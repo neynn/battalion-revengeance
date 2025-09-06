@@ -1,0 +1,38 @@
+{
+    "availableMaps": ["oasis"],
+    "actionsPerTurn": 5,
+    "teamSetup": {
+        "Crimson": {
+            "entities": {
+                "red_artillery": { "type": "red_artillery", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "red_battery": { "type": "red_battery", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "red_bulldozer": { "type": "red_bulldozer", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "red_killdozer": { "type": "red_killdozer", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "red_battletank": { "type": "red_battletank", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "red_infantry": { "type": "red_infantry", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "red_warfly": { "type": "red_warfly", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "red_scout": {  "type": "red_scout", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "red_stormtrooper": { "type": "red_stormtrooper", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "red_droid": { "type": "red_droid", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "red_supplytruck": { "type": "red_supplytruck", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "red_tank": { "type": "red_tank", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }}
+            }
+        },
+        "Allies": {
+            "entities": {
+                "blue_artillery": { "type": "blue_artillery", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "blue_battery": { "type": "blue_battery", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "blue_battletank": { "type": "blue_battletank", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "blue_commando": { "type": "blue_commando", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "blue_infantry": { "type": "blue_infantry", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "blue_landkreuzer": { "type": "blue_landkreuzer", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "blue_sniper": { "type": "blue_sniper", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "blue_tank": { "type": "blue_tank", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "blue_elite_battery": { "type": "blue_elite_battery", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "blue_elite_battletank": { "type": "blue_elite_battletank", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "blue_elite_commando": { "type": "blue_elite_commando", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }},
+                "blue_elite_infantry": { "type": "blue_elite_infantry", "buy": { "type": "Resource", "id": "Supplies", "value": 0 }}
+            }
+        }
+    }
+}

@@ -1,0 +1,24 @@
+{
+    "maxWidth": 10000,
+    "maxHeight": 10000,
+    "overlayColor": "#eeeeee",
+    "overlayAlpha": 0.75,
+    "brushSizes": [0, 1, 2, 3, 4],
+    "hiddenSets": ["overlay"],
+    "interfaceID": "MAP_EDITOR",
+    "textColorView": [238, 238, 238, 255],
+    "textColorEdit": [252, 252, 63, 255],
+    "textColorHide": [207, 55, 35, 255],
+    "defaultMap": {
+        "music": "music_remastered",
+        "width": 20,
+        "height": 20,
+        "data": {
+            "ground": { "fill": 0 },
+            "decoration": { "fill": 0 },
+            "cloud": { "fill": 0 },
+            "type": { "fill": 0 },
+            "team": { "fill": 0 }
+        }
+    }
+}

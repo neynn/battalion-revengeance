@@ -1,0 +1,3 @@
+{
+    "sound_red_stormtrooper_death": { "directory": ["assets", "sounds"], "source": "commando_enemy_death.mp3", "allowStacking": true, "volume": 1 }
+}

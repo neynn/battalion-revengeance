@@ -1,0 +1,26 @@
+{
+    "tank_idle_right": {
+        "texture": "tank",
+        "bounds": {"x": 0,"y":0,"w":56,"h":56},
+        "frameTime": 0.4,
+        "frames": ["1","7","13","19"]
+    },
+    "tank_idle_down": {
+        "texture": "tank",
+        "bounds": {"x": 0,"y":0,"w":56,"h":56},
+        "frameTime": 0.4,
+        "frames": ["2","8","14","20"]
+    },
+    "tank_idle_left": {
+        "texture": "tank",
+        "bounds": {"x": 0,"y":0,"w":56,"h":56},
+        "frameTime": 0.4,
+        "frames": ["3","9","15","21"]
+    },
+    "tank_idle_up": {
+        "texture": "tank",
+        "bounds": {"x": 0,"y":0,"w":56,"h":56},
+        "frameTime": 0.4,
+        "frames": ["4","10","16","22"]
+    }
+}

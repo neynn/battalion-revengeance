@@ -1,0 +1,30 @@
+{
+    "Debris": {
+        "texture": ["debris", "Debris_01"],
+        "clearRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1},
+            { "type": "Resource", "id": "XP", "value": 2 },
+            { "type": "Resource", "id": "Money", "value": 10 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 },
+            { "type": "Item", "id": "construction_cement_sacks", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_lumber", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_hard_hat", "value": 1, "chance": 5 }
+        ]
+    },
+    "ScorchedGround": {
+        "texture": ["debris", "Debris_01"],
+        "clearRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 2},
+            { "type": "Resource", "id": "XP", "value": 4 },
+            { "type": "Resource", "id": "Money", "value": 20 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "construction_cement_sacks", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "construction_lumber", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "construction_hard_hat", "value": 1, "chance": 10 }
+        ]
+    },
+    "Error": {
+        "texture": ["debris", "Debris_01"],
+        "clearRewards": []
+    }
+}

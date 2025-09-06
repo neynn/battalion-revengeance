@@ -1,0 +1,2972 @@
+{
+    "example_entity": {
+        "id": "example_entity",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "disableCard": false,
+        "stats": {
+            "story": { "health": 8, "damage": 5, "attackRange": 2, "moveRange": 5, "traits": [] }, 
+            "versus": { "health": 8, "damage": 5, "attackRange": 2, "moveRange": 5, "traits": [] }
+        },
+        "sprites": {
+            "aim": "blue_elite_infantry_aim",
+            "aim_ne": "blue_elite_infantry_aim_ne",
+            "fire": "blue_elite_infantry_fire",
+            "fire_ne": "blue_elite_infantry_fire_ne",
+            "hit": "blue_elite_infantry_hit",
+            "idle": "blue_elite_infantry_idle",
+            "move": "blue_elite_infantry_move",
+            "move_ne": "blue_elite_infantry_move_ne",
+            "downed": "blue_elite_infantry_downed",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_red_soldier_fire1", "sound_red_soldier_fire2", "sound_red_soldier_fire3", "sound_red_soldier_fire4", "sound_blue_soldier_fire1", "sound_blue_soldier_fire2", "sound_blue_soldier_fire3", "sound_blue_soldier_fire4"],
+            "death": ["sound_blue_soldier_death"],
+            "move": ["sound_soldier_move"],
+            "select": ["sound_soldier_select_long", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "blue_artillery": {
+        "id": "blue_artillery",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "buy": { "type": "Resource", "id": "Money", "value": 10000 },
+        "sell": { "type": "Resource", "id": "Money", "value": 1000 },
+        "cost": { "infantry": 0, "armor": 0, "artillery": 1 },
+        "stats": {
+            "story": { "health": 4, "damage": 1, "attackRange": 2, "moveRange": 3, "traits": ["Artillery"] }, 
+            "versus": { "health": 4, "damage": 1, "attackRange": 2, "moveRange": 3, "traits": ["Artillery"] }
+        },
+        "sprites": {
+            "aim": "blue_artillery_aim",
+            "aim_ne": "blue_artillery_aim_ne",
+            "fire": "blue_artillery_fire",
+            "fire_ne": "blue_artillery_fire_ne",
+            "hit": "blue_artillery_hit",
+            "idle": "blue_artillery_idle",
+            "move": "blue_artillery_move",
+            "move_ne": "blue_artillery_move_ne",
+            "downed": "blue_artillery_downed",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_blue_artillery_fire"],
+            "death": ["sound_blue_artillery_death"],
+            "move": ["sound_artillery_move"],
+            "select": ["sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "blue_artillery_ultimate": {
+        "id": "blue_artillery_ultimate",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "buy": { "type": "Resource", "id": "Money", "value": 10000 },
+        "sell": { "type": "Resource", "id": "Money", "value": 1000 },
+        "cost": { "infantry": 0, "armor": 0, "artillery": 1 },
+        "stats": {
+            "story": { "health": 6, "damage": 2, "attackRange": 3, "moveRange": 3, "traits": ["Artillery"] }, 
+            "versus": { "health": 6, "damage": 2, "attackRange": 3, "moveRange": 3, "traits": ["Artillery"] }
+        },
+        "sprites": {
+            "aim": "blue_artillery_aim",
+            "aim_ne": "blue_artillery_aim_ne",
+            "fire": "blue_artillery_fire",
+            "fire_ne": "blue_artillery_fire_ne",
+            "hit": "blue_artillery_hit",
+            "idle": "blue_artillery_idle",
+            "move": "blue_artillery_move",
+            "move_ne": "blue_artillery_move_ne",
+            "downed": "blue_artillery_downed",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_blue_artillery_fire"],
+            "death": ["sound_blue_artillery_death"],
+            "move": ["sound_artillery_move"],
+            "select": ["sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]
+        }
+    },
+    "blue_battery": {
+        "id": "blue_battery",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "buy": { "type": "Resource", "id": "Money", "value": 30000 },
+        "sell": { "type": "Resource", "id": "Money", "value": 3000 },
+        "cost": { "infantry": 0, "armor": 0, "artillery": 1 },
+        "stats": {
+            "story": { "health": 8, "damage": 2, "attackRange": 2, "moveRange": 4, "traits": ["Artillery", "Reviveable"] }, 
+            "versus": { "health": 8, "damage": 2, "attackRange": 2, "moveRange": 4, "traits": ["Artillery"] }
+        },
+        "sprites": {
+            "aim": "blue_battery_aim",
+            "aim_ne": "blue_battery_aim_ne",
+            "fire": "blue_battery_fire",
+            "fire_ne": "blue_battery_fire_ne",
+            "hit": "blue_battery_hit",
+            "idle": "blue_battery_idle",
+            "move": "blue_battery_move",
+            "move_ne": "blue_battery_move_ne",
+            "downed": "blue_battery_downed",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_blue_battery_fire"],
+            "death": ["sound_blue_battery_death"],
+            "move": ["sound_battery_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]
+        }
+    },
+    "blue_battery_ultimate": {
+        "id": "blue_battery_ultimate",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "buy": { "type": "Resource", "id": "Money", "value": 30000 },
+        "sell": { "type": "Resource", "id": "Money", "value": 3000 },
+        "cost": { "infantry": 0, "armor": 0, "artillery": 1 },
+        "stats": {
+            "story": { "health": 10, "damage": 3, "attackRange": 3, "moveRange": 4, "traits": ["Artillery"] }, 
+            "versus": { "health": 10, "damage": 3, "attackRange": 3, "moveRange": 4, "traits": ["Artillery"] }
+        },
+        "sprites": {
+            "aim": "blue_battery_aim",
+            "aim_ne": "blue_battery_aim_ne",
+            "fire": "blue_battery_fire",
+            "fire_ne": "blue_battery_fire_ne",
+            "hit": "blue_battery_hit",
+            "idle": "blue_battery_idle",
+            "move": "blue_battery_move",
+            "move_ne": "blue_battery_move_ne",
+            "downed": "blue_battery_downed",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_blue_battery_fire"],
+            "death": ["sound_blue_battery_death"],
+            "move": ["sound_battery_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]
+        }
+    },
+    "blue_battletank": {
+        "id": "blue_battletank",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "buy": { "type": "Resource", "id": "Money", "value": 20000 },
+        "sell": { "type": "Resource", "id": "Money", "value": 2000 },
+        "cost": { "infantry": 0, "armor": 1, "artillery": 0 },
+        "stats": {
+            "story": { "health": 15, "damage": 3, "attackRange": 1, "moveRange": 6, "traits": ["Armor"] }, 
+            "versus": { "health": 15, "damage": 3, "attackRange": 1, "moveRange": 5, "traits": ["Armor"] }
+        },
+        "sprites": {
+            "aim": "blue_battletank_aim",
+            "aim_ne": "blue_battletank_aim_ne",
+            "fire": "blue_battletank_fire",
+            "fire_ne": "blue_battletank_fire_ne",
+            "hit": "blue_battletank_hit",
+            "idle": "blue_battletank_idle",
+            "move": "blue_battletank_move",
+            "move_ne": "blue_battletank_move_ne",
+            "downed": "blue_battletank_downed",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_blue_battletank_fire"],
+            "death": ["sound_blue_battletank_death"],
+            "move": ["sound_battletank_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]
+        }        
+    },
+    "blue_battletank_ultimate": {
+        "id": "blue_battletank_ultimate",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "buy": { "type": "Resource", "id": "Money", "value": 20000 },
+        "sell": { "type": "Resource", "id": "Money", "value": 2000 },
+        "cost": { "infantry": 0, "armor": 1, "artillery": 0 },
+        "stats": {
+            "story": { "health": 20, "damage": 4, "attackRange": 1, "moveRange": 5, "traits": ["Armor"] }, 
+            "versus": { "health": 20, "damage": 4, "attackRange": 1, "moveRange": 5, "traits": ["Armor"] }
+        },
+        "sprites": {
+            "aim": "blue_battletank_aim",
+            "aim_ne": "blue_battletank_aim_ne",
+            "fire": "blue_battletank_fire",
+            "fire_ne": "blue_battletank_fire_ne",
+            "hit": "blue_battletank_hit",
+            "idle": "blue_battletank_idle",
+            "move": "blue_battletank_move",
+            "move_ne": "blue_battletank_move_ne",
+            "downed": "blue_battletank_downed",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_blue_battletank_fire"],
+            "death": ["sound_blue_battletank_death"],
+            "move": ["sound_battletank_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]
+        } 
+    },
+    "blue_commando": {
+        "id": "blue_commando",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "buy": { "type": "Resource", "id": "Money", "value": 22000 },
+        "sell": { "type": "Resource", "id": "Money", "value": 2200 },
+        "cost": { "infantry": 1, "armor": 0, "artillery": 0 },
+        "healCost": 50,
+        "stats": {
+            "story": { "health": 10, "damage": 3, "attackRange": 1, "moveRange": 5, "traits": ["Infantry", "Stealth", "Reviveable"] }, 
+            "versus": { "health": 10, "damage": 3, "attackRange": 1, "moveRange": 5, "traits": ["Infantry"] }
+        },
+        "sprites": {
+            "aim": "blue_commando_aim",
+            "aim_ne": "blue_commando_aim_ne",
+            "fire": "blue_commando_fire",
+            "fire_ne": "blue_commando_fire_ne",
+            "hit": "blue_commando_hit",
+            "idle": "blue_commando_idle",
+            "move": "blue_commando_move",
+            "move_ne": "blue_commando_move_ne",
+            "downed": "blue_commando_downed",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": "sound_blue_commando_fire",
+            "death": "sound_blue_commando_death",
+            "move": "sound_soldier_move",
+            "select": ["sound_commando_select_long", "sound_commando_select_short1", "sound_commando_select_short2", "sound_commando_select_short3", "sound_commando_select_short4"]
+        }
+    },
+    "blue_commando_ultimate": {
+        "id": "blue_commando_ultimate",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "buy": { "type": "Resource", "id": "Money", "value": 22000 },
+        "sell": { "type": "Resource", "id": "Money", "value": 2200 },
+        "cost": { "infantry": 1, "armor": 0, "artillery": 0 },
+        "stats": {
+            "story": { "health": 15, "damage": 4, "attackRange": 1, "moveRange": 5, "traits": ["Infantry"] }, 
+            "versus": { "health": 15, "damage": 4, "attackRange": 1, "moveRange": 5, "traits": ["Infantry"] }
+        },
+        "sprites": {
+            "aim": "blue_commando_aim",
+            "aim_ne": "blue_commando_aim_ne",
+            "fire": "blue_commando_fire",
+            "fire_ne": "blue_commando_fire_ne",
+            "hit": "blue_commando_hit",
+            "idle": "blue_commando_idle",
+            "move": "blue_commando_move",
+            "move_ne": "blue_commando_move_ne",
+            "downed": "blue_commando_downed",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_blue_commando_fire"],
+            "death": ["sound_blue_commando_death"],
+            "move": ["sound_soldier_move"],
+            "select": ["sound_commando_select_long", "sound_commando_select_short1", "sound_commando_select_short2", "sound_commando_select_short3", "sound_commando_select_short4"]
+        }
+    },
+    "blue_elite_battery": {
+        "id": "blue_elite_battery",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "buy": { "type": "Resource", "id": "Gold", "value": 200 },
+        "sell": { "type": "Resource", "id": "Money", "value": 20000 },
+        "cost": { "infantry": 0, "armor": 0, "artillery": 1 },
+        "stats": {
+            "story": { "health": 8, "damage": 3, "attackRange": 3, "moveRange": 2, "traits": ["Artillery", "Elite"] }, 
+            "versus": { "health": 8, "damage": 3, "attackRange": 3, "moveRange": 2, "traits": ["Artillery"] }
+        },
+        "sprites": {
+            "aim": "blue_elite_battery_aim",
+            "aim_ne": "blue_elite_battery_aim_ne",
+            "fire": "blue_elite_battery_fire",
+            "fire_ne": "blue_elite_battery_fire_ne",
+            "hit": "blue_elite_battery_hit",
+            "idle": "blue_elite_battery_idle",
+            "move": "blue_elite_battery_move",
+            "move_ne": "blue_elite_battery_move_ne",
+            "downed": "blue_elite_battery_downed",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"   
+        },
+        "sounds": {
+            "fire": ["sound_blue_battery_fire"],
+            "death": ["sound_blue_battery_death"],
+            "move": ["sound_battery_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "blue_elite_battery_ultimate": {
+        "id": "blue_elite_battery_ultimate",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "buy": { "type": "Resource", "id": "Gold", "value": 200 },
+        "sell": { "type": "Resource", "id": "Money", "value": 20000 },
+        "cost": { "infantry": 0, "armor": 0, "artillery": 1 },
+        "stats": {
+            "story": { "health": 10, "damage": 4, "attackRange": 4, "moveRange": 2, "traits": ["Artillery", "Elite"] }, 
+            "versus": { "health": 10, "damage": 4, "attackRange": 4, "moveRange": 2, "traits": ["Artillery"] }
+        },
+        "sprites": {
+            "aim": "blue_elite_battery_aim",
+            "aim_ne": "blue_elite_battery_aim_ne",
+            "fire": "blue_elite_battery_fire",
+            "fire_ne": "blue_elite_battery_fire_ne",
+            "hit": "blue_elite_battery_hit",
+            "idle": "blue_elite_battery_idle",
+            "move": "blue_elite_battery_move",
+            "move_ne": "blue_elite_battery_move_ne",
+            "downed": "blue_elite_battery_downed",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"   
+        },
+        "sounds": {
+            "fire": ["sound_blue_battery_fire"],
+            "death": ["sound_blue_battery_death"],
+            "move": ["sound_battery_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }    
+    },
+    "blue_elite_battletank": {
+        "id": "blue_elite_battletank",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "buy": { "type": "Resource", "id": "Gold", "value": 90 },
+        "sell": { "type": "Resource", "id": "Money", "value": 9000 },
+        "cost": { "infantry": 0, "armor": 1, "artillery": 0 },
+        "stats": {
+            "story": { "health": 20, "damage": 3, "attackRange": 1, "moveRange": 4, "traits": ["Armor", "Elite"] }, 
+            "versus": { "health": 20, "damage": 3, "attackRange": 1, "moveRange": 4, "traits": ["Armor"] }
+        },
+        "sprites": {
+            "aim": "blue_elite_battletank_aim",
+            "aim_ne": "blue_elite_battletank_aim_ne",
+            "fire": "blue_elite_battletank_fire",
+            "fire_ne": "blue_elite_battletank_fire_ne",
+            "hit": "blue_elite_battletank_hit",
+            "idle": "blue_elite_battletank_idle",
+            "move": "blue_elite_battletank_move",
+            "move_ne": "blue_elite_battletank_move_ne",
+            "downed": "blue_elite_battletank_downed",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_blue_battletank_fire"],
+            "death": ["sound_blue_battletank_death"],
+            "move": ["sound_battletank_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }    
+    },
+    "blue_elite_battletank_ultimate": {
+        "id": "blue_elite_battletank_ultimate",     
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "buy": { "type": "Resource", "id": "Gold", "value": 90 },
+        "sell": { "type": "Resource", "id": "Money", "value": 9000 },
+        "cost": { "infantry": 0, "armor": 1, "artillery": 0 },
+        "stats": {
+            "story": { "health": 25, "damage": 4, "attackRange": 1, "moveRange": 4, "traits": ["Armor", "Elite"] }, 
+            "versus": { "health": 25, "damage": 4, "attackRange": 1, "moveRange": 4, "traits": ["Armor"] }
+        },
+        "sprites": {
+            "aim": "blue_elite_battletank_aim",
+            "aim_ne": "blue_elite_battletank_aim_ne",
+            "fire": "blue_elite_battletank_fire",
+            "fire_ne": "blue_elite_battletank_fire_ne",
+            "hit": "blue_elite_battletank_hit",
+            "idle": "blue_elite_battletank_idle",
+            "move": "blue_elite_battletank_move",
+            "move_ne": "blue_elite_battletank_move_ne",
+            "downed": "blue_elite_battletank_downed",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_blue_battletank_fire"],
+            "death": ["sound_blue_battletank_death"],
+            "move": ["sound_battletank_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "blue_elite_commando": {
+        "id": "blue_elite_commando",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "buy": { "type": "Resource", "id": "Gold", "value": 500 },
+        "sell": { "type": "Resource", "id": "Money", "value": 50000 },
+        "cost": { "infantry": 1, "armor": 0, "artillery": 0 },
+        "stats": {
+            "story": { "health": 30, "damage": 10, "attackRange": 1, "moveRange": 2, "traits": ["Infantry", "Elite"] }, 
+            "versus": { "health": 30, "damage": 10, "attackRange": 1, "moveRange": 2, "traits": ["Infantry"] }
+        },
+        "sprites": {
+            "aim": "blue_elite_commando_aim",
+            "aim_ne": "blue_elite_commando_aim_ne",
+            "fire": "blue_elite_commando_fire",
+            "fire_ne": "blue_elite_commando_fire_ne",
+            "hit": "blue_elite_commando_hit",
+            "idle": "blue_elite_commando_idle",
+            "move": "blue_elite_commando_move",
+            "move_ne": "blue_elite_commando_move_ne",
+            "downed": "blue_elite_commando_downed",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_blue_commando_fire"],
+            "death": ["sound_blue_commando_death"],
+            "move": ["sound_soldier_move"],
+            "select": ["sound_commando_select_long", "sound_commando_select_short1", "sound_commando_select_short2", "sound_commando_select_short3", "sound_commando_select_short4"]
+        }
+    },
+    "blue_elite_infantry": {
+        "id": "blue_elite_infantry",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "buy": { "type": "Resource", "id": "Gold", "value": 30 },
+        "sell": { "type": "Resource", "id": "Money", "value": 3000 },
+        "cost": { "infantry": 1, "armor": 0, "artillery": 0 },
+        "stats": {
+            "story": { "health": 5, "damage": 2, "attackRange": 1, "moveRange": 5, "traits": ["Infantry", "Elite", "Stealth"] }, 
+            "versus": { "health": 5, "damage": 2, "attackRange": 1, "moveRange": 5, "traits": ["Infantry"] }
+        },
+        "sprites": {
+            "aim": "blue_elite_infantry_aim",
+            "aim_ne": "blue_elite_infantry_aim_ne",
+            "fire": "blue_elite_infantry_fire",
+            "fire_ne": "blue_elite_infantry_fire_ne",
+            "hit": "blue_elite_infantry_hit",
+            "idle": "blue_elite_infantry_idle",
+            "move": "blue_elite_infantry_move",
+            "move_ne": "blue_elite_infantry_move_ne",
+            "downed": "blue_elite_infantry_downed",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_red_soldier_fire1", "sound_red_soldier_fire2", "sound_red_soldier_fire3", "sound_red_soldier_fire4", "sound_blue_soldier_fire1", "sound_blue_soldier_fire2", "sound_blue_soldier_fire3", "sound_blue_soldier_fire4"],
+            "death": ["sound_blue_soldier_death"],
+            "move": ["sound_soldier_move"],
+            "select": ["sound_soldier_select_long", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "blue_elite_infantry_ultimate": {
+        "id": "blue_elite_infantry_ultimate",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1, 
+        "passability": ["Land"],
+        "buy": { "type": "Resource", "id": "Gold", "value": 30 },
+        "sell": { "type": "Resource", "id": "Money", "value": 3000 },
+        "cost": { "infantry": 1, "armor": 0, "artillery": 0 },
+        "stats": {
+            "story": { "health": 8, "damage": 3, "attackRange": 1, "moveRange": 5, "traits": ["Infantry", "Elite"] }, 
+            "versus": { "health": 8, "damage": 3, "attackRange": 1, "moveRange": 5, "traits": ["Infantry"] }
+        },
+        "sprites": {
+            "aim": "blue_elite_infantry_aim",
+            "aim_ne": "blue_elite_infantry_aim_ne",
+            "fire": "blue_elite_infantry_fire",
+            "fire_ne": "blue_elite_infantry_fire_ne",
+            "hit": "blue_elite_infantry_hit",
+            "idle": "blue_elite_infantry_idle",
+            "move": "blue_elite_infantry_move",
+            "move_ne": "blue_elite_infantry_move_ne",
+            "downed": "blue_elite_infantry_downed",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_red_soldier_fire1", "sound_red_soldier_fire2", "sound_red_soldier_fire3", "sound_red_soldier_fire4", "sound_blue_soldier_fire1", "sound_blue_soldier_fire2", "sound_blue_soldier_fire3", "sound_blue_soldier_fire4"],
+            "death": ["sound_blue_soldier_death"],
+            "move": ["sound_soldier_move"],
+            "select": ["sound_soldier_select_long", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "blue_infantry": {
+        "id": "blue_infantry",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "buy": { "type": "Resource", "id": "Money", "value": 1500 },
+        "sell": { "type": "Resource", "id": "Money", "value": 150 },
+        "cost": { "infantry": 1, "armor": 0, "artillery": 0 },
+        "upgrade": {
+            "result": "blue_infantry_ultimate",
+            "items": [
+                { "type": "Item", "id": "construction_hard_hat", "value": 5 },
+                { "type": "Item", "id": "construction_cement_sacks", "value": 5 },
+                { "type": "Item", "id": "construction_lumber", "value": 5 }
+            ],
+            "cost": { "type": "Resource", "id": "Gold", "value": 5 }
+        },
+        "stats": {
+            "story": { "health": 5, "damage": 1, "attackRange": 1, "moveRange": 4, "traits": ["Infantry"] }, 
+            "versus": { "health": 5, "damage": 1, "attackRange": 1, "moveRange": 4, "traits": ["Infantry"] }
+        },
+        "sprites": {
+            "aim": "blue_infantry_aim",
+            "aim_ne": "blue_infantry_aim_ne",
+            "fire": "blue_infantry_fire",
+            "fire_ne": "blue_infantry_fire_ne",
+            "hit": "blue_infantry_hit",
+            "idle": "blue_infantry_idle",
+            "move": "blue_infantry_move",
+            "move_ne": "blue_infantry_move_ne",
+            "downed": "blue_infantry_downed",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_blue_soldier_fire1", "sound_blue_soldier_fire2", "sound_blue_soldier_fire3", "sound_blue_soldier_fire4"],
+            "death": ["sound_blue_soldier_death"],
+            "move": ["sound_soldier_move"],
+            "select": ["sound_soldier_select_long", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "blue_infantry_ultimate": {
+        "id": "blue_infantry_ultimate",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "buy": { "type": "Resource", "id": "Money", "value": 1500 },
+        "sell": { "type": "Resource", "id": "Money", "value": 150 },
+        "cost": { "infantry": 1, "armor": 0, "artillery": 0 },
+        "stats": {
+            "story": { "health": 8, "damage": 2, "attackRange": 1, "moveRange": 4, "traits": ["Infantry"] }, 
+            "versus": { "health": 8, "damage": 2, "attackRange": 1, "moveRange": 4, "traits": ["Infantry"] }
+        },
+        "sprites": {
+            "aim": "blue_infantry_aim",
+            "aim_ne": "blue_infantry_aim_ne",
+            "fire": "blue_infantry_fire",
+            "fire_ne": "blue_infantry_fire_ne",
+            "hit": "blue_infantry_hit",
+            "idle": "blue_infantry_idle",
+            "move": "blue_infantry_move",
+            "move_ne": "blue_infantry_move_ne",
+            "downed": "blue_infantry_downed",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_blue_soldier_fire1", "sound_blue_soldier_fire2", "sound_blue_soldier_fire3", "sound_blue_soldier_fire4"],
+            "death": ["sound_blue_soldier_death"],
+            "move": ["sound_soldier_move"],
+            "select": ["sound_soldier_select_long", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "blue_landkreuzer" : {
+        "id": "blue_landkreuzer",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 0, "armor": 1, "artillery": 1 },
+        "stats": {
+            "story": { "health": 22, "damage": 4, "attackRange": 2, "moveRange": 4, "traits": ["Armor", "Artillery"] }, 
+            "versus": { "health": 22, "damage": 4, "attackRange": 2, "moveRange": 4, "traits": ["Armor", "Artillery"] }
+        },
+        "sprites": {
+            "aim": "red_battletank_aim",
+            "aim_ne": "red_battletank_aim_ne",
+            "fire": "red_battletank_fire",
+            "fire_ne": "red_battletank_fire_ne",
+            "hit": "red_battletank_hit",
+            "idle": "red_battletank_idle",
+            "move": "red_battletank_move",
+            "move_ne": "red_battletank_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_blue_battletank_fire"],
+            "death": ["sound_blue_battletank_death"],
+            "move": ["sound_battletank_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "blue_sniper": {
+        "id": "blue_sniper",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 1, "armor": 0, "artillery": 0 },
+        "stats": {
+            "story": { "health": 5, "damage": 1, "attackRange": 4, "moveRange": 4, "traits": ["Infantry"] }, 
+            "versus": { "health": 5, "damage": 1, "attackRange": 4, "moveRange": 4, "traits": ["Infantry"] }
+        },
+        "sprites": {
+            "aim": "blue_sniper_aim",
+            "aim_ne": "blue_sniper_aim_ne",
+            "fire": "blue_sniper_fire",
+            "fire_ne": "blue_sniper_fire_ne",
+            "hit": "blue_sniper_hit",
+            "idle": "blue_sniper_idle",
+            "move": "blue_sniper_move",
+            "move_ne": "blue_sniper_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_blue_soldier_fire1", "sound_blue_soldier_fire2", "sound_blue_soldier_fire3", "sound_blue_soldier_fire4"],
+            "death": ["sound_blue_soldier_death"],
+            "move": ["sound_soldier_move"],
+            "select": ["sound_soldier_select_long", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "blue_tank": {
+        "id": "blue_tank",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "buy": { "type": "Resource", "id": "Money", "value": 5000 },
+        "sell": { "type": "Resource", "id": "Money", "value": 500 },
+        "cost": { "infantry": 0, "armor": 1, "artillery": 0 },
+        "stats": {
+            "story": { "health": 10, "damage": 2, "attackRange": 1, "moveRange": 10, "traits": ["Armor"] }, 
+            "versus": { "health": 10, "damage": 2, "attackRange": 1, "moveRange": 10, "traits": ["Armor"] }
+        },
+        "sprites": {
+            "aim": "blue_tank_aim",
+            "aim_ne": "blue_tank_aim_ne",
+            "fire": "blue_tank_fire",
+            "fire_ne": "blue_tank_fire_ne",
+            "hit": "blue_tank_hit",
+            "idle": "blue_tank_idle",
+            "move": "blue_tank_move",
+            "move_ne": "blue_tank_move_ne",
+            "downed": "blue_tank_downed",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_blue_tank_fire"],
+            "death": ["sound_blue_tank_death"],
+            "move": ["sound_tank_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "blue_tank_ultimate": {
+        "id": "blue_tank_ultimate",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "buy": { "type": "Resource", "id": "Money", "value": 5000 },
+        "sell": { "type": "Resource", "id": "Money", "value": 500 },
+        "cost": { "infantry": 0, "armor": 1, "artillery": 0 },
+        "stats": {
+            "story": { "health": 15, "damage": 3, "attackRange": 1, "moveRange": 10, "traits": ["Armor"] }, 
+            "versus": { "health": 15, "damage": 3, "attackRange": 1, "moveRange": 10, "traits": ["Armor"] }
+        },
+        "sprites": {
+            "aim": "blue_tank_aim",
+            "aim_ne": "blue_tank_aim_ne",
+            "fire": "blue_tank_fire",
+            "fire_ne": "blue_tank_fire_ne",
+            "hit": "blue_tank_hit",
+            "idle": "blue_tank_idle",
+            "move": "blue_tank_move",
+            "move_ne": "blue_tank_move_ne",
+            "downed": "blue_tank_downed",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_blue_tank_fire"],
+            "death": ["sound_blue_tank_death"],
+            "move": ["sound_tank_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "red_artillery" : {
+        "id": "red_artillery",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 0, "armor": 0, "artillery": 1 },
+        "stats": {
+            "story": { "health": 2, "damage": 1, "attackRange": 2, "moveRange": 3, "traits": ["Artillery"] }, 
+            "versus": { "health": 2, "damage": 1, "attackRange": 2, "moveRange": 3, "traits": ["Artillery"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 5 },
+            { "type": "Resource", "id": "Money", "value": 20 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1},
+            { "type": "Resource", "id": "XP", "value": 5 },
+            { "type": "Resource", "id": "Money", "value": 200 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_artillery_tubes", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "construction_black_box", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "artillery_ammo", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "artillery_fire_mission", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "artillery_mortar_base_plate", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "artillery_rangefinder", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "artillery_smoke_marker", "value": 1, "chance": 10 }
+        ],
+        "sprites": {
+            "aim": "red_artillery_aim",
+            "aim_ne": "red_artillery_aim_ne",
+            "airdrop": "red_artillery_airdrop",
+            "fire": "red_artillery_fire",
+            "fire_ne": "red_artillery_fire_ne",
+            "hit": "red_artillery_hit",
+            "idle": "red_artillery_idle",
+            "move": "red_artillery_move",
+            "move_ne": "red_artillery_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_red_artillery_fire"],
+            "death": ["sound_red_artillery_death"],
+            "move": ["sound_artillery_move"],
+            "select": ["sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]
+        }
+    },
+    "red_artillery_ultimate" : {
+        "id": "red_artillery_ultimate",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 0, "armor": 0, "artillery": 1 },
+        "stats": {
+            "story": { "health": 4, "damage": 2, "attackRange": 3, "moveRange": 3, "traits": ["Artillery"] }, 
+            "versus": { "health": 4, "damage": 2, "attackRange": 3, "moveRange": 3, "traits": ["Artillery"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 5 },
+            { "type": "Resource", "id": "Money", "value": 20 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1},
+            { "type": "Resource", "id": "XP", "value": 5 },
+            { "type": "Resource", "id": "Money", "value": 200 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_artillery_tubes", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "construction_black_box", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "artillery_ammo", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "artillery_fire_mission", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "artillery_mortar_base_plate", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "artillery_rangefinder", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "artillery_smoke_marker", "value": 1, "chance": 10 }
+        ],
+        "sprites": {
+            "aim": "red_artillery_aim",
+            "aim_ne": "red_artillery_aim_ne",
+            "airdrop": "red_artillery_airdrop",
+            "fire": "red_artillery_fire",
+            "fire_ne": "red_artillery_fire_ne",
+            "hit": "red_artillery_hit",
+            "idle": "red_artillery_idle",
+            "move": "red_artillery_move",
+            "move_ne": "red_artillery_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_red_artillery_fire"],
+            "death": ["sound_red_artillery_death"],
+            "move": ["sound_artillery_move"],
+            "select": ["sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]
+        }
+    },
+    "red_battery" : {
+        "id": "red_battery",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 0, "armor": 0, "artillery": 1 },
+        "stats": {
+            "story": { "health": 4, "damage": 2, "attackRange": 2, "moveRange": 4, "traits": ["Artillery"] }, 
+            "versus": { "health": 4, "damage": 2, "attackRange": 2, "moveRange": 4, "traits": ["Artillery"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 7 },
+            { "type": "Resource", "id": "Money", "value": 30 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1},
+            { "type": "Resource", "id": "XP", "value": 10 },
+            { "type": "Resource", "id": "Money", "value": 400 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_pilot_helmet", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "construction_artillery_tubes", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "construction_black_box", "value": 1, "chance": 15 },
+            { "type": "Item", "id": "rocket_battery_headphones", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "rocket_battery_radar", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "rocket_battery_rockets", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "rocket_battery_shock_and_awe", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "rocket_battery_strategic_map", "value": 1, "chance": 10 }
+        ],
+        "sprites": {
+            "aim": "red_battery_aim",
+            "aim_ne": "red_battery_aim_ne",
+            "airdrop": "red_battery_airdrop",
+            "fire": "red_battery_fire",
+            "fire_ne": "red_battery_fire_ne",
+            "hit": "red_battery_hit",
+            "idle": "red_battery_idle",
+            "move": "red_battery_move",
+            "move_ne": "red_battery_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_red_battery_fire"],
+            "death": ["sound_red_battery_death"],
+            "move": ["sound_battery_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "red_battery_ultimate" : {
+        "id": "red_battery_ultimate",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 0, "armor": 0, "artillery": 1 },
+        "stats": {
+            "story": { "health": 6, "damage": 3, "attackRange": 3, "moveRange": 4, "traits": ["Artillery"] }, 
+            "versus": { "health": 6, "damage": 3, "attackRange": 3, "moveRange": 4, "traits": ["Artillery"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 7 },
+            { "type": "Resource", "id": "Money", "value": 30 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1},
+            { "type": "Resource", "id": "XP", "value": 10 },
+            { "type": "Resource", "id": "Money", "value": 400 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "construction_pilot_helmet", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "construction_artillery_tubes", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "construction_black_box", "value": 1, "chance": 15 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "rocket_battery_headphones", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "rocket_battery_radar", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "rocket_battery_rockets", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "rocket_battery_shock_and_awe", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "rocket_battery_strategic_map", "value": 1, "chance": 10 }
+        ],
+        "sprites": {
+            "aim": "red_battery_aim",
+            "aim_ne": "red_battery_aim_ne",
+            "airdrop": "red_battery_airdrop",
+            "fire": "red_battery_fire",
+            "fire_ne": "red_battery_fire_ne",
+            "hit": "red_battery_hit",
+            "idle": "red_battery_idle",
+            "move": "red_battery_move",
+            "move_ne": "red_battery_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_red_battery_fire"],
+            "death": ["sound_red_battery_death"],
+            "move": ["sound_battery_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "red_bulldozer" : {
+        "id": "red_bulldozer",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 0, "armor": 1, "artillery": 0 },
+        "stats": {
+            "story": { "health": 20, "damage": 4, "attackRange": 1, "moveRange": 4, "traits": ["Armor", "Bulldoze"] }, 
+            "versus": { "health": 20, "damage": 4, "attackRange": 1, "moveRange": 4, "traits": ["Armor"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 1 },
+            { "type": "Resource", "id": "Money", "value": 10 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1},
+            { "type": "Resource", "id": "XP", "value": 10 },
+            { "type": "Resource", "id": "Money", "value": 300 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "construction_pilot_helmet", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "construction_artillery_tubes", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "construction_black_box", "value": 1, "chance": 15 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "rocket_battery_headphones", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "battle_tank_blueprints", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "battle_tank_broken_track", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "rocket_battery_radar", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "rocket_battery_rockets", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "battle_tank_driver_goggles", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "battle_tank_heat_ammunition", "value": 1, "chance": 5 }
+        ],
+        "sprites": {
+            "aim": "red_bulldozer_aim",
+            "aim_ne": "red_bulldozer_aim_ne",
+            "airdrop": "red_bulldozer_airdrop",
+            "fire": "red_bulldozer_fire",
+            "fire_ne": "red_bulldozer_fire_ne",
+            "hit": "red_bulldozer_hit",
+            "idle": "red_bulldozer_idle",
+            "move": "red_bulldozer_move",
+            "move_ne": "red_bulldozer_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_red_battletank_fire"],
+            "death": ["sound_red_battletank_death"],
+            "move": ["sound_battletank_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "red_bulldozer_ultimate" : {
+        "id": "red_bulldozer_ultimate",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 0, "armor": 1, "artillery": 0 },
+        "stats": {
+            "story": { "health": 25, "damage": 5, "attackRange": 1, "moveRange": 4, "traits": ["Armor"] }, 
+            "versus": { "health": 25, "damage": 5, "attackRange": 1, "moveRange": 4, "traits": ["Armor"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 1 },
+            { "type": "Resource", "id": "Money", "value": 10 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1},
+            { "type": "Resource", "id": "XP", "value": 10 },
+            { "type": "Resource", "id": "Money", "value": 300 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "construction_pilot_helmet", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "construction_artillery_tubes", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "construction_black_box", "value": 1, "chance": 15 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "battle_tank_blueprints", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "battle_tank_broken_track", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "battle_tank_driver_goggles", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "battle_tank_heat_ammunition", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "rocket_battery_headphones", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "rocket_battery_radar", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "rocket_battery_rockets", "value": 1, "chance": 5 }
+        ],
+        "sprites": {
+            "aim": "red_bulldozer_aim",
+            "aim_ne": "red_bulldozer_aim_ne",
+            "airdrop": "red_bulldozer_airdrop",
+            "fire": "red_bulldozer_fire",
+            "fire_ne": "red_bulldozer_fire_ne",
+            "hit": "red_bulldozer_hit",
+            "idle": "red_bulldozer_idle",
+            "move": "red_bulldozer_move",
+            "move_ne": "red_bulldozer_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_red_battletank_fire"],
+            "death": ["sound_red_battletank_death"],
+            "move": ["sound_battletank_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "red_killdozer" : {
+        "id": "red_killdozer",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 0, "armor": 1, "artillery": 0 },
+        "stats": {
+            "story": { "health": 30, "damage": 10, "attackRange": 1, "moveRange": 2, "traits": ["Armor"] }, 
+            "versus": { "health": 30, "damage": 10, "attackRange": 1, "moveRange": 2, "traits": ["Armor"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 1 },
+            { "type": "Resource", "id": "Money", "value": 10 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1},
+            { "type": "Resource", "id": "XP", "value": 10 },
+            { "type": "Resource", "id": "Money", "value": 300 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "construction_pilot_helmet", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "construction_artillery_tubes", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "construction_black_box", "value": 1, "chance": 15 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "battle_tank_blueprints", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "battle_tank_broken_track", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "battle_tank_driver_goggles", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "battle_tank_heat_ammunition", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "rocket_battery_headphones", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "rocket_battery_radar", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "rocket_battery_rockets", "value": 1, "chance": 5 }
+        ],
+        "sprites": {
+            "aim": "red_bulldozer_aim",
+            "aim_ne": "red_bulldozer_aim_ne",
+            "airdrop": "red_bulldozer_airdrop",
+            "fire": "red_bulldozer_fire",
+            "fire_ne": "red_bulldozer_fire_ne",
+            "hit": "red_bulldozer_hit",
+            "idle": "red_bulldozer_idle",
+            "move": "red_bulldozer_move",
+            "move_ne": "red_bulldozer_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_red_battletank_fire"],
+            "death": ["sound_red_battletank_death"],
+            "move": ["sound_battletank_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "red_battletank" : {
+        "id": "red_battletank",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 0, "armor": 1, "artillery": 0 },
+        "stats": {
+            "story": { "health": 10, "damage": 3, "attackRange": 1, "moveRange": 4, "traits": ["Armor"] }, 
+            "versus": { "health": 10, "damage": 3, "attackRange": 1, "moveRange": 4, "traits": ["Armor"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 2 },
+            { "type": "Resource", "id": "Money", "value": 30 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1},
+            { "type": "Resource", "id": "XP", "value": 10 },
+            { "type": "Resource", "id": "Money", "value": 400 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "construction_steel_plates", "value": 1, "chance": 20 },
+            { "type": "Item", "id": "construction_black_box", "value": 1, "chance": 15 },
+            { "type": "Item", "id": "construction_pilot_helmet", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "battle_tank_armor_plates", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "battle_tank_blueprints", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "battle_tank_broken_track", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "battle_tank_driver_goggles", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "battle_tank_heat_ammunition", "value": 1, "chance": 10 }
+        ],
+        "sprites": {
+            "aim": "red_battletank_aim",
+            "aim_ne": "red_battletank_aim_ne",
+            "airdrop": "red_battletank_airdrop",
+            "fire": "red_battletank_fire",
+            "fire_ne": "red_battletank_fire_ne",
+            "hit": "red_battletank_hit",
+            "idle": "red_battletank_idle",
+            "move": "red_battletank_move",
+            "move_ne": "red_battletank_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_red_battletank_fire"],
+            "death": ["sound_red_battletank_death"],
+            "move": ["sound_battletank_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }    
+    },
+    "red_battletank_ultimate" : {
+        "id": "red_battletank_ultimate",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 0, "armor": 1, "artillery": 0 },
+        "stats": {
+            "story": { "health": 15, "damage": 4, "attackRange": 1, "moveRange": 4, "traits": ["Armor"] }, 
+            "versus": { "health": 15, "damage": 4, "attackRange": 1, "moveRange": 4, "traits": ["Armor"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 2 },
+            { "type": "Resource", "id": "Money", "value": 30 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1},
+            { "type": "Resource", "id": "XP", "value": 10 },
+            { "type": "Resource", "id": "Money", "value": 400 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "construction_steel_plates", "value": 1, "chance": 20 },
+            { "type": "Item", "id": "construction_black_box", "value": 1, "chance": 15 },
+            { "type": "Item", "id": "construction_pilot_helmet", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "battle_tank_armor_plates", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "battle_tank_blueprints", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "battle_tank_broken_track", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "battle_tank_driver_goggles", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "battle_tank_heat_ammunition", "value": 1, "chance": 10 }
+        ],
+        "sprites": {
+            "aim": "red_battletank_aim",
+            "aim_ne": "red_battletank_aim_ne",
+            "airdrop": "red_battletank_airdrop",
+            "fire": "red_battletank_fire",
+            "fire_ne": "red_battletank_fire_ne",
+            "hit": "red_battletank_hit",
+            "idle": "red_battletank_idle",
+            "move": "red_battletank_move",
+            "move_ne": "red_battletank_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_red_battletank_fire"],
+            "death": ["sound_red_battletank_death"],
+            "move": ["sound_battletank_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "red_super_warfly" : {
+        "id": "red_super_warfly",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land", "Mountain"],
+        "cost": { "infantry": 1, "armor": 0, "artillery": 0 },
+        "stats": {
+            "story": { "health": 12, "damage": 3, "attackRange": 1, "moveRange": 3, "traits": ["Infantry"] }, 
+            "versus": { "health": 12, "damage": 3, "attackRange": 1, "moveRange": 3, "traits": ["Infantry"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 3 },
+            { "type": "Resource", "id": "Money", "value": 15 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1},
+            { "type": "Resource", "id": "XP", "value": 5 },
+            { "type": "Resource", "id": "Money", "value": 300 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "construction_rebar", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "stormtroop_combat_knife", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "rocket_battery_rockets", "value": 1, "chance": 10 }
+        ],
+        "sprites": {
+            "aim": "red_commando_aim",
+            "aim_ne": "red_commando_aim_ne",
+            "airdrop": "red_commando_airrop",
+            "fire": "red_commando_fire",
+            "fire_ne": "red_commando_fire_ne",
+            "hit": "red_commando_hit",
+            "idle": "red_commando_idle",
+            "move": "red_commando_move",
+            "move_ne": "red_commando_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_red_soldier_fire1", "sound_red_soldier_fire2", "sound_red_soldier_fire3", "sound_red_soldier_fire4"],
+            "death": ["sound_red_soldier_death1", "sound_red_soldier_death2"],
+            "move": [],
+            "select": ["sound_soldier_select_long", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]
+        }
+    },
+    "red_super_warfly_ultimate" : {
+        "id": "red_super_warfly_ultimate",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land", "Mountain"],
+        "cost": { "infantry": 1, "armor": 0, "artillery": 0 },
+        "stats": {
+            "story": { "health": 15, "damage": 4, "attackRange": 1, "moveRange": 3, "traits": ["Infantry"] }, 
+            "versus": { "health": 15, "damage": 4, "attackRange": 1, "moveRange": 3, "traits": ["Infantry"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 3 },
+            { "type": "Resource", "id": "Money", "value": 15 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1},
+            { "type": "Resource", "id": "XP", "value": 5 },
+            { "type": "Resource", "id": "Money", "value": 300 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "construction_rebar", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "stormtroop_combat_knife", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "rocket_battery_rockets", "value": 1, "chance": 10 }
+        ],
+        "sprites": {
+            "aim": "red_commando_aim",
+            "aim_ne": "red_commando_aim_ne",
+            "airdrop": "red_commando_airrop",
+            "fire": "red_commando_fire",
+            "fire_ne": "red_commando_fire_ne",
+            "hit": "red_commando_hit",
+            "idle": "red_commando_idle",
+            "move": "red_commando_move",
+            "move_ne": "red_commando_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_red_soldier_fire1", "sound_red_soldier_fire2", "sound_red_soldier_fire3", "sound_red_soldier_fire4"],
+            "death": ["sound_red_soldier_death1", "sound_red_soldier_death2"],
+            "move": [],
+            "select": ["sound_soldier_select_long", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]
+        }
+    },
+    "red_infantry" : {
+        "id": "red_infantry",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 1, "armor": 0, "artillery": 0 },
+        "stats": {
+            "story": { "health": 2, "damage": 1, "attackRange": 1, "moveRange": 4, "traits": ["Infantry"] }, 
+            "versus": { "health": 2, "damage": 1, "attackRange": 1, "moveRange": 4, "traits": ["Infantry"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 2 },
+            { "type": "Resource", "id": "Money", "value": 20 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ], 
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1 },
+            { "type": "Resource", "id": "XP", "value": 2 },
+            { "type": "Resource", "id": "Money", "value": 80 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_hard_hat", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_cement_sacks", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_rebar", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_wiring", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "infantry_combat_boots", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "infantry_dog_tags", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "infantry_grenade", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "infantry_mre", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "infantry_sergeant_hat", "value": 1, "chance": 10 }
+        ],
+        "sprites": {
+            "aim": "red_infantry_aim",
+            "aim_ne": "red_infantry_aim_ne",
+            "airdrop": "red_infantry_airdrop",
+            "fire": "red_infantry_fire",
+            "fire_ne": "red_infantry_fire_ne",
+            "hit": "red_infantry_hit",
+            "idle": "red_infantry_idle",
+            "move": "red_infantry_move",
+            "move_ne": "red_infantry_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_red_soldier_fire1", "sound_red_soldier_fire2", "sound_red_soldier_fire3", "sound_red_soldier_fire4"],
+            "death": ["sound_red_soldier_death1", "sound_red_soldier_death2"],
+            "move": ["sound_soldier_move"],
+            "select": ["sound_soldier_select_long", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "red_infantry_ultimate" : {
+        "id": "red_infantry_ultimate",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 1, "armor": 0, "artillery": 0 },
+        "stats": {
+            "story": { "health": 4, "damage": 2, "attackRange": 1, "moveRange": 4, "traits": ["Infantry"] }, 
+            "versus": { "health": 4, "damage": 2, "attackRange": 1, "moveRange": 4, "traits": ["Infantry"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 2 },
+            { "type": "Resource", "id": "Money", "value": 20 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1 },
+            { "type": "Resource", "id": "XP", "value": 2 },
+            { "type": "Resource", "id": "Money", "value": 80 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_hard_hat", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_cement_sacks", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_rebar", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_wiring", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "infantry_combat_boots", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "infantry_dog_tags", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "infantry_grenade", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "infantry_mre", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "infantry_sergeant_hat", "value": 1, "chance": 10 }
+        ],
+        "sprites": {
+            "aim": "red_infantry_aim",
+            "aim_ne": "red_infantry_aim_ne",
+            "airdrop": "red_infantry_airdrop",
+            "fire": "red_infantry_fire",
+            "fire_ne": "red_infantry_fire_ne",
+            "hit": "red_infantry_hit",
+            "idle": "red_infantry_idle",
+            "move": "red_infantry_move",
+            "move_ne": "red_infantry_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_red_soldier_fire1", "sound_red_soldier_fire2", "sound_red_soldier_fire3", "sound_red_soldier_fire4"],
+            "death": ["sound_red_soldier_death1", "sound_red_soldier_death2"],
+            "move": ["sound_soldier_move"],
+            "select": ["sound_soldier_select_long", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "red_warfly" : {
+        "id": "red_warfly",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land", "Mountain"],
+        "cost": { "infantry": 1, "armor": 0, "artillery": 0 },
+        "stats": {
+            "story": { "health": 2, "damage": 2, "attackRange": 1, "moveRange": 3, "traits": ["Infantry", "Avian"] }, 
+            "versus": { "health": 2, "damage": 2, "attackRange": 1, "moveRange": 3, "traits": ["Infantry"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 2 },
+            { "type": "Resource", "id": "Money", "value": 15 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1 },
+            { "type": "Resource", "id": "XP", "value": 4 },
+            { "type": "Resource", "id": "Money", "value": 100 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_commando_knife", "value": 1, "chance": 1 },
+            { "type": "Item", "id": "construction_rebar", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_steel_plates", "value": 1, "chance": 10 }
+        ],
+        "sprites": {
+            "aim": "red_commando_aim",
+            "aim_ne": "red_commando_aim_ne",
+            "airdrop": "red_commando_airrop",
+            "fire": "red_commando_fire",
+            "fire_ne": "red_commando_fire_ne",
+            "hit": "red_commando_hit",
+            "idle": "red_commando_idle",
+            "move": "red_commando_move",
+            "move_ne": "red_commando_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_red_soldier_fire1", "sound_red_soldier_fire2", "sound_red_soldier_fire3", "sound_red_soldier_fire4"],
+            "death": ["sound_red_soldier_death1", "sound_red_soldier_death2"],
+            "move": [],
+            "select": ["sound_soldier_select_long", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "red_warfly_ultimate" : {
+        "id": "red_warfly_ultimate",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land", "Mountain"],
+        "cost": { "infantry": 1, "armor": 0, "artillery": 0 },
+        "stats": {
+            "story": { "health": 4, "damage": 3, "attackRange": 1, "moveRange": 3, "traits": ["Infantry"] }, 
+            "versus": { "health": 4, "damage": 3, "attackRange": 1, "moveRange": 3, "traits": ["Infantry"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 2 },
+            { "type": "Resource", "id": "Money", "value": 15 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1 },
+            { "type": "Resource", "id": "XP", "value": 4 },
+            { "type": "Resource", "id": "Money", "value": 100 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_commando_knife", "value": 1, "chance": 1 },
+            { "type": "Item", "id": "construction_rebar", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_steel_plates", "value": 1, "chance": 10 }
+        ],
+        "sprites": {
+            "aim": "red_commando_aim",
+            "aim_ne": "red_commando_aim_ne",
+            "airdrop": "red_commando_airrop",
+            "fire": "red_commando_fire",
+            "fire_ne": "red_commando_fire_ne",
+            "hit": "red_commando_hit",
+            "idle": "red_commando_idle",
+            "move": "red_commando_move",
+            "move_ne": "red_commando_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_red_soldier_fire1", "sound_red_soldier_fire2", "sound_red_soldier_fire3", "sound_red_soldier_fire4"],
+            "death": ["sound_red_soldier_death1", "sound_red_soldier_death2"],
+            "move": [],
+            "select": ["sound_soldier_select_long", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "red_scout" : {
+        "id": "red_scout",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 1, "armor": 0, "artillery": 0 },
+        "stats": {
+            "story": { "health": 1, "damage": 1, "attackRange": 1, "moveRange": 4, "traits": ["Infantry"] }, 
+            "versus": { "health": 1, "damage": 1, "attackRange": 1, "moveRange": 4, "traits": ["Infantry"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 1 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1 },
+            { "type": "Resource", "id": "XP", "value": 2 },
+            { "type": "Resource", "id": "Money", "value": 70 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_hard_hat", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_cement_sacks", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_lumber", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_rebar", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "scout_binoculars", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "scout_camo", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "scout_canteen", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "scout_field_radio", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "scout_tactical_map", "value": 1, "chance": 10 }
+        ],
+        "sprites": {
+            "aim": "red_scout_aim",
+            "aim_ne": "red_scout_aim_ne",
+            "airdrop": "red_scout_airdrop",
+            "fire": "red_scout_fire",
+            "fire_ne": "red_scout_fire_ne",
+            "hit": "red_scout_hit",
+            "idle": "red_scout_idle",
+            "move": "red_scout_move",
+            "move_ne": "red_scout_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_red_soldier_fire1", "sound_red_soldier_fire2", "sound_red_soldier_fire3", "sound_red_soldier_fire4"],
+            "death": ["sound_red_soldier_death1", "sound_red_soldier_death2"],
+            "move": ["sound_soldier_move"],
+            "select": ["sound_soldier_select_long", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "red_scout_ultimate" : {
+        "id": "red_scout_ultimate",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 1, "armor": 0, "artillery": 0 },
+        "stats": {
+            "story": { "health": 2, "damage": 2, "attackRange": 1, "moveRange": 4, "traits": ["Infantry"] }, 
+            "versus": { "health": 2, "damage": 2, "attackRange": 1, "moveRange": 4, "traits": ["Infantry"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 1 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1 },
+            { "type": "Resource", "id": "XP", "value": 2 },
+            { "type": "Resource", "id": "Money", "value": 70 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_hard_hat", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_cement_sacks", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_lumber", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_rebar", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "scout_binoculars", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "scout_camo", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "scout_canteen", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "scout_field_radio", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "scout_tactical_map", "value": 1, "chance": 10 }
+        ],
+        "sprites": {
+            "aim": "red_scout_aim",
+            "aim_ne": "red_scout_aim_ne",
+            "airdrop": "red_scout_airdrop",
+            "fire": "red_scout_fire",
+            "fire_ne": "red_scout_fire_ne",
+            "hit": "red_scout_hit",
+            "idle": "red_scout_idle",
+            "move": "red_scout_move",
+            "move_ne": "red_scout_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_red_soldier_fire1", "sound_red_soldier_fire2", "sound_red_soldier_fire3", "sound_red_soldier_fire4"],
+            "death": ["sound_red_soldier_death1", "sound_red_soldier_death2"],
+            "move": ["sound_soldier_move"],
+            "select": ["sound_soldier_select_long", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]    
+        }
+    },
+    "red_stormtrooper" : {
+        "id": "red_stormtrooper",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 1, "armor": 0, "artillery": 0 },
+        "stats": {
+            "story": { "health": 8, "damage": 2, "attackRange": 1, "moveRange": 5, "traits": ["Infantry"] }, 
+            "versus": { "health": 8, "damage": 2, "attackRange": 1, "moveRange": 5, "traits": ["Infantry"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 2 },
+            { "type": "Resource", "id": "Money", "value": 25 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1 },
+            { "type": "Resource", "id": "XP", "value": 5 },
+            { "type": "Resource", "id": "Money", "value": 200 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "construction_commando_knife", "value": 1, "chance": 20 },
+            { "type": "Item", "id": "construction_rebar", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "construction_pilot_helmet", "value": 1, "chance": 1 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "stormtroop_ammo_crate", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "stormtroop_balaclava", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "stormtroop_beret", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "stormtroop_combat_knife", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "stormtroop_supressor", "value": 1, "chance": 10 }
+        ],
+        "sprites": {
+            "aim": "red_stormtrooper_aim",
+            "aim_ne": "red_stormtrooper_aim_ne",
+            "airdrop": "red_stormtrooper_airdrop",
+            "fire": "red_stormtrooper_fire",
+            "fire_ne": "red_stormtrooper_fire_ne",
+            "hit": "red_stormtrooper_hit",
+            "idle": "red_stormtrooper_idle",
+            "move": "red_stormtrooper_move",
+            "move_ne": "red_stormtrooper_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_red_stormtrooper_fire"],
+            "death": ["sound_red_stormtrooper_death"],
+            "move": ["sound_soldier_move"],
+            "select": ["sound_red_stormtrooper_death"]
+        }
+    },
+    "red_stormtrooper_ultimate" : {
+        "id": "red_stormtrooper_ultimate",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 1, "armor": 0, "artillery": 0 },
+        "stats": {
+            "story": { "health": 10, "damage": 3, "attackRange": 1, "moveRange": 5, "traits": ["Infantry"] }, 
+            "versus": { "health": 10, "damage": 3, "attackRange": 1, "moveRange": 5, "traits": ["Infantry"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 2 },
+            { "type": "Resource", "id": "Money", "value": 25 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1 },
+            { "type": "Resource", "id": "XP", "value": 5 },
+            { "type": "Resource", "id": "Money", "value": 200 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "construction_commando_knife", "value": 1, "chance": 20 },
+            { "type": "Item", "id": "construction_rebar", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "construction_pilot_helmet", "value": 1, "chance": 1 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "stormtroop_ammo_crate", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "stormtroop_balaclava", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "stormtroop_beret", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "stormtroop_combat_knife", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "stormtroop_supressor", "value": 1, "chance": 10 }
+        ],
+        "sprites": {
+            "aim": "red_stormtrooper_aim",
+            "aim_ne": "red_stormtrooper_aim_ne",
+            "airdrop": "red_stormtrooper_airdrop",
+            "fire": "red_stormtrooper_fire",
+            "fire_ne": "red_stormtrooper_fire_ne",
+            "hit": "red_stormtrooper_hit",
+            "idle": "red_stormtrooper_idle",
+            "move": "red_stormtrooper_move",
+            "move_ne": "red_stormtrooper_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_red_stormtrooper_fire"],
+            "death": ["sound_red_stormtrooper_death"],
+            "move": ["sound_soldier_move"],
+            "select": ["sound_red_stormtrooper_death"]
+        }
+    },
+    "red_droid" : {
+        "id": "red_droid",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 0, "armor": 1, "artillery": 0 },
+        "stats": {
+            "story": { "health": 3, "damage": 1, "attackRange": 1, "moveRange": 3, "traits": ["Armor"] }, 
+            "versus": { "health": 3, "damage": 1, "attackRange": 1, "moveRange": 3, "traits": ["Armor"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 1 },
+            { "type": "Resource", "id": "Money", "value": 20 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "XP", "value": 4 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_steel_plates", "value": 1, "chance": 20 },
+            { "type": "Item", "id": "construction_wiring", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_rebar", "value": 1, "chance": 5 }
+        ],
+        "sprites": {
+            "aim": "red_superdroid_aim",
+            "aim_ne": "red_superdroid_aim_ne",
+            "airdrop": "red_superdroid_airdrop",
+            "fire": "red_superdroid_fire",
+            "fire_ne": "red_superdroid_fire_ne",
+            "hit": "red_superdroid_hit",
+            "idle": "red_superdroid_idle",
+            "move": "red_superdroid_move",
+            "move_ne": "red_superdroid_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_red_tank_fire"],
+            "death": ["sound_red_tank_death"],
+            "move": [],
+            "select": []
+        }
+    },
+    "red_droid_ultimate" : {
+        "id": "red_droid_ultimate",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 0, "armor": 1, "artillery": 0 },
+        "stats": {
+            "story": { "health": 5, "damage": 2, "attackRange": 1, "moveRange": 3, "traits": ["Armor"] }, 
+            "versus": { "health": 5, "damage": 2, "attackRange": 1, "moveRange": 3, "traits": ["Armor"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 1 },
+            { "type": "Resource", "id": "Money", "value": 20 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "XP", "value": 4 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_steel_plates", "value": 1, "chance": 20 },
+            { "type": "Item", "id": "construction_wiring", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_rebar", "value": 1, "chance": 5 }
+        ],
+        "sprites": {
+            "aim": "red_superdroid_aim",
+            "aim_ne": "red_superdroid_aim_ne",
+            "airdrop": "red_superdroid_airdrop",
+            "fire": "red_superdroid_fire",
+            "fire_ne": "red_superdroid_fire_ne",
+            "hit": "red_superdroid_hit",
+            "idle": "red_superdroid_idle",
+            "move": "red_superdroid_move",
+            "move_ne": "red_superdroid_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_red_tank_fire"],
+            "death": ["sound_red_tank_death"],
+            "move": [],
+            "select": []
+        }
+    },
+    "red_super_droid" : {
+        "id": "red_super_droid",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 0, "armor": 1, "artillery": 0 },
+        "stats": {
+            "story": { "health": 8, "damage": 3, "attackRange": 1, "moveRange": 3, "traits": ["Armor"] }, 
+            "versus": { "health": 8, "damage": 3, "attackRange": 1, "moveRange": 3, "traits": ["Armor"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 1 },
+            { "type": "Resource", "id": "Money", "value": 20 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "XP", "value": 4 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "battle_tank_armor_plates", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "apc_duct_tape", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "apc_gas_canister", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "stormtroop_ammo_crate", "value": 1, "chance": 5 }
+        ],
+        "sprites": {
+            "aim": "red_superdroid_aim",
+            "aim_ne": "red_superdroid_aim_ne",
+            "airdrop": "red_superdroid_airdrop",
+            "fire": "red_superdroid_fire",
+            "fire_ne": "red_superdroid_fire_ne",
+            "hit": "red_superdroid_hit",
+            "idle": "red_superdroid_idle",
+            "move": "red_superdroid_move",
+            "move_ne": "red_superdroid_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_red_tank_fire"],
+            "death": ["sound_red_tank_death"],
+            "move": [],
+            "select": []
+        }
+    },
+    "red_super_droid_ultimate" : {
+        "id": "red_super_droid_ultimate",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 0, "armor": 1, "artillery": 0 },
+        "stats": {
+            "story": { "health": 10, "damage": 4, "attackRange": 1, "moveRange": 3, "traits": ["Armor"] }, 
+            "versus": { "health": 10, "damage": 4, "attackRange": 1, "moveRange": 3, "traits": ["Armor"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 1 },
+            { "type": "Resource", "id": "Money", "value": 20 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "XP", "value": 4 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "battle_tank_armor_plates", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "apc_duct_tape", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "apc_gas_canister", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "stormtroop_ammo_crate", "value": 1, "chance": 5 }
+        ],
+        "sprites": {
+            "aim": "red_superdroid_aim",
+            "aim_ne": "red_superdroid_aim_ne",
+            "airdrop": "red_superdroid_airdrop",
+            "fire": "red_superdroid_fire",
+            "fire_ne": "red_superdroid_fire_ne",
+            "hit": "red_superdroid_hit",
+            "idle": "red_superdroid_idle",
+            "move": "red_superdroid_move",
+            "move_ne": "red_superdroid_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_red_tank_fire"],
+            "death": ["sound_red_tank_death"],
+            "move": [],
+            "select": []
+        }
+    },
+    "red_supplytruck" : {
+        "id": "red_supplytruck",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 0, "armor": 1, "artillery": 0 },
+        "stats": {
+            "story": { "health": 5, "damage": 0, "attackRange": 0, "moveRange": 8, "traits": ["Armor"] }, 
+            "versus": { "health": 5, "damage": 0, "attackRange": 0, "moveRange": 8, "traits": ["Armor"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 1 },
+            { "type": "Resource", "id": "Supplies", "value": 10 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1 },
+            { "type": "Resource", "id": "XP", "value": 2 },
+            { "type": "Resource", "id": "Supplies", "value": 100 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_hard_hat", "value": 1, "chance": 1 },
+            { "type": "Item", "id": "construction_lumber", "value": 1, "chance": 15 },
+            { "type": "Item", "id": "construction_rebar", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_wiring", "value": 1, "chance": 10 }
+        ],
+        "sprites": {
+            "airdrop": "red_supplytruck_airdrop",
+            "hit": "red_supplytruck_hit",
+            "idle": "red_supplytruck_idle",
+            "move": "red_supplytruck_move",
+            "move_ne": "red_supplytruck_move_ne",
+            "fire": "red_supplytruck_idle",
+            "fire_ne": "red_supplytruck_idle",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_red_tank_death"],
+            "death": ["sound_red_tank_death"],
+            "move": ["sound_tank_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]
+        }
+    },
+    "red_supplytruck_ultimate" : {
+        "id": "red_supplytruck_ultimate",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 0, "armor": 1, "artillery": 0 },
+        "stats": {
+            "story": { "health": 8, "damage": 0, "attackRange": 0, "moveRange": 8, "traits": ["Armor"] }, 
+            "versus": { "health": 8, "damage": 0, "attackRange": 0, "moveRange": 8, "traits": ["Armor"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 1 },
+            { "type": "Resource", "id": "Supplies", "value": 10 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1 },
+            { "type": "Resource", "id": "XP", "value": 2 },
+            { "type": "Resource", "id": "Supplies", "value": 100 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_hard_hat", "value": 1, "chance": 1 },
+            { "type": "Item", "id": "construction_lumber", "value": 1, "chance": 15 },
+            { "type": "Item", "id": "construction_rebar", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_wiring", "value": 1, "chance": 10 }
+        ],
+        "sprites": {
+            "airdrop": "red_supplytruck_airdrop",
+            "hit": "red_supplytruck_hit",
+            "idle": "red_supplytruck_idle",
+            "move": "red_supplytruck_move",
+            "move_ne": "red_supplytruck_move_ne",
+            "fire": "red_supplytruck_idle",
+            "fire_ne": "red_supplytruck_idle",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_red_tank_death"],
+            "death": ["sound_red_tank_death"],
+            "move": ["sound_tank_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]
+        }
+    },
+    "red_tank" : {
+        "id": "red_tank",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 0, "armor": 1, "artillery": 0 },
+        "stats": {
+            "story": { "health": 4, "damage": 2, "attackRange": 1, "moveRange": 10, "traits": ["Armor"] }, 
+            "versus": { "health": 4, "damage": 2, "attackRange": 1, "moveRange": 10, "traits": ["Armor"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 2 },
+            { "type": "Resource", "id": "Money", "value": 25 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1 },
+            { "type": "Resource", "id": "XP", "value": 3 },
+            { "type": "Resource", "id": "Money", "value": 150 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_pilot_helmet", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "construction_hard_hat", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_cement_sacks", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_lumber", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_wiring", "value": 1, "chance": 20 },
+            { "type": "Item", "id": "apc_ammo_shells", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "apc_blueprints", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "apc_duct_tape", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "apc_gas_canister", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "apc_tires", "value": 1, "chance": 10 }
+        ],
+        "sprites": {
+            "aim": "red_tank_aim",
+            "aim_ne": "red_tank_aim_ne",
+            "airdrop": "red_tank_airdrop",
+            "fire": "red_tank_fire",
+            "fire_ne": "red_tank_fire_ne",
+            "hit": "red_tank_hit",
+            "idle": "red_tank_idle",
+            "move": "red_tank_move",
+            "move_ne": "red_tank_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_red_tank_fire"],
+            "death": ["sound_red_tank_death"],
+            "move": ["sound_tank_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]
+        }
+    },
+    "red_tank_ultimate" : {
+        "id": "red_tank_ultimate",
+        "archetype": "Unit",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "passability": ["Land"],
+        "cost": { "infantry": 0, "armor": 1, "artillery": 0 },
+        "stats": {
+            "story": { "health": 8, "damage": 3, "attackRange": 1, "moveRange": 10, "traits": ["Armor"] }, 
+            "versus": { "health": 8, "damage": 3, "attackRange": 1, "moveRange": 10, "traits": ["Armor"] }
+        },
+        "hitRewards": [
+            { "type": "Resource", "id": "XP", "value": 2 },
+            { "type": "Resource", "id": "Money", "value": 25 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 10 }
+        ],
+        "killRewards": [
+            { "type": "Resource", "id": "Gold", "value": 1, "chance": 1},
+            { "type": "Resource", "id": "XP", "value": 3 },
+            { "type": "Resource", "id": "Money", "value": 150 },
+            { "type": "Resource", "id": "EnergyCounter", "value": 20 },
+            { "type": "Item", "id": "intel", "value": 1 },
+            { "type": "Item", "id": "intel", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_pilot_helmet", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "construction_hard_hat", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_cement_sacks", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_lumber", "value": 1, "chance": 5 },
+            { "type": "Item", "id": "construction_wiring", "value": 1, "chance": 20 },
+            { "type": "Item", "id": "apc_ammo_shells", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "apc_blueprints", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "apc_duct_tape", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "apc_gas_canister", "value": 1, "chance": 10 },
+            { "type": "Item", "id": "apc_tires", "value": 1, "chance": 10 }
+        ],
+        "sprites": {
+            "aim": "red_tank_aim",
+            "aim_ne": "red_tank_aim_ne",
+            "airdrop": "red_tank_airdrop",
+            "fire": "red_tank_fire",
+            "fire_ne": "red_tank_fire_ne",
+            "hit": "red_tank_hit",
+            "idle": "red_tank_idle",
+            "move": "red_tank_move",
+            "move_ne": "red_tank_move_ne",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"
+        },
+        "sounds": {
+            "fire": ["sound_red_tank_fire"],
+            "death": ["sound_red_tank_death"],
+            "move": ["sound_tank_move"],
+            "select": ["sound_vehicle_select_long1", "sound_vehicle_select_long2", "sound_soldier_select_short1", "sound_soldier_select_short2", "sound_soldier_select_short3", "sound_soldier_select_short4", "sound_soldier_select_short5", "sound_soldier_select_short6", "sound_soldier_select_short7"]
+        }
+    },
+    "blue_airport_construction": {
+        "id": "blue_airport_construction",
+        "archetype": "Construction", 
+        "dimX": 4, "dimY": 4, "dimZ": 1,
+        "stats": {
+            "story": { "health": 50, "traits": [] }, 
+            "versus": { "health": 50, "traits": [] }
+        },
+        "constructionSteps": 4,
+        "constructionIngredients": [
+            {"type": "Item", "id": "construction_lumber", "value": 5},
+            {"type": "Item", "id": "construction_wiring", "value": 5},
+            {"type": "Item", "id": "construction_hard_hat", "value": 5},
+            {"type": "Item", "id": "construction_pilot_helmet", "value": 10}
+        ],
+        "constructionResult": "blue_airport",
+        "sprites": {
+            "idle": "blue_airport_construction",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "build": ["sound_building_construction"],
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_airport": {
+        "id": "blue_airport",
+        "archetype": "Building", 
+        "dimX": 4, "dimY": 4, "dimZ": 1,
+        "stats": {
+            "story": { "health": 50, "traits": [] }, 
+            "versus": { "health": 50, "traits": [] }
+        },
+        "collectRewards": [
+            {"type": "Resource", "id": "Money", "value": 150},
+            {"type": "Resource", "id": "Supplies", "value": 10},
+            {"type": "Resource", "id": "Energy", "value": 1}
+        ],
+        "collectableTimeSeconds": 3,
+        "sprites": {
+            "idle": "blue_airport",
+            "downed": "building_destroyed_4x4",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_arsenal_construction": {
+        "id": "blue_arsenal_construction",
+        "archetype": "Construction",
+        "dimX": 2, "dimY": 2, "dimZ": 1,
+        "stats": {
+            "story": { "health": 20, "traits": [] }, 
+            "versus": { "health": 20, "traits": [] }
+        },
+        "constructionSteps": 4,
+        "constructionIngredients": [
+            {"type": "Item", "id": "construction_hard_hat", "value": 6},
+            {"type": "Item", "id": "construction_cement_sacks", "value": 6},
+            {"type": "Item", "id": "construction_lumber", "value": 6},
+            {"type": "Item", "id": "construction_artillery_tubes", "value": 6}
+        ],
+        "constructionResult": "blue_arsenal",
+        "sprites": {
+            "idle": "blue_arsenal_construction",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "build": ["sound_building_construction"],
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_arsenal": {
+        "id": "blue_arsenal",
+        "archetype": "Building",
+        "dimX": 2, "dimY": 2, "dimZ": 1,
+        "stats": {
+            "story": { "health": 20, "traits": [] }, 
+            "versus": { "health": 20, "traits": [] }
+        },
+        "collectableTimeSeconds": 28800,
+        "sprites": {
+            "idle": "blue_arsenal",
+            "downed": "building_destroyed_2x2",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_bootcamp_construction": {
+        "id": "blue_bootcamp_construction",
+        "archetype": "Construction",
+        "dimX": 2, "dimY": 2, "dimZ": 1,
+        "stats": {
+            "story": { "health": 12, "traits": [] }, 
+            "versus": { "health": 12, "traits": [] }
+        },
+        "constructionSteps": 4,
+        "constructionIngredients": [
+            {"type": "Item", "id": "construction_hard_hat", "value": 3},
+            {"type": "Item", "id": "construction_lumber", "value": 3},
+            {"type": "Item", "id": "construction_rebar", "value": 3}
+        ],
+        "constructionResult": "blue_bootcamp",
+        "sprites": {
+            "idle": "blue_bootcamp_construction",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "build": ["sound_building_construction"],
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_bootcamp": {
+        "id": "blue_bootcamp",
+        "archetype": "Building",
+        "dimX": 2, "dimY": 2, "dimZ": 1,
+        "stats": {
+            "story": { "health": 12, "traits": [] }, 
+            "versus": { "health": 12, "traits": [] }
+        },
+        "collectableTimeSeconds": 3600,
+        "sprites": {
+            "idle": "blue_bootcamp",
+            "downed": "building_destroyed_2x2",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_commandoschool_construction": {
+        "id": "blue_commandoschool_construction",
+        "archetype": "Construction",
+        "dimX": 3, "dimY": 3, "dimZ": 1,
+        "stats": {
+            "story": { "health": 30, "traits": [] }, 
+            "versus": { "health": 30, "traits": [] }
+        },
+        "constructionSteps": 4,
+        "constructionIngredients": [
+            {"type": "Item", "id": "construction_hard_hat", "value": 10},
+            {"type": "Item", "id": "construction_cement_sacks", "value": 10},
+            {"type": "Item", "id": "construction_lumber", "value": 10},
+            {"type": "Item", "id": "construction_rebar", "value": 12},
+            {"type": "Item", "id": "construction_commando_knife", "value": 12}
+        ],
+        "constructionResult": "blue_commandoschool",
+        "sprites": {
+            "idle": "blue_commandoschool_construction",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "build": ["sound_building_construction"],
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_commandoschool": {
+        "id": "blue_commandoschool",
+        "archetype": "Building",
+        "dimX": 3, "dimY": 3, "dimZ": 1,
+        "stats": {
+            "story": { "health": 30, "traits": [] }, 
+            "versus": { "health": 30, "traits": [] }
+        },
+        "collectableTimeSeconds": 28800,
+        "sprites": {
+            "idle": "blue_commandoschool",
+            "downed": "building_destroyed_3x3",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_factory_construction": {
+        "id": "blue_factory_construction",
+        "archetype": "Construction",
+        "dimX": 3, "dimY": 3, "dimZ": 1,
+        "stats": {
+            "story": { "health": 40, "traits": [] }, 
+            "versus": { "health": 40, "traits": [] }
+        },
+        "constructionSteps": 4,
+        "constructionIngredients": [
+            {"type": "Item", "id": "construction_hard_hat", "value": 8},
+            {"type": "Item", "id": "construction_cement_sacks", "value": 8},
+            {"type": "Item", "id": "construction_lumber", "value": 8},
+            {"type": "Item", "id": "construction_steel_plates", "value": 10},
+            {"type": "Item", "id": "construction_wiring", "value": 10}
+        ],
+        "constructionResult": "blue_factory",
+        "sprites": {
+            "idle": "blue_factory_construction",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "build": ["sound_building_construction"],
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_factory": {
+        "id": "blue_factory",
+        "archetype": "Building",
+        "dimX": 3, "dimY": 3, "dimZ": 1,
+        "stats": {
+            "story": { "health": 40, "traits": [] }, 
+            "versus": { "health": 40, "traits": [] }
+        },
+        "collectableTimeSeconds": 28800,
+        "sprites": {
+            "idle": "blue_factory",
+            "downed": "building_destroyed_3x3",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_hq_construction": {
+        "id": "blue_hq_construction",
+        "archetype": "Construction",
+        "dimX": 2, "dimY": 2, "dimZ": 1,
+        "stats": {
+            "story": { "health": 10, "traits": [] }, 
+            "versus": { "health": 10, "traits": [] }
+        },
+        "constructionSteps": 4,
+        "constructionIngredients": [
+            {"type": "Item", "id": "construction_hard_hat", "value": 2},
+            {"type": "Item", "id": "construction_cement_sacks", "value": 2},
+            {"type": "Item", "id": "construction_lumber", "value": 2}
+        ],
+        "constructionResult": "blue_hq",
+        "sprites": {
+            "idle": "blue_hq_construction",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "build": ["sound_building_construction"],
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_hq": {
+        "id": "blue_hq",
+        "archetype": "Building",
+        "dimX": 2, "dimY": 2, "dimZ": 1,
+        "stats": {
+            "story": { "health": 10, "traits": [] }, 
+            "versus": { "health": 10, "traits": [] }
+        },
+        "collectableTimeSeconds": 600,
+        "sprites": {
+            "idle": "blue_hq",
+            "downed": "building_destroyed_2x2",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_motorpool_construction": {
+        "id": "blue_motorpool_construction",
+        "archetype": "Construction",
+        "dimX": 3, "dimY": 3, "dimZ": 1,
+        "stats": {
+            "story": { "health": 10, "traits": [] }, 
+            "versus": { "health": 10, "traits": [] }
+        },
+        "constructionSteps": 4,
+        "constructionIngredients": [
+            {"type": "Item", "id": "construction_hard_hat", "value": 5},
+            {"type": "Item", "id": "construction_cement_sacks", "value": 5},
+            {"type": "Item", "id": "construction_wiring", "value": 5}
+        ],
+        "constructionResult": "blue_motorpool",
+        "sprites": {
+            "idle": "blue_motorpool_construction",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "build": ["sound_building_construction"],
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_motorpool": {
+        "id": "blue_motorpool",
+        "archetype": "Building",
+        "dimX": 3, "dimY": 3, "dimZ": 1,
+        "stats": {
+            "story": { "health": 10, "traits": [] }, 
+            "versus": { "health": 10, "traits": [] }
+        },
+        "collectableTimeSeconds": 7200,
+        "sprites": {
+            "idle": "blue_motorpool",
+            "downed": "building_destroyed_3x3",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_researchlab_construction": {
+        "id": "blue_researchlab_construction",
+        "archetype": "Construction",
+        "dimX": 3, "dimY": 3, "dimZ": 1,
+        "stats": {
+            "story": { "health": 20, "traits": [] }, 
+            "versus": { "health": 20, "traits": [] }
+        },
+        "constructionSteps": 4,
+        "constructionIngredients": [
+            {"type": "Item", "id": "construction_cement_sacks", "value": 5},
+            {"type": "Item", "id": "construction_steel_plates", "value": 5},
+            {"type": "Item", "id": "construction_hard_hat", "value": 5},
+            {"type": "Item", "id": "construction_black_box", "value": 5}
+        ],
+        "constructionResult": "blue_researchlab",
+        "sprites": {
+            "idle": "blue_researchlab_construction",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "build": ["sound_building_construction"],
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_researchlab": {
+        "id": "blue_researchlab",
+        "archetype": "Building",
+        "dimX": 3, "dimY": 3, "dimZ": 1,
+        "stats": {
+            "story": { "health": 20, "traits": [] }, 
+            "versus": { "health": 20, "traits": [] }
+        },
+        "collectableTimeSeconds": 5,
+        "sprites": {
+            "idle": "blue_researchlab",
+            "downed": "building_destroyed_3x3",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_rocketsite_construction": {
+        "id": "blue_rocketsite_construction",
+        "archetype": "Construction",
+        "dimX": 3, "dimY": 3, "dimZ": 1,
+        "stats": {
+            "story": { "health": 10, "traits": [] }, 
+            "versus": { "health": 10, "traits": [] }
+        },
+        "constructionSteps": 4,
+        "constructionIngredients": [
+            {"type": "Item", "id": "construction_hard_hat", "value": 12},
+            {"type": "Item", "id": "construction_cement_sacks", "value": 12},
+            {"type": "Item", "id": "construction_lumber", "value": 12},
+            {"type": "Item", "id": "construction_artillery_tubes", "value": 15},
+            {"type": "Item", "id": "construction_black_box", "value": 15}
+        ],
+        "constructionResult": "blue_rocketsite",
+        "sprites": {
+            "idle": "blue_rocketsite_construction",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "build": ["sound_building_construction"],
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_rocketsite": {
+        "id": "blue_rocketsite",
+        "archetype": "Building",
+        "dimX": 3, "dimY": 3, "dimZ": 1,
+        "stats": {
+            "story": { "health": 10, "traits": [] }, 
+            "versus": { "health": 10, "traits": [] }
+        },
+        "collectableTimeSeconds": 86400,
+        "sprites": {
+            "idle": "blue_rocketsite",
+            "downed": "building_destroyed_3x3",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_supplyfactory": {
+        "id": "blue_supplyfactory",
+        "archetype": "Building",
+        "dimX": 2, "dimY": 2, "dimZ": 1,
+        "stats": {
+            "story": { "health": 10, "traits": [] }, 
+            "versus": { "health": 10, "traits": [] }
+        },
+        "sprites": {
+            "idle": "blue_supplyfactory",
+            "downed": "building_destroyed_2x2",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_waterplant": {
+        "id": "blue_waterplant",
+        "archetype": "Building",
+        "dimX": 2, "dimY": 2, "dimZ": 1,
+        "stats": {
+            "story": { "health": 10, "traits": [] }, 
+            "versus": { "health": 10, "traits": [] }
+        },
+        "sprites": {
+            "idle": "blue_waterplant",
+            "downed": "building_destroyed_2x2",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_barricades": {
+        "id": "blue_barricades",
+        "archetype": "Deco",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "stats": {
+            "story": { "health": 2, "traits": [] }, 
+            "versus": { "health": 2, "traits": [] }
+        },
+        "sprites": {
+            "idle": "blue_barricades",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_mines": {
+        "id": "blue_mines",
+        "archetype": "Deco",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "stats": {
+            "story": { "health": 1, "traits": [] }, 
+            "versus": { "health": 1, "traits": [] }
+        },
+        "sprites": {
+            "idle": "blue_mines",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_guardtower": {
+        "id": "blue_guardtower",
+        "archetype": "Defense",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "stats": {
+            "story": { "health": 2, "damage": 1, "attackRange": 1, "traits": ["Counter"] }, 
+            "versus": { "health": 2, "damage": 1, "attackRange": 1, "traits": [] }
+        },
+        "sprites": {
+            "idle": "blue_guardtower",
+            "fire": "blue_guardtower_fire",
+            "downed": "building_destroyed_1x1",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_blue_soldier_fire1", "sound_blue_soldier_fire2", "sound_blue_soldier_fire3", "sound_blue_soldier_fire4"],
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_logbunker": {
+        "id": "blue_logbunker",
+        "archetype": "Defense",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "stats": {
+            "story": { "health": 6, "damage": 1, "attackRange": 1, "traits": [] }, 
+            "versus": { "health": 6, "damage": 1, "attackRange": 1, "traits": [] }
+        },
+        "sprites": {
+            "idle": "blue_logbunker",
+            "fire": "blue_logbunker_fire",
+            "downed": "building_destroyed_1x1",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_blue_soldier_fire1", "sound_blue_soldier_fire2", "sound_blue_soldier_fire3", "sound_blue_soldier_fire4"],
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_mortar": {
+        "id": "blue_mortar",
+        "archetype": "Defense",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "stats": {
+            "story": { "health": 4, "damage": 1, "attackRange": 2, "traits": [] }, 
+            "versus": { "health": 4, "damage": 1, "attackRange": 2, "traits": [] }
+        },
+        "sprites": {
+            "idle": "blue_mortar",
+            "fire": "blue_mortar_fire",
+            "downed": "building_destroyed_1x1",
+            "death": "effect_death_explosion",
+            "weapon": "effect_explosion_sequence"    
+        },
+        "sounds": {
+            "fire": ["sound_blue_soldier_fire1", "sound_blue_soldier_fire2", "sound_blue_soldier_fire3", "sound_blue_soldier_fire4"],
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_pillbox": {
+        "id": "blue_pillbox",
+        "archetype": "Defense",
+        "dimX": 2, "dimY": 2, "dimZ": 1,
+        "stats": {
+            "story": { "health": 10, "damage": 2, "attackRange": 1, "traits": [] }, 
+            "versus": { "health": 10, "damage": 2, "attackRange": 1, "traits": [] }
+        },
+        "sprites": {
+            "idle": "blue_pillbox",
+            "fire": "blue_pillbox_fire",
+            "downed": "building_destroyed_2x2",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_blue_soldier_fire1", "sound_blue_soldier_fire2", "sound_blue_soldier_fire3", "sound_blue_soldier_fire4"],
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_snipernest": {
+        "id": "blue_snipernest",
+        "archetype": "Defense",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "stats": {
+            "story": { "health": 2, "damage": 2, "attackRange": 2, "traits": [] }, 
+            "versus": { "health": 2, "damage": 2, "attackRange": 2, "traits": [] }
+        },
+        "sprites": {
+            "idle": "blue_snipernest",
+            "fire": "blue_snipernest_fire",
+            "downed": "building_destroyed_1x1",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_blue_soldier_fire1", "sound_blue_soldier_fire2", "sound_blue_soldier_fire3", "sound_blue_soldier_fire4"],
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_ammobunker": {
+        "id": "blue_ammobunker",
+        "archetype": "Deco",
+        "dimX": 2, "dimY": 2, "dimZ": 1,
+        "stats": {
+            "story": { "health": 3, "traits": [] }, 
+            "versus": { "health": 3, "traits": [] }
+        },
+        "sprites": {
+            "idle": "blue_ammobunker",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_supplydump": {
+        "id": "blue_supplydump",
+        "archetype": "Deco",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "stats": {
+            "story": { "health": 1, "traits": [] }, 
+            "versus": { "health": 1, "traits": [] }
+        },
+        "sprites": {
+            "idle": "blue_supplydump",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_vault": {
+        "id": "blue_vault",
+        "archetype": "Deco",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "stats": {
+            "story": { "health": 3, "traits": [] }, 
+            "versus": { "health": 3, "traits": [] }
+        },
+        "sprites": {
+            "idle": "blue_vault",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_warehouse": {
+        "id": "blue_warehouse",
+        "archetype": "Deco",
+        "dimX": 2, "dimY": 2, "dimZ": 1,
+        "stats": {
+            "story": { "health": 1, "traits": [] }, 
+            "versus": { "health": 1, "traits": [] }
+        },
+        "sprites": {
+            "idle": "blue_warehouse",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "blue_landingzone": {
+        "id": "blue_landingzone",
+        "archetype": "HFE",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "stats": {
+            "story": { "health": 1, "traits": [] }, 
+            "versus": { "health": 1, "traits": [] }
+        },
+        "sprites": {
+            "idle": "blue_landingzone",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "red_barricades": {
+        "id": "red_barricades",
+        "archetype": "Deco",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "stats": {
+            "story": { "health": 4, "traits": [] }, 
+            "versus": { "health": 4, "traits": [] }
+        },
+        "sprites": {
+            "idle": "red_barricades",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_enemy_building_destroyed"]
+        }
+    },
+    "red_factory": {
+        "id": "red_factory",
+        "archetype": "Deco",
+        "dimX": 3, "dimY": 2, "dimZ": 1,
+        "stats": {
+            "story": { "health": 1, "traits": [] }, 
+            "versus": { "health": 1, "traits": [] }
+        },
+        "sprites": {
+            "idle": "red_factory",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_enemy_building_destroyed"]
+        }
+    },
+    "red_fueldump": {
+        "id": "red_fueldump",
+        "archetype": "Deco",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "stats": {
+            "story": { "health": 1, "traits": [] }, 
+            "versus": { "health": 1, "traits": [] }
+        },
+        "sprites": {
+            "idle": "red_fueldump",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_enemy_building_destroyed"]
+        }
+    },
+    "red_landingzone": {
+        "id": "red_landingzone",
+        "archetype": "Deco",
+        "dimX": 1, "dimY": 1,
+        "stats": {
+            "story": { "health": 1, "traits": [] }, 
+            "versus": { "health": 1, "traits": [] }
+        },
+        "sprites": {
+            "idle": "red_landingzone",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_enemy_building_destroyed"]
+        }
+    },
+    "red_mines": {
+        "id": "red_mines",
+        "archetype": "Deco",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "stats": {
+            "story": { "health": 1, "traits": [] }, 
+            "versus": { "health": 1, "traits": [] }
+        },
+        "sprites": {
+            "idle": "red_mines_6497",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_enemy_building_destroyed"]
+        }
+    },
+    "red_propaganda": {
+        "id": "red_propaganda",
+        "archetype": "Deco",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "stats": {
+            "story": { "health": 10, "traits": [] }, 
+            "versus": { "health": 10, "traits": [] }
+        },
+        "sprites": {
+            "idle": "red_propaganda",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_enemy_building_destroyed"]
+        }
+    },
+    "red_vileboard": {
+        "id": "red_vileboard",
+        "archetype": "Deco",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "stats": {
+            "story": { "health": 3, "traits": [] }, 
+            "versus": { "health": 3, "traits": [] }
+        },
+        "sprites": {
+            "idle": "red_vileboard",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_enemy_building_destroyed"]
+        }
+    },
+    "red_bunker": {
+        "id": "red_bunker",
+        "archetype": "Defense",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "stats": {
+            "story": { "health": 10, "damage": 1, "attackRange": 1, "traits": [] }, 
+            "versus": { "health": 10, "damage": 1, "attackRange": 1, "traits": [] }
+        },
+        "sprites": {
+            "idle": "red_bunker",
+            "fire": "red_bunker_fire",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_blue_soldier_fire1", "sound_blue_soldier_fire2", "sound_blue_soldier_fire3", "sound_blue_soldier_fire4"],
+            "death": ["sound_enemy_building_destroyed"]
+        }
+    },
+    "red_guardtower": {
+        "id": "red_guardtower",
+        "archetype": "Defense",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "stats": {
+            "story": { "health": 5, "damage": 1, "attackRange": 2, "traits": ["Counter"] }, 
+            "versus": { "health": 5, "damage": 1, "attackRange": 2, "traits": ["Counter"] }
+        },
+        "sprites": {
+            "idle": "red_guardtower",
+            "fire": "red_guardtower_fire",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_blue_soldier_fire1", "sound_blue_soldier_fire2", "sound_blue_soldier_fire3", "sound_blue_soldier_fire4"],
+            "death": ["sound_enemy_building_destroyed"]
+        }
+    },
+    "red_snipernest": {
+        "id": "red_snipernest",
+        "archetype": "Defense",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "stats": {
+            "story": { "health": 3, "damage": 1, "attackRange": 3, "traits": [] }, 
+            "versus": { "health": 3, "damage": 1, "attackRange": 3, "traits": [] }
+        },
+        "sprites": {
+            "idle": "red_snipernest",
+            "fire": "red_snipernest_fire",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_blue_soldier_fire1", "sound_blue_soldier_fire2", "sound_blue_soldier_fire3", "sound_blue_soldier_fire4"],
+            "death": ["sound_enemy_building_destroyed"]
+        }
+    },
+    "red_teslacoil": {
+        "id": "red_teslacoil",
+        "archetype": "Defense",
+        "dimX": 1, "dimY": 1, "dimZ": 1,
+        "stats": {
+            "story": { "health": 20, "damage": 5, "attackRange": 1, "traits": [] }, 
+            "versus": { "health": 20, "damage": 5, "attackRange": 1, "traits": [] }
+        },
+        "sprites": {
+            "idle": "red_teslacoil_charged",
+            "fire": "red_teslacoil_fire",
+            "charged": "red_teslacoil_charged",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_blue_soldier_fire1", "sound_blue_soldier_fire2", "sound_blue_soldier_fire3", "sound_blue_soldier_fire4"],
+            "death": ["sound_enemy_building_destroyed"]
+        }
+    },
+    "red_battlefortress": {
+        "id": "red_battlefortress",
+        "archetype": "Defense",
+        "dimX": 3, "dimY": 3, "dimZ": 1,
+        "stats": {
+            "story": { "health": 1, "damage": 1, "attackRange": 1, "traits": [] }, 
+            "versus": { "health": 1, "damage": 1, "attackRange": 1, "traits": [] }
+        },
+        "sprites": {
+            "idle": "red_battlefortress",
+            "fire": "red_battlefortress_fire",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_blue_soldier_fire1", "sound_blue_soldier_fire2", "sound_blue_soldier_fire3", "sound_blue_soldier_fire4"],
+            "death": ["sound_enemy_building_destroyed"]
+        }
+    },
+    "red_commandobunker": {
+        "id": "red_commandobunker",
+        "archetype": "Defense",
+        "dimX": 3, "dimY": 3, "dimZ": 1,
+        "stats": {
+            "story": { "health": 50, "damage": 2, "attackRange": 1, "traits": ["Counter"] }, 
+            "versus": { "health": 50, "damage": 2, "attackRange": 1, "traits": ["Counter"] }
+        },
+        "sprites": {
+            "idle": "red_commandobunker",
+            "fire": "red_commandobunker_fire",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_blue_soldier_fire1", "sound_blue_soldier_fire2", "sound_blue_soldier_fire3", "sound_blue_soldier_fire4"],
+            "death": ["sound_enemy_building_destroyed"]
+        }
+    },
+    "red_secretpolice": {
+        "id": "red_secretpolice",
+        "archetype": "Defense",
+        "dimX": 3, "dimY": 3, "dimZ": 1,
+        "stats": {
+            "story": { "health": 1, "damage": 1, "attackRange": 1, "traits": [] }, 
+            "versus": { "health": 1, "damage": 1, "attackRange": 1, "traits": [] }
+        },
+        "sprites": {
+            "idle": "red_secretpolice",
+            "fire": "red_secretpolice_fire",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_blue_soldier_fire1", "sound_blue_soldier_fire2", "sound_blue_soldier_fire3", "sound_blue_soldier_fire4"],
+            "death": ["sound_enemy_building_destroyed"]
+        }
+    },
+    "red_secretpolice_deco": {
+        "id": "red_secretpolice_deco",
+        "archetype": "Deco",
+        "dimX": 3, "dimY": 3, "dimZ": 1,
+        "stats": {
+            "story": { "health": 1, "traits": [] }, 
+            "versus": { "health": 1, "traits": [] }
+        },
+        "sprites": {
+            "idle": "red_secretpolice",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_enemy_building_destroyed"]
+        }
+    },
+    "red_superweapon": {
+        "id": "red_superweapon",
+        "archetype": "Deco",
+        "dimX": 3, "dimY": 3, "dimZ": 1,
+        "stats": {
+            "story": { "health": 1, "traits": [] }, 
+            "versus": { "health": 1, "traits": [] }
+        },
+        "sprites": {
+            "idle": "red_superweapon",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_enemy_building_destroyed"]
+        }
+    },
+    "red_vilesnest": {
+        "id": "red_vilesnest",
+        "archetype": "Defense",
+        "dimX": 3, "dimY": 3, "dimZ": 1,
+        "stats": {
+            "story": { "health": 65, "damage": 1, "attackRange": 2, "traits": [] }, 
+            "versus": { "health": 65, "damage": 1, "attackRange": 2, "traits": [] }
+        },
+        "sprites": {
+            "idle": "red_vilesnest",
+            "fire": "red_vilesnest_fire",
+            "death": "effect_death_explosion",
+            "weapon": "effect_bullets"
+        },
+        "sounds": {
+            "fire": ["sound_blue_soldier_fire1", "sound_blue_soldier_fire2", "sound_blue_soldier_fire3", "sound_blue_soldier_fire4"],
+            "death": ["sound_enemy_building_destroyed"]
+        }
+    }
+}

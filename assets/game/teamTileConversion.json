@@ -1,0 +1,116 @@
+{
+    "Crimson": {
+        "ground": {
+            "Bg_GoodTile_01": ["ground", "Bg_BadTile_01"],
+            "Bg_GoodTile_01_desert": ["ground", "Bg_BadTile_01_desert"],
+            "Bg_GoodTile_02": ["ground", "Bg_BadTile_02"]
+        },
+        "coast": {
+            "Bg_CoastTile_ne_01": ["coast", "Bg_CoastTile_ne_02"],
+            "Bg_CoastTile_w_01": ["coast", "Bg_CoastTile_w_02"],
+            "Bg_CoastTile_nw_inside_01": ["coast", "Bg_CoastTile_nw_inside_02"],
+            "Bg_CoastTile_ne_inside_01": ["coast", "Bg_CoastTile_ne_inside_02"], 
+            "Bg_CoastTile_sw_01": ["coast", "Bg_CoastTile_sw_02"],
+            "Bg_CoastTile_e_01": ["coast", "Bg_CoastTile_e_02"],
+            "Bg_CoastTile_sw_inside_01": ["coast", "Bg_CoastTile_sw_inside_02"],
+            "Bg_CoastTile_s_01": ["coast", "Bg_CoastTile_s_02"],
+            "Bg_CoastTile_se_inside_01": ["coast", "Bg_CoastTile_se_inside_02"],
+            "Bg_CoastTile_n_01": ["coast", "Bg_CoastTile_n_02"],
+            "Bg_CoastTile_nw_01": ["coast", "Bg_CoastTile_nw_02"],
+            "Bg_CoastTile_se_01": ["coast", "Bg_CoastTile_se_02"]
+        },
+        "deco_good": {
+            "Bg_Trees_01": ["deco_bad", "Bg_DeadTrees_01"],
+            "Bg_GoodTile_Deco_01": ["deco_bad", "Bg_BadTile_Deco_01"],
+            "Bg_GoodTile_Deco_02": ["deco_bad", "Bg_BadTile_Deco_02"],
+            "Bg_GoodTile_Deco_03": ["deco_bad", "Bg_BadTile_Deco_03"],
+            "Bg_GoodTile_Deco_04": ["deco_bad", "Bg_BadTile_Deco_04"],
+            "Bg_GoodTile_Deco_05": ["deco_bad", "Bg_BadTile_Deco_05"],
+            "Bg_GoodTile_Deco_06": ["deco_bad", "Bg_BadTile_Deco_06"],
+            "Bg_GoodTile_Deco_07": ["deco_bad", "Bg_BadTile_Deco_07"],
+            "Bg_GoodTile_Deco_08": ["deco_bad", "Bg_BadTile_Deco_08"],
+            "Bg_GoodTile_Deco_09": ["deco_bad", "Bg_BadTile_Deco_09"],
+            "Bg_GoodTile_Deco_10": ["deco_bad", "Bg_BadTile_Deco_10"],
+            "Bg_GoodTile_Deco_11": ["deco_bad", "Bg_BadTile_Deco_11"],
+            "Bg_GoodTile_Deco_12": ["deco_bad", "Bg_BadTile_Deco_12"],
+            "Bg_GoodTile_Deco_13": ["deco_bad", "Bg_BadTile_Deco_13"],
+            "Bg_GoodTile_Deco_14": ["deco_bad", "Bg_BadTile_Deco_14"],
+            "Bg_GoodTile_Deco_15": ["deco_bad", "Bg_BadTile_Deco_15"],
+            "Bg_GoodTile_Deco_16": ["deco_bad", "Bg_BadTile_Deco_16"],
+            "Bg_GoodTile_Deco_17": ["deco_bad", "Bg_BadTile_Deco_17"],
+            "Bg_GoodTile_Deco_18": ["deco_bad", "Bg_BadTile_Deco_18"],
+            "Bg_GoodTile_Deco_19": ["deco_bad", "Bg_BadTile_Deco_19"],
+            "Bg_GoodTile_Deco_20": ["deco_bad", "Bg_BadTile_Deco_20"],
+            "Bg_GoodTile_Deco_21": ["deco_bad", "Bg_BadTile_Deco_21"],
+            "Bg_GoodTile_Deco_22": ["deco_bad", "Bg_BadTile_Deco_22"],
+            "Bg_GoodTile_Deco_23": ["deco_bad", "Bg_BadTile_Deco_23"],
+            "Bg_GoodTile_Deco_24": ["deco_bad", "Bg_BadTile_Deco_24"],
+            "Bg_GoodTile_Deco_25": ["deco_bad", "Bg_BadTile_Deco_25"],
+            "Bg_GoodTile_Deco_26": ["deco_bad", "Bg_BadTile_Deco_26"]
+        },
+        "river_good": {
+            "Bg_RiverTile_01": ["river_bad", "Bg_BadRiverTile_01"],
+            "Bg_RiverTile_02": ["river_bad", "Bg_BadRiverTile_02"],
+            "Bg_RiverTile_03": ["river_bad", "Bg_BadRiverTile_03"],
+            "Bg_RiverTile_04": ["river_bad", "Bg_BadRiverTile_04"],
+            "Bg_RiverTile_05": ["river_bad", "Bg_BadRiverTile_05"]
+        }
+    },
+    "Allies": {
+        "ground": {
+            "Bg_BadTile_01": ["ground", "Bg_GoodTile_01"],
+            "Bg_BadTile_01_desert": ["ground", "Bg_GoodTile_01_desert"],
+            "Bg_BadTile_02": ["ground", "Bg_GoodTile_02"]
+        },
+        "coast": {
+            "Bg_CoastTile_ne_02": ["coast", "Bg_CoastTile_ne_01"],
+            "Bg_CoastTile_w_02": ["coast", "Bg_CoastTile_w_01"],
+            "Bg_CoastTile_nw_inside_02": ["coast", "Bg_CoastTile_nw_inside_01"],
+            "Bg_CoastTile_ne_inside_02": ["coast", "Bg_CoastTile_ne_inside_01"],
+            "Bg_CoastTile_sw_02": ["coast", "Bg_CoastTile_sw_01"],
+            "Bg_CoastTile_e_02": ["coast", "Bg_CoastTile_e_01"],
+            "Bg_CoastTile_sw_inside_02": ["coast", "Bg_CoastTile_sw_inside_01"],
+            "Bg_CoastTile_s_02": ["coast", "Bg_CoastTile_s_01"],
+            "Bg_CoastTile_se_inside_02": ["coast", "Bg_CoastTile_se_inside_01"],
+            "Bg_CoastTile_n_02": ["coast", "Bg_CoastTile_n_01"],
+            "Bg_CoastTile_nw_02": ["coast", "Bg_CoastTile_nw_01"],
+            "Bg_CoastTile_se_02": ["coast", "Bg_CoastTile_se_01"]
+        },
+        "deco_bad": {
+            "Bg_DeadTrees_01": ["deco_good", "Bg_Trees_01"],
+            "Bg_BadTile_Deco_01": ["deco_good", "Bg_GoodTile_Deco_01"],
+            "Bg_BadTile_Deco_02": ["deco_good", "Bg_GoodTile_Deco_02"],
+            "Bg_BadTile_Deco_03": ["deco_good", "Bg_GoodTile_Deco_03"],
+            "Bg_BadTile_Deco_04": ["deco_good", "Bg_GoodTile_Deco_04"],
+            "Bg_BadTile_Deco_05": ["deco_good", "Bg_GoodTile_Deco_05"],
+            "Bg_BadTile_Deco_06": ["deco_good", "Bg_GoodTile_Deco_06"],
+            "Bg_BadTile_Deco_07": ["deco_good", "Bg_GoodTile_Deco_07"],
+            "Bg_BadTile_Deco_08": ["deco_good", "Bg_GoodTile_Deco_08"],
+            "Bg_BadTile_Deco_09": ["deco_good", "Bg_GoodTile_Deco_09"],
+            "Bg_BadTile_Deco_10": ["deco_good", "Bg_GoodTile_Deco_10"],
+            "Bg_BadTile_Deco_11": ["deco_good", "Bg_GoodTile_Deco_11"],
+            "Bg_BadTile_Deco_12": ["deco_good", "Bg_GoodTile_Deco_12"],
+            "Bg_BadTile_Deco_13": ["deco_good", "Bg_GoodTile_Deco_13"],
+            "Bg_BadTile_Deco_14": ["deco_good", "Bg_GoodTile_Deco_14"],
+            "Bg_BadTile_Deco_15": ["deco_good", "Bg_GoodTile_Deco_15"],
+            "Bg_BadTile_Deco_16": ["deco_good", "Bg_GoodTile_Deco_16"],
+            "Bg_BadTile_Deco_17": ["deco_good", "Bg_GoodTile_Deco_17"],
+            "Bg_BadTile_Deco_18": ["deco_good", "Bg_GoodTile_Deco_18"],
+            "Bg_BadTile_Deco_19": ["deco_good", "Bg_GoodTile_Deco_19"],
+            "Bg_BadTile_Deco_20": ["deco_good", "Bg_GoodTile_Deco_20"],
+            "Bg_BadTile_Deco_21": ["deco_good", "Bg_GoodTile_Deco_21"],
+            "Bg_BadTile_Deco_22": ["deco_good", "Bg_GoodTile_Deco_22"],
+            "Bg_BadTile_Deco_23": ["deco_good", "Bg_GoodTile_Deco_23"],
+            "Bg_BadTile_Deco_24": ["deco_good", "Bg_GoodTile_Deco_24"],
+            "Bg_BadTile_Deco_25": ["deco_good", "Bg_GoodTile_Deco_25"],
+            "Bg_BadTile_Deco_26": ["deco_good", "Bg_GoodTile_Deco_26"]
+        },
+        "river_bad": {
+            "Bg_BadRiverTile_01": ["river_good", "Bg_RiverTile_01"],
+            "Bg_BadRiverTile_02": ["river_good", "Bg_RiverTile_02"],
+            "Bg_BadRiverTile_03": ["river_good", "Bg_RiverTile_03"],
+            "Bg_BadRiverTile_04": ["river_good", "Bg_RiverTile_04"],
+            "Bg_BadRiverTile_05": ["river_good", "Bg_RiverTile_05"]
+        }
+    }
+}

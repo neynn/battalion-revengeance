@@ -1,0 +1,795 @@
+{
+    "MAIN_MENU": {
+        "TEXT_TITLE": {
+            "type": "TEXT",
+            "anchor": "CENTER",
+            "position": { "x": 0, "y": -150 },
+            "text": "BATTALION REVENGEANCE",
+            "fontSize": 50,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 0.5,
+            "effects": [ { "type": "FADE_IN", "threshold": 1, "value": 0.3 } ]
+        },
+        "BUTTON_PLAY": {
+            "type": "BUTTON",
+            "shape": 0,
+            "anchor": "CENTER", 
+            "position": { "x": -175, "y": 0 },
+            "width": 300,
+            "height": 100,
+            "opacity": 1,
+            "children": [ "TEXT_PLAY" ]
+        },
+        "TEXT_PLAY": {
+            "type": "TEXT",
+            "position": { "x": 150, "y": 50 },
+            "text": "PLAY",
+            "fontSize": 50,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 0.5,
+            "effects": [ { "type": "FADE_IN", "threshold": 1, "value": 0.3 } ]
+        },
+        "BUTTON_VERSUS": {
+            "type": "BUTTON",
+            "shape": 0,
+            "anchor": "CENTER",
+            "position": { "x": 175, "y": 0 },
+            "width": 300,
+            "height": 100,
+            "opacity": 1,
+            "children": [ "TEXT_VERSUS" ]
+        },
+        "TEXT_VERSUS": {
+            "type": "TEXT",
+            "position": { "x": 150, "y": 50 },
+            "text": "VERSUS",
+            "fontSize": 50,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 0.5,
+            "effects": [ { "type": "FADE_IN", "threshold": 1, "value": 0.3 } ]
+        },
+        "BUTTON_EDIT": {
+            "type": "BUTTON",
+            "shape": 0,
+            "anchor": "CENTER", 
+            "position": { "x": -175, "y": 150 },
+            "width": 300,
+            "height": 100,
+            "opacity": 1,
+            "children": [ "TEXT_EDIT" ]
+        },
+        "TEXT_EDIT": {
+            "type": "TEXT",
+            "position": { "x": 150, "y": 50 },
+            "text": "EDIT",
+            "fontSize": 50,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 0.5,
+            "effects": [ { "type": "FADE_IN", "threshold": 1, "value": 0.3 } ]
+        },
+        "BUTTON_EXTRA": {
+            "type": "BUTTON",
+            "shape": 0,
+            "anchor": "CENTER", 
+            "position": { "x": 175, "y": 150 },
+            "width": 300,
+            "height": 100,
+            "opacity": 1,
+            "children": [ "TEXT_EXTRA" ]
+        },
+        "TEXT_EXTRA": {
+            "type": "TEXT",
+            "position": { "x": 150, "y": 50 },
+            "text": "EXTRA",
+            "fontSize": 50,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 0.5,
+            "effects": [ { "type": "FADE_IN", "threshold": 1, "value": 0.3 } ]
+        }
+    },
+    "VERSUS_MODE_HUB": {
+        "CONTAINER_OPERATIONS": {
+            "type": "CONTAINER",
+            "anchor": "TOP_LEFT",
+            "position": { "x": 0, "y": 0 },
+            "width": 500,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "BUTTON_CREATE_ROOM", "BUTTON_JOIN_ROOM", "BUTTON_LEAVE_ROOM", "BUTTON_START_INSTANCE", "BUTTON_BACK" ]
+        },
+        "BUTTON_CREATE_ROOM": {
+            "type": "BUTTON",
+            "shape": 0,
+            "anchor": "TOP_LEFT", 
+            "position": { "x": 0, "y": 0 },
+            "width": 100,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_CREATE_ROOM" ]
+        },
+        "TEXT_CREATE_ROOM": {
+            "type": "TEXT",
+            "position": { "x": 50, "y": 25 },
+            "text": "CREATE",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 0.5,
+            "effects": [ { "type": "FADE_IN", "threshold": 1, "value": 0.3 } ]
+        },
+        "BUTTON_JOIN_ROOM": {
+            "type": "BUTTON",
+            "shape": 0,
+            "anchor": "TOP_LEFT", 
+            "position": { "x": 100, "y": 0 },
+            "width": 100,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_JOIN_ROOM" ]
+        },
+        "TEXT_JOIN_ROOM": {
+            "type": "TEXT",
+            "position": { "x": 50, "y": 25 },
+            "text": "JOIN",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 0.5,
+            "effects": [ { "type": "FADE_IN", "threshold": 1, "value": 0.3 } ]
+        },
+        "BUTTON_LEAVE_ROOM": {
+            "type": "BUTTON",
+            "shape": 0,
+            "anchor": "TOP_LEFT", 
+            "position": { "x": 200, "y": 0 },
+            "width": 100,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_LEAVE_ROOM" ]
+        },
+        "TEXT_LEAVE_ROOM": {
+            "type": "TEXT",
+            "position": { "x": 50, "y": 25 },
+            "text": "LEAVE",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 0.5,
+            "effects": [ { "type": "FADE_IN", "threshold": 1, "value": 0.3 } ]
+        },
+        "BUTTON_START_INSTANCE": {
+            "type": "BUTTON",
+            "shape": 0,
+            "anchor": "TOP_LEFT", 
+            "position": { "x": 300, "y": 0 },
+            "width": 100,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_START_INSTANCE" ]
+        },
+        "TEXT_START_INSTANCE": {
+            "type": "TEXT",
+            "position": { "x": 50, "y": 25 },
+            "text": "START",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 0.5,
+            "effects": [ { "type": "FADE_IN", "threshold": 1, "value": 0.3 } ]
+        },
+        "BUTTON_BACK": {
+            "type": "BUTTON",
+            "shape": 0,
+            "anchor": "TOP_LEFT", 
+            "position": { "x": 400, "y": 0 },
+            "width": 100,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_BACK" ]
+        },
+        "TEXT_BACK": {
+            "type": "TEXT",
+            "position": { "x": 50, "y": 25 },
+            "text": "BACK",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 0.5,
+            "effects": [ { "type": "FADE_IN", "threshold": 1, "value": 0.3 } ]
+        }
+    },
+    "MAP_EDITOR": {
+        "CONTAINER_FILE": {
+            "type": "CONTAINER",
+            "anchor": "TOP_LEFT",
+            "position": { "x": 0, "y": 0 },
+            "width": 500,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "BUTTON_SAVE", "BUTTON_LOAD", "BUTTON_CREATE", "BUTTON_RESIZE", "BUTTON_BACK" ]
+        },
+        "BUTTON_SAVE": {
+            "type": "BUTTON",
+            "shape": 0,
+            "anchor": "TOP_LEFT",
+            "position": { "x": 0, "y": 0 },
+            "width": 100,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_SAVE" ]
+        },
+        "TEXT_SAVE": {
+            "type": "TEXT",
+            "position": { "x": 50, "y": 25 },
+            "text": "SAVE",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 0.5,
+            "effects": [ { "type": "FADE_IN", "threshold": 1, "value": 0.3 } ]
+        },
+        "BUTTON_LOAD": {
+            "type": "BUTTON",
+            "shape": 0,
+            "anchor": "TOP_LEFT",
+            "position": { "x": 100, "y": 0 },
+            "radius": 50,
+            "width": 100,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_LOAD" ]
+        },
+        "TEXT_LOAD": {
+            "type": "TEXT",
+            "position": { "x": 50, "y": 25 },
+            "text": "LOAD",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 0.5,
+            "effects": [ { "type": "FADE_IN", "threshold": 1, "value": 0.3 } ]
+        },
+        "BUTTON_CREATE": {
+            "type": "BUTTON",
+            "shape": 0,
+            "anchor": "TOP_LEFT",
+            "position": { "x": 200, "y": 0 },
+            "radius": 50,
+            "width": 100,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_CREATE" ]
+        },
+        "TEXT_CREATE": {
+            "type": "TEXT",
+            "position": { "x": 50, "y": 25 },
+            "text": "CREATE",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 0.5,
+            "effects": [ { "type": "FADE_IN", "threshold": 1, "value": 0.3 } ]
+        },
+        "BUTTON_RESIZE": {
+            "type": "BUTTON",
+            "shape": 0,
+            "anchor": "TOP_LEFT",
+            "position": { "x": 300, "y": 0 },
+            "radius": 50,
+            "width": 100,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_RESIZE" ]
+        },
+        "TEXT_RESIZE": {
+            "type": "TEXT",
+            "position": { "x": 50, "y": 25 },
+            "text": "RESIZE",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 0.5,
+            "effects": [ { "type": "FADE_IN", "threshold": 1, "value": 0.3 } ]
+        },
+        "BUTTON_BACK": {
+            "type": "BUTTON",
+            "shape": 0,
+            "anchor": "TOP_LEFT",
+            "position": { "x": 400, "y": 0 },
+            "radius": 50,
+            "width": 100,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_BACK" ]
+        },
+        "TEXT_BACK": {
+            "type": "TEXT",
+            "position": { "x": 50, "y": 25 },
+            "text": "BACK",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 0.5,
+            "effects": [ { "type": "FADE_IN", "threshold": 1, "value": 0.3 } ]
+        },
+        "CONTAINER_LAYERS": {
+            "type": "CONTAINER",
+            "anchor": "BOTTOM_LEFT",
+            "position": { "x": 0, "y": 0 },
+            "width": 400,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "BUTTON_L1", "BUTTON_L2", "BUTTON_L3", "BUTTON_VIEW_ALL" ]
+        },
+        "BUTTON_L1": {
+            "type": "BUTTON",
+            "shape": 0,
+            "anchor": "BOTTOM_LEFT",
+            "position": { "x": 0, "y": 0 },
+            "radius": 50,
+            "width": 100,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_L1" ]
+        },
+        "TEXT_L1": {
+            "type": "TEXT",
+            "position": { "x": 50, "y": 25 },
+            "text": "GROUND",
+            "fontSize": 15,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 0.5,
+            "effects": [ { "type": "FADE_IN", "threshold": 1, "value": 0.3 } ]
+        },
+        "BUTTON_L2": {
+            "type": "BUTTON",
+            "shape": 0,
+            "anchor": "BOTTOM_LEFT",
+            "position": { "x": 100, "y": 0 },
+            "radius": 50,
+            "width": 100,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_L2" ]
+        },
+        "TEXT_L2": {
+            "type": "TEXT",
+            "position": { "x": 50, "y": 25 },
+            "text": "DECORATION",
+            "fontSize": 15,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 0.5,
+            "effects": [ { "type": "FADE_IN", "threshold": 1, "value": 0.3 } ]
+        },
+        "BUTTON_L3": {
+            "type": "BUTTON",
+            "shape": 0,
+            "anchor": "BOTTOM_LEFT",
+            "position": { "x": 200, "y": 0 },
+            "radius": 50,
+            "width": 100,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_L3" ]
+        },
+        "TEXT_L3": {
+            "type": "TEXT",
+            "position": { "x": 50, "y": 25 },
+            "text": "CLOUD",
+            "fontSize": 15,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 0.5,
+            "effects": [ { "type": "FADE_IN", "threshold": 1, "value": 0.3 } ]
+        },
+        "BUTTON_VIEW_ALL": {
+            "type": "BUTTON",
+            "shape": 0,
+            "anchor": "BOTTOM_LEFT",
+            "position": { "x": 300, "y": 0 },
+            "radius": 50,
+            "width": 100,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_VIEW_ALL" ]
+        },
+        "TEXT_VIEW_ALL": {
+            "type": "TEXT",
+            "position": { "x": 50, "y": 25 },
+            "text": "VIEW ALL",
+            "fontSize": 15,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 0.5,
+            "effects": [ { "type": "FADE_IN", "threshold": 1, "value": 0.3 } ]
+        },
+        "CONTAINER_TILES": {
+            "type": "CONTAINER",
+            "anchor": "TOP_RIGHT",
+            "position": { "x": 0, "y": 0 },
+            "width": 350,
+            "height": 550,
+            "opacity": 1,
+            "children": [ "BUTTON_SCROLL_SIZE", "TEXT_TILESET", "BUTTON_TILESET_RIGHT", "BUTTON_TILESET_LEFT", "BUTTON_TILESET_MODE", "TEXT_PAGE", "BUTTON_PAGE_LAST", "BUTTON_PAGE_NEXT" ]
+        },
+        "TEXT_PAGE": {
+            "type": "TEXT",
+            "position": { "x": 175, "y": 475 },
+            "text": "PAGE",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 1
+        },
+        "BUTTON_PAGE_LAST": {
+            "type": "BUTTON",
+            "shape": 0,
+            "position": { "x": 0, "y": 450 },
+            "width": 150,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_PAGE_LAST" ]
+        },
+        "TEXT_PAGE_LAST": {
+            "type": "TEXT",
+            "position": { "x": 75, "y": 25 },
+            "text": "<<",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 1
+        },
+        "BUTTON_PAGE_NEXT": {
+            "type": "BUTTON",
+            "shape": 0,
+            "position": { "x": 200, "y": 450 },
+            "width": 150,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_PAGE_NEXT" ]
+        },
+        "TEXT_PAGE_NEXT": {
+            "type": "TEXT",
+            "position": { "x": 75, "y": 25 },
+            "text": ">>",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 1
+        },
+        "BUTTON_SCROLL_SIZE": {
+            "type": "BUTTON",
+            "shape": 0,
+            "position": { "x": 0, "y": 500 },
+            "width": 350,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_SIZE" ]
+        },
+        "TEXT_SIZE": {
+            "type": "TEXT",
+            "position": { "x": 175, "y": 25 },
+            "text": "<SIZE>",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 1
+        },
+        "TEXT_TILESET": {
+            "type": "TEXT",
+            "position": { "x": 175, "y": 25 },
+            "text": "<TILESET>",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 1
+        },
+        "BUTTON_TILESET_MODE": {
+            "type": "BUTTON",
+            "shape": 0,
+            "position": { "x": 50, "y": 50 },
+            "width": 250,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_TILESET_MODE" ]
+        },
+        "TEXT_TILESET_MODE": {
+            "type": "TEXT",
+            "position": { "x": 125, "y": 25 },
+            "text": "<MODE>",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 1
+        },
+        "BUTTON_TILESET_RIGHT": {
+            "type": "BUTTON",
+            "shape": 0,
+            "position": { "x": 300, "y": 0 },
+            "width": 50,
+            "height": 100,
+            "opacity": 1,
+            "children": [ "TEXT_TILESET_RIGHT" ]
+        },
+        "TEXT_TILESET_RIGHT": {
+            "type": "TEXT",
+            "position": { "x": 25, "y": 50 },
+            "text": ">>",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 1
+        },
+        "BUTTON_TILESET_LEFT": {
+            "type": "BUTTON",
+            "shape": 0,
+            "position": { "x": 0, "y": 0 },
+            "width": 50,
+            "height": 100,
+            "opacity": 1,
+            "children": [ "TEXT_TILESET_LEFT" ]
+        },
+        "TEXT_TILESET_LEFT": {
+            "type": "TEXT",
+            "position": { "x": 25, "y": 50 },
+            "text": "<<",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 1
+        },
+        "CONTAINER_TOOLS": {
+            "type": "CONTAINER",
+            "anchor": "BOTTOM_RIGHT",
+            "position": { "x": 0, "y": 0 },
+            "width": 400,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "BUTTON_AUTO", "BUTTON_UNDO", "BUTTON_ERASER", "BUTTON_INVERT" ]
+        },
+        "BUTTON_AUTO": {
+            "type": "BUTTON",
+            "shape": 0,
+            "position": { "x": 0, "y": 0 },
+            "anchor": "BOTTOM_RIGHT",
+            "width": 100,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_AUTO" ]
+        },
+        "TEXT_AUTO": {
+            "type": "TEXT",
+            "position": { "x": 50, "y": 25 },
+            "text": "AUTO",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 1
+        },
+        "BUTTON_INVERT": {
+            "type": "BUTTON",
+            "shape": 0,
+            "position": { "x": 100, "y": 0 },
+            "anchor": "BOTTOM_RIGHT",
+            "width": 100,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_INVERT" ]
+        },
+        "TEXT_INVERT": {
+            "type": "TEXT",
+            "position": { "x": 50, "y": 25 },
+            "text": "INVERT",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 1
+        },
+        "BUTTON_ERASER": {
+            "type": "BUTTON",
+            "shape": 0,
+            "position": { "x": 200, "y": 0 },
+            "anchor": "BOTTOM_RIGHT",
+            "width": 100,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_ERASER" ]
+        },
+        "TEXT_ERASER": {
+            "type": "TEXT",
+            "position": { "x": 50, "y": 25 },
+            "text": "ERASER",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 1
+        },
+        "BUTTON_UNDO": {
+            "type": "BUTTON",
+            "shape": 0,
+            "position": { "x": 300, "y": 0 },
+            "anchor": "BOTTOM_RIGHT",
+            "width": 100,
+            "height": 50,
+            "opacity": 1,
+            "children": [ "TEXT_UNDO" ]
+        },
+        "TEXT_UNDO": {
+            "type": "TEXT",
+            "position": { "x": 50, "y": 25 },
+            "text": "UNDO",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "center",
+            "opacity": 1
+        }
+    },
+    "STORY_MODE": {
+        "CONTAINER_USER": {
+            "type": "CONTAINER",
+            "anchor": "PERCENT",
+            "position": { "x": 25, "y": 0 },
+            "width": 300,
+            "height": 100,
+            "opacity": 1,
+            "children": []
+        },
+        "CONTAINER_ENERGY": {
+            "type": "CONTAINER",
+            "anchor": "PERCENT",
+            "position": { "x": 50, "y": 0 },
+            "width": 300,
+            "height": 100,
+            "opacity": 1,
+            "children": [ "CONTAINER_ENERGY_BAR", "ICON_ENERGY", "TEXT_ENERGY_COUNT", "TEXT_ENERGY_TIME", "BUTTON_MORE_ENERGY" ]
+        },
+        "CONTAINER_ENERGY_BAR": {
+            "type": "CONTAINER",
+            "position": { "x": 25, "y": 10 },
+            "width": 200,
+            "height": 50
+        },
+        "ICON_ENERGY": {
+            "type": "ICON",
+            "image": "resource_icon_energy",
+            "position": { "x": 0, "y": 0 },
+            "scaleX": 0.9,
+            "scaleY": 0.9
+        },
+        "TEXT_ENERGY_COUNT": {
+            "type": "TEXT",
+            "position": { "x": 210, "y": 35 },
+            "text": "999999/999999",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "right"
+        },
+        "TEXT_ENERGY_TIME": {
+            "type": "TEXT",
+            "position": { "x": 65, "y": 75 },
+            "text": "TEXT_ENERGY_TIME",
+            "fontSize": 15,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "left"
+        },
+        "BUTTON_MORE_ENERGY": {
+            "type": "BUTTON",
+            "shape": 0,
+            "position": { "x": 225, "y": 10 },
+            "width": 50,
+            "height": 50,
+            "opacity": 1
+        },
+        "CONTAINER_RESOURCES": {
+            "type": "CONTAINER",
+            "anchor": "PERCENT",
+            "position": { "x": 80, "y": 0 },
+            "width": 400,
+            "height": 100,
+            "opacity": 1,
+            "children": [ "CONTAINER_MONEY", "CONTAINER_GOLD" ]
+        },
+        "CONTAINER_MONEY": {
+            "type": "CONTAINER",
+            "position": { "x": 0, "y": 0 },
+            "width": 200,
+            "height": 100,
+            "opacity": 1,
+            "children": [ "ICON_MONEY", "TEXT_MONEY_COUNT", "BUTTON_MORE_MONEY" ]
+        },
+        "ICON_MONEY": {
+            "type": "ICON",
+            "image": "resource_icon_cash",
+            "position": { "x": 0, "y": 10 },
+            "scaleX": 0.8,
+            "scaleY": 0.8
+        },
+        "TEXT_MONEY_COUNT": {
+            "type": "TEXT",
+            "position": { "x": 145, "y": 35 },
+            "text": "99999999",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "right"
+        },
+        "BUTTON_MORE_MONEY": {
+            "type": "BUTTON",
+            "shape": 0,
+            "position": { "x": 150, "y": 10 },
+            "width": 50,
+            "height": 50,
+            "opacity": 1
+        },
+        "CONTAINER_GOLD": {
+            "type": "CONTAINER",
+            "position": { "x": 200, "y": 0 },
+            "width": 200,
+            "height": 100,
+            "opacity": 1,
+            "children": [ "ICON_GOLD", "TEXT_GOLD_COUNT", "BUTTON_MORE_GOLD" ]
+        },
+        "ICON_GOLD": {
+            "type": "ICON",
+            "image": "resource_icon_gold",
+            "position": { "x": 0, "y": 10 }
+        },
+        "TEXT_GOLD_COUNT": {
+            "type": "TEXT",
+            "position": { "x": 145, "y": 35 },
+            "text": "99999999",
+            "fontSize": 20,
+            "fontType": "Arial",
+            "color": [238, 238, 238, 255],
+            "align": "right"
+        },
+        "BUTTON_MORE_GOLD": {
+            "type": "BUTTON",
+            "shape": 0,
+            "position": { "x": 150, "y": 10 },
+            "width": 50,
+            "height": 50,
+            "opacity": 1
+        }
+    }
+}

@@ -1,0 +1,155 @@
+{
+    "HFE_Plot": {
+        "canDecay": true,
+        "collectableTimeSeconds": 0,
+        "buy": {},
+        "rewards": [
+
+        ],
+        "sprites": {
+            "idle": "blue_landingzone",
+            "harvest": "",
+            "spoiled": "",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "HFE_Farm": {
+        "canDecay": true,
+        "collectableTimeSeconds": 0,
+        "buy": {},
+        "rewards": [
+
+        ],
+        "sprites": {
+            "idle": "blue_landingzone",
+            "harvest": "",
+            "spoiled": "",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "HFE_Plantation": {
+        "canDecay": true,
+        "collectableTimeSeconds": 0,
+        "buy": {},
+        "rewards": [
+
+        ],
+        "sprites": {
+            "idle": "blue_landingzone",
+            "harvest": "",
+            "spoiled": "",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "HFE_Ranch": {
+        "canDecay": true,
+        "collectableTimeSeconds": 0,
+        "buy": {},
+        "rewards": [
+
+        ],
+        "sprites": {
+            "idle": "blue_landingzone",
+            "harvest": "",
+            "spoiled": "",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "HFE_Mine": {
+        "canDecay": true,
+        "collectableTimeSeconds": 0,
+        "buy": {},
+        "rewards": [
+
+        ],
+        "sprites": {
+            "idle": "blue_landingzone",
+            "harvest": "",
+            "spoiled": "",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "HFE_Quarry": {
+        "canDecay": true,
+        "collectableTimeSeconds": 0,
+        "buy": {},
+        "rewards": [
+
+        ],
+        "sprites": {
+            "idle": "blue_landingzone",
+            "harvest": "",
+            "spoiled": "",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "HFE_Sawmill": {
+        "canDecay": true,
+        "collectableTimeSeconds": 0,
+        "buy": {},
+        "rewards": [
+
+        ],
+        "sprites": {
+            "idle": "blue_landingzone",
+            "harvest": "",
+            "spoiled": "",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "HFE_Oilwell": {
+        "canDecay": true,
+        "collectableTimeSeconds": 0,
+        "buy": {},
+        "rewards": [
+
+        ],
+        "sprites": {
+            "idle": "blue_landingzone",
+            "harvest": "",
+            "spoiled": "",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    },
+    "Error": {
+        "canDecay": false,
+        "collectableTimeSeconds": 0,
+        "buy": {},
+        "rewards": [
+            {"type": "Resource", "id": "Gold", "value": 999}
+        ],
+        "sprites": {
+            "idle": "blue_landingzone",
+            "harvest": "",
+            "spoiled": "",
+            "death": "effect_death_explosion"
+        },
+        "sounds": {
+            "death": ["sound_building_destroyed"]
+        }
+    } 
+}

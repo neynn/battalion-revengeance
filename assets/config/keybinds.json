@@ -1,0 +1,28 @@
+{
+    "PLAY": {
+        "TOGGLE_RANGE": "+v",
+        "CLICK": "-M1",
+        "ESCAPE": "+Escape",
+        "DEBUG_IDLE": "+1",
+        "DEBUG_HEAL": "+2",
+        "DEBUG_FIREMISSION": "+3",
+        "DEBUG_SELL": "+4",
+        "DEBUG_PLACE": "+5",
+        "DEBUG_DEBUG": "+0",
+        "DEBUG_LOAD": "+9",
+        "DEBUG_KILL": "+8"
+    },
+    "EDIT": {
+        "TOGGLE_AUTOTILER": "+a",
+        "TOGGLE_ERASER": "+e",
+        "TOGGLE_INVERSION": "+q"
+    },
+    "DEBUG": {
+        "ESCAPE": "+Escape",
+        "DEBUG_MAP": "+F1",
+        "DEBUG_CONTEXT": "+F2",
+        "DEBUG_INTERFACE": "+F3",
+        "DEBUG_SPRITES": "+F4",
+        "EXPORT_LOGS": "+F6"
+    }
+}

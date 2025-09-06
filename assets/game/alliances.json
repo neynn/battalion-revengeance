@@ -1,0 +1,26 @@
+{
+    "Enemy": { 
+        "isWalkable": false,
+        "isPassable": false,
+        "isPlaceable": false,
+        "isEnemy": true
+    },
+    "Ally": { 
+        "isWalkable": true,
+        "isPassable": true,
+        "isPlaceable": true,
+        "isEnemy": false
+    },
+    "Neutral": { 
+        "isWalkable": true,
+        "isPassable": true,
+        "isPlaceable": false,
+        "isEnemy": false
+    },
+    "Error": {
+        "isWalkable": false,
+        "isPassable": false,
+        "isPlaceable": false,
+        "isEnemy": false
+    }
+}

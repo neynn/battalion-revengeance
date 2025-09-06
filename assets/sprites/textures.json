@@ -1,0 +1,14 @@
+{
+    "tank": {
+        "directory":  ["assets","sprites"],
+        "source": "tank.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 56, 
+            "rows": 4,
+            "columns": 6
+        }
+    }
+}

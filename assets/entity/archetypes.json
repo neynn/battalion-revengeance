@@ -1,0 +1,51 @@
+{
+    "Unit": {
+        "name": "ARCH_NAME_UNIT",
+        "desc": "ARCH_DESC_UNIT",
+        "components": {
+            "Attack": { "active": true },
+            "Move": null
+        }
+    },
+    "Defense": {
+        "name": "ARCH_NAME_DEFENSE",
+        "desc": "ARCH_DESC_DEFENSE",
+        "components": {
+            "Attack": null
+        }
+    },
+    "Construction": {
+        "name": "ARCH_NAME_CONSTRUCTION",
+        "desc": "ARCH_DESC_CONSTRUCTION",
+        "components": {
+            "Construction": null
+        }
+    },
+    "Building": {
+        "name": "ARCH_NAME_BUILDING",
+        "desc": "ARCH_DESC_BUILDING",
+        "components": {
+            "Production": { "isAutomatic": true }
+        }
+    },
+    "Deco": {
+        "name": "ARCH_NAME_DECO",
+        "desc": "ARCH_DESC_DECO",
+        "components": {}
+    },
+    "Town": {
+        "name": "ARCH_NAME_TOWN",
+        "desc": "ARCH_DESC_TOWN",
+        "components": {
+            "Production": null,
+            "Town": null
+        }
+    },
+    "HFE": {
+        "name": "ARCH_NAME_HFE",
+        "desc": "ARCH_DESC_HFE",
+        "components": {
+            "Production": null
+        }
+    }
+}

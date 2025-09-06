@@ -1,0 +1,124 @@
+{
+    "coast": {
+        "Bg_CoastTile_ne_01": [
+            0, 0, 0,
+            0, 0, 0,
+            1, 0, 0
+        ],
+        "Bg_CoastTile_ne_02": [
+            0, 0, 0,
+            0, 0, 0,
+            1, 0, 0
+        ],
+        "Bg_CoastTile_w_01": [
+            0, 0, 0,
+            0, 0, 1,
+            0, 0, 0
+        ],
+        "Bg_CoastTile_w_02": [
+            0, 0, 0,
+            0, 0, 1,
+            0, 0, 0
+        ],
+        "Bg_CoastTile_nw_inside_01": [
+            0, 1, 0,
+            1, 0, 0,
+            0, 0, 0
+        ],
+        "Bg_CoastTile_nw_inside_02": [
+            0, 1, 0,
+            1, 0, 0,
+            0, 0, 0
+        ],
+        "Bg_CoastTile_ne_inside_02": [
+            0, 1, 0,
+            0, 0, 1,
+            0, 0, 0
+        ],
+        "Bg_CoastTile_ne_inside_01": [
+            0, 1, 0,
+            0, 0, 1,
+            0, 0, 0
+        ],
+        "Bg_CoastTile_sw_01": [
+            0, 0, 1,
+            0, 0, 0,
+            0, 0, 0
+        ],
+        "Bg_CoastTile_sw_02": [
+            0, 0, 1,
+            0, 0, 0,
+            0, 0, 0
+        ],
+        "Bg_CoastTile_e_01": [
+            0, 0, 0,
+            1, 0, 0,
+            0, 0, 0
+        ],
+        "Bg_CoastTile_e_02": [
+            0, 0, 0,
+            1, 0, 0,
+            0, 0, 0
+        ],
+        "Bg_CoastTile_sw_inside_01": [
+            0, 0, 0,
+            1, 0, 0,
+            0, 1, 0
+        ],
+        "Bg_CoastTile_sw_inside_02": [
+            0, 0, 0,
+            1, 0, 0,
+            0, 1, 0
+        ],
+        "Bg_CoastTile_s_01": [
+            0, 1, 0,
+            0, 0, 0,
+            0, 0, 0
+        ],
+        "Bg_CoastTile_s_02": [
+            0, 1, 0,
+            0, 0, 0,
+            0, 0, 0
+        ],
+        "Bg_CoastTile_se_inside_01": [
+            0, 0, 0,
+            0, 0, 1,
+            0, 1, 0
+        ],
+        "Bg_CoastTile_se_inside_02": [
+            0, 0, 0,
+            0, 0, 1,
+            0, 1, 0
+        ],
+        "Bg_CoastTile_n_01": [
+            0, 0, 0,
+            0, 0, 0,
+            0, 1, 0
+        ],
+        "Bg_CoastTile_n_02": [
+            0, 0, 0,
+            0, 0, 0,
+            0, 1, 0
+        ],
+        "Bg_CoastTile_nw_01": [
+            0, 0, 0,
+            0, 0, 0,
+            0, 0, 1
+        ],
+        "Bg_CoastTile_nw_02": [
+            0, 0, 0,
+            0, 0, 0,
+            0, 0, 1
+        ],
+        "Bg_CoastTile_se_01": [
+            1, 0, 0,
+            0, 0, 0,
+            0, 0, 0
+        ],
+        "Bg_CoastTile_se_02": [
+            1, 0, 0,
+            0, 0, 0,
+            0, 0, 0
+        ]
+    }
+}
