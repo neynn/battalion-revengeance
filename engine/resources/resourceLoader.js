@@ -6,13 +6,13 @@ export const ResourceLoader = function() {
     this.nextID = 0;
     this.textures = [];
     this.audio = [];
-    this.colorCopyTextures = {};
+    this.copyTextures = {};
 
     this.events = new EventEmitter();
     this.events.listen(ResourceLoader.EVENT.TEXTURE_LOADED);
     this.events.listen(ResourceLoader.EVENT.TEXTURE_ERROR);
 
-    this.events.on(ResourceLoader.EVENT.TEXTURE_ERROR, (t, e) => console.log(t, e));
+    this.events.on(ResourceLoader.EVENT.TEXTURE_ERROR, (t, e) => console.error(t, e));
     this.events.on(ResourceLoader.EVENT.TEXTURE_LOADED, (t, r) => console.log(t, r));
 }
 
@@ -22,15 +22,16 @@ ResourceLoader.EVENT = {
 };
 
 ResourceLoader.EMPTY_TEXTURE = new Texture(-1, "", {})
+
 ResourceLoader.DEFAULT = {
     TEXTURE_TYPE: ".png",
     AUDIO_TYPE: ".mp3"
 };
 
 ResourceLoader.prototype.freeColorCopiedTextures = function() {
-    for(const textureName in this.colorCopyTextures) {
+    for(const textureName in this.copyTextures) {
         for(let i = 0; i < this.textures.length; i++) {
-            if(this.textures[i].id === this.colorCopyTextures[textureName]) {
+            if(this.textures[i].id === this.copyTextures[textureName]) {
                 this.textures[i].clear();
                 this.textures[i] = this.textures[this.textures.length - 1];
                 this.textures.pop();
@@ -41,8 +42,8 @@ ResourceLoader.prototype.freeColorCopiedTextures = function() {
 }
 
 ResourceLoader.prototype.createCopyTexture = function(textureName, texture) {
-    if(this.colorCopyTextures[textureName] !== undefined) {
-        return this.getTextureByID(this.colorCopyTextures[textureName]);
+    if(this.copyTextures[textureName] !== undefined) {
+        return this.getTextureByID(this.copyTextures[textureName]);
     }
 
     const { regions } = texture;
@@ -52,7 +53,7 @@ ResourceLoader.prototype.createCopyTexture = function(textureName, texture) {
     newTexture.isCopy = true;
 
     this.textures.push(newTexture);
-    this.colorCopyTextures[textureName] = textureID;
+    this.copyTextures[textureName] = textureID;
 
     return newTexture;
 }

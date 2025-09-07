@@ -1,4 +1,4 @@
-import { ColorHelper } from "../../engine/sprite/colorHelper.js";
+import { SpriteHelper } from "../../engine/sprite/spriteHelper.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { State } from "../../engine/state/state.js";
 import { BattalionContext } from "../battalionContext.js";
@@ -110,7 +110,7 @@ const SCHEMAS = {
 };
 
 PlayState.prototype.onEnter = async function(gameContext, stateMachine) {
-    const { client, transform2D, spriteManager } = gameContext;
+    const { client, transform2D } = gameContext;
     const { router } = client;
 
     router.on("ESCAPE", () => stateMachine.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));
@@ -121,9 +121,9 @@ PlayState.prototype.onEnter = async function(gameContext, stateMachine) {
     for(const schemaID of Object.keys(SCHEMAS)) {
         const { x, y } = transform2D.transformTileToWorld(tileX, 0);
 
-        ColorHelper.createColoredSprite(gameContext, "tank_idle_left", schemaID, SCHEMAS, SpriteManager.LAYER.MIDDLE).setPosition(x, y); 
+        SpriteHelper.createColoredSprite(gameContext, "tank_idle_left", schemaID, SCHEMAS, SpriteManager.LAYER.MIDDLE).setPosition(x, y); 
         tileX++;
     }
 
-    spriteManager.createSprite("tank_idle_left", SpriteManager.LAYER.MIDDLE);
+    SpriteHelper.createSpriteWithAlias(gameContext, "tank_idle_left", "RED", SpriteManager.LAYER.MIDDLE);
 }

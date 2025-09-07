@@ -47,18 +47,5 @@ export const ColorHelper = {
         }
 
         return new ImageData(copy, width, height);
-    },
-    getSchemaID: function(spriteID, schemaID) {
-        return spriteID + ":" + schemaID;
-    },
-    createColoredSprite: function(gameContext, spriteID, schemaID, schema, layerID) {
-        const { spriteManager } = gameContext;
-        const schemaType = schema[schemaID];
-
-        if(schemaType) {
-            spriteManager.createColoredContainer(spriteID, schemaID, schemaType);
-        }
-
-        return spriteManager.createSprite(ColorHelper.getSchemaID(spriteID, schemaID), layerID);
     }
-}
+};

@@ -3,7 +3,7 @@ import { Sprite } from "./sprite.js";
 import { ObjectPool } from "../util/objectPool.js";
 import { SpriteContainer } from "./spriteContainer.js";
 import { ResourceLoader } from "../resources/resourceLoader.js";
-import { ColorHelper } from "./colorHelper.js";
+import { SpriteHelper } from "./spriteHelper.js";
 
 export const SpriteManager = function(resourceLoader) {
     this.resources = resourceLoader;
@@ -37,18 +37,31 @@ SpriteManager.prototype.addContainer = function(containerID, container) {
     });
 }
 
-SpriteManager.prototype.createColoredContainer = function(spriteID, schemaID, schema) {
+SpriteManager.prototype.createSpriteAlias = function(spriteID, schemaID) {
     const index = this.getContainerIndex(spriteID);
     const container = this.getContainer(index);
-    const coloredID = ColorHelper.getSchemaID(spriteID, schemaID);
+    const aliasID = SpriteHelper.getSchemaID(spriteID, schemaID);
 
-    if(container && !this.spriteMap.has(coloredID)) {
+    if(container && !this.spriteMap.has(aliasID)) {
+        this.spriteMap.set(aliasID, {
+            "index": index,
+            "textureID": container.texture.getID()
+        });
+    }
+}
+
+SpriteManager.prototype.createCopyContainer = function(spriteID, schemaID, schema) {
+    const index = this.getContainerIndex(spriteID);
+    const container = this.getContainer(index);
+    const aliasID = SpriteHelper.getSchemaID(spriteID, schemaID);
+
+    if(container && !this.spriteMap.has(aliasID)) {
         const { texture } = container;
-        const textureName = ColorHelper.getSchemaID(texture.getID(), schemaID);
+        const textureName = SpriteHelper.getSchemaID(texture.getID(), schemaID);
         const copyTexture = this.resources.createCopyTexture(textureName, texture);
         const newContainer = SpriteContainer.copyFrom(copyTexture, container);
 
-        this.addContainer(coloredID, newContainer);
+        this.addContainer(aliasID, newContainer);
 
         if(newContainer.isEmpty()) {
             if(container.isLoaded()) {
