@@ -1,5 +1,3 @@
-import { Texture } from "../resources/texture.js";
-
 export const SpriteContainer = function(texture, bounds, frameTime) {
     this.texture = texture;
     this.bounds = bounds;
@@ -7,29 +5,6 @@ export const SpriteContainer = function(texture, bounds, frameTime) {
     this.frameCount = 0;
     this.totalFrameTime = 0;
     this.frames = [];
-}
-
-SpriteContainer.copyFrom = function(texture, container) {
-    const { bounds, frameTime, frameCount, totalFrameTime, frames } = container;
-    const newContainer = new SpriteContainer(texture, bounds, frameTime);
-
-    newContainer.frameCount = frameCount;
-    newContainer.totalFrameTime = totalFrameTime;
-    newContainer.frames = frames;
-
-    return newContainer;
-}
-
-SpriteContainer.prototype.isEmpty = function() {
-    return this.texture.isState(Texture.STATE.EMPTY);
-}
-
-SpriteContainer.prototype.isLoaded = function() {
-    return this.texture.isState(Texture.STATE.LOADED);
-}
-
-SpriteContainer.prototype.isLoading = function() {
-    return this.texture.isState(Texture.STATE.LOADING);
 }
 
 SpriteContainer.prototype.initFrames = function(frames) {

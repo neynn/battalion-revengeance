@@ -5,7 +5,8 @@ export const Sprite = function(index, DEBUG_NAME) {
     Graph.call(this, DEBUG_NAME);
     
     this.index = index;
-    this.container = null;
+    this.texture = null;
+    this.frames = [];
     this.lastCallTime = 0;
     this.frameCount = 0;
     this.frameTime = 1;
@@ -41,24 +42,14 @@ Sprite.prototype = Object.create(Graph.prototype);
 Sprite.prototype.constructor = Sprite;
 
 Sprite.prototype.onDraw = function(display, localX, localY) {
-    if(!this.container) {
+    if(!this.texture || !this.texture.bitmap) {
         if(Sprite.RENDER_PLACEHOLDER) {
             this.drawPlaceholder(display, localX, localY);
         }
         return;
     }
 
-    const { texture, frames } = this.container;
-    const { bitmap } = texture;
-
-    if(!bitmap) {
-        if(Sprite.RENDER_PLACEHOLDER) {
-            this.drawPlaceholder(display, localX, localY);
-        }
-        return;
-    }
-
-    const currentFrame = frames[this.currentFrame];
+    const currentFrame = this.frames[this.currentFrame];
     const isFlipped = (this.flags & Sprite.FLAG.FLIP) !== 0;
 
     let renderX = localX;
@@ -77,7 +68,7 @@ Sprite.prototype.onDraw = function(display, localX, localY) {
     const { x, y, w, h } = currentFrame;
     const { context } = display;
 
-    context.drawImage(bitmap, x, y, w, h, renderX, renderY, w, h);
+    context.drawImage(this.texture.bitmap, x, y, w, h, renderX, renderY, w, h);
 }
 
 Sprite.prototype.onUpdate = function(timestamp, deltaTime) {
@@ -141,7 +132,8 @@ Sprite.prototype.getIndex = function() {
 }
 
 Sprite.prototype.reset = function() {
-    this.container = null;
+    this.texture = null;
+    this.frames = [];
     this.lastCallTime = 0;
     this.frameCount = 0;
     this.frameTime = 1;
@@ -158,20 +150,24 @@ Sprite.prototype.reset = function() {
     this.show();
 }
 
-Sprite.prototype.init = function(container, lastCallTime, DEBUG_NAME) {
-    if(this.container !== container) {
-        const { frameTime, frameCount, bounds } = container;
-        const { x, y, w, h } = bounds;
-
-        this.container = container;
-        this.lastCallTime = lastCallTime;
-        this.frameCount = frameCount;
-        this.frameTime = frameTime;
-        this.floatFrame = 0;
-        this.currentFrame = 0;
-        this.DEBUG_NAME = DEBUG_NAME;
-        this.setBounds(x, y, w, h);
+Sprite.prototype.setTexture = function(texture) {
+    if(texture) {
+        this.texture = texture;
     }
+}
+
+Sprite.prototype.init = function(container, lastCallTime, DEBUG_NAME) {
+    const { frames, frameTime, frameCount, bounds } = container;
+    const { x, y, w, h } = bounds;
+
+    this.frames = frames;
+    this.frameCount = frameCount;
+    this.frameTime = frameTime;
+    this.floatFrame = 0;
+    this.currentFrame = 0;
+    this.lastCallTime = lastCallTime;
+    this.DEBUG_NAME = DEBUG_NAME;
+    this.setBounds(x, y, w, h);
 }
 
 Sprite.prototype.setBounds = function(x, y, w, h) {

@@ -4,6 +4,8 @@ import { ObjectPool } from "../util/objectPool.js";
 import { SpriteContainer } from "./spriteContainer.js";
 import { ResourceLoader } from "../resources/resourceLoader.js";
 import { SpriteHelper } from "./spriteHelper.js";
+import { Texture } from "../resources/texture.js";
+import { SpriteEntry } from "./spriteEntry.js";
 
 export const SpriteManager = function(resourceLoader) {
     this.resources = resourceLoader;
@@ -29,24 +31,13 @@ SpriteManager.LAYER = {
     UI: 3
 };
 
-SpriteManager.prototype.addContainer = function(containerID, container) {
-    this.containers.push(container);
-    this.spriteMap.set(containerID, {
-        "index": this.containers.length - 1,
-        "textureID": container.texture.getID()
-    });
-}
-
 SpriteManager.prototype.createSpriteAlias = function(spriteID, schemaID) {
     const index = this.getContainerIndex(spriteID);
     const container = this.getContainer(index);
     const aliasID = SpriteHelper.getSchemaID(spriteID, schemaID);
 
     if(container && !this.spriteMap.has(aliasID)) {
-        this.spriteMap.set(aliasID, {
-            "index": index,
-            "textureID": container.texture.getID()
-        });
+        this.spriteMap.set(aliasID, new SpriteEntry(index, container.texture.getID(), null));
     }
 }
 
@@ -57,24 +48,31 @@ SpriteManager.prototype.createCopyContainer = function(spriteID, schemaID, schem
 
     if(container && !this.spriteMap.has(aliasID)) {
         const { texture } = container;
-        const textureName = SpriteHelper.getSchemaID(texture.getID(), schemaID);
-        const copyTexture = this.resources.createCopyTexture(textureName, texture);
-        const newContainer = SpriteContainer.copyFrom(copyTexture, container);
+        const textureID = texture.getID();
+        const texureAlias = SpriteHelper.getSchemaID(texture.getID(), schemaID);
+        const copyTexture = this.resources.createCopyTexture(texureAlias, texture);
 
-        this.addContainer(aliasID, newContainer);
+        this.spriteMap.set(aliasID, new SpriteEntry(index, copyTexture.getID(), texureAlias));
 
-        if(newContainer.isEmpty()) {
-            if(container.isLoaded()) {
-                copyTexture.loadColoredBitmap(texture.bitmap, schema);
-            } else if(container.isLoading()) {
-                this.resources.events.on(ResourceLoader.EVENT.TEXTURE_LOADED, (texture, bitmap) => {
-                    copyTexture.loadColoredBitmap(bitmap, schema);
-                }, { once: true });
-            } else {
-                this.loadBitmap(spriteID);
-                this.resources.events.on(ResourceLoader.EVENT.TEXTURE_LOADED, (texture, bitmap) => {
-                    copyTexture.loadColoredBitmap(bitmap, schema);
-                }, { once: true });
+        if(copyTexture.state === Texture.STATE.EMPTY) {
+            switch(texture.state) {
+                case Texture.STATE.EMPTY: {
+                    this.resources.loadTexture(textureID);
+                    this.resources.events.on(ResourceLoader.EVENT.TEXTURE_LOADED, (texture, bitmap) => {
+                        copyTexture.loadColoredBitmap(bitmap, schema);
+                    }, { once: true });
+                    break;
+                }
+                case Texture.STATE.LOADING: {
+                    this.resources.events.on(ResourceLoader.EVENT.TEXTURE_LOADED, (texture, bitmap) => {
+                        copyTexture.loadColoredBitmap(bitmap, schema);
+                    }, { once: true });
+                    break;
+                }
+                case Texture.STATE.LOADED: {
+                    copyTexture.loadColoredBitmap(texture.bitmap, schema);
+                    break;
+                }
             }
         }
     }
@@ -107,7 +105,8 @@ SpriteManager.prototype.load = function(textures, sprites) {
             continue;
         }
 
-        this.addContainer(spriteID, spriteContainer);
+        this.containers.push(spriteContainer);
+        this.spriteMap.set(spriteID, new SpriteEntry(this.containers.length - 1, textureID, null));
     }
 }
 
@@ -335,18 +334,29 @@ SpriteManager.prototype.removeSpriteFromLayers = function(spriteIndex) {
 }
 
 SpriteManager.prototype.updateSpriteTexture = function(sprite, spriteID) {
-    const containerIndex = this.getContainerIndex(spriteID);
-    const container = this.getContainer(containerIndex);
+    const spriteEntry = this.spriteMap.get(spriteID);
 
-    if(!container) {
-        Logger.log(Logger.CODE.ENGINE_WARN, "Container does not exist!", "SpriteManager.prototype.updateSpriteTexture", { "containerIndex": containerIndex });
-        return;
-    }
+    if(spriteEntry) {
+        const { index, textureID, copyAlias } = spriteEntry;
+        const container = this.getContainer(index);
 
-    sprite.init(container, this.timestamp, spriteID);
+        if(container) {
+            sprite.init(container, this.timestamp, spriteID);
 
-    if(!container.isLoaded()) {
-        this.loadBitmap(spriteID);
+            if(textureID === ResourceLoader.COPY_ID) {
+                const copyTexture = this.resources.getCopyTexture(copyAlias);
+
+                sprite.setTexture(copyTexture);
+            } else {
+                const { texture } = container;
+
+                sprite.setTexture(texture);
+
+                if(texture.state === Texture.STATE.EMPTY) {
+                    this.resources.loadTexture(textureID);
+                }
+            }
+        }
     }
 }
 

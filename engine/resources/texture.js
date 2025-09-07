@@ -9,7 +9,6 @@ export const Texture = function(id, path, regions) {
     this.width = 0;
     this.height = 0;
     this.state = Texture.STATE.EMPTY;
-    this.isCopy = false;
 }
 
 Texture.STATE = {

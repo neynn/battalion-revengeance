@@ -1,6 +1,6 @@
 export const SpriteHelper = {
     getSchemaID: function(spriteID, schemaID) {
-        return spriteID + ":" + schemaID;
+        return spriteID + "::" + schemaID;
     },
     createSpriteWithAlias: function(gameContext, spriteID, schemaID, layerID) {
         const { spriteManager } = gameContext;

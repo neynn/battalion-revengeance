@@ -1,3 +1,4 @@
+import { getRandomElement, getRandomNumber } from "../../engine/math/math.js";
 import { SpriteHelper } from "../../engine/sprite/spriteHelper.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { State } from "../../engine/state/state.js";
@@ -117,13 +118,23 @@ PlayState.prototype.onEnter = async function(gameContext, stateMachine) {
     CameraHelper.createPlayCamera(gameContext);
     MapHelper.createMapById(gameContext, "oasis");
 
-    let tileX = 1;
-    for(const schemaID of Object.keys(SCHEMAS)) {
-        const { x, y } = transform2D.transformTileToWorld(tileX, 0);
+    for(let i = 0; i < 0; i++) {
+        const schemaID = getRandomElement(Object.keys(SCHEMAS));
+        const spriteID = getRandomElement(["tank_idle_left", "tank_idle_right", "tank_idle_down", "tank_idle_up"]);
+        const { x, y } = transform2D.transformWorldToTileToWorld(getRandomNumber(0, 560), getRandomNumber(0, 560));
 
-        SpriteHelper.createColoredSprite(gameContext, "tank_idle_left", schemaID, SCHEMAS, SpriteManager.LAYER.MIDDLE).setPosition(x, y); 
-        tileX++;
+        SpriteHelper.createColoredSprite(gameContext, spriteID, schemaID, SCHEMAS, SpriteManager.LAYER.MIDDLE).setPosition(x, y); 
     }
 
-    SpriteHelper.createSpriteWithAlias(gameContext, "tank_idle_left", "RED", SpriteManager.LAYER.MIDDLE);
+    for(let i = 0; i < 20; i++) {
+        for(let j = 0; j < 20; j++) {
+            const schemaID = getRandomElement(Object.keys(SCHEMAS));
+            const spriteID = getRandomElement(["tank_idle_left", "tank_idle_right", "tank_idle_down", "tank_idle_up"]);
+            const { x, y } = transform2D.transformTileToWorld(j, i);
+
+            SpriteHelper.createColoredSprite(gameContext, spriteID, schemaID, SCHEMAS, SpriteManager.LAYER.MIDDLE).setPosition(x, y); 
+        }
+    }
+
+    //SpriteHelper.createSpriteWithAlias(gameContext, "tank_idle_left", "RED", SpriteManager.LAYER.MIDDLE);
 }

@@ -16,44 +16,47 @@ export const ResourceLoader = function() {
     this.events.on(ResourceLoader.EVENT.TEXTURE_LOADED, (t, r) => console.log(t, r));
 }
 
+ResourceLoader.COPY_ID = -1;
+
 ResourceLoader.EVENT = {
     TEXTURE_LOADED: "TEXTURE_LOADED",
     TEXTURE_ERROR: "TEXTURE_ERROR"
 };
 
-ResourceLoader.EMPTY_TEXTURE = new Texture(-1, "", {})
+ResourceLoader.EMPTY_TEXTURE = new Texture(ResourceLoader.COPY_ID, "", {})
 
 ResourceLoader.DEFAULT = {
     TEXTURE_TYPE: ".png",
     AUDIO_TYPE: ".mp3"
 };
 
-ResourceLoader.prototype.freeColorCopiedTextures = function() {
-    for(const textureName in this.copyTextures) {
-        for(let i = 0; i < this.textures.length; i++) {
-            if(this.textures[i].id === this.copyTextures[textureName]) {
-                this.textures[i].clear();
-                this.textures[i] = this.textures[this.textures.length - 1];
-                this.textures.pop();
-                break;
-            }
-        }
+ResourceLoader.prototype.getCopyTexture = function(textureName) {
+    const texture = this.copyTextures[textureName];
+
+    if(!texture) {
+        return null;
     }
+
+    return texture;
+}
+
+ResourceLoader.prototype.freeCopyTextures = function() {
+    for(const textureName in this.copyTextures) {
+        this.copyTextures[textureName].clear();
+    }
+
+    this.copyTextures = {};
 }
 
 ResourceLoader.prototype.createCopyTexture = function(textureName, texture) {
     if(this.copyTextures[textureName] !== undefined) {
-        return this.getTextureByID(this.copyTextures[textureName]);
+        return this.copyTextures[textureName];
     }
 
     const { regions } = texture;
-    const textureID = this.nextID++;
-    const newTexture = new Texture(textureID, textureName, regions);
+    const newTexture = new Texture(ResourceLoader.COPY_ID, textureName, regions);
 
-    newTexture.isCopy = true;
-
-    this.textures.push(newTexture);
-    this.copyTextures[textureName] = textureID;
+    this.copyTextures[textureName] = newTexture;
 
     return newTexture;
 }
@@ -83,9 +86,11 @@ ResourceLoader.prototype.createTextures = function(textures) {
 }
 
 ResourceLoader.prototype.getTextureByID = function(id) {
-    for(let i = 0; i < this.textures.length; i++) {
-        if(this.textures[i].id === id) {
-            return this.textures[i];
+    if(id !== ResourceLoader.COPY_ID) {
+        for(let i = 0; i < this.textures.length; i++) {
+            if(this.textures[i].id === id) {
+                return this.textures[i];
+            }
         }
     }
 
@@ -107,11 +112,13 @@ ResourceLoader.prototype.createAudio = function() {
 }
 
 ResourceLoader.prototype.destroyTexture = function(id) {
-    for(let i = 0; i < this.textures.length; i++) {
-        if(this.textures[i].id === id) {
-            this.textures[i] = this.textures[this.textures.length -1];
-            this.textures.pop();
-            break;
+    if(id !== ResourceLoader.COPY_ID) {
+        for(let i = 0; i < this.textures.length; i++) {
+            if(this.textures[i].id === id) {
+                this.textures[i] = this.textures[this.textures.length -1];
+                this.textures.pop();
+                break;
+            }
         }
     }
 }   
@@ -119,7 +126,7 @@ ResourceLoader.prototype.destroyTexture = function(id) {
 ResourceLoader.prototype.loadTexture = function(id) {
     const texture = this.getTextureByID(id);
 
-    if(texture && texture.state === Texture.STATE.EMPTY && !texture.isCopy) {
+    if(texture && texture.state === Texture.STATE.EMPTY) {
         texture.requestBitmap()
         .then((result) => this.events.emit(ResourceLoader.EVENT.TEXTURE_LOADED, texture, result))
         .catch((error) => this.events.emit(ResourceLoader.EVENT.TEXTURE_ERROR, texture, error));
