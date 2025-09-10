@@ -4,9 +4,9 @@ import { clampValue, loopValue } from "../../math/math.js";
 import { SHAPE } from "../../math/constants.js";
 import { Brush } from "./brush.js";
 import { ButtonHandler } from "./buttonHandler.js";
-import { getRGBAString } from "../../graphics/helpers.js";
 import { PalletButton } from "./palletButton.js";
 import { Pallet } from "./pallet.js";
+import { ColorHelper } from "../../graphics/colorHelper.js";
 
 export const MapEditorController = function(mapEditor) {
     this.editor = mapEditor;
@@ -79,7 +79,7 @@ MapEditorController.prototype.initUI = function(gameContext) {
         const container = editorInterface.getElement(id);
 
         container.drawBackground = true;
-        container.backgroundColor = getRGBAString(20, 20, 20, 128);
+        container.backgroundColor = ColorHelper.getRGBAString(20, 20, 20, 128);
     });
 }
 

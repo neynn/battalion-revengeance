@@ -1,4 +1,4 @@
-import { getRGBAString } from "../../graphics/helpers.js";
+import { ColorHelper } from "../../graphics/colorHelper.js";
 import { SHAPE } from "../../math/constants.js";
 import { UICollider } from "../uiCollider.js";
 import { UIElement } from "../uiElement.js";
@@ -9,8 +9,8 @@ export const Container = function(DEBUG_NAME) {
     this.collider = new UICollider();
     this.drawBackground = false;
     this.drawOutline = true;
-    this.backgroundColor = getRGBAString(255, 255, 255, 255);
-    this.outlineColor = getRGBAString(255, 255, 255, 255);
+    this.backgroundColor = ColorHelper.getRGBAString(255, 255, 255, 255);
+    this.outlineColor = ColorHelper.getRGBAString(255, 255, 255, 255);
     this.outlineSize = 1;
 } 
 

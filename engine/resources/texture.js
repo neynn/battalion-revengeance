@@ -1,4 +1,4 @@
-import { ColorHelper } from "../sprite/colorHelper.js";
+import { ColorHelper } from "../graphics/colorHelper.js";
 
 export const Texture = function(id, path, regions) {
     this.id = id;

@@ -16,7 +16,7 @@ export const SpriteHelper = {
         const aliasID = SpriteHelper.getSchemaID(spriteID, schemaID);
 
         if(schemaType) {
-            spriteManager.createCopyContainer(spriteID, schemaID, schemaType);
+            spriteManager.createCopyTexture(spriteID, schemaID, schemaType);
         }
 
         return spriteManager.createSprite(aliasID, layerID);

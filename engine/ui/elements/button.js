@@ -1,4 +1,4 @@
-import { getRGBAString } from "../../graphics/helpers.js";
+import { ColorHelper } from "../../graphics/colorHelper.js";
 import { SHAPE } from "../../math/constants.js";
 import { UICollider } from "../uiCollider.js";
 import { UIElement } from "../uiElement.js";
@@ -11,9 +11,9 @@ export const Button = function(DEBUG_NAME) {
     this.drawBackground = false;
     this.drawHighlight = false;
     this.drawOutline = true;
-    this.backgroundColor = getRGBAString(0, 0, 0, 0);
-    this.highlightColor = getRGBAString(200, 200, 200, 64);
-    this.outlineColor = getRGBAString(255, 255, 255, 255);
+    this.backgroundColor = ColorHelper.getRGBAString(0, 0, 0, 0);
+    this.highlightColor = ColorHelper.getRGBAString(200, 200, 200, 64);
+    this.outlineColor = ColorHelper.getRGBAString(255, 255, 255, 255);
     this.outlineSize = 1;
 
     this.collider.events.on(UICollider.EVENT.FIRST_COLLISION, (mouseX, mouseY, mouseRange) => this.drawHighlight = true, { permanent: true });

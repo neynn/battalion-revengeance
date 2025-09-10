@@ -5,7 +5,6 @@ import { SpriteContainer } from "./spriteContainer.js";
 import { ResourceLoader } from "../resources/resourceLoader.js";
 import { SpriteHelper } from "./spriteHelper.js";
 import { Texture } from "../resources/texture.js";
-import { SpriteEntry } from "./spriteEntry.js";
 
 export const SpriteManager = function(resourceLoader) {
     this.resources = resourceLoader;
@@ -31,17 +30,25 @@ SpriteManager.LAYER = {
     UI: 3
 };
 
+SpriteManager.prototype.addSpriteEntry = function(spriteID, containerIndex, textureID, alias = "::") {
+    this.spriteMap.set(spriteID, {
+        "index": containerIndex,
+        "textureID": textureID,
+        "copyAlias": alias
+    });
+}
+
 SpriteManager.prototype.createSpriteAlias = function(spriteID, schemaID) {
     const index = this.getContainerIndex(spriteID);
     const container = this.getContainer(index);
     const aliasID = SpriteHelper.getSchemaID(spriteID, schemaID);
 
     if(container && !this.spriteMap.has(aliasID)) {
-        this.spriteMap.set(aliasID, new SpriteEntry(index, container.texture.getID(), null));
+        this.addSpriteEntry(aliasID, index, container.texture.getID());
     }
 }
 
-SpriteManager.prototype.createCopyContainer = function(spriteID, schemaID, schema) {
+SpriteManager.prototype.createCopyTexture = function(spriteID, schemaID, schema) {
     const index = this.getContainerIndex(spriteID);
     const container = this.getContainer(index);
     const aliasID = SpriteHelper.getSchemaID(spriteID, schemaID);
@@ -52,7 +59,7 @@ SpriteManager.prototype.createCopyContainer = function(spriteID, schemaID, schem
         const texureAlias = SpriteHelper.getSchemaID(texture.getID(), schemaID);
         const copyTexture = this.resources.createCopyTexture(texureAlias, texture);
 
-        this.spriteMap.set(aliasID, new SpriteEntry(index, copyTexture.getID(), texureAlias));
+        this.addSpriteEntry(aliasID, index, copyTexture.getID(), texureAlias);
 
         if(copyTexture.state === Texture.STATE.EMPTY) {
             switch(texture.state) {
@@ -106,7 +113,7 @@ SpriteManager.prototype.load = function(textures, sprites) {
         }
 
         this.containers.push(spriteContainer);
-        this.spriteMap.set(spriteID, new SpriteEntry(this.containers.length - 1, textureID, null));
+        this.addSpriteEntry(spriteID, this.containers.length - 1, textureID);
     }
 }
 
@@ -172,7 +179,7 @@ SpriteManager.prototype.getContainerIndex = function(spriteID) {
         return -1;
     }
 
-    const { index, textureID } = data;
+    const { index } = data;
 
     return index;
 }
@@ -181,7 +188,7 @@ SpriteManager.prototype.loadBitmap = function(spriteID) {
     const data = this.spriteMap.get(spriteID);
 
     if(data) {
-        const { index, textureID } = data;
+        const { textureID } = data;
 
         this.resources.loadTexture(textureID);
     }

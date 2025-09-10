@@ -1,7 +1,7 @@
-import { getRGBAString, getRGBAStringByArray } from "./helpers.js";
+import { ColorHelper } from "./colorHelper.js";
 
 export const TextStyle = function() {
-    this.color = getRGBAString(0, 0, 0, 255);
+    this.color = ColorHelper.getRGBAString(0, 0, 0, 255);
     this.fontSize = TextStyle.DEFAULT.FONT_SIZE;
     this.fontType = TextStyle.DEFAULT.FONT_TYPE;
     this.baseline = TextStyle.TEXT_BASELINE.MIDDLE;
@@ -72,11 +72,11 @@ TextStyle.prototype.apply = function(context) {
 }
 
 TextStyle.prototype.setColor = function(r, g, b, a) {
-    this.color = getRGBAString(r, g, b, a);
+    this.color = ColorHelper.getRGBAString(r, g, b, a);
 }
 
 TextStyle.prototype.setColorArray = function(color) {
     if(color) {
-        this.color = getRGBAStringByArray(color);
+        this.color = ColorHelper.getRGBAStringByArray(color);
     }
 }
