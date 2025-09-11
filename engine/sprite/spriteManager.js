@@ -65,15 +65,11 @@ SpriteManager.prototype.createCopyTexture = function(spriteID, schemaID, schema)
             switch(texture.state) {
                 case Texture.STATE.EMPTY: {
                     this.resources.loadTexture(textureID);
-                    this.resources.events.on(ResourceLoader.EVENT.TEXTURE_LOADED, (texture, bitmap) => {
-                        copyTexture.loadColoredBitmap(bitmap, schema);
-                    }, { once: true });
+                    this.resources.addLoadResolver(textureID, (bitmap) => copyTexture.loadColoredBitmap(bitmap, schema));
                     break;
                 }
                 case Texture.STATE.LOADING: {
-                    this.resources.events.on(ResourceLoader.EVENT.TEXTURE_LOADED, (texture, bitmap) => {
-                        copyTexture.loadColoredBitmap(bitmap, schema);
-                    }, { once: true });
+                    this.resources.addLoadResolver(textureID, (bitmap) => copyTexture.loadColoredBitmap(bitmap, schema));
                     break;
                 }
                 case Texture.STATE.LOADED: {

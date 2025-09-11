@@ -1,3 +1,4 @@
+import { getRandomElement } from "../../engine/math/math.js";
 import { SpriteHelper } from "../../engine/sprite/spriteHelper.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { BattalionEntity } from "./battalionEntity.js";
@@ -116,7 +117,7 @@ export const EntityHelper = {
         const { id, type, x, y } = config;
         const entity = entityManager.createEntity((entityID, entityType) => {
             const entitySprite = new BattalionSprite();
-            const sprite = SpriteHelper.createColoredSprite(gameContext, "scorpion_tank_fire_right", "PURPLE", SCHEMAS, SpriteManager.LAYER.MIDDLE);
+            const sprite = SpriteHelper.createColoredSprite(gameContext, getRandomElement(["scorpion_tank_fire_right", "scorpion_tank_idle_right"]), "GOLD", SCHEMAS, SpriteManager.LAYER.MIDDLE);
             const spawnPosition = transform2D.transformTileToWorld(x, y);
             const entityObject = new BattalionEntity(entityID, entityType, entitySprite);
 
@@ -131,7 +132,7 @@ export const EntityHelper = {
     debugEntities: function(gameContext) {
         for(let i = 0; i < 20; i++) {
             for(let j = 0; j < 20; j++) {
-                EntityHelper.createEntity(gameContext, EntityHelper.createEntityConfig("tank", j, i));
+                EntityHelper.createEntity(gameContext, EntityHelper.createEntityConfig("scorpion_tank", j, i));
             }
         }
     }

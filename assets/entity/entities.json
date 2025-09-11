@@ -1,6 +1,15 @@
 {
-    "tank": {
-        "id": "tank",
-        "sprites": {}
+    "scorpion_tank": {
+        "id": "scorpion_tank",
+        "sprites": {
+            "idle_right": "scorpion_tank_idle_right",
+            "idle_left": "scorpion_tank_idle_left",
+            "idle_down": "scorpion_tank_idle_down",
+            "idle_up": "scorpion_tank_idle_up",
+            "fire_right": "scorpion_tank_fire_right",
+            "fire_left": "scorpion_tank_fire_left",
+            "fire_down": "scorpion_tank_fire_down",
+            "fire_up": "scorpion_tank_fire_up"
+        }
     }
 }
