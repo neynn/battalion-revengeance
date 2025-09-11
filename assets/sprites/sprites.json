@@ -1,26 +1,66 @@
 {
-    "tank_idle_right": {
-        "texture": "tank",
+    "scorpion_tank_idle_right": {
+        "texture": "scorpion_tank",
         "bounds": {"x": 0,"y":0,"w":56,"h":56},
         "frameTime": 0.4,
         "frames": ["1","7","13","19"]
     },
-    "tank_idle_down": {
-        "texture": "tank",
+    "scorpion_tank_idle_down": {
+        "texture": "scorpion_tank",
         "bounds": {"x": 0,"y":0,"w":56,"h":56},
         "frameTime": 0.4,
         "frames": ["2","8","14","20"]
     },
-    "tank_idle_left": {
-        "texture": "tank",
+    "scorpion_tank_idle_left": {
+        "texture": "scorpion_tank",
         "bounds": {"x": 0,"y":0,"w":56,"h":56},
         "frameTime": 0.4,
         "frames": ["3","9","15","21"]
     },
-    "tank_idle_up": {
-        "texture": "tank",
-        "bounds": {"x": 0,"y":0,"w":56,"h":56},
+    "scorpion_tank_idle_up": {
+        "texture": "scorpion_tank",
+        "bounds": {"x":0,"y":0,"w":56,"h":56},
         "frameTime": 0.4,
         "frames": ["4","10","16","22"]
+    },
+    "scorpion_tank_fire_right": {
+        "texture": "scorpion_tank_fire",
+        "bounds": {"x":-44,"y":-44,"w":144,"h":144},
+        "frameTime": 0.1,
+        "autoFrames": {
+            "start": 1,
+            "jump": 4,
+            "repeat": 8
+        }
+    },
+    "scorpion_tank_fire_down": {
+        "texture": "scorpion_tank_fire",
+        "bounds": {"x":-44,"y":-44,"w":144,"h":144},
+        "frameTime": 0.1,
+        "autoFrames": {
+            "start": 2,
+            "jump": 4,
+            "repeat": 8
+        }
+    },
+    "scorpion_tank_fire_left": {
+        "texture": "scorpion_tank_fire",
+        "bounds": {"x":-44,"y":-44,"w":144,"h":144},
+        "frameTime": 0.1,
+        "autoFrames": {
+            "start": 3,
+            "jump": 4,
+            "repeat": 8
+        }
+    },
+    "scorpion_tank_fire_up": {
+        "texture": "scorpion_tank_fire",
+        "bounds": {"x":-44,"y":-44,"w":144,"h":144},
+        "frameTime": 0.1,
+        "autoFrames": {
+            "start": 4,
+            "jump": 4,
+            "repeat": 8
+        }
     }
 }

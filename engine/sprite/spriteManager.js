@@ -95,17 +95,23 @@ SpriteManager.prototype.load = function(textures, sprites) {
     
     for(const spriteID in sprites) {
         const spriteConfig = sprites[spriteID];
-        const { texture, bounds, frameTime, frames } = spriteConfig;
+        const { texture, bounds, frameTime, frames, autoFrames } = spriteConfig;
         const textureID = textureMap[texture];
 
-        if(textureID === undefined || !frames) {
+        if(textureID === undefined || (!frames && !autoFrames)) {
             console.warn(`Texture ${texture} of sprite ${spriteID} does not exist!`);
             continue;
         }
 
+        let frameCount = 0;
         const textureObject = this.resources.getTextureByID(textureID);
         const spriteContainer = new SpriteContainer(textureObject, bounds, frameTime);
-        const frameCount = spriteContainer.initFrames(frames);
+
+        if(autoFrames) {
+            frameCount = spriteContainer.initAutoFrames(autoFrames);
+        } else {
+            frameCount = spriteContainer.initFrames(frames);
+        }
 
         if(frameCount === 0) {
             console.warn(`Sprite ${spriteID} has no frames!`);

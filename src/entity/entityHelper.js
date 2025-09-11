@@ -116,9 +116,9 @@ export const EntityHelper = {
         const { id, type, x, y } = config;
         const entity = entityManager.createEntity((entityID, entityType) => {
             const entitySprite = new BattalionSprite();
-            const sprite = SpriteHelper.createColoredSprite(gameContext, "tank_idle_left", "PURPLE", SCHEMAS, SpriteManager.LAYER.MIDDLE);
+            const sprite = SpriteHelper.createColoredSprite(gameContext, "scorpion_tank_fire_right", "PURPLE", SCHEMAS, SpriteManager.LAYER.MIDDLE);
             const spawnPosition = transform2D.transformTileToWorld(x, y);
-            const entityObject = new BattalionEntity(entityID, entitySprite);
+            const entityObject = new BattalionEntity(entityID, entityType, entitySprite);
 
             sprite.addChild(entitySprite);
             entityObject.setSpritePosition(spawnPosition);

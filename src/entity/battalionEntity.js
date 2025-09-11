@@ -1,10 +1,11 @@
 import { Entity } from "../../engine/entity/entity.js";
 
-export const BattalionEntity = function(id, sprite) {
-    Entity.call(this, id, "BATTALION");
+export const BattalionEntity = function(id, config, sprite) {
+    Entity.call(this, id, "");
 
     this.tileX = -1;
     this.tileY = -1;
+    this.config = config;
     this.sprite = sprite;
 }
 
