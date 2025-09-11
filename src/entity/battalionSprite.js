@@ -1,4 +1,4 @@
-import { Graph } from "../../engine/graphics/graph"
+import { Graph } from "../../engine/graphics/graph.js";
 
 export const BattalionSprite = function() {
     Graph.call(this);

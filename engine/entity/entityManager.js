@@ -119,25 +119,26 @@ EntityManager.prototype.getEntity = function(entityID) {
     return null;
 }
 
-EntityManager.prototype.createEntity = function(onCreate, externalID) {
+EntityManager.prototype.createEntity = function(onCreate, typeID, externalID) {
     const entityID = externalID !== undefined ? externalID : this.nextID++;
 
-    if(this.entityMap.has(entityID)) {
-        return null;
+    if(!this.entityMap.has(entityID)) {
+        const entityType = this.getEntityType(typeID);
+
+        if(entityType) {
+            const entity = onCreate(entityID, entityType);
+
+            if(entity) {
+                this.entityMap.set(entityID, this.entities.length);
+                this.entities.push(entity);
+                this.events.emit(EntityManager.EVENT.ENTITY_CREATE, entityID, entity);
+
+                return entity;
+            }
+        }
     }
 
-    const entity = onCreate(entityID);
-
-    if(!entity) {
-        Logger.log(Logger.CODE.ENGINE_ERROR, "Factory has not returned an entity!", "EntityManager.prototype.createEntity", { "id": entityID, "config": config });
-        return null;
-    }
-
-    this.entityMap.set(entityID, this.entities.length);
-    this.entities.push(entity);
-    this.events.emit(EntityManager.EVENT.ENTITY_CREATE, entityID, entity);
-
-    return entity;
+    return null;
 }
 
 EntityManager.prototype.destroyEntity = function(index) {

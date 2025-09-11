@@ -8,8 +8,8 @@ export const Entity = function(id, DEBUG_NAME = "") {
 }
 
 Entity.FLAG = {
-    NONE: 1 << 0,
-    DESTROY: 1 << 1
+    NONE: 0,
+    DESTROY: 1 << 0
 };
 
 Entity.DEBUG = {
