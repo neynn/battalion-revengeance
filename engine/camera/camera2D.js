@@ -255,6 +255,20 @@ Camera2D.prototype.drawSpriteBatchYSorted = function(display, spriteBatch, realT
     }
 }
 
+Camera2D.prototype.drawTilesWithCallback = function(onDraw) {
+    for(let i = this.startY; i <= this.endY; i++) {
+        const renderY = i * this.tileHeight - this.screenY;
+        const tileRow = i * this.mapWidth;
+
+        for(let j = this.startX; j <= this.endX; j++) {
+            const renderX = j * this.tileWidth - this.screenX;
+            const index = tileRow + j;
+
+            onDraw(j, i, index, renderX, renderY);
+        }
+    }
+}
+
 Camera2D.prototype.drawBufferData = function(context, buffer, offsetX, offsetY) {
     const drawX = Math.floor(offsetX - this.screenX);
     const drawY = Math.floor(offsetY - this.screenY);

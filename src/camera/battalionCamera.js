@@ -40,22 +40,27 @@ BattalionCamera.prototype.update = function(gameContext, display) {
 }
 
 BattalionCamera.prototype.debugMap = function(context, worldMap) {
-    const scaleX = this.tileWidth / 6;
-    const scaleY = this.tileHeight / 6;
+    const scaleX = Math.floor(this.tileWidth / 6);
+    const scaleY = Math.floor(this.tileHeight / 6);
+    const flagBuffer = worldMap.getLayer(BattalionMap.LAYER.FLAG).buffer;
+    const teamBuffer = worldMap.getLayer(BattalionMap.LAYER.TEAM).buffer;
+    const groundBuffer = worldMap.getLayer(BattalionMap.LAYER.GROUND).buffer;
 
     context.globalAlpha = 1;
     context.font = `${scaleX}px Arial`;
     context.textBaseline = "middle";
-    context.textAlign = "center";
+    context.textAlign = "left";
 
-    context.fillStyle = "#ff0000";
-    this.drawBufferData(context, worldMap.getLayer(BattalionMap.LAYER.FLAG).buffer, scaleX, scaleY);
-
-    context.fillStyle = "#00ff00";
-    this.drawBufferData(context, worldMap.getLayer(BattalionMap.LAYER.TEAM).buffer, this.tileWidth - scaleX, scaleY);
-
-    context.fillStyle = "#ffff00";
-    this.drawBufferData(context, worldMap.getLayer(BattalionMap.LAYER.GROUND).buffer, this.tileWidth - scaleX, this.tileHeight - scaleY);
+    this.drawTilesWithCallback((tileX, tileY, index, renderX, renderY) => {
+        context.fillStyle = "#ff0000";
+        context.fillText(flagBuffer[index], renderX + scaleX, renderY + scaleY);
+        context.fillStyle = "#00ff00";
+        context.fillText(teamBuffer[index], renderX + this.tileWidth - scaleX, renderY + scaleY);
+        context.fillStyle = "#ffff00";
+        context.fillText(groundBuffer[index], renderX + this.tileWidth - scaleX, renderY + this.tileHeight - scaleY);
+        context.fillStyle = "#0000ff";
+        context.fillText(`${tileX} | ${tileY}`, renderX + scaleX, renderY + this.tileHeight - scaleY);
+    });
 
     this.drawMapOutlines(context);
 }
