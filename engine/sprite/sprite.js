@@ -52,8 +52,8 @@ Sprite.prototype.onDraw = function(display, localX, localY) {
     const currentFrame = this.frames[this.currentFrame];
     const isFlipped = (this.flags & Sprite.FLAG.FLIP) !== 0;
 
-    let renderX = localX;
-    let renderY = localY;
+    let renderX = 0;
+    let renderY = 0;
 
     if(isFlipped) {
         renderX = (localX - this.boundsX) * -1;
@@ -87,23 +87,21 @@ Sprite.prototype.onDebug = function(display, localX, localY) {
     context.fillStyle = Sprite.DEBUG.COLOR;
     context.lineWidth = Sprite.DEBUG.LINE_SIZE;
 
+    let renderX = 0;
+    let renderY = 0;
+
     if(isFlipped) {
-        const drawX = localX - this.boundsX;
-        const drawY = localY + this.boundsY;
-
+        renderX = (localX - this.boundsX) * -1;
+        renderY = localY + this.boundsY;
         display.flip();
-
-        context.strokeRect(-drawX, drawY, this.boundsW, this.boundsH);
-        context.fillRect(-drawX - Sprite.DEBUG.DOT_SIZE_HALF, drawY - Sprite.DEBUG.DOT_SIZE_HALF, Sprite.DEBUG.DOT_SIZE, Sprite.DEBUG.DOT_SIZE);
     } else {
-        const drawX = localX + this.boundsX;
-        const drawY = localY + this.boundsY;
-
+        renderX = localX + this.boundsX;
+        renderY = localY + this.boundsY;
         display.unflip();
-
-        context.strokeRect(drawX, drawY, this.boundsW, this.boundsH);
-        context.fillRect(drawX - Sprite.DEBUG.DOT_SIZE_HALF, drawY - Sprite.DEBUG.DOT_SIZE_HALF, Sprite.DEBUG.DOT_SIZE, Sprite.DEBUG.DOT_SIZE);
     }
+
+    context.strokeRect(renderX, renderY, this.boundsW, this.boundsH);
+    context.fillRect(renderX - Sprite.DEBUG.DOT_SIZE_HALF, renderY - Sprite.DEBUG.DOT_SIZE_HALF, Sprite.DEBUG.DOT_SIZE, Sprite.DEBUG.DOT_SIZE);
 }
 
 Sprite.prototype.drawPlaceholder = function(display, localX, localY) {
