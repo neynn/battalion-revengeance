@@ -226,6 +226,8 @@ CameraContext.prototype.update = function(gameContext, display) {
             const { context } = display;
             const { canvas, width, height } = this.display;
             const { viewportWidth, viewportHeight } = this.camera;
+            const scaledWidth = Math.floor(viewportWidth * this.scale);
+            const scaledHeight = Math.floor(viewportHeight * this.scale);
 
             this.display.clear();
             this.camera.update(gameContext, this.display);
@@ -233,7 +235,7 @@ CameraContext.prototype.update = function(gameContext, display) {
             context.drawImage(
                 canvas,
                 0, 0, width, height,
-                this.positionX, this.positionY, viewportWidth * this.scale, viewportHeight * this.scale
+                this.positionX, this.positionY, scaledWidth, scaledHeight
             );
             break;
         }

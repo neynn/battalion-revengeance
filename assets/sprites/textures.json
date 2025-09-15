@@ -1,6 +1,6 @@
 {
     "scorpion_tank": {
-        "directory":  ["assets","sprites"],
+        "directory":  ["assets","sprites","textures"],
         "source": "scorpion_tank.png",
         "autoRegions": {
             "startX": 1,
@@ -12,7 +12,7 @@
         }
     },
     "scorpion_tank_fire": {
-        "directory":  ["assets","sprites"],
+        "directory":  ["assets","sprites","textures"],
         "source": "scorpion_tank_fire.png",
         "autoRegions": {
             "startX": 1,
@@ -24,7 +24,7 @@
         }
     },
     "condor_bomber": {
-        "directory":  ["assets","sprites"],
+        "directory":  ["assets","sprites","textures"],
         "source": "condor_bomber.png",
         "autoRegions": {
             "startX": 1,
@@ -36,7 +36,7 @@
         }
     },
     "condor_bomber_fire": {
-        "directory":  ["assets","sprites"],
+        "directory":  ["assets","sprites","textures"],
         "source": "condor_bomber_fire.png",
         "autoRegions": {
             "startX": 1,
@@ -48,7 +48,7 @@
         }
     },
     "annihilator_tank": {
-        "directory":  ["assets","sprites"],
+        "directory":  ["assets","sprites","textures"],
         "source": "annihilator_tank.png",
         "autoRegions": {
             "startX": 1,
@@ -60,7 +60,7 @@
         }
     },
     "annihilator_tank_fire": {
-        "directory":  ["assets","sprites"],
+        "directory":  ["assets","sprites","textures"],
         "source": "annihilator_tank_fire.png",
         "autoRegions": {
             "startX": 1,
@@ -71,8 +71,416 @@
             "columns": 4
         }
     },
+    "battle_cruiser": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "battle_cruiser.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 112,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "battle_cruiser_fire": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "battle_cruiser_fire.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 144,
+            "frameHeight": 144, 
+            "rows": 8,
+            "columns": 4
+        }
+    },
+    "corvette_fighter": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "corvette_fighter.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 112,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "corvette_fighter_fire": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "corvette_fighter_fire.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 144,
+            "frameHeight": 144, 
+            "rows": 8,
+            "columns": 4
+        }
+    },
+    "flak_tank": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "flak_tank.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 112,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "flak_tank_fire": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "flak_tank_fire.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 144,
+            "frameHeight": 144, 
+            "rows": 10,
+            "columns": 4
+        }
+    },
+    "heavy_commando": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "heavy_commando.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "heavy_commando_fire": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "heavy_commando_fire.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 144,
+            "frameHeight": 144, 
+            "rows": 14,
+            "columns": 4
+        }
+    },
+    "hunter_support": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "hunter_support.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 112,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "hunter_support_fire": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "hunter_support_fire.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 144,
+            "frameHeight": 144, 
+            "rows": 16,
+            "columns": 4
+        }
+    },
+    "intrepid": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "intrepid.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "intrepid_fire": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "intrepid_fire.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 144,
+            "frameHeight": 144, 
+            "rows": 10,
+            "columns": 4
+        }
+    },
+    "lancer_tank": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "lancer_tank.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "lancer_tank_fire": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "lancer_tank_fire.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 144,
+            "frameHeight": 144, 
+            "rows": 8,
+            "columns": 4
+        }
+    },
+    "mortar_truck": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "mortar_truck.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 112,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "mortar_truck_fire": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "mortar_truck_fire.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 144,
+            "frameHeight": 144, 
+            "rows": 8,
+            "columns": 4
+        }
+    },
+    "raptor_fighter": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "raptor_fighter.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 112,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "raptor_fighter_fire": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "raptor_fighter_fire.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 144,
+            "frameHeight": 144, 
+            "rows": 12,
+            "columns": 4
+        }
+    },
+    "rocket_truck": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "rocket_truck.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 112,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "rocket_truck_fire": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "rocket_truck_fire.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 144,
+            "frameHeight": 144, 
+            "rows": 14,
+            "columns": 4
+        }
+    },
+    "spider_tank": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "spider_tank.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "spider_tank_fire": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "spider_tank_fire.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 144,
+            "frameHeight": 144, 
+            "rows": 8,
+            "columns": 4
+        }
+    },
+    "stealth_tank": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "stealth_tank.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "stealth_tank_fire": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "stealth_tank_fire.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 144,
+            "frameHeight": 144, 
+            "rows": 8,
+            "columns": 4
+        }
+    },
+    "strike_commando": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "strike_commando.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "strike_commando_fire": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "strike_commando_fire.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 144,
+            "frameHeight": 144, 
+            "rows": 8,
+            "columns": 4
+        }
+    },
+    "turret": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "turret.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 112,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "turret_fire": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "turret_fire.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 144,
+            "frameHeight": 144, 
+            "rows": 8,
+            "columns": 4
+        }
+    },
+    "u_boat": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "u_boat.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 112,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "u_boat_fire": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "u_boat_fire.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 144,
+            "frameHeight": 144, 
+            "rows": 10,
+            "columns": 4
+        }
+    },
+    "vulture_drone": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "vulture_drone.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 112,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "vulture_drone_fire": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "vulture_drone_fire.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 144,
+            "frameHeight": 144, 
+            "rows": 12,
+            "columns": 4
+        }
+    },
+    "warmachine": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "warmachine.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 112,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "warmachine_fire": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "warmachine_fire.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 144,
+            "frameHeight": 144, 
+            "rows": 14,
+            "columns": 4
+        }
+    },
     "albatross_transport": {
-        "directory":  ["assets","sprites"],
+        "directory":  ["assets","sprites","textures"],
         "source": "albatross_transport.png",
         "autoRegions": {
             "startX": 1,
@@ -82,18 +490,41 @@
             "rows": 4,
             "columns": 4
         }
+    }, 
+    "leviathan_barge": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "leviathan_barge.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 112,
+            "rows": 4,
+            "columns": 4
+        }
     },
-    "blue_elite_battletank_idle": {
-        "directory": ["assets","sprites"],
-        "source": "blue_elite_battletank_idle.png",
-        "regions": {
-            "0": {"x":0,"y":0,"w":112,"h":89},
-            "1": {"x":112,"y":0,"w":112,"h":89},
-            "2": {"x":224,"y":0,"w":112,"h":89},
-            "3": {"x":336,"y":0,"w":112,"h":89},
-            "4": {"x":0,"y":89,"w":112,"h":89},
-            "5": {"x":112,"y":89,"w":112,"h":89},
-            "6": {"x":224,"y":89,"w":112,"h":89}
+    "jammer_truck": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "jammer_truck.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 112,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "blockade": {
+        "directory":  ["assets","sprites","textures"],
+        "source": "blockade.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 4,
+            "columns": 4
         }
     }
 }

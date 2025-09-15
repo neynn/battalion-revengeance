@@ -130,10 +130,12 @@ export const EntityHelper = {
         return entity;
     },
     debugEntities: function(gameContext) {
+        const NAME = "stealth_tank";
+
         for(let i = 0; i < 1; i++) {
             for(let j = 0; j < 1; j++) {
-                EntityHelper.createEntity(gameContext, EntityHelper.createEntityConfig("scorpion_tank", 3, 3), "albatross_transport_idle_right");
-                EntityHelper.createEntity(gameContext, EntityHelper.createEntityConfig("scorpion_tank", 5, 3), "blue_elite_battletank_idle");
+                EntityHelper.createEntity(gameContext, EntityHelper.createEntityConfig("scorpion_tank", 3, 3), NAME + "_idle_right");
+                EntityHelper.createEntity(gameContext, EntityHelper.createEntityConfig("scorpion_tank", 5, 3), NAME + "_fire_right");
             }
         }
     }
