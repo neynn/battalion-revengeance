@@ -11,5 +11,18 @@
             "fire_down": "scorpion_tank_fire_down",
             "fire_up": "scorpion_tank_fire_up"
         }
+    },
+    "condor_bomber": {
+        "id": "condor_bomber",
+        "sprites": {
+            "idle_right": "condor_bomber_idle_right",
+            "idle_left": "condor_bomber_idle_left",
+            "idle_down": "condor_bomber_idle_down",
+            "idle_up": "condor_bomber_idle_up",
+            "fire_right": "condor_bomber_fire_right",
+            "fire_left": "condor_bomber_fire_left",
+            "fire_down": "condor_bomber_fire_down",
+            "fire_up": "condor_bomber_fire_up"
+        }
     }
 }

@@ -3,80 +3,168 @@
         "texture": "scorpion_tank",
         "bounds": {"x": 0,"y":0,"w":56,"h":56},
         "frameTime": 0.4,
-        "autoFrames": {
-            "start": 1,
-            "jump": 4,
-            "repeat": 4
-        }
+        "autoFrames": {"start": 1,"jump": 4,"repeat": 4}
     },
     "scorpion_tank_idle_down": {
         "texture": "scorpion_tank",
         "bounds": {"x": 0,"y":0,"w":56,"h":56},
         "frameTime": 0.4,
-        "autoFrames": {
-            "start": 2,
-            "jump": 4,
-            "repeat": 4
-        }
+        "autoFrames": {"start": 2,"jump": 4,"repeat": 4}
     },
     "scorpion_tank_idle_left": {
         "texture": "scorpion_tank",
         "bounds": {"x": 0,"y":0,"w":56,"h":56},
         "frameTime": 0.4,
-        "autoFrames": {
-            "start": 3,
-            "jump": 4,
-            "repeat": 4
-        }
+        "autoFrames": {"start": 3,"jump": 4,"repeat": 4}
     },
     "scorpion_tank_idle_up": {
         "texture": "scorpion_tank",
         "bounds": {"x":0,"y":0,"w":56,"h":56},
         "frameTime": 0.4,
-        "autoFrames": {
-            "start": 4,
-            "jump": 4,
-            "repeat": 4
-        }
+        "autoFrames": {"start": 4,"jump": 4,"repeat": 4}
     },
     "scorpion_tank_fire_right": {
         "texture": "scorpion_tank_fire",
         "bounds": {"x":-44,"y":-44,"w":144,"h":144},
         "frameTime": 0.1,
-        "autoFrames": {
-            "start": 1,
-            "jump": 4,
-            "repeat": 8
-        }
+        "autoFrames": {"start": 1,"jump": 4,"repeat": 8}
     },
     "scorpion_tank_fire_down": {
         "texture": "scorpion_tank_fire",
         "bounds": {"x":-44,"y":-44,"w":144,"h":144},
         "frameTime": 0.1,
-        "autoFrames": {
-            "start": 2,
-            "jump": 4,
-            "repeat": 8
-        }
+        "autoFrames": {"start": 2,"jump": 4,"repeat": 8}
     },
     "scorpion_tank_fire_left": {
         "texture": "scorpion_tank_fire",
         "bounds": {"x":-44,"y":-44,"w":144,"h":144},
         "frameTime": 0.1,
-        "autoFrames": {
-            "start": 3,
-            "jump": 4,
-            "repeat": 8
-        }
+        "autoFrames": {"start": 3,"jump": 4,"repeat": 8}
     },
     "scorpion_tank_fire_up": {
         "texture": "scorpion_tank_fire",
         "bounds": {"x":-44,"y":-44,"w":144,"h":144},
         "frameTime": 0.1,
-        "autoFrames": {
-            "start": 4,
-            "jump": 4,
-            "repeat": 8
-        }
+        "autoFrames": {"start": 4,"jump": 4,"repeat": 8}
+    },
+    "condor_bomber_idle_right": {
+        "texture": "condor_bomber",
+        "bounds": {"x": 0,"y":0,"w":56,"h":112},
+        "frameTime": 0.4,
+        "autoFrames": {"start": 1,"jump": 4,"repeat": 4}
+    },
+    "condor_bomber_idle_down": {
+        "texture": "condor_bomber",
+        "bounds": {"x": 0,"y":0,"w":56,"h":112},
+        "frameTime": 0.4,
+        "autoFrames": {"start": 2,"jump": 4,"repeat": 4}
+    },
+    "condor_bomber_idle_left": {
+        "texture": "condor_bomber",
+        "bounds": {"x": 0,"y":0,"w":56,"h":112},
+        "frameTime": 0.4,
+        "autoFrames": {"start": 3,"jump": 4,"repeat": 4}
+    },
+    "condor_bomber_idle_up": {
+        "texture": "condor_bomber",
+        "bounds": {"x":0,"y":0,"w":56,"h":112},
+        "frameTime": 0.4,
+        "autoFrames": {"start": 4,"jump": 4,"repeat": 4}
+    },
+    "condor_bomber_fire_right": {
+        "texture": "condor_bomber_fire",
+        "bounds": {"x":-44,"y":-44,"w":144,"h":144},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 1,"jump": 4,"repeat": 12}
+    },
+    "condor_bomber_fire_down": {
+        "texture": "condor_bomber_fire",
+        "bounds": {"x":-44,"y":-44,"w":144,"h":144},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 2,"jump": 4,"repeat": 12}
+    },
+    "condor_bomber_fire_left": {
+        "texture": "condor_bomber_fire",
+        "bounds": {"x":-44,"y":-44,"w":144,"h":144},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 3,"jump": 4,"repeat": 12}
+    },
+    "condor_bomber_fire_up": {
+        "texture": "condor_bomber_fire",
+        "bounds": {"x":-44,"y":-44,"w":144,"h":144},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 4,"jump": 4,"repeat": 12}
+    },
+    "annihilator_tank_idle_right": {
+        "texture": "annihilator_tank",
+        "bounds": {"x": 0,"y":-56,"w":56,"h":112},
+        "frameTime": 0.4,
+        "autoFrames": {"start": 1,"jump": 4,"repeat": 4}
+    },
+    "annihilator_tank_idle_down": {
+        "texture": "annihilator_tank",
+        "bounds": {"x": 0,"y":-56,"w":56,"h":112},
+        "frameTime": 0.4,
+        "autoFrames": {"start": 2,"jump": 4,"repeat": 4}
+    },
+    "annihilator_tank_idle_left": {
+        "texture": "annihilator_tank",
+        "bounds": {"x": 0,"y":-56,"w":56,"h":112},
+        "frameTime": 0.4,
+        "autoFrames": {"start": 3,"jump": 4,"repeat": 4}
+    },
+    "annihilator_tank_idle_up": {
+        "texture": "annihilator_tank",
+        "bounds": {"x":0,"y":-56,"w":56,"h":112},
+        "frameTime": 0.4,
+        "autoFrames": {"start": 4,"jump": 4,"repeat": 4}
+    },
+    "annihilator_tank_fire_right": {
+        "texture": "annihilator_tank_fire",
+        "bounds": {"x":-44,"y":-44,"w":144,"h":144},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 1,"jump": 4,"repeat": 8}
+    },
+    "annihilator_tank_fire_down": {
+        "texture": "annihilator_tank_fire",
+        "bounds": {"x":-44,"y":-44,"w":144,"h":144},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 2,"jump": 4,"repeat": 8}
+    },
+    "annihilator_tank_fire_left": {
+        "texture": "annihilator_tank_fire",
+        "bounds": {"x":-44,"y":-44,"w":144,"h":144},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 3,"jump": 4,"repeat": 8}
+    },
+    "annihilator_tank_fire_up": {
+        "texture": "annihilator_tank_fire",
+        "bounds": {"x":-44,"y":-44,"w":144,"h":144},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 4,"jump": 4,"repeat": 8}
+    },
+    "albatross_transport_idle_right": {
+        "texture": "albatross_transport",
+        "bounds": {"x": 0,"y":-56,"w":56,"h":112},
+        "frameTime": 0.4,
+        "autoFrames": {"start": 1,"jump": 4,"repeat": 4}
+    },
+    "albatross_transport_idle_down": {
+        "texture": "albatross_transport",
+        "bounds": {"x": 0,"y":-56,"w":56,"h":112},
+        "frameTime": 0.4,
+        "autoFrames": {"start": 2,"jump": 4,"repeat": 4}
+    },
+    "albatross_transport_idle_left": {
+        "texture": "albatross_transport",
+        "bounds": {"x": 0,"y":-56,"w":56,"h":112},
+        "frameTime": 0.4,
+        "autoFrames": {"start": 3,"jump": 4,"repeat": 4}
+    },
+    "albatross_transport_idle_up": {
+        "texture": "albatross_transport",
+        "bounds": {"x":0,"y":-56,"w":56,"h":112},
+        "frameTime": 0.4,
+        "autoFrames": {"start": 4,"jump": 4,"repeat": 4}
     }
 }

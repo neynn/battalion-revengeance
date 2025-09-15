@@ -51,7 +51,7 @@ Texture.prototype.autoCalcRegions = function(startX, startY, frameWidth, frameHe
         for(let j = 0; j < columns; j++) {
             this.regions[id++] = {
                 "x": startX + j * frameWidth,
-                "y": startY + i * frameWidth,
+                "y": startY + i * frameHeight,
                 "w": frameWidth,
                 "h": frameHeight
             }

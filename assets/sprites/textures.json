@@ -22,5 +22,65 @@
             "rows": 8,
             "columns": 4
         }
+    },
+    "condor_bomber": {
+        "directory":  ["assets","sprites"],
+        "source": "condor_bomber.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 112,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "condor_bomber_fire": {
+        "directory":  ["assets","sprites"],
+        "source": "condor_bomber_fire.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 144,
+            "frameHeight": 144, 
+            "rows": 12,
+            "columns": 4
+        }
+    },
+    "annihilator_tank": {
+        "directory":  ["assets","sprites"],
+        "source": "annihilator_tank.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 112,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "annihilator_tank_fire": {
+        "directory":  ["assets","sprites"],
+        "source": "annihilator_tank_fire.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 144,
+            "frameHeight": 144, 
+            "rows": 12,
+            "columns": 4
+        }
+    },
+    "albatross_transport": {
+        "directory":  ["assets","sprites"],
+        "source": "albatross_transport.png",
+        "autoRegions": {
+            "startX": 1,
+            "startY": 1,
+            "frameWidth": 56,
+            "frameHeight": 112, 
+            "rows": 4,
+            "columns": 4
+        }
     }
 }
