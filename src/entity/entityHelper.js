@@ -111,13 +111,13 @@ export const EntityHelper = {
             "y": tileY
         };
     },
-    createEntity: function(gameContext, config) {
+    createEntity: function(gameContext, config, spriteID) {
         const { world, transform2D } = gameContext;
         const { entityManager } = world;
         const { id, type, x, y } = config;
         const entity = entityManager.createEntity((entityID, entityType) => {
             const entitySprite = new BattalionSprite();
-            const sprite = SpriteHelper.createColoredSprite(gameContext, getRandomElement(["albatross_transport_idle_right"]), getRandomElement(Object.keys(SCHEMAS)), SCHEMAS, SpriteManager.LAYER.MIDDLE);
+            const sprite = SpriteHelper.createColoredSprite(gameContext, spriteID, getRandomElement(Object.keys(SCHEMAS)), SCHEMAS, SpriteManager.LAYER.MIDDLE);
             const spawnPosition = transform2D.transformTileToWorld(x, y);
             const entityObject = new BattalionEntity(entityID, entityType, entitySprite);
 
@@ -132,7 +132,8 @@ export const EntityHelper = {
     debugEntities: function(gameContext) {
         for(let i = 0; i < 1; i++) {
             for(let j = 0; j < 1; j++) {
-                EntityHelper.createEntity(gameContext, EntityHelper.createEntityConfig("scorpion_tank", 3, 3));
+                EntityHelper.createEntity(gameContext, EntityHelper.createEntityConfig("scorpion_tank", 3, 3), "albatross_transport_idle_right");
+                EntityHelper.createEntity(gameContext, EntityHelper.createEntityConfig("scorpion_tank", 5, 3), "blue_elite_battletank_idle");
             }
         }
     }

@@ -42,33 +42,30 @@ Sprite.prototype = Object.create(Graph.prototype);
 Sprite.prototype.constructor = Sprite;
 
 Sprite.prototype.onDraw = function(display, localX, localY) {
-    if(!this.texture || !this.texture.bitmap) {
-        if(Sprite.RENDER_PLACEHOLDER) {
-            this.drawPlaceholder(display, localX, localY);
+    if(this.texture && this.texture.bitmap) {
+        const { context } = display;
+        const currentFrame = this.frames[this.currentFrame];
+        const { x, y, w, h } = currentFrame;
+        const isFlipped = (this.flags & Sprite.FLAG.FLIP) !== 0;
+
+        let renderX = 0;
+        let renderY = 0;
+
+        if(isFlipped) {
+            renderX = this.boundsX - localX;
+            renderY = localY + this.boundsY;
+            display.flip();
+        } else {
+            renderX = localX + this.boundsX;
+            renderY = localY + this.boundsY;
+            display.unflip();
         }
-        return;
+
+        context.drawImage(this.texture.bitmap, x, y, w, h, renderX, renderY, w, h);
+
+    } else if(Sprite.RENDER_PLACEHOLDER) {
+        this.drawPlaceholder(display, localX, localY);
     }
-
-    const currentFrame = this.frames[this.currentFrame];
-    const isFlipped = (this.flags & Sprite.FLAG.FLIP) !== 0;
-
-    let renderX = 0;
-    let renderY = 0;
-
-    if(isFlipped) {
-        renderX = (localX - this.boundsX) * -1;
-        renderY = localY + this.boundsY;
-        display.flip();
-    } else {
-        renderX = localX + this.boundsX;
-        renderY = localY + this.boundsY;
-        display.unflip();
-    }
-
-    const { x, y, w, h } = currentFrame;
-    const { context } = display;
-
-    context.drawImage(this.texture.bitmap, x, y, w, h, renderX, renderY, w, h);
 }
 
 Sprite.prototype.onUpdate = function(timestamp, deltaTime) {
@@ -83,25 +80,28 @@ Sprite.prototype.onDebug = function(display, localX, localY) {
     const { context } = display;
     const isFlipped = (this.flags & Sprite.FLAG.FLIP) !== 0;
 
-    context.strokeStyle = Sprite.DEBUG.COLOR;
-    context.fillStyle = Sprite.DEBUG.COLOR;
-    context.lineWidth = Sprite.DEBUG.LINE_SIZE;
-
     let renderX = 0;
     let renderY = 0;
+    let pivotX = 0;
 
     if(isFlipped) {
-        renderX = (localX - this.boundsX) * -1;
+        renderX = this.boundsX - localX;
         renderY = localY + this.boundsY;
+        pivotX = 0 - localX;
         display.flip();
     } else {
         renderX = localX + this.boundsX;
         renderY = localY + this.boundsY;
+        pivotX = localX;
         display.unflip();
     }
 
+    context.strokeStyle = Sprite.DEBUG.COLOR;
+    context.fillStyle = Sprite.DEBUG.COLOR;
+    context.lineWidth = Sprite.DEBUG.LINE_SIZE;
     context.strokeRect(renderX, renderY, this.boundsW, this.boundsH);
     context.fillRect(renderX - Sprite.DEBUG.DOT_SIZE_HALF, renderY - Sprite.DEBUG.DOT_SIZE_HALF, Sprite.DEBUG.DOT_SIZE, Sprite.DEBUG.DOT_SIZE);
+    context.fillRect(pivotX - Sprite.DEBUG.DOT_SIZE_HALF, localY - Sprite.DEBUG.DOT_SIZE_HALF, Sprite.DEBUG.DOT_SIZE, Sprite.DEBUG.DOT_SIZE);
 }
 
 Sprite.prototype.drawPlaceholder = function(display, localX, localY) {
