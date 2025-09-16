@@ -26,18 +26,14 @@ MusicPlayer.STATE = {
     MUTED: 1
 };
 
-MusicPlayer.prototype.load = function(musicData) {
-    if(!musicData) {
-        if(MusicPlayer.DEBUG) {
-            console.warn("MusicData does not exist!");
-        }
-        return;
+MusicPlayer.prototype.load = function(tracks, playlists) {
+    if(tracks) {
+        this.tracks = tracks;
     }
 
-    const { tracks, playlists } = musicData;
-
-    this.tracks = tracks;
-    this.playlists = playlists;
+    if(playlists) {
+        this.playlists = playlists;
+    }
 }
 
 MusicPlayer.prototype.loadTrack = function(trackID) {

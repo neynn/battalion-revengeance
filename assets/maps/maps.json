@@ -1,3 +1,9 @@
 {
-    "oasis": { "directory": ["assets", "maps"], "source": "oasis.json" }
+    "oasis": {
+        "directory": ["assets", "maps", "oasis"],
+        "source": "oasis.json",
+        "language": {
+            "en-US": "oasis_en.json"
+        }
+    }
 }

@@ -1,0 +1,30 @@
+{
+    "EMPTY": [],
+
+    "GENERIC_BATTLE": ["Generic1","Generic2","Generic3","Generic4","Generic5","Generic6","Generic7","Generic8","Generic9","Generic10"],
+    "EPIC_BATTLE": ["Epic1","Epic2","Epic3","Epic4","Epic5","Epic6","Epic7","Epic8","Epic9","Epic10","Epic11","Epic12","Epic13","Epic14","Epic15"],
+    "GENERIC_NAVAL": ["Naval1","Naval2","Naval3","Naval4","Naval5","Naval6","Naval7","Naval8","Naval9"],
+    "EPIC_NAVAL": ["NavalEpic1","NavalEpic2","NavalEpic3","NavalEpic4","NavalEpic5","NavalEpic6","NavalEpic7"],
+    
+    "LAMENTOSO": ["Lamentoso1","Lamentoso2","Lamentoso3","Lamentoso4","Lamentoso5","Lamentoso6","Lamentoso7","Lamentoso8","Lamentoso9","Lamentoso10","Lamentoso11","Lamentoso12","Lamentoso13","Lamentoso14"],
+    "FORTISSIMO": ["Fortissimo1","Fortissimo2","Fortissimo3","Fortissimo4","Fortissimo5","Fortissimo6","Fortissimo7","Fortissimo8","Fortissimo9","Fortissimo10","Fortissimo11"],
+    "CRUSADE": ["Crusade1","Crusade2","Crusade3","Crusade4","Crusade5","Crusade6","Crusade7","Crusade8","Crusade9","Crusade10"],
+    
+    "PANZER": ["PanzerBrr1","PanzerBrr2","PanzerBrr3","PanzerBrr4","PanzerBrr5","PanzerBrr6","PanzerBrr7","PanzerBrr8","PanzerBrr9","PanzerBrr10"],
+    "UNSTOPPABLE_PANZER": ["PANZERBRR!!!1","PANZERBRR!!!2","PANZERBRR!!!3","PANZERBRR!!!4","PANZERBRR!!!5"],
+    
+    "TAIGA": ["Taiga1","Taiga2","Taiga3","Taiga4","Taiga5","Taiga6","Taiga7","Taiga8","Taiga9","Taiga10"],
+    "CHILL": ["Chill1","Chill2","Chill3","Chill4","Chill5","Chill6","Chill7","Chill8","Chill9","Chill10","Chill11","Chill12","Chill13"],
+    "BLIZZARD": ["Blizzard1","Blizzard2","Blizzard3","Blizzard4","Blizzard5"],
+    
+    "FREEDOM": ["Freedom1","Freedom2","Freedom3","Freedom4","Freedom5","Freedom6","Freedom7","Freedom8","Freedom9","Freedom10"],
+    "WISTFUL": ["Wistful1","Wistful2","Wistful3","Wistful4","Wistful5","Wistful6","Wistful7","Wistful8","Wistful9","Wistful10","Wistful11","Wistful12","Wistful13","Wistful14","Wistful15","Wistful16","Wistful17"],
+    "TERMINUS": ["Terminus1","Terminus2","Terminus3","Terminus4","Terminus5"],
+    "DECAY": ["Decay1","Decay2","Decay3","Decay4","Decay5","Decay6","Decay7","Decay8","Decay9","Decay10","Decay11","Decay12"],
+    
+    "NASHEED": ["Nasheed1","Nasheed2","Nasheed3","Nasheed4","Nasheed5","Nasheed6","Nasheed7","Nasheed8","Nasheed9","Nasheed10"],
+    "TAFSAK": ["Tafsak1","Tafsak2","Tafsak3","Tafsak4","Tafsak5","Tafsak6","Tafsak7","Tafsak8","Tafsak9","Tafsak10","Tafsak11","Tafsak12","Tafsak13","Tafsak14","Tafsak15","Tafsak16"],
+    "MALHAMAT": ["Malhamat1","Malhamat2","Malhamat3","Malhamat4","Malhamat5"],
+    "JIHAD": ["Jihad1","Jihad2","Jihad3","Jihad4","Jihad5","Jihad6","Jihad7","Jihad8","Jihad9","Jihad10","Jihad11"],
+    "AL_KUBRA": ["AlMalhamaAlKubra1","AlMalhamaAlKubra2","AlMalhamaAlKubra3","AlMalhamaAlKubra4","AlMalhamaAlKubra5"]
+}

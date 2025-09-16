@@ -19,5 +19,3 @@ console.log(assetLoader, gameContext);
 /*["river"].forEach(name => {
 	PathHandler.promiseJSON("export/" + name + ".json").then(f => packerToJSONSprites(name, f));
 });*/
-
-//create recolored textures as new texture objects with the scheme: tex_name:color. _:_ seperates the textures from their color.

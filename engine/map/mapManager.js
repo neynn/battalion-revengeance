@@ -24,6 +24,18 @@ MapManager.EVENT = {
     MAP_DISABLE: "MAP_DISABLE"
 };
 
+MapManager.prototype.onLanguageSwitch = async function(gameContext, languageID) {
+    if(this.activeMap) {
+        const { language } = gameContext;
+        const mapID = this.activeMap.getID();
+        const mapLanguage = await this.fetchMapTranslations(mapID, languageID);
+
+        if(mapLanguage) {
+            language.registerMap(mapID, mapLanguage);
+        }
+    }
+}
+
 MapManager.prototype.createMap = function(mapID, onCreate) {
     if(this.maps.has(mapID)) {
         return this.maps.get(mapID);
@@ -58,36 +70,47 @@ MapManager.prototype.forAllMaps = function(onCall) {
     }
 }
 
-MapManager.prototype.fetchMapData = async function(mapID) {
+MapManager.prototype.fetchMapTranslations = function(mapID, languageID) {
     const mapType = this.getMapType(mapID);
 
-    if(!mapType) {
-        Logger.log(Logger.CODE.ENGINE_WARN, "MapType does not exist!", "MapManager.prototype.loadMapData", { "mapID": mapID });
-        return null;
-    }
+    if(mapType) {
+        const { directory, language } = mapType;
 
-    if(this.cacheEnabled) {
-        const cachedMap = this.mapFiles.get(mapID);
+        if(language !== undefined && language[languageID] !== undefined) {
+            const filePath = PathHandler.getPath(directory, language[languageID]);
 
-        if(cachedMap) {
-            return cachedMap;
+            return PathHandler.promiseJSON(filePath);
         }
     }
 
-    const { directory, source } = mapType;
-    const filePath = PathHandler.getPath(directory, source);
-    const mapData = await PathHandler.promiseJSON(filePath);
+    return Promise.resolve(null);
+}
 
-    if(!mapData) {
-        Logger.log(Logger.CODE.ENGINE_WARN, "MapData does not exist!", "MapManager.prototype.loadMapData", { "mapID": mapID });
-        return null;
+MapManager.prototype.fetchMapData = function(mapID) {
+    const mapType = this.getMapType(mapID);
+
+    if(mapType) {
+        if(this.cacheEnabled) {
+            const cachedMap = this.mapFiles.get(mapID);
+
+            if(cachedMap) {
+                return Promise.resolve(cachedMap);
+            }
+        }
+
+        const { directory, source } = mapType;
+        const filePath = PathHandler.getPath(directory, source);
+
+        return PathHandler.promiseJSON(filePath).then(mapData => {
+            if(this.cacheEnabled && mapData) {
+                this.mapFiles.set(mapID, mapData);
+            } 
+
+            return mapData;
+        });
     }
 
-    if(this.cacheEnabled) {
-        this.mapFiles.set(mapID, mapData);
-    }
-
-    return mapData;
+    return Promise.resolve(null);
 }
 
 MapManager.prototype.setActiveMap = function(mapID) {

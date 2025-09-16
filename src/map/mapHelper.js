@@ -20,17 +20,32 @@ export const MapHelper = {
         return worldMap;
     },
     createMapById: async function(gameContext, mapID) {
-        const { world } = gameContext;
+        const { world, language } = gameContext;
         const { mapManager } = world;
-        const mapData = await mapManager.fetchMapData(mapID);
+        const currentLanguage = language.getCurrent();
 
-        if(!mapData) {
-            return null;
+        let mapData = null;
+        let mapLanguage = null;
+
+        if(currentLanguage) {
+            const response = await Promise.all([
+                mapManager.fetchMapData(mapID),
+                mapManager.fetchMapTranslations(mapID, language.getCurrent())
+            ]);
+
+            mapData = response[0];
+            mapLanguage = response[1];
+        } else {
+            mapData = await mapManager.fetchMapData(mapID);
         }
 
         const worldMap = mapManager.createMap(mapID, (id) => MapHelper.initializeMap(gameContext, id, mapData));
 
         mapManager.setActiveMap(mapID);
+
+        if(mapLanguage) {
+            language.registerMap(mapID, mapLanguage);
+        }
 
         return worldMap;
     },

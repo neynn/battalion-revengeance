@@ -14,6 +14,7 @@
     "languages": { "directory": ["assets", "language"], "source": "languages.json" },
     "maps": { "directory": ["assets", "maps"], "source": "maps.json" },
     "music": { "directory": ["assets", "music"], "source": "music.json" },
+    "playlists": { "directory": ["assets", "music"], "source": "playlists.json" },
     "sounds": { "directory": ["assets", "sounds"], "source": "sounds.json" },
     "sprites": { "directory": ["assets", "sprites"], "source": "sprites.json" },
     "spriteTextures": { "directory": ["assets", "sprites"], "source": "textures.json" },

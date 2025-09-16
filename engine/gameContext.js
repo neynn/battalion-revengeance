@@ -7,7 +7,7 @@ import { Timer } from "./timer.js";
 import { TileManager } from "./tile/tileManager.js";
 import { Renderer } from "./renderer.js";
 import { World } from "./world.js";
-import { LanguageHandler } from "./languageHandler.js";
+import { LanguageHandler } from "./language/languageHandler.js";
 import { Transform2D } from "./math/transform2D.js";
 import { FontHandler } from "./fontHandler.js";
 import { MapManager } from "./map/mapManager.js";
@@ -63,6 +63,10 @@ export const GameContext = function() {
         this.renderer.onMapSizeUpdate(width, height);
     }, { permanent: true });
 
+    this.language.events.on(LanguageHandler.EVENT.LANGUAGE_CHANGE, (languageID) => {
+        this.world.mapManager.onLanguageSwitch(this, languageID);
+    }, { permanent: true });
+
     this.addDebug();
 }
 
@@ -81,7 +85,7 @@ GameContext.prototype.loadResources = function(resources) {
     this.spriteManager.load(resources.spriteTextures, resources.sprites);
     this.uiManager.load(resources.interfaces, resources.icons);
     this.fonts.load(resources.fonts);
-    this.client.musicPlayer.load(resources.music);
+    this.client.musicPlayer.load(resources.music, resources.playlists);
     this.client.soundPlayer.load(resources.sounds);
     this.client.socket.load(resources.network.socket);
     this.client.router.load(resources.keybinds);
