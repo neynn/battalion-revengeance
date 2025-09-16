@@ -1,4 +1,5 @@
 import { CameraContext } from "../../engine/camera/cameraContext.js";
+import { ContextHelper } from "../../engine/camera/ContextHelper.js";
 import { Cursor } from "../../engine/client/cursor.js";
 import { BattalionCamera } from "./battalionCamera.js";
 import { EditCamera } from "./editCamera.js";
@@ -45,7 +46,7 @@ export const CameraHelper = {
         camera.setTileSize(tileWidth, tileHeight);
 
         CameraHelper.tryLoadingWorldSize(gameContext, camera);
-        CameraHelper.createDrag(gameContext);
+        ContextHelper.createDrag(gameContext, Cursor.BUTTON.LEFT);
 
         return camera;
     },
@@ -65,22 +66,8 @@ export const CameraHelper = {
         camera.setTileSize(tileWidth, tileHeight);
     
         CameraHelper.tryLoadingWorldSize(gameContext, camera);
-        CameraHelper.createDrag(gameContext);
+        ContextHelper.createDrag(gameContext, Cursor.BUTTON.LEFT);
 
         return camera;
-    },
-    createDrag: function(gameContext) {
-        const { client } = gameContext;
-        const { cursor } = client;
-
-        cursor.events.on(Cursor.EVENT.BUTTON_DRAG, (buttonID, deltaX, deltaY) => {
-            if(buttonID === Cursor.BUTTON.LEFT) {
-                const context = gameContext.getContextAtMouse();
-
-                if(context) {
-                    context.dragCamera(deltaX, deltaY);
-                }
-            }
-        });
     }
 };

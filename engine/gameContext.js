@@ -90,52 +90,6 @@ GameContext.prototype.loadResources = function(resources) {
     this.world.turnManager.load(resources.actors);
 }
 
-GameContext.prototype.getContextAtMouse = function() {
-    const context = this.renderer.getCollidedContext(this.client.cursor.positionX, this.client.cursor.positionY, this.client.cursor.radius);
-
-    if(!context) {
-        return null;
-    }
-
-    return context;
-}
-
-GameContext.prototype.getMouseTile = function() {
-    const context = this.getContextAtMouse();
-
-    if(!context) {
-        return {
-            "x": -1,
-            "y": -1
-        }
-    }
-
-    const { x, y } = context.getWorldPosition(this.client.cursor.positionX, this.client.cursor.positionY);
-    const mouseTile = this.transform2D.transformWorldToTile(x, y);
-
-    return mouseTile;
-}
-
-GameContext.prototype.getMousePosition = function() {
-    const context = this.getContextAtMouse();
-
-    if(!context) {
-        return {
-            "x": -1,
-            "y": -1,
-            "r": this.client.cursor.radius
-        }
-    }
-
-    const { x, y } = context.getWorldPosition(this.client.cursor.positionX, this.client.cursor.positionY);
-
-    return {
-        "x": x,
-        "y": y,
-        "r": this.client.cursor.radius
-    };
-}
-
 GameContext.prototype.addDebug = function() {
     const { router } = this.client;
 

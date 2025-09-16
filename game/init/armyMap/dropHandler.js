@@ -2,6 +2,7 @@ import { Drop } from "./drop.js";
 import { Inventory } from "../../actors/player/inventory/inventory.js";
 import { getRandomNumber } from "../../../engine/math/math.js";
 import { DefaultTypes } from "../../defaultTypes.js";
+import { ContextHelper } from "../../../engine/camera/ContextHelper.js";
 
 export const DropHandler = function() {
     this.drops = [];
@@ -95,7 +96,7 @@ DropHandler.prototype.playCursorCollectSound = function(gameContext) {
 
 DropHandler.prototype.update = function(gameContext) {
     const { timer } = gameContext;
-    const { x, y, r } = gameContext.getMousePosition();
+    const { x, y, r } = ContextHelper.getMousePosition(gameContext);
     const fixedDeltaTime = timer.getFixedDeltaTime();
     const toRemove = [];
 

@@ -13,6 +13,7 @@ import { PlayCamera } from "../camera/playCamera.js";
 import { MissionHandler } from "../actors/player/mission/missionHandler.js";
 import { ArmyEventHandler } from "../armyEventHandler.js";
 import { MissionCompleteEvent } from "../events/missionComplete.js";
+import { ContextHelper } from "../../engine/camera/ContextHelper.js";
 
 const ACTOR_TYPE = {
     PLAYER: "Player",
@@ -64,7 +65,7 @@ const createPlayer = function(gameContext, actorID, team, type) {
 
     cursor.events.on(Cursor.EVENT.BUTTON_DRAG, (buttonID, deltaX, deltaY) => {
         if(buttonID === Cursor.BUTTON.LEFT) {
-            const context = gameContext.getContextAtMouse();
+            const context = ContextHelper.getContextAtMouse(gameContext);
 
             if(context) {
                 context.dragCamera(deltaX, deltaY);

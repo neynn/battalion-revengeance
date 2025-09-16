@@ -103,7 +103,7 @@ const SCHEMAS = {
     }
 };
 
-export const EntityHelper = {
+export const EntitySpawner = {
     createEntityConfig: function(type, tileX, tileY) {
         return {
             "type": type,
@@ -134,8 +134,8 @@ export const EntityHelper = {
 
         for(let i = 0; i < 1; i++) {
             for(let j = 0; j < 1; j++) {
-                EntityHelper.createEntity(gameContext, EntityHelper.createEntityConfig("scorpion_tank", 3, 3), NAME + "_idle_right");
-                EntityHelper.createEntity(gameContext, EntityHelper.createEntityConfig("scorpion_tank", 5, 3), NAME + "_fire_right");
+                EntitySpawner.createEntity(gameContext, EntitySpawner.createEntityConfig("scorpion_tank", 3, 3), NAME + "_idle_right");
+                EntitySpawner.createEntity(gameContext, EntitySpawner.createEntityConfig("scorpion_tank", 5, 3), NAME + "_fire_right");
             }
         }
     }

@@ -4,6 +4,7 @@ import { ArmyEntity } from "../init/armyEntity.js";
 import { AttackSystem } from "./attack.js";
 import { DebrisSystem } from "./debris.js";
 import { DebrisSpawnEvent } from "../events/debrisSpawn.js";
+import { EntityHelper } from "../../engine/entity/entityHelper.js";
 
 /**
  * Collection of functions revolving around the fire missions.
@@ -121,7 +122,7 @@ FireMissionSystem.isBlocked = function(gameContext, fireMission, tileX, tileY) {
 
     for(let i = tileY; i < endY; i++) {
         for(let j = tileX; j < endX; j++) {
-            const tileEntity = world.getTileEntity(j, i);
+            const tileEntity = EntityHelper.getTileEntity(gameContext, j, i);
 
             if(tileEntity && !FireMissionSystem.isTargetable(tileEntity)) {
                 return true;

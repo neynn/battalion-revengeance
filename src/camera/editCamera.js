@@ -1,3 +1,4 @@
+import { ContextHelper } from "../../engine/camera/ContextHelper.js";
 import { Pallet } from "../../engine/map/editor/pallet.js";
 import { Renderer } from "../../engine/renderer.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
@@ -54,7 +55,7 @@ EditCamera.prototype.drawHoverTile = function(gameContext, context) {
 
     const { tileManager, transform2D } = gameContext;
     const { tileWidth, tileHeight, halfTileWidth } = transform2D;
-    const { x, y } = gameContext.getMouseTile();
+    const { x, y } = ContextHelper.getMouseTile(gameContext);
 
     context.globalAlpha = this.overlayAlpha;
     context.fillStyle = this.overlayColor;

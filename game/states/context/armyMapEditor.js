@@ -1,3 +1,4 @@
+import { ContextHelper } from "../../../engine/camera/ContextHelper.js";
 import { MapEditor } from "../../../engine/map/mapEditor.js";
 import { getTileID } from "../../enums.js";
 import { ArmyMap } from "../../init/armyMap.js";
@@ -33,7 +34,7 @@ ArmyMapEditor.prototype.paint = function(gameContext, layerID) {
         return;
     }
 
-    const { x, y } = gameContext.getMouseTile();
+    const { x, y } = ContextHelper.getMouseTile(gameContext);
     const autotiler = tileManager.getAutotilerByTile(this.brush.id);
     const actionsTaken = [];
     

@@ -4,6 +4,7 @@ import { EffectManager } from "./effects/effectManager.js";
 import { EventEmitter } from "./events/eventEmitter.js";
 import { CameraContext } from "./camera/cameraContext.js";
 import { Camera2D } from "./camera/camera2D.js";
+import { ContextHelper } from "./camera/ContextHelper.js";
 
 export const Renderer = function() {
     this.contexts = [];
@@ -132,7 +133,7 @@ Renderer.prototype.update = function(gameContext) {
 Renderer.prototype.drawInfo = function(gameContext) {
     const { context } = this.display;
     const { timer } = gameContext;
-    const { x, y } = gameContext.getMouseTile();
+    const { x, y } = ContextHelper.getMouseTile(gameContext);
     const fps = Math.round(timer.getFPS());
 
     if(fps >= 60) {

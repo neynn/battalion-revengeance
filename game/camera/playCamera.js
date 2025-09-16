@@ -1,4 +1,5 @@
 import { Overlay } from "../../engine/camera/overlay.js";
+import { EntityHelper } from "../../engine/entity/entityHelper.js";
 import { Layer } from "../../engine/map/layer.js";
 import { Renderer } from "../../engine/renderer.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
@@ -98,7 +99,6 @@ PlayCamera.prototype.debugMap = function(context, worldMap) {
 }
 
 PlayCamera.prototype.updateMoveOverlay = function(gameContext, nodeList, enableTileID, attackTileID) {
-    const { world } = gameContext;
     const showInvalidTiles = gameContext.settings.debug.showInvalidMoveTiles;
 
     this.clearOverlay(PlayCamera.OVERLAY.MOVE);
@@ -113,7 +113,7 @@ PlayCamera.prototype.updateMoveOverlay = function(gameContext, nodeList, enableT
             }
 
         } else {
-            const tileEntity = world.getTileEntity(positionX, positionY);
+            const tileEntity = EntityHelper.getTileEntity(gameContext, positionX, positionY);
 
             if(!tileEntity) {
                 this.pushOverlay(PlayCamera.OVERLAY.MOVE, enableTileID, positionX, positionY);

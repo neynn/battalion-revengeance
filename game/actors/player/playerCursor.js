@@ -1,3 +1,5 @@
+import { ContextHelper } from "../../../engine/camera/ContextHelper.js";
+import { EntityHelper } from "../../../engine/entity/entityHelper.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { SpriteManager } from "../../../engine/sprite/spriteManager.js";
 import { PathfinderSystem } from "../../systems/pathfinder.js";
@@ -71,8 +73,6 @@ PlayerCursor.prototype.clearNodes = function() {
 }
 
 PlayerCursor.prototype.updateNodes = function(gameContext, nodeList) {
-    const { world } = gameContext;
-
     this.nodeMap.clear();
 
     for(let i = 0; i < nodeList.length; i++) {
@@ -84,7 +84,7 @@ PlayerCursor.prototype.updateNodes = function(gameContext, nodeList) {
             continue;
         }
 
-        const tileEntity = world.getTileEntity(positionX, positionY);
+        const tileEntity = EntityHelper.getTileEntity(gameContext, positionX, positionY);
 
         if(tileEntity === null) {
             this.nodeMap.set(nodeKey, node);
@@ -97,9 +97,8 @@ PlayerCursor.prototype.getNodeKey = function(nodeX, nodeY) {
 }
 
 PlayerCursor.prototype.update = function(gameContext) {
-    const { world } = gameContext;
-    const { x, y } = gameContext.getMouseTile();
-    const mouseEntity = world.getTileEntity(x, y);
+    const { x, y } = ContextHelper.getMouseTile(gameContext);
+    const mouseEntity = EntityHelper.getTileEntity(gameContext, x, y);
     const previous = this.currentTarget;
 
     this.tileChanged = this.tileX !== x || this.tileY !== y;

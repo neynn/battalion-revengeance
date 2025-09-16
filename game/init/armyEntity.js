@@ -1,4 +1,5 @@
 import { Entity } from "../../engine/entity/entity.js";
+import { EntityHelper } from "../../engine/entity/entityHelper.js";
 import { clampValue, isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { DefaultTypes } from "../defaultTypes.js";
 import { getTeamID, TEAM_NAME } from "../enums.js";
@@ -237,12 +238,11 @@ ArmyEntity.prototype.determineSprite = function(gameContext) {
 }
 
 ArmyEntity.prototype.getSurroundingEntities = function(gameContext, range) {
-    const { world } = gameContext;
     const startX = this.tileX - range;
     const startY = this.tileY - range;
     const endX = this.tileX + this.config.dimX + range;
     const endY = this.tileY + this.config.dimY + range;
-    const entities = world.getUniqueEntitiesInArea(startX, startY, endX, endY);
+    const entities = EntityHelper.getUniqueEntitiesInArea(gameContext, startX, startY, endX, endY);
 
     return entities;
 }

@@ -3,7 +3,6 @@ import { TurnManager } from "./turn/turnManager.js";
 import { EntityManager } from "./entity/entityManager.js";
 import { EventBus } from "./eventBus.js";
 import { MapManager } from "./map/mapManager.js";
-import { Logger } from "./logger.js";
 
 export const World = function() {
     this.actionQueue = new ActionQueue();
@@ -71,79 +70,4 @@ World.prototype.update = function(gameContext) {
     this.turnManager.update(gameContext);
     this.mapManager.update(gameContext);
     this.entityManager.update(gameContext);
-}
-
-World.prototype.getTileEntity = function(tileX, tileY) {
-    const activeMap = this.mapManager.getActiveMap();
-
-    if(!activeMap) {
-        Logger.log(Logger.CODE.ENGINE_WARN, "There is no active map!", "World.prototype.getTileEntity", null);
-        return null;
-    }
-
-    const entityID = activeMap.getTopEntity(tileX, tileY);
-    const entity = this.entityManager.getEntity(entityID);
-
-    return entity;
-}
-
-World.prototype.getEntitiesInArea = function(startX, startY, endX, endY) {
-    const entities = [];
-    const worldMap = this.mapManager.getActiveMap();
-
-    if(!worldMap) {
-        return entities;
-    }
-
-    const entityIDs = worldMap.getAllEntitiesInArea(startX, startY, endX, endY);
-
-    for(let i = 0; i < entityIDs.length; i++) {
-        const entity = this.entityManager.getEntity(entityIDs[i]);
-
-        if(entity) {
-            entities.push(entity);
-        }
-    }
-    
-    return entities;
-} 
-
-World.prototype.getUniqueEntitiesInArea = function(startX, startY, endX, endY) {
-    const entities = [];
-    const worldMap = this.mapManager.getActiveMap();
-
-    if(!worldMap) {
-        return entities;
-    }
-
-    const entityIDs = worldMap.getUniqueEntitiesInArea(startX, startY, endX, endY);
-
-    for(const entityID of entityIDs) {
-        const entity = this.entityManager.getEntity(entityID);
-
-        if(entity) {
-            entities.push(entity);
-        }
-    }
-
-    return entities;
-}
-
-World.prototype.getEntitiesOwnedBy = function(actorID) {
-    const entities = [];
-    const actor = this.turnManager.getActor(actorID);
-
-    if(!actor) {
-        return entities;
-    }
-
-    for(const entityID of actor.entities) {
-        const entity = this.entityManager.getEntity(entityID);
-
-        if(entity) {
-            entities.push(entity);
-        }
-    }
-
-    return entities;
 }
