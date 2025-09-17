@@ -13,7 +13,7 @@ import { PlayCamera } from "../camera/playCamera.js";
 import { MissionHandler } from "../actors/player/mission/missionHandler.js";
 import { ArmyEventHandler } from "../armyEventHandler.js";
 import { MissionCompleteEvent } from "../events/missionComplete.js";
-import { ContextHelper } from "../../engine/camera/ContextHelper.js";
+import { ContextHelper } from "../../engine/camera/contextHelper.js";
 
 const ACTOR_TYPE = {
     PLAYER: "Player",

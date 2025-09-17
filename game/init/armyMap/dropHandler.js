@@ -2,7 +2,7 @@ import { Drop } from "./drop.js";
 import { Inventory } from "../../actors/player/inventory/inventory.js";
 import { getRandomNumber } from "../../../engine/math/math.js";
 import { DefaultTypes } from "../../defaultTypes.js";
-import { ContextHelper } from "../../../engine/camera/ContextHelper.js";
+import { ContextHelper } from "../../../engine/camera/contextHelper.js";
 
 export const DropHandler = function() {
     this.drops = [];

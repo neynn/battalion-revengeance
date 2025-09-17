@@ -1,4 +1,4 @@
-import { ContextHelper } from "../../engine/camera/ContextHelper.js";
+import { ContextHelper } from "../../engine/camera/contextHelper.js";
 import { Pallet } from "../../engine/map/editor/pallet.js";
 import { Renderer } from "../../engine/renderer.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";

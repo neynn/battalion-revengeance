@@ -1,5 +1,5 @@
 import { CameraContext } from "../../engine/camera/cameraContext.js";
-import { ContextHelper } from "../../engine/camera/ContextHelper.js";
+import { ContextHelper } from "../../engine/camera/contextHelper.js";
 import { Cursor } from "../../engine/client/cursor.js";
 import { BattalionCamera } from "./battalionCamera.js";
 import { EditCamera } from "./editCamera.js";

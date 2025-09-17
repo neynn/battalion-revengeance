@@ -1,4 +1,4 @@
-import { ContextHelper } from "../../../engine/camera/ContextHelper.js";
+import { ContextHelper } from "../../../engine/camera/contextHelper.js";
 import { EntityHelper } from "../../../engine/entity/entityHelper.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { SpriteManager } from "../../../engine/sprite/spriteManager.js";
