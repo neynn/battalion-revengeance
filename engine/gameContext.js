@@ -64,7 +64,7 @@ export const GameContext = function() {
     }, { permanent: true });
 
     this.language.events.on(LanguageHandler.EVENT.LANGUAGE_CHANGE, (languageID) => {
-        this.world.mapManager.onLanguageSwitch(this, languageID);
+        this.world.mapManager.onLanguageUpdate(this, languageID);
     }, { permanent: true });
 
     this.addDebug();

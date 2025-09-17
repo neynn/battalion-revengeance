@@ -13,6 +13,8 @@ export const WorldMap = function(id) {
     this.flags = 0;
 }
 
+WorldMap.prototype.onLanguageUpdate = function(languageID, language) {}
+
 WorldMap.prototype.hasFlag = function(flag) {
     return (this.flags & flag) !== 0;
 }
@@ -75,18 +77,6 @@ WorldMap.prototype.applyAutotiler = function(autotiler, tileX, tileY, layerID, i
     }
 
     return responseID;
-}
-
-WorldMap.prototype.createLayer = function(id) {
-    if(this.layers.has(id)) {
-        return this.layers.get(id);
-    }
-
-    const layer = new Layer(this.width, this.height);
-
-    this.layers.set(id, layer);
-
-    return layer;
 }
 
 WorldMap.prototype.getLayer = function(layerID) {
@@ -230,7 +220,7 @@ WorldMap.prototype.setLayerAlpha = function(layerID, alpha) {
 } 
 
 WorldMap.prototype.resize = function(width, height) {
-    this.layers.forEach(layer => layer.resize(width, height));
+    this.layers.forEach(layer => layer.resize(this.width, this.height, width, height));
     this.width = width;
     this.height = height;
 }
@@ -331,15 +321,28 @@ WorldMap.prototype.getUniqueEntitiesInArea = function(startX, startY, endX, endY
     return entities;
 }
 
+WorldMap.prototype.createLayer = function(id) {
+    if(this.layers.has(id)) {
+        return this.layers.get(id);
+    }
+
+    const layer = new Layer();
+
+    this.layers.set(id, layer);
+
+    return layer;
+}
+
 WorldMap.prototype.loadLayersEmpty = function(gameContext, layerData) {
     const { tileManager } = gameContext;
     const containerCount = tileManager.getContainerCount();
+    const bufferSize = this.width * this.height;
 
     for(const layerID in layerData) {
         const { fill } = layerData[layerID];
         const layer = this.createLayer(layerID);
 
-        layer.initBuffer(containerCount);
+        layer.initBuffer(bufferSize, containerCount);
         layer.fill(fill);
     }
 }
@@ -347,11 +350,12 @@ WorldMap.prototype.loadLayersEmpty = function(gameContext, layerData) {
 WorldMap.prototype.loadLayers = function(gameContext, layerData) {
     const { tileManager } = gameContext;
     const containerCount = tileManager.getContainerCount();
+    const bufferSize = this.width * this.height;
 
     for(const layerID in layerData) {
         const layer = this.createLayer(layerID);
 
-        layer.initBuffer(containerCount);
+        layer.initBuffer(bufferSize, containerCount);
         layer.decode(layerData[layerID]);
     }
 }

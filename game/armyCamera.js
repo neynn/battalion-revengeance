@@ -71,17 +71,16 @@ ArmyCamera.prototype.drawDrops = function(display, worldMap) {
 ArmyCamera.prototype.initCustomLayers = function(gameContext) {
     const { tileManager } = gameContext;
     const containerCount = tileManager.getContainerCount();
+    const bufferSize = this.mapWidth * this.mapHeight;
 
     for(let i = 0; i < this.customLayers.length; i++) {
-        this.customLayers[i].initBuffer(containerCount);
+        this.customLayers[i].initBuffer(bufferSize, containerCount);
     }
-
-    this.onMapSizeUpdate();
 }
 
-ArmyCamera.prototype.onMapSizeUpdate = function() {
+ArmyCamera.prototype.onMapSizeUpdate = function(oldWidth, oldHeight) {
     for(let i = 0; i < this.customLayers.length; i++) {
-        this.customLayers[i].resize(this.mapWidth, this.mapHeight);
+        this.customLayers[i].resize(oldWidth, oldHeight, this.mapWidth, this.mapHeight);
     }
 }
 

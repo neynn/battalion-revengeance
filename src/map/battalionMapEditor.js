@@ -1,5 +1,5 @@
 import { ContextHelper } from "../../engine/camera/contextHelper.js";
-import { MapEditor } from "../../engine/map/mapEditor.js";
+import { MapEditor } from "../../engine/map/editor/mapEditor.js";
 import { TileHelper } from "../tile/tileHelper.js";
 
 export const BattalionMapEditor = function() {

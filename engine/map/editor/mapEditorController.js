@@ -1,5 +1,5 @@
 import { Cursor } from "../../client/cursor.js";
-import { MapEditor } from "../mapEditor.js";
+import { MapEditor } from "./mapEditor.js";
 import { clampValue, loopValue } from "../../math/math.js";
 import { SHAPE } from "../../math/constants.js";
 import { Brush } from "./brush.js";

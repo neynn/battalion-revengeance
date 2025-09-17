@@ -5,7 +5,7 @@ import { EditCamera } from "../../camera/editCamera.js";
 import { MapEditorController } from "../../../engine/map/editor/mapEditorController.js";
 import { MapSystem } from "../../systems/map.js";
 import { ArmyMapEditor } from "./armyMapEditor.js";
-import { MapEditor } from "../../../engine/map/mapEditor.js";
+import { MapEditor } from "../../../engine/map/editor/mapEditor.js";
 import { CameraContext } from "../../../engine/camera/cameraContext.js";
 
 export const MapEditorState = function() {

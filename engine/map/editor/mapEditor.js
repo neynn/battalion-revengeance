@@ -1,7 +1,7 @@
-import { EventEmitter } from "../events/eventEmitter.js";
-import { Scroller } from "../util/scroller.js";
-import { Brush } from "./editor/brush.js";
-import { Pallet } from "./editor/pallet.js";
+import { EventEmitter } from "../../events/eventEmitter.js";
+import { Scroller } from "../../util/scroller.js";
+import { Brush } from "./brush.js";
+import { Pallet } from "./pallet.js";
 
 export const MapEditor = function() {
     this.brush = new Brush();

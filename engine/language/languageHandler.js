@@ -7,9 +7,8 @@ export const LanguageHandler = function() {
     this.mapTranslations = new Map();
 
     this.events = new EventEmitter();
-    this.events.listen(LanguageHandler.EVENT.LANGUAGE_SET);
+    this.events.listen(LanguageHandler.EVENT.LANGUAGE_REGISTER);
     this.events.listen(LanguageHandler.EVENT.LANGUAGE_CHANGE);
-    this.events.listen(LanguageHandler.EVENT.MAP_LANGUAGE_SET);
 }
 
 LanguageHandler.LANGUAGE = {
@@ -19,9 +18,8 @@ LanguageHandler.LANGUAGE = {
 };
 
 LanguageHandler.EVENT = {
-    LANGUAGE_SET: "LANGUAGE_SET",
-    LANGUAGE_CHANGE: "LANGUAGE_CHANGE",
-    MAP_LANGUAGE_SET: "MAP_LANGUAGE_SET"
+    LANGUAGE_REGISTER: "LANGUAGE_REGISTER",
+    LANGUAGE_CHANGE: "LANGUAGE_CHANGE"
 };
 
 LanguageHandler.IS_STRICT = 1;
@@ -54,7 +52,7 @@ LanguageHandler.prototype.selectLanguage = function(languageID) {
 LanguageHandler.prototype.registerLanguage = function(languageID, language) {
     if(LanguageHandler.isAllowed(languageID)) {
         this.languages.set(languageID, language);
-        this.events.emit(LanguageHandler.EVENT.LANGUAGE_SET, languageID);
+        this.events.emit(LanguageHandler.EVENT.LANGUAGE_REGISTER, languageID);
 
         if(this.languageID === languageID) {
             this.events.emit(LanguageHandler.EVENT.LANGUAGE_CHANGE, languageID);
@@ -63,11 +61,12 @@ LanguageHandler.prototype.registerLanguage = function(languageID, language) {
 }
 
 LanguageHandler.prototype.registerMap = function(mapID, language) {
-    this.mapTranslations.set(mapID, language);
-    this.events.emit(LanguageHandler.EVENT.MAP_LANGUAGE_SET, mapID);
+    if(language) {
+        this.mapTranslations.set(mapID, language);
+    }
 }
 
-LanguageHandler.prototype.getMap = function(mapID, key) {
+LanguageHandler.prototype.getMapTag = function(mapID, key) {
     const translations = this.mapTranslations.get(mapID);
 
     if(translations) {
@@ -81,7 +80,7 @@ LanguageHandler.prototype.getMap = function(mapID, key) {
     return key;
 }   
 
-LanguageHandler.prototype.getSystem = function(key) {
+LanguageHandler.prototype.getSystemTag = function(key) {
     if(!this.currentLanguage || typeof key !== "string") {
         console.warn("Error!", key);
 

@@ -32,7 +32,7 @@ Camera2D.MAP_OUTLINE = {
 Camera2D.prototype = Object.create(Camera.prototype);
 Camera2D.prototype.constructor = Camera2D;
 
-Camera2D.prototype.onMapSizeUpdate = function() {}
+Camera2D.prototype.onMapSizeUpdate = function(oldwidth, oldHeight) {}
 
 Camera2D.prototype.setRelativeScale = function(tileWidth, tileHeight) {
     //TODO: Add pixel clipping.
@@ -321,12 +321,14 @@ Camera2D.prototype.setTileSize = function(tileWidth, tileHeight) {
 Camera2D.prototype.setMapSize = function(mapWidth, mapHeight) {
     const worldWidth = mapWidth * this.tileWidth;
     const worldHeight = mapHeight * this.tileHeight;
+    const oldWidth = this.mapWidth;
+    const oldHeight = this.mapHeight;
 
     this.mapWidth = mapWidth;
     this.mapHeight = mapHeight;
 
     this.setWorldSize(worldWidth, worldHeight);
-    this.onMapSizeUpdate();
+    this.onMapSizeUpdate(oldWidth, oldHeight);
 }
 
 Camera2D.prototype.updateWorldBounds = function() {

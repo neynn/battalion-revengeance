@@ -2,7 +2,7 @@ import { MapEditorController } from "../../engine/map/editor/mapEditorController
 import { PrettyJSON } from "../../engine/resources/prettyJSON.js";
 import { BattalionContext } from "../battalionContext.js";
 import { BattalionMap } from "./battalionMap.js";
-import { MapHelper } from "./mapHelper.js";
+import { MapSpawner } from "./mapSpawner.js";
 
 export const BattaltionEditorController = function(mapEditor, brushSets) {
     MapEditorController.call(this, mapEditor);
@@ -84,21 +84,19 @@ BattaltionEditorController.prototype.createMap = function(gameContext) {
 
     if(createNew) {
         const mapID = `${Date.now()}`;
-        const worldMap = MapHelper.createEmptyMap(gameContext, mapID, this.defaultMap);
+        const worldMap = MapSpawner.createEmptyMap(gameContext, mapID, this.defaultMap);
 
         this.mapID = worldMap.getID();
     }
 }
 
-BattaltionEditorController.prototype.loadMap = function(gameContext) {
+BattaltionEditorController.prototype.loadMap = async function(gameContext) {
     const mapID = prompt("MAP-ID?");
+    const worldMap = MapSpawner.createMapByID(gameContext, mapID);
 
-    MapHelper.createMapById(gameContext, mapID)
-    .then(worldMap => {
-        if(worldMap) {
-            this.mapID = worldMap.getID();
-        }
-    });
+    if(worldMap) {
+        this.mapID = worldMap.getID();
+    }
 }
 
 BattaltionEditorController.prototype.initUIEvents = function(gameContext) {

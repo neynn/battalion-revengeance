@@ -24,7 +24,7 @@ MapManager.EVENT = {
     MAP_DISABLE: "MAP_DISABLE"
 };
 
-MapManager.prototype.onLanguageSwitch = async function(gameContext, languageID) {
+MapManager.prototype.onLanguageUpdate = async function(gameContext, languageID) {
     if(this.activeMap) {
         const { language } = gameContext;
         const mapID = this.activeMap.getID();
@@ -32,21 +32,17 @@ MapManager.prototype.onLanguageSwitch = async function(gameContext, languageID) 
 
         if(mapLanguage) {
             language.registerMap(mapID, mapLanguage);
+
+            this.activeMap.onLanguageUpdate(languageID, mapLanguage);
         }
     }
 }
 
-MapManager.prototype.createMap = function(mapID, onCreate) {
-    if(this.maps.has(mapID)) {
-        return this.maps.get(mapID);
+MapManager.prototype.addMap = function(mapID, worldMap) {
+    if(!this.maps.has(mapID)) {
+        this.maps.set(mapID, worldMap);
+        this.events.emit(MapManager.EVENT.MAP_CREATE, mapID, worldMap);   
     }
-
-    const worldMap = onCreate(mapID);
-
-    this.maps.set(mapID, worldMap);
-    this.events.emit(MapManager.EVENT.MAP_CREATE, mapID, worldMap);
-
-    return worldMap;
 }
 
 MapManager.prototype.update = function(gameContext) {

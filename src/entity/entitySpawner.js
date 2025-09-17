@@ -130,7 +130,7 @@ export const EntitySpawner = {
         return entity;
     },
     debugEntities: function(gameContext) {
-        const NAME = "stealth_tank";
+        const NAME = "condor_bomber";
 
         for(let i = 0; i < 1; i++) {
             for(let j = 0; j < 1; j++) {

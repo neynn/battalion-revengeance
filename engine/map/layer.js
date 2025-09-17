@@ -1,9 +1,7 @@
-export const Layer = function(width, height) {
+export const Layer = function() {
     this.buffer = [];
     this.alpha = 1;
     this.autoGenerate = false;
-    this.width = width;
-    this.height = height;
     this.threshold = Layer.BUFFER_THRESHOLD.BIT_0;
     this.fillValue = 0;
 }
@@ -24,7 +22,7 @@ Layer.prototype.clear = function() {
 }
 
 Layer.prototype.fill = function(id) {
-    if(typeof id === "number" && id > 0) {
+    if(typeof id === "number" && id > 0 && id <= this.threshold) {
         const length = this.buffer.length;
         
         for(let i = 0; i < length; ++i) {
@@ -35,13 +33,11 @@ Layer.prototype.fill = function(id) {
     }
 }
 
-Layer.prototype.initBuffer = function(count) {
-    const bufferSize = this.width * this.height;
-
-    if(count < Layer.BUFFER_THRESHOLD.BIT_8) {
+Layer.prototype.initBuffer = function(bufferSize, maxValue) {
+    if(maxValue < Layer.BUFFER_THRESHOLD.BIT_8) {
         this.threshold = Layer.BUFFER_THRESHOLD.BIT_8;
         this.buffer = new Uint8Array(bufferSize);
-    } else if(count < Layer.BUFFER_THRESHOLD.BIT_16) {
+    } else if(maxValue < Layer.BUFFER_THRESHOLD.BIT_16) {
         this.threshold = Layer.BUFFER_THRESHOLD.BIT_16;
         this.buffer = new Uint16Array(bufferSize);
     } else {
@@ -64,7 +60,7 @@ Layer.prototype.setAutoGenerate = function(autoGenerate) {
     this.autoGenerate = autoGenerate ?? this.autoGenerate;
 }
 
-Layer.prototype.resize = function(newWidth, newHeight) {
+Layer.prototype.resize = function(oldWidth, oldHeight, newWidth, newHeight) {
     const layerSize = newWidth * newHeight;
     const ArrayType = this.buffer.constructor;
     const newBuffer = new ArrayType(layerSize);
@@ -76,12 +72,12 @@ Layer.prototype.resize = function(newWidth, newHeight) {
         }
     }
 
-    const copyWidth = newWidth < this.width ? newWidth : this.width;
-    const copyHeight = newHeight < this.height ? newHeight : this.height;
+    const copyWidth = newWidth < oldWidth ? newWidth : oldWidth;
+    const copyHeight = newHeight < oldHeight ? newHeight : oldHeight;
 
     for(let i = 0; i < copyHeight; ++i) {
         const newRow = i * newWidth;
-        const oldRow = i * this.width;
+        const oldRow = i * oldWidth;
 
         for(let j = 0; j < copyWidth; ++j) {
             const newIndex = newRow + j;
@@ -92,8 +88,6 @@ Layer.prototype.resize = function(newWidth, newHeight) {
     }
 
     this.buffer = newBuffer;
-    this.width = newWidth;
-    this.height = newHeight;
 }
 
 Layer.prototype.decode = function(encodedLayer) {

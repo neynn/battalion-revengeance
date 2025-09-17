@@ -1,4 +1,4 @@
-import { MapEditor } from "../../engine/map/mapEditor.js";
+import { MapEditor } from "../../engine/map/editor/mapEditor.js";
 import { State } from "../../engine/state/state.js";
 import { CameraHelper } from "../camera/cameraHelper.js";
 import { BattalionMapEditor } from "../map/battalionMapEditor.js";

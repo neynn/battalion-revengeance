@@ -14,8 +14,8 @@ export const PlayCamera = function() {
     this.overlays[PlayCamera.OVERLAY.MOVE] = new Overlay();
     this.overlays[PlayCamera.OVERLAY.RANGE] = new Overlay();
     this.overlays[PlayCamera.OVERLAY.FIRE_MISSION] = new Overlay();
-    this.customLayers[PlayCamera.LAYER.BORDER] = new Layer(0, 0);
-    this.customLayers[PlayCamera.LAYER.PLACE] = new Layer(0, 0);
+    this.customLayers[PlayCamera.LAYER.BORDER] = new Layer();
+    this.customLayers[PlayCamera.LAYER.PLACE] = new Layer();
 }
 
 PlayCamera.OVERLAY = {
