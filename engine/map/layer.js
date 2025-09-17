@@ -95,22 +95,18 @@ Layer.prototype.decode = function(encodedLayer) {
         return;
     }
 
+    let i = 0;
     let index = 0;
     const MAX_INDEX = this.buffer.length;
-    const layerLength = encodedLayer.length;
+    const LAYER_LENGTH = encodedLayer.length;
 
-    for(let i = 0; i < layerLength; i += 2) {
-        const typeID = encodedLayer[i];
-        const typeCount = encodedLayer[i + 1];
-        const copies = Math.min(typeCount, MAX_INDEX - index);
+    while(index < MAX_INDEX && i < LAYER_LENGTH) {
+        const typeID = encodedLayer[i++];
+        const typeCount = encodedLayer[i++];
+        const copies = (typeCount < MAX_INDEX - index) ? typeCount : MAX_INDEX - index;
 
         for(let j = 0; j < copies; ++j) {
-            this.buffer[index] = typeID;
-            ++index;
-        }
-
-        if(index >= MAX_INDEX) {
-            return;
+            this.buffer[index++] = typeID;
         }
     }
 }
