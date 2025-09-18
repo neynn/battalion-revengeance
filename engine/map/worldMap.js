@@ -37,11 +37,7 @@ WorldMap.prototype.saveLayers = function() {
     const layers = [];
 
     for(const [layerID, layer] of this.layers) {
-        const { autoGenerate } = layer;
-
-        if(!autoGenerate) {
-            layers.push(`"${layerID}": [${layer.encode()}]`);
-        }
+        layers.push(`"${layerID}": [${layer.encode()}]`);
     }
 
     return layers;

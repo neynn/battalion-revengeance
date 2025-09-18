@@ -42,19 +42,19 @@ export const MapHelper = {
     createEmptyMap: function(gameContext, mapID, onCreate) {
         const { world } = gameContext;
         const { mapManager } = world;
-        const worldMap = mapManager.getMap(mapID);
+        const cachedMap = mapManager.getMap(mapID);
 
-        if(worldMap) {
-            return worldMap;
+        if(cachedMap) {
+            return cachedMap;
         }
 
-        const newMap = onCreate();
+        const worldMap = onCreate();
 
-        if(newMap) {
-            mapManager.addMap(mapID, newMap);
+        if(worldMap) {
+            mapManager.addMap(mapID, worldMap);
             mapManager.setActiveMap(mapID);
         }
 
-        return newMap;
+        return worldMap;
     }
 };

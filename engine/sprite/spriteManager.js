@@ -39,24 +39,24 @@ SpriteManager.prototype.addSpriteEntry = function(spriteID, containerIndex, text
 }
 
 SpriteManager.prototype.createSpriteAlias = function(spriteID, schemaID) {
-    const index = this.getContainerIndex(spriteID);
-    const container = this.getContainer(index);
+    const spriteEntry = this.spriteMap.get(spriteID);
     const aliasID = SpriteHelper.getSchemaID(spriteID, schemaID);
 
-    if(container && !this.spriteMap.has(aliasID)) {
-        this.addSpriteEntry(aliasID, index, container.texture.getID());
+    if(spriteEntry && !this.spriteMap.has(aliasID)) {
+        const { index, textureID } = spriteEntry;
+
+        this.addSpriteEntry(aliasID, index, textureID);
     }
 }
 
 SpriteManager.prototype.createCopyTexture = function(spriteID, schemaID, schema) {
-    const index = this.getContainerIndex(spriteID);
-    const container = this.getContainer(index);
+    const spriteEntry = this.spriteMap.get(spriteID);
     const aliasID = SpriteHelper.getSchemaID(spriteID, schemaID);
 
-    if(container && !this.spriteMap.has(aliasID)) {
-        const { texture } = container;
-        const textureID = texture.getID();
-        const texureAlias = SpriteHelper.getSchemaID(texture.getID(), schemaID);
+    if(spriteEntry && !this.spriteMap.has(aliasID)) {
+        const { index, textureID } = spriteEntry;
+        const texture = this.resources.getTextureByID(textureID);
+        const texureAlias = SpriteHelper.getSchemaID(textureID, schemaID);
         const copyTexture = this.resources.createCopyTexture(texureAlias, texture);
 
         this.addSpriteEntry(aliasID, index, copyTexture.getID(), texureAlias);
@@ -99,23 +99,17 @@ SpriteManager.prototype.load = function(textures, sprites) {
             continue;
         }
 
-        let frameCount = 0;
         const textureObject = this.resources.getTextureByID(textureID);
-        const spriteContainer = new SpriteContainer(textureObject, bounds, frameTime);
+        const regionFrames = autoFrames !== undefined ? textureObject.getFramesAuto(autoFrames) : textureObject.getFrames(frames);
 
-        if(autoFrames) {
-            frameCount = spriteContainer.initAutoFrames(autoFrames);
+        if(regionFrames.length !== 0) {
+            const spriteContainer = new SpriteContainer(bounds, frameTime, regionFrames);
+
+            this.containers.push(spriteContainer);
+            this.addSpriteEntry(spriteID, this.containers.length - 1, textureID);
         } else {
-            frameCount = spriteContainer.initFrames(frames);
-        }
-
-        if(frameCount === 0) {
             console.warn(`Sprite ${spriteID} has no frames!`);
-            continue;
         }
-
-        this.containers.push(spriteContainer);
-        this.addSpriteEntry(spriteID, this.containers.length - 1, textureID);
     }
 }
 
@@ -172,18 +166,6 @@ SpriteManager.prototype.getContainer = function(index) {
     }
 
     return this.containers[index];
-}
-
-SpriteManager.prototype.getContainerIndex = function(spriteID) {
-    const data = this.spriteMap.get(spriteID);
-
-    if(!data) {
-        return -1;
-    }
-
-    const { index } = data;
-
-    return index;
 }
 
 SpriteManager.prototype.loadBitmap = function(spriteID) {
@@ -357,7 +339,7 @@ SpriteManager.prototype.updateSpriteTexture = function(sprite, spriteID) {
 
                 sprite.setTexture(copyTexture);
             } else {
-                const { texture } = container;
+                const texture = this.resources.getTextureByID(textureID);
 
                 sprite.setTexture(texture);
 

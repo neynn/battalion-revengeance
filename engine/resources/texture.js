@@ -148,16 +148,6 @@ Texture.prototype.removeReference = function() {
     return this.references;
 }
 
-Texture.prototype.getRegion = function(regionID) {
-    const region = this.regions[regionID];
-
-    if(!region) {
-        return null;
-    }
-
-    return region;
-}
-
 Texture.prototype.getID = function() {
     return this.id;
 }
@@ -179,4 +169,39 @@ Texture.prototype.loadColoredBitmap = function(copyBitmap, schema) {
         .then(bitmap => this.setBitmapData(bitmap))
         .catch(error => this.clear());
     }
+}
+
+Texture.prototype.getFramesAuto = function(autoRegions) {
+    const { start = 1, jump = 0, repeat = 0 } = autoRegions;
+    const frames = [];
+
+    for(let i = 0; i < repeat; i++) {
+        const regionID = start + jump * i;
+        const region = this.regions[regionID];
+
+        if(region) {
+            frames.push(region);
+        } else {
+            //TODO: Log region error.
+        }
+    }
+
+    return frames;
+}
+
+Texture.prototype.getFrames = function(regions) {
+    const frames = [];
+
+    for(let i = 0; i < regions.length; i++) {
+        const regionID = regions[i];
+        const region = this.regions[regionID];
+
+        if(region) {
+            frames.push(region);
+        } else {
+            //TODO: Log region error.
+        }
+    }
+
+    return frames;
 }

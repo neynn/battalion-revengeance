@@ -1,7 +1,6 @@
 export const Layer = function() {
     this.buffer = [];
     this.alpha = 1;
-    this.autoGenerate = false;
     this.threshold = Layer.BUFFER_THRESHOLD.BIT_0;
     this.fillValue = 0;
 }
@@ -54,10 +53,6 @@ Layer.prototype.setAlpha = function(alpha = 0) {
     } else {
         this.alpha = alpha;
     }
-}
-
-Layer.prototype.setAutoGenerate = function(autoGenerate) {
-    this.autoGenerate = autoGenerate ?? this.autoGenerate;
 }
 
 Layer.prototype.resize = function(oldWidth, oldHeight, newWidth, newHeight) {
