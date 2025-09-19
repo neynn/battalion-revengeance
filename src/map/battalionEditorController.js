@@ -92,7 +92,7 @@ BattaltionEditorController.prototype.createMap = function(gameContext) {
 
 BattaltionEditorController.prototype.loadMap = async function(gameContext) {
     const mapID = prompt("MAP-ID?");
-    const worldMap = MapSpawner.createMapByID(gameContext, mapID);
+    const worldMap = await MapSpawner.createMapByID(gameContext, mapID);
 
     if(worldMap) {
         this.mapID = worldMap.getID();

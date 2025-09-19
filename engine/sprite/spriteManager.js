@@ -8,13 +8,14 @@ import { Texture } from "../resources/texture.js";
 
 export const SpriteManager = function(resourceLoader) {
     this.resources = resourceLoader;
-    this.pool = new ObjectPool(1024, (index) => new Sprite(index, "EMPTY_SPRITE"));
-    this.pool.allocate();
     this.spriteTracker = new Set();
     this.spriteMap = new Map();
     this.containers = [];
     this.sharedSprites = [];
     this.timestamp = 0;
+
+    this.pool = new ObjectPool(1024, (index) => new Sprite(index, "EMPTY_SPRITE"));
+    this.pool.allocate();
 
     this.layers = [];
     this.layers[SpriteManager.LAYER.BOTTOM] = [];
@@ -175,7 +176,10 @@ SpriteManager.prototype.destroyCopyTextures = function() {
 
 SpriteManager.prototype.exit = function() {
     this.spriteTracker.clear();
-    this.pool.forAllReserved((sprite) => sprite.closeGraph());
+    this.pool.forAllReserved((sprite) => {
+        sprite.reset();
+        sprite.closeGraph();
+    });
     this.pool.reset();
     this.destroyCopyTextures();
     this.sharedSprites.length = 0;

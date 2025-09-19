@@ -1,15 +1,28 @@
 {
-    "scorpion_tank": {
-        "id": "scorpion_tank",
+    "annihilator_tank": {
+        "id": "annihilator_tank",
         "sprites": {
-            "idle_right": "scorpion_tank_idle_right",
-            "idle_left": "scorpion_tank_idle_left",
-            "idle_down": "scorpion_tank_idle_down",
-            "idle_up": "scorpion_tank_idle_up",
-            "fire_right": "scorpion_tank_fire_right",
-            "fire_left": "scorpion_tank_fire_left",
-            "fire_down": "scorpion_tank_fire_down",
-            "fire_up": "scorpion_tank_fire_up"
+            "idle_right": "annihilator_tank_idle_right",
+            "idle_left": "annihilator_tank_idle_left",
+            "idle_down": "annihilator_tank_idle_down",
+            "idle_up": "annihilator_tank_idle_up",
+            "fire_right": "annihilator_tank_fire_right",
+            "fire_left": "annihilator_tank_fire_left",
+            "fire_down": "annihilator_tank_fire_down",
+            "fire_up": "annihilator_tank_fire_up"
+        }
+    },
+    "battle_cruiser": {
+        "id": "battle_cruiser",
+        "sprites": {
+            "idle_right": "battle_cruiser_idle_right",
+            "idle_left": "battle_cruiser_idle_left",
+            "idle_down": "battle_cruiser_idle_down",
+            "idle_up": "battle_cruiser_idle_up",
+            "fire_right": "battle_cruiser_fire_right",
+            "fire_left": "battle_cruiser_fire_left",
+            "fire_down": "battle_cruiser_fire_down",
+            "fire_up": "battle_cruiser_fire_up"
         }
     },
     "condor_bomber": {
@@ -23,6 +36,263 @@
             "fire_left": "condor_bomber_fire_left",
             "fire_down": "condor_bomber_fire_down",
             "fire_up": "condor_bomber_fire_up"
+        }
+    },
+    "corvette_fighter": {
+        "id": "corvette_fighter",
+        "sprites": {
+            "idle_right": "corvette_fighter_idle_right",
+            "idle_left": "corvette_fighter_idle_left",
+            "idle_down": "corvette_fighter_idle_down",
+            "idle_up": "corvette_fighter_idle_up",
+            "fire_right": "corvette_fighter_fire_right",
+            "fire_left": "corvette_fighter_fire_left",
+            "fire_down": "corvette_fighter_fire_down",
+            "fire_up": "corvette_fighter_fire_up"
+        }
+    },
+    "flak_tank": {
+        "id": "flak_tank",
+        "sprites": {
+            "idle_right": "flak_tank_idle_right",
+            "idle_left": "flak_tank_idle_left",
+            "idle_down": "flak_tank_idle_down",
+            "idle_up": "flak_tank_idle_up",
+            "fire_right": "flak_tank_fire_right",
+            "fire_left": "flak_tank_fire_left",
+            "fire_down": "flak_tank_fire_down",
+            "fire_up": "flak_tank_fire_up"
+        }
+    },
+    "heavy_commando": {
+        "id": "heavy_commando",
+        "sprites": {
+            "idle_right": "heavy_commando_idle_right",
+            "idle_left": "heavy_commando_idle_left",
+            "idle_down": "heavy_commando_idle_down",
+            "idle_up": "heavy_commando_idle_up",
+            "fire_right": "heavy_commando_fire_right",
+            "fire_left": "heavy_commando_fire_left",
+            "fire_down": "heavy_commando_fire_down",
+            "fire_up": "heavy_commando_fire_up"
+        }
+    },
+    "hunter_support": {
+        "id": "hunter_support",
+        "sprites": {
+            "idle_right": "hunter_support_idle_right",
+            "idle_left": "hunter_support_idle_left",
+            "idle_down": "hunter_support_idle_down",
+            "idle_up": "hunter_support_idle_up",
+            "fire_right": "hunter_support_fire_right",
+            "fire_left": "hunter_support_fire_left",
+            "fire_down": "hunter_support_fire_down",
+            "fire_up": "hunter_support_fire_up"
+        }
+    },
+    "intrepid": {
+        "id": "intrepid",
+        "sprites": {
+            "idle_right": "intrepid_idle_right",
+            "idle_left": "intrepid_idle_left",
+            "idle_down": "intrepid_idle_down",
+            "idle_up": "intrepid_idle_up",
+            "fire_right": "intrepid_fire_right",
+            "fire_left": "intrepid_fire_left",
+            "fire_down": "intrepid_fire_down",
+            "fire_up": "intrepid_fire_up"
+        }
+    },
+    "lancer_tank": {
+        "id": "lancer_tank",
+        "sprites": {
+            "idle_right": "lancer_tank_idle_right",
+            "idle_left": "lancer_tank_idle_left",
+            "idle_down": "lancer_tank_idle_down",
+            "idle_up": "lancer_tank_idle_up",
+            "fire_right": "lancer_tank_fire_right",
+            "fire_left": "lancer_tank_fire_left",
+            "fire_down": "lancer_tank_fire_down",
+            "fire_up": "lancer_tank_fire_up"
+        }
+    },
+    "mortar_truck": {
+        "id": "mortar_truck",
+        "sprites": {
+            "idle_right": "mortar_truck_idle_right",
+            "idle_left": "mortar_truck_idle_left",
+            "idle_down": "mortar_truck_idle_down",
+            "idle_up": "mortar_truck_idle_up",
+            "fire_right": "mortar_truck_fire_right",
+            "fire_left": "mortar_truck_fire_left",
+            "fire_down": "mortar_truck_fire_down",
+            "fire_up": "mortar_truck_fire_up"
+        }
+    },
+    "raptor_fighter": {
+        "id": "raptor_fighter",
+        "sprites": {
+            "idle_right": "raptor_fighter_idle_right",
+            "idle_left": "raptor_fighter_idle_left",
+            "idle_down": "raptor_fighter_idle_down",
+            "idle_up": "raptor_fighter_idle_up",
+            "fire_right": "raptor_fighter_fire_right",
+            "fire_left": "raptor_fighter_fire_left",
+            "fire_down": "raptor_fighter_fire_down",
+            "fire_up": "raptor_fighter_fire_up"
+        }
+    },
+    "rocket_truck": {
+        "id": "rocket_truck",
+        "sprites": {
+            "idle_right": "rocket_truck_idle_right",
+            "idle_left": "rocket_truck_idle_left",
+            "idle_down": "rocket_truck_idle_down",
+            "idle_up": "rocket_truck_idle_up",
+            "fire_right": "rocket_truck_fire_right",
+            "fire_left": "rocket_truck_fire_left",
+            "fire_down": "rocket_truck_fire_down",
+            "fire_up": "rocket_truck_fire_up"
+        }
+    },
+    "scorpion_tank": {
+        "id": "scorpion_tank",
+        "sprites": {
+            "idle_right": "scorpion_tank_idle_right",
+            "idle_left": "scorpion_tank_idle_left",
+            "idle_down": "scorpion_tank_idle_down",
+            "idle_up": "scorpion_tank_idle_up",
+            "fire_right": "scorpion_tank_fire_right",
+            "fire_left": "scorpion_tank_fire_left",
+            "fire_down": "scorpion_tank_fire_down",
+            "fire_up": "scorpion_tank_fire_up"
+        }
+    },
+    "spider_tank": {
+        "id": "spider_tank",
+        "sprites": {
+            "idle_right": "spider_tank_idle_right",
+            "idle_left": "spider_tank_idle_left",
+            "idle_down": "spider_tank_idle_down",
+            "idle_up": "spider_tank_idle_up",
+            "fire_right": "spider_tank_fire_right",
+            "fire_left": "spider_tank_fire_left",
+            "fire_down": "spider_tank_fire_down",
+            "fire_up": "spider_tank_fire_up"
+        }
+    },
+    "stealth_tank": {
+        "id": "stealth_tank",
+        "sprites": {
+            "idle_right": "stealth_tank_idle_right",
+            "idle_left": "stealth_tank_idle_left",
+            "idle_down": "stealth_tank_idle_down",
+            "idle_up": "stealth_tank_idle_up",
+            "fire_right": "stealth_tank_fire_right",
+            "fire_left": "stealth_tank_fire_left",
+            "fire_down": "stealth_tank_fire_down",
+            "fire_up": "stealth_tank_fire_up"
+        }
+    },
+    "strike_commando": {
+        "id": "strike_commando",
+        "sprites": {
+            "idle_right": "strike_commando_idle_right",
+            "idle_left": "strike_commando_idle_left",
+            "idle_down": "strike_commando_idle_down",
+            "idle_up": "strike_commando_idle_up",
+            "fire_right": "strike_commando_fire_right",
+            "fire_left": "strike_commando_fire_left",
+            "fire_down": "strike_commando_fire_down",
+            "fire_up": "strike_commando_fire_up"
+        }
+    },
+    "turret": {
+        "id": "turret",
+        "sprites": {
+            "idle_right": "turret_idle_right",
+            "idle_left": "turret_idle_left",
+            "idle_down": "turret_idle_down",
+            "idle_up": "turret_idle_up",
+            "fire_right": "turret_fire_right",
+            "fire_left": "turret_fire_left",
+            "fire_down": "turret_fire_down",
+            "fire_up": "turret_fire_up"
+        }
+    },
+    "u_boat": {
+        "id": "u_boat",
+        "sprites": {
+            "idle_right": "u_boat_idle_right",
+            "idle_left": "u_boat_idle_left",
+            "idle_down": "u_boat_idle_down",
+            "idle_up": "u_boat_idle_up",
+            "fire_right": "u_boat_fire_right",
+            "fire_left": "u_boat_fire_left",
+            "fire_down": "u_boat_fire_down",
+            "fire_up": "u_boat_fire_up"
+        }
+    },
+    "vulture_drone": {
+        "id": "vulture_drone",
+        "sprites": {
+            "idle_right": "vulture_drone_idle_right",
+            "idle_left": "vulture_drone_idle_left",
+            "idle_down": "vulture_drone_idle_down",
+            "idle_up": "vulture_drone_idle_up",
+            "fire_right": "vulture_drone_fire_right",
+            "fire_left": "vulture_drone_fire_left",
+            "fire_down": "vulture_drone_fire_down",
+            "fire_up": "vulture_drone_fire_up"
+        }
+    },
+    "warmachine": {
+        "id": "warmachine",
+        "sprites": {
+            "idle_right": "warmachine_idle_right",
+            "idle_left": "warmachine_idle_left",
+            "idle_down": "warmachine_idle_down",
+            "idle_up": "warmachine_idle_up",
+            "fire_right": "warmachine_fire_right",
+            "fire_left": "warmachine_fire_left",
+            "fire_down": "warmachine_fire_down",
+            "fire_up": "warmachine_fire_up"
+        }
+    },
+    "albatross_transport": {
+        "id": "albatross_transport",
+        "sprites": {
+            "idle_right": "albatross_transport_idle_right",
+            "idle_left": "albatross_transport_idle_left",
+            "idle_down": "albatross_transport_idle_down",
+            "idle_up": "albatross_transport_idle_up"
+        }
+    },
+    "blockade": {
+        "id": "blockade",
+        "sprites": {
+            "idle_right": "blockade_idle_right",
+            "idle_left": "blockade_idle_left",
+            "idle_down": "blockade_idle_down",
+            "idle_up": "blockade_idle_up"
+        }
+    },
+    "jammer_truck": {
+        "id": "jammer_truck",
+        "sprites": {
+            "idle_right": "jammer_truck_idle_right",
+            "idle_left": "jammer_truck_idle_left",
+            "idle_down": "jammer_truck_idle_down",
+            "idle_up": "jammer_truck_idle_up"
+        }
+    },
+    "leviathan_barge": {
+        "id": "leviathan_barge",
+        "sprites": {
+            "idle_right": "leviathan_barge_idle_right",
+            "idle_left": "leviathan_barge_idle_left",
+            "idle_down": "leviathan_barge_idle_down",
+            "idle_up": "leviathan_barge_idle_up"
         }
     }
 }

@@ -111,11 +111,12 @@ export const EntitySpawner = {
             "y": tileY
         };
     },
-    createEntity: function(gameContext, config, spriteID) {
+    createEntity: function(gameContext, config) {
         const { world, transform2D } = gameContext;
         const { entityManager } = world;
         const { id, type, x, y } = config;
         const entity = entityManager.createEntity((entityID, entityType) => {
+            const spriteID = entityType.sprites[BattalionEntity.SPRITE_TYPE.IDLE_RIGHT];
             const entitySprite = new BattalionSprite();
             const sprite = SpriteHelper.createColoredSprite(gameContext, spriteID, getRandomElement(Object.keys(SCHEMAS)), SCHEMAS, SpriteManager.LAYER.MIDDLE);
             const spawnPosition = transform2D.transformTileToWorld(x, y);
@@ -129,13 +130,17 @@ export const EntitySpawner = {
     
         return entity;
     },
-    debugEntities: function(gameContext) {
-        const NAME = "condor_bomber";
+    getRandomEntity: function(gameContext) {
+        const { world } = gameContext;
+        const { entityManager } = world;
+        const entities = Object.keys(entityManager.entityTypes);
 
-        for(let i = 0; i < 1; i++) {
-            for(let j = 0; j < 1; j++) {
-                EntitySpawner.createEntity(gameContext, EntitySpawner.createEntityConfig("scorpion_tank", 3, 3), NAME + "_idle_right");
-                EntitySpawner.createEntity(gameContext, EntitySpawner.createEntityConfig("scorpion_tank", 5, 3), NAME + "_fire_right");
+        return getRandomElement(entities);
+    },
+    debugEntities: function(gameContext) {
+        for(let i = 0; i < 20; i++) {
+            for(let j = 0; j < 20; j++) {
+                EntitySpawner.createEntity(gameContext, EntitySpawner.createEntityConfig(EntitySpawner.getRandomEntity(gameContext), j, i));
             }
         }
     }
