@@ -29,7 +29,7 @@ export const MapHelper = {
 
         if(worldMap) {
             mapManager.addMap(mapID, worldMap);
-            mapManager.setActiveMap(mapID);
+            mapManager.enableMap(mapID);
 
             if(mapLanguage) {
                 language.registerMap(mapID, mapLanguage);
@@ -52,7 +52,7 @@ export const MapHelper = {
 
         if(worldMap) {
             mapManager.addMap(mapID, worldMap);
-            mapManager.setActiveMap(mapID);
+            mapManager.enableMap(mapID);
         }
 
         return worldMap;

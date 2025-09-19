@@ -88,7 +88,7 @@ MapSystem.createMapByID = async function(gameContext, mapID) {
 
     const worldMap = mapManager.createMap(mapID, (id) => createMap(gameContext, id, mapData, 1));
 
-    mapManager.setActiveMap(mapID);
+    mapManager.enableMap(mapID);
 
     return worldMap;
 }
@@ -106,7 +106,7 @@ MapSystem.createMapByData = function(gameContext, mapID, mapData) {
     const { mapManager } = world;
     const worldMap = mapManager.createMap(mapID, (id) => createMap(gameContext, id, mapData, 1));
 
-    mapManager.setActiveMap(mapID);
+    mapManager.enableMap(mapID);
 
     return worldMap;
 }
@@ -124,7 +124,7 @@ MapSystem.createEmptyMap = function(gameContext, mapID, mapData) {
     const { mapManager } = world;
     const worldMap = mapManager.createMap(mapID, (id) => createMap(gameContext, id, mapData, 0));
 
-    mapManager.setActiveMap(mapID);
+    mapManager.enableMap(mapID);
 
     return worldMap;
 }

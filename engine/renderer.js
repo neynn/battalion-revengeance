@@ -1,33 +1,19 @@
-import { Camera } from "./camera/camera.js";
 import { Display } from "./camera/display.js";
 import { EffectManager } from "./effects/effectManager.js";
-import { EventEmitter } from "./events/eventEmitter.js";
 import { CameraContext } from "./camera/cameraContext.js";
 import { Camera2D } from "./camera/camera2D.js";
 import { ContextHelper } from "./camera/contextHelper.js";
 
-export const Renderer = function() {
+export const Renderer = function(windowWidth, windowHeight) {
     this.contexts = [];
-    this.windowWidth = window.innerWidth;
-    this.windowHeight = window.innerHeight;
+    this.windowWidth = windowWidth;
+    this.windowHeight = windowHeight;
 
-    this.effectManager = new EffectManager();
     this.display = new Display();
     this.display.init(this.windowWidth, this.windowHeight, Display.TYPE.DISPLAY);
 
-    this.events = new EventEmitter();
-    this.events.listen(Renderer.EVENT.SCREEN_RESIZE);
-    this.events.listen(Renderer.EVENT.CONTEXT_CREATE);
-    this.events.listen(Renderer.EVENT.CONTEXT_DESTROY);
-
-    window.addEventListener("resize", () => this.onWindowResize(window.innerWidth, window.innerHeight));
+    this.effectManager = new EffectManager();
 }
-
-Renderer.EVENT = {
-    SCREEN_RESIZE: "SCREEN_RESIZE",
-    CONTEXT_CREATE: "CONTEXT_CREATE",
-    CONTEXT_DESTROY: "CONTEXT_DESTROY"
-};
 
 Renderer.DEBUG = {
     CONTEXT: false,
@@ -76,10 +62,11 @@ Renderer.prototype.createContext = function(contextID, camera) {
         return this.getContext(contextID);
     }
 
-    const context = new CameraContext(contextID, camera, this.windowWidth, this.windowHeight);
+    const context = new CameraContext(contextID, camera);
+
+    context.setSize(this.windowWidth, this.windowHeight);
 
     this.contexts.push(context);
-    this.events.emit(Renderer.EVENT.CONTEXT_CREATE, contextID, context);
 
     return context;
 }
@@ -91,7 +78,6 @@ Renderer.prototype.destroyContext = function(contextID) {
 
         if(id === contextID) {
             this.contexts.splice(i, 1);
-            this.events.emit(Renderer.EVENT.CONTEXT_DESTROY, contextID);
             return;
         }
     }
@@ -167,8 +153,6 @@ Renderer.prototype.onWindowResize = function(width, height) {
     for(let i = 0; i < this.contexts.length; i++) {
         this.contexts[i].onWindowResize(this.display.width, this.display.height);
     }
-    
-    this.events.emit(Renderer.EVENT.SCREEN_RESIZE, width, height);
 }
 
 Renderer.prototype.onMapSizeUpdate = function(mapWidth, mapHeight) {
@@ -180,7 +164,7 @@ Renderer.prototype.onMapSizeUpdate = function(mapWidth, mapHeight) {
             camera.setMapSize(mapWidth, mapHeight);
         }
 
-        context.refreshFull();
+        context.refresh();
     }
 }
 

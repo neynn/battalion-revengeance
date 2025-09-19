@@ -1,9 +1,11 @@
 import { Display } from "./display.js";
 import { isRectangleRectangleIntersect } from "../math/math.js";
 
-export const CameraContext = function(id, camera, windowWidth, windowHeight) {
+export const CameraContext = function(id, camera) {
     this.id = id;
     this.camera = camera;
+    this.width = 0;
+    this.height = 0;
     this.positionX = 0;
     this.positionY = 0;
     this.display = new Display();
@@ -11,9 +13,6 @@ export const CameraContext = function(id, camera, windowWidth, windowHeight) {
     this.scaleMode = CameraContext.SCALE_MODE.NONE;
     this.positionMode = CameraContext.POSITION_MODE.FIXED;
     this.displayMode = CameraContext.DISPLAY_MODE.RESOLUTION_DEPENDENT;
-    this.windowWidth = windowWidth;
-    this.windowHeight = windowHeight;
-    this.camera.setViewportSize(this.windowWidth, this.windowHeight);
     this.display.init(1, 1, Display.TYPE.BUFFER);
 }
 
@@ -88,10 +87,21 @@ CameraContext.prototype.setPosition = function(x, y) {
     this.positionY = Math.floor(y);
 }
 
+CameraContext.prototype.setSize = function(width, height) {
+    this.width = width;
+    this.height = height;
+
+    if(this.displayMode === CameraContext.DISPLAY_MODE.RESOLUTION_DEPENDENT) {
+        this.camera.setViewportSize(width, height);
+    }
+
+    this.refresh();
+}
+
 CameraContext.prototype.centerCamera = function() {
     const { viewportWidth, viewportHeight } = this.camera;
-    const positionX = (this.windowWidth - this.scale * viewportWidth) * 0.5;
-    const positionY = (this.windowHeight - this.scale * viewportHeight) * 0.5;
+    const positionX = (this.width - this.scale * viewportWidth) * 0.5;
+    const positionY = (this.height - this.scale * viewportHeight) * 0.5;
 
     this.setPosition(positionX, positionY);
 }
@@ -109,8 +119,8 @@ CameraContext.prototype.reloadScale = function() {
         return;
     }
 
-    let width = this.windowWidth;
-    let height = this.windowHeight;
+    let width = this.width;
+    let height = this.height;
 
     if(this.positionMode === CameraContext.POSITION_MODE.FIXED) {
         width -= this.positionX;
@@ -120,7 +130,7 @@ CameraContext.prototype.reloadScale = function() {
     this.scale = this.getScale(width, height);
 }
 
-CameraContext.prototype.refreshFull = function() {
+CameraContext.prototype.refresh = function() {
     this.reloadScale();
 
     if(this.positionMode === CameraContext.POSITION_MODE.AUTO_CENTER) {
@@ -178,14 +188,14 @@ CameraContext.prototype.setDisplayMode = function(modeID) {
     switch(modeID) {
         case CameraContext.DISPLAY_MODE.RESOLUTION_DEPENDENT: {
             this.displayMode = CameraContext.DISPLAY_MODE.RESOLUTION_DEPENDENT;
-            this.camera.setViewportSize(this.windowWidth, this.windowHeight);
-            this.refreshFull();
+            this.camera.setViewportSize(this.width, this.height);
+            this.refresh();
             break;
         }
         case CameraContext.DISPLAY_MODE.RESOLUTION_FIXED: {
             this.displayMode = CameraContext.DISPLAY_MODE.RESOLUTION_FIXED;
             this.camera.setViewportSize(this.display.width, this.display.height);
-            this.refreshFull();
+            this.refresh();
             break;
         }
         default: {
@@ -196,21 +206,15 @@ CameraContext.prototype.setDisplayMode = function(modeID) {
 }
 
 CameraContext.prototype.onWindowResize = function(windowWidth, windowHeight) {
-    this.windowWidth = windowWidth;
-    this.windowHeight = windowHeight;
-
-    if(this.displayMode === CameraContext.DISPLAY_MODE.RESOLUTION_DEPENDENT) {
-        this.camera.setViewportSize(windowWidth, windowHeight);
-    }
-
-    this.refreshFull();
+    //TODO: Decouple the context size from the window size.
+    this.setSize(windowWidth, windowHeight);
 }
 
 CameraContext.prototype.setResolution = function(width, height) {
     if(this.displayMode === CameraContext.DISPLAY_MODE.RESOLUTION_FIXED) {
         this.display.resize(width, height);
         this.camera.setViewportSize(width, height);
-        this.refreshFull();
+        this.refresh();
     }
 }
 

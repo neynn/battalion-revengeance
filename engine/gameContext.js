@@ -16,7 +16,7 @@ import { ResourceLoader } from "./resources/resourceLoader.js";
 export const GameContext = function() {
     this.client = new Client();
     this.world = new World();
-    this.renderer = new Renderer();
+    this.renderer = new Renderer(window.innerWidth, window.innerHeight);
     this.resourceLoader = new ResourceLoader();
     this.tileManager = new TileManager(this.resourceLoader);
     this.spriteManager = new SpriteManager(this.resourceLoader);
@@ -43,10 +43,6 @@ export const GameContext = function() {
         this.renderer.update(this);
     }
 
-    this.renderer.events.on(Renderer.EVENT.SCREEN_RESIZE, (width, height) => {
-        this.uiManager.onWindowResize(width, height);
-    }, { permanent: true });
-
     this.client.cursor.events.on(Cursor.EVENT.BUTTON_CLICK, (buttonID, cursorX, cursorY) => {
         if(buttonID === Cursor.BUTTON.LEFT) {
             this.uiManager.onClick(cursorX, cursorY, this.client.cursor.radius);
@@ -66,6 +62,11 @@ export const GameContext = function() {
     this.language.events.on(LanguageHandler.EVENT.LANGUAGE_CHANGE, (languageID) => {
         this.world.mapManager.onLanguageUpdate(this, languageID);
     }, { permanent: true });
+
+    window.addEventListener("resize", () => {
+        this.renderer.onWindowResize(window.innerWidth, window.innerHeight);
+        this.uiManager.onWindowResize(window.innerWidth, window.innerHeight);
+    });
 
     this.addDebug();
 }

@@ -109,7 +109,7 @@ MapManager.prototype.fetchMapData = function(mapID) {
     return Promise.resolve(null);
 }
 
-MapManager.prototype.setActiveMap = function(mapID) {
+MapManager.prototype.enableMap = function(mapID) {
     const worldMap = this.maps.get(mapID);
 
     if(!worldMap || worldMap === this.activeMap) {
@@ -117,7 +117,7 @@ MapManager.prototype.setActiveMap = function(mapID) {
     }
 
     if(this.activeMap && this.activeMap !== worldMap) {
-        this.clearActiveMap();
+        this.disableMap();
     }
 
     this.activeMap = worldMap;
@@ -148,7 +148,7 @@ MapManager.prototype.deleteMap = function(mapID) {
     }
 
     if(this.activeMap === loadedMap) {
-        this.clearActiveMap();
+        this.disableMap();
     }
 
     this.maps.delete(mapID);
@@ -165,7 +165,7 @@ MapManager.prototype.getMap = function(mapID) {
     return loadedMap;
 }
 
-MapManager.prototype.clearActiveMap = function() {
+MapManager.prototype.disableMap = function() {
     if(this.activeMap) {
         const mapID = this.activeMap.getID();
 
@@ -178,6 +178,6 @@ MapManager.prototype.clearActiveMap = function() {
 MapManager.prototype.exit = function() {
     this.events.muteAll();
     this.maps.clear();
-    this.clearActiveMap();
+    this.disableMap();
     this.nextID = 0;
 }
