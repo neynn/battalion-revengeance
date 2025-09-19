@@ -19,10 +19,11 @@
     },
     "DEBUG": {
         "ESCAPE": "+Escape",
-        "DEBUG_MAP": "+F1",
-        "DEBUG_CONTEXT": "+F2",
-        "DEBUG_INTERFACE": "+F3",
+        "DEBUG_INFO": "+F1",
+        "DEBUG_MAP": "+F2",
+        "DEBUG_CONTEXT": "+F3",
         "DEBUG_SPRITES": "+F4",
-        "EXPORT_LOGS": "+F6"
+        "DEBUG_INTERFACE": "+F6",
+        "EXPORT_LOGS": "+F7"
     }
 }

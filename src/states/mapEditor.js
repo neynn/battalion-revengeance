@@ -6,6 +6,7 @@ import { BattaltionEditorController } from "../map/battalionEditorController.js"
 
 export const MapEditorState = function() {
     this.controller = null;
+    this.contextID = -1;
 }
 
 MapEditorState.prototype = Object.create(State.prototype);
@@ -13,7 +14,8 @@ MapEditorState.prototype.constructor = MapEditorState;
 
 MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
     const { tileManager } = gameContext;
-    const camera = CameraHelper.createEditCamera(gameContext);
+    const context = CameraHelper.createEditCamera(gameContext);
+    const camera = context.getCamera();
     const mapEditor = new BattalionMapEditor();
     const controller = new BattaltionEditorController(mapEditor, tileManager.getInversion());
 
@@ -28,13 +30,15 @@ MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
     controller.loadCommands(gameContext);
 
     this.controller = controller;
+    this.contextID = context.getID();
 }
 
 MapEditorState.prototype.onExit = function(gameContext, stateMachine) {
-    const { uiManager } = gameContext;
+    const { uiManager, renderer } = gameContext;
 
     uiManager.destroyGUI(this.controller.guiID);
-    CameraHelper.destroyEditCamera(gameContext);
+    renderer.destroyContext(this.contextID);
 
     this.controller = null;
+    this.contextID = -1;
 }

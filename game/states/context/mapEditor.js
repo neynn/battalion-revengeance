@@ -51,7 +51,7 @@ MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
 MapEditorState.prototype.initCamera = function(gameContext, camera) {
     const { renderer, transform2D } = gameContext;
     const { tileWidth, tileHeight } = transform2D;
-    const context = renderer.createContext("CAMERA_CONTEXT", camera);
+    const context = renderer.createContext(camera);
     
     context.setPosition(0, 0);
     //context.setDisplayMode(CameraContext.DISPLAY_MODE.RESOLUTION_FIXED);

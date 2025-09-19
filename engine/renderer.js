@@ -5,6 +5,7 @@ import { Camera2D } from "./camera/camera2D.js";
 import { ContextHelper } from "./camera/contextHelper.js";
 
 export const Renderer = function(windowWidth, windowHeight) {
+    this.nextID = 0;
     this.contexts = [];
     this.windowWidth = windowWidth;
     this.windowHeight = windowHeight;
@@ -16,18 +17,21 @@ export const Renderer = function(windowWidth, windowHeight) {
 }
 
 Renderer.DEBUG = {
-    CONTEXT: false,
-    INTERFACE: false,
-    SPRITES: false,
-    MAP: false
+    CONTEXT: 0,
+    INTERFACE: 0,
+    SPRITES: 0,
+    MAP: 0,
+    INFO: 1
 };
 
 Renderer.FPS_COLOR = {
-    BAD: "#ff0000",
-    GOOD: "#00ff00"
+    LOW: "#ff0000",
+    MEDIUM: "#ffff00",
+    HIGH: "#00ff00"
 };
 
 Renderer.prototype.exit = function() {
+    this.nextID = 0;
     this.contexts.length = 0;
 }
 
@@ -57,11 +61,8 @@ Renderer.prototype.hasContext = function(contextID) {
     return false;
 }
 
-Renderer.prototype.createContext = function(contextID, camera) {
-    if(this.hasContext(contextID)) {
-        return this.getContext(contextID);
-    }
-
+Renderer.prototype.createContext = function(camera) {
+    const contextID = this.nextID++;
     const context = new CameraContext(contextID, camera);
 
     context.setSize(this.windowWidth, this.windowHeight);
@@ -113,7 +114,9 @@ Renderer.prototype.update = function(gameContext) {
         uiManager.debug(this.display);
     }
 
-    this.drawInfo(gameContext);
+    if(Renderer.DEBUG.INFO) {
+        this.drawInfo(gameContext);
+    }
 }
 
 Renderer.prototype.drawInfo = function(gameContext) {
@@ -122,10 +125,12 @@ Renderer.prototype.drawInfo = function(gameContext) {
     const { x, y } = ContextHelper.getMouseTile(gameContext);
     const fps = Math.round(timer.getFPS());
 
-    if(fps >= 60) {
-        context.fillStyle = Renderer.FPS_COLOR.GOOD;
+    if(fps >= 120) {
+        context.fillStyle = Renderer.FPS_COLOR.HIGH;
+    } else if(fps >= 60) {
+        context.fillStyle = Renderer.FPS_COLOR.MEDIUM;
     } else {
-        context.fillStyle = Renderer.FPS_COLOR.BAD;
+        context.fillStyle = Renderer.FPS_COLOR.LOW;
     }
     
     const TEXT_SIZE = 10;
@@ -141,8 +146,8 @@ Renderer.prototype.drawInfo = function(gameContext) {
 
     context.fillText(`DEBUG-MAP: ${Renderer.DEBUG.MAP}`, 0, DEBUG_Y);
     context.fillText(`DEBUG-CONTEXT: ${Renderer.DEBUG.CONTEXT}`, 0, DEBUG_Y + TEXT_SIZE);
-    context.fillText(`DEBUG-INTERFACE: ${Renderer.DEBUG.INTERFACE}`, 0, DEBUG_Y + TEXT_SIZE * 2);
-    context.fillText(`DEBUG-SPRITES: ${Renderer.DEBUG.SPRITES}`, 0, DEBUG_Y + TEXT_SIZE * 3);
+    context.fillText(`DEBUG-SPRITES: ${Renderer.DEBUG.SPRITES}`, 0, DEBUG_Y + TEXT_SIZE * 2);
+    context.fillText(`DEBUG-INTERFACE: ${Renderer.DEBUG.INTERFACE}`, 0, DEBUG_Y + TEXT_SIZE * 3);
 }
 
 Renderer.prototype.onWindowResize = function(width, height) {

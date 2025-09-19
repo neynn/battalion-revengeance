@@ -26,7 +26,7 @@ const createPlayerCamera = function(gameContext) {
     const { tileWidth, tileHeight } = transform2D;
 
     const camera = new PlayCamera();
-    const context = renderer.createContext("PLAYER_CAMERA", camera);
+    const context = renderer.createContext(camera);
 
     context.setPositionMode(CameraContext.POSITION_MODE.AUTO_CENTER);
     context.setDisplayMode(CameraContext.DISPLAY_MODE.RESOLUTION_FIXED);

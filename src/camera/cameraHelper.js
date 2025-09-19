@@ -4,20 +4,7 @@ import { Cursor } from "../../engine/client/cursor.js";
 import { BattalionCamera } from "./battalionCamera.js";
 import { EditCamera } from "./editCamera.js";
 
-const EDIT_CAMERA_ID = "EDIT";
-const PLAY_CAMERA_ID = "PLAY";
-
 export const CameraHelper = {
-    destroyPlayCamera: function(gameContext) {
-        const { renderer } = gameContext;
-
-        renderer.destroyContext(PLAY_CAMERA_ID);
-    },
-    destroyEditCamera: function(gameContext) {
-        const { renderer } = gameContext;
-
-        renderer.destroyContext(EDIT_CAMERA_ID);
-    },  
     tryLoadingWorldSize: function(gameContext, camera2D) {
         const { world } = gameContext;
         const { mapManager } = world;
@@ -34,7 +21,7 @@ export const CameraHelper = {
         const { tileWidth, tileHeight } = transform2D;
 
         const camera = new EditCamera();
-        const context = renderer.createContext(EDIT_CAMERA_ID, camera);
+        const context = renderer.createContext(camera);
         
         context.setPosition(0, 0);
         //context.setDisplayMode(CameraContext.DISPLAY_MODE.RESOLUTION_FIXED);
@@ -48,14 +35,14 @@ export const CameraHelper = {
         CameraHelper.tryLoadingWorldSize(gameContext, camera);
         ContextHelper.createDrag(gameContext, Cursor.BUTTON.LEFT);
 
-        return camera;
+        return context;
     },
     createPlayCamera: function(gameContext) {
         const { renderer, transform2D } = gameContext;
         const { tileWidth, tileHeight } = transform2D;
 
         const camera = new BattalionCamera();
-        const context = renderer.createContext(PLAY_CAMERA_ID, camera);
+        const context = renderer.createContext(camera);
         
         context.setPositionMode(CameraContext.POSITION_MODE.AUTO_CENTER);
         context.setDisplayMode(CameraContext.DISPLAY_MODE.RESOLUTION_FIXED);
@@ -68,6 +55,6 @@ export const CameraHelper = {
         CameraHelper.tryLoadingWorldSize(gameContext, camera);
         ContextHelper.createDrag(gameContext, Cursor.BUTTON.LEFT);
 
-        return camera;
+        return context;
     }
 };

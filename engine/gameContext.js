@@ -99,9 +99,9 @@ GameContext.prototype.addDebug = function() {
     const { router } = this.client;
 
     router.bind(this, "DEBUG");
-    router.on("DEBUG_MAP", () => Renderer.DEBUG.MAP = !Renderer.DEBUG.MAP);
-    router.on("DEBUG_CONTEXT", () => Renderer.DEBUG.CONTEXT = !Renderer.DEBUG.CONTEXT);
-    router.on("DEBUG_INTERFACE", () => Renderer.DEBUG.INTERFACE = !Renderer.DEBUG.INTERFACE);
-    router.on("DEBUG_SPRITES", () => Renderer.DEBUG.SPRITES = !Renderer.DEBUG.SPRITES);
-    router.on("EXPORT_LOGS", () => Logger.exportLogs(Logger.EXPORT_CODE_ALL));
+    router.on("DEBUG_MAP", () => Renderer.DEBUG.MAP = 1 - Renderer.DEBUG.MAP);
+    router.on("DEBUG_CONTEXT", () => Renderer.DEBUG.CONTEXT = 1 - Renderer.DEBUG.CONTEXT);
+    router.on("DEBUG_INTERFACE", () => Renderer.DEBUG.INTERFACE = 1 - Renderer.DEBUG.INTERFACE);
+    router.on("DEBUG_SPRITES", () => Renderer.DEBUG.SPRITES = 1 - Renderer.DEBUG.SPRITES);
+    router.on("DEBUG_INFO", () => Renderer.DEBUG.INFO = 1 - Renderer.DEBUG.INFO);
 }
