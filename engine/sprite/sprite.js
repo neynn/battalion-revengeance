@@ -6,7 +6,7 @@ export const Sprite = function(index, DEBUG_NAME) {
     
     this.index = index;
     this.texture = null;
-    this.frames = [];
+    this.container = null;
     this.lastCallTime = 0;
     this.frameCount = 0;
     this.frameTime = 1;
@@ -60,7 +60,7 @@ Sprite.prototype.onDraw = function(display, localX, localY) {
     }
 
     if(this.texture && this.texture.bitmap) {
-        const currentFrame = this.frames[this.currentFrame];
+        const currentFrame = this.container.frames[this.currentFrame];
         const { x, y, w, h } = currentFrame;
 
         context.drawImage(this.texture.bitmap, x, y, w, h, renderX, renderY, w, h);
@@ -112,7 +112,7 @@ Sprite.prototype.getIndex = function() {
 
 Sprite.prototype.reset = function() {
     this.texture = null;
-    this.frames = [];
+    this.container = null;
     this.lastCallTime = 0;
     this.frameCount = 0;
     this.frameTime = 1;
@@ -136,10 +136,10 @@ Sprite.prototype.setTexture = function(texture) {
 }
 
 Sprite.prototype.init = function(container, lastCallTime, DEBUG_NAME) {
-    const { frames, frameTime, frameCount, bounds } = container;
+    const { frameTime, frameCount, bounds } = container;
     const { x, y, w, h } = bounds;
 
-    this.frames = frames;
+    this.container = container;
     this.frameCount = frameCount;
     this.frameTime = frameTime;
     this.floatFrame = 0;

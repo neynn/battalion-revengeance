@@ -1,4 +1,5 @@
-export const SpriteContainer = function(bounds, frameTime, frames) {
+export const SpriteContainer = function(id, bounds, frameTime, frames) {
+    this.id = id;
     this.bounds = bounds;
     this.frameTime = frameTime;
     this.frames = frames;

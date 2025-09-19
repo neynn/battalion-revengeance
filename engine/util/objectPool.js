@@ -84,15 +84,17 @@ ObjectPool.prototype.getElement = function(index) {
 
 ObjectPool.prototype.reset = function() {
     this.size = this.originalSize;
-    this.elements.length = 0;
-    this.openSlots.length = 0;
+    this.elements.length = this.originalSize;
     this.reservedElements.clear();
-    this.allocate();
+
+    for(let i = 0; i < this.originalSize; i++) {
+        this.openSlots[i] = i;
+    }
 }
 
 ObjectPool.prototype.destroy = function() {
     this.size = 0;
     this.elements.length = 0;
     this.openSlots.length = 0;
-    this.reserveElement.clear();
+    this.reservedElements.clear();
 }

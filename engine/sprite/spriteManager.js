@@ -8,8 +8,8 @@ import { Texture } from "../resources/texture.js";
 
 export const SpriteManager = function(resourceLoader) {
     this.resources = resourceLoader;
-    this.sprites = new ObjectPool(1024, (index) => new Sprite(index, "EMPTY_SPRITE"));
-    this.sprites.allocate();
+    this.pool = new ObjectPool(1024, (index) => new Sprite(index, "EMPTY_SPRITE"));
+    this.pool.allocate();
     this.spriteTracker = new Set();
     this.spriteMap = new Map();
     this.containers = [];
@@ -38,47 +38,62 @@ SpriteManager.prototype.addSpriteEntry = function(spriteID, containerIndex, text
     });
 }
 
+SpriteManager.prototype.addSharedEntry = function(spriteID, index) {
+    this.sharedSprites.push({
+        "id": spriteID,
+        "index": index
+    });
+}
+
 SpriteManager.prototype.createSpriteAlias = function(spriteID, schemaID) {
     const spriteEntry = this.spriteMap.get(spriteID);
     const aliasID = SpriteHelper.getSchemaID(spriteID, schemaID);
 
-    if(spriteEntry && !this.spriteMap.has(aliasID)) {
-        const { index, textureID } = spriteEntry;
-
-        this.addSpriteEntry(aliasID, index, textureID);
+    if(!spriteEntry || this.spriteMap.has(aliasID)) {
+        return spriteID;
     }
+
+    const { index, textureID } = spriteEntry;
+
+    this.addSpriteEntry(aliasID, index, textureID);
+
+    return aliasID;
 }
 
 SpriteManager.prototype.createCopyTexture = function(spriteID, schemaID, schema) {
     const spriteEntry = this.spriteMap.get(spriteID);
     const aliasID = SpriteHelper.getSchemaID(spriteID, schemaID);
 
-    if(spriteEntry && !this.spriteMap.has(aliasID)) {
-        const { index, textureID } = spriteEntry;
-        const texture = this.resources.getTextureByID(textureID);
-        const texureAlias = SpriteHelper.getSchemaID(textureID, schemaID);
-        const copyTexture = this.resources.createCopyTexture(texureAlias, texture);
+    if(!spriteEntry || this.spriteMap.has(aliasID)) {
+        return null;
+    }
 
-        this.addSpriteEntry(aliasID, index, copyTexture.getID(), texureAlias);
+    const { index, textureID } = spriteEntry;
+    const texureAlias = SpriteHelper.getSchemaID(textureID, schemaID);
+    const texture = this.resources.getTextureByID(textureID);
+    const copyTexture = this.resources.createCopyTexture(texureAlias, texture);
 
-        if(copyTexture.state === Texture.STATE.EMPTY) {
-            switch(texture.state) {
-                case Texture.STATE.EMPTY: {
-                    this.resources.loadTexture(textureID);
-                    this.resources.addLoadResolver(textureID, (bitmap) => copyTexture.loadColoredBitmap(bitmap, schema));
-                    break;
-                }
-                case Texture.STATE.LOADING: {
-                    this.resources.addLoadResolver(textureID, (bitmap) => copyTexture.loadColoredBitmap(bitmap, schema));
-                    break;
-                }
-                case Texture.STATE.LOADED: {
-                    copyTexture.loadColoredBitmap(texture.bitmap, schema);
-                    break;
-                }
+    this.addSpriteEntry(aliasID, index, copyTexture.getID(), texureAlias);
+
+    if(copyTexture.state === Texture.STATE.EMPTY) {
+        switch(texture.state) {
+            case Texture.STATE.EMPTY: {
+                this.resources.loadTexture(textureID);
+                this.resources.addLoadResolver(textureID, (bitmap) => copyTexture.loadColoredBitmap(bitmap, schema));
+                break;
+            }
+            case Texture.STATE.LOADING: {
+                this.resources.addLoadResolver(textureID, (bitmap) => copyTexture.loadColoredBitmap(bitmap, schema));
+                break;
+            }
+            case Texture.STATE.LOADED: {
+                copyTexture.loadColoredBitmap(texture.bitmap, schema);
+                break;
             }
         }
     }
+
+    return copyTexture;
 }
 
 SpriteManager.prototype.load = function(textures, sprites) {
@@ -103,7 +118,7 @@ SpriteManager.prototype.load = function(textures, sprites) {
         const regionFrames = autoFrames !== undefined ? textureObject.getFramesAuto(autoFrames) : textureObject.getFrames(frames);
 
         if(regionFrames.length !== 0) {
-            const spriteContainer = new SpriteContainer(bounds, frameTime, regionFrames);
+            const spriteContainer = new SpriteContainer(spriteID, bounds, frameTime, regionFrames);
 
             this.containers.push(spriteContainer);
             this.addSpriteEntry(spriteID, this.containers.length - 1, textureID);
@@ -123,13 +138,13 @@ SpriteManager.prototype.update = function(gameContext) {
 
     for(let i = 0; i < this.sharedSprites.length; i++) {
         const { id, index } = this.sharedSprites[i];
-        const sprite = this.getSprite(index);
+        const sprite = this.pool.getElement(index);
 
         sprite.update(realTime, deltaTime);
     }
 
-    for(const index of this.sprites.reservedElements) {
-        const sprite = this.sprites.elements[index];
+    for(const index of this.pool.reservedElements) {
+        const sprite = this.pool.elements[index];
 
         if(sprite.hasFlag(Sprite.FLAG.DESTROY)) {
             removedSprites.push(index);
@@ -141,10 +156,28 @@ SpriteManager.prototype.update = function(gameContext) {
     }
 }
 
+SpriteManager.prototype.destroyCopyTextures = function() {
+    const toDestroy = [];
+
+    for(const [spriteID, entry] of this.spriteMap) {
+        const { index, textureID, copyAlias } = entry;
+
+        if(textureID === ResourceLoader.COPY_ID) {
+            this.resources.destroyCopyTexture(copyAlias);
+            toDestroy.push(spriteID);
+        }
+    }
+
+    for(let i = 0; i < toDestroy.length; i++) {
+        this.spriteMap.delete(toDestroy[i]);
+    }
+}
+
 SpriteManager.prototype.exit = function() {
     this.spriteTracker.clear();
-    this.sprites.forAllReserved((sprite) => sprite.closeGraph());
-    this.sprites.reset();
+    this.pool.forAllReserved((sprite) => sprite.closeGraph());
+    this.pool.reset();
+    this.destroyCopyTextures();
     this.sharedSprites.length = 0;
 
     for(let i = 0; i < this.layers.length; i++) {
@@ -193,7 +226,7 @@ SpriteManager.prototype.createSharedSprite = function(typeID) {
         return sharedSprite;
     }
 
-    const sprite = this.sprites.reserveElement();
+    const sprite = this.pool.reserveElement();
 
     if(!sprite) {
         Logger.log(Logger.CODE.ENGINE_ERROR, "SpritePool is full!", "SpriteManager.prototype.createSprite", null);
@@ -206,17 +239,14 @@ SpriteManager.prototype.createSharedSprite = function(typeID) {
     const spriteIndex = sprite.getIndex();
 
     this.spriteTracker.add(spriteID);
-    this.sharedSprites.push({
-        "id": typeID,
-        "index": spriteIndex
-    });
+    this.addSharedEntry(typeID, spriteIndex);
     this.updateSpriteTexture(sprite, typeID);
 
     return sprite;
 }
 
 SpriteManager.prototype.createSprite = function(typeID, layerID = null) {
-    const sprite = this.sprites.reserveElement();
+    const sprite = this.pool.reserveElement();
 
     if(!sprite) {
         Logger.log(Logger.CODE.ENGINE_ERROR, "SpritePool is full!", "SpriteManager.prototype.createSprite", null);
@@ -238,7 +268,7 @@ SpriteManager.prototype.createSprite = function(typeID, layerID = null) {
 }
 
 SpriteManager.prototype.destroySprite = function(spriteIndex) {
-    const sprite = this.sprites.getReservedElement(spriteIndex);
+    const sprite = this.pool.getReservedElement(spriteIndex);
 
     if(!sprite) {
         Logger.log(Logger.CODE.ENGINE_WARN, "Sprite is not reserved!", "SpriteManager.prototype.destroySprite", { "spriteID": spriteIndex });
@@ -247,6 +277,8 @@ SpriteManager.prototype.destroySprite = function(spriteIndex) {
     
     const graph = sprite.getGraph();
     const invalidElements = [];
+
+    sprite.reset();
 
     for(let i = graph.length - 1; i >= 0; i--) {
         const node = graph[i];
@@ -258,24 +290,22 @@ SpriteManager.prototype.destroySprite = function(spriteIndex) {
         }
 
         const index = node.getIndex();
-        const isReserved = this.sprites.isReserved(index);
+        const isReserved = this.pool.isReserved(index);
 
-        if(!isReserved) {
-            continue;
+        if(isReserved) {
+            node.closeGraph();
+
+            this.removeSpriteFromLayers(index);
+            this.pool.freeElement(index);
+            this.spriteTracker.delete(nodeID);
         }
-
-        node.closeGraph();
-
-        this.removeSpriteFromLayers(index);
-        this.sprites.freeElement(index);
-        this.spriteTracker.delete(nodeID);
     }
     
     return invalidElements;
 }
 
 SpriteManager.prototype.getSprite = function(spriteIndex) {
-    return this.sprites.getReservedElement(spriteIndex);
+    return this.pool.getReservedElement(spriteIndex);
 }
 
 SpriteManager.prototype.swapLayer = function(spriteIndex, layerIndex) {
@@ -284,7 +314,7 @@ SpriteManager.prototype.swapLayer = function(spriteIndex, layerIndex) {
         return;
     }
 
-    const sprite = this.sprites.getReservedElement(spriteIndex);
+    const sprite = this.pool.getReservedElement(spriteIndex);
 
     if(!sprite) {
         Logger.log(Logger.CODE.ENGINE_WARN, "Sprite is not reserved!", "SpriteManager.prototype.swapLayer", { "spriteID": spriteIndex });
@@ -352,7 +382,7 @@ SpriteManager.prototype.updateSpriteTexture = function(sprite, spriteID) {
 }
 
 SpriteManager.prototype.updateSprite = function(spriteIndex, spriteID) {
-    const sprite = this.sprites.getReservedElement(spriteIndex);
+    const sprite = this.pool.getReservedElement(spriteIndex);
 
     if(!sprite) {
         Logger.log(Logger.CODE.ENGINE_WARN, "Sprite is not reserved!", "SpriteManager.prototype.updateSprite", { "spriteID": spriteIndex });

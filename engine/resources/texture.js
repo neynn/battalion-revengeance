@@ -114,15 +114,11 @@ Texture.prototype.requestBitmap = function() {
     });
 };
 
-Texture.prototype.mockLoading = function() {
-    this.state = Texture.STATE.LOADING;
-}
-
 Texture.prototype.clear = function() {
     this.bitmap = null;
     this.width = 0;
     this.height = 0;
-    this.state = Texture.STATE.LOADED;
+    this.state = Texture.STATE.EMPTY;
 }
 
 Texture.prototype.setImageData = function(bitmap, width, height) {
@@ -133,19 +129,15 @@ Texture.prototype.setImageData = function(bitmap, width, height) {
 }
 
 Texture.prototype.addReference = function() {
-    this.references++;
-
-    return this.references;
+    return this.references++;
 }
 
 Texture.prototype.removeReference = function() {
-    this.references--;
-
-    if(this.references <= 0) {
+    if(this.references === 1) {
         this.clear();
     }
 
-    return this.references;
+    return this.references--;
 }
 
 Texture.prototype.getID = function() {
@@ -160,7 +152,7 @@ Texture.prototype.setBitmapData = function(bitmap) {
 
 Texture.prototype.loadColoredBitmap = function(copyBitmap, schema) {
     if(this.state === Texture.STATE.EMPTY) {
-        this.mockLoading();
+        this.state = Texture.STATE.LOADING;
 
         const bitmapData = ColorHelper.getBitmapData(copyBitmap);
         const mappedData = ColorHelper.mapColors(bitmapData, this.regions, schema);

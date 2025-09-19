@@ -6,7 +6,7 @@ export const ResourceLoader = function() {
     this.nextID = 0;
     this.textures = [];
     this.audio = [];
-    this.copyTextures = {};
+    this.copyTextures = new Map();
     this.toResolve = new Map();
 
     this.events = new EventEmitter();
@@ -32,7 +32,7 @@ ResourceLoader.DEFAULT = {
 };
 
 ResourceLoader.prototype.getCopyTexture = function(textureName) {
-    const texture = this.copyTextures[textureName];
+    const texture = this.copyTextures.get(textureName);
 
     if(!texture) {
         return null;
@@ -41,23 +41,32 @@ ResourceLoader.prototype.getCopyTexture = function(textureName) {
     return texture;
 }
 
-ResourceLoader.prototype.freeCopyTextures = function() {
-    for(const textureName in this.copyTextures) {
-        this.copyTextures[textureName].clear();
-    }
+ResourceLoader.prototype.destroyCopyTexture = function(textureName) {
+    const texture = this.copyTextures.get(textureName);
 
-    this.copyTextures = {};
+    if(texture) {
+        texture.clear();
+
+        this.copyTextures.delete(textureName);
+    }
+}
+
+ResourceLoader.prototype.destroyCopyTextures = function() {
+    this.copyTextures.forEach(texture => texture.clear());
+    this.copyTextures.clear();
 }
 
 ResourceLoader.prototype.createCopyTexture = function(textureName, texture) {
-    if(this.copyTextures[textureName] !== undefined) {
-        return this.copyTextures[textureName];
+    const copyTexture = this.copyTextures.get(textureName);
+
+    if(copyTexture) {
+        return copyTexture;
     }
 
     const { regions } = texture;
     const newTexture = new Texture(ResourceLoader.COPY_ID, textureName, regions);
 
-    this.copyTextures[textureName] = newTexture;
+    this.copyTextures.set(textureName, newTexture);
 
     return newTexture;
 }
