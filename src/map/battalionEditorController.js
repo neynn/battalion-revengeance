@@ -83,8 +83,7 @@ BattaltionEditorController.prototype.createMap = function(gameContext) {
     const createNew = confirm("This will create and load a brand new map! Proceed?");
 
     if(createNew) {
-        const mapID = `${Date.now()}`;
-        const worldMap = MapSpawner.createEmptyMap(gameContext, mapID, this.defaultMap);
+        const worldMap = MapSpawner.createEmptyMap(gameContext, this.defaultMap);
 
         this.mapID = worldMap.getID();
     }

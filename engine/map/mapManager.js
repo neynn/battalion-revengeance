@@ -27,15 +27,58 @@ MapManager.EVENT = {
 MapManager.prototype.onLanguageUpdate = async function(gameContext, languageID) {
     if(this.activeMap) {
         const { language } = gameContext;
-        const mapID = this.activeMap.getID();
-        const mapLanguage = await this.fetchMapTranslations(mapID, languageID);
+        const mapConfig = this.activeMap.getConfig();
 
-        if(mapLanguage) {
-            language.registerMap(mapID, mapLanguage);
+        if(mapConfig) {
+            const mapLanguage = await this.loadMapTranslations(mapConfig, languageID);
 
-            this.activeMap.onLanguageUpdate(languageID, mapLanguage);
+            if(mapLanguage) {
+                const mapID = this.activeMap.getID();
+
+                language.registerMap(mapID, mapLanguage);
+
+                this.activeMap.onLanguageUpdate(languageID, mapLanguage);
+            }
         }
     }
+}
+
+MapManager.prototype.createEmptyMap = function(onCreate, externalID) {
+    const mapID = externalID !== undefined ? externalID : this.nextID++;
+
+    if(!this.maps.has(mapID)) {
+        const worldMap = onCreate(mapID);
+
+        if(worldMap) {
+            this.maps.set(mapID, worldMap);
+            this.events.emit(MapManager.EVENT.MAP_CREATE, mapID, worldMap);
+
+            return worldMap;
+        }
+    }
+
+    return null;
+}
+
+MapManager.prototype.createMap = function(onCreate, typeID, externalID) {
+    const mapID = externalID !== undefined ? externalID : this.nextID++;
+
+    if(!this.maps.has(mapID)) {
+        const mapType = this.getMapType(typeID);
+
+        if(mapType) {
+            const worldMap = onCreate(mapID, mapType);
+
+            if(worldMap) {
+                this.maps.set(mapID, worldMap);
+                this.events.emit(MapManager.EVENT.MAP_CREATE, mapID, worldMap);
+
+                return worldMap;
+            }
+        }
+    }
+
+    return null;
 }
 
 MapManager.prototype.addMap = function(mapID, worldMap) {
@@ -66,17 +109,23 @@ MapManager.prototype.forAllMaps = function(onCall) {
     }
 }
 
-MapManager.prototype.fetchMapTranslations = function(mapID, languageID) {
-    const mapType = this.getMapType(mapID);
+MapManager.prototype.loadMapTranslations = function(mapType, languageID) {
+    const { directory, language } = mapType;
+
+    if(language !== undefined && language[languageID] !== undefined) {
+        const filePath = PathHandler.getPath(directory, language[languageID]);
+
+        return PathHandler.promiseJSON(filePath);
+    }
+
+    return Promise.resolve(null);
+}
+
+MapManager.prototype.fetchMapTranslations = function(typeID, languageID) {
+    const mapType = this.getMapType(typeID);
 
     if(mapType) {
-        const { directory, language } = mapType;
-
-        if(language !== undefined && language[languageID] !== undefined) {
-            const filePath = PathHandler.getPath(directory, language[languageID]);
-
-            return PathHandler.promiseJSON(filePath);
-        }
+        return this.loadMapTranslations(mapType, languageID);
     }
 
     return Promise.resolve(null);

@@ -1,4 +1,5 @@
 import { GameContext } from "../engine/gameContext.js";
+import { LanguageHandler } from "../engine/language/languageHandler.js";
 import { MainMenuState } from "./states/mainMenu.js";
 import { MapEditorState } from "./states/mapEditor.js";
 import { PlayState } from "./states/play.js";
@@ -19,6 +20,8 @@ BattalionContext.prototype = Object.create(GameContext.prototype);
 BattalionContext.prototype.constructor = BattalionContext;
 
 BattalionContext.prototype.init = function(resources) {
+    this.language.registerLanguage(LanguageHandler.LANGUAGE.ENGLISH, {});
+    this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);
     this.states.addState(BattalionContext.STATE.MAIN_MENU, new MainMenuState());
     this.states.addState(BattalionContext.STATE.MAP_EDITOR, new MapEditorState());
     this.states.addState(BattalionContext.STATE.PLAY, new PlayState());

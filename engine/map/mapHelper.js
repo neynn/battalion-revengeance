@@ -1,13 +1,7 @@
 export const MapHelper = {
-    createMapByID: async function(gameContext, mapID, onCreate) {
+    createMapByID: async function(gameContext, typeID, onCreate) {
         const { world, language } = gameContext;
         const { mapManager } = world;
-        const cachedMap = mapManager.getMap(mapID);
-
-        if(cachedMap) {
-            return cachedMap;
-        }
-
         const currentLanguage = language.getCurrent();
 
         let mapData = null;
@@ -15,20 +9,27 @@ export const MapHelper = {
 
         if(currentLanguage) {
             const response = await Promise.all([
-                mapManager.fetchMapData(mapID),
-                mapManager.fetchMapTranslations(mapID, currentLanguage)
+                mapManager.fetchMapData(typeID),
+                mapManager.fetchMapTranslations(typeID, currentLanguage)
             ]);
 
             mapData = response[0];
             mapLanguage = response[1];
         } else {
-            mapData = await mapManager.fetchMapData(mapID);
+            mapData = await mapManager.fetchMapData(typeID);
         }
 
-        const worldMap = onCreate(mapData);
+        const worldMap = mapManager.createMap((mapID, mapType) => {
+            const mapObject = onCreate(mapID, mapData);
+
+            mapObject.setConfig(mapType);
+
+            return mapObject;
+        }, typeID);
 
         if(worldMap) {
-            mapManager.addMap(mapID, worldMap);
+            const mapID = worldMap.getID();
+
             mapManager.enableMap(mapID);
 
             if(mapLanguage) {
@@ -39,19 +40,18 @@ export const MapHelper = {
 
         return worldMap;
     },
-    createEmptyMap: function(gameContext, mapID, onCreate) {
+    createEmptyMap: function(gameContext, onCreate) {
         const { world } = gameContext;
         const { mapManager } = world;
-        const cachedMap = mapManager.getMap(mapID);
+        const worldMap = mapManager.createEmptyMap((mapID) => {
+            const mapObject = onCreate(mapID);
 
-        if(cachedMap) {
-            return cachedMap;
-        }
-
-        const worldMap = onCreate();
+            return mapObject;
+        });
 
         if(worldMap) {
-            mapManager.addMap(mapID, worldMap);
+            const mapID = worldMap.getID();
+
             mapManager.enableMap(mapID);
         }
 

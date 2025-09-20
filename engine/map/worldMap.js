@@ -4,13 +4,24 @@ import { Layer } from "./layer.js";
 
 export const WorldMap = function(id) {
     this.id = id;
+    this.music = null;
+    this.config = null;
     this.width = 0;
     this.height = 0;
     this.flags = 0;
     this.layers = new Map();
     this.entities = new Map();
-    this.music = null;
     this.flags = 0;
+}
+
+WorldMap.prototype.getConfig = function() {
+    return this.config;
+}
+
+WorldMap.prototype.setConfig = function(config) {
+    if(config !== undefined) {
+        this.config = config;
+    }
 }
 
 WorldMap.prototype.onLanguageUpdate = function(languageID, language) {}
