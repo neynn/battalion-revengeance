@@ -104,28 +104,33 @@ const SCHEMAS = {
 };
 
 export const EntitySpawner = {
-    createEntityConfig: function(type, tileX, tileY) {
+    createEntityConfig: function(type, tileX, tileY, direction) {
         return {
-            "type": type,
             "x": tileX,
-            "y": tileY
+            "y": tileY,
+            "type": type,
+            "direction": direction
         };
     },
     createEntity: function(gameContext, config) {
         const { world, transform2D } = gameContext;
         const { entityManager } = world;
-        const { id, type, x, y } = config;
+        const { id, type, x, y, direction } = config;
         const entity = entityManager.createEntity((entityID, entityType) => {
-            const spriteID = entityType.sprites[BattalionEntity.SPRITE_TYPE.IDLE_RIGHT];
             const entitySprite = new BattalionSprite();
-            const sprite = SpriteHelper.createColoredSprite(gameContext, spriteID, getRandomElement(Object.keys(SCHEMAS)), SCHEMAS, SpriteManager.LAYER.MIDDLE);
-            const spawnPosition = transform2D.transformTileToWorld(x, y);
             const entityObject = new BattalionEntity(entityID, entitySprite);
 
-            sprite.addChild(entitySprite);
-            entityObject.setPosition(spawnPosition);
             entityObject.setConfig(entityType);
-            
+            entityObject.setDirectionByName(direction);
+
+            const spriteID = entityObject.getSpriteID();
+            const sprite = SpriteHelper.createColoredSprite(gameContext, spriteID, getRandomElement(Object.keys(SCHEMAS)), SCHEMAS, SpriteManager.LAYER.MIDDLE);
+            const spawnPosition = transform2D.transformTileToWorld(x, y);
+
+            sprite.addChild(entitySprite);
+            entityObject.setTile(x, y);
+            entityObject.setPosition(spawnPosition);
+
             return entityObject;
         }, type, id);
     
@@ -141,7 +146,10 @@ export const EntitySpawner = {
     debugEntities: function(gameContext) {
         for(let i = 0; i < 1; i++) {
             for(let j = 0; j < 1; j++) {
-                EntitySpawner.createEntity(gameContext, EntitySpawner.createEntityConfig(EntitySpawner.getRandomEntityType(gameContext), j, i));
+                const config = EntitySpawner.createEntityConfig(EntitySpawner.getRandomEntityType(gameContext), j, i);
+                const entity = EntitySpawner.createEntity(gameContext, config);
+
+                console.log(config, entity);
             }
         }
     }

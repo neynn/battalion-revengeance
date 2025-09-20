@@ -6,6 +6,7 @@ export const BattalionEntity = function(id, sprite) {
     this.tileX = -1;
     this.tileY = -1;
     this.direction = BattalionEntity.DIRECTION.EAST;
+    this.state = BattalionEntity.STATE.IDLE;
     this.sprite = sprite;
 }
 
@@ -16,7 +17,7 @@ BattalionEntity.DIRECTION = {
     WEST: 1 << 3
 };
 
-BattalionEntity.SPRITE_CATEGORY = {
+BattalionEntity.STATE = {
     IDLE: 0,
     FIRE: 1
 };
@@ -35,10 +36,23 @@ BattalionEntity.SPRITE_TYPE = {
 BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
 
+BattalionEntity.prototype.setTile = function(tileX, tileY) {
+    this.tileX = tileX;
+    this.tileY = tileY;
+}
+
 BattalionEntity.prototype.setPosition = function(positionVector) {
     const { x, y } = positionVector;
 
     this.sprite.setPosition(x, y);
+}
+
+BattalionEntity.prototype.setDirectionByName = function(name) {
+    const direction = BattalionEntity.DIRECTION[name];
+
+    if(direction !== undefined) {
+        this.direction = direction;
+    }
 }
 
 BattalionEntity.prototype.setDirection = function(direction) {
@@ -47,9 +61,15 @@ BattalionEntity.prototype.setDirection = function(direction) {
     }
 }
 
-BattalionEntity.prototype.getSpriteTypeID = function(category) {
-    switch(category) {
-        case BattalionEntity.SPRITE_CATEGORY.IDLE: {
+BattalionEntity.prototype.setState = function(state) {
+    if(Object.values(BattalionEntity.STATE).includes(state)) {
+        this.state = state;
+    }
+}
+
+BattalionEntity.prototype.getSpriteTypeID = function() {
+    switch(this.state) {
+        case BattalionEntity.STATE.IDLE: {
             switch(this.direction) {
                 case BattalionEntity.DIRECTION.NORTH: return BattalionEntity.SPRITE_TYPE.IDLE_UP;
                 case BattalionEntity.DIRECTION.EAST: return BattalionEntity.SPRITE_TYPE.IDLE_RIGHT;
@@ -58,7 +78,7 @@ BattalionEntity.prototype.getSpriteTypeID = function(category) {
             }
             break;
         }
-        case BattalionEntity.SPRITE_CATEGORY.FIRE: {
+        case BattalionEntity.STATE.FIRE: {
             switch(this.direction) {
                 case BattalionEntity.DIRECTION.NORTH: return BattalionEntity.SPRITE_TYPE.FIRE_UP;
                 case BattalionEntity.DIRECTION.EAST: return BattalionEntity.SPRITE_TYPE.FIRE_RIGHT;
@@ -72,11 +92,21 @@ BattalionEntity.prototype.getSpriteTypeID = function(category) {
     return BattalionEntity.SPRITE_TYPE.IDLE_RIGHT;
 }
 
-BattalionEntity.prototype.updateSprite = function(gameContext, category) {
-    const spriteTypeID = this.getSpriteTypeID(category);
+BattalionEntity.prototype.getSpriteID = function() {
+    const spriteTypeID = this.getSpriteTypeID();
     const spriteID = this.config.sprites[spriteTypeID];
 
-    if(spriteID !== undefined) {
+    if(spriteID === undefined) {
+        return null;
+    }
+
+    return spriteID;
+}
+
+BattalionEntity.prototype.updateSprite = function(gameContext) {
+    const spriteID = this.getSpriteID();
+
+    if(spriteID) {
         this.sprite.updateParent(gameContext, spriteID);
     }
 }
