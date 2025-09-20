@@ -120,17 +120,18 @@ export const EntitySpawner = {
             const entitySprite = new BattalionSprite();
             const sprite = SpriteHelper.createColoredSprite(gameContext, spriteID, getRandomElement(Object.keys(SCHEMAS)), SCHEMAS, SpriteManager.LAYER.MIDDLE);
             const spawnPosition = transform2D.transformTileToWorld(x, y);
-            const entityObject = new BattalionEntity(entityID, entityType, entitySprite);
+            const entityObject = new BattalionEntity(entityID, entitySprite);
 
             sprite.addChild(entitySprite);
-            entityObject.setSpritePosition(spawnPosition);
-
+            entityObject.setPosition(spawnPosition);
+            entityObject.setConfig(entityType);
+            
             return entityObject;
         }, type, id);
     
         return entity;
     },
-    getRandomEntity: function(gameContext) {
+    getRandomEntityType: function(gameContext) {
         const { world } = gameContext;
         const { entityManager } = world;
         const entities = Object.keys(entityManager.entityTypes);
@@ -140,7 +141,7 @@ export const EntitySpawner = {
     debugEntities: function(gameContext) {
         for(let i = 0; i < 1; i++) {
             for(let j = 0; j < 1; j++) {
-                EntitySpawner.createEntity(gameContext, EntitySpawner.createEntityConfig(EntitySpawner.getRandomEntity(gameContext), j, i));
+                EntitySpawner.createEntity(gameContext, EntitySpawner.createEntityConfig(EntitySpawner.getRandomEntityType(gameContext), j, i));
             }
         }
     }
