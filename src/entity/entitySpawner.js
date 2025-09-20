@@ -138,8 +138,8 @@ export const EntitySpawner = {
         return getRandomElement(entities);
     },
     debugEntities: function(gameContext) {
-        for(let i = 0; i < 20; i++) {
-            for(let j = 0; j < 20; j++) {
+        for(let i = 0; i < 1; i++) {
+            for(let j = 0; j < 1; j++) {
                 EntitySpawner.createEntity(gameContext, EntitySpawner.createEntityConfig(EntitySpawner.getRandomEntity(gameContext), j, i));
             }
         }

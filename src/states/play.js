@@ -1,4 +1,5 @@
 import { State } from "../../engine/state/state.js";
+import { ActorSpawner } from "../actors/actorSpawner.js";
 import { BattalionContext } from "../battalionContext.js";
 import { CameraHelper } from "../camera/cameraHelper.js";
 import { EntitySpawner } from "../entity/entitySpawner.js";
@@ -11,11 +12,12 @@ export const PlayState = function() {
 PlayState.prototype = Object.create(State.prototype);
 PlayState.prototype.constructor = PlayState;
 
-PlayState.prototype.onEnter = async function(gameContext, stateMachine) {
+PlayState.prototype.onEnter = async function(gameContext, stateMachine, transition) {
     const { client } = gameContext;
     const { router } = client;
     const context = CameraHelper.createPlayCamera(gameContext);
 
+    ActorSpawner.createPlayer(gameContext, { "type": "Player" });
     MapSpawner.createMapByID(gameContext, "oasis");
     EntitySpawner.debugEntities(gameContext);
     router.on("ESCAPE", () => stateMachine.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));

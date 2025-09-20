@@ -41,8 +41,8 @@ World.prototype.addDebug = function() {
         this.turnManager.events.on(TurnManager.EVENT.ACTIONS_CLEAR, (actor, remainder) => console.log(actor, remainder), { permanent: true });
         this.turnManager.events.on(TurnManager.EVENT.ACTIONS_REDUCE, (actor, remainder) => console.log(actor, remainder), { permanent: true });
         this.turnManager.events.on(TurnManager.EVENT.ACTOR_CHANGE, (current, next) => console.log(current, next), { permanent: true });
-        this.turnManager.events.on(TurnManager.EVENT.ACTOR_ADD, (id, actor) => console.log(id, actor), { permanent: true });
-        this.turnManager.events.on(TurnManager.EVENT.ACTOR_REMOVE, (id) => console.log(id), { permanent: true });
+        this.turnManager.events.on(TurnManager.EVENT.ACTOR_CREATE, (id, actor) => console.log(id, actor), { permanent: true });
+        this.turnManager.events.on(TurnManager.EVENT.ACTOR_DESTROY, (id) => console.log(id), { permanent: true });
     }
 
     if(World.DEBUG.LOG_ENTITY_EVENTS) {
