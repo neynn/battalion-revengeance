@@ -250,7 +250,7 @@ SpriteManager.prototype.createSharedSprite = function(typeID) {
 
     this.spriteTracker.add(spriteID);
     this.addSharedEntry(typeID, spriteIndex);
-    this.updateSpriteTexture(sprite, typeID);
+    this.updateSprite(spriteIndex, typeID);
 
     return sprite;
 }
@@ -270,9 +270,10 @@ SpriteManager.prototype.createSprite = function(typeID, layerID = null) {
     }
 
     const spriteID = sprite.getID();
+    const spriteIndex = sprite.getIndex();
 
     this.spriteTracker.add(spriteID);
-    this.updateSpriteTexture(sprite, typeID);
+    this.updateSprite(spriteIndex, typeID);
 
     return sprite;
 }
@@ -364,42 +365,35 @@ SpriteManager.prototype.removeSpriteFromLayers = function(spriteIndex) {
     }
 }
 
-SpriteManager.prototype.updateSpriteTexture = function(sprite, spriteID) {
-    const spriteEntry = this.spriteMap.get(spriteID);
-
-    if(spriteEntry) {
-        const { index, textureID, copyAlias } = spriteEntry;
-        const container = this.getContainer(index);
-
-        if(container) {
-            sprite.init(container, this.timestamp, spriteID);
-
-            if(textureID === ResourceLoader.COPY_ID) {
-                const copyTexture = this.resources.getCopyTexture(copyAlias);
-
-                sprite.setTexture(copyTexture);
-            } else {
-                const texture = this.resources.getTextureByID(textureID);
-
-                sprite.setTexture(texture);
-
-                if(texture.state === Texture.STATE.EMPTY) {
-                    this.resources.loadTexture(textureID);
-                }
-            }
-        }
-    }
-}
-
 SpriteManager.prototype.updateSprite = function(spriteIndex, spriteID) {
     const sprite = this.pool.getReservedElement(spriteIndex);
+    const spriteEntry = this.spriteMap.get(spriteID);
 
-    if(!sprite) {
-        Logger.log(Logger.CODE.ENGINE_WARN, "Sprite is not reserved!", "SpriteManager.prototype.updateSprite", { "spriteID": spriteIndex });
+    if(!sprite || !spriteEntry) {
+        Logger.log(Logger.CODE.ENGINE_WARN, "SpriteType/Sprite does not exist!", "SpriteManager.prototype.updateSprite", { "spriteIndex": spriteIndex, "spriteID": spriteID });
         return;
     }
 
-    this.updateSpriteTexture(sprite, spriteID);
+    const { index, textureID, copyAlias } = spriteEntry;
+    const container = this.getContainer(index);
+
+    if(container) {
+        sprite.init(container, this.timestamp, spriteID);
+
+        if(textureID === ResourceLoader.COPY_ID) {
+            const copyTexture = this.resources.getCopyTexture(copyAlias);
+
+            sprite.setTexture(copyTexture);
+        } else {
+            const texture = this.resources.getTextureByID(textureID);
+
+            sprite.setTexture(texture);
+
+            if(texture.state === Texture.STATE.EMPTY) {
+                this.resources.loadTexture(textureID);
+            }
+        }
+    }
 }
 
 SpriteManager.prototype.isShared = function(spriteID, spriteIndex) {
