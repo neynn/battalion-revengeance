@@ -250,9 +250,11 @@ CameraContext.prototype.debug = function(context) {
     const { viewportWidth, viewportHeight } = this.camera;
 
     context.globalAlpha = 1;
-    context.strokeStyle = "#eeeeee";
     context.lineWidth = 3;
+    context.strokeStyle = "#eeeeee";
     context.strokeRect(this.positionX, this.positionY, viewportWidth * this.scale, viewportHeight * this.scale);
+    context.strokeStyle = "#aaaaaa";
+    context.strokeRect(this.positionX, this.positionY, this.width, this.height);
 }
 
 CameraContext.prototype.isColliding = function(mouseX, mouseY, mouseRange) {

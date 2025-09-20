@@ -107,7 +107,7 @@ SpriteManager.prototype.load = function(textures, sprites) {
     
     for(const spriteID in sprites) {
         const spriteConfig = sprites[spriteID];
-        const { texture, bounds, frameTime, frames, autoFrames } = spriteConfig;
+        const { texture, bounds, frameTime, spriteTime, frames, autoFrames } = spriteConfig;
         const textureID = textureMap[texture];
 
         if(textureID === undefined || (!frames && !autoFrames)) {
@@ -119,7 +119,13 @@ SpriteManager.prototype.load = function(textures, sprites) {
         const regionFrames = autoFrames !== undefined ? textureObject.getFramesAuto(autoFrames) : textureObject.getFrames(frames);
 
         if(regionFrames.length !== 0) {
-            const spriteContainer = new SpriteContainer(spriteID, bounds, frameTime, regionFrames);
+            const spriteContainer = new SpriteContainer(spriteID, bounds, regionFrames);
+
+            if(spriteTime !== undefined) {
+                spriteContainer.setSpriteTime(spriteTime);
+            } else {
+                spriteContainer.setFrameTime(frameTime);
+            }
 
             this.containers.push(spriteContainer);
             this.addSpriteEntry(spriteID, this.containers.length - 1, textureID);
