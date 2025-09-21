@@ -77,6 +77,14 @@ export const getRandomElement = function(list) {
 	return list[Math.floor(Math.random() * list.length)];
 }
 
+export const getRandomEnumValue = function(mockEnum) {
+	return getRandomElement(Object.values(mockEnum));
+}
+
+export const getRandomEnumKey = function(mockEnum) {
+	return getRandomElement(Object.keys(mockEnum));
+}
+
 export const loopValue = function(value, upperLimit, lowerLimit) {
 	if(value > upperLimit) {
 	  return lowerLimit;

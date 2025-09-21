@@ -75,20 +75,14 @@ EntityManager.prototype.forAllEntities = function(onCall) {
 }
 
 EntityManager.prototype.update = function(gameContext) {
-    const toRemove = [];
-
-    for(let i = 0; i < this.entities.length; i++) {
+    for(let i = this.entities.length - 1; i >= 0; i--) {
         const entity = this.entities[i];
 
-        entity.update(gameContext);
-
         if(entity.hasFlag(Entity.FLAG.DESTROY)) {
-            toRemove.push(i);
+            this.destroyEntity(i);
+        } else {
+            entity.update(gameContext);
         }
-    }
-
-    for(let i = toRemove.length - 1; i >= 0; i--) {
-        this.destroyEntity(toRemove[i]);
     }
 }
 

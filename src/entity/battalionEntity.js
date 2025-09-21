@@ -3,11 +3,11 @@ import { Entity } from "../../engine/entity/entity.js";
 export const BattalionEntity = function(id, sprite) {
     Entity.call(this, id, "");
 
+    this.sprite = sprite;
     this.tileX = -1;
     this.tileY = -1;
     this.direction = BattalionEntity.DIRECTION.EAST;
     this.state = BattalionEntity.STATE.IDLE;
-    this.sprite = sprite;
 }
 
 BattalionEntity.DIRECTION = {
@@ -19,7 +19,8 @@ BattalionEntity.DIRECTION = {
 
 BattalionEntity.STATE = {
     IDLE: 0,
-    FIRE: 1
+    MOVE: 1,
+    FIRE: 2
 };
 
 BattalionEntity.SPRITE_TYPE = {
@@ -78,6 +79,15 @@ BattalionEntity.prototype.getSpriteTypeID = function() {
             }
             break;
         }
+        case BattalionEntity.STATE.MOVE: {
+            switch(this.direction) {
+                case BattalionEntity.DIRECTION.NORTH: return BattalionEntity.SPRITE_TYPE.IDLE_UP;
+                case BattalionEntity.DIRECTION.EAST: return BattalionEntity.SPRITE_TYPE.IDLE_RIGHT;
+                case BattalionEntity.DIRECTION.SOUTH: return BattalionEntity.SPRITE_TYPE.IDLE_DOWN;
+                case BattalionEntity.DIRECTION.WEST: return BattalionEntity.SPRITE_TYPE.IDLE_LEFT;
+            }
+            break;
+        }
         case BattalionEntity.STATE.FIRE: {
             switch(this.direction) {
                 case BattalionEntity.DIRECTION.NORTH: return BattalionEntity.SPRITE_TYPE.FIRE_UP;
@@ -103,10 +113,14 @@ BattalionEntity.prototype.getSpriteID = function() {
     return spriteID;
 }
 
+BattalionEntity.prototype.updateSchema = function(gameContext, schemaID) {
+    this.sprite.updateSchema(gameContext, schemaID);
+}
+
 BattalionEntity.prototype.updateSprite = function(gameContext) {
     const spriteID = this.getSpriteID();
 
     if(spriteID) {
-        this.sprite.updateParent(gameContext, spriteID);
+        this.sprite.updateType(gameContext, spriteID);
     }
 }

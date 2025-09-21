@@ -136,17 +136,19 @@ Sprite.prototype.setTexture = function(texture) {
 }
 
 Sprite.prototype.init = function(container, lastCallTime, DEBUG_NAME) {
-    const { frameTime, frameCount, bounds } = container;
-    const { x, y, w, h } = bounds;
+    if(this.container !== container) {
+        const { frameTime, frameCount, bounds } = container;
+        const { x, y, w, h } = bounds;
 
-    this.container = container;
-    this.frameCount = frameCount;
-    this.frameTime = frameTime;
-    this.floatFrame = 0;
-    this.currentFrame = 0;
-    this.lastCallTime = lastCallTime;
-    this.DEBUG_NAME = DEBUG_NAME;
-    this.setBounds(x, y, w, h);
+        this.container = container;
+        this.frameCount = frameCount;
+        this.frameTime = frameTime;
+        this.floatFrame = 0;
+        this.currentFrame = 0;
+        this.lastCallTime = lastCallTime;
+        this.DEBUG_NAME = DEBUG_NAME;
+        this.setBounds(x, y, w, h);
+    }
 }
 
 Sprite.prototype.setBounds = function(x, y, w, h) {

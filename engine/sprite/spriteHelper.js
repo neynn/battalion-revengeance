@@ -20,5 +20,16 @@ export const SpriteHelper = {
         }
 
         return spriteManager.createSprite(aliasID, layerID);
+    },
+    updateColoredSprite: function(gameContext, spriteIndex, spriteID, schemaID, schema) {
+        const { spriteManager } = gameContext;
+        const schemaType = schema[schemaID];
+        const aliasID = SpriteHelper.getSchemaID(spriteID, schemaID);
+
+        if(schemaType) {
+            spriteManager.createCopyTexture(spriteID, schemaID, schemaType);
+        }
+
+        spriteManager.updateSprite(spriteIndex, aliasID);
     }
 };
