@@ -22,6 +22,20 @@ FloodFill.CROSS = {
     DOWN_RIGHT: FloodFill.STRAIGHT.DOWN | FloodFill.STRAIGHT.RIGHT
 };
 
+FloodFill.NEIGHBORS = [
+    [0, -1, FloodFill.STRAIGHT.UP],
+    [1, 0, FloodFill.STRAIGHT.RIGHT],
+    [0, 1, FloodFill.STRAIGHT.DOWN],
+    [-1, 0, FloodFill.STRAIGHT.LEFT]
+];
+
+FloodFill.CROSS_NEIGHBORS = [
+    [-1, -1, FloodFill.CROSS.UP_LEFT],
+    [1, -1, FloodFill.CROSS.UP_RIGHT],
+    [-1, 1, FloodFill.CROSS.DOWN_LEFT],
+    [1, 1, FloodFill.CROSS.DOWN_RIGHT]
+];
+
 FloodFill.createNode = function(positionX, positionY, cost, type, parent) {
     return {
         "positionX": positionX,
@@ -34,24 +48,6 @@ FloodFill.createNode = function(positionX, positionY, cost, type, parent) {
 
 FloodFill.isNodeInBounds = function(positionX, positionY, mapWidth, mapHeight) {
     return positionX >= 0 && positionY >= 0 && positionX < mapWidth && positionY < mapHeight;
-}
-
-FloodFill.getNeighbors = function(positionX, positionY) {
-    return [
-        positionX, positionY - 1, FloodFill.STRAIGHT.UP,
-        positionX + 1, positionY, FloodFill.STRAIGHT.RIGHT,
-        positionX, positionY + 1, FloodFill.STRAIGHT.DOWN,
-        positionX - 1, positionY, FloodFill.STRAIGHT.LEFT
-    ]
-}
-
-FloodFill.getCrossNeighbors = function(positionX, positionY) {
-    return [
-        positionX - 1, positionY - 1, FloodFill.CROSS.UP_LEFT,
-        positionX + 1, positionY - 1, FloodFill.CROSS.UP_RIGHT,
-        positionX - 1, positionY + 1, FloodFill.CROSS.DOWN_LEFT,
-        positionX + 1, positionY + 1, FloodFill.CROSS.DOWN_RIGHT
-    ]
 }
 
 FloodFill.flattenTree = function(startNode) {
@@ -95,12 +91,11 @@ FloodFill.prototype.search = function(startX, startY, gLimit, mapWidth, mapHeigh
         }
 
         const neighborCost = cost + this.straightCost;
-        const neighbors = FloodFill.getNeighbors(positionX, positionY);
 
-        for(let i = 0; i < neighbors.length; i += 3) {
-            const x = neighbors[i];
-            const y = neighbors[i + 1];
-            const type = neighbors[i + 2];
+        for(let i = 0; i < FloodFill.NEIGHBORS.length; i++) {
+            const [deltaX, deltaY, type] = FloodFill.NEIGHBORS[i];
+            const x = positionX + deltaX;
+            const y = positionY + deltaY;
             const neighborID = y * mapWidth + x;
 
             if(!visitedNodes.has(neighborID) && FloodFill.isNodeInBounds(x, y, mapWidth, mapHeight)) {
@@ -137,14 +132,13 @@ FloodFill.prototype.searchCross = function(startX, startY, gLimit, mapWidth, map
         }
 
         let validStraights = 0b00000000;
-
         const neighborCost = cost + this.straightCost;
-        const neighbors = FloodFill.getNeighbors(positionX, positionY);
+        const crossNeighborCost = cost + this.crossCost;
 
-        for(let i = 0; i < neighbors.length; i += 3) {
-            const x = neighbors[i];
-            const y = neighbors[i + 1];
-            const type = neighbors[i + 2];
+        for(let i = 0; i < FloodFill.NEIGHBORS.length; i++) {
+            const [deltaX, deltaY, type] = FloodFill.NEIGHBORS[i];
+            const x = positionX + deltaX;
+            const y = positionY + deltaY;
             const neighborID = y * mapWidth + x;
 
             if(!visitedNodes.has(neighborID) && FloodFill.isNodeInBounds(x, y, mapWidth, mapHeight)) {
@@ -162,13 +156,10 @@ FloodFill.prototype.searchCross = function(startX, startY, gLimit, mapWidth, map
             }
         }
 
-        const crossNeighborCost = cost + this.crossCost;
-        const crossNeighbors = FloodFill.getCrossNeighbors(positionX, positionY);
-
-        for(let i = 0; i < crossNeighbors.length; i += 3) {
-            const x = crossNeighbors[i];
-            const y = crossNeighbors[i + 1];
-            const type = crossNeighbors[i + 2];
+        for(let i = 0; i < FloodFill.CROSS_NEIGHBORS.length; i++) {
+            const [deltaX, deltaY, type] = FloodFill.CROSS_NEIGHBORS[i];
+            const x = positionX + deltaX;
+            const y = positionY + deltaY;
 
             if((validStraights & type) !== type) {
                 continue;
