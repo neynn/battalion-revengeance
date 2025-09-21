@@ -20,8 +20,12 @@ Entity.prototype.hasFlag = function(flag) {
     return (this.flags & flag) !== 0;
 }
 
-Entity.prototype.destroy = function() {
-    this.flags |= Entity.FLAG.DESTROY;
+Entity.prototype.setFlag = function(flag) {
+    this.flags |= flag;
+}
+
+Entity.prototype.removeFlag = function(flag) {
+    this.flags &= ~flag;
 }
 
 Entity.prototype.setConfig = function(config) {
@@ -35,10 +39,8 @@ Entity.prototype.getID = function() {
 }
 
 Entity.prototype.update = function(gameContext) {
-    if(!this.hasFlag(Entity.FLAG.DESTROY)) {
-        for(let i = 0; i < this.activeComponents.length; i++) {
-            this.activeComponents[i].update(gameContext, this);
-        }
+    for(let i = 0; i < this.activeComponents.length; i++) {
+        this.activeComponents[i].update(gameContext, this);
     }
 }
 

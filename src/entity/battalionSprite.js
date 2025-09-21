@@ -111,6 +111,15 @@ BattalionSprite.SCHEMA = {
 BattalionSprite.prototype = Object.create(Graph.prototype);
 BattalionSprite.prototype.constructor = BattalionSprite;
 
+BattalionSprite.prototype.destroy = function() {
+    this.spriteID = null;
+    this.schemaID = null;
+
+    if(this.parent) {
+        this.parent.terminate();
+    }
+}
+
 BattalionSprite.prototype.create = function(gameContext, spriteID, schemaID) {
     if(this.parent === null) {
         const sprite = SpriteHelper.createColoredSprite(gameContext, spriteID, schemaID, BattalionSprite.SCHEMA, SpriteManager.LAYER.MIDDLE);

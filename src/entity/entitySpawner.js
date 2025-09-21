@@ -2,6 +2,7 @@ import { getRandomElement, getRandomEnumKey } from "../../engine/math/math.js";
 import { BattalionEntity } from "./battalionEntity.js";
 import { BattalionSprite } from "./battalionSprite.js";
 
+
 export const EntitySpawner = {
     createEntityConfig: function(type, tileX, tileY, direction) {
         return {
@@ -10,6 +11,13 @@ export const EntitySpawner = {
             "type": type,
             "direction": direction
         };
+    },
+    getRandomEntityType: function(gameContext) {
+        const { world } = gameContext;
+        const { entityManager } = world;
+        const entities = Object.keys(entityManager.entityTypes);
+
+        return getRandomElement(entities);
     },
     createEntity: function(gameContext, config) {
         const { world, transform2D } = gameContext;
@@ -33,14 +41,47 @@ export const EntitySpawner = {
             return entityObject;
         }, type, id);
     
+        if(entity) {
+            EntitySpawner.placeEntity(gameContext, entity);
+        }
+
         return entity;
     },
-    getRandomEntityType: function(gameContext) {
+    destroyEntity: function(gameContext, entityID) {
         const { world } = gameContext;
         const { entityManager } = world;
-        const entities = Object.keys(entityManager.entityTypes);
+        const entity = entityManager.getEntity(entityID);
 
-        return getRandomElement(entities);
+        if(entity) {
+            EntitySpawner.removeEntity(gameContext, entity);
+            entity.destroy();
+        }
+    },
+    placeEntity: function(gameContext, entity) {
+        const { world } = gameContext;
+        const { mapManager } = world;
+        const worldMap = mapManager.getActiveMap();
+
+        if(worldMap) {
+            const sizeX = entity.config.dimX ?? 1;
+            const sizeY = entity.config.dimY ?? 1;
+            const entityID = entity.getID();
+
+            worldMap.addEntity(entity.tileX, entity.tileY, sizeX, sizeY, entityID);
+        }
+    },
+    removeEntity: function(gameContext, entity) {
+        const { world } = gameContext;
+        const { mapManager } = world;
+        const worldMap = mapManager.getActiveMap();
+
+        if(worldMap) {
+            const sizeX = entity.config.dimX ?? 1;
+            const sizeY = entity.config.dimY ?? 1;
+            const entityID = entity.getID();
+
+            worldMap.removeEntity(entity.tileX, entity.tileY, sizeX, sizeY, entityID);
+        }
     },
     debugEntities: function(gameContext) {
         for(let i = 0; i < 1; i++) {

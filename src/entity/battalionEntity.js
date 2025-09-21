@@ -37,6 +37,11 @@ BattalionEntity.SPRITE_TYPE = {
 BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
 
+BattalionEntity.prototype.destroy = function() {
+    this.setFlag(Entity.FLAG.DESTROY);
+    this.sprite.destroy();
+}
+
 BattalionEntity.prototype.setTile = function(tileX, tileY) {
     this.tileX = tileX;
     this.tileY = tileY;
