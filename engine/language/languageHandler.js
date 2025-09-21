@@ -7,8 +7,8 @@ export const LanguageHandler = function() {
     this.mapTranslations = new Map();
 
     this.events = new EventEmitter();
-    this.events.listen(LanguageHandler.EVENT.LANGUAGE_REGISTER);
-    this.events.listen(LanguageHandler.EVENT.LANGUAGE_CHANGE);
+    this.events.register(LanguageHandler.EVENT.LANGUAGE_REGISTER);
+    this.events.register(LanguageHandler.EVENT.LANGUAGE_CHANGE);
 }
 
 LanguageHandler.LANGUAGE = {

@@ -6,9 +6,9 @@ export const ClientManager = function() {
     this.clients = new Map();
 
     this.events = new EventEmitter();
-    this.events.listen(ClientManager.EVENT.CLIENT_CREATE);
-    this.events.listen(ClientManager.EVENT.CLIENT_DELETE);
-    this.events.listen(ClientManager.EVENT.USER_ID_ADDED);
+    this.events.register(ClientManager.EVENT.CLIENT_CREATE);
+    this.events.register(ClientManager.EVENT.CLIENT_DELETE);
+    this.events.register(ClientManager.EVENT.USER_ID_ADDED);
 }
 
 ClientManager.EVENT = {
@@ -19,7 +19,7 @@ ClientManager.EVENT = {
 
 ClientManager.prototype.exit = function() {
     this.clients.clear();
-    this.events.deafenAll();
+    this.events.removeAll();
 }
 
 ClientManager.prototype.destroyClient = function(clientID) {

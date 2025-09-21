@@ -13,10 +13,10 @@ export const MapEditor = function() {
     this.activityStack = [];
 
     this.events = new EventEmitter();
-    this.events.listen(MapEditor.EVENT.BRUSH_UPDATE);
-    this.events.listen(MapEditor.EVENT.PALLET_UPDATE);
-    this.events.listen(MapEditor.EVENT.MODE_UPDATE);
-    this.events.listen(MapEditor.EVENT.SET_UPDATE);
+    this.events.register(MapEditor.EVENT.BRUSH_UPDATE);
+    this.events.register(MapEditor.EVENT.PALLET_UPDATE);
+    this.events.register(MapEditor.EVENT.MODE_UPDATE);
+    this.events.register(MapEditor.EVENT.SET_UPDATE);
 }
 
 MapEditor.EVENT = {

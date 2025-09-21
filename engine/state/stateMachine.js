@@ -10,10 +10,10 @@ export const StateMachine = function(context) {
     this.states = new Map();
 
     this.events = new EventEmitter();
-    this.events.listen(StateMachine.EVENT.STATE_ADD);
-    this.events.listen(StateMachine.EVENT.STATE_REMOVE);
-    this.events.listen(StateMachine.EVENT.STATE_EXIT);
-    this.events.listen(StateMachine.EVENT.STATE_ENTER);
+    this.events.register(StateMachine.EVENT.STATE_ADD);
+    this.events.register(StateMachine.EVENT.STATE_REMOVE);
+    this.events.register(StateMachine.EVENT.STATE_EXIT);
+    this.events.register(StateMachine.EVENT.STATE_ENTER);
 
     if(!context) {
         console.warn(`No context given to state machine!`);

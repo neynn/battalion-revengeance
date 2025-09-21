@@ -13,10 +13,10 @@ export const UICollider = function() {
     this.state = UICollider.STATE.NOT_COLLIDED;
 
     this.events = new EventEmitter();
-    this.events.listen(UICollider.EVENT.CLICKED);
-    this.events.listen(UICollider.EVENT.FIRST_COLLISION);
-    this.events.listen(UICollider.EVENT.LAST_COLLISION);
-    this.events.listen(UICollider.EVENT.REPEATED_COLLISION);
+    this.events.register(UICollider.EVENT.CLICKED);
+    this.events.register(UICollider.EVENT.FIRST_COLLISION);
+    this.events.register(UICollider.EVENT.LAST_COLLISION);
+    this.events.register(UICollider.EVENT.REPEATED_COLLISION);
 }
 
 UICollider.STATE = {

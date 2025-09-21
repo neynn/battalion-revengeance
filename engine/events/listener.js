@@ -5,7 +5,7 @@ export const Listener = function(type) {
     this.singleObservers = [];
 }
 
-Listener.CODE = {
+Listener.ID = {
     SUPER: -1,
     ERROR: -2
 };
@@ -16,32 +16,28 @@ Listener.OBSERVER_TYPE = {
 };
 
 Listener.prototype.getType = function(options) {
-    if(!options) {
-        return Listener.OBSERVER_TYPE.DEFAULT;
-    }
+    if(options) {
+        const { once } = options;
 
-    const { once } = options;
-
-    if(once) {
-        return Listener.OBSERVER_TYPE.SINGLE;
+        if(once) {
+            return Listener.OBSERVER_TYPE.SINGLE;
+        }
     }
 
     return Listener.OBSERVER_TYPE.DEFAULT;
 }
 
 Listener.prototype.getID = function(options) {
-    if(!options) {
-        return this.nextID++;
-    }
+    if(options) {
+        const { permanent, id } = options;
 
-    const { permanent, id } = options;
+        if(permanent) {
+            return Listener.ID.SUPER;
+        }
 
-    if(permanent) {
-        return Listener.CODE.SUPER;
-    }
-
-    if(id && typeof id !== "number") {
-        return id;
+        if(id && typeof id !== "number") {
+            return id;
+        }
     }
 
     return this.nextID++;
@@ -49,58 +45,61 @@ Listener.prototype.getID = function(options) {
 
 Listener.prototype.emit = function(argsList) {
     for(let i = 0; i < this.observers.length; i++) {
-        this.observers[i].onCall(...argsList);
+        this.observers[i].onEvent(...argsList);
     }
 
     for(let i = 0; i < this.singleObservers.length; i++) {
-        this.singleObservers[i].onCall(...argsList);
+        this.singleObservers[i].onEvent(...argsList);
     }
 
     this.singleObservers.length = 0;
 }
 
-Listener.prototype.addObserver = function(type, id, onCall) {
-    switch(type) {
+Listener.prototype.addObserver = function(onEvent, options) {
+    const observerType = this.getType(options);
+    const observerID = this.getID(options);
+
+    switch(observerType) {
         case Listener.OBSERVER_TYPE.SINGLE: {
-            this.singleObservers.push({ "id": id, "onCall": onCall });
-            break;
+            this.singleObservers.push({
+                "id": observerID,
+                "onEvent": onEvent
+            });
+
+            return observerID;
         }
         case Listener.OBSERVER_TYPE.DEFAULT: {
-            this.observers.push({ "id": id, "onCall": onCall });
-            break;
+            this.observers.push({
+                "id": observerID,
+                "onEvent": onEvent
+            });
+
+            return observerID;
         }
         default: {
-            console.warn(`Unknown observer type! ${type}`);
-            break; 
+            console.warn(`Unknown observer type! ${observerType}`);
+
+            return Listener.ID.ERROR;
         }
     }
 }
 
-Listener.prototype.getFilteredObservers = function(oldList, onCheck) {
-    const observers = [];
+Listener.prototype.removeObservers = function(onCheck) {
+    for(let i = this.observers.length - 1; i >= 0; i--) {
+        const isRemoved = onCheck(this.observers[i]);
 
-    for(let i = 0; i < oldList.length; i++) {
-        const observer = oldList[i];
-        const result = onCheck(observer);
-
-        if(result) {
-            observers.push(observer);
+        if(isRemoved) {
+            this.observers[i] = this.observers[this.observers.length - 1];
+            this.observers.pop();
         }
     }
 
-    return observers;
-}
+    for(let i = this.singleObservers.length - 1; i >= 0; i--) {
+        const isRemoved = onCheck(this.singleObservers[i]);
 
-Listener.prototype.filterObservers = function(onCheck) {
-    if(typeof onCheck !== "function") {
-        return;
-    }
-
-    if(this.observers.length > 0) {
-        this.observers = this.getFilteredObservers(this.observers, onCheck);
-    }
-
-    if(this.singleObservers.length > 0) {    
-        this.singleObservers = this.getFilteredObservers(this.singleObservers, onCheck);
+        if(isRemoved) {
+            this.singleObservers[i] = this.singleObservers[this.singleObservers.length - 1];
+            this.singleObservers.pop();
+        }
     }
 }

@@ -14,10 +14,10 @@ export const ActionQueue = function() {
     this.state = ActionQueue.STATE.ACTIVE;
 
     this.events = new EventEmitter();
-    this.events.listen(ActionQueue.EVENT.EXECUTION_DEFER);
-    this.events.listen(ActionQueue.EVENT.EXECUTION_ERROR);
-    this.events.listen(ActionQueue.EVENT.EXECUTION_RUNNING);
-    this.events.listen(ActionQueue.EVENT.EXECUTION_COMPLETE);
+    this.events.register(ActionQueue.EVENT.EXECUTION_DEFER);
+    this.events.register(ActionQueue.EVENT.EXECUTION_ERROR);
+    this.events.register(ActionQueue.EVENT.EXECUTION_RUNNING);
+    this.events.register(ActionQueue.EVENT.EXECUTION_COMPLETE);
 }
 
 ActionQueue.STATE = {

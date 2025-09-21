@@ -10,11 +10,11 @@ export const TurnManager = function() {
     this.actionsLeft = 0;
 
     this.events = new EventEmitter();
-    this.events.listen(TurnManager.EVENT.ACTOR_CREATE);
-    this.events.listen(TurnManager.EVENT.ACTOR_DESTROY);
-    this.events.listen(TurnManager.EVENT.ACTOR_CHANGE);
-    this.events.listen(TurnManager.EVENT.ACTIONS_REDUCE);
-    this.events.listen(TurnManager.EVENT.ACTIONS_CLEAR);
+    this.events.register(TurnManager.EVENT.ACTOR_CREATE);
+    this.events.register(TurnManager.EVENT.ACTOR_DESTROY);
+    this.events.register(TurnManager.EVENT.ACTOR_CHANGE);
+    this.events.register(TurnManager.EVENT.ACTIONS_REDUCE);
+    this.events.register(TurnManager.EVENT.ACTIONS_CLEAR);
 }
 
 TurnManager.EVENT = {

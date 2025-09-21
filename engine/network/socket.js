@@ -7,9 +7,9 @@ export const Socket = function() {
     this.isConnected = false;
     this.events = new EventEmitter();
 
-    this.events.listen(Socket.EVENT.CONNECTED_TO_SERVER);
-    this.events.listen(Socket.EVENT.DISCONNECTED_FROM_SERVER);
-    this.events.listen(Socket.EVENT.MESSAGE_FROM_SERVER);
+    this.events.register(Socket.EVENT.CONNECTED_TO_SERVER);
+    this.events.register(Socket.EVENT.DISCONNECTED_FROM_SERVER);
+    this.events.register(Socket.EVENT.MESSAGE_FROM_SERVER);
 
     this.addDebug();
 }

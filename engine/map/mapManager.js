@@ -11,10 +11,10 @@ export const MapManager = function() {
     this.cacheEnabled = true;
 
     this.events = new EventEmitter();
-    this.events.listen(MapManager.EVENT.MAP_CREATE);
-    this.events.listen(MapManager.EVENT.MAP_DELETE);
-    this.events.listen(MapManager.EVENT.MAP_ENABLE);
-    this.events.listen(MapManager.EVENT.MAP_DISABLE);
+    this.events.register(MapManager.EVENT.MAP_CREATE);
+    this.events.register(MapManager.EVENT.MAP_DELETE);
+    this.events.register(MapManager.EVENT.MAP_ENABLE);
+    this.events.register(MapManager.EVENT.MAP_DISABLE);
 }
 
 MapManager.EVENT = {

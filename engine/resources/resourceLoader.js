@@ -10,8 +10,8 @@ export const ResourceLoader = function() {
     this.toResolve = new Map();
 
     this.events = new EventEmitter();
-    this.events.listen(ResourceLoader.EVENT.TEXTURE_LOADED);
-    this.events.listen(ResourceLoader.EVENT.TEXTURE_ERROR);
+    this.events.register(ResourceLoader.EVENT.TEXTURE_LOADED);
+    this.events.register(ResourceLoader.EVENT.TEXTURE_ERROR);
 
     this.events.on(ResourceLoader.EVENT.TEXTURE_ERROR, (t, e) => console.error("ERROR", t, e));
     this.events.on(ResourceLoader.EVENT.TEXTURE_LOADED, (t, r) => console.log("LOADED", t, r));

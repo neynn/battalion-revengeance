@@ -20,12 +20,12 @@ export const Cursor = function() {
     this.addEventHandler("contextmenu", event => event);
 
     this.events = new EventEmitter();
-    this.events.listen(Cursor.EVENT.BUTTON_UP);
-    this.events.listen(Cursor.EVENT.BUTTON_DOWN);
-    this.events.listen(Cursor.EVENT.BUTTON_CLICK);
-    this.events.listen(Cursor.EVENT.BUTTON_DRAG);
-    this.events.listen(Cursor.EVENT.BUTTON_HOLD);
-    this.events.listen(Cursor.EVENT.SCROLL);
+    this.events.register(Cursor.EVENT.BUTTON_UP);
+    this.events.register(Cursor.EVENT.BUTTON_DOWN);
+    this.events.register(Cursor.EVENT.BUTTON_CLICK);
+    this.events.register(Cursor.EVENT.BUTTON_DRAG);
+    this.events.register(Cursor.EVENT.BUTTON_HOLD);
+    this.events.register(Cursor.EVENT.SCROLL);
 }
 
 Cursor.EVENT = {

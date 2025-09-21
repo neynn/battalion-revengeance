@@ -7,7 +7,7 @@ export const MissionHandler = function() {
     this.currentGroup = null;
 
     this.events = new EventEmitter();
-    this.events.listen(MissionHandler.EVENT.MISSION_COMPLETE);
+    this.events.register(MissionHandler.EVENT.MISSION_COMPLETE);
 }
 
 MissionHandler.EVENT = {

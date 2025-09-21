@@ -13,8 +13,8 @@ export const EntityManager = function() {
     this.entityMap = new Map();
 
     this.events = new EventEmitter();
-    this.events.listen(EntityManager.EVENT.ENTITY_CREATE);
-    this.events.listen(EntityManager.EVENT.ENTITY_DESTROY);
+    this.events.register(EntityManager.EVENT.ENTITY_CREATE);
+    this.events.register(EntityManager.EVENT.ENTITY_DESTROY);
 }
 
 EntityManager.EVENT = {

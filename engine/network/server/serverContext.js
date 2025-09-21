@@ -12,8 +12,8 @@ export const ServerContext = function(io) {
     this.clientManager = new ClientManager();
 
     this.events = new EventEmitter();
-    this.events.listen(ServerContext.EVENT.CONNECT);
-    this.events.listen(ServerContext.EVENT.DISCONNECT);
+    this.events.register(ServerContext.EVENT.CONNECT);
+    this.events.register(ServerContext.EVENT.DISCONNECT);
 
     this.events.on(ServerContext.EVENT.CONNECT, (socket) => console.log(`${socket.id} has connected to the server!`), { permanent: true });
     this.events.on(ServerContext.EVENT.DISCONNECT, (clientID) => console.log(`${clientID} has disconnected from the server!`), { permanent: true });

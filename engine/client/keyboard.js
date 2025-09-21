@@ -5,11 +5,11 @@ export const Keyboard = function() {
     this.activeKeys = new Set();
 
     this.events = new EventEmitter();
-    this.events.listen(Keyboard.EVENT.KEY_PRESSED);
-    this.events.listen(Keyboard.EVENT.KEY_RELEASED);
-    this.events.listen(Keyboard.EVENT.KEY_DOWN);
-    this.events.listen(Keyboard.EVENT.KEY_BOUND);
-    this.events.listen(Keyboard.EVENT.KEY_UNBOUND);
+    this.events.register(Keyboard.EVENT.KEY_PRESSED);
+    this.events.register(Keyboard.EVENT.KEY_RELEASED);
+    this.events.register(Keyboard.EVENT.KEY_DOWN);
+    this.events.register(Keyboard.EVENT.KEY_BOUND);
+    this.events.register(Keyboard.EVENT.KEY_UNBOUND);
 
     document.addEventListener("keydown", (event) => {
         const { key } = event;

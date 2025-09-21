@@ -7,15 +7,15 @@ export const RoomManager = function() {
     this.roomTypes = {};
 
     this.events = new EventEmitter();
-    this.events.listen(RoomManager.EVENT.ROOM_OPENED);
-    this.events.listen(RoomManager.EVENT.ROOM_CLOSED);
-    this.events.listen(RoomManager.EVENT.CLIENT_JOINED);
-    this.events.listen(RoomManager.EVENT.CLIENT_LEFT);
-    this.events.listen(RoomManager.EVENT.CLIENT_LEADER);
-    this.events.listen(RoomManager.EVENT.MESSAGE_RECEIVED);
-    this.events.listen(RoomManager.EVENT.MESSAGE_LOST);
-    this.events.listen(RoomManager.EVENT.MESSAGE_SEND);
-    this.events.listen(RoomManager.EVENT.MESSAGE_BROADCAST);
+    this.events.register(RoomManager.EVENT.ROOM_OPENED);
+    this.events.register(RoomManager.EVENT.ROOM_CLOSED);
+    this.events.register(RoomManager.EVENT.CLIENT_JOINED);
+    this.events.register(RoomManager.EVENT.CLIENT_LEFT);
+    this.events.register(RoomManager.EVENT.CLIENT_LEADER);
+    this.events.register(RoomManager.EVENT.MESSAGE_RECEIVED);
+    this.events.register(RoomManager.EVENT.MESSAGE_LOST);
+    this.events.register(RoomManager.EVENT.MESSAGE_SEND);
+    this.events.register(RoomManager.EVENT.MESSAGE_BROADCAST);
 }
 
 RoomManager.ID = {
