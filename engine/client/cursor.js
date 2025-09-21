@@ -26,7 +26,6 @@ export const Cursor = function() {
     this.events.listen(Cursor.EVENT.BUTTON_DRAG);
     this.events.listen(Cursor.EVENT.BUTTON_HOLD);
     this.events.listen(Cursor.EVENT.SCROLL);
-    this.events.listen(Cursor.EVENT.MOVE);
 }
 
 Cursor.EVENT = {
@@ -35,8 +34,7 @@ Cursor.EVENT = {
     BUTTON_CLICK: "BUTTON_CLICK",
     BUTTON_DRAG: "BUTTON_DRAG",
     BUTTON_HOLD: "BUTTON_HOLD",
-    SCROLL: "SCROLL",
-    MOVE: "MOVE"
+    SCROLL: "SCROLL"
 };
 
 Cursor.BUTTON = {
@@ -76,7 +74,6 @@ Cursor.prototype.eventMouseMove = function(event) {
 
     this.positionX = pageX;
     this.positionY = pageY;
-    this.events.emit(Cursor.EVENT.MOVE, deltaX, deltaY);
 }
 
 Cursor.prototype.eventMouseDown = function(event) {

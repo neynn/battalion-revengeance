@@ -22,7 +22,8 @@ export const CameraHelper = {
 
         const camera = new EditCamera();
         const context = renderer.createContext(camera);
-        
+        const contextID = context.getID();
+
         context.setPosition(0, 0);
         //context.setDisplayMode(CameraContext.DISPLAY_MODE.RESOLUTION_FIXED);
         //context.setResolution(560, 560);
@@ -33,7 +34,7 @@ export const CameraHelper = {
         camera.setTileSize(tileWidth, tileHeight);
 
         CameraHelper.tryLoadingWorldSize(gameContext, camera);
-        ContextHelper.createDrag(gameContext, Cursor.BUTTON.LEFT);
+        ContextHelper.createDrag(gameContext, contextID, Cursor.BUTTON.LEFT);
 
         return context;
     },
@@ -43,7 +44,8 @@ export const CameraHelper = {
 
         const camera = new BattalionCamera();
         const context = renderer.createContext(camera);
-        
+        const contextID = context.getID();
+
         context.setPositionMode(CameraContext.POSITION_MODE.AUTO_CENTER);
         context.setDisplayMode(CameraContext.DISPLAY_MODE.RESOLUTION_FIXED);
         context.setScaleMode(CameraContext.SCALE_MODE.WHOLE);
@@ -53,7 +55,7 @@ export const CameraHelper = {
         camera.setTileSize(tileWidth, tileHeight);
     
         CameraHelper.tryLoadingWorldSize(gameContext, camera);
-        ContextHelper.createDrag(gameContext, Cursor.BUTTON.LEFT);
+        ContextHelper.createDrag(gameContext, contextID, Cursor.BUTTON.LEFT);
 
         return context;
     }

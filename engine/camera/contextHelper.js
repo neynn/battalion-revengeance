@@ -1,4 +1,5 @@
 import { Cursor } from "../client/cursor.js";
+import { CameraContext } from "./cameraContext.js";
 
 export const ContextHelper = {
     getContextAtMouse: function(gameContext) {
@@ -8,17 +9,34 @@ export const ContextHelper = {
 
         return context;
     },
-    createDrag: function(gameContext, mouseButton = Cursor.BUTTON.LEFT) {
-        const { client } = gameContext;
+    createDrag: function(gameContext, contextID, mouseButton = Cursor.BUTTON.LEFT) {
+        const { client, renderer } = gameContext;
         const { cursor } = client;
+        const context = renderer.getContext(contextID);
+
+        if(!context) {
+            return;
+        }
+
+        cursor.events.on(Cursor.EVENT.BUTTON_DOWN, (buttonID) => {
+            if(buttonID === mouseButton) {
+                const isColliding = context.isColliding(cursor.positionX, cursor.positionY, cursor.radius);
+
+                if(isColliding) {
+                    context.enableDrag();
+                }
+            }
+        });
 
         cursor.events.on(Cursor.EVENT.BUTTON_DRAG, (buttonID, deltaX, deltaY) => {
             if(buttonID === mouseButton) {
-                const context = ContextHelper.getContextAtMouse(gameContext);
+                context.dragCamera(deltaX, deltaY);
+            }
+        });
 
-                if(context) {
-                    context.dragCamera(deltaX, deltaY);
-                }
+        cursor.events.on(Cursor.EVENT.BUTTON_UP, (buttonID) => {
+            if(buttonID === mouseButton) {
+                context.disableDrag();
             }
         });
     },
@@ -59,5 +77,23 @@ export const ContextHelper = {
             "y": y,
             "r": cursor.radius
         };
+    },
+    toNative: function(gameContext, contextID) {
+        const { renderer } = gameContext;
+        const context = renderer.getContext(contextID);
+
+        if(context) {
+            context.setDisplayMode(CameraContext.DISPLAY_MODE.RESOLUTION_DEPENDENT);
+        }
+    },
+    toFixed: function(gameContext, contextID, width, height) {
+        const { renderer } = gameContext;
+        const context = renderer.getContext(contextID);
+
+        if(context) {
+            context.setDisplayMode(CameraContext.DISPLAY_MODE.RESOLUTION_FIXED);
+            context.setScaleMode(CameraContext.SCALE_MODE.WHOLE);
+            context.setResolution(width, height);
+        }
     }
 };

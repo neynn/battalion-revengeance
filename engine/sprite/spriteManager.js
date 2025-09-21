@@ -46,6 +46,21 @@ SpriteManager.prototype.addSharedEntry = function(spriteID, index) {
     });
 }
 
+SpriteManager.prototype.getSpriteDuration = function(spriteID) {
+    const spriteEntry = this.spriteMap.get(spriteID);
+
+    if(spriteEntry) {
+        const { index } = spriteEntry;
+        const container = this.getContainer(index);
+
+        if(container) {
+            return container.totalFrameTime;
+        }
+    }
+
+    return 1;
+}
+
 SpriteManager.prototype.createSpriteAlias = function(spriteID, schemaID) {
     const spriteEntry = this.spriteMap.get(spriteID);
     const aliasID = SpriteHelper.getSchemaID(spriteID, schemaID);

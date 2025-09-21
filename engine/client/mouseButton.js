@@ -15,32 +15,26 @@ MouseButton.DRAG = {
 };
 
 MouseButton.prototype.onMouseUp = function() {
-    if(this.state === MouseButton.STATE.UP) {
-        return;
+    if(this.state !== MouseButton.STATE.UP) {
+        this.state = MouseButton.STATE.UP;
+        this.downStartTime = 0;
     }
-
-    this.state = MouseButton.STATE.UP;
-    this.downStartTime = 0;
 }
 
 MouseButton.prototype.onMouseDown = function() {
-    if(this.state !== MouseButton.STATE.UP) {
-        return;
+    if(this.state === MouseButton.STATE.UP) {
+        this.state = MouseButton.STATE.DOWN;
+        this.downStartTime = Date.now();
     }
-
-    this.state = MouseButton.STATE.DOWN;
-    this.downStartTime = Date.now();
 }
 
 MouseButton.prototype.onMouseMove = function(deltaX, deltaY) {
-    if(this.state !== MouseButton.STATE.DOWN) {
-        return;
-    }
-
-    const isDragging = this.isDragging(deltaX, deltaY);
-    
-    if(isDragging) {
-        this.state = MouseButton.STATE.DRAG;
+    if(this.state === MouseButton.STATE.DOWN) {
+        const isDragging = this.isDragging(deltaX, deltaY);
+        
+        if(isDragging) {
+            this.state = MouseButton.STATE.DRAG;
+        }
     }
 }
 

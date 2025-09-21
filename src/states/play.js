@@ -1,4 +1,3 @@
-import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { State } from "../../engine/state/state.js";
 import { ActorSpawner } from "../actors/actorSpawner.js";
 import { BattalionContext } from "../battalionContext.js";

@@ -14,6 +14,7 @@ export const CameraContext = function(id, camera) {
     this.positionMode = CameraContext.POSITION_MODE.FIXED;
     this.displayMode = CameraContext.DISPLAY_MODE.RESOLUTION_DEPENDENT;
     this.display.init(1, 1, Display.TYPE.BUFFER);
+    this.isDragging = false;
 }
 
 CameraContext.BASE_SCALE = 1;
@@ -106,11 +107,21 @@ CameraContext.prototype.centerCamera = function() {
     this.setPosition(positionX, positionY);
 }
 
-CameraContext.prototype.dragCamera = function(deltaX, deltaY) {
-    const dragX = deltaX / this.scale;
-    const dragY = deltaY / this.scale;
+CameraContext.prototype.enableDrag = function() {
+    this.isDragging = true;
+}
 
-    this.camera.dragViewport(dragX, dragY);
+CameraContext.prototype.disableDrag = function() {
+    this.isDragging = false;
+}
+
+CameraContext.prototype.dragCamera = function(deltaX, deltaY) {
+    if(this.isDragging) {
+        const dragX = deltaX / this.scale;
+        const dragY = deltaY / this.scale;
+
+        this.camera.dragViewport(dragX, dragY);
+    }
 }
 
 CameraContext.prototype.reloadScale = function() {
