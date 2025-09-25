@@ -1,4 +1,60 @@
+import { Layer } from "./layer.js";
+
+const createLayer8 = function(size) {
+    return new Layer(new Uint8Array(size), Layer.THRESHOLD.BIT_8);   
+}
+
+const createLayer16 = function(size) {
+    return new Layer(new Uint16Array(size), Layer.THRESHOLD.BIT_16);
+}
+
+const createLayer32 = function(size) {
+    return new Layer(new Uint32Array(size), Layer.THRESHOLD.BIT_32);
+}
+
+const transformThresholdToType = function(maxValue) {
+    if(maxValue <= Layer.THRESHOLD.BIT_8) {
+        return Layer.TYPE.BIT_8;
+    } else if(maxValue <= Layer.THRESHOLD.BIT_16) {
+        return Layer.TYPE.BIT_16;
+    } else {
+        return Layer.TYPE.BIT_32;
+    }
+}
+
 export const MapHelper = {
+    createLayer: function(size, type) {
+        switch(type) {
+            case Layer.TYPE.BIT_8: return createLayer8(size);
+            case Layer.TYPE.BIT_16: return createLayer16(size);
+            case Layer.TYPE.BIT_32: return createLayer32(size);
+            default: return createLayer8(size);
+        }
+    },
+    createLayerByThreshold: function(gameContext, size) {
+        const { tileManager } = gameContext;
+        const containerCount = tileManager.getContainerCount();
+        const type = transformThresholdToType(containerCount);
+        const layer = MapHelper.createLayer(size, type);
+
+        return layer;
+    },
+    enableMap: function(gameContext, worldMap, mapLanguage) {
+        if(worldMap) {
+            const { world, language } = gameContext;
+            const { mapManager } = world;
+            const mapID = worldMap.getID();
+            const currentLanguage = language.getCurrent();
+
+            language.registerMap(mapID, mapLanguage);
+
+            if(currentLanguage) {
+                worldMap.onLanguageUpdate(currentLanguage, mapLanguage);
+            }
+
+            mapManager.enableMap(mapID);
+        }
+    },
     createMapByID: async function(gameContext, typeID, onCreate) {
         const { world, language } = gameContext;
         const { mapManager } = world;
@@ -20,40 +76,53 @@ export const MapHelper = {
         }
 
         const worldMap = mapManager.createMap((mapID, mapType) => {
+            const { width, height, data } = mapData;
             const mapObject = onCreate(mapID, mapData);
 
             mapObject.setConfig(mapType);
+            mapObject.resize(width, height);
+            mapObject.loadLayers(gameContext, data);
 
             return mapObject;
         }, typeID);
 
-        if(worldMap) {
-            const mapID = worldMap.getID();
-
-            mapManager.enableMap(mapID);
-
-            if(mapLanguage) {
-                language.registerMap(mapID, mapLanguage);
-                worldMap.onLanguageUpdate(currentLanguage, mapLanguage);
-            }
-        }
+        MapHelper.enableMap(gameContext, worldMap, mapLanguage);
 
         return worldMap;
     },
-    createEmptyMap: function(gameContext, onCreate) {
+    createMapByData: function(gameContext, mapData, mapLanguage, onCreate) {
         const { world } = gameContext;
         const { mapManager } = world;
-        const worldMap = mapManager.createEmptyMap((mapID) => {
+
+        const worldMap = mapManager.createCustomMap((mapID) => {
+            const { width, height, data } = mapData;
             const mapObject = onCreate(mapID);
+
+            mapObject.resize(width, height);
+            mapObject.loadLayers(gameContext, data);
 
             return mapObject;
         });
 
-        if(worldMap) {
-            const mapID = worldMap.getID();
+        MapHelper.enableMap(gameContext, worldMap, mapLanguage);
 
-            mapManager.enableMap(mapID);
-        }
+        return worldMap;
+    },
+    createEmptyMap: function(gameContext, mapData, onCreate) {
+        const { world } = gameContext;
+        const { mapManager } = world;
+
+        const worldMap = mapManager.createCustomMap((mapID) => {
+            const { width, height, data } = mapData;
+            const mapObject = onCreate(mapID);
+
+            mapObject.resize(width, height);
+            mapObject.loadLayersEmpty(gameContext, data);
+
+            return mapObject;
+        });
+
+        MapHelper.enableMap(gameContext, worldMap, {});
 
         return worldMap;
     }

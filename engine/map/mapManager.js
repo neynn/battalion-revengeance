@@ -43,7 +43,7 @@ MapManager.prototype.onLanguageUpdate = async function(gameContext, languageID) 
     }
 }
 
-MapManager.prototype.createEmptyMap = function(onCreate, externalID) {
+MapManager.prototype.createCustomMap = function(onCreate, externalID) {
     const mapID = externalID !== undefined ? externalID : this.nextID++;
 
     if(!this.maps.has(mapID)) {

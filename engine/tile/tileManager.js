@@ -95,7 +95,8 @@ TileManager.prototype.getContainer = function(tileID) {
 }
 
 TileManager.prototype.getContainerCount = function() {
-    return this.containers.length;
+    //+1 because 0 is treated as an empty tile -> counting begins at 1.
+    return this.containers.length + 1;
 }
 
 TileManager.prototype.createAutotiler = function(config) {

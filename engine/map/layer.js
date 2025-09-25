@@ -1,12 +1,17 @@
-export const Layer = function() {
-    this.buffer = [];
+export const Layer = function(buffer, threshold) {
+    this.buffer = buffer;
+    this.threshold = threshold;
     this.alpha = 1;
-    this.threshold = Layer.BUFFER_THRESHOLD.BIT_0;
     this.fillValue = 0;
 }
 
-Layer.BUFFER_THRESHOLD = {
-    BIT_0: -1,
+Layer.TYPE = {
+    BIT_8: 0,
+    BIT_16: 1,
+    BIT_32: 2
+};
+
+Layer.THRESHOLD = {
     BIT_8: 255,
     BIT_16: 65535,
     BIT_32: 4294967295
@@ -32,19 +37,6 @@ Layer.prototype.fill = function(id) {
     }
 }
 
-Layer.prototype.initBuffer = function(bufferSize, maxValue) {
-    if(maxValue < Layer.BUFFER_THRESHOLD.BIT_8) {
-        this.threshold = Layer.BUFFER_THRESHOLD.BIT_8;
-        this.buffer = new Uint8Array(bufferSize);
-    } else if(maxValue < Layer.BUFFER_THRESHOLD.BIT_16) {
-        this.threshold = Layer.BUFFER_THRESHOLD.BIT_16;
-        this.buffer = new Uint16Array(bufferSize);
-    } else {
-        this.threshold = Layer.BUFFER_THRESHOLD.BIT_32;
-        this.buffer = new Uint32Array(bufferSize);
-    }
-}
-
 Layer.prototype.setAlpha = function(alpha = 0) {
     if(alpha < 0) {
         this.alpha = 0;
@@ -56,10 +48,10 @@ Layer.prototype.setAlpha = function(alpha = 0) {
 }
 
 Layer.prototype.resize = function(oldWidth, oldHeight, newWidth, newHeight) {
+    const fill = this.fillValue;
     const layerSize = newWidth * newHeight;
     const ArrayType = this.buffer.constructor;
     const newBuffer = new ArrayType(layerSize);
-    const fill = this.fillValue;
 
     if(fill !== 0 && fill <= this.threshold) {
         for(let i = 0; i < layerSize; ++i) {
@@ -133,25 +125,23 @@ Layer.prototype.encode = function() {
 }
 
 Layer.prototype.getItem = function(index) {
-    if(index < 0 || index >= this.buffer.length) {
-        return -1;
+    if(index >= 0 && index < this.buffer.length) {
+        return this.buffer[index];
     }
 
-    return this.buffer[index];
+    return -1;
 }
 
 Layer.prototype.setItem = function(item, index) {
-    if(index < 0 || index >= this.buffer.length) {
-        return;
+    if(index >= 0 && index < this.buffer.length) {
+        if(item >= 0 && item <= this.threshold) {
+            this.buffer[index] = item;
+        }
     }
-
-    this.buffer[index] = item;
 }
 
 Layer.prototype.clearItem = function(index) {
-    if(index < 0 || index >= this.buffer.length) {
-        return;
+    if(index >= 0 && index < this.buffer.length) {
+        this.buffer[index] = 0;
     }
-
-    this.buffer[index] = 0;
 }

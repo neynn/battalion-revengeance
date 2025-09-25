@@ -1,7 +1,11 @@
+import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 
 export const BattalionMap = function(id) {
     WorldMap.call(this, id);
+
+    this.createLayer(BattalionMap.LAYER.FLAG, Layer.TYPE.BIT_8);
+    this.createLayer(BattalionMap.LAYER.TEAM, Layer.TYPE.BIT_8);
 }
 
 BattalionMap.LAYER = {

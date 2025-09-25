@@ -4,24 +4,14 @@ import { BattalionMap } from "./battalionMap.js";
 export const MapSpawner = {
     createMapByID: function(gameContext, typeID) {
         return MapHelper.createMapByID(gameContext, typeID, (mapID, mapData) => {
-            const worldMap = new BattalionMap(mapID);
-            const { width, height, data } = mapData;
+            //MapData to broadcast e.g. missions or music.
 
-            worldMap.resize(width, height);
-            worldMap.loadLayers(gameContext, data);
-
-            return worldMap;
+            return new BattalionMap(mapID);
         });
     },
     createEmptyMap: function(gameContext, mapData) {
-        return MapHelper.createEmptyMap(gameContext, (mapID) => {
-            const worldMap = new BattalionMap(mapID);
-            const { width, height, data } = mapData;
-
-            worldMap.resize(width, height);
-            worldMap.loadLayersEmpty(gameContext, data);
-
-            return worldMap;
+        return MapHelper.createEmptyMap(gameContext, mapData, (mapID) => {
+            return new BattalionMap(mapID);
         });
     }
 }

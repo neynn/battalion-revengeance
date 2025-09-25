@@ -1,6 +1,6 @@
 import { Autotiler } from "../tile/autotiler.js";
 import { TileManager } from "../tile/tileManager.js";
-import { Layer } from "./layer.js";
+import { MapHelper } from "./mapHelper.js";
 
 export const WorldMap = function(id) {
     this.id = id;
@@ -328,41 +328,43 @@ WorldMap.prototype.getUniqueEntitiesInArea = function(startX, startY, endX, endY
     return entities;
 }
 
-WorldMap.prototype.createLayer = function(id) {
-    if(this.layers.has(id)) {
-        return this.layers.get(id);
-    }
+WorldMap.prototype.createLayer = function(layerID, type) {
+    const bufferSize = this.width * this.height;
+    const layer = MapHelper.createLayer(bufferSize, type); 
 
-    const layer = new Layer();
-
-    this.layers.set(id, layer);
+    this.layers.set(layerID, layer);
 
     return layer;
 }
 
-WorldMap.prototype.loadLayersEmpty = function(gameContext, layerData) {
-    const { tileManager } = gameContext;
-    const containerCount = tileManager.getContainerCount();
+WorldMap.prototype.getOrCreateLayer = function(gameContext, layerID) {
+    const layer = this.layers.get(layerID);
+
+    if(layer) {
+        return layer;
+    }
+
     const bufferSize = this.width * this.height;
+    const newLayer = MapHelper.createLayerByThreshold(gameContext, bufferSize);
 
+    this.layers.set(layerID, newLayer);
+
+    return newLayer;
+}
+
+WorldMap.prototype.loadLayersEmpty = function(gameContext, layerData) {
     for(const layerID in layerData) {
+        const layer = this.getOrCreateLayer(gameContext, layerID);
         const { fill } = layerData[layerID];
-        const layer = this.createLayer(layerID);
 
-        layer.initBuffer(bufferSize, containerCount);
         layer.fill(fill);
     }
 }
 
 WorldMap.prototype.loadLayers = function(gameContext, layerData) {
-    const { tileManager } = gameContext;
-    const containerCount = tileManager.getContainerCount();
-    const bufferSize = this.width * this.height;
-
     for(const layerID in layerData) {
-        const layer = this.createLayer(layerID);
+        const layer = this.getOrCreateLayer(gameContext, layerID);
 
-        layer.initBuffer(bufferSize, containerCount);
         layer.decode(layerData[layerID]);
     }
 }
