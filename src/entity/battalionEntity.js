@@ -8,6 +8,7 @@ export const BattalionEntity = function(id, sprite) {
     this.tileY = -1;
     this.direction = BattalionEntity.DIRECTION.EAST;
     this.state = BattalionEntity.STATE.IDLE;
+    this.traits = [];
 }
 
 BattalionEntity.DIRECTION = {
@@ -34,8 +35,50 @@ BattalionEntity.SPRITE_TYPE = {
     FIRE_UP: "fire_up",
 };
 
+BattalionEntity.TRAIT = {
+    TEST: "TEST"
+};
+
 BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
+
+BattalionEntity.prototype.removeTags = function() {
+    this.traits.length = 0;
+}
+
+BattalionEntity.prototype.hasTrait = function(traitID) {
+    for(let i = 0; i < this.traits.length; i++) {
+        if(this.traits[i] === traitID) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+BattalionEntity.prototype.removeTrait = function(traitID) {
+    for(let i = 0; i < this.traits.length; i++) {
+        if(this.traits[i] === traitID) {
+            this.traits[i] = this.traits[this.traits.length - 1];
+            this.traits.pop();
+            break;
+        }
+    }
+}
+
+BattalionEntity.prototype.loadTraits = function() {
+    const traits = this.config.traits;
+
+    if(traits) {
+        for(let i = 0; i < traits.length; i++) {
+            const traitID = BattalionEntity.TRAIT[traits[i]];
+
+            if(traitID !== undefined) {
+                this.traits.push(traitID);
+            }
+        }
+    }
+}
 
 BattalionEntity.prototype.destroy = function() {
     this.setFlag(Entity.FLAG.DESTROY);

@@ -37,6 +37,7 @@ export const EntitySpawner = {
             entitySprite.create(gameContext, spriteID, schemaID);
             entityObject.setTile(x, y);
             entityObject.setPosition(spawnPosition);
+            entityObject.loadTraits();
 
             return entityObject;
         }, type, id);

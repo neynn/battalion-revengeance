@@ -1,13 +1,17 @@
 import { GameContext } from "../engine/gameContext.js";
 import { LanguageHandler } from "../engine/language/languageHandler.js";
+import { BattalionEntity } from "./entity/battalionEntity.js";
 import { MainMenuState } from "./states/mainMenu.js";
 import { MapEditorState } from "./states/mapEditor.js";
 import { PlayState } from "./states/play.js";
+import { TraitRegistry } from "./trait/traitRegistry.js";
+import { TestTrait } from "./trait/types/test.js";
 
 export const BattalionContext = function() {
     GameContext.call(this);
 
     this.transform2D.setSize(56, 56);
+    this.traitRegistry = new TraitRegistry();
 }
 
 BattalionContext.STATE = {
@@ -27,4 +31,6 @@ BattalionContext.prototype.init = function(resources) {
     this.states.addState(BattalionContext.STATE.PLAY, new PlayState());
     this.states.setNextState(this, BattalionContext.STATE.MAIN_MENU);
     this.timer.start();
+
+    this.traitRegistry.registerTrait(BattalionEntity.TRAIT.TEST, new TestTrait());
 }
