@@ -66,7 +66,7 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
             const { type = TypeRegistry.TILE_TYPE.NONE } = meta;
             const climate = typeRegistry.getClimateType(type);
 
-            if(climate !== TypeRegistry.CLIMATE_TYPE.TEMPERATE) {
+            if(climate !== TypeRegistry.CLIMATE_TYPE.NONE) {
                 return climate;
             }
         }

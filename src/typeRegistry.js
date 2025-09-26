@@ -23,6 +23,7 @@ TypeRegistry.CATEGORY = {
 };
 
 TypeRegistry.CLIMATE_TYPE = {
+    NONE: "NONE",
     TEMPERATE: "TEMPERATE",
     ARID: "ARID",
     BOREAL: "BOREAL",
@@ -198,10 +199,10 @@ TypeRegistry.prototype.getClimateType = function(tileID) {
     const type = this.getType(tileID, TypeRegistry.CATEGORY.TILE);
 
     if(type) {
-        const { climate = TypeRegistry.CLIMATE_TYPE.TEMPERATE } = type;
+        const { climate = TypeRegistry.CLIMATE_TYPE.NONE } = type;
 
         return climate;
     }
 
-    return TypeRegistry.CLIMATE_TYPE.TEMPERATE;
+    return TypeRegistry.CLIMATE_TYPE.NONE;
 }

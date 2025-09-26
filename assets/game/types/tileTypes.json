@@ -1,6 +1,6 @@
 {
     "NONE": {
-        "climate": null,
+        "climate": "NONE",
         "terrain": []
     },
     "GRASS": {
@@ -16,7 +16,7 @@
         "terrain": ["UNEVEN"]
     },
     "SHORE": {
-        "climate": null,
+        "climate": "NONE",
         "terrain": ["UNEVEN"]
     },
     "ISLAND": {
@@ -24,19 +24,19 @@
         "terrain": []
     },
     "SWIRL": {
-        "climate": null,
+        "climate": "NONE",
         "terrain": []
     },
     "ROCKS": {
-        "climate": null,
+        "climate": "NONE",
         "terrain": []
     },
     "RIVER": {
-        "climate": null,
+        "climate": "NONE",
         "terrain": []
     },
     "ROAD": {
-        "climate": null,
+        "climate": "NONE",
         "terrain": []
     },
     "VOLCANO": {

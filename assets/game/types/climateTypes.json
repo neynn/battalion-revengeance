@@ -1,4 +1,5 @@
 {
+    "NONE": { "name": "CLIMATE_NAME_NONE", "desc": "CLIMATE_DESC_NONE", "icon": null },
     "TEMPERATE": { "name": "CLIMATE_NAME_TEMPERATE", "desc": "CLIMATE_DESC_TEMPERATE", "icon": null },
     "ARID": { "name": "CLIMATE_NAME_ARID", "desc": "CLIMATE_DESC_ARID", "icon": null },
     "BOREAL": { "name": "CLIMATE_NAME_BOREAL", "desc": "CLIMATE_DESC_BOREAL", "icon": null },

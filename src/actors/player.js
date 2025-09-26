@@ -17,7 +17,10 @@ Player.prototype.constructor = Player;
 
 Player.prototype.onClick = function(gameContext) {
     const tile = ContextHelper.getMouseTile(gameContext);
+    const worldMap = gameContext.world.mapManager.getActiveMap();
 
+    console.log(worldMap.getTerrainTags(gameContext, tile.x, tile.y));
+    console.log(worldMap.getClimateType(gameContext, tile.x, tile.y))
     console.log(tile);
 }
 
