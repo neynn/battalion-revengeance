@@ -1,11 +1,4 @@
 {
-    "TEMPERATE": { "name": "TRAIT_NAME_TEMPERATE", "desc": "TRAIT_DESC_TEMPERATE", "icon": "Assets/Traits/.png" },
-    "ARID": { "name": "TRAIT_NAME_ARID", "desc": "TRAIT_DESC_ARID", "icon": "Assets/Traits/.png" },
-    "BOREAL": { "name": "TRAIT_NAME_BOREAL", "desc": "TRAIT_DESC_BOREAL", "icon": "Assets/Traits/.png" },
-    "BARREN": { "name": "TRAIT_NAME_BARREN", "desc": "TRAIT_DESC_BARREN", "icon": "Assets/Traits/.png" },
-    "ARCTIC": { "name": "TRAIT_NAME_ARCTIC", "desc": "TRAIT_DESC_ARCTIC", "icon": "Assets/Traits/.png" },
-    "LUNAR": { "name": "TRAIT_NAME_LUNAR", "desc": "TRAIT_DESC_LUNAR", "icon": "Assets/Traits/.png" },
-    "MARTIAN": { "name": "TRAIT_NAME_MARTIAN", "desc": "TRAIT_DESC_MARTIAN", "icon": "Assets/Traits/.png" },
     "UNEVEN": { "name": "TRAIT_NAME_UNEVEN", "desc": "TRAIT_DESC_UNEVEN", "icon": "Assets/Traits/Uneven.png" },
     "RUGGED": { "name": "TRAIT_NAME_RUGGED", "desc": "TRAIT_DESC_RUGGED", "icon": "Assets/Traits/Rugged.png" },
     "PRECIPITOUS": { "name": "TRAIT_NAME_PRECIPITOUS", "desc": "TRAIT_DESC_PRECIPITOUS", "icon": "Assets/Traits/Precipitous.png" },

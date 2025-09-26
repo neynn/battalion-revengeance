@@ -19,9 +19,8 @@ PlayState.prototype.onEnter = async function(gameContext, stateMachine, transiti
 
     ActorSpawner.createPlayer(gameContext, { "type": "Player" });
     MapSpawner.createMapByID(gameContext, "oasis").then(map => {
-        const tags = map.getTerrainTags(gameContext, 0, 0);
-
-        console.log(tags);
+        console.log(map.getTerrainTags(gameContext, 0, 0));
+        console.log(map.getClimateType(gameContext, 0, 0));
         EntitySpawner.debugEntities(gameContext);
     });
     router.on("ESCAPE", () => stateMachine.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));

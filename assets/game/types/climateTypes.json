@@ -1,0 +1,10 @@
+{
+    "TEMPERATE": { "name": "CLIMATE_NAME_TEMPERATE", "desc": "CLIMATE_DESC_TEMPERATE", "icon": null },
+    "ARID": { "name": "CLIMATE_NAME_ARID", "desc": "CLIMATE_DESC_ARID", "icon": null },
+    "BOREAL": { "name": "CLIMATE_NAME_BOREAL", "desc": "CLIMATE_DESC_BOREAL", "icon": null },
+    "BARREN": { "name": "CLIMATE_NAME_BARREN", "desc": "CLIMATE_DESC_BARREN", "icon": null },
+    "ARCTIC": { "name": "CLIMATE_NAME_ARCTIC", "desc": "CLIMATE_DESC_ARCTIC", "icon": null },
+    "LUNAR": { "name": "CLIMATE_NAME_LUNAR", "desc": "CLIMATE_DESC_LUNAR", "icon": null },
+    "MARTIAN": { "name": "CLIMATE_NAME_MARTIAN", "desc": "CLIMATE_DESC_MARTIAN", "icon": null },
+    "HELLISH": { "name": "CLIMATE_NAME_HELLISH", "desc": "CLIMATE_DESC_HELLISH", "icon": null }
+}

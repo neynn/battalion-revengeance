@@ -50,6 +50,31 @@ BattalionMap.prototype.removeTileFlag = function(tileX, tileY, flag) {
     }
 }
 
+BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
+    if(this.isTileOutOfBounds(tileX, tileY)) {
+        return TypeRegistry.CLIMATE_TYPE.TEMPERATE;
+    }
+
+    const { typeRegistry, tileManager } = gameContext;
+    const layers = [BattalionMap.LAYER.DECORATION, BattalionMap.LAYER.GROUND];
+
+    for(const layerID of layers) {
+        const typeID = this.getTile(layerID, tileX, tileY);
+        const meta = tileManager.getMeta(typeID);
+
+        if(meta) {
+            const { type = TypeRegistry.TILE_TYPE.NONE } = meta;
+            const climate = typeRegistry.getClimateType(type);
+
+            if(climate !== TypeRegistry.CLIMATE_TYPE.TEMPERATE) {
+                return climate;
+            }
+        }
+    }
+
+    return TypeRegistry.CLIMATE_TYPE.TEMPERATE;
+}
+
 BattalionMap.prototype.getTerrainTags = function(gameContext, tileX, tileY) {
     const tags = new Set();
 
@@ -58,10 +83,10 @@ BattalionMap.prototype.getTerrainTags = function(gameContext, tileX, tileY) {
     }
 
     const { typeRegistry, tileManager } = gameContext;
-    const groundID = this.getTile(BattalionMap.LAYER.GROUND, tileX, tileY);
-    const decorationID = this.getTile(BattalionMap.LAYER.DECORATION, tileX, tileY);
+    const layers = [BattalionMap.LAYER.GROUND, BattalionMap.LAYER.DECORATION];
 
-    [groundID, decorationID].forEach(typeID => {
+    for(const layerID of layers) {
+        const typeID = this.getTile(layerID, tileX, tileY);
         const meta = tileManager.getMeta(typeID);
 
         if(meta) {
@@ -72,7 +97,7 @@ BattalionMap.prototype.getTerrainTags = function(gameContext, tileX, tileY) {
                 tags.add(terrainTags[i]);
             }
         }
-    });
+    }
 
     return tags;
 }

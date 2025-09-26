@@ -21,6 +21,7 @@
     "tiles": { "directory": ["assets", "tiles"], "source": "tiles.json" },
 
     "armorTypes": { "directory": ["assets", "game", "types"], "source": "armorTypes.json" },
+    "climateTypes": { "directory": ["assets", "game", "types"], "source": "climateTypes.json" },
     "movementTypes": { "directory": ["assets", "game", "types"], "source": "movementTypes.json" },
     "terrainTypes": { "directory": ["assets", "game", "types"], "source": "terrainTypes.json" },
     "tileTypes": { "directory": ["assets", "game", "types"], "source": "tileTypes.json" },

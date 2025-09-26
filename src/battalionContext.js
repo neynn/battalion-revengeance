@@ -31,6 +31,7 @@ BattalionContext.prototype.init = function(resources) {
     this.typeRegistry.loadCategory(resources.tileTypes, TypeRegistry.CATEGORY.TILE);
     this.typeRegistry.loadCategory(resources.traitTypes, TypeRegistry.CATEGORY.TRAIT);
     this.typeRegistry.loadCategory(resources.weaponTypes, TypeRegistry.CATEGORY.WEAPON);
+    this.typeRegistry.loadCategory(resources.climateTypes, TypeRegistry.CATEGORY.CLIMATE);
 
     this.states.addState(BattalionContext.STATE.MAIN_MENU, new MainMenuState());
     this.states.addState(BattalionContext.STATE.MAP_EDITOR, new MapEditorState());

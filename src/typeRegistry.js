@@ -7,7 +7,8 @@ export const TypeRegistry = function() {
         [TypeRegistry.CATEGORY.WEAPON]: new TypeCategory(TypeRegistry.CATEGORY.WEAPON, TypeRegistry.WEAPON_TYPE),
         [TypeRegistry.CATEGORY.ARMOR]: new TypeCategory(TypeRegistry.CATEGORY.ARMOR, TypeRegistry.ARMOR_TYPE),
         [TypeRegistry.CATEGORY.TERRAIN]: new TypeCategory(TypeRegistry.CATEGORY.TERRAIN, TypeRegistry.TERRAIN_TYPE),
-        [TypeRegistry.CATEGORY.TILE]: new TypeCategory(TypeRegistry.CATEGORY.TILE, TypeRegistry.TILE_TYPE)
+        [TypeRegistry.CATEGORY.TILE]: new TypeCategory(TypeRegistry.CATEGORY.TILE, TypeRegistry.TILE_TYPE),
+        [TypeRegistry.CATEGORY.CLIMATE]: new TypeCategory(TypeRegistry.CATEGORY.CLIMATE, TypeRegistry.CLIMATE_TYPE)
     };
 }
 
@@ -17,17 +18,11 @@ TypeRegistry.CATEGORY = {
     WEAPON: "WEAPON",
     ARMOR: "ARMOR",
     TERRAIN: "TERRAIN",
-    TILE: "TILE"
+    TILE: "TILE",
+    CLIMATE: "CLIMATE"
 };
 
-TypeRegistry.TILE_TYPE = {
-    NONE: "NONE",
-    TEMPERATE: "TEMPERATE",
-    BOREAL: "BOREAL",
-    ARCTIC: "ARCTIC"
-};
-
-TypeRegistry.TERRAIN_TYPE = {
+TypeRegistry.CLIMATE_TYPE = {
     TEMPERATE: "TEMPERATE",
     ARID: "ARID",
     BOREAL: "BOREAL",
@@ -35,6 +30,24 @@ TypeRegistry.TERRAIN_TYPE = {
     ARCTIC: "ARCTIC",
     LUNAR: "LUNAR",
     MARTIAN: "MARTIAN",
+    HELLISH: "HELLISH"
+};
+
+TypeRegistry.TILE_TYPE = {
+    NONE: "NONE",
+    GRASS: "GRASS",
+    BOREAL: "BOREAL",
+    ARCTIC: "ARCTIC",
+    SHORE: "SHORE",
+    ISLAND: "ISLAND",
+    SWIRL: "SWIRL",
+    ROCKS: "ROCKS",
+    RIVER: "RIVER",
+    ROAD: "ROAD",
+    VOLCANO: "VOLCANO"
+};
+
+TypeRegistry.TERRAIN_TYPE = {
     UNEVEN: "UNEVEN",
     RUGGED: "RUGGED",
     PRECIPITOUS: "PRECIPITOUS",
@@ -164,9 +177,9 @@ TypeRegistry.prototype.getIconID = function(typeID, categoryID) {
     return null;
 }
 
-TypeRegistry.prototype.getTerrainTags = function(tileTypeID) {
+TypeRegistry.prototype.getTerrainTags = function(tileID) {
     const tags = [];
-    const type = this.getType(tileTypeID, TypeRegistry.CATEGORY.TILE);
+    const type = this.getType(tileID, TypeRegistry.CATEGORY.TILE);
 
     if(type) {
         const { terrain } = type;
@@ -179,4 +192,16 @@ TypeRegistry.prototype.getTerrainTags = function(tileTypeID) {
     }
 
     return tags;
+}
+
+TypeRegistry.prototype.getClimateType = function(tileID) {
+    const type = this.getType(tileID, TypeRegistry.CATEGORY.TILE);
+
+    if(type) {
+        const { climate = TypeRegistry.CLIMATE_TYPE.TEMPERATE } = type;
+
+        return climate;
+    }
+
+    return TypeRegistry.CLIMATE_TYPE.TEMPERATE;
 }
