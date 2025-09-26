@@ -36,13 +36,42 @@ BattalionEntity.SPRITE_TYPE = {
 };
 
 BattalionEntity.TRAIT = {
-    TEST: "TEST"
+    INDOMITABLE: "INDOMITABLE",
+    COMMANDO: "COMMANDO",
+    ANTI_INFANTRY: "ANTI_INFANTRY",
+    ANTI_AIR: "ANTI_AIR",
+    ANTI_SHIP: "ANTI_SHIP",
+    ANTI_TANK: "ANTI_TANK",
+    ANTI_STRUCTURE: "ANTI_STRUCTURE",
+    STEER: "STEER",
+    STEALTH: "STEALTH",
+    SCHWERPUNKT: "SCHWERPUNKT",
+    CEMENTED_STEEL_ARMOR: "CEMENTED_STEEL_ARMOR",
+    SUPPLY_DISTRIBUTION: "SUPPLY_DISTRIBUTION",
+    CAVITATION_EXPLOSION: "CAVITATION_EXPLOSION",
+    SONAR: "SONAR",
+    SUBMERGED: "SUBMERGED",
+    TANK_HUNTER: "TANK_HUNTER",
+    SUICIDE: "SUICIDE",
+    SKYSWEEPER: "SKYSWEEPER",
+    DEPTH_STRIKE: "DEPTH_STRIKE",
+    SEABOUND: "SEABOUND",
+    TERRIFYING: "TERRIFYING",
+    INFLAMING: "INFLAMING",
+    ABSORBER: "ABSORBER",
+    DISPERSION: "DISPERSION",
+    JUDGEMENT: "JUDGEMENT",
+    BEWEGUNGSKRIEG: "BEWEGUNGSKRIEG",
+    MOBILE_BATTERY: "MOBILE_BATTERY",
+    STREAMBLAST: "STREAMBLAST",
+    AIR_TRANSPORT: "AIR_TRANSPORT",
+    NAVAL_TRANSPORT: "NAVAL_TRANSPORT"
 };
 
 BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
 
-BattalionEntity.prototype.removeTags = function() {
+BattalionEntity.prototype.removeTraits = function() {
     this.traits.length = 0;
 }
 
