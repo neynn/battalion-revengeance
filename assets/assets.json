@@ -23,6 +23,7 @@
     "armorTypes": { "directory": ["assets", "game", "types"], "source": "armorTypes.json" },
     "movementTypes": { "directory": ["assets", "game", "types"], "source": "movementTypes.json" },
     "terrainTypes": { "directory": ["assets", "game", "types"], "source": "terrainTypes.json" },
+    "tileTypes": { "directory": ["assets", "game", "types"], "source": "tileTypes.json" },
     "traitTypes": { "directory": ["assets", "game", "types"], "source": "traitTypes.json" },
     "weaponTypes": { "directory": ["assets", "game", "types"], "source": "weaponTypes.json" }
 }

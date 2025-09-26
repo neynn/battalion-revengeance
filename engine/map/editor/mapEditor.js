@@ -1,3 +1,4 @@
+import { ContextHelper } from "../../camera/contextHelper.js";
 import { EventEmitter } from "../../events/eventEmitter.js";
 import { Scroller } from "../../util/scroller.js";
 import { Brush } from "./brush.js";
@@ -42,7 +43,19 @@ MapEditor.MODE_NAME = {
     [MapEditor.MODE.AUTOTILE]: "AUTOTILE"
 };
 
-MapEditor.prototype.paint = function(gameContext, mapID, layerID) {}
+MapEditor.prototype.onPaint = function(gameContext, worldMap, position, layerID) {}
+
+MapEditor.prototype.paint = function(gameContext, mapID, layerID) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getMap(mapID);
+
+    if(worldMap) {
+        const position = ContextHelper.getMouseTile(gameContext);
+
+        this.onPaint(gameContext, worldMap, position, layerID);
+    }
+}
 
 MapEditor.prototype.scrollBrushSize = function(delta = 0) {
     const brushSize = this.brushSizes.scroll(delta);

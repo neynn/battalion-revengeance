@@ -1,0 +1,14 @@
+{
+    "NONE": {
+        "terrain": []
+    },
+    "TEMPERATE": {
+        "terrain": ["UNEVEN"]
+    },
+    "BOREAL": {
+        "terrain": ["UNEVEN"]
+    },
+    "ARCTIC": {
+        "terrain": ["UNEVEN"]
+    }
+}

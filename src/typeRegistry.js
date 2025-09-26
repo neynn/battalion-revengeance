@@ -6,7 +6,8 @@ export const TypeRegistry = function() {
         [TypeRegistry.CATEGORY.MOVEMENT]: new TypeCategory(TypeRegistry.CATEGORY.MOVEMENT, TypeRegistry.MOVEMENT_TYPE),
         [TypeRegistry.CATEGORY.WEAPON]: new TypeCategory(TypeRegistry.CATEGORY.WEAPON, TypeRegistry.WEAPON_TYPE),
         [TypeRegistry.CATEGORY.ARMOR]: new TypeCategory(TypeRegistry.CATEGORY.ARMOR, TypeRegistry.ARMOR_TYPE),
-        [TypeRegistry.CATEGORY.TERRAIN]: new TypeCategory(TypeRegistry.CATEGORY.TERRAIN, TypeRegistry.TERRAIN_TYPE)
+        [TypeRegistry.CATEGORY.TERRAIN]: new TypeCategory(TypeRegistry.CATEGORY.TERRAIN, TypeRegistry.TERRAIN_TYPE),
+        [TypeRegistry.CATEGORY.TILE]: new TypeCategory(TypeRegistry.CATEGORY.TILE, TypeRegistry.TILE_TYPE)
     };
 }
 
@@ -15,7 +16,15 @@ TypeRegistry.CATEGORY = {
     MOVEMENT: "MOVEMENT",
     WEAPON: "WEAPON",
     ARMOR: "ARMOR",
-    TERRAIN: "TERRAIN"
+    TERRAIN: "TERRAIN",
+    TILE: "TILE"
+};
+
+TypeRegistry.TILE_TYPE = {
+    NONE: "NONE",
+    TEMPERATE: "TEMPERATE",
+    BOREAL: "BOREAL",
+    ARCTIC: "ARCTIC"
 };
 
 TypeRegistry.TERRAIN_TYPE = {
@@ -153,4 +162,21 @@ TypeRegistry.prototype.getIconID = function(typeID, categoryID) {
     }
 
     return null;
+}
+
+TypeRegistry.prototype.getTerrainTags = function(tileTypeID) {
+    const tags = [];
+    const type = this.getType(tileTypeID, TypeRegistry.CATEGORY.TILE);
+
+    if(type) {
+        const { terrain } = type;
+
+        if(terrain) {
+            for(let i = 0; i < terrain.length; i++) {
+                tags.push(terrain[i]);
+            }
+        }
+    }
+
+    return tags;
 }

@@ -1,5 +1,6 @@
 import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
+import { TypeRegistry } from "../typeRegistry.js";
 
 export const BattalionMap = function(id) {
     WorldMap.call(this, id);
@@ -47,4 +48,31 @@ BattalionMap.prototype.removeTileFlag = function(tileX, tileY, flag) {
     if(tileFlags !== -1) {
         this.placeTile(tileFlags & ~flag, BattalionMap.LAYER.FLAG, tileX, tileY);
     }
+}
+
+BattalionMap.prototype.getTerrainTags = function(gameContext, tileX, tileY) {
+    const tags = new Set();
+
+    if(this.isTileOutOfBounds(tileX, tileY)) {
+        return tags;
+    }
+
+    const { typeRegistry, tileManager } = gameContext;
+    const groundID = this.getTile(BattalionMap.LAYER.GROUND, tileX, tileY);
+    const decorationID = this.getTile(BattalionMap.LAYER.DECORATION, tileX, tileY);
+
+    [groundID, decorationID].forEach(typeID => {
+        const meta = tileManager.getMeta(typeID);
+
+        if(meta) {
+            const { type = TypeRegistry.TILE_TYPE.NONE } = meta;
+            const terrainTags = typeRegistry.getTerrainTags(type);
+
+            for(let i = 0; i < terrainTags.length; i++) {
+                tags.add(terrainTags[i]);
+            }
+        }
+    });
+
+    return tags;
 }

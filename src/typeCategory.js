@@ -4,6 +4,10 @@ export const TypeCategory = function(name, values) {
     this.types = {};
 }
 
+TypeCategory.prototype.hasType = function(typeID) {
+    return this.types[typeID] !== undefined;
+}
+
 TypeCategory.prototype.logMissingType = function(typeID) {
     console.log(`Type ${typeID} is not registered in category ${this.name}!`);
 }

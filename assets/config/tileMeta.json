@@ -1,7 +1,7 @@
 [
-    { "flag": "VOLCANO", "graphics": ["battalion_bg", "0"] },
-    { "graphics": ["battalion_bg", "1"] },
-    { "graphics": ["battalion_bg", "2"] },
+    { "type": "TEMPERATE", "graphics": ["battalion_bg", "temperate"] },
+    { "type": "BOREAL", "graphics": ["battalion_bg", "boreal"] },
+    { "type": "ARCTIC", "graphics": ["battalion_bg", "arctic"] },
 
     { "autotiler": "battalion_road", "graphics": ["road", "0"] },
     { "autotiler": "battalion_road", "graphics": ["road", "1"] },

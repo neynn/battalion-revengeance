@@ -1,6 +1,4 @@
-import { ContextHelper } from "../../engine/camera/contextHelper.js";
 import { MapEditor } from "../../engine/map/editor/mapEditor.js";
-import { TileHelper } from "../tile/tileHelper.js";
 
 export const BattalionMapEditor = function() {
     MapEditor.call(this);
@@ -9,52 +7,18 @@ export const BattalionMapEditor = function() {
 BattalionMapEditor.prototype = Object.create(MapEditor.prototype);
 BattalionMapEditor.prototype.constructor = BattalionMapEditor;
 
-BattalionMapEditor.prototype.updateFlags = function(gameContext, worldMap, tileX, tileY, newTile, oldTile) {
+BattalionMapEditor.prototype.onPaint = function(gameContext, worldMap, position, layerID) {
     const { tileManager } = gameContext;
-    const oldMeta = tileManager.getMeta(oldTile);
-    const newMeta = tileManager.getMeta(newTile);
-
-    if(oldMeta) {
-        const { flag } = oldMeta;
-        
-        if(flag !== undefined) {
-            const tileFlag = TileHelper.getTileFlag(flag);
-
-            worldMap.removeTileFlag(tileX, tileY, tileFlag);
-        }
-    }
-
-    if(newMeta) {
-        const { flag } = newMeta;
-
-        if(flag !== undefined) {
-            const tileFlag = TileHelper.getTileFlag(flag);
-
-            worldMap.setTileFlag(tileX, tileY, tileFlag);
-        }
-    }
-}
-
-BattalionMapEditor.prototype.paint = function(gameContext, mapID, layerID) {
-    const { world, tileManager } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getMap(mapID);
-
-    if(!worldMap) {
-        return;
-    }
-
-    const { x, y } = ContextHelper.getMouseTile(gameContext);
+    const { x, y } = position;
     const autotiler = tileManager.getAutotilerByTile(this.brush.id);
     const actionsTaken = [];
+    const mapID = worldMap.getID();
     
     this.brush.paint(x, y, (tileX, tileY, brushID, brushName) => {
         const tileID = worldMap.getTile(layerID, tileX, tileY);
 
         if(tileID !== -1 && tileID !== brushID) {
             worldMap.placeTile(brushID, layerID, tileX, tileY);
-
-            this.updateFlags(gameContext, worldMap, tileX, tileY, brushID, tileID);
 
             actionsTaken.push({
                 "layerID": layerID,
@@ -73,15 +37,7 @@ BattalionMapEditor.prototype.paint = function(gameContext, mapID, layerID) {
 
             for(let i = startY; i <= endY; i++) {
                 for(let j = startX; j <= endX; j++) {
-                    const previousID = worldMap.getTile(layerID, j, i);
-
                     worldMap.applyAutotiler(autotiler, j, i, layerID, isInverted);
-
-                    const nextID = worldMap.getTile(layerID, j, i);
-
-                    if(previousID !== nextID) {
-                        this.updateFlags(gameContext, worldMap, j, i, nextID, previousID);
-                    }
                 }
             }
         }

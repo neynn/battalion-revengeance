@@ -28,6 +28,7 @@ BattalionContext.prototype.init = function(resources) {
     this.typeRegistry.loadCategory(resources.armorTypes, TypeRegistry.CATEGORY.ARMOR);
     this.typeRegistry.loadCategory(resources.movementTypes, TypeRegistry.CATEGORY.MOVEMENT);
     this.typeRegistry.loadCategory(resources.terrainTypes, TypeRegistry.CATEGORY.TERRAIN);
+    this.typeRegistry.loadCategory(resources.tileTypes, TypeRegistry.CATEGORY.TILE);
     this.typeRegistry.loadCategory(resources.traitTypes, TypeRegistry.CATEGORY.TRAIT);
     this.typeRegistry.loadCategory(resources.weaponTypes, TypeRegistry.CATEGORY.WEAPON);
 
