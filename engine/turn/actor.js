@@ -1,7 +1,7 @@
 export const Actor = function(id) {
     this.id = id;
     this.config = null;
-    this.entities = new Set();
+    this.endRequested = false;
     this.maxActions = 1;
 }
 
@@ -15,11 +15,24 @@ Actor.prototype.save = function() {
 
 Actor.prototype.update = function(gameContext) {}
 
-Actor.prototype.onMakeChoice = function(gameContext, actionsLeft) {}
+Actor.prototype.activeUpdate = function(gameContext, actionsLeft) {}
 
 Actor.prototype.onTurnStart = function(gameContext) {}
 
 Actor.prototype.onTurnEnd = function(gameContext) {}
+
+Actor.prototype.startTurn = function(gameContext) {
+    this.endRequested = false;
+    this.onTurnStart(gameContext);
+}
+
+Actor.prototype.endTurn = function(gameContext) {
+    this.onTurnEnd(gameContext);
+}
+
+Actor.prototype.requestTurnEnd = function() {
+    this.endRequested = true;
+}
 
 Actor.prototype.setMaxActions = function(maxActions) {
     this.maxActions = maxActions;
@@ -27,22 +40,6 @@ Actor.prototype.setMaxActions = function(maxActions) {
 
 Actor.prototype.getID = function() {
     return this.id;
-}
-
-Actor.prototype.addEntity = function(entityID) {
-    if(!this.entities.has(entityID)) {
-        this.entities.add(entityID);
-    }
-}
-
-Actor.prototype.removeEntity = function(entityID) {
-    if(this.entities.has(entityID)) {
-        this.entities.delete(entityID);
-    }
-}
-
-Actor.prototype.hasEntity = function(entityID) {
-    return this.entities.has(entityID);
 }
 
 Actor.prototype.setConfig = function(config) {

@@ -7,6 +7,7 @@ export const BattalionMap = function(id) {
 
     this.createLayer(BattalionMap.LAYER.FLAG, Layer.TYPE.BIT_8);
     this.createLayer(BattalionMap.LAYER.TEAM, Layer.TYPE.BIT_8);
+    this.climate = TypeRegistry.CLIMATE_TYPE.NONE;
 }
 
 BattalionMap.LAYER = {
@@ -50,7 +51,15 @@ BattalionMap.prototype.removeTileFlag = function(tileX, tileY, flag) {
     }
 }
 
+BattalionMap.prototype.setClimate = function(climateType) {
+    this.climate = climateType;
+}
+
 BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
+    if(this.climate !== TypeRegistry.CLIMATE_TYPE.NONE) {
+        return this.climate;
+    }
+
     if(this.isTileOutOfBounds(tileX, tileY)) {
         return TypeRegistry.CLIMATE_TYPE.TEMPERATE;
     }

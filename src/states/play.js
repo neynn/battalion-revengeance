@@ -13,14 +13,19 @@ PlayState.prototype = Object.create(State.prototype);
 PlayState.prototype.constructor = PlayState;
 
 PlayState.prototype.onEnter = async function(gameContext, stateMachine, transition) {
-    const { client } = gameContext;
+    const { client, world } = gameContext;
     const { router } = client;
+    const { turnManager } = world;
     const context = CameraHelper.createPlayCamera(gameContext);
 
-    ActorSpawner.createPlayer(gameContext, { "type": "Player" });
-    MapSpawner.createMapByID(gameContext, "oasis").then(map => {;
-        EntitySpawner.debugEntities(gameContext);
+    MapSpawner.createMapByID(gameContext, "oasis").then(map => {
+        const player = ActorSpawner.createPlayer(gameContext, { "type": "Player" });
+        const playerID = player.getID();
+
+        EntitySpawner.debugEntities(gameContext, playerID);
+        turnManager.setActorOrder(gameContext, [playerID]);
     });
+
     router.on("ESCAPE", () => stateMachine.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));
 
     this.contextID = context.getID();

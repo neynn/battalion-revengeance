@@ -84,11 +84,19 @@ export const EntitySpawner = {
             worldMap.removeEntity(entity.tileX, entity.tileY, sizeX, sizeY, entityID);
         }
     },
-    debugEntities: function(gameContext) {
+    debugEntities: function(gameContext, ownerID) {
+        const { world } = gameContext;
+        const { turnManager } = world;
+        const owner = turnManager.getActor(ownerID);
+
         for(let i = 0; i < 1; i++) {
             for(let j = 0; j < 1; j++) {
                 const config = EntitySpawner.createEntityConfig(EntitySpawner.getRandomEntityType(gameContext), j, i);
                 const entity = EntitySpawner.createEntity(gameContext, config);
+
+                if(owner) {
+                    owner.addEntity(entity.getID());
+                }
 
                 console.log(config, entity);
             }

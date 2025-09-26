@@ -117,7 +117,7 @@ Player.prototype.onClick = function(gameContext) {
     this.states.eventEnter(gameContext, Player.EVENT.CLICK, null);
 }
 
-Player.prototype.onMakeChoice = function(gameContext, actionsLeft) {
+Player.prototype.activeUpdate = function(gameContext, actionsLeft) {
     const { world } = gameContext;
     const { actionQueue, eventBus } = world;
 

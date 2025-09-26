@@ -169,3 +169,7 @@ BattalionEntity.prototype.updateSprite = function(gameContext) {
         this.sprite.updateType(gameContext, spriteID);
     }
 }
+
+BattalionEntity.prototype.onTurnStart = function(gameContext) {
+    console.log("My turn started", this);
+} 

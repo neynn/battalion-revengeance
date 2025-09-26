@@ -10,10 +10,6 @@ export const World = function() {
     this.entityManager = new EntityManager();
     this.mapManager = new MapManager();
     this.eventBus = new EventBus();
-
-    this.entityManager.events.on(EntityManager.EVENT.ENTITY_DESTROY, (entityID) => {
-        this.turnManager.removeEntity(entityID);
-    }, { permanent: true });
     
     this.actionQueue.events.on(ActionQueue.EVENT.EXECUTION_COMPLETE, (executionItem) => {
         this.eventBus.onExecutionComplete(executionItem);

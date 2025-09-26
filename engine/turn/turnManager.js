@@ -98,14 +98,14 @@ TurnManager.prototype.getActor = function(actorID) {
 }
 
 TurnManager.prototype.isActor = function(actorID) {
-    if(this.actorIndex === -1) {
-        return false;
+    if(this.actorIndex !== -1) {
+        const currentActorID = this.actorOrder[this.actorIndex];
+        const isActor = actorID === currentActorID;
+
+        return isActor;
     }
 
-    const currentActorID = this.actorOrder[this.actorIndex];
-    const isActor = actorID === currentActorID;
-
-    return isActor;
+    return false;
 }
 
 TurnManager.prototype.getNextActor = function(gameContext) {
@@ -119,7 +119,7 @@ TurnManager.prototype.getNextActor = function(gameContext) {
         const firstActorID = this.actorOrder[this.actorIndex];
         const firstActor = this.actors.get(firstActorID);
         
-        firstActor.onTurnStart(gameContext);   
+        firstActor.startTurn(gameContext);   
 
         this.actionsLeft = firstActor.maxActions;
 
@@ -139,8 +139,8 @@ TurnManager.prototype.getNextActor = function(gameContext) {
     const actorID = this.actorOrder[this.actorIndex];
     const actor = this.actors.get(actorID);
 
-    currentActor.onTurnEnd(gameContext);
-    actor.onTurnStart(gameContext);   
+    currentActor.endTurn(gameContext);
+    actor.startTurn(gameContext);   
 
     this.actionsLeft = actor.maxActions;
     this.events.emit(TurnManager.EVENT.ACTOR_CHANGE, currentActorID, actorID);
@@ -149,25 +149,23 @@ TurnManager.prototype.getNextActor = function(gameContext) {
 }
 
 TurnManager.prototype.getCurrentActor = function() {
-    if(this.actorIndex === -1) {
-        return null;
+    if(this.actorIndex !== -1) {
+        const currentActorID = this.actorOrder[this.actorIndex];
+        const currentActor = this.actors.get(currentActorID);
+
+        return currentActor;
     }
 
-    const currentActorID = this.actorOrder[this.actorIndex];
-    const currentActor = this.actors.get(currentActorID);
-
-    return currentActor;
+    return null;
 }
 
 TurnManager.prototype.cancelActorActions = function() {
     const currentActor = this.getCurrentActor();
 
-    if(!currentActor) {
-        return;
+    if(currentActor) {
+        this.actionsLeft = 0;
+        this.events.emit(TurnManager.EVENT.ACTIONS_CLEAR, currentActor, this.actionsLeft);
     }
-
-    this.actionsLeft = 0;
-    this.events.emit(TurnManager.EVENT.ACTIONS_CLEAR, currentActor, this.actionsLeft);
 }
 
 TurnManager.prototype.reduceActorActions = function(value) {
@@ -185,74 +183,48 @@ TurnManager.prototype.reduceActorActions = function(value) {
 }
 
 TurnManager.prototype.setActorOrder = function(gameContext, order, index = -1) {
+    this.actorOrder.length = 0;
+
     for(let i = 0; i < order.length; i++) {
         const actorID = order[i];
 
-        if(!this.actors.has(actorID)) {
-            return false;
+        if(this.actors.has(actorID)) {
+            this.actorOrder.push(actorID);
         }
     }
 
     if(index >= order.length) {
-        return false;
+        this.actorIndex = -1;
+    } else {
+        this.actorIndex = index;
     }
-
-    this.actorOrder = order;
-    this.actorIndex = index;
 
     const currentActor = this.getCurrentActor();
 
     if(currentActor) {
         this.actionsLeft = currentActor.maxActions;
 
-        currentActor.onTurnStart(gameContext);
+        currentActor.startTurn(gameContext);
     }
-
-    return true;
 }
 
 TurnManager.prototype.update = function(gameContext) {
     const { world } = gameContext;
     const { actionQueue } = world;
 
-    this.actors.forEach(actor => actor.update(gameContext));
+    for(const [actorID, actor] of this.actors) {
+        actor.update(gameContext);
+    }
 
-    const isQueueRunning = actionQueue.isRunning();
-
-    if(!isQueueRunning) {
+    if(!actionQueue.isRunning()) {
         const actor = this.getNextActor(gameContext);
 
-        if(actor && this.actionsLeft > 0) {
-            actor.onMakeChoice(gameContext, this.actionsLeft);
+        if(actor) {
+            actor.activeUpdate(gameContext, this.actionsLeft);
+
+            if(actor.endRequested) {
+                this.actionsLeft = 0;
+            }
         }
     }
-}
-
-TurnManager.prototype.removeEntity = function(entityID) {
-    this.actors.forEach((actor) => {
-        actor.removeEntity(entityID);
-    });
-}
-
-TurnManager.prototype.addEntity = function(actorID, entityID) {
-    const owner = this.actors.get(actorID);
-
-    if(!owner) {
-        Logger.log(Logger.CODE.ENGINE_WARN, "Actor does not exist!", "TurnManager.prototype.addEntity", { "actorID": actorID });
-        return;
-    }
-
-    owner.addEntity(entityID);
-}
-
-TurnManager.prototype.getOwnersOf = function(entityID) {
-    const owners = [];
-
-    this.actors.forEach((actor) => {
-        if(actor.hasEntity(entityID)) {
-            owners.push(actor);
-        }
-    });
-
-    return owners;
 }
