@@ -1,0 +1,10 @@
+{
+    "STATIONARY": { "name": "TRAIT_NAME_STATIONARY", "desc": "TRAIT_DESC_STATIONARY", "icon": "Assets/Traits/.png" },
+    "FOOT": { "name": "TRAIT_NAME_FOOT", "desc": "TRAIT_DESC_FOOT", "icon": "Assets/Traits/.png" },
+    "WHEELED": { "name": "TRAIT_NAME_WHEELED", "desc": "TRAIT_DESC_WHEELED", "icon": "Assets/Traits/.png" },
+    "TRACKED": { "name": "TRAIT_NAME_TRACKED", "desc": "TRAIT_DESC_TRACKED", "icon": "Assets/Traits/.png" },
+    "FLIGHT": { "name": "TRAIT_NAME_FLIGHT", "desc": "TRAIT_DESC_FLIGHT", "icon": "Assets/Traits/.png" },
+    "RUDDER": { "name": "TRAIT_NAME_RUDDER", "desc": "TRAIT_DESC_RUDDER", "icon": "Assets/Traits/.png" },
+    "HEAVY_RUDDER": { "name": "TRAIT_NAME_HEAVY_RUDDER", "desc": "TRAIT_DESC_HEAVY_RUDDER", "icon": "Assets/Traits/.png" },
+    "AMPHIBIOUS": { "name": "TRAIT_NAME_AMPHIBIOUS", "desc": "TRAIT_DESC_AMPHIBIOUS", "icon": "Assets/Traits/.png" }
+}

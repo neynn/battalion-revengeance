@@ -1,4 +1,5 @@
 import { Entity } from "../../engine/entity/entity.js";
+import { TypeRegistry } from "../typeRegistry.js";
 
 export const BattalionEntity = function(id, sprite) {
     Entity.call(this, id, "");
@@ -35,39 +36,6 @@ BattalionEntity.SPRITE_TYPE = {
     FIRE_UP: "fire_up",
 };
 
-BattalionEntity.TRAIT = {
-    INDOMITABLE: "INDOMITABLE",
-    COMMANDO: "COMMANDO",
-    ANTI_INFANTRY: "ANTI_INFANTRY",
-    ANTI_AIR: "ANTI_AIR",
-    ANTI_SHIP: "ANTI_SHIP",
-    ANTI_TANK: "ANTI_TANK",
-    ANTI_STRUCTURE: "ANTI_STRUCTURE",
-    STEER: "STEER",
-    STEALTH: "STEALTH",
-    SCHWERPUNKT: "SCHWERPUNKT",
-    CEMENTED_STEEL_ARMOR: "CEMENTED_STEEL_ARMOR",
-    SUPPLY_DISTRIBUTION: "SUPPLY_DISTRIBUTION",
-    CAVITATION_EXPLOSION: "CAVITATION_EXPLOSION",
-    SONAR: "SONAR",
-    SUBMERGED: "SUBMERGED",
-    TANK_HUNTER: "TANK_HUNTER",
-    SUICIDE: "SUICIDE",
-    SKYSWEEPER: "SKYSWEEPER",
-    DEPTH_STRIKE: "DEPTH_STRIKE",
-    SEABOUND: "SEABOUND",
-    TERRIFYING: "TERRIFYING",
-    INFLAMING: "INFLAMING",
-    ABSORBER: "ABSORBER",
-    DISPERSION: "DISPERSION",
-    JUDGEMENT: "JUDGEMENT",
-    BEWEGUNGSKRIEG: "BEWEGUNGSKRIEG",
-    MOBILE_BATTERY: "MOBILE_BATTERY",
-    STREAMBLAST: "STREAMBLAST",
-    AIR_TRANSPORT: "AIR_TRANSPORT",
-    NAVAL_TRANSPORT: "NAVAL_TRANSPORT"
-};
-
 BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
 
@@ -100,7 +68,7 @@ BattalionEntity.prototype.loadTraits = function() {
 
     if(traits) {
         for(let i = 0; i < traits.length; i++) {
-            const traitID = BattalionEntity.TRAIT[traits[i]];
+            const traitID = TypeRegistry.TRAIT_TYPE[traits[i]];
 
             if(traitID !== undefined) {
                 this.traits.push(traitID);

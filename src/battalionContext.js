@@ -3,13 +3,13 @@ import { LanguageHandler } from "../engine/language/languageHandler.js";
 import { MainMenuState } from "./states/mainMenu.js";
 import { MapEditorState } from "./states/mapEditor.js";
 import { PlayState } from "./states/play.js";
-import { BattalionTraitRegistry } from "./trait/battalionTraitRegistry.js";
+import { TypeRegistry } from "./typeRegistry.js";
 
 export const BattalionContext = function() {
     GameContext.call(this);
 
     this.transform2D.setSize(56, 56);
-    this.traitRegistry = new BattalionTraitRegistry();
+    this.typeRegistry = new TypeRegistry();
 }
 
 BattalionContext.STATE = {
@@ -24,6 +24,13 @@ BattalionContext.prototype.constructor = BattalionContext;
 BattalionContext.prototype.init = function(resources) {
     this.language.registerLanguage(LanguageHandler.LANGUAGE.ENGLISH, {});
     this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);
+
+    this.typeRegistry.loadCategory(resources.armorTypes, TypeRegistry.CATEGORY.ARMOR);
+    this.typeRegistry.loadCategory(resources.movementTypes, TypeRegistry.CATEGORY.MOVEMENT);
+    this.typeRegistry.loadCategory(resources.terrainTypes, TypeRegistry.CATEGORY.TERRAIN);
+    this.typeRegistry.loadCategory(resources.traitTypes, TypeRegistry.CATEGORY.TRAIT);
+    this.typeRegistry.loadCategory(resources.weaponTypes, TypeRegistry.CATEGORY.WEAPON);
+
     this.states.addState(BattalionContext.STATE.MAIN_MENU, new MainMenuState());
     this.states.addState(BattalionContext.STATE.MAP_EDITOR, new MapEditorState());
     this.states.addState(BattalionContext.STATE.PLAY, new PlayState());
