@@ -4,15 +4,17 @@
     "height": 20,
     "flags": [],
     "teams": {
-        "MY_TEAM": { "color": "PURPLE" },
+        "MY_TEAM": { "color": "DARK_BLUE" },
         "MY_TEAM2": { "color": "DARK_RED" }
     },
     "actors": {
-        "PLAYER": { "team": "MY_TEAM", "type": "Player" }
+        "PLAYER": { "team": "MY_TEAM", "type": "Player" },
+        "Test": { "team": "MY_TEAM2", "type": "Test" }
     },
     "entities": {
         "BOAT_1": { "x": 1, "y": 1, "type": "u_boat", "owner": "PLAYER" },
-        "TANK_1": { "x": 3, "y": 3, "type": "stealth_tank", "owner": "PLAYER" }
+        "TANK_1": { "x": 3, "y": 3, "type": "stealth_tank", "owner": "PLAYER" },
+        "BOAT_2": { "x": 5, "y": 1, "type": "u_boat", "owner": "Test", "direction": "WEST" }
     },
     "data": {
         "ground": [2,400],

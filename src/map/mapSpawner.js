@@ -35,16 +35,25 @@ export const MapSpawner = {
 
                     playerCreated = true;
                 }
+            } else {
+                const actor = ActorSpawner.createActor(gameContext, config);
+
+                if(actor) {
+                    const actorID = actor.getID();
+
+                    actorMap[actorName] = actorID;
+                    actorOrder.push(actorID);
+                }
             }
         }
 
         for(const entityName in entities) {
             const config = entities[entityName];
-            const { x = -1, y = -1, owner = null, type = null } = config;
+            const { x = -1, y = -1, owner = null, type = null, direction = BattalionEntity.DIRECTION_TYPE.EAST } = config;
             const ownerID = actorMap[owner];
 
             if(ownerID !== undefined) {
-                const spawnConfig = EntitySpawner.createEntityConfig(type, x, y, BattalionEntity.DIRECTION.EAST);
+                const spawnConfig = EntitySpawner.createEntityConfig(type, x, y, direction);
                 const entity = EntitySpawner.spawnEntity(gameContext, spawnConfig, ownerID);
 
                 console.log("ENTITY_CREATED", entity);

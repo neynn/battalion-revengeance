@@ -14,6 +14,13 @@ export const BattalionEntity = function(id, sprite) {
     this.isEssential = false;
 }
 
+BattalionEntity.DIRECTION_TYPE = {
+    NORTH: "NORTH",
+    EAST: "EAST",
+    SOUTH: "SOUTH",
+    WEST: "WEST"
+};
+
 BattalionEntity.DIRECTION = {
     NORTH: 1 << 0,
     EAST: 1 << 1,

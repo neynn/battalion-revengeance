@@ -57,5 +57,6 @@
             "sell": "sound_item_sold",
             "place": "sound_item_placed"
         }
-    }
+    },
+    "Test": {}
 }
