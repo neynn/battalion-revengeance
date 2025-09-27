@@ -2,9 +2,10 @@ import { TypeRegistry } from "../typeRegistry.js";
 
 export const Team = function(id) {
     this.id = id;
-    this.allies = []; //IDs of allied teams.
-    this.enemies = []; //IDs of enemy teams.
+    this.allies = [];
+    this.enemies = [];
     this.actors = [];
+    this.entities = [];
     this.colorID = null;
     this.color = null;
     this.status = Team.STATUS.ALIVE;
@@ -18,6 +19,34 @@ Team.STATUS = {
 
 Team.prototype.getID = function() {
     return this.id;
+}
+
+Team.prototype.hasEntity = function(entityID) {
+    for(let i = 0; i < this.entities.length; i++) {
+        if(this.entities[i] === entityID) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+Team.prototype.addEntity = function(entityID) {
+    const hasEntity = this.hasEntity(entityID);
+
+    if(!hasEntity) {
+        this.entities.push(entityID);
+    }
+}
+
+Team.prototype.removeEntity = function(entityID) {
+    for(let i = 0; i < this.entities.length; i++) {
+        if(this.entities[i] === entityID) {
+            this.entities[i] = this.entities[this.entities.length - 1];
+            this.entities.pop();
+            return;
+        }
+    }
 }
 
 Team.prototype.addActor = function(actorID) {
@@ -61,4 +90,18 @@ Team.prototype.isAlly = function(teamID) {
     }
     
     return false;
+}
+
+Team.prototype.isDefeated = function() {
+    return this.status === Team.STATUS.DEFEATED;
+}
+
+Team.prototype.updateStatus = function() {
+    if(this.entities.length === 0) {
+        this.status = Team.STATUS.DEFEATED;
+    } else {
+        this.status = Team.STATUS.ALIVE;
+    }
+
+    return this.status;
 }

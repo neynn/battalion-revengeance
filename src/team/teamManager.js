@@ -59,6 +59,21 @@ TeamManager.prototype.isAlly = function(teamA, teamB) {
     return false;
 }
 
-TeamManager.prototype.getActingOrder = function(gameContext) {
+TeamManager.prototype.onEntityDestroy = function(gameContext, teamID, entityID) {
+    const team = this.teams.get(teamID);
+
+    if(team) {
+        team.removeEntity(entityID);
+        team.updateStatus();
+
+        if(team.isDefeated()) {
+            //TODO: Implement.
+            this.updateActingOrder(gameContext);
+            console.log("TEAM has been defeated!");
+        }
+    }
+}
+
+TeamManager.prototype.updateActingOrder = function(gameContext) {
     //TODO: Implement.
 }

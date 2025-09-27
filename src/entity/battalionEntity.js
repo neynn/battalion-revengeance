@@ -11,6 +11,7 @@ export const BattalionEntity = function(id, sprite) {
     this.state = BattalionEntity.STATE.IDLE;
     this.teamID = null;
     this.traits = [];
+    this.isEssential = false;
 }
 
 BattalionEntity.DIRECTION = {
@@ -177,13 +178,4 @@ BattalionEntity.prototype.onTurnStart = function(gameContext) {
 
 BattalionEntity.prototype.setTeam = function(teamID) {
     this.teamID = teamID;
-}
-
-BattalionEntity.prototype.update = function(gameContext) {
-    this.tileX++;
-
-    if(this.tileX === 100) {
-        this.setState(BattalionEntity.STATE.FIRE);
-        this.updateSprite(gameContext);
-    }
 }

@@ -19,6 +19,21 @@ export const EntitySpawner = {
             "direction": direction
         };
     },
+    getOwnersOf: function(gameContext, entityID) {
+        const { world } = gameContext;
+        const { turnManager } = world;
+        const owners = [];
+
+        turnManager.forAllActors((actor) => {
+            const hasEntity = actor.hasEntity(entityID);
+
+            if(hasEntity) {
+                owners.push(actor);
+            }
+        });
+
+        return owners;
+    },
     createEntity: function(gameContext, config, colorID, color) {
         const { world, transform2D } = gameContext;
         const { entityManager } = world;
@@ -45,14 +60,18 @@ export const EntitySpawner = {
         return entity;
     },
     destroyEntity: function(gameContext, entityID) {
-        const { world } = gameContext;
-        const { entityManager } = world;
+        const { world, teamManager } = gameContext;
+        const { entityManager, turnManager } = world;
         const entity = entityManager.getEntity(entityID);
 
         if(entity) {
+            const entityID = entity.getID();
+            const { teamID } = entity;
+
             EntitySpawner.removeEntity(gameContext, entity);
+            turnManager.forAllActors(actor => actor.removeEntity(entityID));
+            teamManager.onEntityDestroy(gameContext, teamID, entityID);
             entity.destroy();
-            //TODO: Remove entity from team/actor.
         }
     },
     placeEntity: function(gameContext, entity) {
@@ -93,16 +112,25 @@ export const EntitySpawner = {
             if(team) {
                 const { colorID, color } = team;
                 const entity = EntitySpawner.createEntity(gameContext, entityConfig, colorID, color);
-
+                //TODO: Add a way to set isEssential to true.
                 if(entity) {
                     const entityID = entity.getID();
+                    const { isEssential } = entity;
 
                     EntitySpawner.placeEntity(gameContext, entity);
                     entity.setTeam(teamID);
                     actor.addEntity(entityID);
+
+                    if(isEssential) {
+                        team.addEntity(entityID);
+                    }
+
+                    return entity;
                 }
             }
         }
+
+        return null;
     },
     debugEntities: function(gameContext, ownerID) {
         for(let i = 0; i < 1; i++) {
