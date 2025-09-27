@@ -26,7 +26,10 @@ export const GameContext = function() {
     this.states = new StateMachine(this);
     this.transform2D = new Transform2D();
     this.timer = new Timer();
-    
+
+    this.isResizeQueued = false;
+    this.timeUntilResize = 0;
+
     this.timer.input = () => {
         this.client.update();
     }
@@ -37,6 +40,17 @@ export const GameContext = function() {
     }
 
     this.timer.render = () => {
+        if(this.isResizeQueued) {
+            this.timeUntilResize += this.timer.deltaTime;
+
+            if(this.timeUntilResize >= GameContext.RESIZE_BUFFER_TIME) {
+                this.isResizeQueued = false;
+                this.timeUntilResize = 0;
+                this.renderer.onWindowResize(window.innerWidth, window.innerHeight);
+                this.uiManager.onWindowResize(window.innerWidth, window.innerHeight);
+            }
+        }
+
         this.spriteManager.update(this);
         this.tileManager.update(this);
         this.uiManager.update(this);
@@ -63,12 +77,18 @@ export const GameContext = function() {
         this.world.mapManager.onLanguageUpdate(this, languageID);
     }, { permanent: true });
 
-    window.addEventListener("resize", () => {
-        this.renderer.onWindowResize(window.innerWidth, window.innerHeight);
-        this.uiManager.onWindowResize(window.innerWidth, window.innerHeight);
-    });
+    window.addEventListener("resize", () => this.queueResize());
 
     this.addDebug();
+}
+
+GameContext.RESIZE_BUFFER_TIME = 0.2;
+
+GameContext.prototype.queueResize = function() {
+    if(!this.isResizeQueued) {
+        this.timeUntilResize = 0;
+        this.isResizeQueued = true;
+    }
 }
 
 GameContext.prototype.onExit = function() {}
