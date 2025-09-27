@@ -21,9 +21,10 @@ export const MapSpawner = {
             ActorSpawner.createTeam(gameContext, teamName, teams[teamName]);
         }
 
-        for(const actorName in actors) {            
+        for(const actorName in actors) {
+            const config = actors[actorName];   
+
             if(!playerCreated && actorName === PLAYER_NAME) {
-                const config = actors[actorName];
                 const actor = ActorSpawner.createPlayer(gameContext, config);
 
                 if(actor) {
@@ -52,6 +53,14 @@ export const MapSpawner = {
 
         turnManager.setActorOrder(gameContext, actorOrder);
     },
+    playMapMusic: function(gameContext, worldMap, mapData) {
+        const { client } = gameContext;
+        const { musicPlayer } = client;
+        const { music } = mapData;
+
+        musicPlayer.play(music);
+        worldMap.music = music;
+    },
     createMapByID: function(gameContext, typeID) {
         let loadedData = null;
 
@@ -60,6 +69,7 @@ export const MapSpawner = {
             return new BattalionMap(mapID);
         }).then(map => {
             MapSpawner.initMap(gameContext, loadedData);
+            MapSpawner.playMapMusic(gameContext, map, loadedData);
             return map;
         });
     },
@@ -68,6 +78,7 @@ export const MapSpawner = {
 
         if(worldMap) {
             MapSpawner.initMap(gameContext, mapData);
+            MapSpawner.playMapMusic(gameContext, worldMap, mapData);
         }
 
         return worldMap;
