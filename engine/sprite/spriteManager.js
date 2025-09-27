@@ -3,7 +3,6 @@ import { Sprite } from "./sprite.js";
 import { ObjectPool } from "../util/objectPool.js";
 import { SpriteContainer } from "./spriteContainer.js";
 import { ResourceLoader } from "../resources/resourceLoader.js";
-import { SpriteHelper } from "./spriteHelper.js";
 import { Texture } from "../resources/texture.js";
 
 export const SpriteManager = function(resourceLoader) {
@@ -29,6 +28,10 @@ SpriteManager.LAYER = {
     MIDDLE: 1,
     TOP: 2,
     UI: 3
+};
+
+SpriteManager.prototype.getAlias = function(spriteID, schemaID) {
+    return spriteID + "::" + schemaID;
 };
 
 SpriteManager.prototype.addSpriteEntry = function(spriteID, containerIndex, textureID, alias = "::") {
@@ -63,7 +66,7 @@ SpriteManager.prototype.getSpriteDuration = function(spriteID) {
 
 SpriteManager.prototype.createSpriteAlias = function(spriteID, schemaID) {
     const spriteEntry = this.spriteMap.get(spriteID);
-    const aliasID = SpriteHelper.getSchemaID(spriteID, schemaID);
+    const aliasID = this.getAlias(spriteID, schemaID);
 
     if(!spriteEntry || this.spriteMap.has(aliasID)) {
         return spriteID;
@@ -78,14 +81,14 @@ SpriteManager.prototype.createSpriteAlias = function(spriteID, schemaID) {
 
 SpriteManager.prototype.createCopyTexture = function(spriteID, schemaID, schema) {
     const spriteEntry = this.spriteMap.get(spriteID);
-    const aliasID = SpriteHelper.getSchemaID(spriteID, schemaID);
+    const aliasID = this.getAlias(spriteID, schemaID);
 
     if(!spriteEntry || this.spriteMap.has(aliasID)) {
         return null;
     }
 
     const { index, textureID } = spriteEntry;
-    const texureAlias = SpriteHelper.getSchemaID(textureID, schemaID);
+    const texureAlias = this.getAlias(textureID, schemaID);
     const texture = this.resources.getTextureByID(textureID);
     const copyTexture = this.resources.createCopyTexture(texureAlias, texture);
 

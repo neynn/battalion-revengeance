@@ -1,7 +1,14 @@
-import { getRandomElement, getRandomEnumKey } from "../../engine/math/math.js";
+import { getRandomElement } from "../../engine/math/math.js";
 import { BattalionEntity } from "./battalionEntity.js";
 import { BattalionSprite } from "./battalionSprite.js";
 
+const getRandomEntityType = function(gameContext) {
+    const { world } = gameContext;
+    const { entityManager } = world;
+    const entities = Object.keys(entityManager.entityTypes);
+
+    return getRandomElement(entities);
+}
 
 export const EntitySpawner = {
     createEntityConfig: function(type, tileX, tileY, direction) {
@@ -12,17 +19,12 @@ export const EntitySpawner = {
             "direction": direction
         };
     },
-    getRandomEntityType: function(gameContext) {
-        const { world } = gameContext;
-        const { entityManager } = world;
-        const entities = Object.keys(entityManager.entityTypes);
-
-        return getRandomElement(entities);
-    },
-    createEntity: function(gameContext, config) {
+    createEntity: function(gameContext, config, schema) {
         const { world, transform2D } = gameContext;
         const { entityManager } = world;
         const { id, type, x, y, direction } = config;
+        const { colorID, color } = schema;
+
         const entity = entityManager.createEntity((entityID, entityType) => {
             const entitySprite = new BattalionSprite();
             const entityObject = new BattalionEntity(entityID, entitySprite);
@@ -30,21 +32,16 @@ export const EntitySpawner = {
             entityObject.setConfig(entityType);
             entityObject.setDirectionByName(direction);
 
-            const schemaID = getRandomEnumKey(BattalionSprite.SCHEMA);
             const spriteID = entityObject.getSpriteID();
             const spawnPosition = transform2D.transformTileToWorld(x, y);
 
-            entitySprite.create(gameContext, spriteID, schemaID);
+            entitySprite.init(gameContext, spriteID, colorID, color);
             entityObject.setTile(x, y);
             entityObject.setPosition(spawnPosition);
             entityObject.loadTraits();
 
             return entityObject;
         }, type, id);
-    
-        if(entity) {
-            EntitySpawner.placeEntity(gameContext, entity);
-        }
 
         return entity;
     },
@@ -84,19 +81,29 @@ export const EntitySpawner = {
             worldMap.removeEntity(entity.tileX, entity.tileY, sizeX, sizeY, entityID);
         }
     },
-    debugEntities: function(gameContext, ownerID) {
+    spawnEntity: function(gameContext, entityConfig, ownerID) {
         const { world } = gameContext;
         const { turnManager } = world;
-        const owner = turnManager.getActor(ownerID);
+        const actor = turnManager.getActor(ownerID);
 
+        if(actor) {
+            const schema = actor.getColorSchema(gameContext);
+            const entity = EntitySpawner.createEntity(gameContext, entityConfig, schema);
+
+            if(entity) {
+                const entityID = entity.getID()
+
+                EntitySpawner.placeEntity(gameContext, entity);
+                actor.addEntity(entityID);
+            }
+        }
+    },
+    debugEntities: function(gameContext, ownerID) {
         for(let i = 0; i < 1; i++) {
             for(let j = 0; j < 1; j++) {
-                const config = EntitySpawner.createEntityConfig(EntitySpawner.getRandomEntityType(gameContext), j, i);
-                const entity = EntitySpawner.createEntity(gameContext, config);
-
-                if(owner) {
-                    owner.addEntity(entity.getID());
-                }
+                const entityType = getRandomEntityType(gameContext);
+                const config = EntitySpawner.createEntityConfig(entityType, j, i);
+                const entity = EntitySpawner.spawnEntity(gameContext, config, ownerID);
 
                 console.log(config, entity);
             }

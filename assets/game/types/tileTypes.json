@@ -1,46 +1,13 @@
 {
-    "NONE": {
-        "climate": "NONE",
-        "terrain": []
-    },
-    "GRASS": {
-        "climate": "TEMPERATE",
-        "terrain": ["UNEVEN"]
-    },
-    "BOREAL": {
-        "climate": "BOREAL",
-        "terrain": ["UNEVEN"]
-    },
-    "ARCTIC": {
-        "climate": "ARCTIC",
-        "terrain": ["UNEVEN"]
-    },
-    "SHORE": {
-        "climate": "NONE",
-        "terrain": ["UNEVEN"]
-    },
-    "ISLAND": {
-        "climate": "TEMPERATE",
-        "terrain": []
-    },
-    "SWIRL": {
-        "climate": "NONE",
-        "terrain": []
-    },
-    "ROCKS": {
-        "climate": "NONE",
-        "terrain": []
-    },
-    "RIVER": {
-        "climate": "NONE",
-        "terrain": []
-    },
-    "ROAD": {
-        "climate": "NONE",
-        "terrain": []
-    },
-    "VOLCANO": {
-        "climate": "HELLISH",
-        "terrain": []
-    }
+    "NONE": { "climate": "NONE", "terrain": [] },
+    "GRASS": { "climate": "TEMPERATE", "terrain": ["UNEVEN"] },
+    "BOREAL": { "climate": "BOREAL", "terrain": ["UNEVEN"] },
+    "ARCTIC": { "climate": "ARCTIC", "terrain": ["UNEVEN"] },
+    "SHORE": { "climate": "NONE", "terrain": ["UNEVEN"] },
+    "ISLAND": { "climate": "TEMPERATE", "terrain": [] },
+    "SWIRL": { "climate": "NONE", "terrain": [] },
+    "ROCKS": { "climate": "NONE", "terrain": [] },
+    "RIVER": { "climate": "NONE", "terrain": [] },
+    "ROAD": { "climate": "NONE", "terrain": [] },
+    "VOLCANO": { "climate": "HELLISH", "terrain": [] }
 }

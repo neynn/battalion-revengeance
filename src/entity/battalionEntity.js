@@ -9,6 +9,10 @@ export const BattalionEntity = function(id, sprite) {
     this.tileY = -1;
     this.direction = BattalionEntity.DIRECTION.EAST;
     this.state = BattalionEntity.STATE.IDLE;
+    this.teamID = null;
+    //The team will determine if other entities are allied. It will also determine the color!
+    // -> when creating an actor, also create a team, or add them to the team.
+    // id -> { actors, allies, enemies } (Add a teamManager)
     this.traits = [];
 }
 
@@ -158,8 +162,8 @@ BattalionEntity.prototype.getSpriteID = function() {
     return spriteID;
 }
 
-BattalionEntity.prototype.updateSchema = function(gameContext, schemaID) {
-    this.sprite.updateSchema(gameContext, schemaID);
+BattalionEntity.prototype.updateSchema = function(gameContext, schemaID, schema) {
+    this.sprite.updateSchema(gameContext, schemaID, schema);
 }
 
 BattalionEntity.prototype.updateSprite = function(gameContext) {

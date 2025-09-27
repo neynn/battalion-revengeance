@@ -1,9 +1,11 @@
+import { getRandomEnumKey } from "../../engine/math/math.js";
 import { State } from "../../engine/state/state.js";
 import { ActorSpawner } from "../actors/actorSpawner.js";
 import { BattalionContext } from "../battalionContext.js";
 import { CameraHelper } from "../camera/cameraHelper.js";
 import { EntitySpawner } from "../entity/entitySpawner.js";
 import { MapSpawner } from "../map/mapSpawner.js";
+import { TypeRegistry } from "../typeRegistry.js";
 
 export const PlayState = function() {
     this.contextID = -1;
@@ -19,7 +21,8 @@ PlayState.prototype.onEnter = async function(gameContext, stateMachine, transiti
     const context = CameraHelper.createPlayCamera(gameContext);
 
     MapSpawner.createMapByID(gameContext, "oasis").then(map => {
-        const player = ActorSpawner.createPlayer(gameContext, { "type": "Player" });
+        const color = getRandomEnumKey(TypeRegistry.SCHEMA_TYPE);
+        const player = ActorSpawner.createPlayer(gameContext, { "type": "Player", "color": color });
         const playerID = player.getID();
 
         EntitySpawner.debugEntities(gameContext, playerID);
