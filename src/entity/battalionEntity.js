@@ -10,9 +10,6 @@ export const BattalionEntity = function(id, sprite) {
     this.direction = BattalionEntity.DIRECTION.EAST;
     this.state = BattalionEntity.STATE.IDLE;
     this.teamID = null;
-    //The team will determine if other entities are allied. It will also determine the color!
-    // -> when creating an actor, also create a team, or add them to the team.
-    // id -> { actors, allies, enemies } (Add a teamManager)
     this.traits = [];
 }
 

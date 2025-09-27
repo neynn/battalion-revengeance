@@ -3,6 +3,7 @@ import { LanguageHandler } from "../engine/language/languageHandler.js";
 import { MainMenuState } from "./states/mainMenu.js";
 import { MapEditorState } from "./states/mapEditor.js";
 import { PlayState } from "./states/play.js";
+import { TeamManager } from "./team/teamManager.js";
 import { TypeRegistry } from "./typeRegistry.js";
 
 export const BattalionContext = function() {
@@ -10,6 +11,7 @@ export const BattalionContext = function() {
 
     this.transform2D.setSize(56, 56);
     this.typeRegistry = new TypeRegistry();
+    this.teamManager = new TeamManager();
 }
 
 BattalionContext.STATE = {
