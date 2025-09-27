@@ -19,11 +19,10 @@ export const EntitySpawner = {
             "direction": direction
         };
     },
-    createEntity: function(gameContext, config, schema) {
+    createEntity: function(gameContext, config, colorID, color) {
         const { world, transform2D } = gameContext;
         const { entityManager } = world;
         const { id, type, x, y, direction } = config;
-        const { colorID, color } = schema;
 
         const entity = entityManager.createEntity((entityID, entityType) => {
             const entitySprite = new BattalionSprite();
@@ -53,6 +52,7 @@ export const EntitySpawner = {
         if(entity) {
             EntitySpawner.removeEntity(gameContext, entity);
             entity.destroy();
+            //TODO: Remove entity from team/actor.
         }
     },
     placeEntity: function(gameContext, entity) {
@@ -82,19 +82,25 @@ export const EntitySpawner = {
         }
     },
     spawnEntity: function(gameContext, entityConfig, ownerID) {
-        const { world } = gameContext;
+        const { world, teamManager } = gameContext;
         const { turnManager } = world;
         const actor = turnManager.getActor(ownerID);
 
         if(actor) {
-            const schema = actor.getColorSchema(gameContext);
-            const entity = EntitySpawner.createEntity(gameContext, entityConfig, schema);
+            const { teamID } = actor;
+            const team = teamManager.getTeam(teamID);
 
-            if(entity) {
-                const entityID = entity.getID()
+            if(team) {
+                const { colorID, color } = team;
+                const entity = EntitySpawner.createEntity(gameContext, entityConfig, colorID, color);
 
-                EntitySpawner.placeEntity(gameContext, entity);
-                actor.addEntity(entityID);
+                if(entity) {
+                    const entityID = entity.getID();
+
+                    EntitySpawner.placeEntity(gameContext, entity);
+                    entity.setTeam(teamID);
+                    actor.addEntity(entityID);
+                }
             }
         }
     },

@@ -3,7 +3,6 @@ import { Team } from "./team.js";
 
 /**
  * Server-Side initialization code for the VersusMode.
- * TODO: Remove on client.
  */
 
 /**
@@ -17,7 +16,6 @@ import { Team } from "./team.js";
 //when a unit dies it gets detracted from the teams unit count. if a random unit gets summoned via any event e, it gets added to the unit count of the team
 //that emitted event e.
 
-//TODO: extract acting and team logic into its own functions and add them to the general game context
 //they will be used for MODE_STRIKE and MODE_STORY. -> Energy system feeds directly into turn manager
 //if energy = 0 then no more turn for player x. <- meaning: player/ai based energy meter.
 

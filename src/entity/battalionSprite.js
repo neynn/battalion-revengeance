@@ -1,6 +1,7 @@
 import { Graph } from "../../engine/graphics/graph.js";
 import { SpriteHelper } from "../../engine/sprite/spriteHelper.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
+import { TypeRegistry } from "../typeRegistry.js";
 
 export const BattalionSprite = function() {
     Graph.call(this);
@@ -24,7 +25,13 @@ BattalionSprite.prototype.destroy = function() {
 
 BattalionSprite.prototype.init = function(gameContext, spriteID, schemaID, schema) {
     if(this.parent === null) {
-        const sprite = SpriteHelper.createColoredSprite(gameContext, spriteID, schemaID, schema, SpriteManager.LAYER.MIDDLE);
+        let sprite = null;
+
+        if(schemaID === TypeRegistry.SCHEMA_TYPE.RED) {
+            sprite = SpriteHelper.createSpriteWithAlias(gameContext, spriteID, schemaID, SpriteManager.LAYER.MIDDLE);
+        } else {
+            sprite = SpriteHelper.createColoredSprite(gameContext, spriteID, schemaID, schema, SpriteManager.LAYER.MIDDLE);
+        }
 
         this.spriteID = spriteID;
         this.schemaID = schemaID;
@@ -62,10 +69,12 @@ BattalionSprite.prototype.updateParent = function(gameContext) {
         const { spriteManager } = gameContext;
         const spriteIndex = this.parent.getIndex();
 
-        if(this.schemaID !== null && this.schema !== null) {
-            SpriteHelper.updateColoredSprite(gameContext, spriteIndex, this.spriteID, this.schemaID, this.schema);
-        } else {
+        if(this.schemaID === null) {
             spriteManager.updateSprite(spriteIndex, this.spriteID);
+        } else if(this.schemaID === TypeRegistry.SCHEMA_TYPE.RED) {
+            SpriteHelper.updateSpriteWithAlias(gameContext, spriteIndex, this.spriteID, this.schemaID);
+        } else {
+            SpriteHelper.updateColoredSprite(gameContext, spriteIndex, this.spriteID, this.schemaID, this.schema);
         }
     }
 }

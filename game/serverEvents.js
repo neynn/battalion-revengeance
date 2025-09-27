@@ -96,16 +96,5 @@ ServerEvents.gameEvent = function(gameContext, payload) {
     const { eventBus } = world;
     const { type, data } = payload;
 
-    /*
-        TODO: FOR SERVER!
-        When the server sends an action, it sends it as CLIENT_EVENT.EVENT { ACTION_AUTHORIZE { "choice": executionRequest, "actorID": messengerID } }
-        const { executionRequest } = payload;
-        const { messengerID } = executionRequest;
-
-        eventBus.emit(ArmyEventHandler.TYPE.ACTION_AUTHORIZE, { "choice": executionRequest, "actorID": messengerID });
-
-        So force the eventBus to call ACTION_AUTHORIZE with the parameters.
-    */
-
     eventBus.emit(type, data);
 }

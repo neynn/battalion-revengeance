@@ -1,15 +1,64 @@
-import { Team } from "./team";
+import { Team } from "./team.js";
 
 export const TeamManager = function() {
-    this.nextID = 0;
-    this.teams = [];
+    this.teams = new Map();
 }
 
-TeamManager.prototype.createTeam = function() {
-    const teamID = this.nextID++;
+TeamManager.prototype.exit = function() {
+    this.teams.clear();
+}
+
+TeamManager.prototype.createTeam = function(teamID) {
+    if(this.teams.has(teamID)) {
+        console.log("Team creation failed!")
+        return null;
+    }
+
     const team = new Team(teamID);
 
-    this.teams.push(team);
+    this.teams.set(teamID, team);
 
     return team;
+}
+
+TeamManager.prototype.getTeam = function(teamID) {
+    const team = this.teams.get(teamID);
+
+    if(!team) {
+        return null;
+    }
+
+    return team;
+}
+
+TeamManager.prototype.isEnemy = function(teamA, teamB) {
+    const mainTeam = this.teams.get(teamA);
+
+    if(mainTeam) {
+        const checkTeam = this.teams.get(teamB);
+
+        if(checkTeam) {
+            return checkTeam.isEnemy(teamA);
+        }
+    }
+
+    return false;
+}
+
+TeamManager.prototype.isAlly = function(teamA, teamB) {
+    const mainTeam = this.teams.get(teamA);
+
+    if(mainTeam) {
+        const checkTeam = this.teams.get(teamB);
+
+        if(checkTeam) {
+            return checkTeam.isAlly(teamA);
+        }
+    }
+
+    return false;
+}
+
+TeamManager.prototype.getActingOrder = function(gameContext) {
+    //TODO: Implement.
 }

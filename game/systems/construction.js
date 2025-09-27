@@ -9,7 +9,6 @@ export const ConstructionSystem = function() {}
 
 /**
  * Creates a build request for the entity or finishes up construction.
- * TODO: Create confirmation dialog & isolate to game event.
  * 
  * @param {*} gameContext 
  * @param {*} entity 

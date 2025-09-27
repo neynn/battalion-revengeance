@@ -21,5 +21,12 @@ export const SpriteHelper = {
 
         spriteManager.createCopyTexture(spriteID, schemaID, schemaType);
         spriteManager.updateSprite(spriteIndex, aliasID);
+    },
+    updateSpriteWithAlias: function(gameContext, spriteIndex, spriteID, schemaID) {
+        const { spriteManager } = gameContext;
+        const aliasID = spriteManager.getAlias(spriteID, schemaID);
+
+        spriteManager.createSpriteAlias(spriteID, schemaID);
+        spriteManager.updateSprite(spriteIndex, aliasID);
     }
 };

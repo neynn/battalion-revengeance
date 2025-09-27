@@ -71,6 +71,8 @@ export const GameContext = function() {
     this.addDebug();
 }
 
+GameContext.prototype.onExit = function() {}
+
 GameContext.prototype.exit = function() {
     this.client.exit(this);
     this.world.exit();
@@ -78,6 +80,7 @@ GameContext.prototype.exit = function() {
     this.spriteManager.exit();
     this.uiManager.exit();
     this.language.exit();
+    this.onExit();
     this.addDebug();
 }
 

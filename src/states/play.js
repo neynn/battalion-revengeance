@@ -22,7 +22,8 @@ PlayState.prototype.onEnter = async function(gameContext, stateMachine, transiti
 
     MapSpawner.createMapByID(gameContext, "oasis").then(map => {
         const color = getRandomEnumKey(TypeRegistry.SCHEMA_TYPE);
-        const player = ActorSpawner.createPlayer(gameContext, { "type": "Player", "color": color });
+        const team = ActorSpawner.createTeam(gameContext, "MY_TEAM", { "color": color });
+        const player = ActorSpawner.createPlayer(gameContext, { "type": "Player", "team": "MY_TEAM" });
         const playerID = player.getID();
 
         EntitySpawner.debugEntities(gameContext, playerID);

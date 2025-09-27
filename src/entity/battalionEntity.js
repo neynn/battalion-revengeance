@@ -174,3 +174,16 @@ BattalionEntity.prototype.updateSprite = function(gameContext) {
 BattalionEntity.prototype.onTurnStart = function(gameContext) {
     console.log("My turn started", this);
 } 
+
+BattalionEntity.prototype.setTeam = function(teamID) {
+    this.teamID = teamID;
+}
+
+BattalionEntity.prototype.update = function(gameContext) {
+    this.tileX++;
+
+    if(this.tileX === 100) {
+        this.setState(BattalionEntity.STATE.FIRE);
+        this.updateSprite(gameContext);
+    }
+}

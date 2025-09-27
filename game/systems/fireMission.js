@@ -68,7 +68,7 @@ FireMissionSystem.getTargets = function(gameContext, fireMission, tileX, tileY) 
             const isAlive = entity.isAlive();
 
             if(isTargetable && isAlive) {
-                const currentDamage = damage; //TODO Calculate the damage.
+                const currentDamage = damage;
                 const entry = entityList.get(entityID);
     
                 if(!entry) {

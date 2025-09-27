@@ -16,7 +16,7 @@ VersusModeLobbyState.prototype.onEnter = function(gameContext, stateMachine) {
     this.guiID = versusInterface.getID();
 
     versusInterface.addClick("BUTTON_CREATE_ROOM", () => {
-        client.socket.createRoom("VERSUS"); //TODO
+        client.socket.createRoom("VERSUS");
     });
 
     versusInterface.addClick("BUTTON_JOIN_ROOM", () => {

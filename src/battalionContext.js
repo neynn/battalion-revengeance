@@ -41,3 +41,7 @@ BattalionContext.prototype.init = function(resources) {
     this.states.setNextState(this, BattalionContext.STATE.MAIN_MENU);
     this.timer.start();
 }
+
+BattalionContext.prototype.onExit = function() {
+    this.teamManager.exit();
+}
