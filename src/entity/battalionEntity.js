@@ -1,5 +1,6 @@
 import { Entity } from "../../engine/entity/entity.js";
 import { TypeRegistry } from "../typeRegistry.js";
+import { EntitySpawner } from "./entitySpawner.js";
 
 export const BattalionEntity = function(id, sprite) {
     Entity.call(this, id, "");

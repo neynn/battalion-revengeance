@@ -1,8 +1,19 @@
+import { EventEmitter } from "../../engine/events/eventEmitter.js";
 import { Team } from "./team.js";
 
 export const TeamManager = function() {
     this.teams = new Map();
+    this.activeTeams = [];
+
+    this.events = new EventEmitter();
+    this.events.register(TeamManager.EVENT.TEAM_LOST);
+    this.events.register(TeamManager.EVENT.TEAM_WON);
 }
+
+TeamManager.EVENT = {
+    TEAM_LOST: 0,
+    TEAM_WON: 1
+};
 
 TeamManager.prototype.exit = function() {
     this.teams.clear();
@@ -59,21 +70,46 @@ TeamManager.prototype.isAlly = function(teamA, teamB) {
     return false;
 }
 
-TeamManager.prototype.onEntityDestroy = function(gameContext, teamID, entityID) {
-    const team = this.teams.get(teamID);
-
-    if(team) {
-        team.removeEntity(entityID);
-        team.updateStatus();
-
-        if(team.isDefeated()) {
-            //TODO: Implement.
-            this.updateActingOrder(gameContext);
-            console.log("TEAM has been defeated!");
+TeamManager.prototype.removeActiveTeam = function(teamID) {
+    for(let i = 0; i < this.activeTeams.length; i++) {
+        if(this.activeTeams[i] === teamID) {
+            this.activeTeams[i] = this.activeTeams[this.activeTeams.length - 1];
+            this.activeTeams.pop();
+            this.events.emit(TeamManager.EVENT.TEAM_LOST, teamID);
+            break;
         }
     }
 }
 
-TeamManager.prototype.updateActingOrder = function(gameContext) {
-    //TODO: Implement.
+TeamManager.prototype.checkWinner = function(gameContext) {
+    switch(this.activeTeams.length) {
+        case 0: {
+            //No team remaining. This is a draw.
+            break;
+        }
+        case 1: {
+            const winner = this.activeTeams[0];
+            //Only team remaining. They must be the winner.
+            break;
+        }   
+        default: {
+            //More than two teams remaining. Check if they are allies?
+            break;
+        }
+    }
+}
+
+TeamManager.prototype.onEntityDestroy = function(gameContext, entity) {
+    const entityID = entity.getID();
+
+    for(const [teamID, team] of this.teams) {
+        team.removeEntity(entityID);
+        team.updateStatus();
+
+        if(team.isLoser()) {
+            this.removeActiveTeam(teamID);
+        }
+    }
+
+    this.checkWinner(gameContext);
 }

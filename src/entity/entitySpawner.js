@@ -62,16 +62,12 @@ export const EntitySpawner = {
     },
     destroyEntity: function(gameContext, entityID) {
         const { world, teamManager } = gameContext;
-        const { entityManager, turnManager } = world;
+        const { entityManager } = world;
         const entity = entityManager.getEntity(entityID);
 
         if(entity) {
-            const entityID = entity.getID();
-            const { teamID } = entity;
-
             EntitySpawner.removeEntity(gameContext, entity);
-            turnManager.forAllActors(actor => actor.removeEntity(entityID));
-            teamManager.onEntityDestroy(gameContext, teamID, entityID);
+            teamManager.onEntityDestroy(gameContext, entity);
             entity.destroy();
         }
     },

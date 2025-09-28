@@ -1,7 +1,6 @@
 import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { TypeRegistry } from "../typeRegistry.js";
-import { ObjectiveHandler } from "../objective/objectiveHandler.js";
 
 export const BattalionMap = function(id) {
     WorldMap.call(this, id);

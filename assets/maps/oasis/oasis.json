@@ -17,7 +17,7 @@
         "BOAT_2": { "x": 5, "y": 1, "type": "u_boat", "owner": "Test", "direction": "WEST" }
     },
     "objectives": {
-        "DESTROY_TEST": { "type": "DESTROY", "target": "BOAT_2" }
+        "DESTROY_TEST": { "type": "DEFEAT", "target": "BOAT_2" }
     },
     "data": {
         "ground": [2,400],

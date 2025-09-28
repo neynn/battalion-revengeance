@@ -1,3 +1,4 @@
+import { Objective } from "../objective/objective.js";
 import { TypeRegistry } from "../typeRegistry.js";
 
 export const Team = function(id) {
@@ -8,14 +9,14 @@ export const Team = function(id) {
     this.entities = [];
     this.colorID = null;
     this.color = null;
-    this.status = Team.STATUS.ALIVE;
+    this.status = Team.STATUS.IDLE;
     this.objectives = [];
 }
 
 Team.STATUS = {
-    ALIVE: 0,
-    DEFEATED: 1,
-    SPECTATING: 2
+    IDLE: 0,
+    WINNER: 1,
+    LOSER: 2
 };
 
 Team.prototype.getID = function() {
@@ -93,18 +94,47 @@ Team.prototype.isAlly = function(teamID) {
     return false;
 }
 
-Team.prototype.isDefeated = function() {
-    return this.status === Team.STATUS.DEFEATED;
+Team.prototype.isLoser = function() {
+    return this.status === Team.STATUS.LOSER;
+}
+
+Team.prototype.isWinner = function() {
+    return this.status === Team.STATUS.WINNER;
 }
 
 Team.prototype.updateStatus = function() {
-    if(this.entities.length === 0) {
-        this.status = Team.STATUS.DEFEATED;
-    } else {
-        this.status = Team.STATUS.ALIVE;
+    if(this.status !== Team.STATUS.IDLE) {
+        return;
     }
 
-    return this.status;
+    if(this.entities.length === 0) {
+        this.status = Team.STATUS.LOSER;
+        return;
+    }
+
+    let objectivesWon = 0;
+
+    for(let i = 0; i < this.objectives.length; i++) {
+        const objective = this.objectives[i];
+        const { status } = objective;
+
+        switch(status) {
+            case Objective.STATUS.SUCCESS: {
+                objectivesWon++;
+                break;
+            }
+            case Objective.STATUS.FAILURE: {
+                this.status = Team.STATUS.LOSER;
+                return;
+            }
+        }
+    }
+
+    const allObjectivesWon = objectivesWon !== 0 && this.objectives.length === objectivesWon;
+
+    if(allObjectivesWon) {
+        this.status = Team.STATUS.WINNER;
+    }
 }
 
 Team.prototype.loadObjectives = function(teamObjectives, allObjectives) {
@@ -112,7 +142,11 @@ Team.prototype.loadObjectives = function(teamObjectives, allObjectives) {
         const config = allObjectives[objectiveID];
 
         if(config) {
-            this.objectives.push(config);
+            const { type } = config;
+            
+            if(TypeRegistry.OBJECTIVE_TYPE[type]) {
+                this.objectives.push(config);
+            }
         }
     }
 }

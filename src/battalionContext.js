@@ -1,3 +1,4 @@
+import { EntityManager } from "../engine/entity/entityManager.js";
 import { GameContext } from "../engine/gameContext.js";
 import { LanguageHandler } from "../engine/language/languageHandler.js";
 import { MainMenuState } from "./states/mainMenu.js";
@@ -12,6 +13,13 @@ export const BattalionContext = function() {
     this.transform2D.setSize(56, 56);
     this.typeRegistry = new TypeRegistry();
     this.teamManager = new TeamManager();
+
+    //Entities need to be removed from the actors as the last step.
+    //This ensures that actors can iterate over their entities during updates.
+    //E.g. a removal during onTurnStart will cause a skip!
+    this.world.entityManager.events.on(EntityManager.EVENT.ENTITY_DESTROY, (id) => {
+        this.world.turnManager.forAllActors(actor => actor.removeEntity(id));
+    }, { permanent: true });
 }
 
 BattalionContext.STATE = {
