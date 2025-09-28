@@ -4,27 +4,30 @@ import { Team } from "./team.js";
 export const TeamManager = function() {
     this.teams = new Map();
     this.activeTeams = [];
-    this.winner = null;
+    this.isConcluded = false;
 
     this.events = new EventEmitter();
     this.events.register(TeamManager.EVENT.TEAM_LOST);
     this.events.register(TeamManager.EVENT.TEAM_WON);
     this.events.register(TeamManager.EVENT.DRAW);
 
-    this.events.on(TeamManager.EVENT.TEAM_LOST, (id) => console.log("TEAM LOST " + id));
-    this.events.on(TeamManager.EVENT.TEAM_WON, (id) => console.log("TEAM WON " + id));
+    this.events.on(TeamManager.EVENT.TEAM_LOST, (id) => console.log("TEAM LOST!", id));
+    this.events.on(TeamManager.EVENT.TEAM_WON, (id) => console.log("TEAM WON!", id));
+    this.events.on(TeamManager.EVENT.ALLIANCE_WON, (alliance) => console.log("ALLIANCE_WON!", alliance));
+    this.events.on(TeamManager.EVENT.DRAW, () => console.log("DRAW!"));
 }
 
 TeamManager.EVENT = {
     TEAM_LOST: "TEAM_LOST",
     TEAM_WON: "TEAM_WON",
+    ALLIANCE_WON: "ALLIANCE_WON",
     DRAW: "DRAW"
 };
 
 TeamManager.prototype.exit = function() {
     this.teams.clear();
     this.activeTeams.length = 0;
-    this.winner = null;
+    this.isConcluded = false;
 }
 
 TeamManager.prototype.createTeam = function(teamID) {
@@ -91,30 +94,32 @@ TeamManager.prototype.removeActiveTeam = function(teamID) {
 }
 
 TeamManager.prototype.checkWinner = function(gameContext) {
-    if(this.winner) {
+    if(this.isConcluded) {
         return;
     }
 
-    switch(this.activeTeams.length) {
-        case 0: {
-            this.events.emit(TeamManager.EVENT.DRAW);
-            break;
-        }
-        case 1: {
-            this.setWinner(this.activeTeams[0]);
-            break;
-        }   
-        default: {
-            //More than two teams remaining. Check if they are allies?
-            break;
-        }
+    if(this.activeTeams.length === 0) {
+        this.isConcluded = true;
+        this.events.emit(TeamManager.EVENT.DRAW);
+        return;
     }
-}
 
-TeamManager.prototype.setWinner = function(teamID) {
-    if(this.winner === null) {
-        this.winner = teamID;
-        this.events.emit(TeamManager.EVENT.TEAM_WON, teamID);
+    if(this.activeTeams.length === 1) {
+        this.isConcluded = true;
+        this.events.emit(TeamManager.EVENT.TEAM_WON, this.activeTeams[0]);
+        return;
+    }
+    
+    //More than 1 team remaining. Check if they are on the same team.
+
+    for(const [teamID, team] of this.teams) {
+        const { status } = team;
+
+        if(status === Team.STATUS.WINNER) {
+            this.isConcluded = true;
+            this.events.emit(TeamManager.EVENT.TEAM_WON, teamID);
+            break;
+        }
     }
 }
 
@@ -122,16 +127,22 @@ TeamManager.prototype.updateTeamStatus = function(team) {
     const teamID = team.getID();
     const status = team.updateStatus();
 
-    switch(status) {
-        case Team.STATUS.LOSER: {
-            this.removeActiveTeam(teamID);
-            break;
-        }
-        case Team.STATUS.WINNER: {
-            this.setWinner(teamID);
-            break;
-        }
+    if(status === Team.STATUS.LOSER) {
+        this.removeActiveTeam(teamID);
     }
+}
+
+TeamManager.prototype.onEntityMove = function(gameContext, entity) {
+    const entityID = entity.getID();
+
+    for(const [teamID, team] of this.teams) {
+        team.removeEntity(entityID);
+        team.handleDeath(gameContext, entity);
+
+        this.updateTeamStatus(team);
+    }
+
+    this.checkWinner(gameContext);
 }
 
 TeamManager.prototype.onEntityDestroy = function(gameContext, entity) {
@@ -139,7 +150,7 @@ TeamManager.prototype.onEntityDestroy = function(gameContext, entity) {
 
     for(const [teamID, team] of this.teams) {
         team.removeEntity(entityID);
-        team.handleDefeatObjective(gameContext, entity);
+        team.handleDeath(gameContext, entity);
 
         this.updateTeamStatus(team);
     }

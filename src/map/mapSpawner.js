@@ -91,9 +91,6 @@ export const MapSpawner = {
         } else {
             musicPlayer.play(music);
         }
-
-        //DEBUG
-        EntitySpawner.destroyEntity(gameContext, 2);
     },
     createMapByID: function(gameContext, typeID) {
         let loadedData = null;

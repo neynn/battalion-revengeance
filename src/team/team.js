@@ -178,13 +178,24 @@ Team.prototype.loadObjectives = function(teamObjectives, allObjectives) {
     }
 }
 
-Team.prototype.handleDefeatObjective = function(gameContext, entity) {
+Team.prototype.handleDeath = function(gameContext, entity) {
     for(let i = 0; i < this.objectives.length; i++) {
         const objective = this.objectives[i];
         const { status } = objective;
 
         if(status === Objective.STATUS.IDLE) {
             objective.onDeath(gameContext, entity, this.id);
+        }
+    }
+}
+
+Team.prototype.handleMove = function(gameContext, entity) {
+    for(let i = 0; i < this.objectives.length; i++) {
+        const objective = this.objectives[i];
+        const { status } = objective;
+
+        if(status === Objective.STATUS.IDLE) {
+            objective.onMove(gameContext, entity, this.id);
         }
     }
 }
