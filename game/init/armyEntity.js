@@ -361,7 +361,7 @@ ArmyEntity.prototype.isColliding = function(target, range) {
         target.tileY,
         target.config.dimX - 1,
         target.config.dimY - 1
-    );;
+    );
 }
 
 ArmyEntity.prototype.isAttackableByTeam = function(gameContext, teamID) {

@@ -4,7 +4,7 @@
     "height": 20,
     "flags": [],
     "teams": {
-        "MY_TEAM": { "color": "DARK_BLUE", "objectives": ["DESTROY_TEST"] },
+        "MY_TEAM": { "color": "DARK_BLUE", "objectives": ["DESTROY_BOAT_2", "CAPTURE_0_0"] },
         "MY_TEAM2": { "color": "DARK_RED" }
     },
     "actors": {
@@ -17,7 +17,8 @@
         "BOAT_2": { "x": 5, "y": 1, "type": "u_boat", "owner": "Test", "direction": "WEST" }
     },
     "objectives": {
-        "DESTROY_TEST": { "type": "DEFEAT", "target": "BOAT_2" }
+        "DESTROY_BOAT_2": { "type": "DEFEAT", "target": "BOAT_2" },
+        "CAPTURE_0_0": { "type": "CAPTURE", "x": 0, "y": 0 }
     },
     "data": {
         "ground": [2,400],

@@ -1,6 +1,6 @@
 import { Entity } from "../../engine/entity/entity.js";
+import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { TypeRegistry } from "../typeRegistry.js";
-import { EntitySpawner } from "./entitySpawner.js";
 
 export const BattalionEntity = function(id, sprite) {
     Entity.call(this, id, "");
@@ -194,4 +194,21 @@ BattalionEntity.prototype.onTurnStart = function(gameContext) {
 
 BattalionEntity.prototype.onTurnEnd = function(gameContext) {
     console.log("My turn ended", this);
+}
+
+BattalionEntity.prototype.occupiesTile = function(tileX, tileY) {
+    return isRectangleRectangleIntersect(tileX, tileY, 1, 1, this.tileX, this.tileY, this.config.dimX ?? 1, this.config.dimY ?? 1);
+}
+
+BattalionEntity.prototype.isColliding = function(target, range = 0) {
+    return isRectangleRectangleIntersect(
+        this.tileX - range,
+        this.tileY - range,
+        this.config.dimX - 1 + range * 2,
+        this.config.dimY - 1 + range * 2,
+        target.tileX,
+        target.tileY,
+        target.config.dimX - 1,
+        target.config.dimY - 1
+    );;
 }

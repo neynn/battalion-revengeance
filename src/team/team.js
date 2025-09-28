@@ -1,4 +1,8 @@
 import { Objective } from "../objective/objective.js";
+import { CaptureObjective } from "../objective/types/capture.js";
+import { DefeatObjective } from "../objective/types/defeat.js";
+import { DefendObjective } from "../objective/types/defend.js";
+import { ProtectObjective } from "../objective/types/protect.js";
 import { TypeRegistry } from "../typeRegistry.js";
 
 export const Team = function(id) {
@@ -10,8 +14,20 @@ export const Team = function(id) {
     this.colorID = null;
     this.color = null;
     this.status = Team.STATUS.IDLE;
-    this.objectives = [];
+    this.objectives = [
+        new ProtectObjective(),
+        new DefeatObjective(),
+        new CaptureObjective(),
+        new DefendObjective()
+    ];
 }
+
+Team.OBJECTIVE_SLOT = {
+    [TypeRegistry.OBJECTIVE_TYPE.PROTECT]: 0,
+    [TypeRegistry.OBJECTIVE_TYPE.DEFEAT]: 1,
+    [TypeRegistry.OBJECTIVE_TYPE.CAPTURE]: 2,
+    [TypeRegistry.OBJECTIVE_TYPE.DEFEND]: 3
+};
 
 Team.STATUS = {
     IDLE: 0,
@@ -104,37 +120,47 @@ Team.prototype.isWinner = function() {
 
 Team.prototype.updateStatus = function() {
     if(this.status !== Team.STATUS.IDLE) {
-        return;
+        return this.status;
     }
 
     if(this.entities.length === 0) {
         this.status = Team.STATUS.LOSER;
-        return;
+
+        return this.status;
     }
 
     let objectivesWon = 0;
+    let necessaryObjectives = 0;
 
     for(let i = 0; i < this.objectives.length; i++) {
         const objective = this.objectives[i];
-        const { status } = objective;
+        const { status, targets } = objective;
 
-        switch(status) {
-            case Objective.STATUS.SUCCESS: {
-                objectivesWon++;
-                break;
+        if(targets.length > 0) {
+            switch(status) {
+                case Objective.STATUS.IDLE: {
+                    objectivesWon += objective.allTargetsComplete() ? 1 : 0
+                    break;
+                }
+                case Objective.STATUS.FAILURE: {
+                    this.status = Team.STATUS.LOSER;  
+                    return this.status;
+                }
+                case Objective.STATUS.SUCCESS: {
+                    objectivesWon++;
+                    break;
+                }
             }
-            case Objective.STATUS.FAILURE: {
-                this.status = Team.STATUS.LOSER;
-                return;
-            }
+
+            necessaryObjectives++;
         }
     }
 
-    const allObjectivesWon = objectivesWon !== 0 && this.objectives.length === objectivesWon;
-
-    if(allObjectivesWon) {
+    if(necessaryObjectives === objectivesWon) {
         this.status = Team.STATUS.WINNER;
     }
+
+    return this.status;
 }
 
 Team.prototype.loadObjectives = function(teamObjectives, allObjectives) {
@@ -143,10 +169,22 @@ Team.prototype.loadObjectives = function(teamObjectives, allObjectives) {
 
         if(config) {
             const { type } = config;
-            
-            if(TypeRegistry.OBJECTIVE_TYPE[type]) {
-                this.objectives.push(config);
+            const index = Team.OBJECTIVE_SLOT[type];
+
+            if(index !== undefined) {
+                this.objectives[index].addTarget(config);
             }
+        }
+    }
+}
+
+Team.prototype.handleDefeatObjective = function(gameContext, entity) {
+    for(let i = 0; i < this.objectives.length; i++) {
+        const objective = this.objectives[i];
+        const { status } = objective;
+
+        if(status === Objective.STATUS.IDLE) {
+            objective.onDeath(gameContext, entity, this.id);
         }
     }
 }
