@@ -13,8 +13,11 @@
     },
     "entities": {
         "BOAT_1": { "x": 1, "y": 1, "type": "u_boat", "owner": "PLAYER" },
-        "TANK_1": { "x": 3, "y": 3, "type": "stealth_tank", "owner": "PLAYER" },
+        "TANK_1": { "x": 3, "y": 3, "type": "annihilator_tank", "owner": "PLAYER" },
         "BOAT_2": { "x": 5, "y": 1, "type": "u_boat", "owner": "Test", "direction": "WEST" }
+    },
+    "objectives": {
+        
     },
     "data": {
         "ground": [2,400],

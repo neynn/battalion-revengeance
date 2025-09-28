@@ -45,7 +45,8 @@ Player.prototype.onTurnStart = function(gameContext) {
 
         if(entity) {
             entity.onTurnStart(gameContext);
-            console.log(entity);
         }
     }
 }
+
+Player.prototype.activeUpdate = function(gameContext, remainingActions) {}

@@ -7,11 +7,10 @@ import { BattalionMap } from "./battalionMap.js";
 const PLAYER_NAME = "PLAYER";
 
 export const MapSpawner = {
-    //TODO: Add other actor types and other tags. Also add is essential.
     initMap: function(gameContext, mapData) {
         const { world } = gameContext;
         const { turnManager } = world;
-        const { teams = {}, actors = {}, entities = {} } = mapData;
+        const { teams = {}, actors = {}, entities = {}, objectives = {} } = mapData;
         const actorOrder = [];
         const actorMap = {};
 
@@ -49,15 +48,27 @@ export const MapSpawner = {
 
         for(const entityName in entities) {
             const config = entities[entityName];
-            const { x = -1, y = -1, owner = null, type = null, direction = BattalionEntity.DIRECTION_TYPE.EAST } = config;
+            const { 
+                x = -1,
+                y = -1,
+                owner = null,
+                type = null,
+                direction = BattalionEntity.DIRECTION_TYPE.EAST
+            } = config;
             const ownerID = actorMap[owner];
 
             if(ownerID !== undefined) {
                 const spawnConfig = EntitySpawner.createEntityConfig(type, x, y, direction);
                 const entity = EntitySpawner.spawnEntity(gameContext, spawnConfig, ownerID);
 
-                console.log("ENTITY_CREATED", entity);
+                if(entity) {
+                    entity.setCustomID(entityName);
+                }
             }
+        }
+
+        for(const objectiveName in objectives) {
+            console.log(objectives[objectiveName]);
         }
 
         turnManager.setActorOrder(gameContext, actorOrder);

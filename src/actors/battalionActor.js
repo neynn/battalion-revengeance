@@ -39,3 +39,8 @@ BattalionActor.prototype.hasEntity = function(entityID) {
 
     return false;
 }
+
+BattalionActor.prototype.activeUpdate = function(gameContext, remainingActions) {
+    this.requestTurnEnd();
+}
+

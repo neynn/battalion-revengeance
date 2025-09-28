@@ -4,6 +4,7 @@ import { TypeRegistry } from "../typeRegistry.js";
 export const BattalionEntity = function(id, sprite) {
     Entity.call(this, id, "");
 
+    this.customID = null;
     this.sprite = sprite;
     this.tileX = -1;
     this.tileY = -1;
@@ -11,7 +12,6 @@ export const BattalionEntity = function(id, sprite) {
     this.state = BattalionEntity.STATE.IDLE;
     this.teamID = null;
     this.traits = [];
-    this.isEssential = false;
 }
 
 BattalionEntity.DIRECTION_TYPE = {
@@ -47,6 +47,10 @@ BattalionEntity.SPRITE_TYPE = {
 
 BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
+
+BattalionEntity.prototype.setCustomID = function(id) {
+    this.customID = id;
+}
 
 BattalionEntity.prototype.removeTraits = function() {
     this.traits.length = 0;

@@ -125,6 +125,13 @@ TypeRegistry.CATEGORY = {
     SCHEMA: "SCHEMA"
 };
 
+TypeRegistry.OBJECTIVE_TYPE = {
+    CAPTURE: "CAPTURE",
+    DEFEND: "DEFEND",
+    DEFEAT: "DEFEAT",
+    PROTECT: "PROTECT"
+};
+
 TypeRegistry.SCHEMA_TYPE = {
     "RED": "RED",
     "BLUE": "BLUE",
@@ -211,6 +218,7 @@ TypeRegistry.MOVEMENT_TYPE = {
 };
 
 TypeRegistry.TRAIT_TYPE = {
+    INERTIAL: "INERTIAL",
     INDOMITABLE: "INDOMITABLE",
     COMMANDO: "COMMANDO",
     ANTI_INFANTRY: "ANTI_INFANTRY",

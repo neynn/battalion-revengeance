@@ -1,4 +1,5 @@
 {
+    "INERTIAL": { "name": "TRAIT_NAME_INERTIAL", "desc": "TRAIT_DESC_INERTIAL", "icon": null },
     "Logistic Challenge": { "name": "TRAIT_NAME_LOGISTIC_CHALLENGE", "desc": "TRAIT_DESC_LOGISTIC_CHALLENGE", "icon": "Assets/Traits/Logistic Challenge.png" },
     "Logistic Nightmare": { "name": "TRAIT_NAME_LOGISTIC_NIGHTMARE", "desc": "TRAIT_DESC_LOGISTIC_NIGHTMARE", "icon": "Assets/Traits/Logistic Nightmare.png" },
     "Financial Center": { "name": "TRAIT_NAME_FINANCIAL_CENTER", "desc": "TRAIT_DESC_FINANCIAL_CENTER", "icon": "Assets/Traits/Financial Center.png" },

@@ -1,6 +1,7 @@
 {
     "annihilator_tank": {
         "id": "annihilator_tank",
+        "traits": ["INERTIAL"],
         "sprites": {
             "idle_right": "annihilator_tank_idle_right",
             "idle_left": "annihilator_tank_idle_left",

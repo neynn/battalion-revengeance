@@ -1,4 +1,5 @@
 import { getRandomElement } from "../../engine/math/math.js";
+import { TypeRegistry } from "../typeRegistry.js";
 import { BattalionEntity } from "./battalionEntity.js";
 import { BattalionSprite } from "./battalionSprite.js";
 
@@ -112,16 +113,16 @@ export const EntitySpawner = {
             if(team) {
                 const { colorID, color } = team;
                 const entity = EntitySpawner.createEntity(gameContext, entityConfig, colorID, color);
-                //TODO: Add a way to set isEssential to true.
+
                 if(entity) {
                     const entityID = entity.getID();
-                    const { isEssential } = entity;
+                    const isExpendable = entity.hasTrait(TypeRegistry.TRAIT_TYPE.INERTIAL);
 
                     EntitySpawner.placeEntity(gameContext, entity);
                     entity.setTeam(teamID);
                     actor.addEntity(entityID);
 
-                    if(isEssential) {
+                    if(!isExpendable) {
                         team.addEntity(entityID);
                     }
 
