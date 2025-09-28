@@ -183,10 +183,14 @@ BattalionEntity.prototype.updateSprite = function(gameContext) {
     }
 }
 
+BattalionEntity.prototype.setTeam = function(teamID) {
+    this.teamID = teamID;
+}
+
 BattalionEntity.prototype.onTurnStart = function(gameContext) {
     console.log("My turn started", this);
 } 
 
-BattalionEntity.prototype.setTeam = function(teamID) {
-    this.teamID = teamID;
+BattalionEntity.prototype.onTurnEnd = function(gameContext) {
+    console.log("My turn ended", this);
 }

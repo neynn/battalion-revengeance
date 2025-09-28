@@ -273,28 +273,30 @@ TypeRegistry.prototype.getType = function(typeID, categoryID) {
     return this.categories[categoryID].getType(typeID);
 }
 
-TypeRegistry.prototype.getDisplayName = function(typeID, categoryID) {
+TypeRegistry.prototype.getDisplayName = function(gameContext, typeID, categoryID) {
+    const { language } = gameContext;
     const type = this.getType(typeID, categoryID);
 
     if(type) {
         if(type.name) {
-            return type.name;
+            return language.getSystemTag(type.name);
         }
     }
 
-    return "TYPE_REGISTRY_MISSING_NAME";
+    return language.getSystemTag("TYPE_REGISTRY_MISSING_NAME");
 }
 
-TypeRegistry.prototype.getDisplayDesc = function(typeID, categoryID) {
+TypeRegistry.prototype.getDisplayDesc = function(gameContext, typeID, categoryID) {
+    const { language } = gameContext;
     const type = this.getType(typeID, categoryID);
 
     if(type) {
         if(type.desc) {
-            return type.desc;
+            return language.getSystemTag(type.desc);
         }
     }
 
-    return "TYPE_REGISTRY_MISSING_DESC";
+    return language.getSystemTag("TYPE_REGISTRY_MISSING_DESC");
 }
 
 TypeRegistry.prototype.getIconID = function(typeID, categoryID) {

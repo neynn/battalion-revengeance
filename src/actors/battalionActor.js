@@ -40,6 +40,32 @@ BattalionActor.prototype.hasEntity = function(entityID) {
     return false;
 }
 
+BattalionActor.prototype.onTurnStart = function(gameContext) {
+    const { world } = gameContext;
+    const { entityManager } = world;
+
+    for(const entityID of this.entities) {
+        const entity = entityManager.getEntity(entityID);
+
+        if(entity) {
+            entity.onTurnStart(gameContext);
+        }
+    }
+}
+
+BattalionActor.prototype.onTurnEnd = function(gameContext) {
+    const { world } = gameContext;
+    const { entityManager } = world;
+
+    for(const entityID of this.entities) {
+        const entity = entityManager.getEntity(entityID);
+
+        if(entity) {
+            entity.onTurnEnd(gameContext);
+        }
+    }
+}
+
 BattalionActor.prototype.activeUpdate = function(gameContext, remainingActions) {
     this.requestTurnEnd();
 }
