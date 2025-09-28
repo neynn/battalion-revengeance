@@ -132,6 +132,10 @@ TypeRegistry.OBJECTIVE_TYPE = {
     PROTECT: "PROTECT"
 };
 
+TypeRegistry.TRIGGER_TYPE = {
+    MUSIC_CHANGE: "MUSIC_CHANGE"
+};
+
 TypeRegistry.SCHEMA_TYPE = {
     "RED": "RED",
     "BLUE": "BLUE",

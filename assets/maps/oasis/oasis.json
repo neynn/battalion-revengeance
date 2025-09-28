@@ -1,10 +1,10 @@
 {
-    "music": "NavalEpic4",
+    "music": "NavalEpic5",
     "width": 20,
     "height": 20,
     "flags": [],
     "teams": {
-        "MY_TEAM": { "color": "DARK_BLUE" },
+        "MY_TEAM": { "color": "DARK_BLUE", "objectives": ["DESTROY_TEST"] },
         "MY_TEAM2": { "color": "DARK_RED" }
     },
     "actors": {
@@ -17,7 +17,7 @@
         "BOAT_2": { "x": 5, "y": 1, "type": "u_boat", "owner": "Test", "direction": "WEST" }
     },
     "objectives": {
-        
+        "DESTROY_TEST": { "type": "DESTROY", "target": "BOAT_2" }
     },
     "data": {
         "ground": [2,400],

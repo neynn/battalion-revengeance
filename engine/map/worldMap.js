@@ -4,7 +4,6 @@ import { MapHelper } from "./mapHelper.js";
 
 export const WorldMap = function(id) {
     this.id = id;
-    this.music = null;
     this.config = null;
     this.width = 0;
     this.height = 0;

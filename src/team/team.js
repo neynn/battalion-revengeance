@@ -9,6 +9,7 @@ export const Team = function(id) {
     this.colorID = null;
     this.color = null;
     this.status = Team.STATUS.ALIVE;
+    this.objectives = [];
 }
 
 Team.STATUS = {
@@ -104,4 +105,14 @@ Team.prototype.updateStatus = function() {
     }
 
     return this.status;
+}
+
+Team.prototype.loadObjectives = function(teamObjectives, allObjectives) {
+    for(const objectiveID of teamObjectives) {
+        const config = allObjectives[objectiveID];
+
+        if(config) {
+            this.objectives.push(config);
+        }
+    }
 }

@@ -8,16 +8,29 @@ const PLAYER_NAME = "PLAYER";
 
 export const MapSpawner = {
     initMap: function(gameContext, mapData) {
-        const { world } = gameContext;
+        const { world, client } = gameContext;
         const { turnManager } = world;
-        const { teams = {}, actors = {}, entities = {}, objectives = {} } = mapData;
+        const { musicPlayer } = client;
+        const { 
+            music,
+            playlist,
+            teams = {},
+            actors = {},
+            entities = {},
+            objectives = {}
+        } = mapData;
         const actorOrder = [];
         const actorMap = {};
 
         let playerCreated = false;
 
         for(const teamName in teams) {
-            ActorSpawner.createTeam(gameContext, teamName, teams[teamName]);
+            const teamObjectives = teams[teamName].objectives ?? [];
+            const team = ActorSpawner.createTeam(gameContext, teamName, teams[teamName]);
+
+            if(team) {
+                team.loadObjectives(teamObjectives, objectives);
+            }
         }
 
         for(const actorName in actors) {
@@ -72,14 +85,12 @@ export const MapSpawner = {
         }
 
         turnManager.setActorOrder(gameContext, actorOrder);
-    },
-    playMapMusic: function(gameContext, worldMap, mapData) {
-        const { client } = gameContext;
-        const { musicPlayer } = client;
-        const { music } = mapData;
 
-        musicPlayer.play(music);
-        worldMap.music = music;
+        if(playlist) {
+            musicPlayer.playPlaylist(playlist);
+        } else {
+            musicPlayer.play(music);
+        }
     },
     createMapByID: function(gameContext, typeID) {
         let loadedData = null;
@@ -89,7 +100,6 @@ export const MapSpawner = {
             return new BattalionMap(mapID);
         }).then(map => {
             MapSpawner.initMap(gameContext, loadedData);
-            MapSpawner.playMapMusic(gameContext, map, loadedData);
             return map;
         });
     },
@@ -98,7 +108,6 @@ export const MapSpawner = {
 
         if(worldMap) {
             MapSpawner.initMap(gameContext, mapData);
-            MapSpawner.playMapMusic(gameContext, worldMap, mapData);
         }
 
         return worldMap;

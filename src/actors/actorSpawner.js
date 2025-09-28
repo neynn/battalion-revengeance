@@ -5,7 +5,10 @@ import { Player } from "./player.js";
 export const ActorSpawner = {
     createTeam: function(gameContext, teamID, config) {
         const { teamManager } = gameContext;
-        const { color = TypeRegistry.SCHEMA_TYPE.RED, customColor } = config;
+        const { 
+            color = TypeRegistry.SCHEMA_TYPE.RED,
+            customColor
+        } = config;
         const team = teamManager.createTeam(teamID);
 
         if(!team) {

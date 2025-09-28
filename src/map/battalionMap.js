@@ -1,6 +1,7 @@
 import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { TypeRegistry } from "../typeRegistry.js";
+import { ObjectiveHandler } from "../objective/objectiveHandler.js";
 
 export const BattalionMap = function(id) {
     WorldMap.call(this, id);
@@ -8,6 +9,7 @@ export const BattalionMap = function(id) {
     this.createLayer(BattalionMap.LAYER.FLAG, Layer.TYPE.BIT_8);
     this.createLayer(BattalionMap.LAYER.TEAM, Layer.TYPE.BIT_8);
     this.climate = TypeRegistry.CLIMATE_TYPE.NONE;
+    this.music = null;
 }
 
 BattalionMap.LAYER = {
