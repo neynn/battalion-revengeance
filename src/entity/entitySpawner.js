@@ -1,5 +1,5 @@
 import { getRandomElement } from "../../engine/math/math.js";
-import { TypeRegistry } from "../typeRegistry.js";
+import { TypeRegistry } from "../type/typeRegistry.js";
 import { BattalionEntity } from "./battalionEntity.js";
 import { BattalionSprite } from "./battalionSprite.js";
 

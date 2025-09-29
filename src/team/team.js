@@ -5,7 +5,7 @@ import { DefendObjective } from "../objective/types/defend.js";
 import { ProtectObjective } from "../objective/types/protect.js";
 import { SurviveObjective } from "../objective/types/survive.js";
 import { TimeLimitObjective } from "../objective/types/timeLimit.js";
-import { TypeRegistry } from "../typeRegistry.js";
+import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const Team = function(id) {
     this.id = id;

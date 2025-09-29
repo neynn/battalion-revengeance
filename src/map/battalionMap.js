@@ -1,6 +1,7 @@
 import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
-import { TypeRegistry } from "../typeRegistry.js";
+import { TypeHelper } from "../type/typeHelper.js";
+import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const BattalionMap = function(id) {
     WorldMap.call(this, id);
@@ -65,7 +66,7 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
         return TypeRegistry.CLIMATE_TYPE.TEMPERATE;
     }
 
-    const { typeRegistry, tileManager } = gameContext;
+    const { tileManager } = gameContext;
     const layers = [BattalionMap.LAYER.DECORATION, BattalionMap.LAYER.GROUND];
 
     for(const layerID of layers) {
@@ -74,7 +75,7 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
 
         if(meta) {
             const { type = TypeRegistry.TILE_TYPE.NONE } = meta;
-            const climate = typeRegistry.getClimateType(type);
+            const climate = TypeHelper.getClimateType(gameContext, type);
 
             if(climate !== TypeRegistry.CLIMATE_TYPE.NONE) {
                 return climate;
@@ -92,7 +93,7 @@ BattalionMap.prototype.getTerrainTags = function(gameContext, tileX, tileY) {
         return tags;
     }
 
-    const { typeRegistry, tileManager } = gameContext;
+    const { tileManager } = gameContext;
     const layers = [BattalionMap.LAYER.GROUND, BattalionMap.LAYER.DECORATION];
 
     for(const layerID of layers) {
@@ -101,7 +102,7 @@ BattalionMap.prototype.getTerrainTags = function(gameContext, tileX, tileY) {
 
         if(meta) {
             const { type = TypeRegistry.TILE_TYPE.NONE } = meta;
-            const terrainTags = typeRegistry.getTerrainTags(type);
+            const terrainTags = TypeHelper.getTerrainTags(gameContext, type);
 
             for(let i = 0; i < terrainTags.length; i++) {
                 tags.add(terrainTags[i]);

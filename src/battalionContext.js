@@ -5,7 +5,7 @@ import { MainMenuState } from "./states/mainMenu.js";
 import { MapEditorState } from "./states/mapEditor.js";
 import { PlayState } from "./states/play.js";
 import { TeamManager } from "./team/teamManager.js";
-import { TypeRegistry } from "./typeRegistry.js";
+import { TypeRegistry } from "./type/typeRegistry.js";
 
 export const BattalionContext = function() {
     GameContext.call(this);
@@ -36,12 +36,12 @@ BattalionContext.prototype.init = function(resources) {
     this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);
 
     this.typeRegistry.loadCategory(resources.armorTypes, TypeRegistry.CATEGORY.ARMOR);
+    this.typeRegistry.loadCategory(resources.climateTypes, TypeRegistry.CATEGORY.CLIMATE);
     this.typeRegistry.loadCategory(resources.movementTypes, TypeRegistry.CATEGORY.MOVEMENT);
     this.typeRegistry.loadCategory(resources.terrainTypes, TypeRegistry.CATEGORY.TERRAIN);
     this.typeRegistry.loadCategory(resources.tileTypes, TypeRegistry.CATEGORY.TILE);
     this.typeRegistry.loadCategory(resources.traitTypes, TypeRegistry.CATEGORY.TRAIT);
     this.typeRegistry.loadCategory(resources.weaponTypes, TypeRegistry.CATEGORY.WEAPON);
-    this.typeRegistry.loadCategory(resources.climateTypes, TypeRegistry.CATEGORY.CLIMATE);
 
     this.states.addState(BattalionContext.STATE.MAIN_MENU, new MainMenuState());
     this.states.addState(BattalionContext.STATE.MAP_EDITOR, new MapEditorState());

@@ -1,7 +1,7 @@
 import { Graph } from "../../engine/graphics/graph.js";
 import { SpriteHelper } from "../../engine/sprite/spriteHelper.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
-import { TypeRegistry } from "../typeRegistry.js";
+import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const BattalionSprite = function() {
     Graph.call(this);

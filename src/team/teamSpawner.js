@@ -1,4 +1,4 @@
-import { TypeRegistry } from "../typeRegistry.js";
+import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const TeamSpawner = {
     createTeam: function(gameContext, teamID, config) {

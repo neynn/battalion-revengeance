@@ -316,32 +316,3 @@ TypeRegistry.prototype.getIconID = function(typeID, categoryID) {
 
     return null;
 }
-
-TypeRegistry.prototype.getTerrainTags = function(tileID) {
-    const tags = [];
-    const type = this.getType(tileID, TypeRegistry.CATEGORY.TILE);
-
-    if(type) {
-        const { terrain } = type;
-
-        if(terrain) {
-            for(let i = 0; i < terrain.length; i++) {
-                tags.push(terrain[i]);
-            }
-        }
-    }
-
-    return tags;
-}
-
-TypeRegistry.prototype.getClimateType = function(tileID) {
-    const type = this.getType(tileID, TypeRegistry.CATEGORY.TILE);
-
-    if(type) {
-        const { climate = TypeRegistry.CLIMATE_TYPE.NONE } = type;
-
-        return climate;
-    }
-
-    return TypeRegistry.CLIMATE_TYPE.NONE;
-}

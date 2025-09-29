@@ -1,6 +1,6 @@
 import { Entity } from "../../engine/entity/entity.js";
 import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
-import { TypeRegistry } from "../typeRegistry.js";
+import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const BattalionEntity = function(id, sprite) {
     Entity.call(this, id, "");
