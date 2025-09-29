@@ -38,7 +38,7 @@ BattalionContext.prototype.init = function(resources) {
     this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);
 
     this.portraitHandler.load(resources.portraits);
-    
+
     this.typeRegistry.loadCategory(resources.armorTypes, TypeRegistry.CATEGORY.ARMOR);
     this.typeRegistry.loadCategory(resources.climateTypes, TypeRegistry.CATEGORY.CLIMATE);
     this.typeRegistry.loadCategory(resources.movementTypes, TypeRegistry.CATEGORY.MOVEMENT);

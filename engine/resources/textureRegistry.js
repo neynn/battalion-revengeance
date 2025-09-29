@@ -132,3 +132,11 @@ TextureRegistry.prototype.destroyTexture = function(id) {
         }
     }
 }   
+
+TextureRegistry.prototype.clear = function() {
+    for(let i = 0; i < this.textures.length; i++) {
+        this.textures[i].clear();
+    }
+
+    this.destroyCopyTextures();
+}
