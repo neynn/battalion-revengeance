@@ -1,6 +1,7 @@
 import { EntityManager } from "../engine/entity/entityManager.js";
 import { GameContext } from "../engine/gameContext.js";
 import { LanguageHandler } from "../engine/language/languageHandler.js";
+import { PortraitHandler } from "./actors/portraitHandler.js";
 import { MainMenuState } from "./states/mainMenu.js";
 import { MapEditorState } from "./states/mapEditor.js";
 import { PlayState } from "./states/play.js";
@@ -13,6 +14,7 @@ export const BattalionContext = function() {
     this.transform2D.setSize(56, 56);
     this.typeRegistry = new TypeRegistry();
     this.teamManager = new TeamManager();
+    this.portraitHandler = new PortraitHandler();
 
     //Entities need to be removed from the actors as the last step.
     //This ensures that actors can iterate over their entities during updates.
@@ -35,6 +37,8 @@ BattalionContext.prototype.init = function(resources) {
     this.language.registerLanguage(LanguageHandler.LANGUAGE.ENGLISH, {});
     this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);
 
+    this.portraitHandler.load(resources.portraits);
+    
     this.typeRegistry.loadCategory(resources.armorTypes, TypeRegistry.CATEGORY.ARMOR);
     this.typeRegistry.loadCategory(resources.climateTypes, TypeRegistry.CATEGORY.CLIMATE);
     this.typeRegistry.loadCategory(resources.movementTypes, TypeRegistry.CATEGORY.MOVEMENT);

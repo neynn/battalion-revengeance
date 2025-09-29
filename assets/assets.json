@@ -20,6 +20,8 @@
     "spriteTextures": { "directory": ["assets", "sprites"], "source": "textures.json" },
     "tiles": { "directory": ["assets", "tiles"], "source": "tiles.json" },
 
+    "portraits": { "directory": ["assets", "portraits"], "source": "portraits.json" },
+
     "armorTypes": { "directory": ["assets", "game", "types"], "source": "armorTypes.json" },
     "climateTypes": { "directory": ["assets", "game", "types"], "source": "climateTypes.json" },
     "movementTypes": { "directory": ["assets", "game", "types"], "source": "movementTypes.json" },
