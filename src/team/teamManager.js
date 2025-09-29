@@ -9,6 +9,7 @@ export const TeamManager = function() {
     this.events = new EventEmitter();
     this.events.register(TeamManager.EVENT.TEAM_LOST);
     this.events.register(TeamManager.EVENT.TEAM_WON);
+    this.events.register(TeamManager.EVENT.ALLIANCE_WON);
     this.events.register(TeamManager.EVENT.DRAW);
 
     this.events.on(TeamManager.EVENT.TEAM_LOST, (id) => console.log("TEAM LOST!", id));
@@ -123,10 +124,6 @@ TeamManager.prototype.getFirstWinner = function() {
 }
 
 TeamManager.prototype.checkWinner = function() {
-    if(this.isConcluded) {
-        return;
-    }
-
     switch(this.activeTeams.length) {
         case 0: {
             this.isConcluded = true;
@@ -156,7 +153,11 @@ TeamManager.prototype.checkWinner = function() {
     }
 }
 
-TeamManager.prototype.updateTeamStatus = function() {
+TeamManager.prototype.updateStatus = function(gameContext) {
+    if(this.isConcluded) {
+        return;
+    }
+
     const losers = [];
 
     for(let i = 0; i < this.activeTeams.length; i++) {
@@ -174,32 +175,11 @@ TeamManager.prototype.updateTeamStatus = function() {
 
         this.removeActiveTeam(loserID);
     }
-}
 
-TeamManager.prototype.onEntityMove = function(gameContext, entity) {
-    for(let i = 0; i < this.activeTeams.length; i++) {
-        const teamID = this.activeTeams[i];
-        const team = this.getTeam(teamID);
-
-        team.handleMove(gameContext, entity);
+    if(losers.length !== 0) {
+        this.updateOrder(gameContext);
     }
 
-    this.updateTeamStatus();
-    this.checkWinner();
-}
-
-TeamManager.prototype.onEntityDeath = function(gameContext, entity) {
-    const entityID = entity.getID();
-
-    for(let i = 0; i < this.activeTeams.length; i++) {
-        const teamID = this.activeTeams[i];
-        const team = this.getTeam(teamID);
-
-        team.removeEntity(entityID);
-        team.handleDeath(gameContext, entity);
-    }
-
-    this.updateTeamStatus();
     this.checkWinner();
 }
 
@@ -221,5 +201,37 @@ TeamManager.prototype.updateOrder = function(gameContext) {
     }
 }
 
-//TODO: TURN_LIMIT <- immediately lose if actor.turn >= value
-//TODO: SURVIVE_TURN <- survive until actor.turn >= value
+TeamManager.prototype.onEntityMove = function(gameContext, entity) {
+    for(let i = 0; i < this.activeTeams.length; i++) {
+        const teamID = this.activeTeams[i];
+        const team = this.getTeam(teamID);
+
+        team.runObjectives((objective) => objective.onMove(gameContext, entity, teamID));
+    }
+
+    this.updateStatus(gameContext);
+}
+
+TeamManager.prototype.onEntityDeath = function(gameContext, entity) {
+    const entityID = entity.getID();
+
+    for(let i = 0; i < this.activeTeams.length; i++) {
+        const teamID = this.activeTeams[i];
+        const team = this.getTeam(teamID);
+
+        team.removeEntity(entityID);
+        team.runObjectives((objective) => objective.onDeath(gameContext, entity, teamID));
+    }
+
+    this.updateStatus(gameContext);
+}
+
+TeamManager.prototype.onTurnEnd = function(gameContext, teamID, currentTurn) {
+    const team = this.getTeam(teamID);
+
+    if(team) {
+        team.runObjectives((objective) => objective.onTurnEnd(gameContext, currentTurn, teamID));
+    }
+
+    this.updateStatus(gameContext);
+}

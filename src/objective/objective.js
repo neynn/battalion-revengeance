@@ -40,5 +40,6 @@ Objective.prototype.succeed = function() {
 }
 
 Objective.prototype.addTarget = function(config) {}
+Objective.prototype.onTurnEnd = function(gameContext, currentTurn, teamID) {}
 Objective.prototype.onMove = function(gameContext, entity, teamID) {}
 Objective.prototype.onDeath = function(gameContext, entity, teamID) {}

@@ -87,6 +87,7 @@ export const MapSpawner = {
             musicPlayer.play(music);
         }
 
+        teamManager.updateStatus(gameContext);
         teamManager.updateOrder(gameContext);
     },
     createMapByID: function(gameContext, typeID) {

@@ -54,7 +54,7 @@ BattalionActor.prototype.onTurnStart = function(gameContext) {
 }
 
 BattalionActor.prototype.onTurnEnd = function(gameContext) {
-    const { world } = gameContext;
+    const { world, teamManager } = gameContext;
     const { entityManager } = world;
 
     for(const entityID of this.entities) {
@@ -64,6 +64,8 @@ BattalionActor.prototype.onTurnEnd = function(gameContext) {
             entity.onTurnEnd(gameContext);
         }
     }
+
+    teamManager.onTurnEnd(gameContext, this.teamID, this.turn);
 }
 
 BattalionActor.prototype.activeUpdate = function(gameContext, remainingActions) {

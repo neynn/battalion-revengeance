@@ -3,6 +3,8 @@ import { CaptureObjective } from "../objective/types/capture.js";
 import { DefeatObjective } from "../objective/types/defeat.js";
 import { DefendObjective } from "../objective/types/defend.js";
 import { ProtectObjective } from "../objective/types/protect.js";
+import { SurviveObjective } from "../objective/types/survive.js";
+import { TimeLimitObjective } from "../objective/types/timeLimit.js";
 import { TypeRegistry } from "../typeRegistry.js";
 
 export const Team = function(id) {
@@ -18,7 +20,9 @@ export const Team = function(id) {
         new ProtectObjective(),
         new DefeatObjective(),
         new CaptureObjective(),
-        new DefendObjective()
+        new DefendObjective(),
+        new TimeLimitObjective(),
+        new SurviveObjective()
     ];
 }
 
@@ -26,7 +30,9 @@ Team.OBJECTIVE_SLOT = {
     [TypeRegistry.OBJECTIVE_TYPE.PROTECT]: 0,
     [TypeRegistry.OBJECTIVE_TYPE.DEFEAT]: 1,
     [TypeRegistry.OBJECTIVE_TYPE.CAPTURE]: 2,
-    [TypeRegistry.OBJECTIVE_TYPE.DEFEND]: 3
+    [TypeRegistry.OBJECTIVE_TYPE.DEFEND]: 3,
+    [TypeRegistry.OBJECTIVE_TYPE.TIME_LIMIT]: 4,
+    [TypeRegistry.OBJECTIVE_TYPE.SURVIVE]: 5
 };
 
 Team.STATUS = {
@@ -176,24 +182,13 @@ Team.prototype.loadObjectives = function(teamObjectives, allObjectives) {
     }
 }
 
-Team.prototype.handleDeath = function(gameContext, entity) {
+Team.prototype.runObjectives = function(onObjective) {
     for(let i = 0; i < this.objectives.length; i++) {
         const objective = this.objectives[i];
         const { status } = objective;
 
         if(status === Objective.STATUS.IDLE) {
-            objective.onDeath(gameContext, entity, this.id);
-        }
-    }
-}
-
-Team.prototype.handleMove = function(gameContext, entity) {
-    for(let i = 0; i < this.objectives.length; i++) {
-        const objective = this.objectives[i];
-        const { status } = objective;
-
-        if(status === Objective.STATUS.IDLE) {
-            objective.onMove(gameContext, entity, this.id);
+            onObjective(objective);
         }
     }
 }
