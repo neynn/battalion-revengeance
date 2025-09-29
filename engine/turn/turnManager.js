@@ -12,6 +12,8 @@ export const TurnManager = function() {
     this.currentTurn = 0;
 
     this.events = new EventEmitter();
+    this.events.register(TurnManager.EVENT.NEXT_TURN);
+    this.events.register(TurnManager.EVENT.NEXT_ROUND);
     this.events.register(TurnManager.EVENT.ACTOR_CREATE);
     this.events.register(TurnManager.EVENT.ACTOR_DESTROY);
     this.events.register(TurnManager.EVENT.ACTOR_CHANGE);
@@ -20,6 +22,8 @@ export const TurnManager = function() {
 }
 
 TurnManager.EVENT = {
+    NEXT_TURN: "NEXT_TURN",
+    NEXT_ROUND: "NEXT_ROUND",
     ACTOR_CREATE: "ACTOR_CREATE",
     ACTOR_DESTROY: "ACTOR_DESTROY",
     ACTOR_CHANGE: "ACTOR_CHANGE",
@@ -115,18 +119,14 @@ TurnManager.prototype.isActor = function(actorID) {
 TurnManager.prototype.startNextTurn = function(gameContext) {
     this.actorIndex++;
     this.currentTurn++;
-
-    for(const [actorID, actor] of this.actors) {
-        actor.onNextTurn(gameContext, this.currentTurn);
-    }
+    this.events.emit(TurnManager.EVENT.NEXT_TURN, this.currentTurn);
+    this.actors.forEach(actor => actor.onNextTurn(gameContext, this.currentTurn));
 
     if(this.actorIndex === this.actorOrder.length) {
         this.actorIndex = 0;
         this.currentRound++;
-
-        for(const [actorID, actor] of this.actors) {
-            actor.onNextRound(gameContext, this.currentRound);
-        }
+        this.events.emit(TurnManager.EVENT.NEXT_ROUND, this.currentRound);
+        this.actors.forEach(actor => actor.onNextRound(gameContext, this.currentRound));
     }
 }
 
