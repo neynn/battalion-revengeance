@@ -1,62 +1,8 @@
 {
     "Player": {
-        "overlays": {
-            "attack": ["overlay", "grid_attack_1x1"],
-            "enable": ["overlay", "grid_enabled_1x1"],
-            "disabled": ["cursor", "Disabled"]
-        },
-        "sprites": {
-            "move": {
-                "1-1": "cursor_select_1x1"
-            },
-            "select": {
-                "1-1": "cursor_select_1x1",
-                "2-1": "cursor_select_2x1",
-                "2-2": "cursor_select_2x2",
-                "3-2": "cursor_select_3x2",
-                "3-3": "cursor_select_3x3",
-                "4-1": "cursor_select_4x1",
-                "4-2": "cursor_select_4x2",
-                "4-4": "cursor_select_4x4"
-            },
-            "attack": {
-                "1-1": "cursor_attack_1x1",
-                "2-1": "cursor_attack_2x1",
-                "2-2": "cursor_attack_2x2",
-                "3-2": "cursor_attack_3x2",
-                "3-3": "cursor_attack_3x3",
-                "4-1": "cursor_attack_4x1",
-                "4-2": "cursor_attack_4x2",
-                "4-4": "cursor_attack_4x4"
-            },
-            "powerup": {
-                "1-1": "cursor_powerup_1x1",
-                "2-2": "cursor_powerup_2x2",
-                "3-1": "cursor_powerup_3x1",
-                "3-3": "cursor_powerup_3x3",
-                "6-1": "cursor_powerup_6x1"
-            },
-            "repair": {
-                "1-1": "cursor_repair_1x1",
-                "2-2": "cursor_repair_2x2",
-                "3-3": "cursor_repair_3x3",
-                "4-4": "cursor_repair_4x4"
-            },
-            "place": {
-                "1-1": "cursor_place_1x1",
-                "2-2": "cursor_place_2x2",
-                "3-3": "cursor_place_3x3",
-                "4-4": "cursor_place_4x4"
-            },
-            "debris": {
-                "1-1": "cursor_select_1x1"
-            }
-        },
-        "sounds": {
-            "error": "sound_error",
-            "sell": "sound_item_sold",
-            "place": "sound_item_placed"
-        }
+        "portrait": "Kanye"
     },
-    "Test": {}
+    "Kanye": {
+        "portrait": "Kanye"
+    }
 }
