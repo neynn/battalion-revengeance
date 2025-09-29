@@ -4,7 +4,7 @@
     "height": 20,
     "flags": [],
     "teams": {
-        "MY_TEAM": { "color": "DARK_BLUE", "objectives": ["DEFEAT_BOAT_2", "CAPTURE_0_0", "PROTECT_BOAT_1"] },
+        "MY_TEAM": { "color": "DARK_BLUE", "objectives": ["DEFEAT_BOAT_2", "CAPTURE_0_0", "PROTECT_BOAT_1", "SURVIVE_TURN_2"] },
         "MY_TEAM2": { "color": "DARK_RED", "objectives": ["DEFEAT_BOAT_1"] }
     },
     "actors": {
@@ -17,10 +17,27 @@
         "BOAT_2": { "x": 5, "y": 1, "type": "u_boat", "owner": "NPC", "direction": "WEST" }
     },
     "objectives": {
+        "SURVIVE_TURN_2": { "type": "SURVIVE", "turn": 2 },
         "PROTECT_BOAT_1": { "type": "PROTECT", "target": "BOAT_1" },
         "DEFEAT_BOAT_1": { "type": "DEFEAT", "target": "BOAT_1" },
         "DEFEAT_BOAT_2": { "type": "DEFEAT", "target": "BOAT_2" },
         "CAPTURE_0_0": { "type": "CAPTURE", "x": 0, "y": 0 }
+    },
+    "prelogue": [
+        { "narrator": "Kanye", "text": "OASIS_PRELOGUE_1" },
+        { "narrator": "Kanye", "text": "OASIS_PRELOGUE_2" }
+    ],
+    "postlogue": [
+        { "narrator": "Kanye", "text": "OASIS_POSTLOGUE_1" },
+        { "narrator": "Kanye", "text": "OASIS_POSTLOGUE_2" }
+    ],
+    "defeat": [
+        { "narrator": "Kanye", "text": "OASIS_DEFEAT_1" },
+        { "narrator": "Kanye", "text": "OASIS_DEFEAT_2" }
+    ],
+    "event": {
+        "TEST": { "type": "DESTROY_TILE", "triggerOnTurn": 3, "next": "TEST_TEXT", "x": 5, "y": 5 },
+        "TEST_TEXT": { "type": "DIALOGUE", "narrator": "Kanye", "text": "OASIS_EVENT_TEST" }
     },
     "data": {
         "ground": [2,400],

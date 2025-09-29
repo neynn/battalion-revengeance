@@ -1,3 +1,9 @@
 {
-
+    "OASIS_PRELOGUE_1": "This is Kanye West.",
+    "OASIS_PRELOGUE_2": "Ye.",
+    "OASIS_POSTLOGUE_1": "This is Kanye West.",
+    "OASIS_POSTLOGUE_2": "I won.",
+    "OASIS_DEFEAT_1": "This is Kanye West.",
+    "OASIS_DEFEAT_2": "I lost.",
+    "OASIS_EVENT_TEST": "They bombed a tile!"
 }

@@ -9,6 +9,7 @@ export const TurnManager = function() {
     this.actorIndex = -1;
     this.actionsLeft = 0;
     this.currentRound = 1;
+    this.currentTurn = 0;
 
     this.events = new EventEmitter();
     this.events.register(TurnManager.EVENT.ACTOR_CREATE);
@@ -50,6 +51,7 @@ TurnManager.prototype.exit = function() {
     this.actionsLeft = 0;
     this.nextID = 0;
     this.currentRound = 1;
+    this.currentTurn = 0;
 }
 
 TurnManager.prototype.forAllActors = function(onCall) {
@@ -110,13 +112,31 @@ TurnManager.prototype.isActor = function(actorID) {
     return false;
 }
 
+TurnManager.prototype.startNextTurn = function(gameContext) {
+    this.actorIndex++;
+    this.currentTurn++;
+
+    for(const [actorID, actor] of this.actors) {
+        actor.onNextTurn(gameContext, this.currentTurn);
+    }
+
+    if(this.actorIndex === this.actorOrder.length) {
+        this.actorIndex = 0;
+        this.currentRound++;
+
+        for(const [actorID, actor] of this.actors) {
+            actor.onNextRound(gameContext, this.currentRound);
+        }
+    }
+}
+
 TurnManager.prototype.getNextActor = function(gameContext) {
     if(this.actorOrder.length === 0) {
         return null;
     }
 
     if(this.actorIndex === -1) {
-        this.actorIndex++;
+        this.startNextTurn(gameContext);
 
         const firstActorID = this.actorOrder[this.actorIndex];
         const firstActor = this.actors.get(firstActorID);
@@ -133,16 +153,10 @@ TurnManager.prototype.getNextActor = function(gameContext) {
 
     if(this.actionsLeft > 0) {
         return currentActor;
-    } else {
-        currentActor.endTurn(gameContext);
     }
 
-    this.actorIndex++;
-
-    if(this.actorIndex === this.actorOrder.length) {
-        this.actorIndex = 0;
-        this.startNextRound(gameContext);
-    }
+    currentActor.endTurn(gameContext);
+    this.startNextTurn(gameContext);
 
     const actorID = this.actorOrder[this.actorIndex];
     const actor = this.actors.get(actorID);
@@ -153,14 +167,6 @@ TurnManager.prototype.getNextActor = function(gameContext) {
     this.events.emit(TurnManager.EVENT.ACTOR_CHANGE, currentActorID, actorID);
 
     return actor;
-}
-
-TurnManager.prototype.startNextRound = function(gameContext) {
-    this.currentRound++;
-
-    for(const [actorID, actor] of this.actors) {
-        actor.onNextRound(gameContext, this.currentRound);
-    }
 }
 
 TurnManager.prototype.getCurrentActor = function() {
@@ -197,7 +203,13 @@ TurnManager.prototype.reduceActorActions = function(value) {
     }
 }
 
-TurnManager.prototype.setActorOrder = function(gameContext, order, index = -1) {
+TurnManager.prototype.removeFromOrder = function(actorID) {
+    //TODO: Implement.
+    //Changes the actorOrder and decrements the actorIndex if actorIndex >= index of actorID!
+}
+
+TurnManager.prototype.setActorOrder = function(order) {
+    this.actorIndex = -1;
     this.actorOrder.length = 0;
 
     for(let i = 0; i < order.length; i++) {
@@ -206,20 +218,6 @@ TurnManager.prototype.setActorOrder = function(gameContext, order, index = -1) {
         if(this.actors.has(actorID)) {
             this.actorOrder.push(actorID);
         }
-    }
-
-    if(index >= order.length) {
-        this.actorIndex = -1;
-    } else {
-        this.actorIndex = index;
-    }
-
-    const currentActor = this.getCurrentActor();
-
-    if(currentActor) {
-        this.actionsLeft = currentActor.maxActions;
-
-        currentActor.startTurn(gameContext);
     }
 }
 

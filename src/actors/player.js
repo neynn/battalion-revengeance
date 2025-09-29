@@ -30,6 +30,7 @@ Player.prototype.onClick = function(gameContext) {
         "y": tile.y
     }
 
+    this.requestTurnEnd();
     console.log(test);
 }
 
@@ -42,3 +43,11 @@ Player.prototype.loadKeybinds = function(gameContext) {
 }
 
 Player.prototype.activeUpdate = function(gameContext, remainingActions) {}
+
+Player.prototype.onNextTurn = function(gameContext, turn) {
+    console.log("IT IS TURN " + turn);
+}
+
+Player.prototype.onNextRound = function(gameContext, round) {
+    console.log("IT IS ROUND " + round);
+}

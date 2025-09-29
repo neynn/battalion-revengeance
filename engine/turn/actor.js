@@ -50,4 +50,5 @@ Actor.prototype.setConfig = function(config) {
     }
 } 
 
+Actor.prototype.onNextTurn = function(gameContext, turn) {}
 Actor.prototype.onNextRound = function(gameContext, round) {}
