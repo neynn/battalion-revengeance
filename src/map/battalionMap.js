@@ -8,6 +8,7 @@ export const BattalionMap = function(id) {
 
     this.createLayer(BattalionMap.LAYER.FLAG, Layer.TYPE.BIT_8);
     this.createLayer(BattalionMap.LAYER.TEAM, Layer.TYPE.BIT_8);
+    this.globalClimate = TypeRegistry.CLIMATE_TYPE.NONE;
     this.climate = TypeRegistry.CLIMATE_TYPE.NONE;
     this.music = null;
 }
@@ -53,34 +54,37 @@ BattalionMap.prototype.removeTileFlag = function(tileX, tileY, flag) {
     }
 }
 
-BattalionMap.prototype.setClimate = function(climateType) {
-    this.climate = climateType;
+BattalionMap.prototype.setClimate = function(local, global) {
+    this.climate = local ?? TypeRegistry.CLIMATE_TYPE.NONE;
+    this.globalClimate = global ?? TypeRegistry.CLIMATE_TYPE.NONE;
 }
 
 BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
-    if(this.climate !== TypeRegistry.CLIMATE_TYPE.NONE) {
-        return this.climate;
+    if(this.globalClimate !== TypeRegistry.CLIMATE_TYPE.NONE) {
+        return this.globalClimate;
     }
 
-    if(this.isTileOutOfBounds(tileX, tileY)) {
-        return TypeRegistry.CLIMATE_TYPE.TEMPERATE;
-    }
+    if(!this.isTileOutOfBounds(tileX, tileY)) {
+        const { tileManager } = gameContext;
+        const layers = [BattalionMap.LAYER.DECORATION, BattalionMap.LAYER.GROUND];
 
-    const { tileManager } = gameContext;
-    const layers = [BattalionMap.LAYER.DECORATION, BattalionMap.LAYER.GROUND];
+        for(const layerID of layers) {
+            const typeID = this.getTile(layerID, tileX, tileY);
+            const meta = tileManager.getMeta(typeID);
 
-    for(const layerID of layers) {
-        const typeID = this.getTile(layerID, tileX, tileY);
-        const meta = tileManager.getMeta(typeID);
+            if(meta) {
+                const { type = TypeRegistry.TILE_TYPE.NONE } = meta;
+                const climate = TypeHelper.getClimateType(gameContext, type);
 
-        if(meta) {
-            const { type = TypeRegistry.TILE_TYPE.NONE } = meta;
-            const climate = TypeHelper.getClimateType(gameContext, type);
-
-            if(climate !== TypeRegistry.CLIMATE_TYPE.NONE) {
-                return climate;
+                if(climate !== TypeRegistry.CLIMATE_TYPE.NONE) {
+                    return climate;
+                }
             }
         }
+    }
+
+    if(this.climate !== TypeRegistry.CLIMATE_TYPE.NONE) {
+        return this.climate;
     }
 
     return TypeRegistry.CLIMATE_TYPE.TEMPERATE;
@@ -111,4 +115,28 @@ BattalionMap.prototype.getTerrainTags = function(gameContext, tileX, tileY) {
     }
 
     return tags;
+}
+
+BattalionMap.prototype.getTileType = function(gameContext, tileX, tileY) {
+    if(this.isTileOutOfBounds(tileX, tileY)) {
+        return TypeRegistry.TILE_TYPE.NONE;
+    }
+
+    const { tileManager } = gameContext;
+    const layers = [BattalionMap.LAYER.DECORATION, BattalionMap.LAYER.GROUND];
+
+    for(const layerID of layers) {
+        const typeID = this.getTile(layerID, tileX, tileY);
+        const meta = tileManager.getMeta(typeID);
+
+        if(meta) {
+            const { type = TypeRegistry.TILE_TYPE.NONE } = meta;
+
+            if(type !== TypeRegistry.TILE_TYPE.NONE) {
+                return type;
+            }
+        }
+    }
+
+    return TypeRegistry.TILE_TYPE.NONE;
 }

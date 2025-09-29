@@ -22,10 +22,15 @@ Player.prototype.setCamera = function(camera) {
 Player.prototype.onClick = function(gameContext) {
     const tile = ContextHelper.getMouseTile(gameContext);
     const worldMap = gameContext.world.mapManager.getActiveMap();
+    const test = {
+        "terrain": worldMap.getTerrainTags(gameContext, tile.x, tile.y),
+        "climate": worldMap.getClimateType(gameContext, tile.x, tile.y),
+        "type": worldMap.getTileType(gameContext, tile.x, tile.y),
+        "x": tile.x,
+        "y": tile.y
+    }
 
-    console.log(worldMap.getTerrainTags(gameContext, tile.x, tile.y));
-    console.log(worldMap.getClimateType(gameContext, tile.x, tile.y))
-    console.log(tile);
+    console.log(test);
 }
 
 Player.prototype.loadKeybinds = function(gameContext) {
