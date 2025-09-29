@@ -1,12 +1,9 @@
 import { EventEmitter } from "../events/eventEmitter.js";
-import { PathHandler } from "./pathHandler.js";
+import { TextureRegistry } from "./textureRegistry.js";
 import { Texture } from "./texture.js";
 
 export const ResourceLoader = function() {
-    this.nextID = 0;
-    this.textures = [];
-    this.audio = [];
-    this.copyTextures = new Map();
+    this.textureRegistry = new TextureRegistry();
     this.toResolve = new Map();
 
     this.events = new EventEmitter();
@@ -17,106 +14,37 @@ export const ResourceLoader = function() {
     this.events.on(ResourceLoader.EVENT.TEXTURE_LOADED, (t, r) => console.log("LOADED", t, r));
 }
 
-ResourceLoader.COPY_ID = -1;
-
 ResourceLoader.EVENT = {
     TEXTURE_LOADED: "TEXTURE_LOADED",
     TEXTURE_ERROR: "TEXTURE_ERROR"
 };
 
-ResourceLoader.EMPTY_TEXTURE = new Texture(ResourceLoader.COPY_ID, "", {})
-
-ResourceLoader.DEFAULT = {
-    TEXTURE_TYPE: ".png",
-    AUDIO_TYPE: ".mp3"
-};
-
 ResourceLoader.prototype.getCopyTexture = function(textureName) {
-    const texture = this.copyTextures.get(textureName);
-
-    if(!texture) {
-        return null;
-    }
-
-    return texture;
+    return this.textureRegistry.getCopyTexture(textureName);
 }
 
 ResourceLoader.prototype.destroyCopyTexture = function(textureName) {
-    const texture = this.copyTextures.get(textureName);
-
-    if(texture) {
-        texture.clear();
-
-        this.copyTextures.delete(textureName);
-    }
+    this.textureRegistry.destroyCopyTexture(textureName);
 }
 
 ResourceLoader.prototype.destroyCopyTextures = function() {
-    this.copyTextures.forEach(texture => texture.clear());
-    this.copyTextures.clear();
+    this.textureRegistry.destroyCopyTextures();
 }
 
 ResourceLoader.prototype.createCopyTexture = function(textureName, texture) {
-    const copyTexture = this.copyTextures.get(textureName);
-
-    if(copyTexture) {
-        return copyTexture;
-    }
-
-    const { regions } = texture;
-    const newTexture = new Texture(ResourceLoader.COPY_ID, textureName, regions);
-
-    this.copyTextures.set(textureName, newTexture);
-
-    return newTexture;
+    return this.textureRegistry.createCopyAtlasTexture(textureName, texture);
 }
 
 ResourceLoader.prototype.createTextures = function(textures) {
-    const textureMap = {};
-
-    for(const textureName in textures) {
-        const { directory, source, autoRegions, regions = {} } = textures[textureName];
-        const fileName = source ? source : `${textureName}${ResourceLoader.DEFAULT.TEXTURE_TYPE}`;
-        const filePath = PathHandler.getPath(directory, fileName);
-        const textureID = this.nextID++;
-        const texture = new Texture(textureID, filePath, regions);
-
-        if(autoRegions) {
-            const { startX, startY, frameWidth, frameHeight, rows, columns } = autoRegions;
-
-            texture.autoCalcRegions(startX, startY, frameWidth, frameHeight, rows, columns);
-        }
-
-        this.textures.push(texture);
-
-        textureMap[textureName] = textureID;
-    }
-
-    return textureMap;
+    return this.textureRegistry.createAtlasTextures(textures);
 }
 
 ResourceLoader.prototype.getTextureByID = function(id) {
-    if(id !== ResourceLoader.COPY_ID) {
-        for(let i = 0; i < this.textures.length; i++) {
-            if(this.textures[i].id === id) {
-                return this.textures[i];
-            }
-        }
-    }
-
-    return null;
+    return this.textureRegistry.getTextureByID(id);
 }
 
 ResourceLoader.prototype.destroyTexture = function(id) {
-    if(id !== ResourceLoader.COPY_ID) {
-        for(let i = 0; i < this.textures.length; i++) {
-            if(this.textures[i].id === id) {
-                this.textures[i] = this.textures[this.textures.length -1];
-                this.textures.pop();
-                break;
-            }
-        }
-    }
+    this.textureRegistry.destroyTexture(id);
 }   
 
 ResourceLoader.prototype.addLoadResolver = function(textureID, onLoad) {
@@ -161,26 +89,4 @@ ResourceLoader.prototype.loadTexture = function(id) {
             this.events.emit(ResourceLoader.EVENT.TEXTURE_ERROR, texture, error);
         });
     } 
-}
-
-ResourceLoader.prototype.getAudioByID = function(id) {
-    for(let i = 0; i < this.audio.length; i++) {
-        if(this.audio[i].id === id) {
-            return this.audio[i];
-        }
-    }
-
-    return null;
-}
-
-ResourceLoader.prototype.streamAudio = function() {
-
-}
-
-ResourceLoader.prototype.loadAudio = function() {
-
-}
-
-ResourceLoader.prototype.createAudio = function() {
-
 }

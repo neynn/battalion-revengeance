@@ -2,8 +2,8 @@ import { Logger } from "../logger.js";
 import { Sprite } from "./sprite.js";
 import { ObjectPool } from "../util/objectPool.js";
 import { SpriteContainer } from "./spriteContainer.js";
-import { ResourceLoader } from "../resources/resourceLoader.js";
 import { Texture } from "../resources/texture.js";
+import { TextureRegistry } from "../resources/textureRegistry.js";
 
 export const SpriteManager = function(resourceLoader) {
     this.resources = resourceLoader;
@@ -98,15 +98,15 @@ SpriteManager.prototype.createCopyTexture = function(spriteID, schemaID, schema)
         switch(texture.state) {
             case Texture.STATE.EMPTY: {
                 this.resources.loadTexture(textureID);
-                this.resources.addLoadResolver(textureID, (bitmap) => copyTexture.loadColoredBitmap(bitmap, schema));
+                this.resources.addLoadResolver(textureID, (bitmap) => copyTexture.loadColoredRegions(bitmap, schema));
                 break;
             }
             case Texture.STATE.LOADING: {
-                this.resources.addLoadResolver(textureID, (bitmap) => copyTexture.loadColoredBitmap(bitmap, schema));
+                this.resources.addLoadResolver(textureID, (bitmap) => copyTexture.loadColoredRegions(bitmap, schema));
                 break;
             }
             case Texture.STATE.LOADED: {
-                copyTexture.loadColoredBitmap(texture.bitmap, schema);
+                copyTexture.loadColoredRegions(texture.bitmap, schema);
                 break;
             }
         }
@@ -187,7 +187,7 @@ SpriteManager.prototype.destroyCopyTextures = function() {
     for(const [spriteID, entry] of this.spriteMap) {
         const { index, textureID, copyAlias } = entry;
 
-        if(textureID === ResourceLoader.COPY_ID) {
+        if(textureID === TextureRegistry.EMPTY_ID) {
             this.resources.destroyCopyTexture(copyAlias);
             toDestroy.push(spriteID);
         }
@@ -398,7 +398,7 @@ SpriteManager.prototype.updateSprite = function(spriteIndex, spriteID) {
     if(container) {
         sprite.init(container, this.timestamp, spriteID);
 
-        if(textureID === ResourceLoader.COPY_ID) {
+        if(textureID === TextureRegistry.EMPTY_ID) {
             const copyTexture = this.resources.getCopyTexture(copyAlias);
 
             sprite.setTexture(copyTexture);

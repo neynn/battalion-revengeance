@@ -1,11 +1,11 @@
 {
-    "NONE": { "name": "CLIMATE_NAME_NONE", "desc": "CLIMATE_DESC_NONE", "icon": null },
-    "TEMPERATE": { "name": "CLIMATE_NAME_TEMPERATE", "desc": "CLIMATE_DESC_TEMPERATE", "icon": null },
-    "ARID": { "name": "CLIMATE_NAME_ARID", "desc": "CLIMATE_DESC_ARID", "icon": null },
-    "BOREAL": { "name": "CLIMATE_NAME_BOREAL", "desc": "CLIMATE_DESC_BOREAL", "icon": null },
-    "BARREN": { "name": "CLIMATE_NAME_BARREN", "desc": "CLIMATE_DESC_BARREN", "icon": null },
-    "ARCTIC": { "name": "CLIMATE_NAME_ARCTIC", "desc": "CLIMATE_DESC_ARCTIC", "icon": null },
-    "LUNAR": { "name": "CLIMATE_NAME_LUNAR", "desc": "CLIMATE_DESC_LUNAR", "icon": null },
-    "MARTIAN": { "name": "CLIMATE_NAME_MARTIAN", "desc": "CLIMATE_DESC_MARTIAN", "icon": null },
-    "HELLISH": { "name": "CLIMATE_NAME_HELLISH", "desc": "CLIMATE_DESC_HELLISH", "icon": null }
+    "NONE": { "name": "CLIMATE_NAME_NONE", "desc": "CLIMATE_DESC_NONE", "icon": null, "logisticFactor": 1 },
+    "TEMPERATE": { "name": "CLIMATE_NAME_TEMPERATE", "desc": "CLIMATE_DESC_TEMPERATE", "icon": null, "logisticFactor": 1 },
+    "ARID": { "name": "CLIMATE_NAME_ARID", "desc": "CLIMATE_DESC_ARID", "icon": null, "logisticFactor": 0.75 },
+    "BOREAL": { "name": "CLIMATE_NAME_BOREAL", "desc": "CLIMATE_DESC_BOREAL", "icon": null, "logisticFactor": 0.75 },
+    "BARREN": { "name": "CLIMATE_NAME_BARREN", "desc": "CLIMATE_DESC_BARREN", "icon": null, "logisticFactor": 0.5 },
+    "ARCTIC": { "name": "CLIMATE_NAME_ARCTIC", "desc": "CLIMATE_DESC_ARCTIC", "icon": null, "logisticFactor": 0.5 },
+    "LUNAR": { "name": "CLIMATE_NAME_LUNAR", "desc": "CLIMATE_DESC_LUNAR", "icon": null, "logisticFactor": 0.25 },
+    "MARTIAN": { "name": "CLIMATE_NAME_MARTIAN", "desc": "CLIMATE_DESC_MARTIAN", "icon": null, "logisticFactor": 0.25 },
+    "HELLISH": { "name": "CLIMATE_NAME_HELLISH", "desc": "CLIMATE_DESC_HELLISH", "icon": null, "logisticFactor": 0.1 }
 }

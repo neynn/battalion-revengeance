@@ -68,7 +68,16 @@ export const ColorHelper = {
             }
         }
     },
-    mapColors: function(imageData, regions, colorMap) {
+    mapFullColors: function(imageData, colorMap) {
+        const { data, width, height } = imageData;
+        const copy = new Uint8ClampedArray(data.length);
+
+        copy.set(data);
+        ColorHelper.mapFrame(copy, width, colorMap, 0, 0, width, height);
+
+        return new ImageData(copy, width, height);
+    },
+    mapRegionColors: function(imageData, regions, colorMap) {
         const { data, width, height } = imageData;
         const copy = new Uint8ClampedArray(data.length);
 

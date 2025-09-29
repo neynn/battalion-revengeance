@@ -1,7 +1,7 @@
-import { ResourceLoader } from "../resources/resourceLoader.js";
+import { TextureRegistry } from "../resources/textureRegistry.js";
 
 export const TileContainer = function() {
-    this.texture = ResourceLoader.EMPTY_TEXTURE;
+    this.texture = TextureRegistry.EMPTY_ATLAS_TEXTURE;
     this.frames = [];
     this.frameTime = TileContainer.DEFAULT.FRAME_TIME;
     this.frameIndex = 0;

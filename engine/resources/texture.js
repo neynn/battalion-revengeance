@@ -1,9 +1,8 @@
 import { ColorHelper } from "../graphics/colorHelper.js";
 
-export const Texture = function(id, path, regions) {
+export const Texture = function(id, path) {
     this.id = id;
     this.path = path;
-    this.regions = regions;
     this.bitmap = null;
     this.references = 0;
     this.width = 0;
@@ -43,19 +42,16 @@ Texture.createImageData = function(bitmap) {
     return pixelArray;
 }
 
-Texture.prototype.autoCalcRegions = function(startX, startY, frameWidth, frameHeight, rows, columns) {
-    this.regions = {};
-    let id = 1;
+Texture.prototype.loadColoredImage = function(copyBitmap, schema) {
+    if(this.state === Texture.STATE.EMPTY) {
+        this.state = Texture.STATE.LOADING;
 
-    for(let i = 0; i < rows; i++) {
-        for(let j = 0; j < columns; j++) {
-            this.regions[id++] = {
-                "x": startX + j * frameWidth,
-                "y": startY + i * frameHeight,
-                "w": frameWidth,
-                "h": frameHeight
-            }
-        }
+        const bitmapData = ColorHelper.getBitmapData(copyBitmap);
+        const mappedData = ColorHelper.mapFullColors(bitmapData, this.regions, schema);
+
+        createImageBitmap(mappedData)
+        .then(bitmap => this.setBitmapData(bitmap))
+        .catch(error => this.clear());
     }
 }
 
@@ -148,52 +144,4 @@ Texture.prototype.setBitmapData = function(bitmap) {
     const { width, height } = bitmap;
 
     this.setImageData(bitmap, width, height);
-}
-
-Texture.prototype.loadColoredBitmap = function(copyBitmap, schema) {
-    if(this.state === Texture.STATE.EMPTY) {
-        this.state = Texture.STATE.LOADING;
-
-        const bitmapData = ColorHelper.getBitmapData(copyBitmap);
-        const mappedData = ColorHelper.mapColors(bitmapData, this.regions, schema);
-
-        createImageBitmap(mappedData)
-        .then(bitmap => this.setBitmapData(bitmap))
-        .catch(error => this.clear());
-    }
-}
-
-Texture.prototype.getFramesAuto = function(autoRegions) {
-    const { start = 1, jump = 0, repeat = 0 } = autoRegions;
-    const frames = [];
-
-    for(let i = 0; i < repeat; i++) {
-        const regionID = start + jump * i;
-        const region = this.regions[regionID];
-
-        if(region) {
-            frames.push(region);
-        } else {
-            //TODO: Log region error.
-        }
-    }
-
-    return frames;
-}
-
-Texture.prototype.getFrames = function(regions) {
-    const frames = [];
-
-    for(let i = 0; i < regions.length; i++) {
-        const regionID = regions[i];
-        const region = this.regions[regionID];
-
-        if(region) {
-            frames.push(region);
-        } else {
-            //TODO: Log region error.
-        }
-    }
-
-    return frames;
 }
