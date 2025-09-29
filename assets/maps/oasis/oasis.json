@@ -5,7 +5,7 @@
     "flags": [],
     "teams": {
         "MY_TEAM": { "color": "DARK_BLUE", "objectives": ["DEFEAT_BOAT_2", "CAPTURE_0_0", "PROTECT_BOAT_1"] },
-        "MY_TEAM2": { "color": "DARK_RED" }
+        "MY_TEAM2": { "color": "DARK_RED", "objectives": ["DEFEAT_BOAT_1"] }
     },
     "actors": {
         "PLAYER": { "team": "MY_TEAM", "type": "Player" },
@@ -18,6 +18,7 @@
     },
     "objectives": {
         "PROTECT_BOAT_1": { "type": "PROTECT", "target": "BOAT_1" },
+        "DEFEAT_BOAT_1": { "type": "DEFEAT", "target": "BOAT_1" },
         "DEFEAT_BOAT_2": { "type": "DEFEAT", "target": "BOAT_2" },
         "CAPTURE_0_0": { "type": "CAPTURE", "x": 0, "y": 0 }
     },

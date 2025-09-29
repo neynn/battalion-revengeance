@@ -93,67 +93,133 @@ TeamManager.prototype.removeActiveTeam = function(teamID) {
     }
 }
 
-TeamManager.prototype.checkWinner = function(gameContext) {
+TeamManager.prototype.allActiveAllied = function() {
+    if(this.activeTeams.length === 0) {
+        return false;
+    }
+
+    const mainTeam = this.getTeam(this.activeTeams[0]);
+
+    for(let i = 1; i < this.activeTeams.length; i++) {
+        if(!mainTeam.isAlly(this.activeTeams[i])) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+TeamManager.prototype.getFirstWinner = function() {
+    for(let i = 0; i < this.activeTeams.length; i++) {
+        const team = this.getTeam(this.activeTeams[i]);
+        const { status } = team;
+
+        if(status === Team.STATUS.WINNER) {
+            return this.activeTeams[i];
+        }
+    }
+
+    return null;
+}
+
+TeamManager.prototype.checkWinner = function() {
     if(this.isConcluded) {
         return;
     }
 
-    if(this.activeTeams.length === 0) {
-        this.isConcluded = true;
-        this.events.emit(TeamManager.EVENT.DRAW);
-        return;
-    }
-
-    if(this.activeTeams.length === 1) {
-        this.isConcluded = true;
-        this.events.emit(TeamManager.EVENT.TEAM_WON, this.activeTeams[0]);
-        return;
-    }
-    
-    //More than 1 team remaining. Check if they are on the same team.
-
-    for(const [teamID, team] of this.teams) {
-        const { status } = team;
-
-        if(status === Team.STATUS.WINNER) {
+    switch(this.activeTeams.length) {
+        case 0: {
             this.isConcluded = true;
-            this.events.emit(TeamManager.EVENT.TEAM_WON, teamID);
+            this.events.emit(TeamManager.EVENT.DRAW);
+            break;
+        }
+        case 1: {
+            this.isConcluded = true;
+            this.events.emit(TeamManager.EVENT.TEAM_WON, this.activeTeams[0]);
+            break;
+        }
+        default: {
+            if(this.allActiveAllied()) {
+                this.isConcluded = true;
+                this.events.emit(TeamManager.EVENT.ALLIANCE_WON, this.activeTeams);
+            } else {
+                const firstWinner = this.getFirstWinner();
+
+                if(firstWinner !== null) {
+                    this.isConcluded = true;
+                    this.events.emit(TeamManager.EVENT.TEAM_WON, firstWinner);
+                }
+            }
+
             break;
         }
     }
 }
 
-TeamManager.prototype.updateTeamStatus = function(team) {
-    const teamID = team.getID();
-    const status = team.updateStatus();
+TeamManager.prototype.updateTeamStatus = function() {
+    const losers = [];
 
-    if(status === Team.STATUS.LOSER) {
-        this.removeActiveTeam(teamID);
+    for(let i = 0; i < this.activeTeams.length; i++) {
+        const teamID = this.activeTeams[i];
+        const team = this.getTeam(teamID);
+        const status = team.updateStatus();
+
+        if(status === Team.STATUS.LOSER) {
+            losers.push(teamID);
+        }
+    }
+
+    for(let i = 0; i < losers.length; i++) {
+        const loserID = losers[i];
+
+        this.removeActiveTeam(loserID);
     }
 }
 
 TeamManager.prototype.onEntityMove = function(gameContext, entity) {
-    const entityID = entity.getID();
+    for(let i = 0; i < this.activeTeams.length; i++) {
+        const teamID = this.activeTeams[i];
+        const team = this.getTeam(teamID);
 
-    for(const [teamID, team] of this.teams) {
-        team.removeEntity(entityID);
-        team.handleDeath(gameContext, entity);
-
-        this.updateTeamStatus(team);
+        team.handleMove(gameContext, entity);
     }
 
-    this.checkWinner(gameContext);
+    this.updateTeamStatus();
+    this.checkWinner();
 }
 
-TeamManager.prototype.onEntityDestroy = function(gameContext, entity) {
+TeamManager.prototype.onEntityDeath = function(gameContext, entity) {
     const entityID = entity.getID();
 
-    for(const [teamID, team] of this.teams) {
+    for(let i = 0; i < this.activeTeams.length; i++) {
+        const teamID = this.activeTeams[i];
+        const team = this.getTeam(teamID);
+
         team.removeEntity(entityID);
         team.handleDeath(gameContext, entity);
-
-        this.updateTeamStatus(team);
     }
 
-    this.checkWinner(gameContext);
+    this.updateTeamStatus();
+    this.checkWinner();
 }
+
+TeamManager.prototype.updateOrder = function(gameContext) {
+    const { world } = gameContext;
+    const { turnManager } = world;
+    const order = [];
+
+    for(let i = 0; i < this.activeTeams.length; i++) {
+        const teamID = this.activeTeams[i];
+        const team = this.getTeam(teamID);
+        const { actor } = team;
+
+        order.push(actor);
+    }
+
+    if(order.length > 1) {
+        turnManager.setActorOrder(gameContext, order, 0);
+    }
+}
+
+//TODO: TURN_LIMIT <- immediately lose if actor.turn >= value
+//TODO: SURVIVE_TURN <- survive until actor.turn >= value

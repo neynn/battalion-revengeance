@@ -8,6 +8,7 @@ export const TurnManager = function() {
     this.actorOrder = [];
     this.actorIndex = -1;
     this.actionsLeft = 0;
+    this.currentRound = 1;
 
     this.events = new EventEmitter();
     this.events.register(TurnManager.EVENT.ACTOR_CREATE);
@@ -48,6 +49,7 @@ TurnManager.prototype.exit = function() {
     this.actorIndex = -1;
     this.actionsLeft = 0;
     this.nextID = 0;
+    this.currentRound = 1;
 }
 
 TurnManager.prototype.forAllActors = function(onCall) {
@@ -131,21 +133,34 @@ TurnManager.prototype.getNextActor = function(gameContext) {
 
     if(this.actionsLeft > 0) {
         return currentActor;
+    } else {
+        currentActor.endTurn(gameContext);
     }
 
     this.actorIndex++;
-    this.actorIndex %= this.actorOrder.length;
+
+    if(this.actorIndex === this.actorOrder.length) {
+        this.actorIndex = 0;
+        this.startNextRound(gameContext);
+    }
 
     const actorID = this.actorOrder[this.actorIndex];
     const actor = this.actors.get(actorID);
 
-    currentActor.endTurn(gameContext);
     actor.startTurn(gameContext);   
 
     this.actionsLeft = actor.maxActions;
     this.events.emit(TurnManager.EVENT.ACTOR_CHANGE, currentActorID, actorID);
 
     return actor;
+}
+
+TurnManager.prototype.startNextRound = function(gameContext) {
+    this.currentRound++;
+
+    for(const [actorID, actor] of this.actors) {
+        actor.onNextRound(gameContext, this.currentRound);
+    }
 }
 
 TurnManager.prototype.getCurrentActor = function() {

@@ -9,8 +9,8 @@ export const Team = function(id) {
     this.id = id;
     this.allies = [];
     this.enemies = [];
-    this.actors = [];
     this.entities = [];
+    this.actor = null;
     this.colorID = null;
     this.color = null;
     this.status = Team.STATUS.IDLE;
@@ -34,6 +34,14 @@ Team.STATUS = {
     WINNER: 1,
     LOSER: 2
 };
+
+Team.prototype.hasActor = function() {
+    return this.actor !== null
+}
+
+Team.prototype.setActor = function(actorID) {
+    this.actor = actorID;
+}
 
 Team.prototype.getID = function() {
     return this.id;
@@ -65,16 +73,6 @@ Team.prototype.removeEntity = function(entityID) {
             return;
         }
     }
-}
-
-Team.prototype.addActor = function(actorID) {
-    for(let i = 0; i < this.actors.length; i++) {
-        if(this.actors[i] === actorID) {
-            return;
-        }
-    }
-
-    this.actors.push(actorID);
 }
 
 Team.prototype.setCustomColor = function(color) {

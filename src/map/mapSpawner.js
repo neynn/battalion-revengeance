@@ -2,14 +2,14 @@ import { MapHelper } from "../../engine/map/mapHelper.js";
 import { ActorSpawner } from "../actors/actorSpawner.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { EntitySpawner } from "../entity/entitySpawner.js";
+import { TeamSpawner } from "../team/teamSpawner.js";
 import { BattalionMap } from "./battalionMap.js";
 
 const PLAYER_NAME = "PLAYER";
 
 export const MapSpawner = {
     initMap: function(gameContext, mapData) {
-        const { world, client } = gameContext;
-        const { turnManager } = world;
+        const { client, teamManager } = gameContext;
         const { musicPlayer } = client;
         const { 
             music,
@@ -19,14 +19,13 @@ export const MapSpawner = {
             entities = {},
             objectives = {}
         } = mapData;
-        const actorOrder = [];
         const actorMap = {};
 
         let playerCreated = false;
 
         for(const teamName in teams) {
             const teamObjectives = teams[teamName].objectives ?? [];
-            const team = ActorSpawner.createTeam(gameContext, teamName, teams[teamName]);
+            const team = TeamSpawner.createTeam(gameContext, teamName, teams[teamName]);
 
             if(team) {
                 team.loadObjectives(teamObjectives, objectives);
@@ -43,7 +42,6 @@ export const MapSpawner = {
                     const actorID = actor.getID();
 
                     actorMap[actorName] = actorID;
-                    actorOrder.push(actorID);
 
                     playerCreated = true;
                 }
@@ -54,7 +52,6 @@ export const MapSpawner = {
                     const actorID = actor.getID();
 
                     actorMap[actorName] = actorID;
-                    actorOrder.push(actorID);
                 }
             }
         }
@@ -84,13 +81,13 @@ export const MapSpawner = {
             console.log(objectives[objectiveName]);
         }
 
-        turnManager.setActorOrder(gameContext, actorOrder);
-
         if(playlist) {
             musicPlayer.playPlaylist(playlist);
         } else {
             musicPlayer.play(music);
         }
+
+        teamManager.updateOrder(gameContext);
     },
     createMapByID: function(gameContext, typeID) {
         let loadedData = null;

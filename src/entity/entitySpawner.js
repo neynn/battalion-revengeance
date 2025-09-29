@@ -67,7 +67,7 @@ export const EntitySpawner = {
 
         if(entity) {
             EntitySpawner.removeEntity(gameContext, entity);
-            teamManager.onEntityDestroy(gameContext, entity);
+            teamManager.onEntityDeath(gameContext, entity);
             entity.destroy();
         }
     },

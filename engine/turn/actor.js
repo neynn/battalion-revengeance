@@ -3,6 +3,7 @@ export const Actor = function(id) {
     this.config = null;
     this.endRequested = false;
     this.maxActions = 1;
+    this.turn = 0;
 }
 
 Actor.prototype.load = function(blob) {}
@@ -23,6 +24,7 @@ Actor.prototype.onTurnEnd = function(gameContext) {}
 
 Actor.prototype.startTurn = function(gameContext) {
     this.endRequested = false;
+    this.turn++;
     this.onTurnStart(gameContext);
 }
 
@@ -47,3 +49,5 @@ Actor.prototype.setConfig = function(config) {
         this.config = config;
     }
 } 
+
+Actor.prototype.onNextRound = function(gameContext, round) {}
