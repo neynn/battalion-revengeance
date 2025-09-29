@@ -2,9 +2,10 @@ import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const TeamSpawner = {
     createTeam: function(gameContext, teamID, config) {
-        const { teamManager } = gameContext;
+        const { teamManager, typeRegistry } = gameContext;
         const { 
-            color = TypeRegistry.SCHEMA_TYPE.RED,
+            type,
+            color,
             customColor
         } = config;
         const team = teamManager.createTeam(teamID);
@@ -14,9 +15,18 @@ export const TeamSpawner = {
             return null;
         }
 
+        const nationType = typeRegistry.getType(type, TypeRegistry.CATEGORY.NATION);
+
+        if(nationType) {
+            const { color } = nationType;
+
+            team.setColor(gameContext, color);
+            team.setNation(type);
+        }
+
         if(customColor) {
             team.setCustomColor(customColor);
-        } else {
+        } else if(color) {
             team.setColor(gameContext, color);
         }
 

@@ -12,6 +12,7 @@ export const Team = function(id) {
     this.allies = [];
     this.enemies = [];
     this.entities = [];
+    this.nationID = null;
     this.actor = null;
     this.colorID = null;
     this.color = null;
@@ -40,6 +41,10 @@ Team.STATUS = {
     WINNER: 1,
     LOSER: 2
 };
+
+Team.prototype.setNation = function(nationID) {
+    this.nationID = nationID;
+}
 
 Team.prototype.hasActor = function() {
     return this.actor !== null

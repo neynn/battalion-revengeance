@@ -108,7 +108,10 @@ export const TypeRegistry = function() {
         [TypeRegistry.CATEGORY.TERRAIN]: new TypeCategory(TypeRegistry.CATEGORY.TERRAIN, TypeRegistry.TERRAIN_TYPE),
         [TypeRegistry.CATEGORY.TILE]: new TypeCategory(TypeRegistry.CATEGORY.TILE, TypeRegistry.TILE_TYPE),
         [TypeRegistry.CATEGORY.CLIMATE]: new TypeCategory(TypeRegistry.CATEGORY.CLIMATE, TypeRegistry.CLIMATE_TYPE),
-        [TypeRegistry.CATEGORY.SCHEMA]: new TypeCategory(TypeRegistry.CATEGORY.SCHEMA, TypeRegistry.SCHEMA_TYPE)
+        [TypeRegistry.CATEGORY.SCHEMA]: new TypeCategory(TypeRegistry.CATEGORY.SCHEMA, TypeRegistry.SCHEMA_TYPE),
+        [TypeRegistry.CATEGORY.NATION]: new TypeCategory(TypeRegistry.CATEGORY.NATION, TypeRegistry.NATION_TYPE),
+        [TypeRegistry.CATEGORY.POWER]: new TypeCategory(TypeRegistry.CATEGORY.POWER, TypeRegistry.POWER_TYPE),
+        [TypeRegistry.CATEGORY.CURRENCY]: new TypeCategory(TypeRegistry.CATEGORY.CURRENCY, TypeRegistry.CURRENCY_TYPE)
     };
 
     this.loadCategory(SCHEMA_TYPES, TypeRegistry.CATEGORY.SCHEMA);
@@ -122,7 +125,10 @@ TypeRegistry.CATEGORY = {
     TERRAIN: "TERRAIN",
     TILE: "TILE",
     CLIMATE: "CLIMATE",
-    SCHEMA: "SCHEMA"
+    SCHEMA: "SCHEMA",
+    NATION: "NATION",
+    POWER: "POWER",
+    CURRENCY: "CURRENCY"
 };
 
 TypeRegistry.OBJECTIVE_TYPE = {
@@ -136,6 +142,28 @@ TypeRegistry.OBJECTIVE_TYPE = {
 
 TypeRegistry.TRIGGER_TYPE = {
     MUSIC_CHANGE: "MUSIC_CHANGE"
+};
+
+TypeRegistry.CURRENCY_TYPE = {
+    ZLOT: "ZLOT",
+    KARGIL: "KARGIL",
+    KRONE: "KRONE",
+    PULA: "PULA",
+    RIAL: "RIAL"
+};
+
+TypeRegistry.POWER_TYPE = {
+    MAJOR: "MAJOR",
+    MINOR: "MINOR",
+    REGIONAL: "REGIONAL"
+},
+
+TypeRegistry.NATION_TYPE = {
+    SOMERTIN: "SOMERTIN",
+    KARGIT: "KARGIT",
+    TRANSKAL: "TRANSKAL",
+    POLASIE: "POLASIE",
+    ELAM: "ELAM"
 };
 
 TypeRegistry.SCHEMA_TYPE = {

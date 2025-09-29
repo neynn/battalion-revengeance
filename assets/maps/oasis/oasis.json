@@ -4,8 +4,8 @@
     "height": 20,
     "flags": [],
     "teams": {
-        "MY_TEAM": { "color": "DARK_BLUE", "objectives": ["DEFEAT_BOAT_2", "CAPTURE_0_0", "PROTECT_BOAT_1", "SURVIVE_TURN_2"] },
-        "MY_TEAM2": { "color": "DARK_RED", "objectives": ["DEFEAT_BOAT_1"] }
+        "MY_TEAM": { "type": "SOMERTIN", "objectives": ["DEFEAT_BOAT_2", "CAPTURE_0_0", "PROTECT_BOAT_1", "SURVIVE_TURN_2"] },
+        "MY_TEAM2": { "type": "ELAM", "objectives": ["DEFEAT_BOAT_1"] }
     },
     "actors": {
         "PLAYER": { "team": "MY_TEAM", "type": "Player" },
@@ -37,7 +37,7 @@
     ],
     "event": {
         "TEST": { "type": "DESTROY_TILE", "triggerOnTurn": 3, "next": "TEST_TEXT", "x": 5, "y": 5 },
-        "TEST_TEXT": { "type": "DIALOGUE", "narrator": "Kanye", "text": "OASIS_EVENT_TEST" }
+        "TEST_TEXT": { "type": "DIALOGUE", "dialogue": [ { "narrator": "Kanye", "text": "OASIS_EVENT_TEST" } ] }
     },
     "data": {
         "ground": [2,400],
