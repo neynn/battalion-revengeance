@@ -1,6 +1,6 @@
-export const Target = function(config) {
+export const Target = function(goal) {
     this.status = Target.STATUS.INCOMPLETE;
-    this.config = config;
+    this.goal = goal;
 }
 
 Target.STATUS = {
@@ -8,10 +8,10 @@ Target.STATUS = {
     COMPLETE: 1
 };
 
-Target.prototype.complete = function() {
+Target.prototype.toComplete = function() {
     this.status = Target.STATUS.COMPLETE;
 }
 
-Target.prototype.incomplete = function() {
+Target.prototype.toIncomplete = function() {
     this.status = Target.STATUS.INCOMPLETE;
 }

@@ -9,18 +9,15 @@ TimeLimitObjective.prototype.constructor = TimeLimitObjective;
 
 TimeLimitObjective.prototype.addTarget = function(config) {
     if(this.status !== Objective.STATUS.FAILURE) {
-        this.createTarget({
-            "turn": config.turn
-        });
+        this.createTarget(config.turn);
     }
 }
 
 TimeLimitObjective.prototype.onTurnEnd = function(gameContext, currentTurn, teamID) {
     for(const target of this.targets) {
-        const { config } = target;
-        const { turn } = config;
+        const { goal } = target;
 
-        if(currentTurn >= turn) {
+        if(currentTurn >= goal) {
             this.fail();
             break;
         }

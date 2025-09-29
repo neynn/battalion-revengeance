@@ -9,20 +9,17 @@ DefeatObjective.prototype.constructor = DefeatObjective;
 
 DefeatObjective.prototype.addTarget = function(config) {
     this.status = Objective.STATUS.IDLE;
-    this.createTarget({
-        "name": config.target
-    });
+    this.createTarget(config.target);
 }
 
 DefeatObjective.prototype.onDeath = function(gameContext, entity, teamID) {
     const { customID } = entity;
 
     for(const target of this.targets) {
-        const { config } = target;
-        const { name } = config;
+        const { goal } = target;
 
-        if(name === customID) {
-            target.complete();
+        if(goal === customID) {
+            target.toComplete();
         }
     }
 

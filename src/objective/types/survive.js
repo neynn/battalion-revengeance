@@ -10,19 +10,16 @@ SurviveObjective.prototype.constructor = SurviveObjective;
 SurviveObjective.prototype.addTarget = function(config) {
     if(this.status !== Objective.STATUS.FAILURE) {
         this.status = Objective.STATUS.IDLE;
-        this.createTarget({
-            "turn": config.turn
-        });
+        this.createTarget(config.turn);
     }
 }
 
 SurviveObjective.prototype.onTurnEnd = function(gameContext, currentTurn, teamID) {
     for(const target of this.targets) {
-        const { config } = target;
-        const { turn } = config;
+        const { goal } = target;
 
-        if(currentTurn >= turn) {
-            target.complete();
+        if(currentTurn >= goal) {
+            target.toComplete();
         }
     }
 

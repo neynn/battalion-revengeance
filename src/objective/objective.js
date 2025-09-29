@@ -11,6 +11,16 @@ Objective.STATUS = {
     FAILURE: 2
 };
 
+Objective.prototype.allTargetsIncomplete = function() {
+    for(let i = 0; i < this.targets.length; i++) {
+        if(this.targets[i].status === Target.STATUS.COMPLETE) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 Objective.prototype.allTargetsComplete = function() {
     for(let i = 0; i < this.targets.length; i++) {
         if(this.targets[i].status === Target.STATUS.INCOMPLETE) {
@@ -21,8 +31,8 @@ Objective.prototype.allTargetsComplete = function() {
     return true;
 }
 
-Objective.prototype.createTarget = function(config) {
-    this.targets.push(new Target(config));
+Objective.prototype.createTarget = function(goal) {
+    this.targets.push(new Target(goal));
 
     return this.targets[this.targets.length - 1];
 }

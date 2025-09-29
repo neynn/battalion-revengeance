@@ -143,7 +143,7 @@ Team.prototype.updateStatus = function() {
         if(targets.length > 0) {
             switch(status) {
                 case Objective.STATUS.IDLE: {
-                    objectivesWon += objective.allTargetsComplete() ? 1 : 0
+                    objectivesWon += objective.allTargetsComplete() ? 1 : 0;
                     break;
                 }
                 case Objective.STATUS.FAILURE: {

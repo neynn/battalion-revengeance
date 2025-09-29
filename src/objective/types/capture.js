@@ -16,14 +16,14 @@ CaptureObjective.prototype.addTarget = function(config) {
 
 CaptureObjective.prototype.onMove = function(gameContext, entity, teamID) {
     for(const target in this.targets) {
-        const { config } = target;
-        const { x, y } = config;
+        const { goal } = target;
+        const { x, y } = goal;
 
         if(entity.occupiesTile(x, y)) {
             if(entity.teamID === teamID) {
-                target.complete();
+                target.toComplete();
             } else {
-                target.incomplete();
+                target.toIncomplete();
             }
         }
     }

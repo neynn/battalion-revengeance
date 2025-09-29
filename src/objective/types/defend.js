@@ -23,8 +23,8 @@ DefendObjective.prototype.onMove = function(gameContext, entity, teamID) {
     }
 
     for(const target of this.targets) {
-        const { config } = target;
-        const { x, y } = config;
+        const { goal } = target;
+        const { x, y } = goal;
 
         if(entity.occupiesTile(x, y)) {
             this.fail();
