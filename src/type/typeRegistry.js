@@ -1,6 +1,12 @@
 import { TypeCategory } from "./typeCategory.js";
 
 const SCHEMA_TYPES = {
+    "RED": {
+        0x661A5E: [0, 0, 0],
+        0xAA162C: [0, 0, 0],
+        0xE9332E: [0, 0, 0],
+        0xFF9085: [0, 0, 0]
+    },
     "BLUE": {
         0x661A5E: [61, 49, 127],
         0xAA162C: [43, 95, 199],
@@ -136,7 +142,23 @@ TypeRegistry.CATEGORY = {
 TypeRegistry.FACTION_TYPE = {
     CONTINENTAL_SECURITY_LEAGUE: "CONTINENTAL_SECURITY_LEAGUE",
     GLORIOUS_COALLITION: "GLORIOUS_COALLITION",
-    GREEN: "GREEN"
+    RED: "RED",
+    BLUE: "BLUE",
+    GREEN: "GREEN",
+    YELLOW: "YELLOW",
+    DARK_RED: "DARK_RED",
+    DARK_BLUE: "DARK_BLUE",
+    BRONZE: "BRONZE",
+    DARK_GREEN: "DARK_GREEN",
+    GOLD: "GOLD",
+    CYAN: "CYAN",
+    PINK: "PINK",
+    WHILE: "WHITE",
+    PURPLE: "PURPLE",
+    BLACK: "BLACK",
+    GRAY: "GRAY",
+    CREAM: "CREAM",
+    LIME: "LIME"
 };
 
 TypeRegistry.OBJECTIVE_TYPE = {

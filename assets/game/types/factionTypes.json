@@ -1,5 +1,21 @@
 {
     "CONTINENTAL_SECURITY_LEAGUE": { "name": "FACTION_NAME_CONTINENTAL_SECURITY_LEAGUE", "desc": "FACTION_DESC_CONTINENTAL_SECURITY_LEAGUE", "color": "WHITE" },
     "GLORIOUS_COALLITION": { "name": "FACTION_NAME_GLORIOUS_COALLITION", "desc": "FACTION_DESC_GLORIOUS_COALLITION", "color": "BLACK" },
-    "GREEN": { "name": "FACTION_NAME_GREEN", "desc": "FACTION_DESC_GREEN", "color": "GREEN" }
+    "RED": { "name": "FACTION_NAME_RED", "desc": "FACTION_DESC_RED", "color": "RED" },
+    "BLUE": { "name": "FACTION_NAME_BLUE", "desc": "FACTION_DESC_BLUE", "color": "BLUE" },
+    "GREEN": { "name": "FACTION_NAME_GREEN", "desc": "FACTION_DESC_GREEN", "color": "GREEN" },
+    "YELLOW": { "name": "FACTION_NAME_YELLOW", "desc": "FACTION_DESC_YELLOW", "color": "YELLOW" },
+    "DARK_RED": { "name": "FACTION_NAME_DARK_RED", "desc": "FACTION_DESC_DARK_RED", "color": "DARK_RED" },
+    "DARK_BLUE": { "name": "FACTION_NAME_DARK_BLUE", "desc": "FACTION_DESC_DARK_BLUE", "color": "DARK_BLUE" },
+    "BRONZE": { "name": "FACTION_NAME_BRONZE", "desc": "FACTION_DESC_BRONZE", "color": "BRONZE" },
+    "DARK_GREEN": { "name": "FACTION_NAME_DARK_GREEN", "desc": "FACTION_DESC_DARK_GREEN", "color": "DARK_GREEN" },
+    "GOLD": { "name": "FACTION_NAME_GOLD", "desc": "FACTION_DESC_GOLD", "color": "GOLD" },
+    "CYAN": { "name": "FACTION_NAME_CYAN", "desc": "FACTION_DESC_CYAN", "color": "CYAN" },
+    "PINK": { "name": "FACTION_NAME_PINK", "desc": "FACTION_DESC_PINK", "color": "PINK" },
+    "WHITE": { "name": "FACTION_NAME_WHITE", "desc": "FACTION_DESC_WHITE", "color": "WHITE" },
+    "PURPLE": { "name": "FACTION_NAME_PURPLE", "desc": "FACTION_DESC_PURPLE", "color": "PURPLE" },
+    "BLACK": { "name": "FACTION_NAME_BLACK", "desc": "FACTION_DESC_BLACK", "color": "BLACK" },
+    "GRAY": { "name": "FACTION_NAME_GRAY", "desc": "FACTION_DESC_GRAY", "color": "GRAY" },
+    "CREAM": { "name": "FACTION_NAME_CREAM", "desc": "FACTION_DESC_CREAM", "color": "CREAM" },
+    "LIME": { "name": "FACTION_NAME_LIME", "desc": "FACTION_DESC_LIME", "color": "LIME" }
 }

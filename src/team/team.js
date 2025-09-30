@@ -44,6 +44,9 @@ Team.STATUS = {
     LOSER: 2
 };
 
+//TODO: after a team is created, check all other teams for their FACTION
+//if factionA === factionB then make them allies.
+
 Team.prototype.loadAsNation = function(gameContext, nationID) {
     const { typeRegistry } = gameContext;
 
@@ -54,12 +57,16 @@ Team.prototype.loadAsNation = function(gameContext, nationID) {
             const { color, faction, currency } = nationType;
             const factionType = typeRegistry.getType(faction, TypeRegistry.CATEGORY.FACTION)
             const currencyType = typeRegistry.getType(currency, TypeRegistry.CATEGORY.CURRENCY);
+            const isColorSet = this.setColor(gameContext, color);
 
-            this.setColor(gameContext, color);
             this.nation = nationType;
 
             if(factionType) {
                 this.faction = factionType;
+
+                if(!isColorSet) {
+                    this.setColor(gameContext, factionType.color);
+                }
             }
 
             if(currencyType) {
@@ -89,12 +96,12 @@ Team.prototype.loadAsFaction = function(gameContext, factionID) {
 Team.prototype.getDisplayName = function(gameContext) {
     const { language } = gameContext;
 
-    if(this.faction) {
-        return language.getSystemTag(this.faction.name);
-    }
-
     if(this.nation) {
         return language.getSystemTag(this.nation.name);
+    }
+
+    if(this.faction) {
+        return language.getSystemTag(this.faction.name);
     }
 
     return language.getSystemTag("MISSING_NAME");
@@ -149,8 +156,14 @@ Team.prototype.setColor = function(gameContext, colorID) {
     const { typeRegistry } = gameContext;
     const color = typeRegistry.getType(colorID, TypeRegistry.CATEGORY.SCHEMA);
 
-    this.colorID = colorID;
-    this.color = color;
+    if(color) {
+        this.colorID = colorID;
+        this.color = color;
+
+        return true;
+    }
+
+    return false;
 }
 
 Team.prototype.isEnemy = function(teamID) {
