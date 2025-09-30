@@ -49,6 +49,7 @@ BattalionContext.prototype.init = function(resources) {
     this.typeRegistry.loadCategory(resources.nationTypes, TypeRegistry.CATEGORY.NATION);
     this.typeRegistry.loadCategory(resources.powerTypes, TypeRegistry.CATEGORY.POWER);
     this.typeRegistry.loadCategory(resources.currencyTypes, TypeRegistry.CATEGORY.CURRENCY);
+    this.typeRegistry.loadCategory(resources.factionTypes, TypeRegistry.CATEGORY.FACTION);
 
     this.states.addState(BattalionContext.STATE.MAIN_MENU, new MainMenuState());
     this.states.addState(BattalionContext.STATE.MAP_EDITOR, new MapEditorState());

@@ -25,6 +25,7 @@
     "armorTypes": { "directory": ["assets", "game", "types"], "source": "armorTypes.json" },
     "climateTypes": { "directory": ["assets", "game", "types"], "source": "climateTypes.json" },
     "currencyTypes": { "directory": ["assets", "game", "types"], "source": "currencyTypes.json" },
+    "factionTypes": { "directory": ["assets", "game", "types"], "source": "factionTypes.json" },
     "movementTypes": { "directory": ["assets", "game", "types"], "source": "movementTypes.json" },
     "nationTypes": { "directory": ["assets", "game", "types"], "source": "nationTypes.json" },
     "powerTypes": { "directory": ["assets", "game", "types"], "source": "powerTypes.json" },

@@ -4,8 +4,8 @@
     "height": 20,
     "flags": [],
     "teams": {
-        "MY_TEAM": { "type": "SOMERTIN", "objectives": ["DEFEAT_BOAT_2", "CAPTURE_0_0", "PROTECT_BOAT_1", "SURVIVE_TURN_2"] },
-        "MY_TEAM2": { "type": "ELAM", "objectives": ["DEFEAT_BOAT_1"] }
+        "MY_TEAM": { "nation": "SOMERTIN", "objectives": ["DEFEAT_BOAT_2", "CAPTURE_0_0", "PROTECT_BOAT_1", "SURVIVE_TURN_2"] },
+        "MY_TEAM2": { "nation": "ELAM", "objectives": ["DEFEAT_BOAT_1"] }
     },
     "actors": {
         "PLAYER": { "team": "MY_TEAM", "type": "Player" },

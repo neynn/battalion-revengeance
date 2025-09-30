@@ -111,7 +111,8 @@ export const TypeRegistry = function() {
         [TypeRegistry.CATEGORY.SCHEMA]: new TypeCategory(TypeRegistry.CATEGORY.SCHEMA, TypeRegistry.SCHEMA_TYPE),
         [TypeRegistry.CATEGORY.NATION]: new TypeCategory(TypeRegistry.CATEGORY.NATION, TypeRegistry.NATION_TYPE),
         [TypeRegistry.CATEGORY.POWER]: new TypeCategory(TypeRegistry.CATEGORY.POWER, TypeRegistry.POWER_TYPE),
-        [TypeRegistry.CATEGORY.CURRENCY]: new TypeCategory(TypeRegistry.CATEGORY.CURRENCY, TypeRegistry.CURRENCY_TYPE)
+        [TypeRegistry.CATEGORY.CURRENCY]: new TypeCategory(TypeRegistry.CATEGORY.CURRENCY, TypeRegistry.CURRENCY_TYPE),
+        [TypeRegistry.CATEGORY.FACTION]: new TypeCategory(TypeRegistry.CATEGORY.FACTION, TypeRegistry.FACTION_TYPE)
     };
 
     this.loadCategory(SCHEMA_TYPES, TypeRegistry.CATEGORY.SCHEMA);
@@ -128,7 +129,14 @@ TypeRegistry.CATEGORY = {
     SCHEMA: "SCHEMA",
     NATION: "NATION",
     POWER: "POWER",
-    CURRENCY: "CURRENCY"
+    CURRENCY: "CURRENCY",
+    FACTION: "FACTION"
+};
+
+TypeRegistry.FACTION_TYPE = {
+    CONTINENTAL_SECURITY_LEAGUE: "CONTINENTAL_SECURITY_LEAGUE",
+    GLORIOUS_COALLITION: "GLORIOUS_COALLITION",
+    GREEN: "GREEN"
 };
 
 TypeRegistry.OBJECTIVE_TYPE = {
@@ -167,23 +175,23 @@ TypeRegistry.NATION_TYPE = {
 };
 
 TypeRegistry.SCHEMA_TYPE = {
-    "RED": "RED",
-    "BLUE": "BLUE",
-    "GREEN": "GREEN",
-    "YELLOW": "YELLOW",
-    "DARK_RED": "DARK_RED",
-    "DARK_BLUE": "DARK_BLUE",
-    "BRONZE": "BRONZE",
-    "DARK_GREEN": "DARK_GREEN",
-    "GOLD": "GOLD",
-    "CYAN": "CYAN",
-    "PINK": "PINK",
-    "WHITE": "WHITE",
-    "PURPLE": "PURPLE",
-    "BLACK": "BLACK",
-    "GRAY": "GRAY",
-    "CREAM": "CREAM",
-    "LIME": "LIME"
+    RED: "RED",
+    BLUE: "BLUE",
+    GREEN: "GREEN",
+    YELLOW: "YELLOW",
+    DARK_RED: "DARK_RED",
+    DARK_BLUE: "DARK_BLUE",
+    BRONZE: "BRONZE",
+    DARK_GREEN: "DARK_GREEN",
+    GOLD: "GOLD",
+    CYAN: "CYAN",
+    PINK: "PINK",
+    WHITE: "WHITE",
+    PURPLE: "PURPLE",
+    BLACK: "BLACK",
+    GRAY: "GRAY",
+    CREAM: "CREAM",
+    LIME: "LIME"
 };
 
 TypeRegistry.CLIMATE_TYPE = {

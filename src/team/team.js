@@ -12,11 +12,13 @@ export const Team = function(id) {
     this.allies = [];
     this.enemies = [];
     this.entities = [];
-    this.nationID = null;
+    this.faction = null;
+    this.nation = null;
     this.actor = null;
     this.colorID = null;
     this.color = null;
     this.status = Team.STATUS.IDLE;
+    this.exchangeRate = 1;
     this.objectives = [
         new ProtectObjective(),
         new DefeatObjective(),
@@ -42,8 +44,60 @@ Team.STATUS = {
     LOSER: 2
 };
 
-Team.prototype.setNation = function(nationID) {
-    this.nationID = nationID;
+Team.prototype.loadAsNation = function(gameContext, nationID) {
+    const { typeRegistry } = gameContext;
+
+    if(nationID) {
+        const nationType = typeRegistry.getType(nationID, TypeRegistry.CATEGORY.NATION);
+
+        if(nationType) {
+            const { color, faction, currency } = nationType;
+            const factionType = typeRegistry.getType(faction, TypeRegistry.CATEGORY.FACTION)
+            const currencyType = typeRegistry.getType(currency, TypeRegistry.CATEGORY.CURRENCY);
+
+            this.setColor(gameContext, color);
+            this.nation = nationType;
+
+            if(factionType) {
+                this.faction = factionType;
+            }
+
+            if(currencyType) {
+                const { exchangeRate } = currencyType;
+
+                this.exchangeRate = exchangeRate;
+            }
+        }
+    }
+}
+
+Team.prototype.loadAsFaction = function(gameContext, factionID) {
+    const { typeRegistry } = gameContext;
+
+    if(factionID) {
+        const factionType = typeRegistry.getType(factionID, TypeRegistry.CATEGORY.FACTION);
+
+        if(factionType) {
+            const { color } = factionType;
+
+            this.faction = factionType;
+            this.setColor(gameContext, color);
+        }
+    }
+}
+
+Team.prototype.getDisplayName = function(gameContext) {
+    const { language } = gameContext;
+
+    if(this.faction) {
+        return language.getSystemTag(this.faction.name);
+    }
+
+    if(this.nation) {
+        return language.getSystemTag(this.nation.name);
+    }
+
+    return language.getSystemTag("MISSING_NAME");
 }
 
 Team.prototype.hasActor = function() {
@@ -194,6 +248,14 @@ Team.prototype.runObjectives = function(onObjective) {
 
         if(status === Objective.STATUS.IDLE) {
             onObjective(objective);
+        }
+    }
+}
+
+Team.prototype.addAlly = function(teamID) {
+    if(teamID !== this.id) {
+        if(!this.isAlly(teamID)) {
+            this.allies.push(teamID);
         }
     }
 }

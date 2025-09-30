@@ -1,47 +1,7 @@
 {
-	"SOMERTIN": {
-		"name": "NATION_NAME_SOMERTIN",
-		"desc": "NATION_DESC_SOMERTIN",
-		"prefix": "SOM",
-        "faction": "CONTINENTAL_SECURITY_LEAGUE",
-		"power": "MAJOR",
-		"color": "WHITE",
-		"currency": "ZLOT"
-	},
-	"KARGIT": {
-		"name": "NATION_NAME_KARGIT",
-		"desc": "NATION_DESC_KARGIT",
-		"prefix": "KAR",
-        "faction": "GLORIOUS_COALLITION",
-		"power": "MAJOR",
-		"color": "BLACK",
-		"currency": "KARGIL"
-	},
-	"TRANSKAL": {
-		"name": "NATION_NAME_TRANSKAL",
-		"desc": "NATION_DESC_TRANSKAL",
-		"prefix": "TRK",
-        "faction": "CONTINENTAL_SECURITY_LEAGUE",
-		"power": "REGIONAL",
-		"color": "GRAY",
-		"currency": "KRONE"
-	},
-	"POLASIE": {
-		"name": "NATION_NAME_POLASIE",
-		"desc": "NATION_DESC_POLASIE",
-		"prefix": "POE",
-        "faction": "GLORIOUS_COALLITION",
-		"power": "REGIONAL",
-		"color": "DARK_BLUE",
-		"currency": "PULA"
-	},
-	"ELAM": {
-		"name": "NATION_NAME_ELAM",
-		"desc": "NATION_DESC_ELAM",
-		"prefix": "ELM",
-        "faction": "GLORIOUS_COALLITION",
-		"power": "REGIONAL",
-		"color": "LIME",
-		"currency": "RIAL"
-	}
+	"SOMERTIN": { "name": "NATION_NAME_SOMERTIN", "desc": "NATION_DESC_SOMERTIN", "prefix": "SOM", "faction": "CONTINENTAL_SECURITY_LEAGUE", "power": "MAJOR", "color": "WHITE", "currency": "ZLOT" },
+	"KARGIT": { "name": "NATION_NAME_KARGIT", "desc": "NATION_DESC_KARGIT", "prefix": "KAR", "faction": "GLORIOUS_COALLITION", "power": "MAJOR", "color": "BLACK", "currency": "KARGIL" },
+	"TRANSKAL": { "name": "NATION_NAME_TRANSKAL", "desc": "NATION_DESC_TRANSKAL", "prefix": "TRK", "faction": "CONTINENTAL_SECURITY_LEAGUE", "power": "REGIONAL", "color": "GRAY", "currency": "KRONE" },
+	"POLASIE": { "name": "NATION_NAME_POLASIE", "desc": "NATION_DESC_POLASIE", "prefix": "POE", "faction": "GLORIOUS_COALLITION", "power": "REGIONAL", "color": "DARK_BLUE", "currency": "PULA" },
+	"ELAM": { "name": "NATION_NAME_ELAM", "desc": "NATION_DESC_ELAM", "prefix": "ELM", "faction": "GLORIOUS_COALLITION", "power": "REGIONAL", "color": "LIME", "currency": "RIAL" }
 }
