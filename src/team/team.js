@@ -10,7 +10,6 @@ import { TypeRegistry } from "../type/typeRegistry.js";
 export const Team = function(id) {
     this.id = id;
     this.allies = [];
-    this.enemies = [];
     this.entities = [];
     this.faction = null;
     this.nation = null;
@@ -43,9 +42,6 @@ Team.STATUS = {
     WINNER: 1,
     LOSER: 2
 };
-
-//TODO: after a team is created, check all other teams for their FACTION
-//if factionA === factionB then make them allies.
 
 Team.prototype.loadAsNation = function(gameContext, nationID) {
     const { typeRegistry } = gameContext;
@@ -166,9 +162,13 @@ Team.prototype.setColor = function(gameContext, colorID) {
     return false;
 }
 
-Team.prototype.isEnemy = function(teamID) {
-    for(let i = 0; i < this.enemies.length; i++) {
-        if(this.enemies[i] === teamID) {
+Team.prototype.isAlly = function(teamID) {
+    if(this.teamID === teamID) {
+        return true;
+    }
+    
+    for(let i = 0; i < this.allies.length; i++) {
+        if(this.allies[i] === teamID) {
             return true;
         }
     }
@@ -176,14 +176,10 @@ Team.prototype.isEnemy = function(teamID) {
     return false;
 }
 
-Team.prototype.isAlly = function(teamID) {
-    for(let i = 0; i < this.allies.length; i++) {
-        if(this.allies[i] === teamID) {
-            return true;
-        }
+Team.prototype.addAlly = function(teamID) {
+    if(!this.isAlly(teamID)) {
+        this.allies.push(teamID);
     }
-    
-    return false;
 }
 
 Team.prototype.isLoser = function() {
@@ -261,14 +257,6 @@ Team.prototype.runObjectives = function(onObjective) {
 
         if(status === Objective.STATUS.IDLE) {
             onObjective(objective);
-        }
-    }
-}
-
-Team.prototype.addAlly = function(teamID) {
-    if(teamID !== this.id) {
-        if(!this.isAlly(teamID)) {
-            this.allies.push(teamID);
         }
     }
 }

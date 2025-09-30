@@ -4,17 +4,20 @@
     "height": 20,
     "flags": [],
     "teams": {
-        "MY_TEAM": { "nation": "SOMERTIN", "objectives": ["DEFEAT_BOAT_2", "CAPTURE_0_0", "PROTECT_BOAT_1", "SURVIVE_TURN_2"] },
-        "MY_TEAM2": { "nation": "ELAM", "objectives": ["DEFEAT_BOAT_1"] }
+        "MY_TEAM": { "nation": "SOMERTIN", "allies": ["DRAGOON"], "objectives": ["DEFEAT_BOAT_2", "CAPTURE_0_0", "PROTECT_BOAT_1", "SURVIVE_TURN_2"] },
+        "MY_TEAM2": { "nation": "TRANSKAL", "objectives": ["DEFEAT_BOAT_1"] },
+        "DRAGOON": { "nation": "ELAM" }
     },
     "actors": {
         "PLAYER": { "team": "MY_TEAM", "type": "Player" },
-        "NPC": { "team": "MY_TEAM2", "type": "Kanye" }
+        "NPC": { "team": "MY_TEAM2", "type": "Kanye" },
+        "DRAGOON": { "team": "DRAGOON", "type": "Kanye" }
     },
     "entities": {
         "BOAT_1": { "x": 1, "y": 1, "type": "u_boat", "owner": "PLAYER" },
         "TANK_1": { "x": 3, "y": 3, "type": "annihilator_tank", "owner": "PLAYER" },
-        "BOAT_2": { "x": 5, "y": 1, "type": "u_boat", "owner": "NPC", "direction": "WEST" }
+        "BOAT_2": { "x": 5, "y": 1, "type": "u_boat", "owner": "NPC", "direction": "WEST" },
+        "JAMMER_TRUCK_1": { "x": 11, "y": 5, "type": "jammer_truck", "owner": "DRAGOON", "direction": "WEST" }
     },
     "objectives": {
         "SURVIVE_TURN_2": { "type": "SURVIVE", "turn": 2 },

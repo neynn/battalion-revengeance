@@ -32,6 +32,23 @@ export const MapSpawner = {
             }
         }
 
+        for(const teamName in teams) {
+            const team = teamManager.getTeam(teamName);
+
+            if(team) {
+                const teamAllies = teams[teamName].allies ?? [];
+
+                for(const teamID of teamAllies) {
+                    const allyTeam = teamManager.getTeam(teamID);
+
+                    if(allyTeam) {
+                        team.addAlly(teamID);
+                        allyTeam.addAlly(teamName);
+                    }
+                }
+            }
+        }
+
         for(const actorName in actors) {
             const config = actors[actorName];   
 

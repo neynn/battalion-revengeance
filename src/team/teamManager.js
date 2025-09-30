@@ -55,29 +55,11 @@ TeamManager.prototype.getTeam = function(teamID) {
     return team;
 }
 
-TeamManager.prototype.isEnemy = function(teamA, teamB) {
-    const mainTeam = this.teams.get(teamA);
-
-    if(mainTeam) {
-        const checkTeam = this.teams.get(teamB);
-
-        if(checkTeam) {
-            return checkTeam.isEnemy(teamA);
-        }
-    }
-
-    return false;
-}
-
 TeamManager.prototype.isAlly = function(teamA, teamB) {
-    const mainTeam = this.teams.get(teamA);
+    const team = this.teams.get(teamA);
 
-    if(mainTeam) {
-        const checkTeam = this.teams.get(teamB);
-
-        if(checkTeam) {
-            return checkTeam.isAlly(teamA);
-        }
+    if(team) {
+        return team.isAlly(teamB);
     }
 
     return false;
