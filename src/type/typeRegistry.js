@@ -170,10 +170,6 @@ TypeRegistry.OBJECTIVE_TYPE = {
     SURVIVE: "SURVIVE"
 };
 
-TypeRegistry.TRIGGER_TYPE = {
-    MUSIC_CHANGE: "MUSIC_CHANGE"
-};
-
 TypeRegistry.CURRENCY_TYPE = {
     ZLOT: "ZLOT",
     KARGIL: "KARGIL",

@@ -2,6 +2,7 @@ import { EntityManager } from "../engine/entity/entityManager.js";
 import { GameContext } from "../engine/gameContext.js";
 import { LanguageHandler } from "../engine/language/languageHandler.js";
 import { PortraitHandler } from "./actors/portraitHandler.js";
+import { EventHandler } from "./event/eventHandler.js";
 import { MainMenuState } from "./states/mainMenu.js";
 import { MapEditorState } from "./states/mapEditor.js";
 import { PlayState } from "./states/play.js";
@@ -15,7 +16,7 @@ export const BattalionContext = function() {
     this.typeRegistry = new TypeRegistry();
     this.teamManager = new TeamManager();
     this.portraitHandler = new PortraitHandler();
-
+    this.eventHandler = new EventHandler();
     //Entities need to be removed from the actors as the last step.
     //This ensures that actors can iterate over their entities during updates.
     //E.g. a removal during onTurnStart will cause a skip!
@@ -60,4 +61,5 @@ BattalionContext.prototype.init = function(resources) {
 
 BattalionContext.prototype.onExit = function() {
     this.teamManager.exit();
+    this.eventHandler.exit();
 }

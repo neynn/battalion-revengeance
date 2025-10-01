@@ -9,7 +9,7 @@ const PLAYER_NAME = "PLAYER";
 
 export const MapSpawner = {
     initMap: function(gameContext, worldMap, mapData) {
-        const { client, teamManager } = gameContext;
+        const { client, teamManager, eventHandler } = gameContext;
         const { musicPlayer } = client;
         const { 
             music,
@@ -18,6 +18,7 @@ export const MapSpawner = {
             actors = {},
             entities = {},
             objectives = {},
+            events = {},
             localization = []
         } = mapData;
         const actorMap = {};
@@ -109,6 +110,7 @@ export const MapSpawner = {
         }
 
         worldMap.loadLocalization(localization);
+        eventHandler.loadEvents(events);
         teamManager.updateStatus(gameContext);
         teamManager.updateOrder(gameContext);
     },
