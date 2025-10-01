@@ -1,10 +1,13 @@
 import { Entity } from "../../engine/entity/entity.js";
+import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const BattalionEntity = function(id, sprite) {
     Entity.call(this, id, "");
 
+    this.customName = null;
+    this.customDesc = null;
     this.customID = null;
     this.sprite = sprite;
     this.tileX = -1;
@@ -48,6 +51,48 @@ BattalionEntity.SPRITE_TYPE = {
 
 BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
+
+BattalionEntity.prototype.setCustomText = function(name, desc) {
+    if(name) {
+        this.customName = name;
+    }
+
+    if(desc) {
+        this.customDesc = desc;
+    }
+}
+
+BattalionEntity.prototype.getDisplayDesc = function(gameContext) {
+    const { language } = gameContext;
+    
+    if(this.customDesc) {
+        return language.get(this.customDesc, LanguageHandler.TAG_TYPE.MAP);
+    }
+
+    const sharedTag = this.config.desc;
+
+    if(sharedTag) {
+        return language.get(sharedTag);
+    }
+
+    return language.get("MISSING_ENTITY_DESC");
+}
+
+BattalionEntity.prototype.getDisplayName = function(gameContext) {
+    const { language } = gameContext;
+    
+    if(this.customName) {
+        return language.get(this.customName, LanguageHandler.TAG_TYPE.MAP);
+    }
+
+    const sharedTag = this.config.name;
+
+    if(sharedTag) {
+        return language.get(sharedTag);
+    }
+
+    return language.get("MISSING_ENTITY_NAME");
+}
 
 BattalionEntity.prototype.setCustomID = function(id) {
     this.customID = id;

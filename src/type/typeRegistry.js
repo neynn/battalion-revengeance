@@ -343,11 +343,11 @@ TypeRegistry.prototype.getDisplayName = function(gameContext, typeID, categoryID
 
     if(type) {
         if(type.name) {
-            return language.getSystemTag(type.name);
+            return language.get(type.name);
         }
     }
 
-    return language.getSystemTag("TYPE_REGISTRY_MISSING_NAME");
+    return language.get("TYPE_REGISTRY_MISSING_NAME");
 }
 
 TypeRegistry.prototype.getDisplayDesc = function(gameContext, typeID, categoryID) {
@@ -356,11 +356,11 @@ TypeRegistry.prototype.getDisplayDesc = function(gameContext, typeID, categoryID
 
     if(type) {
         if(type.desc) {
-            return language.getSystemTag(type.desc);
+            return language.get(type.desc);
         }
     }
 
-    return language.getSystemTag("TYPE_REGISTRY_MISSING_DESC");
+    return language.get("TYPE_REGISTRY_MISSING_DESC");
 }
 
 TypeRegistry.prototype.getIconID = function(typeID, categoryID) {

@@ -14,10 +14,10 @@
         "DRAGOON": { "team": "DRAGOON", "type": "Kanye" }
     },
     "entities": {
-        "BOAT_1": { "x": 1, "y": 1, "type": "u_boat", "owner": "PLAYER" },
-        "TANK_1": { "x": 3, "y": 3, "type": "annihilator_tank", "owner": "PLAYER" },
-        "BOAT_2": { "x": 5, "y": 1, "type": "u_boat", "owner": "NPC", "direction": "WEST" },
-        "JAMMER_TRUCK_1": { "x": 11, "y": 5, "type": "jammer_truck", "owner": "DRAGOON", "direction": "WEST" }
+        "BOAT_1": { "x": 1, "y": 1, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "u_boat", "owner": "PLAYER" },
+        "TANK_1": { "x": 3, "y": 3, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "annihilator_tank", "owner": "PLAYER" },
+        "BOAT_2": { "x": 5, "y": 1, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "u_boat", "owner": "NPC", "direction": "WEST" },
+        "JAMMER_TRUCK_1": { "x": 11, "y": 5, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "jammer_truck", "owner": "DRAGOON", "direction": "WEST" }
     },
     "objectives": {
         "SURVIVE_TURN_2": { "type": "SURVIVE", "turn": 2 },
@@ -39,8 +39,19 @@
         { "narrator": "Kanye", "text": "OASIS_DEFEAT_2" }
     ],
     "event": {
-        "TEST": { "type": "DESTROY_TILE", "triggerOnTurn": 3, "next": "TEST_TEXT", "x": 5, "y": 5 },
-        "TEST_TEXT": { "type": "DIALOGUE", "dialogue": [ { "narrator": "Kanye", "text": "OASIS_EVENT_TEST" } ] }
+        "TEST": {
+            "type": "DESTROY_TILE",
+            "triggerOnTurn": 3,
+            "next": "TEST_TEXT",
+            "x": 5,
+            "y": 5
+        },
+        "TEST_TEXT": {
+            "type": "DIALOGUE",
+            "dialogue": [
+                { "narrator": "Kanye", "text": "OASIS_EVENT_TEST" }
+            ]
+        }
     },
     "data": {
         "ground": [2,400],

@@ -47,6 +47,7 @@ export const MapHelper = {
             const currentLanguage = language.getCurrent();
 
             language.registerMap(mapID, mapLanguage);
+            language.selectMap(mapID);
 
             if(currentLanguage) {
                 worldMap.onLanguageUpdate(currentLanguage, mapLanguage);

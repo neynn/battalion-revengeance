@@ -5,5 +5,7 @@
     "OASIS_POSTLOGUE_2": "I won.",
     "OASIS_DEFEAT_1": "This is Kanye West.",
     "OASIS_DEFEAT_2": "I lost.",
-    "OASIS_EVENT_TEST": "They bombed a tile!"
+    "OASIS_EVENT_TEST": "They bombed a tile!",
+    "ENTITY_NAME_1": "A name!",
+    "ENTITY_DESC_1": "A description!"
 }

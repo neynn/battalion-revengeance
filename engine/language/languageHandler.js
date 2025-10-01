@@ -4,12 +4,21 @@ export const LanguageHandler = function() {
     this.languages = new Map();
     this.languageID = null;
     this.currentLanguage = null;
+
     this.mapTranslations = new Map();
+    this.mapID = null;
+    this.currentMap = null;
 
     this.events = new EventEmitter();
     this.events.register(LanguageHandler.EVENT.LANGUAGE_REGISTER);
     this.events.register(LanguageHandler.EVENT.LANGUAGE_CHANGE);
+    this.events.register(LanguageHandler.EVENT.MAP_CHANGE);
 }
+
+LanguageHandler.TAG_TYPE = {
+    SYSTEM: 0,
+    MAP: 1
+};
 
 LanguageHandler.LANGUAGE = {
     ENGLISH: "en-US",
@@ -19,7 +28,8 @@ LanguageHandler.LANGUAGE = {
 
 LanguageHandler.EVENT = {
     LANGUAGE_REGISTER: "LANGUAGE_REGISTER",
-    LANGUAGE_CHANGE: "LANGUAGE_CHANGE"
+    LANGUAGE_CHANGE: "LANGUAGE_CHANGE",
+    MAP_CHANGE: "MAP_CHANGE"
 };
 
 LanguageHandler.IS_STRICT = 1;
@@ -35,6 +45,20 @@ LanguageHandler.prototype.getCurrent = function() {
 LanguageHandler.prototype.exit = function() {
     this.events.muteAll();
     this.mapTranslations.clear();
+    this.mapID = null;
+    this.currentMap = null;
+}
+
+LanguageHandler.prototype.selectMap = function(mapID) {
+    if(this.mapID !== mapID) {
+        const translations = this.mapTranslations.get(mapID);
+
+        if(translations) {
+            this.currentMap = translations;
+            this.mapID = mapID;
+            this.events.emit(LanguageHandler.EVENT.MAP_CHANGE, mapID);
+        }
+    }
 }
 
 LanguageHandler.prototype.selectLanguage = function(languageID) {
@@ -60,24 +84,50 @@ LanguageHandler.prototype.registerLanguage = function(languageID, language) {
     }
 }
 
-LanguageHandler.prototype.registerMap = function(mapID, language) {
-    if(language) {
-        this.mapTranslations.set(mapID, language);
+LanguageHandler.prototype.registerMap = function(mapID, translations) {
+    if(translations) {
+        this.mapTranslations.set(mapID, translations);
+
+        if(this.mapID === mapID) {
+            this.currentMap = translations;
+        }
     }
 }
 
-LanguageHandler.prototype.getMapTag = function(mapID, key) {
-    const translations = this.mapTranslations.get(mapID);
+LanguageHandler.prototype.get = function(key, tagType = LanguageHandler.TAG_TYPE.SYSTEM) {
+    switch(tagType) {
+        case LanguageHandler.TAG_TYPE.SYSTEM: return this.getSystemTag(key);
+        case LanguageHandler.TAG_TYPE.MAP: return this.getMapTag(key);
+        default: key;
+    }
+}
 
-    if(translations) {
-        const text = translations[key];
+LanguageHandler.prototype.getMapTag = function(key) {
+    if(!this.currentMap || typeof key !== "string") {
+        console.warn("Error!", key);
 
-        if(text !== undefined && text.length !== 0) {
-            return text;
+        return key;
+    }
+
+    const text = this.currentMap[key];
+
+    if(text === undefined) {
+        if(LanguageHandler.IS_STRICT) {
+            console.warn("Translation does not exist!", key, this.languageID);
+        }
+
+        return key;
+    }
+
+    if(LanguageHandler.IS_STRICT) {
+        if(text.length === 0) {
+            console.warn("Translation is empty!", key, this.languageID);
+
+            return key;
         }
     }
 
-    return key;
+    return text;
 }   
 
 LanguageHandler.prototype.getSystemTag = function(key) {

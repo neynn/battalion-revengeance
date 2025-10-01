@@ -80,7 +80,9 @@ export const MapSpawner = {
                 y = -1,
                 owner = null,
                 type = null,
-                direction = BattalionEntity.DIRECTION_TYPE.EAST
+                direction = BattalionEntity.DIRECTION_TYPE.EAST,
+                name = null,
+                desc = null
             } = config;
             const ownerID = actorMap[owner];
 
@@ -90,6 +92,7 @@ export const MapSpawner = {
 
                 if(entity) {
                     entity.setCustomID(entityName);
+                    entity.setCustomText(name, desc);
                 }
             }
         }
