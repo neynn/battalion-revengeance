@@ -8,7 +8,7 @@ import { BattalionMap } from "./battalionMap.js";
 const PLAYER_NAME = "PLAYER";
 
 export const MapSpawner = {
-    initMap: function(gameContext, mapData) {
+    initMap: function(gameContext, worldMap, mapData) {
         const { client, teamManager } = gameContext;
         const { musicPlayer } = client;
         const { 
@@ -17,7 +17,8 @@ export const MapSpawner = {
             teams = {},
             actors = {},
             entities = {},
-            objectives = {}
+            objectives = {},
+            localization = []
         } = mapData;
         const actorMap = {};
 
@@ -107,6 +108,7 @@ export const MapSpawner = {
             musicPlayer.play(music);
         }
 
+        worldMap.loadLocalization(localization);
         teamManager.updateStatus(gameContext);
         teamManager.updateOrder(gameContext);
     },
@@ -117,7 +119,7 @@ export const MapSpawner = {
             loadedData = mapData;
             return new BattalionMap(mapID);
         }).then(map => {
-            MapSpawner.initMap(gameContext, loadedData);
+            MapSpawner.initMap(gameContext, map, loadedData);
             return map;
         });
     },
@@ -125,7 +127,7 @@ export const MapSpawner = {
         const worldMap = MapHelper.createEmptyMap(gameContext, mapData, (mapID) => new BattalionMap(mapID));
 
         if(worldMap) {
-            MapSpawner.initMap(gameContext, mapData);
+            MapSpawner.initMap(gameContext, worldMap, mapData);
         }
 
         return worldMap;

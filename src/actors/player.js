@@ -27,10 +27,12 @@ Player.prototype.onClick = function(gameContext) {
         "climate": worldMap.getClimateType(gameContext, tile.x, tile.y),
         "type": worldMap.getTileType(gameContext, tile.x, tile.y),
         "x": tile.x,
-        "y": tile.y
+        "y": tile.y,
+        "name": worldMap.getTileName(gameContext, tile.x, tile.y),
+        "desc": worldMap.getTileDesc(gameContext, tile.x, tile.y)
     }
 
-    this.requestTurnEnd();
+    //this.requestTurnEnd();
     console.log(test);
 }
 

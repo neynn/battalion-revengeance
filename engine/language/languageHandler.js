@@ -113,7 +113,7 @@ LanguageHandler.prototype.getMapTag = function(key) {
 
     if(text === undefined) {
         if(LanguageHandler.IS_STRICT) {
-            console.warn("Translation does not exist!", key, this.languageID);
+            console.warn("Map translation does not exist!", key, this.languageID);
         }
 
         return key;
@@ -121,7 +121,7 @@ LanguageHandler.prototype.getMapTag = function(key) {
 
     if(LanguageHandler.IS_STRICT) {
         if(text.length === 0) {
-            console.warn("Translation is empty!", key, this.languageID);
+            console.warn("Map translation is empty!", key, this.languageID);
 
             return key;
         }
@@ -141,7 +141,7 @@ LanguageHandler.prototype.getSystemTag = function(key) {
 
     if(text === undefined) {
         if(LanguageHandler.IS_STRICT) {
-            console.warn("Translation does not exist!", key, this.languageID);
+            console.warn("System translation does not exist!", key, this.languageID);
         }
 
         return key;
@@ -149,7 +149,7 @@ LanguageHandler.prototype.getSystemTag = function(key) {
 
     if(LanguageHandler.IS_STRICT) {
         if(text.length === 0) {
-            console.warn("Translation is empty!", key, this.languageID);
+            console.warn("System translation is empty!", key, this.languageID);
 
             return key;
         }

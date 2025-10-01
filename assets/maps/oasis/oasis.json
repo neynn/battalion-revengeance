@@ -4,13 +4,13 @@
     "height": 20,
     "flags": [],
     "teams": {
-        "MY_TEAM": { "nation": "SOMERTIN", "allies": ["DRAGOON"], "objectives": ["DEFEAT_BOAT_2", "CAPTURE_0_0", "PROTECT_BOAT_1", "SURVIVE_TURN_2"] },
-        "MY_TEAM2": { "nation": "TRANSKAL", "objectives": ["DEFEAT_BOAT_1"] },
+        "SOMERTIN": { "nation": "SOMERTIN", "allies": ["DRAGOON"], "objectives": ["DEFEAT_BOAT_2", "CAPTURE_0_0", "PROTECT_BOAT_1", "SURVIVE_TURN_2"] },
+        "TRANSKAL": { "nation": "TRANSKAL", "objectives": ["DEFEAT_BOAT_1"] },
         "DRAGOON": { "nation": "ELAM" }
     },
     "actors": {
-        "PLAYER": { "team": "MY_TEAM", "type": "Player" },
-        "NPC": { "team": "MY_TEAM2", "type": "Kanye" },
+        "PLAYER": { "team": "SOMERTIN", "type": "Player" },
+        "NPC": { "team": "TRANSKAL", "type": "Kanye" },
         "DRAGOON": { "team": "DRAGOON", "type": "Kanye" }
     },
     "entities": {
@@ -37,6 +37,10 @@
     "defeat": [
         { "narrator": "Kanye", "text": "OASIS_DEFEAT_1" },
         { "narrator": "Kanye", "text": "OASIS_DEFEAT_2" }
+    ],
+    "localization": [
+        { "x": 0, "y": 0, "name": "TILE_NAME_TEST" },
+        { "x": 1, "y": 0, "desc": "TILE_DESC_TEST" }
     ],
     "event": {
         "TEST": {
