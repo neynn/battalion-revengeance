@@ -30,32 +30,6 @@ BattalionMap.prototype.saveFlags = function() {
     return [];
 }
 
-BattalionMap.prototype.checkTileFlag = function(tileX, tileY, flag) {
-    const tileFlags = this.getTile(BattalionMap.LAYER.FLAG, tileX, tileY);
-
-    if(tileFlags === -1) {
-        return false;
-    }
-
-    return (tileFlags & flag) !== 0;
-}
-
-BattalionMap.prototype.setTileFlag = function(tileX, tileY, flag) {
-    const tileFlags = this.getTile(BattalionMap.LAYER.FLAG, tileX, tileY);
-
-    if(tileFlags !== -1) {
-        this.placeTile(tileFlags | flag, BattalionMap.LAYER.FLAG, tileX, tileY);
-    }
-}
-
-BattalionMap.prototype.removeTileFlag = function(tileX, tileY, flag) {
-    const tileFlags = this.getTile(BattalionMap.LAYER.FLAG, tileX, tileY);
-
-    if(tileFlags !== -1) {
-        this.placeTile(tileFlags & ~flag, BattalionMap.LAYER.FLAG, tileX, tileY);
-    }
-}
-
 BattalionMap.prototype.setClimate = function(local, global) {
     this.climate = local ?? TypeRegistry.CLIMATE_TYPE.NONE;
     this.globalClimate = global ?? TypeRegistry.CLIMATE_TYPE.NONE;
@@ -68,7 +42,7 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
 
     if(!this.isTileOutOfBounds(tileX, tileY)) {
         const { tileManager } = gameContext;
-        const layers = [BattalionMap.LAYER.DECORATION, BattalionMap.LAYER.GROUND];
+        const layers = [BattalionMap.LAYER.CLOUD, BattalionMap.LAYER.DECORATION, BattalionMap.LAYER.GROUND];
 
         for(const layerID of layers) {
             const typeID = this.getTile(layerID, tileX, tileY);
@@ -100,7 +74,7 @@ BattalionMap.prototype.getTerrainTags = function(gameContext, tileX, tileY) {
     }
 
     const { tileManager } = gameContext;
-    const layers = [BattalionMap.LAYER.GROUND, BattalionMap.LAYER.DECORATION];
+    const layers = [BattalionMap.LAYER.GROUND, BattalionMap.LAYER.DECORATION, BattalionMap.LAYER.CLOUD];
 
     for(const layerID of layers) {
         const typeID = this.getTile(layerID, tileX, tileY);
@@ -125,7 +99,7 @@ BattalionMap.prototype.getTileType = function(gameContext, tileX, tileY) {
     }
 
     const { tileManager } = gameContext;
-    const layers = [BattalionMap.LAYER.DECORATION, BattalionMap.LAYER.GROUND];
+    const layers = [BattalionMap.LAYER.CLOUD, BattalionMap.LAYER.DECORATION, BattalionMap.LAYER.GROUND];
 
     for(const layerID of layers) {
         const typeID = this.getTile(layerID, tileX, tileY);

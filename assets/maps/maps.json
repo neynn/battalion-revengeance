@@ -5,5 +5,12 @@
         "language": {
             "en-US": "oasis_en.json"
         }
+    },
+    "presus": {
+        "directory": ["assets", "maps", "presus"],
+        "source": "presus.json",
+        "language": {
+            "en-US": "presus_en.json"
+        }
     }
 }
