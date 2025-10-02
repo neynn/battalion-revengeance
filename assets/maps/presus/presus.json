@@ -65,7 +65,6 @@
             "triggers": [
                 {
                     "type": "SPAWN_ENTITY",
-                    "id": "TEST_ENTITY",
                     "setup": { "x": 2, "y": 1, "type": "stealth_tank", "owner": "PLAYER" }
                 }
             ]
