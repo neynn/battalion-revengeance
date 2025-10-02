@@ -1,12 +1,17 @@
 import { EntitySpawner } from "../entity/entitySpawner.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
-export const Event = function(id, turn, round, next, triggers) {
+export const Event = function(id, next, triggers) {
     this.id = id;
-    this.turn = turn;
-    this.round = round;
+    this.turn = -1;
+    this.round = -1;
     this.next = next;
     this.triggers = triggers;
+}
+
+Event.prototype.setTriggerTime = function(turn = 1, round = 1) {
+    this.turn = turn;
+    this.round = round;
 }
 
 Event.prototype.trigger = function(gameContext) {

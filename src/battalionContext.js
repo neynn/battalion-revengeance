@@ -70,6 +70,7 @@ BattalionContext.prototype.init = function(resources) {
 
 BattalionContext.prototype.onExit = function() {
     this.teamManager.exit();
+    this.portraitHandler.exit();
     this.eventHandler.exit();
     this.dialogueHandler.exit();
 }

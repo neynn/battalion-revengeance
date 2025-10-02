@@ -11,13 +11,15 @@ EventHandler.prototype.exit = function() {
 EventHandler.prototype.loadEvents = function(events) {
     for(const eventName in events) {
         const { 
-            turn = -1,
-            round = -1,
+            turn,
+            round,
             next = null,
             triggers = []
         } = events[eventName];
         const nextEvent = events[next] !== undefined ? eventName : null;
-        const event = new Event(eventName, turn, nextEvent, triggers);
+        const event = new Event(eventName, nextEvent, triggers);
+
+        event.setTriggerTime(turn, round);
 
         this.events.push(event);
     }
