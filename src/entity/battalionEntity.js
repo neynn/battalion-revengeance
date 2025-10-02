@@ -6,6 +6,15 @@ import { TypeRegistry } from "../type/typeRegistry.js";
 export const BattalionEntity = function(id, sprite) {
     Entity.call(this, id, "");
 
+    this.hp = 1;
+    this.maxHP = 1;
+    this.damage = 0;
+    this.range = 0;
+    this.speed = 0;
+    this.morale = 0;
+    this.weaponType = TypeRegistry.WEAPON_TYPE.NONE;
+    this.armorType = TypeRegistry.ARMOR_TYPE.NONE;
+    this.movementType = TypeRegistry.MOVEMENT_TYPE.STATIONARY;
     this.customName = null;
     this.customDesc = null;
     this.customID = null;
@@ -137,7 +146,7 @@ BattalionEntity.prototype.loadTraits = function() {
 }
 
 BattalionEntity.prototype.destroy = function() {
-    this.setFlag(Entity.FLAG.DESTROY);
+    this.isMarkedForDestroy = true;
     this.sprite.destroy();
 }
 

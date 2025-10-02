@@ -4,17 +4,17 @@ export const Entity = function(id, DEBUG_NAME = "") {
     this.config = null;
     this.components = new Map();
     this.activeComponents = [];
-    this.flags = Entity.FLAG.NONE;
+    this.isMarkedForDestroy = false;
+    this.flags = 0;
 }
-
-Entity.FLAG = {
-    NONE: 0,
-    DESTROY: 1 << 0
-};
 
 Entity.DEBUG = {
     LOG_COMPONENT: 0
 };
+
+Entity.prototype.clearFlags = function() {
+    this.flags = 0;
+}
 
 Entity.prototype.hasFlag = function(flag) {
     return (this.flags & flag) !== 0;

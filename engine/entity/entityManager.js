@@ -78,7 +78,7 @@ EntityManager.prototype.update = function(gameContext) {
     for(let i = this.entities.length - 1; i >= 0; i--) {
         const entity = this.entities[i];
 
-        if(entity.hasFlag(Entity.FLAG.DESTROY)) {
+        if(entity.isMarkedForDestroy) {
             this.destroyEntity(i);
         } else {
             entity.update(gameContext);

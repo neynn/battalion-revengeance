@@ -1,6 +1,5 @@
 import { MapHelper } from "../../engine/map/mapHelper.js";
 import { ActorSpawner } from "../actors/actorSpawner.js";
-import { BattalionEntity } from "../entity/battalionEntity.js";
 import { EntitySpawner } from "../entity/entitySpawner.js";
 import { TeamSpawner } from "../team/teamSpawner.js";
 import { BattalionMap } from "./battalionMap.js";
@@ -21,7 +20,6 @@ export const MapSpawner = {
             events = {},
             localization = []
         } = mapData;
-        const actorMap = {};
 
         let playerCreated = false;
 
@@ -58,45 +56,20 @@ export const MapSpawner = {
                 const actor = ActorSpawner.createPlayer(gameContext, config);
 
                 if(actor) {
-                    const actorID = actor.getID();
-
-                    actorMap[actorName] = actorID;
-
+                    actor.setCustomID(actorName);
                     playerCreated = true;
                 }
             } else {
                 const actor = ActorSpawner.createActor(gameContext, config);
 
                 if(actor) {
-                    const actorID = actor.getID();
-
-                    actorMap[actorName] = actorID;
+                    actor.setCustomID(actorName);
                 }
             }
         }
 
         for(const entityName in entities) {
-            const config = entities[entityName];
-            const { 
-                x = -1,
-                y = -1,
-                owner = null,
-                type = null,
-                direction = BattalionEntity.DIRECTION_TYPE.EAST,
-                name = null,
-                desc = null
-            } = config;
-            const ownerID = actorMap[owner];
-
-            if(ownerID !== undefined) {
-                const spawnConfig = EntitySpawner.createEntityConfig(type, x, y, direction);
-                const entity = EntitySpawner.spawnEntity(gameContext, spawnConfig, ownerID);
-
-                if(entity) {
-                    entity.setCustomID(entityName);
-                    entity.setCustomText(name, desc);
-                }
-            }
+            EntitySpawner.loadEntity(gameContext, entities[entityName], entityName);
         }
 
         for(const objectiveName in objectives) {

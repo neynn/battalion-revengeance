@@ -6,10 +6,15 @@ export const BattalionActor = function(id) {
     this.entities = [];
     this.teamID = null;
     this.portrait = null;
+    this.customID = null;
 }
 
 BattalionActor.prototype = Object.create(Actor.prototype);
 BattalionActor.prototype.constructor = BattalionActor;
+
+BattalionActor.prototype.setCustomID = function(id) {
+    this.customID = id;
+}
 
 BattalionActor.prototype.drawPortrait = function(context, drawX, drawY) {
     if(this.portrait && this.portrait.bitmap) {

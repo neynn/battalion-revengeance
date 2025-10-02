@@ -2,15 +2,75 @@
     "music": null,
     "width": 10,
     "height": 10,
-    "teams": {},
-    "actors": {},
-    "entities": {},
-    "objectives": {},
-    "prelogue": [],
-    "postlogue": [],
-    "defeat": [],
-    "localization": [],
-    "events": {},
+    "teams": {
+        "SOMERTIN": { "nation": "SOMERTIN", "allies": ["DRAGOON"], "objectives": ["DEFEAT_BOAT_2", "CAPTURE_0_0", "PROTECT_BOAT_1", "SURVIVE_TURN_2"] },
+        "TRANSKAL": { "nation": "TRANSKAL", "objectives": ["DEFEAT_BOAT_1"] },
+        "DRAGOON": { "nation": "ELAM" }
+    },
+    "actors": {
+        "PLAYER": { "team": "SOMERTIN", "type": "Player" },
+        "NPC": { "team": "TRANSKAL", "type": "Kanye" },
+        "DRAGOON": { "team": "DRAGOON", "type": "Kanye" }
+    },
+    "entities": {
+        "BOAT_1": { "x": 1, "y": 1, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "u_boat", "owner": "PLAYER" },
+        "TANK_1": { "x": 3, "y": 3, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "annihilator_tank", "owner": "PLAYER" },
+        "BOAT_2": { "x": 5, "y": 1, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "u_boat", "owner": "NPC", "direction": "WEST" },
+        "JAMMER_TRUCK_1": { "x": 9, "y": 0, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "jammer_truck", "owner": "DRAGOON", "direction": "WEST" }
+    },
+    "objectives": {
+        "SURVIVE_TURN_2": { "type": "SURVIVE", "turn": 2 },
+        "PROTECT_BOAT_1": { "type": "PROTECT", "target": "BOAT_1" },
+        "DEFEAT_BOAT_1": { "type": "DEFEAT", "target": "BOAT_1" },
+        "DEFEAT_BOAT_2": { "type": "DEFEAT", "target": "BOAT_2" },
+        "CAPTURE_0_0": { "type": "CAPTURE", "x": 0, "y": 0 }
+    },
+    "prelogue": [
+        { "narrator": "Kanye", "text": "OASIS_PRELOGUE_1" },
+        { "narrator": "Kanye", "text": "OASIS_PRELOGUE_2" }
+    ],
+    "postlogue": [
+        { "narrator": "Kanye", "text": "OASIS_POSTLOGUE_1" },
+        { "narrator": "Kanye", "text": "OASIS_POSTLOGUE_2" }
+    ],
+    "defeat": [
+        { "narrator": "Kanye", "text": "OASIS_DEFEAT_1" },
+        { "narrator": "Kanye", "text": "OASIS_DEFEAT_2" }
+    ],
+    "localization": [
+        { "x": 0, "y": 0, "name": "TILE_NAME_TEST" },
+        { "x": 1, "y": 0, "desc": "TILE_DESC_TEST" }
+    ],
+    "events": {
+        "DESTROY_BRIDGE": {
+            "globalTurn": 3,
+            "next": "DESTROY_BRIDGE_DIALOGUE",
+            "triggers": [
+                { "type": "EXPLODE_TILE", "layer": "cloud", "x": 2, "y": 2 },
+                { "type": "EXPLODE_TILE", "layer": "cloud", "x": 3, "y": 7 }
+            ]
+        },
+        "DESTROY_BRIDGE_DIALOGUE": { 
+            "triggers": [
+                {
+                    "type": "DIALOGUE",
+                    "dialogue": [
+                        { "narrator": "Kanye", "text": "OASIS_EVENT_TEXT" },
+                        { "narrator": "Kanye", "text": "OASIS_EVENT_TEXT" }
+                    ]
+                }
+            ]
+        },
+        "SPAWN_RECRUITS": {
+            "triggers": [
+                {
+                    "type": "SPAWN_ENTITY",
+                    "id": "TEST_ENTITY",
+                    "setup": { "x": 2, "y": 1, "type": "stealth_tank", "owner": "PLAYER" }
+                }
+            ]
+        }
+    },
     "flags": [],
     "data": {
         "flag": [0,100],

@@ -124,6 +124,12 @@ export const TypeRegistry = function() {
     this.loadCategory(SCHEMA_TYPES, TypeRegistry.CATEGORY.SCHEMA);
 }
 
+TypeRegistry.EvENT_TYPE = {
+    DIALOGUE: "DIALOGUE",
+    EXPLODE_TILE: "EXPLODE_TILE",
+    SPAWN_ENTITY: "SPAWN_ENTITY"
+};
+
 TypeRegistry.CATEGORY = {
     TRAIT: "TRAIT",
     MOVEMENT: "MOVEMENT",

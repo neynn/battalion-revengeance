@@ -1,4 +1,5 @@
 import { getRandomElement } from "../../engine/math/math.js";
+import { TeamSpawner } from "../team/teamSpawner.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { BattalionEntity } from "./battalionEntity.js";
 import { BattalionSprite } from "./battalionSprite.js";
@@ -12,7 +13,7 @@ const getRandomEntityType = function(gameContext) {
 }
 
 export const EntitySpawner = {
-    createEntityConfig: function(type, tileX, tileY, direction) {
+    createSpawnConfig: function(type, tileX, tileY, direction) {
         return {
             "x": tileX,
             "y": tileY,
@@ -129,11 +130,32 @@ export const EntitySpawner = {
 
         return null;
     },
+    loadEntity: function(gameContext, config, customID = null) {
+        const { 
+            x = -1,
+            y = -1,
+            owner = null,
+            type = null,
+            direction = BattalionEntity.DIRECTION_TYPE.EAST,
+            name = null,
+            desc = null
+        } = config;
+        const ownerID = TeamSpawner.getActorID(gameContext, owner);
+        const spawnConfig = EntitySpawner.createSpawnConfig(type, x, y, direction);
+        const entity = EntitySpawner.spawnEntity(gameContext, spawnConfig, ownerID);
+
+        if(entity) {
+            entity.setCustomText(name, desc);
+            entity.setCustomID(customID);
+        }
+
+        return entity;
+    },
     debugEntities: function(gameContext, ownerID) {
         for(let i = 0; i < 1; i++) {
             for(let j = 0; j < 1; j++) {
                 const entityType = getRandomEntityType(gameContext);
-                const config = EntitySpawner.createEntityConfig(entityType, j, i);
+                const config = EntitySpawner.createSpawnConfig(entityType, j, i);
                 const entity = EntitySpawner.spawnEntity(gameContext, config, ownerID);
 
                 console.log(config, entity);
