@@ -1,21 +1,25 @@
 import { EntitySpawner } from "../entity/entitySpawner.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
-export const Event = function(id, turn, next, triggers) {
+export const Event = function(id, turn, round, next, triggers) {
     this.id = id;
     this.turn = turn;
+    this.round = round;
     this.next = next;
     this.triggers = triggers;
 }
 
 Event.prototype.trigger = function(gameContext) {
+    const { dialogueHandler } = gameContext;
+
     for(let i = 0; i < this.triggers.length; i++) {
         const { type } = this.trigger[i];
 
         switch(type) {
             case TypeRegistry.EvENT_TYPE.DIALOGUE: {
-                const { dialogue, targer } = this.trigger[i];
-                //Play dialogue if the target if the clients actors.
+                const { dialogue, target } = this.trigger[i];
+
+                dialogueHandler.playDialogue(gameContext, dialogue);
                 break;
             }
             case TypeRegistry.EvENT_TYPE.EXPLODE_TILE: {

@@ -1,7 +1,9 @@
 import { EntityManager } from "../engine/entity/entityManager.js";
 import { GameContext } from "../engine/gameContext.js";
 import { LanguageHandler } from "../engine/language/languageHandler.js";
+import { TurnManager } from "../engine/turn/turnManager.js";
 import { PortraitHandler } from "./actors/portraitHandler.js";
+import { DialogueHandler } from "./dialogue/dialogueHandler.js";
 import { EventHandler } from "./event/eventHandler.js";
 import { MainMenuState } from "./states/mainMenu.js";
 import { MapEditorState } from "./states/mapEditor.js";
@@ -17,11 +19,18 @@ export const BattalionContext = function() {
     this.teamManager = new TeamManager();
     this.portraitHandler = new PortraitHandler();
     this.eventHandler = new EventHandler();
-    //Entities need to be removed from the actors as the last step.
-    //This ensures that actors can iterate over their entities during updates.
-    //E.g. a removal during onTurnStart will cause a skip!
+    this.dialogueHandler = new DialogueHandler();
+
     this.world.entityManager.events.on(EntityManager.EVENT.ENTITY_DESTROY, (id) => {
         this.world.turnManager.forAllActors(actor => actor.removeEntity(id));
+    }, { permanent: true });
+
+    this.world.turnManager.events.on(TurnManager.EVENT.NEXT_TURN, (turn) => {
+        this.eventHandler.onTurn(this, turn);
+    }, { permanent: true} );
+
+    this.world.turnManager.events.on(TurnManager.EVENT.NEXT_ROUND, (round) => {
+        this.eventHandler.onRound(this, round);
     }, { permanent: true });
 }
 
@@ -62,4 +71,5 @@ BattalionContext.prototype.init = function(resources) {
 BattalionContext.prototype.onExit = function() {
     this.teamManager.exit();
     this.eventHandler.exit();
+    this.dialogueHandler.exit();
 }

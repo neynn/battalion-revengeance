@@ -3,66 +3,15 @@
     "width": 20,
     "height": 20,
     "flags": [],
-    "teams": {
-        "SOMERTIN": { "nation": "SOMERTIN", "allies": ["DRAGOON"], "objectives": ["DEFEAT_BOAT_2", "CAPTURE_0_0", "PROTECT_BOAT_1", "SURVIVE_TURN_2"] },
-        "TRANSKAL": { "nation": "TRANSKAL", "objectives": ["DEFEAT_BOAT_1"] },
-        "DRAGOON": { "nation": "ELAM" }
-    },
-    "actors": {
-        "PLAYER": { "team": "SOMERTIN", "type": "Player" },
-        "NPC": { "team": "TRANSKAL", "type": "Kanye" },
-        "DRAGOON": { "team": "DRAGOON", "type": "Kanye" }
-    },
-    "entities": {
-        "BOAT_1": { "x": 1, "y": 1, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "u_boat", "owner": "PLAYER" },
-        "TANK_1": { "x": 3, "y": 3, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "annihilator_tank", "owner": "PLAYER" },
-        "BOAT_2": { "x": 5, "y": 1, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "u_boat", "owner": "NPC", "direction": "WEST" },
-        "JAMMER_TRUCK_1": { "x": 11, "y": 5, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "jammer_truck", "owner": "DRAGOON", "direction": "WEST" }
-    },
-    "objectives": {
-        "SURVIVE_TURN_2": { "type": "SURVIVE", "turn": 2 },
-        "PROTECT_BOAT_1": { "type": "PROTECT", "target": "BOAT_1" },
-        "DEFEAT_BOAT_1": { "type": "DEFEAT", "target": "BOAT_1" },
-        "DEFEAT_BOAT_2": { "type": "DEFEAT", "target": "BOAT_2" },
-        "CAPTURE_0_0": { "type": "CAPTURE", "x": 0, "y": 0 }
-    },
-    "prelogue": [
-        { "narrator": "Kanye", "text": "OASIS_PRELOGUE_1" },
-        { "narrator": "Kanye", "text": "OASIS_PRELOGUE_2" }
-    ],
-    "postlogue": [
-        { "narrator": "Kanye", "text": "OASIS_POSTLOGUE_1" },
-        { "narrator": "Kanye", "text": "OASIS_POSTLOGUE_2" }
-    ],
-    "defeat": [
-        { "narrator": "Kanye", "text": "OASIS_DEFEAT_1" },
-        { "narrator": "Kanye", "text": "OASIS_DEFEAT_2" }
-    ],
-    "localization": [
-        { "x": 0, "y": 0, "name": "TILE_NAME_TEST" },
-        { "x": 1, "y": 0, "desc": "TILE_DESC_TEST" }
-    ],
-    "events": {
-        "DESTROY_BRIDGE": {
-            "globalTurn": 3,
-            "next": "DESTROY_BRIDGE_DIALOGUE",
-            "triggers": [
-                { "type": "REMOVE_TILE", "x": 2, "y": 2 },
-                { "type": "REMOVE_TILE", "x": 3, "y": 7 }
-            ]
-        },
-        "DESTROY_BRIDGE_DIALOGUE": { 
-            "triggers": [
-                {
-                    "type": "DIALOGUE",
-                    "dialogue": [
-                        { "narrator": "Kanye", "text": "OASIS_EVENT_TEXT" },
-                        { "narrator": "Kanye", "text": "OASIS_EVENT_TEXT" }
-                    ]
-                }
-            ]
-        }
-    },
+    "teams": {},
+    "actors": {},
+    "entities": {},
+    "objectives": { },
+    "prelogue": [],
+    "postlogue": [],
+    "defeat": [],
+    "localization": [],
+    "events": {},
     "data": {
         "ground": [2,400],
         "decoration": [83,1,31,2,89,1,31,6,88,1,31,3,81,1,31,2,89,1,31,3,84,1,31,5,84,1,31,4,88,1,31,5,82,1,31,3,44,1,48,8,32,1,31,5,90,1,31,1,92,1,31,1,44,1,26,1,0,8,52,1,31,4,88,1,31,4,56,1,0,9,21,1,32,1,82,1,31,4,81,1,31,2,56,1,0,10,21,1,32,1,31,6,44,1,71,1,0,11,21,1,48,1,32,1,31,4,56,1,0,14,21,1,32,1,31,3,26,1,0,15,52,1,31,3,0,16,69,1,32,1,31,2,0,17,21,1,32,1,31,1,0,18,52,1,31,1,0,18,52,1,31,1,0,18,52,1,31,1,0,18,21,1,32,1,0,19,52,1,0,19,52,1,0,17,24,1,60,1,36,1,0,11,24,1,60,5,36,1,92,1,89,1,0,11,52,1,31,4,92,1,89,2,91,1],

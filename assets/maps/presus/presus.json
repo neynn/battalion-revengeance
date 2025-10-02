@@ -43,7 +43,7 @@
     ],
     "events": {
         "DESTROY_BRIDGE": {
-            "globalTurn": 3,
+            "turn": 3,
             "next": "DESTROY_BRIDGE_DIALOGUE",
             "triggers": [
                 { "type": "EXPLODE_TILE", "layer": "cloud", "x": 2, "y": 2 },

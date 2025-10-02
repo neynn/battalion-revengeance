@@ -26,36 +26,12 @@ export const GameContext = function() {
     this.states = new StateMachine(this);
     this.transform2D = new Transform2D();
     this.timer = new Timer();
+    this.timer.input = () => this.input();
+    this.timer.update = () => this.update();
+    this.timer.render = () => this.render();
 
     this.isResizeQueued = false;
     this.timeUntilResize = 0;
-
-    this.timer.input = () => {
-        this.client.update();
-    }
-
-    this.timer.update = () => {
-        this.states.update(this);
-        this.world.update(this);
-    }
-
-    this.timer.render = () => {
-        if(this.isResizeQueued) {
-            this.timeUntilResize += this.timer.deltaTime;
-
-            if(this.timeUntilResize >= GameContext.RESIZE_BUFFER_TIME) {
-                this.isResizeQueued = false;
-                this.timeUntilResize = 0;
-                this.renderer.onWindowResize(window.innerWidth, window.innerHeight);
-                this.uiManager.onWindowResize(window.innerWidth, window.innerHeight);
-            }
-        }
-
-        this.spriteManager.update(this);
-        this.tileManager.update(this);
-        this.uiManager.update(this);
-        this.renderer.update(this);
-    }
 
     this.client.cursor.events.on(Cursor.EVENT.BUTTON_CLICK, (buttonID, cursorX, cursorY) => {
         if(buttonID === Cursor.BUTTON.LEFT) {
@@ -83,6 +59,33 @@ export const GameContext = function() {
 }
 
 GameContext.RESIZE_BUFFER_TIME = 0.2;
+
+GameContext.prototype.input = function() {
+    this.client.update(this);
+}
+
+GameContext.prototype.update = function() {
+    this.states.update(this);
+    this.world.update(this);
+}
+
+GameContext.prototype.render = function() {
+    if(this.isResizeQueued) {
+        this.timeUntilResize += this.timer.deltaTime;
+
+        if(this.timeUntilResize >= GameContext.RESIZE_BUFFER_TIME) {
+            this.isResizeQueued = false;
+            this.timeUntilResize = 0;
+            this.renderer.onWindowResize(window.innerWidth, window.innerHeight);
+            this.uiManager.onWindowResize(window.innerWidth, window.innerHeight);
+        }
+    }
+
+    this.spriteManager.update(this);
+    this.tileManager.update(this);
+    this.uiManager.update(this);
+    this.renderer.update(this);
+}
 
 GameContext.prototype.queueResize = function() {
     if(!this.isResizeQueued) {
