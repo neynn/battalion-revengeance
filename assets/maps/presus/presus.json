@@ -26,16 +26,16 @@
         "CAPTURE_0_0": { "type": "CAPTURE", "x": 0, "y": 0 }
     },
     "prelogue": [
-        { "narrator": "Kanye", "text": "OASIS_PRELOGUE_1" },
-        { "narrator": "Kanye", "text": "OASIS_PRELOGUE_2" }
+        { "narrator": "Kanye", "text": "PRESUS_PRELOGUE_1" },
+        { "narrator": "Kanye", "text": "PRESUS_PRELOGUE_2" }
     ],
     "postlogue": [
-        { "narrator": "Kanye", "text": "OASIS_POSTLOGUE_1" },
-        { "narrator": "Kanye", "text": "OASIS_POSTLOGUE_2" }
+        { "narrator": "Kanye", "text": "PRESUS_POSTLOGUE_1" },
+        { "narrator": "Kanye", "text": "PRESUS_POSTLOGUE_2" }
     ],
     "defeat": [
-        { "narrator": "Kanye", "text": "OASIS_DEFEAT_1" },
-        { "narrator": "Kanye", "text": "OASIS_DEFEAT_2" }
+        { "narrator": "Kanye", "text": "PRESUS_DEFEAT_1" },
+        { "narrator": "Kanye", "text": "PRESUS_DEFEAT_2" }
     ],
     "localization": [
         { "x": 0, "y": 0, "name": "TILE_NAME_TEST" },
@@ -55,8 +55,8 @@
                 {
                     "type": "DIALOGUE",
                     "dialogue": [
-                        { "narrator": "Kanye", "text": "OASIS_EVENT_TEXT" },
-                        { "narrator": "Kanye", "text": "OASIS_EVENT_TEXT" }
+                        { "narrator": "Kanye", "text": "PRESUS_EVENT_TEXT" },
+                        { "narrator": "Kanye", "text": "PRESUS_EVENT_TEXT" }
                     ]
                 }
             ]

@@ -1,5 +1,6 @@
 import { MapHelper } from "../../engine/map/mapHelper.js";
 import { ActorSpawner } from "../actors/actorSpawner.js";
+import { DialogueHandler } from "../dialogue/dialogueHandler.js";
 import { EntitySpawner } from "../entity/entitySpawner.js";
 import { TeamSpawner } from "../team/teamSpawner.js";
 import { BattalionMap } from "./battalionMap.js";
@@ -92,6 +93,7 @@ export const MapSpawner = {
         eventHandler.loadEvents(events);
         teamManager.updateStatus(gameContext);
         teamManager.updateOrder(gameContext);
+        dialogueHandler.play(gameContext, DialogueHandler.TYPE.PRELOGUE);
     },
     createMapByID: function(gameContext, typeID) {
         let loadedData = null;

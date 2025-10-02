@@ -6,10 +6,13 @@ export const DialogueHandler = function() {
     this.defeat = [];
     this.state = DialogueHandler.STATE.ENABLED;
     this.skipUnveiling = false;
+
     this.currentDialogue = [];
     this.currentIndex = -1;
-    this.fullCurrentText = "";
+    this.currentPortrait = null;
+    this.currentName = "";
     this.currentText = "";
+    this.fullCurrentText = "";
 }
 
 DialogueHandler.STATE = {
@@ -63,10 +66,19 @@ DialogueHandler.prototype.play = function(gameContext, type) {
 
 DialogueHandler.prototype.disable = function() {
     this.state = DialogueHandler.STATE.DISABLED;
+    this.reset();
 }
 
 DialogueHandler.prototype.enable = function() {
     this.state = DialogueHandler.STATE.ENABLED;
+}
+
+DialogueHandler.prototype.enableUnveiling = function() {
+    this.skipUnveiling = false;
+}
+
+DialogueHandler.prototype.disableUnveiling = function() {
+    this.skipUnveiling = true;
 }
 
 DialogueHandler.prototype.playDialogue = function(gameContext, dialogue) {
@@ -80,7 +92,7 @@ DialogueHandler.prototype.showNextEntry = function(gameContext) {
     this.currentIndex++;
 
     if(this.currentIndex >= this.currentDialogue.length) {
-        this.currentIndex = -1;
+        this.reset();
         return;
     }
 
@@ -95,16 +107,19 @@ DialogueHandler.prototype.showNextEntry = function(gameContext) {
         const portraitTexture = portraitHandler.getPortraitTexture(portrait);
         const nameTranslation = language.get(name);
 
-        //TODO: Implement rendering for name/portrait.
+        this.currentName = nameTranslation;
+        this.currentPortrait = portraitTexture;
+    } else {
+        this.currentName = "";
+        this.currentPortrait = null;
     }
 
     this.fullCurrentText = translation;
+    this.currentText = this.skipUnveiling ? translation : "";
+}
 
-    if(this.skipUnveiling) {
-        this.showFullText();
-    }
-
-    //TODO: Implement rendering for text.
+DialogueHandler.prototype.showFullText = function() {
+    this.currentText = this.fullCurrentText;
 }
 
 DialogueHandler.prototype.advanceLetter = function() {
@@ -113,15 +128,11 @@ DialogueHandler.prototype.advanceLetter = function() {
     }
 }
 
-DialogueHandler.prototype.showFullText = function() {
-    this.currentText = this.fullCurrentText;
-}
-
-DialogueHandler.prototype.skip = function() {
+DialogueHandler.prototype.reset = function() {
     this.currentDialogue = [];
     this.currentIndex = -1;
-}
-
-DialogueHandler.prototype.update = function(gameContext) {
-
+    this.currentPortrait = null;
+    this.currentName = "";
+    this.currentText = "";
+    this.fullCurrentText = "";
 }
