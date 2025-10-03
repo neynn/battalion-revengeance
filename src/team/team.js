@@ -18,6 +18,7 @@ export const Team = function(id) {
     this.color = null;
     this.status = Team.STATUS.IDLE;
     this.exchangeRate = 1;
+    this.funds = 0;
     this.objectives = [
         new ProtectObjective(),
         new DefeatObjective(),

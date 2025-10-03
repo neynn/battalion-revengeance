@@ -526,5 +526,19 @@
             "rows": 4,
             "columns": 4
         }
+    },
+    "buildings": {
+        "directory": ["assets","sprites","textures"],
+        "source": "buildings.png",
+        "regions": {
+            "AIR_CONTROL": {"x":0,"y":0,"w":0,"h":0},
+            "COMMAND_CENTER": {"x":0,"y":0,"w":0,"h":0},
+            "FACTORY": {"x":0,"y":0,"w":0,"h":0},
+            "GROUND_CONTROL": {"x":0,"y":0,"w":0,"h":0},
+            "OIL_ADVANCED_REFINERY": {"x":0,"y":0,"w":0,"h":0},
+            "OIL_REFINERY": {"x":0,"y":0,"w":0,"h":0},
+            "OIL_RIG": {"x":0,"y":0,"w":0,"h":0},
+            "SEA_CONTROL": {"x":0,"y":0,"w":0,"h":0}
+        }
     }
 }

@@ -12,15 +12,19 @@ TypeCategory.prototype.logMissingType = function(typeID) {
     console.log(`Type ${typeID} is not registered in category ${this.name}!`);
 }
 
+TypeCategory.prototype.logMissingEnum = function(typeID) {
+    console.log(`Enum for ${typeID} is not registered in category ${this.name}!`);
+}
+
 TypeCategory.prototype.setTypes = function(types) {
     for(const typeName in types) {
         const typeID = this.values[typeName];
 
-        if(typeID !== undefined) {
-            this.types[typeName] = types[typeName];
-        } else {
-            this.logMissingType(typeName);
+        if(typeID === undefined) {
+            this.logMissingEnum(typeName);
         }
+
+        this.types[typeName] = types[typeName];
     }
 }
 
