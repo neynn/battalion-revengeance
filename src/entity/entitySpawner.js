@@ -1,8 +1,10 @@
 import { getRandomElement } from "../../engine/math/math.js";
+import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { SchemaSprite } from "../sprite/schemaSprite.js";
 import { TeamSpawner } from "../team/teamSpawner.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { BattalionEntity } from "./battalionEntity.js";
+import { Building } from "./building.js";
 
 const getRandomEntityType = function(gameContext) {
     const { world } = gameContext;
@@ -51,7 +53,7 @@ export const EntitySpawner = {
             const spriteID = entityObject.getSpriteID();
             const spawnPosition = transform2D.transformTileToWorld(x, y);
 
-            entitySprite.init(gameContext, spriteID, colorID, color);
+            entitySprite.init(gameContext, spriteID, colorID, color, SpriteManager.LAYER.MIDDLE);
             entityObject.setTile(x, y);
             entityObject.setPosition(spawnPosition);
             entityObject.loadTraits();
@@ -150,6 +152,28 @@ export const EntitySpawner = {
         }
 
         return entity;
+    },
+    loadBuilding: function(gameContext, worldMap, config, name) {
+        const { typeRegistry, teamManager } = gameContext;
+        const { x = -1, y = -1, type = TypeRegistry.BUILDING_TYPE.AIR_CONTROL, team = null } = config;
+        const teamType = teamManager.getTeam(team);
+
+        if(teamType) {
+            const { colorID, color } = teamType;
+
+            worldMap.createBuilding(x, y, (index) => {
+                const buildingType = typeRegistry.getType(type, TypeRegistry.CATEGORY.BUILDING);
+                const { sprite } = buildingType;
+                const buildingSprite = new SchemaSprite();
+                const building = new Building(name, buildingType, buildingSprite);
+
+                buildingSprite.init(gameContext, sprite, colorID, color, SpriteManager.LAYER.BOTTOM);
+                building.setTile(gameContext, x, y);
+                building.setTeam(team);
+
+                return building;
+            });
+        }
     },
     debugEntities: function(gameContext, ownerID) {
         for(let i = 0; i < 1; i++) {

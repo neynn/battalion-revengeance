@@ -221,6 +221,22 @@ BattalionMap.prototype.createBuilding = function(tileX, tileY, onCreate) {
     return null;
 }
 
+BattalionMap.prototype.createBuilding = function(tileX, tileY, onCreate) {
+    const index = this.getIndex(tileX, tileY);
+
+    if(index !== -1) {
+        if(!this.buildings.has(index)) {
+            const building = onCreate(index);
+
+            this.buildings.set(index, building);
+
+            return building;
+        }
+    }
+
+    return null;
+}
+
 BattalionMap.prototype.getBuilding = function(tileX, tileY) {
     const index = this.getIndex(tileX, tileY);
 

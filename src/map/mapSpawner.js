@@ -19,6 +19,7 @@ export const MapSpawner = {
             entities = {},
             objectives = {},
             events = {},
+            buildings = {},
             localization = [],
             prelogue = [],
             postlogue = [],
@@ -78,6 +79,10 @@ export const MapSpawner = {
 
         for(const objectiveName in objectives) {
             console.log(objectives[objectiveName]);
+        }
+
+        for(const buildingName in buildings) {
+            EntitySpawner.loadBuilding(gameContext, worldMap, buildings[buildingName], buildingName);
         }
 
         if(playlist) {

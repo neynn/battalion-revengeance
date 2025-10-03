@@ -118,7 +118,8 @@ export const TypeRegistry = function() {
         [TypeRegistry.CATEGORY.NATION]: new TypeCategory(TypeRegistry.CATEGORY.NATION, TypeRegistry.NATION_TYPE),
         [TypeRegistry.CATEGORY.POWER]: new TypeCategory(TypeRegistry.CATEGORY.POWER, TypeRegistry.POWER_TYPE),
         [TypeRegistry.CATEGORY.CURRENCY]: new TypeCategory(TypeRegistry.CATEGORY.CURRENCY, TypeRegistry.CURRENCY_TYPE),
-        [TypeRegistry.CATEGORY.FACTION]: new TypeCategory(TypeRegistry.CATEGORY.FACTION, TypeRegistry.FACTION_TYPE)
+        [TypeRegistry.CATEGORY.FACTION]: new TypeCategory(TypeRegistry.CATEGORY.FACTION, TypeRegistry.FACTION_TYPE),
+        [TypeRegistry.CATEGORY.BUILDING]: new TypeCategory(TypeRegistry.CATEGORY.BUILDING, TypeRegistry.BUILDING_TYPE)
     };
 
     this.loadCategory(SCHEMA_TYPES, TypeRegistry.CATEGORY.SCHEMA);
@@ -142,7 +143,19 @@ TypeRegistry.CATEGORY = {
     NATION: "NATION",
     POWER: "POWER",
     CURRENCY: "CURRENCY",
-    FACTION: "FACTION"
+    FACTION: "FACTION",
+    BUILDING: "BUILDING"
+};
+
+TypeRegistry.BUILDING_TYPE = {
+    AIR_CONTROL: "AIR_CONTROL",
+    COMMAND_CENTER: "COMMAND_CENTER",
+    FACTORY: "FACTORY",
+    GROUND_CONTROL: "GROUND_CONTROL",
+    OIL_ADVANCED_REFINERY: "OIL_ADVANCED_REFINERY",
+    OIL_REFINERY: "OIL_REFINERY",
+    OIL_RIG: "OIL_RIG",
+    SEA_CONTROL: "SEA_CONTROL"
 };
 
 TypeRegistry.FACTION_TYPE = {
@@ -164,7 +177,8 @@ TypeRegistry.FACTION_TYPE = {
     BLACK: "BLACK",
     GRAY: "GRAY",
     CREAM: "CREAM",
-    LIME: "LIME"
+    LIME: "LIME",
+    WHITE: "WHITE"
 };
 
 TypeRegistry.OBJECTIVE_TYPE = {

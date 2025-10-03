@@ -1,6 +1,5 @@
 import { Graph } from "../../engine/graphics/graph.js";
 import { SpriteHelper } from "../../engine/sprite/spriteHelper.js";
-import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const SchemaSprite = function() {
@@ -23,14 +22,14 @@ SchemaSprite.prototype.destroy = function() {
     }
 }
 
-SchemaSprite.prototype.init = function(gameContext, spriteID, schemaID, schema) {
+SchemaSprite.prototype.init = function(gameContext, spriteID, schemaID, schema, layerID) {
     if(this.parent === null) {
         let sprite = null;
 
         if(schemaID === TypeRegistry.SCHEMA_TYPE.RED) {
-            sprite = SpriteHelper.createSpriteWithAlias(gameContext, spriteID, schemaID, SpriteManager.LAYER.MIDDLE);
+            sprite = SpriteHelper.createSpriteWithAlias(gameContext, spriteID, schemaID, layerID);
         } else {
-            sprite = SpriteHelper.createColoredSprite(gameContext, spriteID, schemaID, schema, SpriteManager.LAYER.MIDDLE);
+            sprite = SpriteHelper.createColoredSprite(gameContext, spriteID, schemaID, schema, layerID);
         }
 
         this.spriteID = spriteID;

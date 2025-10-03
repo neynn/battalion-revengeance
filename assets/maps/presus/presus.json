@@ -42,7 +42,7 @@
         { "x": 1, "y": 0, "desc": "TILE_DESC_TEST" }
     ],
     "buildings": {
-
+        "TEST_BUILDING": { "x": 2, "y": 1, "team": "DRAGOON" }
     },
     "events": {
         "DESTROY_BRIDGE": {
