@@ -11,6 +11,10 @@ Objective.STATUS = {
     FAILURE: 2
 };
 
+Objective.prototype.hasAnyTarget = function() {
+    return this.targets.length !== 0;
+}
+
 Objective.prototype.allTargetsIncomplete = function() {
     for(let i = 0; i < this.targets.length; i++) {
         if(this.targets[i].status === Target.STATUS.COMPLETE) {

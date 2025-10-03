@@ -97,7 +97,7 @@ TeamManager.prototype.getFirstWinner = function() {
         const team = this.getTeam(this.activeTeams[i]);
         const { status } = team;
 
-        if(status === Team.STATUS.WINNER) {
+        if(status === Team.STATUS.WINNER && team.hasAnyObjective()) {
             return this.activeTeams[i];
         }
     }

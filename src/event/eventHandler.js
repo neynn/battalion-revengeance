@@ -27,20 +27,25 @@ EventHandler.prototype.loadEvents = function(events) {
 
 EventHandler.prototype.onTurn = function(gameContext, globalTurn) {
     for(let i = 0; i < this.events.length; i++) {
-        const { turn } = this.events[i];
-
-        if(turn !== -1 && globalTurn >= turn) {
-            this.events[i].trigger(gameContext);
-        }
+        this.events[i].triggerByTurn(gameContext, globalTurn);
     }
 }
 
 EventHandler.prototype.onRound = function(gameContext, globalRound) {
     for(let i = 0; i < this.events.length; i++) {
-        const { round } = this.events[i];
+        this.events[i].triggerByRound(gameContext, globalRound);
+    }
+}
 
-        if(round !== -1 && globalRound >= round) {
-            this.events[i].trigger(gameContext);
+EventHandler.prototype.getEvent = function(eventID) {
+    for(let i = 0; i < this.events.length; i++) {
+        const event = this.events[i];
+        const { id } = event;
+
+        if(id === eventID) {
+            return event;
         }
     }
+
+    return null;
 }

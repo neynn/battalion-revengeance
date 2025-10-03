@@ -9,31 +9,43 @@ export const Event = function(id, next, triggers) {
     this.triggers = triggers;
 }
 
-Event.prototype.setTriggerTime = function(turn = 1, round = 1) {
+Event.prototype.setTriggerTime = function(turn = -1, round = -1) {
     this.turn = turn;
     this.round = round;
+}
+
+Event.prototype.triggerByTurn = function(gameContext, turn) {
+    if(this.turn !== -1 && turn >= this.turn) {
+        this.trigger(gameContext);
+    }
+}
+
+Event.prototype.triggerByRound = function(gameContext, round) {
+    if(this.round !== -1 && round >= this.round) {
+        this.trigger(gameContext);
+    }
 }
 
 Event.prototype.trigger = function(gameContext) {
     const { dialogueHandler } = gameContext;
 
     for(let i = 0; i < this.triggers.length; i++) {
-        const { type } = this.trigger[i];
+        const { type } = this.triggers[i];
 
         switch(type) {
             case TypeRegistry.EvENT_TYPE.DIALOGUE: {
-                const { dialogue, target } = this.trigger[i];
+                const { dialogue, target } = this.triggers[i];
 
                 dialogueHandler.playDialogue(gameContext, dialogue);
                 break;
             }
             case TypeRegistry.EvENT_TYPE.EXPLODE_TILE: {
-                const { layer, x, y } = this.trigger[i];
+                const { layer, x, y } = this.triggers[i];
                 //Play explode sfx and set tile x y at layer l to 0.
                 break;
             }
             case TypeRegistry.EvENT_TYPE.SPAWN_ENTITY: {
-                const { setup } = this.trigger[i];
+                const { setup } = this.triggers[i];
 
                 EntitySpawner.loadEntity(gameContext, setup, null);
                 break; 

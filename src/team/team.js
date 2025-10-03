@@ -43,6 +43,16 @@ Team.STATUS = {
     LOSER: 2
 };
 
+Team.prototype.hasAnyObjective = function() {
+    for(let i = 0; i < this.objectives.length; i++) {
+        if(this.objectives[i].hasAnyTarget()) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 Team.prototype.loadAsNation = function(gameContext, nationID) {
     const { typeRegistry } = gameContext;
 
