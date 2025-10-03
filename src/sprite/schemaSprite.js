@@ -3,7 +3,7 @@ import { SpriteHelper } from "../../engine/sprite/spriteHelper.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
-export const BattalionSprite = function() {
+export const SchemaSprite = function() {
     Graph.call(this);
 
     this.spriteID = null;
@@ -11,10 +11,10 @@ export const BattalionSprite = function() {
     this.schema = null;
 }
 
-BattalionSprite.prototype = Object.create(Graph.prototype);
-BattalionSprite.prototype.constructor = BattalionSprite;
+SchemaSprite.prototype = Object.create(Graph.prototype);
+SchemaSprite.prototype.constructor = SchemaSprite;
 
-BattalionSprite.prototype.destroy = function() {
+SchemaSprite.prototype.destroy = function() {
     this.spriteID = null;
     this.schemaID = null;
 
@@ -23,7 +23,7 @@ BattalionSprite.prototype.destroy = function() {
     }
 }
 
-BattalionSprite.prototype.init = function(gameContext, spriteID, schemaID, schema) {
+SchemaSprite.prototype.init = function(gameContext, spriteID, schemaID, schema) {
     if(this.parent === null) {
         let sprite = null;
 
@@ -43,7 +43,7 @@ BattalionSprite.prototype.init = function(gameContext, spriteID, schemaID, schem
     }
 }
 
-BattalionSprite.prototype.updateSchema = function(gameContext, schemaID, schema) {
+SchemaSprite.prototype.updateSchema = function(gameContext, schemaID, schema) {
     if(schemaID !== this.schemaID) {
         this.schemaID = schemaID;
         this.schema = schema;
@@ -51,20 +51,20 @@ BattalionSprite.prototype.updateSchema = function(gameContext, schemaID, schema)
     }
 }
 
-BattalionSprite.prototype.updateType = function(gameContext, spriteType) {
+SchemaSprite.prototype.updateType = function(gameContext, spriteType) {
     if(spriteType !== this.spriteID) {
         this.spriteID = spriteType;
         this.updateParent(gameContext);
     }
 }
 
-BattalionSprite.prototype.setPosition = function(positionX, positionY) {
+SchemaSprite.prototype.setPosition = function(positionX, positionY) {
     if(this.parent) {
         this.parent.setPosition(positionX, positionY);
     }
 }
 
-BattalionSprite.prototype.updateParent = function(gameContext) {
+SchemaSprite.prototype.updateParent = function(gameContext) {
     if(this.parent) {
         const { spriteManager } = gameContext;
         const spriteIndex = this.parent.getIndex();

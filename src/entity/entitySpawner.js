@@ -1,8 +1,8 @@
 import { getRandomElement } from "../../engine/math/math.js";
+import { SchemaSprite } from "../sprite/schemaSprite.js";
 import { TeamSpawner } from "../team/teamSpawner.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { BattalionEntity } from "./battalionEntity.js";
-import { BattalionSprite } from "./battalionSprite.js";
 
 const getRandomEntityType = function(gameContext) {
     const { world } = gameContext;
@@ -42,7 +42,7 @@ export const EntitySpawner = {
         const { id, type, x, y, direction } = config;
 
         const entity = entityManager.createEntity((entityID, entityType) => {
-            const entitySprite = new BattalionSprite();
+            const entitySprite = new SchemaSprite();
             const entityObject = new BattalionEntity(entityID, entitySprite);
 
             entityObject.setConfig(entityType);

@@ -41,6 +41,9 @@
         { "x": 0, "y": 0, "name": "TILE_NAME_TEST" },
         { "x": 1, "y": 0, "desc": "TILE_DESC_TEST" }
     ],
+    "buildings": {
+
+    },
     "events": {
         "DESTROY_BRIDGE": {
             "turn": 3,

@@ -1,6 +1,7 @@
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
+import { Building } from "../entity/building.js";
 import { TypeHelper } from "../type/typeHelper.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
@@ -13,6 +14,7 @@ export const BattalionMap = function(id) {
     this.climate = TypeRegistry.CLIMATE_TYPE.NONE;
     this.localization = [];
     this.music = null;
+    this.buildings = new Map();
 }
 
 BattalionMap.LAYER = {
@@ -201,4 +203,34 @@ BattalionMap.prototype.loadLocalization = function(localization) {
             }
         }
     }
+}
+
+BattalionMap.prototype.createBuilding = function(tileX, tileY, onCreate) {
+    const index = this.getIndex(tileX, tileY);
+
+    if(index !== -1) {
+        if(!this.buildings.has(index)) {
+            const building = onCreate(index);
+
+            this.buildings.set(index, building);
+
+            return building;
+        }
+    }
+
+    return null;
+}
+
+BattalionMap.prototype.getBuilding = function(tileX, tileY) {
+    const index = this.getIndex(tileX, tileY);
+
+    if(index !== -1) {
+        const building = this.buildings.get(index);
+
+        if(building) {
+            return building;
+        }
+    }
+
+    return null;
 }
