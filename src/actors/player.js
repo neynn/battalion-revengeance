@@ -1,22 +1,31 @@
 import { ContextHelper } from "../../engine/camera/contextHelper.js";
 import { EntityHelper } from "../../engine/entity/entityHelper.js";
+import { StateMachine } from "../../engine/state/stateMachine.js";
 import { BattalionActor } from "./battalionActor.js";
+import { IdleState } from "./player/idle.js";
+import { SelectState } from "./player/select.js";
 
 export const Player = function(id, config) {
     BattalionActor.call(this, id);
 
     this.config = config;
     this.camera = null;
-    this.selectedEntity = null;
     this.inspectedEntity = null;
 
-    this.selectionState = Player.SELECTION_STATE.NONE;
+    this.states = new StateMachine(this);
+    this.states.addState(Player.STATE.IDLE, new IdleState());
+    this.states.addState(Player.STATE.SELECT, new SelectState());
 }
 
-Player.SELECTION_STATE = {
-    NONE: 0,
-    SELECTED: 1,
-    CONTEXT_MENU: 2
+Player.EVENT = {
+    ENTITY_CLICK: 0,
+    BUILDING_CLICK: 1,
+    TILE_CLICK: 2
+};
+
+Player.STATE = {
+    IDLE: "IDLE",
+    SELECT: "SELECT"
 };
 
 Player.ACTION = {
@@ -40,142 +49,34 @@ Player.prototype.inspectEntity = function(gameContext, entity) {
     console.log("Inspected Entity", entity);
 }
 
-Player.prototype.onOwnEntitySelect = function(gameContext, entity) {
-    if(this.selectedEntity === entity) {
-        switch(this.selectionState) {
-            case Player.SELECTION_STATE.SELECTED: {
-                console.log("Opened context menu");
-                //TODO: give context menu the entity and callbacks.
-                this.selectedEntity = null;
-                this.selectionState = Player.SELECTION_STATE.CONTEXT_MENU;
-                break;
-            }
-            case Player.SELECTION_STATE.CONTEXT_MENU: {
-                //Close only the context menu.
-                this.selectedEntity = null;
-                this.selectionState = Player.SELECTION_STATE.NONE;
-                break;
-            }
-        }
-    } else {
-        switch(this.selectionState) {
-            case Player.SELECTION_STATE.NONE: {
-                this.selectedEntity = entity; //Show tiles.
-                this.selectionState = Player.SELECTION_STATE.SELECTED;
-                break;
-            }
-            case Player.SELECTION_STATE.SELECTED: { //Show tiles.
-                this.selectedEntity = entity;
-                this.selectionState = Player.SELECTION_STATE.SELECTED;
-                break;
-            }
-            case Player.SELECTION_STATE.CONTEXT_MENU: {
-                this.selectedEntity = entity; //Show tiles.
-                this.selectionState = Player.SELECTION_STATE.SELECTED;
-                break;
-            }
-        }
-    }
+Player.prototype.inspectTile = function(gameContext, tileX, tileY) {
+    this.inspectedEntity = null;
 }
 
-Player.prototype.onOtherEnemyEntitySelect = function(gameContext, entity) {
-    switch(this.selectionState) {
-        case Player.SELECTION_STATE.NONE: {
-            //Show the tiles of enemy entity.
-            break;
-        }
-        case Player.SELECTION_STATE.SELECTED: {
-            console.log("Attacked entity");
-            this.selectedEntity = null;
-            this.selectionState = Player.SELECTION_STATE.NONE;
-            break;
-        }
-        case Player.SELECTION_STATE.CONTEXT_MENU: {
-            //Just close the context menu.
-            break;
-        }
-    }   
-}
-
-Player.prototype.onOtherAllyEntitySelect = function(gameContext, entity) {
-    switch(this.selectionState) {
-        case Player.SELECTION_STATE.NONE: {
-            //Show tiles of friendly entity.
-            break;
-        }
-        case Player.SELECTION_STATE.SELECTED: {
-            //Show tiles of friendly entity.
-            this.selectedEntity = null;
-            this.selectionState = Player.SELECTION_STATE.NONE;
-            break;
-        }
-        case Player.SELECTION_STATE.CONTEXT_MENU: {
-            //Close the context menu AND show tiles of friendly entity.
-            break;
-        }
-    }
-}
-
-Player.prototype.onEntityClick = function(gameContext, entity) {
-    const { teamManager } = gameContext;
-    const { teamID } = entity;
-    const entityID = entity.getID();
-
-    if(this.inspectedEntity === entity) {
-        this.inspectedEntity = null;
-        console.log("inspected terrain");
-    } else {
-        this.inspectEntity(gameContext, entity);        
-    }
-
-    //Clear visible tiles.
-
-    if(this.hasEntity(entityID)) {
-        if(entity.isSelectable()) {
-            this.onOwnEntitySelect(gameContext, entity);
-        }
-    } else {
-        if(!teamManager.isAlly(this.teamID, teamID)) {
-            this.onOtherEnemyEntitySelect(gameContext, entity);
-        } else {
-            this.onOtherAllyEntitySelect(gameContext, entity);
-        }
-    }
-}
-
-Player.prototype.onBuildingClick = function(gameContext, building) {
-    console.log(building);
-}
 
 Player.prototype.onClick = function(gameContext, worldMap, tile) {
     const { x, y } = tile;
     const entity = EntityHelper.getTileEntity(gameContext, x, y);
 
     if(entity) {
-        this.onEntityClick(gameContext, entity);
+        if(this.inspectedEntity === entity) {
+            this.inspectTile(gameContext, x, y);
+        } else {
+            this.inspectEntity(gameContext, entity);        
+        }
+
+        this.states.eventEnter(gameContext, Player.EVENT.ENTITY_CLICK, { "entity": entity });
         return;
     }
 
     const building = worldMap.getBuilding(x, y);
 
     if(building) {
-        this.onBuildingClick(gameContext, building);
+        this.states.eventEnter(gameContext, Player.EVENT.BUILDING_CLICK, { "building": building });
         return;
     }
 
-    const test = {
-        "x": x,
-        "y": y,
-        "terrain": worldMap.getTerrainTags(gameContext, x, y),
-        "climate": worldMap.getClimateType(gameContext, x, y),
-        "type": worldMap.getTileType(gameContext, x, y),
-        "name": worldMap.getTileName(gameContext, x, y),
-        "desc": worldMap.getTileDesc(gameContext, x, y),
-        "entity": EntityHelper.getTileEntity(gameContext, x, y)
-    }
-
-    //this.requestTurnEnd();
-    console.log(test);
+    this.states.eventEnter(gameContext, Player.EVENT.TILE_CLICK, { "x": x, "y": y });
 }
 
 Player.prototype.loadKeybinds = function(gameContext) {
@@ -197,6 +98,10 @@ Player.prototype.loadKeybinds = function(gameContext) {
 }
 
 Player.prototype.activeUpdate = function(gameContext, remainingActions) {}
+
+Player.prototype.update = function(gameContext) {
+    this.states.update(gameContext);
+}
 
 Player.prototype.onNextTurn = function(gameContext, turn) {
     console.log("IT IS TURN " + turn);

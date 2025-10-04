@@ -51,6 +51,7 @@ export const ActorSpawner = {
         
 
         player.loadKeybinds(gameContext);
+        player.states.setNextState(gameContext, Player.STATE.IDLE);
 
         return player;
     }
