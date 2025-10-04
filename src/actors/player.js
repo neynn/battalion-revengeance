@@ -8,14 +8,15 @@ export const Player = function(id, config) {
     this.config = config;
     this.camera = null;
     this.selectedEntity = null;
+    this.inspectedEntity = null;
+
     this.selectionState = Player.SELECTION_STATE.NONE;
 }
 
 Player.SELECTION_STATE = {
     NONE: 0,
-    INSPECT: 1,
-    SELECTED: 2,
-    CONTEXT_MENU: 3
+    SELECTED: 1,
+    CONTEXT_MENU: 2
 };
 
 Player.ACTION = {
@@ -29,46 +30,90 @@ Player.prototype.setCamera = function(camera) {
     this.camera = camera;
 }
 
-Player.prototype.closeContextMenu = function() {
-    if(this.selectionState === Player.SELECTION_STATE.CONTEXT_MENU) {
-        this.deselectEntity();
+Player.prototype.inspectEntity = function(gameContext, entity) {
+    this.inspectedEntity = entity;
 
-        console.log("Context menu closed");
-    }
+    const displayName = entity.getDisplayName(gameContext);
+    const displayDesc = entity.getDisplayDesc(gameContext);
+
+    console.log(displayName, displayDesc);
+    console.log("Inspected Entity", entity);
 }
 
-Player.prototype.openContextMenu = function() {
-    if(this.selectedEntity !== null) {
-        if(this.selectionState === Player.SELECTION_STATE.CONTEXT_MENU) {
-            this.closeContextMenu();
-        } else {
-            this.selectionState = Player.SELECTION_STATE.CONTEXT_MENU;
-
-            console.log("Context menu opened");
+Player.prototype.onOwnEntitySelect = function(gameContext, entity) {
+    if(this.selectedEntity === entity) {
+        switch(this.selectionState) {
+            case Player.SELECTION_STATE.SELECTED: {
+                console.log("Opened context menu");
+                //TODO: give context menu the entity and callbacks.
+                this.selectedEntity = null;
+                this.selectionState = Player.SELECTION_STATE.CONTEXT_MENU;
+                break;
+            }
+            case Player.SELECTION_STATE.CONTEXT_MENU: {
+                //Close only the context menu.
+                this.selectedEntity = null;
+                this.selectionState = Player.SELECTION_STATE.NONE;
+                break;
+            }
+        }
+    } else {
+        switch(this.selectionState) {
+            case Player.SELECTION_STATE.NONE: {
+                this.selectedEntity = entity; //Show tiles.
+                this.selectionState = Player.SELECTION_STATE.SELECTED;
+                break;
+            }
+            case Player.SELECTION_STATE.SELECTED: { //Show tiles.
+                this.selectedEntity = entity;
+                this.selectionState = Player.SELECTION_STATE.SELECTED;
+                break;
+            }
+            case Player.SELECTION_STATE.CONTEXT_MENU: {
+                this.selectedEntity = entity; //Show tiles.
+                this.selectionState = Player.SELECTION_STATE.SELECTED;
+                break;
+            }
         }
     }
 }
 
-Player.prototype.inspectEntity = function(gameContext, entity) {
-    this.selectionState = Player.SELECTION_STATE.INSPECT;
-
-    console.log("Inspected Entity", entity);
+Player.prototype.onOtherEnemyEntitySelect = function(gameContext, entity) {
+    switch(this.selectionState) {
+        case Player.SELECTION_STATE.NONE: {
+            //Show the tiles of enemy entity.
+            break;
+        }
+        case Player.SELECTION_STATE.SELECTED: {
+            console.log("Attacked entity");
+            this.selectedEntity = null;
+            this.selectionState = Player.SELECTION_STATE.NONE;
+            break;
+        }
+        case Player.SELECTION_STATE.CONTEXT_MENU: {
+            //Just close the context menu.
+            break;
+        }
+    }   
 }
 
-Player.prototype.selectEntity = function(gameContext, entity) {
-    const entityID = entity.getID();
-
-    this.selectionState = Player.SELECTION_STATE.SELECTED;
-    this.selectedEntity = entityID;
-
-    console.log("Selected Entity", entity);
-}
-
-Player.prototype.deselectEntity = function() {
-    this.selectionState = Player.SELECTION_STATE.NONE;
-    this.selectedEntity = null;
-
-    console.log("Deselected Entity", entity);
+Player.prototype.onOtherAllyEntitySelect = function(gameContext, entity) {
+    switch(this.selectionState) {
+        case Player.SELECTION_STATE.NONE: {
+            //Show tiles of friendly entity.
+            break;
+        }
+        case Player.SELECTION_STATE.SELECTED: {
+            //Show tiles of friendly entity.
+            this.selectedEntity = null;
+            this.selectionState = Player.SELECTION_STATE.NONE;
+            break;
+        }
+        case Player.SELECTION_STATE.CONTEXT_MENU: {
+            //Close the context menu AND show tiles of friendly entity.
+            break;
+        }
+    }
 }
 
 Player.prototype.onEntityClick = function(gameContext, entity) {
@@ -76,27 +121,25 @@ Player.prototype.onEntityClick = function(gameContext, entity) {
     const { teamID } = entity;
     const entityID = entity.getID();
 
+    if(this.inspectedEntity === entity) {
+        this.inspectedEntity = null;
+        console.log("inspected terrain");
+    } else {
+        this.inspectEntity(gameContext, entity);        
+    }
+
+    //Clear visible tiles.
+
     if(this.hasEntity(entityID)) {
-        if(this.selectedEntity === entityID) {
-            this.openContextMenu();
-        } else if(entity.isSelectable()) {
-            this.closeContextMenu();
-            this.selectEntity(gameContext, entity);
+        if(entity.isSelectable()) {
+            this.onOwnEntitySelect(gameContext, entity);
         }
     } else {
         if(!teamManager.isAlly(this.teamID, teamID)) {
-            if(this.selectedEntity !== null) {
-                console.log("Attacked Entity", entity)
-            } else {
-                this.closeContextMenu();
-                this.inspectEntity(gameContext, entity);
-            }
+            this.onOtherEnemyEntitySelect(gameContext, entity);
         } else {
-            this.closeContextMenu();
-            this.inspectEntity(gameContext, entity);
+            this.onOtherAllyEntitySelect(gameContext, entity);
         }
-
-        this.deselectEntity();
     }
 }
 
@@ -112,9 +155,6 @@ Player.prototype.onClick = function(gameContext, worldMap, tile) {
         this.onEntityClick(gameContext, entity);
         return;
     }
-
-    //TODO: When clicking on a building/tile do a move if an entity is selected.
-    this.closeContextMenu();
 
     const building = worldMap.getBuilding(x, y);
 
