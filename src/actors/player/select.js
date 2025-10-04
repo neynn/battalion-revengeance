@@ -13,9 +13,15 @@ SelectState.prototype.constructor = SelectState;
 
 SelectState.prototype.onExit = function(gameContext, stateMachine) {
     this.entity = null;
-    this.inContextMenu = false;
+    this.closeContextMenu(gameContext);
+}
 
-    //Close the context menu, if open.
+SelectState.prototype.closeContextMenu = function(gameContext) {
+    if(!this.inContextMenu) {
+        return;
+    }
+
+    this.inContextMenu = false;
 }
 
 SelectState.prototype.onEnter = function(gameContext, stateMachine, enterData) {
@@ -47,8 +53,10 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
             this.openContextMenu(gameContext, entity);
         }
     } else {
-        if(isControlled) {
+        if(isControlled && entity.isSelectable()) {
             this.selectEntity(gameContext, entity);
+        } else {
+            this.closeContextMenu(gameContext);
         }
     }
 }
