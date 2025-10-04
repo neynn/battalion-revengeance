@@ -1054,5 +1054,53 @@
         "bounds": {"x":0,"y":0,"w":56,"h":56},
         "frameTime": 0.2,
         "autoFrames": {"start": 4,"jump": 4,"repeat": 4}
+    },
+    "air_control": {
+        "texture": "buildings",
+        "bounds": {"x":0,"y":-16,"w":56,"h":72},
+        "frameTime": 1,
+        "frames": ["AIR_CONTROL"]
+    },
+    "command_center": {
+        "texture": "buildings",
+        "bounds": {"x":0,"y":-20,"w":56,"h":76},
+        "frameTime": 1,
+        "frames": ["COMMAND_CENTER"]
+    },
+    "factory": {
+        "texture": "buildings",
+        "bounds": {"x":0,"y":-9,"w":56,"h":65},
+        "frameTime": 1,
+        "frames": ["FACTORY"]
+    },
+    "ground_control": {
+        "texture": "buildings",
+        "bounds": {"x":0,"y":0,"w":56,"h":56},
+        "frameTime": 1,
+        "frames": ["GROUND_CONTROL"]
+    },
+    "oil_advanced_refinery": {
+        "texture": "buildings",
+        "bounds": {"x":0,"y":-12,"w":56,"h":68},
+        "frameTime": 1,
+        "frames": ["OIL_ADVANCED_REFINERY"]
+    },
+    "oil_refinery": {
+        "texture": "buildings",
+        "bounds": {"x":0,"y":-2,"w":56,"h":58},
+        "frameTime": 1,
+        "frames": ["OIL_REFINERY"]
+    },
+    "oil_rig": {
+        "texture": "buildings",
+        "bounds": {"x":0,"y":-10,"w":56,"h":66},
+        "frameTime": 1,
+        "frames": ["OIL_RIG"]
+    },
+    "sea_control": {
+        "texture": "buildings",
+        "bounds": {"x":0,"y":-16,"w":56,"h":72},
+        "frameTime": 1,
+        "frames": ["SEA_CONTROL"]
     }
 }

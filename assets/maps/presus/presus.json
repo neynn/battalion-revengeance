@@ -42,7 +42,14 @@
         { "x": 1, "y": 0, "desc": "TILE_DESC_TEST" }
     ],
     "buildings": {
-        "TEST_BUILDING": { "x": 2, "y": 1, "team": "DRAGOON" }
+        "AIR_CONTROL": { "x": 0, "y": 6, "type": "AIR_CONTROL", "team": "SOMERTIN" },
+        "COMMAND_CENTER": { "x": 1, "y": 6, "type": "COMMAND_CENTER", "team": "SOMERTIN" },
+        "FACTORY": { "x": 2, "y": 6, "type": "FACTORY", "team": "SOMERTIN" },
+        "GROUND_CONTROL": { "x": 3, "y": 6, "type": "GROUND_CONTROL", "team": "SOMERTIN" },
+        "OIL_ADVANCED_REFINERY": { "x": 4, "y": 6, "type": "OIL_ADVANCED_REFINERY", "team": "DRAGOON" },
+        "OIL_REFINERY": { "x": 5, "y": 6, "type": "OIL_REFINERY", "team": "DRAGOON" },
+        "OIL_RIG": { "x": 6, "y": 6, "type": "OIL_RIG", "team": "DRAGOON" },
+        "SEA_CONTROL": { "x": 7, "y": 6, "type": "SEA_CONTROL", "team": "DRAGOON" }
     },
     "events": {
         "DESTROY_BRIDGE": {

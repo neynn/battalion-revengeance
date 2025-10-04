@@ -531,14 +531,14 @@
         "directory": ["assets","sprites","textures"],
         "source": "buildings.png",
         "regions": {
-            "AIR_CONTROL": {"x":0,"y":0,"w":0,"h":0},
-            "COMMAND_CENTER": {"x":0,"y":0,"w":0,"h":0},
-            "FACTORY": {"x":0,"y":0,"w":0,"h":0},
-            "GROUND_CONTROL": {"x":0,"y":0,"w":0,"h":0},
-            "OIL_ADVANCED_REFINERY": {"x":0,"y":0,"w":0,"h":0},
-            "OIL_REFINERY": {"x":0,"y":0,"w":0,"h":0},
-            "OIL_RIG": {"x":0,"y":0,"w":0,"h":0},
-            "SEA_CONTROL": {"x":0,"y":0,"w":0,"h":0}
+            "AIR_CONTROL": {"x":1,"y":1,"w":56,"h":72},
+            "COMMAND_CENTER": {"x":58,"y":1,"w":56,"h":76},
+            "FACTORY": {"x":115,"y":1,"w":56,"h":65},
+            "GROUND_CONTROL": {"x":172,"y":1,"w":56,"h":56},
+            "OIL_ADVANCED_REFINERY": {"x":229,"y":1,"w":56,"h":68},
+            "OIL_REFINERY": {"x":286,"y":1,"w":56,"h":58},
+            "OIL_RIG": {"x":343,"y":1,"w":56,"h":66},
+            "SEA_CONTROL": {"x":400,"y":1,"w":56,"h":72}
         }
     }
 }
