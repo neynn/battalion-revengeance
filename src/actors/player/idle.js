@@ -26,6 +26,10 @@ IdleState.prototype.onTileClick = function(gameContext, stateMachine, tileX, til
 
     console.log(test);
 }
+
+IdleState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly) {
+
+}
 /*
 Player.prototype.onOwnEntitySelect = function(gameContext, entity) {
     if(this.selectedEntity === entity) {

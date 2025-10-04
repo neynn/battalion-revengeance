@@ -174,7 +174,7 @@ Team.prototype.setColor = function(gameContext, colorID) {
 }
 
 Team.prototype.isAlly = function(teamID) {
-    if(this.teamID === teamID) {
+    if(this.id === teamID) {
         return true;
     }
     

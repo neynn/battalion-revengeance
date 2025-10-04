@@ -65,7 +65,11 @@ Player.prototype.onClick = function(gameContext, worldMap, tile) {
             this.inspectEntity(gameContext, entity);        
         }
 
-        this.states.eventEnter(gameContext, Player.EVENT.ENTITY_CLICK, { "entity": entity });
+        const { teamManager } = gameContext;
+        const { teamID } = entity;
+        const isAlly = teamManager.isAlly(this.teamID, teamID);
+
+        this.states.eventEnter(gameContext, Player.EVENT.ENTITY_CLICK, { "entity": entity, "isAlly": isAlly });
         return;
     }
 
