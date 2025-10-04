@@ -195,6 +195,10 @@ Camera2D.prototype.drawSprite = function(display, sprite, realTime, deltaTime) {
     if(isVisible) {
         sprite.update(realTime, deltaTime);
         sprite.draw(display, viewportLeftEdge, viewportTopEdge);
+
+        if(Renderer.DEBUG.SPRITES) {
+            sprite.debug(display, viewportLeftEdge, viewportTopEdge);
+        }
     }
 }
 

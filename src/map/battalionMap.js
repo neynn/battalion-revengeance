@@ -1,7 +1,6 @@
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
-import { Building } from "../entity/building.js";
 import { TypeHelper } from "../type/typeHelper.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
@@ -13,8 +12,8 @@ export const BattalionMap = function(id) {
     this.globalClimate = TypeRegistry.CLIMATE_TYPE.NONE;
     this.climate = TypeRegistry.CLIMATE_TYPE.NONE;
     this.localization = [];
+    this.buildings = [];
     this.music = null;
-    this.buildings = new Map();
 }
 
 BattalionMap.LAYER = {
@@ -185,7 +184,7 @@ BattalionMap.prototype.loadLocalization = function(localization) {
     const indices = new Set();
 
     for(let i = 0; i < localization.length; i++) {
-        const { x = -1, y = -1, name = null, desc = null} = localization[i];
+        const { x = -1, y = -1, name = null, desc = null } = localization[i];
         const index = this.getIndex(x, y);
 
         if(index !== -1) {
@@ -209,26 +208,10 @@ BattalionMap.prototype.createBuilding = function(tileX, tileY, onCreate) {
     const index = this.getIndex(tileX, tileY);
 
     if(index !== -1) {
-        if(!this.buildings.has(index)) {
-            const building = onCreate(index);
+        if(!this.getBuilding(tileX, tileY)) {
+            const building = onCreate();
 
-            this.buildings.set(index, building);
-
-            return building;
-        }
-    }
-
-    return null;
-}
-
-BattalionMap.prototype.createBuilding = function(tileX, tileY, onCreate) {
-    const index = this.getIndex(tileX, tileY);
-
-    if(index !== -1) {
-        if(!this.buildings.has(index)) {
-            const building = onCreate(index);
-
-            this.buildings.set(index, building);
+            this.buildings.push(building);
 
             return building;
         }
@@ -237,14 +220,17 @@ BattalionMap.prototype.createBuilding = function(tileX, tileY, onCreate) {
     return null;
 }
 
-BattalionMap.prototype.getBuilding = function(tileX, tileY) {
-    const index = this.getIndex(tileX, tileY);
+BattalionMap.prototype.getBuilding = function(targetX, targetY) {
+    const index = this.getIndex(targetX, targetY);
 
     if(index !== -1) {
-        const building = this.buildings.get(index);
+        for(let i = 0; i < this.buildings.length; i++) {
+            const building = this.buildings[i];
+            const { tileX, tileY } = building;
 
-        if(building) {
-            return building;
+            if(targetX === tileX && targetY === tileY) {
+                return building;
+            }
         }
     }
 

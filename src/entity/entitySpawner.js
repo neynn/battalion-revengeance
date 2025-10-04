@@ -161,13 +161,13 @@ export const EntitySpawner = {
         if(teamType) {
             const { colorID, color } = teamType;
 
-            worldMap.createBuilding(x, y, (index) => {
+            worldMap.createBuilding(x, y, () => {
                 const buildingType = typeRegistry.getType(type, TypeRegistry.CATEGORY.BUILDING);
                 const { sprite } = buildingType;
                 const buildingSprite = new SchemaSprite();
                 const building = new Building(name, buildingType, buildingSprite);
 
-                buildingSprite.init(gameContext, sprite, colorID, color, SpriteManager.LAYER.BOTTOM);
+                buildingSprite.init(gameContext, sprite, colorID, color, null);
                 building.setTile(gameContext, x, y);
                 building.setTeam(team);
 

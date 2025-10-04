@@ -12,7 +12,6 @@ export const SpriteManager = function(resourceLoader) {
     this.containers = [];
     this.sharedSprites = [];
     this.timestamp = 0;
-
     this.pool = new ObjectPool(1024, (index) => new Sprite(index, "EMPTY_SPRITE"));
     this.pool.allocate();
 
@@ -22,6 +21,8 @@ export const SpriteManager = function(resourceLoader) {
     this.layers[SpriteManager.LAYER.TOP] = [];
     this.layers[SpriteManager.LAYER.UI] = [];
 }
+
+SpriteManager.EMPTY_LAYER = [];
 
 SpriteManager.LAYER = {
     BOTTOM: 0,
@@ -213,9 +214,13 @@ SpriteManager.prototype.exit = function() {
     }
 }
 
+SpriteManager.prototype.addLayer = function() {
+    this.layers.push([]);
+}
+
 SpriteManager.prototype.getLayer = function(layerIndex) {
     if(layerIndex < 0 || layerIndex >= this.layers.length) {
-        return [];
+        return SpriteManager.EMPTY_LAYER;
     }
 
     return this.layers[layerIndex];

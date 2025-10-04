@@ -28,6 +28,7 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     this.floorRenderCoordinates();
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.GROUND));
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
+    this.drawBuildings(display, worldMap, realTime, deltaTime);
     this.drawSpriteBatchYSorted(display, spriteManager.getLayer(SpriteManager.LAYER.BOTTOM), realTime, deltaTime);
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.CLOUD));
     this.drawSpriteBatchYSorted(display, spriteManager.getLayer(SpriteManager.LAYER.MIDDLE), realTime, deltaTime);
@@ -36,6 +37,20 @@ BattalionCamera.prototype.update = function(gameContext, display) {
 
     if(Renderer.DEBUG.MAP) {
         this.debugMap(context, worldMap);
+    }
+}
+
+BattalionCamera.prototype.drawBuildings = function(display, worldMap, realTime, deltaTime) {
+    const { buildings } = worldMap;
+    const length = buildings.length;
+
+    for(let i = 0; i < length; i++) {
+        const { sprite } = buildings[i];
+        const { parent } = sprite;
+
+        if(parent) {
+            this.drawSprite(display, parent, realTime, deltaTime);
+        }
     }
 }
 

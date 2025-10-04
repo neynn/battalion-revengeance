@@ -18,4 +18,4 @@ Building.prototype.setTile = function(gameContext, tileX, tileY) {
 
 Building.prototype.setTeam = function(teamID) {
     this.teamID = teamID;
-} 
+}
