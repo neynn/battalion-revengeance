@@ -1,4 +1,5 @@
 import { EntityHelper } from "../../../engine/entity/entityHelper.js";
+import { Player } from "../player.js";
 import { PlayerState } from "./playerState.js";
 
 export const IdleState = function() {
@@ -27,9 +28,13 @@ IdleState.prototype.onTileClick = function(gameContext, stateMachine, tileX, til
     console.log(test);
 }
 
-IdleState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly) {
-
+IdleState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {
+    if(isControlled && entity.isSelectable()) {
+        stateMachine.setNextState(gameContext, Player.STATE.SELECT, { "entity": entity });
+        return;
+    }
 }
+
 /*
 Player.prototype.onOwnEntitySelect = function(gameContext, entity) {
     if(this.selectedEntity === entity) {

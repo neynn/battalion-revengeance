@@ -9,7 +9,7 @@ PlayerState.prototype.constructor = PlayerState;
 PlayerState.prototype.onEvent = function(gameContext, stateMachine, eventID, eventData) {
     switch(eventID) {
         case Player.EVENT.ENTITY_CLICK: {
-            this.onEntityClick(gameContext, stateMachine, eventData.entity, eventData.isAlly);
+            this.onEntityClick(gameContext, stateMachine, eventData.entity, eventData.isAlly, eventData.isControlled);
             break;
         }
         case Player.EVENT.BUILDING_CLICK: {
@@ -23,6 +23,6 @@ PlayerState.prototype.onEvent = function(gameContext, stateMachine, eventID, eve
     }
 }
 
-PlayerState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly) {}
+PlayerState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {}
 PlayerState.prototype.onBuildingClick = function(gameContext, stateMachine, building) {}
 PlayerState.prototype.onTileClick = function(gameContext, stateMachine, tileX, tileY) {}
