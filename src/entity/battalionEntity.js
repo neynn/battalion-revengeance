@@ -266,3 +266,7 @@ BattalionEntity.prototype.isColliding = function(target, range = 0) {
         target.config.dimY - 1
     );;
 }
+
+BattalionEntity.prototype.isSelectable = function() {
+    return this.hp >= 0 && !this.isMarkedForDestroy;
+}
