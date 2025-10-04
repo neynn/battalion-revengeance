@@ -2,7 +2,6 @@ import { ArmyContext } from "../armyContext.js";
 import { ArmyEntity } from "../init/armyEntity.js";
 import { MapSystem } from "./map.js";
 import { UnitLimitSystem } from "./unitLimit.js";
-import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 
 const BLOCKED_SPRITES = [
     "airdrop"
@@ -11,7 +10,7 @@ const BLOCKED_SPRITES = [
 const createSprite = function(gameContext, config, tileX, tileY) {
     const { spriteManager, transform2D } = gameContext;
     const spriteType = config.sprites[ArmyEntity.SPRITE_TYPE.IDLE];
-    const sprite = spriteManager.createSprite(spriteType, SpriteManager.LAYER.MIDDLE);
+    const sprite = spriteManager.createSprite(spriteType, 1);
     const { x, y } = transform2D.transformTileToWorldCenter(tileX, tileY);
 
     sprite.setPosition(x, y);

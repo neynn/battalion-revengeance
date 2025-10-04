@@ -1,7 +1,7 @@
 import { Camera2D } from "../../engine/camera/camera2D.js";
 import { Renderer } from "../../engine/renderer.js";
-import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { BattalionMap } from "../map/battalionMap.js";
+import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const BattalionCamera = function() {
     Camera2D.call(this);
@@ -28,12 +28,10 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     this.floorRenderCoordinates();
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.GROUND));
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
-    this.drawBuildings(display, worldMap, realTime, deltaTime);
-    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(SpriteManager.LAYER.BOTTOM), realTime, deltaTime);
+    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.BUILDING), realTime, deltaTime);
+    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.SEA), realTime, deltaTime);
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.CLOUD));
-    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(SpriteManager.LAYER.MIDDLE), realTime, deltaTime);
-    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(SpriteManager.LAYER.TOP), realTime, deltaTime);
-    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(SpriteManager.LAYER.UI), realTime, deltaTime);
+    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.LAND), realTime, deltaTime);
 
     if(Renderer.DEBUG.MAP) {
         this.debugMap(context, worldMap);

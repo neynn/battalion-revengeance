@@ -1,7 +1,6 @@
 import { ContextHelper } from "../../engine/camera/contextHelper.js";
 import { Pallet } from "../../engine/map/editor/pallet.js";
 import { Renderer } from "../../engine/renderer.js";
-import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { ArmyCamera } from "../armyCamera.js";
 import { ArmyMap } from "../init/armyMap.js";
 
@@ -37,10 +36,10 @@ EditCamera.prototype.update = function(gameContext, display) {
     this.drawLayer(tileManager, display, worldMap.getLayer(ArmyMap.LAYER.GROUND));
     this.drawLayer(tileManager, display, worldMap.getLayer(ArmyMap.LAYER.DECORATION));
     this.drawDebris(gameContext, context, worldMap);
-    this.drawSpriteBatch(display, spriteManager.getLayer(SpriteManager.LAYER.BOTTOM), realTime, deltaTime);
-    this.drawSpriteBatch(display, spriteManager.getLayer(SpriteManager.LAYER.MIDDLE), realTime, deltaTime);
-    this.drawSpriteBatch(display, spriteManager.getLayer(SpriteManager.LAYER.TOP), realTime, deltaTime);
-    this.drawSpriteBatch(display, spriteManager.getLayer(SpriteManager.LAYER.UI), realTime, deltaTime);
+    this.drawSpriteBatch(display, spriteManager.getLayer(0), realTime, deltaTime);
+    this.drawSpriteBatch(display, spriteManager.getLayer(1), realTime, deltaTime);
+    this.drawSpriteBatch(display, spriteManager.getLayer(2), realTime, deltaTime);
+    this.drawSpriteBatch(display, spriteManager.getLayer(3), realTime, deltaTime);
     this.drawLayer(tileManager, display, worldMap.getLayer(ArmyMap.LAYER.CLOUD));
     this.drawHoverTile(gameContext, context);
 

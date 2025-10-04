@@ -1,5 +1,4 @@
 import { getRandomElement } from "../../engine/math/math.js";
-import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { SchemaSprite } from "../sprite/schemaSprite.js";
 import { TeamSpawner } from "../team/teamSpawner.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
@@ -53,7 +52,7 @@ export const EntitySpawner = {
             const spriteID = entityObject.getSpriteID();
             const spawnPosition = transform2D.transformTileToWorld(x, y);
 
-            entitySprite.init(gameContext, spriteID, colorID, color, SpriteManager.LAYER.MIDDLE);
+            entitySprite.init(gameContext, spriteID, colorID, color, TypeRegistry.LAYER_TYPE.LAND);
             entityObject.setTile(x, y);
             entityObject.setPosition(spawnPosition);
             entityObject.loadTraits();
@@ -167,7 +166,7 @@ export const EntitySpawner = {
                 const buildingSprite = new SchemaSprite();
                 const building = new Building(name, buildingType, buildingSprite);
 
-                buildingSprite.init(gameContext, sprite, colorID, color, null);
+                buildingSprite.init(gameContext, sprite, colorID, color, TypeRegistry.LAYER_TYPE.BUILDING);
                 building.setTile(gameContext, x, y);
                 building.setTeam(team);
 

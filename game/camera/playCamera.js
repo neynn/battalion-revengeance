@@ -2,7 +2,6 @@ import { Overlay } from "../../engine/camera/overlay.js";
 import { EntityHelper } from "../../engine/entity/entityHelper.js";
 import { Layer } from "../../engine/map/layer.js";
 import { Renderer } from "../../engine/renderer.js";
-import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { ArmyCamera } from "../armyCamera.js";
 import { ArmyMap } from "../init/armyMap.js";
 import { PathfinderSystem } from "../systems/pathfinder.js";
@@ -59,13 +58,13 @@ PlayCamera.prototype.update = function(gameContext, display) {
     this.drawDebris(gameContext, context, worldMap);
     this.drawOverlay(tileManager, context, this.overlays[PlayCamera.OVERLAY.MOVE]);
     this.drawOverlay(tileManager, context, this.overlays[PlayCamera.OVERLAY.ATTACK]);
-    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(SpriteManager.LAYER.BOTTOM), realTime, deltaTime);
-    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(SpriteManager.LAYER.MIDDLE), realTime, deltaTime);
+    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(0), realTime, deltaTime);
+    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(1), realTime, deltaTime);
     this.drawLayer(tileManager, display, this.customLayers[PlayCamera.LAYER.PLACE]);
     this.drawOverlay(tileManager, context, this.overlays[PlayCamera.OVERLAY.FIRE_MISSION]);
     this.drawOverlay(tileManager, context, this.overlays[PlayCamera.OVERLAY.RANGE]);
-    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(SpriteManager.LAYER.TOP), realTime, deltaTime);
-    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(SpriteManager.LAYER.UI), realTime, deltaTime);
+    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(2), realTime, deltaTime);
+    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(3), realTime, deltaTime);
     this.drawDrops(display, worldMap);
     this.drawLayer(tileManager, display, worldMap.getLayer(ArmyMap.LAYER.CLOUD));
 

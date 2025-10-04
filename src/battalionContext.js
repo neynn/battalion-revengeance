@@ -44,6 +44,10 @@ BattalionContext.prototype = Object.create(GameContext.prototype);
 BattalionContext.prototype.constructor = BattalionContext;
 
 BattalionContext.prototype.init = function(resources) {
+    for(let i = 0; i < TypeRegistry.LAYER_TYPE.COUNT; i++) {
+        this.spriteManager.addLayer();
+    }
+
     this.language.registerLanguage(LanguageHandler.LANGUAGE.ENGLISH, {});
     this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);
 

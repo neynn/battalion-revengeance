@@ -1,7 +1,6 @@
 import { ContextHelper } from "../../../engine/camera/contextHelper.js";
 import { EntityHelper } from "../../../engine/entity/entityHelper.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
-import { SpriteManager } from "../../../engine/sprite/spriteManager.js";
 import { PathfinderSystem } from "../../systems/pathfinder.js";
 
 export const PlayerCursor = function() {
@@ -176,7 +175,7 @@ PlayerCursor.prototype.createSprite = function(gameContext) {
     }
 
     const { spriteManager } = gameContext;
-    const actorSprite = spriteManager.createSprite("cursor_attack_1x1", SpriteManager.LAYER.UI);
+    const actorSprite = spriteManager.createSprite("cursor_attack_1x1", 3);
 
     if(actorSprite) {
         const spriteIndex = actorSprite.getIndex();

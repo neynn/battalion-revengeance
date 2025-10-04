@@ -125,7 +125,14 @@ export const TypeRegistry = function() {
     this.loadCategory(SCHEMA_TYPES, TypeRegistry.CATEGORY.SCHEMA);
 }
 
-TypeRegistry.EvENT_TYPE = {
+TypeRegistry.LAYER_TYPE = {
+    BUILDING: 0,
+    SEA: 1,
+    LAND: 2,
+    COUNT: 3
+};
+
+TypeRegistry.EVENT_TYPE = {
     DIALOGUE: "DIALOGUE",
     EXPLODE_TILE: "EXPLODE_TILE",
     SPAWN_ENTITY: "SPAWN_ENTITY"

@@ -1,4 +1,3 @@
-import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { UI_SONUD } from "../enums.js";
 import { ArmyEntity } from "../init/armyEntity.js";
 import { ArmySprite } from "../init/armySprite.js";
@@ -42,7 +41,7 @@ AnimationSystem.playIdle = function(gameContext, entityIDList) {
 AnimationSystem.playDeath = function(gameContext, entity) {
     const { spriteManager, transform2D } = gameContext;
     const spriteType = entity.getSpriteID(ArmyEntity.SPRITE_TYPE.DEATH);
-    const deathAnimation = spriteManager.createSprite(spriteType, SpriteManager.LAYER.MIDDLE);
+    const deathAnimation = spriteManager.createSprite(spriteType, 1);
 
     if(deathAnimation) {
         const centerPosition = transform2D.transformTileToWorldCenter(entity.tileX, entity.tileY);
@@ -127,7 +126,7 @@ AnimationSystem.stopSelect = function(entity) {
 AnimationSystem.playCleaning = function(gameContext, tileX, tileY) {
     const { spriteManager, transform2D, client } = gameContext;
     const { soundPlayer } = client;
-    const delaySprite = spriteManager.createSprite(AnimationSystem.SPRITE_TYPE.DELAY, SpriteManager.LAYER.MIDDLE);
+    const delaySprite = spriteManager.createSprite(AnimationSystem.SPRITE_TYPE.DELAY, 1);
 
     if(delaySprite) {
         const { x, y } = transform2D.transformTileToWorldCenter(tileX, tileY);

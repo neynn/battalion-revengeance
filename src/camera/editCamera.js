@@ -1,8 +1,8 @@
 import { ContextHelper } from "../../engine/camera/contextHelper.js";
 import { Pallet } from "../../engine/map/editor/pallet.js";
 import { Renderer } from "../../engine/renderer.js";
-import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { BattalionMap } from "../map/battalionMap.js";
+import { TypeRegistry } from "../type/typeRegistry.js";
 import { BattalionCamera } from "./battalionCamera.js";
 
 export const EditCamera = function() {
@@ -36,10 +36,9 @@ EditCamera.prototype.update = function(gameContext, display) {
     this.floorRenderCoordinates();
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.GROUND));
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
-    this.drawSpriteBatch(display, spriteManager.getLayer(SpriteManager.LAYER.BOTTOM), realTime, deltaTime);
-    this.drawSpriteBatch(display, spriteManager.getLayer(SpriteManager.LAYER.MIDDLE), realTime, deltaTime);
-    this.drawSpriteBatch(display, spriteManager.getLayer(SpriteManager.LAYER.TOP), realTime, deltaTime);
-    this.drawSpriteBatch(display, spriteManager.getLayer(SpriteManager.LAYER.UI), realTime, deltaTime);
+    this.drawSpriteBatch(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.BUILDING), realTime, deltaTime);
+    this.drawSpriteBatch(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.SEA), realTime, deltaTime);
+    this.drawSpriteBatch(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.LAND), realTime, deltaTime);
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.CLOUD));
     this.drawHoverTile(gameContext, context);
 

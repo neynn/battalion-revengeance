@@ -1,4 +1,3 @@
-import { SpriteManager } from "../../../engine/sprite/spriteManager.js";
 import { Autotiler } from "../../../engine/tile/autotiler.js";
 import { PlayCamera } from "../../camera/playCamera.js";
 import { ArmyEntity } from "../../init/armyEntity.js";
@@ -46,7 +45,7 @@ RangeVisualizer.prototype.show = function(gameContext, camera, entity) {
     const autotiler = tileManager.getAutotilerByID(ArmyMap.AUTOTILER.RANGE);
     const { range } = attackComponent;
 
-    entity.sprite.swapLayer(gameContext, SpriteManager.LAYER.TOP);
+    entity.sprite.swapLayer(gameContext, 2);
 
     const startX = entity.tileX - range;
     const startY = entity.tileY - range;
@@ -76,7 +75,7 @@ RangeVisualizer.prototype.hide = function(gameContext, camera) {
     camera.clearOverlay(PlayCamera.OVERLAY.RANGE);
 
     if(entity) {
-        entity.sprite.swapLayer(gameContext, SpriteManager.LAYER.MIDDLE);
+        entity.sprite.swapLayer(gameContext, 1);
     }
 }
 

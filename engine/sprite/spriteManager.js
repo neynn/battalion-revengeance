@@ -14,22 +14,10 @@ export const SpriteManager = function(resourceLoader) {
     this.timestamp = 0;
     this.pool = new ObjectPool(1024, (index) => new Sprite(index, "EMPTY_SPRITE"));
     this.pool.allocate();
-
     this.layers = [];
-    this.layers[SpriteManager.LAYER.BOTTOM] = [];
-    this.layers[SpriteManager.LAYER.MIDDLE] = [];
-    this.layers[SpriteManager.LAYER.TOP] = [];
-    this.layers[SpriteManager.LAYER.UI] = [];
 }
 
 SpriteManager.EMPTY_LAYER = [];
-
-SpriteManager.LAYER = {
-    BOTTOM: 0,
-    MIDDLE: 1,
-    TOP: 2,
-    UI: 3
-};
 
 SpriteManager.prototype.getAlias = function(spriteID, schemaID) {
     return spriteID + "::" + schemaID;
