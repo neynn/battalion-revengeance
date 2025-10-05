@@ -1,7 +1,9 @@
 import { State } from "../../../engine/state/state.js";
 import { Player } from "../player.js";
 
-export const PlayerState = function() {}
+export const PlayerState = function() {
+    State.call(this);
+}
 
 PlayerState.prototype = Object.create(State.prototype);
 PlayerState.prototype.constructor = PlayerState;

@@ -53,7 +53,6 @@ Player.prototype.inspectTile = function(gameContext, tileX, tileY) {
     this.inspectedEntity = null;
 }
 
-
 Player.prototype.onClick = function(gameContext, worldMap, tile) {
     const { x, y } = tile;
     const entity = EntityHelper.getTileEntity(gameContext, x, y);

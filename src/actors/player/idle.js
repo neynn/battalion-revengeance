@@ -31,7 +31,6 @@ IdleState.prototype.onTileClick = function(gameContext, stateMachine, tileX, til
 IdleState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {
     if(isControlled && entity.isSelectable()) {
         stateMachine.setNextState(gameContext, Player.STATE.SELECT, { "entity": entity });
-        return;
     }
 }
 

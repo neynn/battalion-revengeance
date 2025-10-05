@@ -1,7 +1,9 @@
 import { Entity } from "../../engine/entity/entity.js";
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
+import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
+import { EntityFlagMap } from "./flagMap.js";
 
 export const BattalionEntity = function(id, sprite) {
     Entity.call(this, id, "");
@@ -10,10 +12,11 @@ export const BattalionEntity = function(id, sprite) {
     this.maxHP = 1;
     this.damage = 0;
     this.range = 0;
-    this.speed = 0;
     this.morale = 0;
     this.weaponType = TypeRegistry.WEAPON_TYPE.NONE;
     this.armorType = TypeRegistry.ARMOR_TYPE.NONE;
+    this.movementSpeed = 0;
+    this.movementRange = 2;
     this.movementType = TypeRegistry.MOVEMENT_TYPE.STATIONARY;
     this.customName = null;
     this.customDesc = null;
@@ -268,5 +271,101 @@ BattalionEntity.prototype.isColliding = function(target, range = 0) {
 }
 
 BattalionEntity.prototype.isSelectable = function() {
-    return this.hp >= 0 && !this.isMarkedForDestroy;
+    return !this.isMarkedForDestroy && !this.isDead();
+}
+
+BattalionEntity.prototype.isDead = function() {
+    return this.hp <= 0;
+}
+
+const mGetLowestCostNode = function(queue) {
+    let lowestNode = queue[0];
+    let lowestIndex = 0;
+
+    for(let i = 1; i < queue.length; i++) {
+        if(queue[i].cost < queue[lowestIndex].cost) {
+            lowestNode = queue[i];
+            lowestIndex = i;
+        }
+    }
+
+    queue[lowestIndex] = queue[queue.length - 1];
+    queue.pop();
+
+    return lowestNode;
+}
+
+const createNode = function(x, y, cost, type, parent, flags) {
+    return {
+        "x": x,
+        "y": y,
+        "cost": cost,
+        "type": type,
+        "parent": parent,
+        "flags": flags
+    }
+}
+
+BattalionEntity.prototype.getMapFlag = function(flagMap, tileX, tileY) {
+    const deltaX = tileX - this.tileX;
+    const deltaY = tileY - this.tileY;
+    const flag = flagMap.getFlag(deltaX, deltaY);
+
+    return flag;
+}
+
+BattalionEntity.prototype.getNodeList = function(gameContext) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const nodes = new Map();
+
+    if(this.isDead()) {
+        return nodes;
+    }
+
+    const flagMap = new EntityFlagMap(this.movementRange);
+    const queue = [createNode(this.tileX, this.tileY, 0, null, null, 0)];
+    const visitedCost = new Map();
+
+    visitedCost.set(worldMap.getIndex(this.tileX, this.tileY), 0);
+
+    while(queue.length > 0) {
+        const node = mGetLowestCostNode(queue);
+        const { cost, x, y } = node;
+
+        if(cost > this.movementRange) {
+            continue;
+        }
+
+        for(let i = 0; i < FloodFill.NEIGHBORS.length; i++) {
+            const [deltaX, deltaY, type] = FloodFill.NEIGHBORS[i];
+            const neighborX = x + deltaX;
+            const neighborY = y + deltaY;
+            const neighborID = worldMap.getIndex(neighborX, neighborY);
+
+            if(neighborID !== -1) {
+                const mapFlag = this.getMapFlag(flagMap, neighborX, neighborY);
+                const TILE_COST = 1 + Math.random();
+                const neighborCost = cost + TILE_COST;
+
+                //All tiles have a minCost of 1. This means they must ALL be inside the flag map.
+                console.log(mapFlag);
+
+                if(neighborCost <= this.movementRange) {
+                    const bestCost = visitedCost.get(neighborID);
+
+                    if(bestCost === undefined || neighborCost < bestCost) {
+                        const childNode = createNode(neighborX, neighborY, neighborCost, type, node, 0);
+
+                        queue.push(childNode);
+                        nodes.set(neighborID, childNode);
+                        visitedCost.set(neighborID, neighborCost);
+                    }
+                }
+            }
+        }
+    }
+
+    return nodes;
 }

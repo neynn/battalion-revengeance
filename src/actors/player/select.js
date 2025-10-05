@@ -4,8 +4,9 @@ import { PlayerState } from "./playerState.js";
 export const SelectState = function() {
     PlayerState.call(this);
 
-    this.entity = this.entity;
+    this.entity = null;
     this.inContextMenu = false;
+    this.nodes = [];
 }
 
 SelectState.prototype = Object.create(PlayerState.prototype);
@@ -13,6 +14,7 @@ SelectState.prototype.constructor = SelectState;
 
 SelectState.prototype.onExit = function(gameContext, stateMachine) {
     this.entity = null;
+    this.nodes.length = 0;
     this.closeContextMenu(gameContext);
 }
 
@@ -32,10 +34,16 @@ SelectState.prototype.onEnter = function(gameContext, stateMachine, enterData) {
 
 SelectState.prototype.selectEntity = function(gameContext, entity) {
     this.entity = entity;
+    console.log(this.entity.getNodeList(gameContext));
 }
 
 SelectState.prototype.openContextMenu = function(gameContext, entity) {
     this.inContextMenu = true;
+}
+
+SelectState.prototype.onTileClick = function(gameContext, stateMachine, tilex, tileY) {
+    //this holds a list of nodes that the entity can go to.
+    //when selecting, generate a list of nodes.
 }
 
 SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {
@@ -54,9 +62,10 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
         }
     } else {
         if(isControlled && entity.isSelectable()) {
+            this.closeContextMenu(gameContext);
             this.selectEntity(gameContext, entity);
         } else {
-            this.closeContextMenu(gameContext);
+            stateMachine.setNextState(gameContext, Player.STATE.IDLE);
         }
     }
 }
