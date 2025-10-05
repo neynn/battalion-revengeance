@@ -381,20 +381,17 @@ BattalionEntity.prototype.getPath = function(gameContext, nodes, targetX, target
     const index = worldMap.getIndex(targetX, targetY);
     const targetNode = nodes.get(index);
 
-    if(!targetNode) {
+    if(!targetNode || targetNode.flags === -1) {
         return path;
     }
 
+    let i = 0;
     let lastX = targetX;
     let lastY = targetY;
-    let currentNode = targetNode;
+    let currentNode = nodes.get(targetNode.parent);
 
-    if(currentNode.flags === -1) {
-        return path;
-    }
-
-    while(currentNode = nodes.get(currentNode.parent)) {
-        const { x, y } = currentNode;
+    while(currentNode !== undefined && i < 100) {
+        const { x, y, parent } = currentNode;
         const deltaX = lastX - x;
         const deltaY = lastY - y;
 
@@ -405,8 +402,10 @@ BattalionEntity.prototype.getPath = function(gameContext, nodes, targetX, target
             "tileY": lastY
         });
 
+        i++;
         lastX = x;
         lastY = y;
+        currentNode = nodes.get(parent);
     }
 
     return path.reverse();
