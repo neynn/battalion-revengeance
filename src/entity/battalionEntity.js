@@ -351,9 +351,14 @@ BattalionEntity.prototype.getNodeList = function(gameContext) {
                         const childNode = createNode(neighborX, neighborY, neighborCost, type, node, 0);
 
                         queue.push(childNode);
-                        nodes.set(neighborID, childNode);
                         visitedCost.set(neighborID, neighborCost);
+                        nodes.set(neighborID, childNode);
                     }
+                } else {
+                    //TODO: This is unreachable.
+                    const childNode = createNode(neighborX, neighborY, neighborCost, type, node, -1);
+
+                    nodes.set(neighborID, childNode);
                 }
             }
         }
