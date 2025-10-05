@@ -34,16 +34,17 @@ SelectState.prototype.onEnter = function(gameContext, stateMachine, enterData) {
 
 SelectState.prototype.selectEntity = function(gameContext, entity) {
     this.entity = entity;
-    console.log(this.entity.getNodeList(gameContext));
 }
 
 SelectState.prototype.openContextMenu = function(gameContext, entity) {
     this.inContextMenu = true;
 }
 
-SelectState.prototype.onTileClick = function(gameContext, stateMachine, tilex, tileY) {
-    //this holds a list of nodes that the entity can go to.
-    //when selecting, generate a list of nodes.
+SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, tileY) {
+    const nodeList = this.entity.getNodeList(gameContext);
+    const path = this.entity.getPath(gameContext, nodeList, tileX, tileY);
+
+    console.log(nodeList, path);
 }
 
 SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {

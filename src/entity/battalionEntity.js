@@ -16,7 +16,7 @@ export const BattalionEntity = function(id, sprite) {
     this.weaponType = TypeRegistry.WEAPON_TYPE.NONE;
     this.armorType = TypeRegistry.ARMOR_TYPE.NONE;
     this.movementSpeed = 0;
-    this.movementRange = 2;
+    this.movementRange = 10;
     this.movementType = TypeRegistry.MOVEMENT_TYPE.STATIONARY;
     this.customName = null;
     this.customDesc = null;
@@ -295,8 +295,9 @@ const mGetLowestCostNode = function(queue) {
     return lowestNode;
 }
 
-const createNode = function(x, y, cost, type, parent, flags) {
+const createNode = function(id, x, y, cost, type, parent, flags) {
     return {
+        "id": id,
         "x": x,
         "y": y,
         "cost": cost,
@@ -317,14 +318,17 @@ BattalionEntity.prototype.getNodeList = function(gameContext) {
     }
 
     const flagMap = new EntityFlagMap(this.tileX, this.tileY, this.movementRange);
-    const queue = [createNode(this.tileX, this.tileY, 0, null, null, 0)];
+    const startID = worldMap.getIndex(this.tileX, this.tileY);
+    const startNode = createNode(startID, this.tileX, this.tileY, 0, null, null, 0);
+    const queue = [startNode];
     const visitedCost = new Map();
 
-    visitedCost.set(worldMap.getIndex(this.tileX, this.tileY), 0);
+    nodes.set(startID, startNode);
+    visitedCost.set(startID, 0);
 
     while(queue.length > 0) {
         const node = mGetLowestCostNode(queue);
-        const { cost, x, y } = node;
+        const { cost, x, y, id } = node;
 
         if(cost > this.movementRange) {
             continue;
@@ -343,20 +347,18 @@ BattalionEntity.prototype.getNodeList = function(gameContext) {
                 if(neighborCost <= this.movementRange) {
                     const bestCost = visitedCost.get(neighborID);
                     const mapFlag = flagMap.getFlag(neighborX, neighborY);
-
                     //All tiles have a minCost of 1. This means they must ALL be inside the flag map.
-                    console.log(mapFlag);
 
                     if(bestCost === undefined || neighborCost < bestCost) {
-                        const childNode = createNode(neighborX, neighborY, neighborCost, type, node, 0);
+                        const childNode = createNode(neighborID, neighborX, neighborY, neighborCost, type, id, 0);
 
                         queue.push(childNode);
                         visitedCost.set(neighborID, neighborCost);
                         nodes.set(neighborID, childNode);
                     }
-                } else {
-                    //TODO: This is unreachable.
-                    const childNode = createNode(neighborX, neighborY, neighborCost, type, node, -1);
+                } else if(!nodes.has(neighborID)) {
+                    //This is unreachable.
+                    const childNode = createNode(neighborID, neighborX, neighborY, neighborCost, type, id, -1);
 
                     nodes.set(neighborID, childNode);
                 }
@@ -365,4 +367,48 @@ BattalionEntity.prototype.getNodeList = function(gameContext) {
     }
 
     return nodes;
+}
+
+BattalionEntity.prototype.getPath = function(gameContext, nodes, targetX, targetY) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const path = [];
+
+    if(!worldMap) {
+        return path;
+    }
+
+    const index = worldMap.getIndex(targetX, targetY);
+    const targetNode = nodes.get(index);
+
+    if(!targetNode) {
+        return path;
+    }
+
+    let lastX = targetX;
+    let lastY = targetY;
+    let currentNode = targetNode;
+
+    if(currentNode.flags === -1) {
+        return path;
+    }
+
+    while(currentNode = nodes.get(currentNode.parent)) {
+        const { x, y } = currentNode;
+        const deltaX = lastX - x;
+        const deltaY = lastY - y;
+
+        path.push({
+            "deltaX": deltaX,
+            "deltaY": deltaY,
+            "tileX": lastX,
+            "tileY": lastY
+        });
+
+        lastX = x;
+        lastY = y;
+    }
+
+    return path.reverse();
 }
