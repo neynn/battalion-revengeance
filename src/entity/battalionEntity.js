@@ -306,14 +306,6 @@ const createNode = function(x, y, cost, type, parent, flags) {
     }
 }
 
-BattalionEntity.prototype.getMapFlag = function(flagMap, tileX, tileY) {
-    const deltaX = tileX - this.tileX;
-    const deltaY = tileY - this.tileY;
-    const flag = flagMap.getFlag(deltaX, deltaY);
-
-    return flag;
-}
-
 BattalionEntity.prototype.getNodeList = function(gameContext) {
     const { world } = gameContext;
     const { mapManager } = world;
@@ -324,7 +316,7 @@ BattalionEntity.prototype.getNodeList = function(gameContext) {
         return nodes;
     }
 
-    const flagMap = new EntityFlagMap(this.movementRange);
+    const flagMap = new EntityFlagMap(this.tileX, this.tileY, this.movementRange);
     const queue = [createNode(this.tileX, this.tileY, 0, null, null, 0)];
     const visitedCost = new Map();
 
@@ -345,12 +337,12 @@ BattalionEntity.prototype.getNodeList = function(gameContext) {
             const neighborID = worldMap.getIndex(neighborX, neighborY);
 
             if(neighborID !== -1) {
-                const TILE_COST = 1 + Math.random();
-                const neighborCost = cost + TILE_COST;
+                const TILE_COST = 0.5 + Math.random();
+                const neighborCost = cost + (TILE_COST < 1 ? 1 : TILE_COST);
 
                 if(neighborCost <= this.movementRange) {
                     const bestCost = visitedCost.get(neighborID);
-                    const mapFlag = this.getMapFlag(flagMap, neighborX, neighborY);
+                    const mapFlag = flagMap.getFlag(neighborX, neighborY);
 
                     //All tiles have a minCost of 1. This means they must ALL be inside the flag map.
                     console.log(mapFlag);
