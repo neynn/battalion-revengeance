@@ -540,5 +540,17 @@
             "OIL_RIG": {"x":343,"y":1,"w":56,"h":66},
             "SEA_CONTROL": {"x":400,"y":1,"w":56,"h":72}
         }
+    },
+    "explosion": {
+        "directory": ["assets","sprites","textures"],
+        "source": "explosion.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 56,
+            "frameHeight": 96,
+            "rows": 3,
+            "columns": 4
+        }
     }
 }

@@ -1102,5 +1102,11 @@
         "bounds": {"x":0,"y":-16,"w":56,"h":72},
         "frameTime": 1,
         "frames": ["SEA_CONTROL"]
+    },
+    "explosion": {
+        "texture": "explosion",
+        "bounds": {"x":0,"y":20,"w":56,"h":96},
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 12}
     }
 }
