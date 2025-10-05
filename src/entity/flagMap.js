@@ -22,3 +22,7 @@ EntityFlagMap.prototype.getFlag = function(deltaX, deltaY) {
 
     return this.buffer[index];
 }
+
+EntityFlagMap.prototype.getCenter = function() {
+    return this.buffer[this.center];
+}

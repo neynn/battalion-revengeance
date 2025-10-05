@@ -345,15 +345,15 @@ BattalionEntity.prototype.getNodeList = function(gameContext) {
             const neighborID = worldMap.getIndex(neighborX, neighborY);
 
             if(neighborID !== -1) {
-                const mapFlag = this.getMapFlag(flagMap, neighborX, neighborY);
                 const TILE_COST = 1 + Math.random();
                 const neighborCost = cost + TILE_COST;
 
-                //All tiles have a minCost of 1. This means they must ALL be inside the flag map.
-                console.log(mapFlag);
-
                 if(neighborCost <= this.movementRange) {
                     const bestCost = visitedCost.get(neighborID);
+                    const mapFlag = this.getMapFlag(flagMap, neighborX, neighborY);
+
+                    //All tiles have a minCost of 1. This means they must ALL be inside the flag map.
+                    console.log(mapFlag);
 
                     if(bestCost === undefined || neighborCost < bestCost) {
                         const childNode = createNode(neighborX, neighborY, neighborCost, type, node, 0);
