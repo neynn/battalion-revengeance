@@ -14,6 +14,7 @@ export const CameraHelper = {
             const { width, height } = activeMap;
 
             camera2D.setWorldSize(width, height);
+            camera2D.setMapSize(width, height);
         }
     },
     createEditCamera: function(gameContext) {

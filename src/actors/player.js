@@ -5,11 +5,11 @@ import { BattalionActor } from "./battalionActor.js";
 import { IdleState } from "./player/idle.js";
 import { SelectState } from "./player/select.js";
 
-export const Player = function(id, config) {
+export const Player = function(id, config, camera) {
     BattalionActor.call(this, id);
 
     this.config = config;
-    this.camera = null;
+    this.camera = camera;
     this.inspectedEntity = null;
 
     this.states = new StateMachine(this);
@@ -34,10 +34,6 @@ Player.ACTION = {
 
 Player.prototype = Object.create(BattalionActor.prototype);
 Player.prototype.constructor = Player;
-
-Player.prototype.setCamera = function(camera) {
-    this.camera = camera;
-}
 
 Player.prototype.inspectEntity = function(gameContext, entity) {
     this.inspectedEntity = entity;
@@ -114,4 +110,19 @@ Player.prototype.onNextTurn = function(gameContext, turn) {
 
 Player.prototype.onNextRound = function(gameContext, round) {
     console.log("IT IS ROUND " + round);
+}
+
+Player.prototype.clearNodeMapRender = function() {
+    this.camera.selectOverlay.clear();
+}
+
+Player.prototype.addNodeMapRender = function(nodeMap) {
+    this.clearNodeMapRender();
+
+    for(const [index, node] of nodeMap) {
+        const { x, y, flags } = node;
+        const id = flags === -1 ? 2 : 1;
+    
+        this.camera.selectOverlay.add(id, x, y);
+    }
 }

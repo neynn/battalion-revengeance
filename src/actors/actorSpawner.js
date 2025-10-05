@@ -1,3 +1,4 @@
+import { CameraHelper } from "../camera/cameraHelper.js";
 import { BattalionActor } from "./battalionActor.js";
 import { Player } from "./player.js";
 
@@ -41,14 +42,15 @@ export const ActorSpawner = {
         }
 
         const player = turnManager.createActor((actorID, actorType) => {
-            const actor = new Player(actorID, actorType);
+            const context = CameraHelper.createPlayCamera(gameContext);
+            const camera = context.getCamera();
+            const actor = new Player(actorID, actorType, camera);
 
             actor.setTeam(team);
             teamObject.setActor(actorID);
 
             return actor;
         }, type, id);
-        
 
         player.loadKeybinds(gameContext);
         player.states.setNextState(gameContext, Player.STATE.IDLE);

@@ -13,18 +13,18 @@ PlayState.prototype.constructor = PlayState;
 PlayState.prototype.onEnter = async function(gameContext, stateMachine, transition) {
     const { client } = gameContext;
     const { router } = client;
-    const context = CameraHelper.createPlayCamera(gameContext);
+    //const context = CameraHelper.createPlayCamera(gameContext);
 
     MapSpawner.createMapByID(gameContext, "presus").then(map => {});
     router.on("ESCAPE", () => stateMachine.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));
 
-    this.contextID = context.getID();
+    //this.contextID = context.getID();
 }
 
 PlayState.prototype.onExit = function(gameContext, stateMachine) {
-    const { renderer } = gameContext;
+    //const { renderer } = gameContext;
 
-    renderer.destroyContext(this.contextID);
+    //renderer.destroyContext(this.contextID);
 
-    this.contextID = -1;
+    //this.contextID = -1;
 }

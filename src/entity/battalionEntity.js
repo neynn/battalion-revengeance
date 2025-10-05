@@ -16,7 +16,7 @@ export const BattalionEntity = function(id, sprite) {
     this.weaponType = TypeRegistry.WEAPON_TYPE.NONE;
     this.armorType = TypeRegistry.ARMOR_TYPE.NONE;
     this.movementSpeed = 0;
-    this.movementRange = 10;
+    this.movementRange = 2;
     this.movementType = TypeRegistry.MOVEMENT_TYPE.STATIONARY;
     this.customName = null;
     this.customDesc = null;
@@ -307,14 +307,15 @@ const createNode = function(id, x, y, cost, type, parent, flags) {
     }
 }
 
-BattalionEntity.prototype.getNodeList = function(gameContext) {
+BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
     const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
-    const nodes = new Map();
+
+    nodeMap.clear();
 
     if(this.isDead()) {
-        return nodes;
+        return;
     }
 
     const flagMap = new EntityFlagMap(this.tileX, this.tileY, this.movementRange);
@@ -323,7 +324,7 @@ BattalionEntity.prototype.getNodeList = function(gameContext) {
     const queue = [startNode];
     const visitedCost = new Map();
 
-    nodes.set(startID, startNode);
+    nodeMap.set(startID, startNode);
     visitedCost.set(startID, 0);
 
     while(queue.length > 0) {
@@ -342,7 +343,7 @@ BattalionEntity.prototype.getNodeList = function(gameContext) {
 
             if(neighborID !== -1) {
                 const TILE_COST = 0.5 + Math.random();
-                const neighborCost = cost + (TILE_COST < 1 ? 1 : TILE_COST);
+                const neighborCost = cost + 1;//(TILE_COST < 1 ? 1 : TILE_COST);
 
                 if(neighborCost <= this.movementRange) {
                     const bestCost = visitedCost.get(neighborID);
@@ -354,19 +355,17 @@ BattalionEntity.prototype.getNodeList = function(gameContext) {
 
                         queue.push(childNode);
                         visitedCost.set(neighborID, neighborCost);
-                        nodes.set(neighborID, childNode);
+                        nodeMap.set(neighborID, childNode);
                     }
-                } else if(!nodes.has(neighborID)) {
+                } else if(!nodeMap.has(neighborID)) {
                     //This is unreachable.
                     const childNode = createNode(neighborID, neighborX, neighborY, neighborCost, type, id, -1);
 
-                    nodes.set(neighborID, childNode);
+                    nodeMap.set(neighborID, childNode);
                 }
             }
         }
     }
-
-    return nodes;
 }
 
 BattalionEntity.prototype.getPath = function(gameContext, nodes, targetX, targetY) {

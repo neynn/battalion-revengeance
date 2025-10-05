@@ -1,10 +1,13 @@
 import { Camera2D } from "../../engine/camera/camera2D.js";
+import { Overlay } from "../../engine/camera/overlay.js";
 import { Renderer } from "../../engine/renderer.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const BattalionCamera = function() {
     Camera2D.call(this);
+
+    this.selectOverlay = new Overlay();
 }
 
 BattalionCamera.prototype = Object.create(Camera2D.prototype);
@@ -30,6 +33,7 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.CLOUD));
     this.drawSpriteBatchYSorted(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.BUILDING), realTime, deltaTime);
+    this.drawOverlay(tileManager, context, this.selectOverlay);
     this.drawSpriteBatchYSorted(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.SEA), realTime, deltaTime);
     this.drawSpriteBatchYSorted(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.LAND), realTime, deltaTime);
 

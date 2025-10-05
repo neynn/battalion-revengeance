@@ -119,5 +119,11 @@ export const MapSpawner = {
         }
 
         return worldMap;
+    },
+    createEditMapByID: function(gameContext, typeID) {
+        return MapHelper.createMapByID(gameContext, typeID, (mapID, mapData) => new BattalionMap(mapID));
+    },
+    createEmptyEditMap: function(gameContext, mapData) {
+        return MapHelper.createEmptyMap(gameContext, mapData, (mapID) => new BattalionMap(mapID));
     }
 }

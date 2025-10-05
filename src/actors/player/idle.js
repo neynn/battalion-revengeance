@@ -9,6 +9,12 @@ export const IdleState = function() {
 IdleState.prototype = Object.create(PlayerState.prototype);
 IdleState.prototype.constructor = IdleState;
 
+IdleState.prototype.onEnter = function(gameContext, stateMachine, enterData) {
+    const player = stateMachine.getContext();
+
+    player.clearNodeMapRender();
+}
+
 IdleState.prototype.onTileClick = function(gameContext, stateMachine, tileX, tileY) {
     const { world } = gameContext;
     const { mapManager } = world;
