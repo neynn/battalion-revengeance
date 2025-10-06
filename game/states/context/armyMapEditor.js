@@ -12,7 +12,7 @@ ArmyMapEditor.prototype.constructor = ArmyMapEditor;
 
 ArmyMapEditor.prototype.updateType = function(gameContext, worldMap, tileX, tileY, tileID) {
     const { tileManager } = gameContext;
-    const tileMeta = tileManager.getMeta(tileID);
+    const tileMeta = tileManager.getTile(tileID);
 
     if(tileMeta) {
         const { type } = tileMeta;

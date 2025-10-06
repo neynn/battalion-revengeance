@@ -33,8 +33,8 @@ export const MapHelper = {
     },
     createLayerByThreshold: function(gameContext, size) {
         const { tileManager } = gameContext;
-        const containerCount = tileManager.getContainerCount();
-        const type = transformThresholdToType(containerCount);
+        const tileCount = tileManager.getTileCount();
+        const type = transformThresholdToType(tileCount);
         const layer = MapHelper.createLayer(size, type);
 
         return layer;

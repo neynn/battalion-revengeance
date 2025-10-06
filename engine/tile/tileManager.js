@@ -1,16 +1,15 @@
 import { Autotiler } from "./autotiler.js";
-import { TileContainer } from "./tileContainer.js";
+import { Tile } from "./tile.js";
 
 export const TileManager = function(resourceLoader) {
     this.resources = resourceLoader;
     this.autotilers = new Map();
     this.metaInversion = {};
-    this.activeContainers = [];
-    this.containers = [];
-    this.meta = [];
+    this.activeTiles = [];
+    this.tiles = [];
 }
 
-TileManager.EMPTY_CONTAINER = new TileContainer();
+TileManager.EMPTY_TILE = new Tile(-1, null, null);
 
 TileManager.TILE_ID = {
     EMPTY: 0,
@@ -23,42 +22,37 @@ TileManager.prototype.load = function(tileAtlases, tileMeta, autotilers) {
         return;
     }
 
-    this.meta = tileMeta;
     const textureMap = this.resources.createTextures(tileAtlases);
 
     for(let i = 0; i < tileMeta.length; i++) {
-        const { texture, tile } = tileMeta[i];
-        const container = new TileContainer();
+        const { type = null, autotiler = null, texture, tile } = tileMeta[i];
+        const tileID = i + 1;
+        const tileObject = new Tile(tileID, type, autotiler);
         const textureConfig = tileAtlases[texture];
 
         if(textureConfig) {
-            container.init(textureConfig, tile);
+            tileObject.init(textureConfig, tile);
         }
 
         const textureID = textureMap[texture];
-        const frameCount = container.getFrameCount();
+        const frameCount = tileObject.getFrameCount();
 
-        if(frameCount > 0) {
-            if(textureID !== undefined) {
-                const textureObject = this.resources.getTextureByID(textureID);
+        if(frameCount > 0 && textureID !== undefined) {
+            const textureObject = this.resources.getTextureByID(textureID);
 
-                container.setTexture(textureObject);
-                textureObject.addReference();
-                this.resources.loadTexture(textureID);
-            } 
+            tileObject.setTexture(textureObject);
+            textureObject.addReference();
 
-            if(frameCount > 1) {
-                this.activeContainers.push(container);
-            }
+            this.resources.loadTexture(textureID);
         }
 
-        this.containers.push(container);
+        this.tiles.push(tileObject);
 
         if(!this.metaInversion[texture]) {
             this.metaInversion[texture] = {};
         }
 
-        this.metaInversion[texture][tile] = i + 1;
+        this.metaInversion[texture][tile] = tileID;
     }
 
     if(!autotilers) {
@@ -71,30 +65,50 @@ TileManager.prototype.load = function(tileAtlases, tileMeta, autotilers) {
 
         this.autotilers.set(autotilerID, autotiler);
     }
+
+    this.enableAnimations();
+}
+
+TileManager.prototype.enableAnimations = function() {
+    this.activeTiles.length = 0;
+
+    for(let i = 0; i < this.tiles.length; i++) {
+        if(this.tiles[i].frameCount > 1) {
+            this.activeTiles.push(this.tiles[i]);
+        }
+    }
+}
+
+TileManager.prototype.disableAnimations = function() {
+    for(let i = 0; i < this.activeTiles.length; i++) {
+        this.activeTiles[i].reset();
+    }
+
+    this.activeTiles.length = 0;
 }
 
 TileManager.prototype.update = function(gameContext) {
     const { timer } = gameContext;
     const realTime = timer.getRealTime();
 
-    for(let i = 0; i < this.activeContainers.length; i++) {
-        this.activeContainers[i].updateFrameIndex(realTime);
+    for(let i = 0; i < this.activeTiles.length; i++) {
+        this.activeTiles[i].updateFrameIndex(realTime);
     }
 }
 
-TileManager.prototype.getContainer = function(tileID) {
+TileManager.prototype.getTile = function(tileID) {
     const index = tileID - 1;
 
-    if(index < 0 || index >= this.containers.length) {
-        return TileManager.EMPTY_CONTAINER;
+    if(index < 0 || index >= this.tiles.length) {
+        return TileManager.EMPTY_TILE;
     }
 
-    return this.containers[index];
+    return this.tiles[index];
 }
 
-TileManager.prototype.getContainerCount = function() {
+TileManager.prototype.getTileCount = function() {
     //+1 because 0 is treated as an empty tile -> counting begins at 1.
-    return this.containers.length + 1;
+    return this.tiles.length + 1;
 }
 
 TileManager.prototype.createAutotiler = function(config) {
@@ -161,17 +175,7 @@ TileManager.prototype.getTileID = function(atlasID, textureID) {
 TileManager.prototype.hasMeta = function(tileID) {
     const index = tileID - 1;
 
-    return index >= 0 && index < this.meta.length;
-}
-
-TileManager.prototype.getMeta = function(tileID) {
-    const index = tileID - 1;
-
-    if(index < 0 || index >= this.meta.length) {
-        return null;
-    }
-
-    return this.meta[index];
+    return index >= 0 && index < this.tiles.length;
 }
 
 TileManager.prototype.getAutotilerByID = function(autotilerID) {
@@ -185,13 +189,8 @@ TileManager.prototype.getAutotilerByID = function(autotilerID) {
 }
 
 TileManager.prototype.getAutotilerByTile = function(tileID) {
-    const tileMeta = this.getMeta(tileID);
+    const tile = this.getTile(tileID);
+    const { autotiler } = tile;
 
-    if(tileMeta) {
-        const { autotiler = null } = tileMeta;
-
-        return this.getAutotilerByID(autotiler);
-    }
-
-    return null;
+    return this.getAutotilerByID(autotiler);
 }

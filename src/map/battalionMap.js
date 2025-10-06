@@ -47,10 +47,9 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
 
         for(const layerID of layers) {
             const typeID = this.getTile(layerID, tileX, tileY);
-            const meta = tileManager.getMeta(typeID);
+            const { type } = tileManager.getTile(typeID);
 
-            if(meta) {
-                const { type = TypeRegistry.TILE_TYPE.NONE } = meta;
+            if(type !== null) {
                 const climate = TypeHelper.getClimateType(gameContext, type);
 
                 if(climate !== TypeRegistry.CLIMATE_TYPE.NONE) {
@@ -79,10 +78,9 @@ BattalionMap.prototype.getTerrainTags = function(gameContext, tileX, tileY) {
 
     for(const layerID of layers) {
         const typeID = this.getTile(layerID, tileX, tileY);
-        const meta = tileManager.getMeta(typeID);
+        const { type } = tileManager.getTile(typeID);
 
-        if(meta) {
-            const { type = TypeRegistry.TILE_TYPE.NONE } = meta;
+        if(type !== null) {
             const terrainTags = TypeHelper.getTerrainTags(gameContext, type);
 
             for(let i = 0; i < terrainTags.length; i++) {
@@ -104,14 +102,10 @@ BattalionMap.prototype.getTileType = function(gameContext, tileX, tileY) {
 
     for(const layerID of layers) {
         const typeID = this.getTile(layerID, tileX, tileY);
-        const meta = tileManager.getMeta(typeID);
+        const { type } = tileManager.getTile(typeID);
 
-        if(meta) {
-            const { type = TypeRegistry.TILE_TYPE.NONE } = meta;
-
-            if(type !== TypeRegistry.TILE_TYPE.NONE) {
-                return type;
-            }
+        if(type !== null && type !== TypeRegistry.TILE_TYPE.NONE) {
+            return type;
         }
     }
 

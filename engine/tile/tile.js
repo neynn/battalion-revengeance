@@ -1,19 +1,22 @@
 import { TextureRegistry } from "../resources/textureRegistry.js";
 
-export const TileContainer = function() {
+export const Tile = function(id, type, autotiler) {
+    this.id = id;
+    this.type = type;
+    this.autotiler = autotiler;
     this.texture = TextureRegistry.EMPTY_ATLAS_TEXTURE;
     this.frames = [];
-    this.frameTime = TileContainer.DEFAULT.FRAME_TIME;
+    this.frameTime = Tile.DEFAULT.FRAME_TIME;
     this.frameIndex = 0;
     this.frameCount = 0;
     this.frameTimeTotal = 1;
 }
 
-TileContainer.DEFAULT = {
+Tile.DEFAULT = {
     FRAME_TIME: 1
 };
 
-TileContainer.createComponent = function(x, y, w, h, offsetX, offsetY) {
+Tile.createComponent = function(x, y, w, h, offsetX, offsetY) {
     return {
         "frameX": x,
         "frameY": y,
@@ -24,7 +27,7 @@ TileContainer.createComponent = function(x, y, w, h, offsetX, offsetY) {
     }
 }
 
-TileContainer.createFrame = function(frameData) {
+Tile.createFrame = function(frameData) {
     if(!frameData) {
         console.warn("FrameData does not exist!");
         return [];
@@ -33,12 +36,12 @@ TileContainer.createFrame = function(frameData) {
     const { x, y, w, h, offset } = frameData;
     const offsetX = (offset?.x ?? 0);
     const offsetY = (offset?.y ?? 0);
-    const component = TileContainer.createComponent(x, y, w, h, offsetX, offsetY);
+    const component = Tile.createComponent(x, y, w, h, offsetX, offsetY);
     
     return [component];
 }
 
-TileContainer.createPatternFrame = function(pattern, frames) {
+Tile.createPatternFrame = function(pattern, frames) {
     const frame = [];
 
     if(!pattern) {
@@ -57,7 +60,7 @@ TileContainer.createPatternFrame = function(pattern, frames) {
         const { x, y, w, h, offset } = frameData;
         const offsetX = (offset?.x ?? 0) + (shiftX ?? 0);
         const offsetY = (offset?.y ?? 0) + (shiftY ?? 0);
-        const component = TileContainer.createComponent(x, y, w, h, offsetX, offsetY);
+        const component = Tile.createComponent(x, y, w, h, offsetX, offsetY);
 
         frame.push(component);
     }
@@ -65,33 +68,37 @@ TileContainer.createPatternFrame = function(pattern, frames) {
     return frame;
 }
 
-TileContainer.prototype.setTexture = function(texture) {
+Tile.prototype.setTexture = function(texture) {
     this.texture = texture;
 }
 
-TileContainer.prototype.getFrameTime = function() {
+Tile.prototype.getFrameTime = function() {
     return this.frameTime;
 }
 
-TileContainer.prototype.getFrameCount = function() {
+Tile.prototype.getFrameCount = function() {
     return this.frameCount;
 }
 
-TileContainer.prototype.updateFrameIndex = function(timestamp) {
+Tile.prototype.reset = function() {
+    this.frameIndex = 0;
+}
+
+Tile.prototype.updateFrameIndex = function(timestamp) {
     const currentFrameTime = timestamp % this.frameTimeTotal;
     const frameIndex = Math.floor(currentFrameTime / this.frameTime);
 
     this.frameIndex = frameIndex;
 }
 
-TileContainer.prototype.setFrameTime = function(frameTime) {
+Tile.prototype.setFrameTime = function(frameTime) {
     if(frameTime && frameTime > 0) {
         this.frameTime = frameTime;
         this.updateTotalFrameTime();
     }
 }
 
-TileContainer.prototype.addFrame = function(frame) {
+Tile.prototype.addFrame = function(frame) {
     if(frame && frame.length > 0) {
         this.frames.push(frame);
         this.frameCount++;
@@ -99,7 +106,7 @@ TileContainer.prototype.addFrame = function(frame) {
     }
 }
 
-TileContainer.prototype.getFrame = function(index) {
+Tile.prototype.getFrame = function(index) {
     if(index < 0 || index >= this.frames.length) {
         return null;
     }
@@ -107,7 +114,7 @@ TileContainer.prototype.getFrame = function(index) {
     return this.frames[index];
 }
 
-TileContainer.prototype.updateTotalFrameTime = function() {
+Tile.prototype.updateTotalFrameTime = function() {
     const frameTimeTotal = this.frameTime * this.frameCount;
 
     if(frameTimeTotal <= 0) {
@@ -117,14 +124,14 @@ TileContainer.prototype.updateTotalFrameTime = function() {
     }
 }
 
-TileContainer.prototype.init = function(atlas, graphicID) {
+Tile.prototype.init = function(atlas, graphicID) {
     const { regions = {}, patterns = {}, animations = {} } = atlas;
     const frameData = regions[graphicID];
 
     if(frameData) {
-        const frame = TileContainer.createFrame(frameData);
+        const frame = Tile.createFrame(frameData);
 
-        this.setFrameTime(TileContainer.DEFAULT.FRAME_TIME);
+        this.setFrameTime(Tile.DEFAULT.FRAME_TIME);
         this.addFrame(frame);
         return;
     } 
@@ -132,9 +139,9 @@ TileContainer.prototype.init = function(atlas, graphicID) {
     const patternData = patterns[graphicID];
 
     if(patternData) {
-        const frame = TileContainer.createPatternFrame(patternData, regions);
+        const frame = Tile.createPatternFrame(patternData, regions);
 
-        this.setFrameTime(TileContainer.DEFAULT.FRAME_TIME);
+        this.setFrameTime(Tile.DEFAULT.FRAME_TIME);
         this.addFrame(frame);
         return;
     }
@@ -142,7 +149,7 @@ TileContainer.prototype.init = function(atlas, graphicID) {
     const animationData = animations[graphicID];
 
     if(animationData) {
-        const frameTime = animationData.frameTime ?? TileContainer.DEFAULT.FRAME_TIME;
+        const frameTime = animationData.frameTime ?? Tile.DEFAULT.FRAME_TIME;
         const animationFrames = animationData.frames ?? [];
 
         this.setFrameTime(frameTime);
@@ -152,7 +159,7 @@ TileContainer.prototype.init = function(atlas, graphicID) {
             const frameData = regions[frameID];
 
             if(frameData) {
-                const frame = TileContainer.createFrame(frameData);
+                const frame = Tile.createFrame(frameData);
 
                 this.addFrame(frame);
                 continue;
@@ -161,7 +168,7 @@ TileContainer.prototype.init = function(atlas, graphicID) {
             const patternData = patterns[frameID];
 
             if(patternData) {
-                const frame = TileContainer.createPatternFrame(patternData, regions);
+                const frame = Tile.createPatternFrame(patternData, regions);
 
                 this.addFrame(frame);
                 continue;

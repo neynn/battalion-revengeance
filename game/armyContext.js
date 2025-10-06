@@ -153,7 +153,7 @@ ArmyContext.prototype.getConversionID = function(tileID, teamID) {
 } 
 
 ArmyContext.prototype.getAnimationForm = function(tileID) {
-    const tileMeta = this.tileManager.getMeta(tileID);
+    const tileMeta = this.tileManager.getTile(tileID);
 
     if(tileMeta) {
         const { texture, tile } = tileMeta;

@@ -70,11 +70,11 @@ ArmyCamera.prototype.drawDrops = function(display, worldMap) {
 
 ArmyCamera.prototype.initCustomLayers = function(gameContext) {
     const { tileManager } = gameContext;
-    const containerCount = tileManager.getContainerCount();
+    const tileCount = tileManager.getTileCount();
     const bufferSize = this.mapWidth * this.mapHeight;
 
     for(let i = 0; i < this.customLayers.length; i++) {
-        this.customLayers[i].initBuffer(bufferSize, containerCount);
+        this.customLayers[i].initBuffer(bufferSize, tileCount);
     }
 }
 

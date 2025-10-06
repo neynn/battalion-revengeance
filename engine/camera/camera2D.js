@@ -59,8 +59,8 @@ Camera2D.prototype.drawEmptyTile = function(context, renderX, renderY) {
 }
 
 Camera2D.prototype.drawTileSafe = function(tileManager, tileID, context, renderX, renderY) {
-    const container = tileManager.getContainer(tileID);
-    const { texture, frames, frameIndex } = container;
+    const tile = tileManager.getTile(tileID);
+    const { texture, frames, frameIndex } = tile;
     const { bitmap } = texture;
 
     if(bitmap === null) {
