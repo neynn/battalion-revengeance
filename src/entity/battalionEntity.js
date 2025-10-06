@@ -8,15 +8,15 @@ import { EntityFlagMap } from "./flagMap.js";
 export const BattalionEntity = function(id, sprite) {
     Entity.call(this, id, "");
 
-    this.hp = 1;
-    this.maxHP = 1;
+    this.health = 1;
+    this.maxHealth = 1;
     this.damage = 0;
     this.range = 0;
     this.morale = 0;
     this.weaponType = TypeRegistry.WEAPON_TYPE.NONE;
     this.armorType = TypeRegistry.ARMOR_TYPE.NONE;
-    this.movementSpeed = 0;
-    this.movementRange = 2;
+    this.movementSpeed = 56;
+    this.movementRange = 1;
     this.movementType = TypeRegistry.MOVEMENT_TYPE.STATIONARY;
     this.customName = null;
     this.customDesc = null;
@@ -63,6 +63,19 @@ BattalionEntity.SPRITE_TYPE = {
 
 BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
+
+BattalionEntity.prototype.loadConfig = function(config) {
+    const { health, movementRange, movementType, damage, weaponType, armorType } = config;
+
+    this.config = config;
+    this.health = health ?? 1;
+    this.maxHealth = health ?? 1;
+    this.damage = damage ?? 0;
+    this.weaponType = TypeRegistry.WEAPON_TYPE[weaponType] ? weaponType : TypeRegistry.WEAPON_TYPE.NONE;
+    this.armorType = TypeRegistry.ARMOR_TYPE[armorType] ? armorType : TypeRegistry.ARMOR_TYPE.NONE;
+    this.movementType = TypeRegistry.MOVEMENT_TYPE[movementType] ? movementType : TypeRegistry.MOVEMENT_TYPE.STATIONARY;
+    this.movementRange = movementRange ?? 1;
+}
 
 BattalionEntity.prototype.setCustomText = function(name, desc) {
     if(name) {
@@ -275,7 +288,7 @@ BattalionEntity.prototype.isSelectable = function() {
 }
 
 BattalionEntity.prototype.isDead = function() {
-    return this.hp <= 0;
+    return this.health <= 0;
 }
 
 const mGetLowestCostNode = function(queue) {

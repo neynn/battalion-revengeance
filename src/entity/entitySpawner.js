@@ -46,7 +46,7 @@ export const EntitySpawner = {
             const entitySprite = new SchemaSprite();
             const entityObject = new BattalionEntity(entityID, entitySprite);
 
-            entityObject.setConfig(entityType);
+            entityObject.loadConfig(entityType);
             entityObject.setDirectionByName(direction);
 
             const spriteID = entityObject.getSpriteID();

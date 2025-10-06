@@ -124,9 +124,9 @@ Tile.prototype.updateTotalFrameTime = function() {
     }
 }
 
-Tile.prototype.init = function(atlas, graphicID) {
-    const { regions = {}, patterns = {}, animations = {} } = atlas;
-    const frameData = regions[graphicID];
+Tile.prototype.init = function(texture, regionID) {
+    const { regions = {}, patterns = {}, animations = {} } = texture;
+    const frameData = regions[regionID];
 
     if(frameData) {
         const frame = Tile.createFrame(frameData);
@@ -136,7 +136,7 @@ Tile.prototype.init = function(atlas, graphicID) {
         return;
     } 
 
-    const patternData = patterns[graphicID];
+    const patternData = patterns[regionID];
 
     if(patternData) {
         const frame = Tile.createPatternFrame(patternData, regions);
@@ -146,7 +146,7 @@ Tile.prototype.init = function(atlas, graphicID) {
         return;
     }
 
-    const animationData = animations[graphicID];
+    const animationData = animations[regionID];
 
     if(animationData) {
         const frameTime = animationData.frameTime ?? Tile.DEFAULT.FRAME_TIME;
