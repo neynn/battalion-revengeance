@@ -67,29 +67,23 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
 }
 
 BattalionMap.prototype.getTerrainTags = function(gameContext, tileX, tileY) {
-    const tags = new Set();
-
     if(this.isTileOutOfBounds(tileX, tileY)) {
-        return tags;
+        return [];
     }
 
     const { tileManager } = gameContext;
-    const layers = [BattalionMap.LAYER.GROUND, BattalionMap.LAYER.DECORATION, BattalionMap.LAYER.CLOUD];
+    const layers = [BattalionMap.LAYER.CLOUD, BattalionMap.LAYER.DECORATION, BattalionMap.LAYER.GROUND];
 
     for(const layerID of layers) {
         const typeID = this.getTile(layerID, tileX, tileY);
         const { type } = tileManager.getTile(typeID);
 
-        if(type !== null) {
-            const terrainTags = TypeHelper.getTerrainTags(gameContext, type);
-
-            for(let i = 0; i < terrainTags.length; i++) {
-                tags.add(terrainTags[i]);
-            }
+        if(type !== null && type !== TypeRegistry.TILE_TYPE.NONE) {
+            return TypeHelper.getTerrainTags(gameContext, type);
         }
     }
 
-    return tags;
+    return [];
 }
 
 BattalionMap.prototype.getTileType = function(gameContext, tileX, tileY) {

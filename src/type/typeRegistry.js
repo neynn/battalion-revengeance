@@ -315,6 +315,7 @@ TypeRegistry.TILE_TYPE = {
     ROCKS: "ROCKS",
     RIVER: "RIVER",
     ROAD: "ROAD",
+    BRIDGE: "BRIDGE",
     VOLCANO: "VOLCANO"
 };
 

@@ -27,6 +27,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "battle_cruiser_idle_right",
             "idle_left": "battle_cruiser_idle_left",
@@ -46,6 +47,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "condor_bomber_idle_right",
             "idle_left": "condor_bomber_idle_left",
@@ -65,6 +67,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "corvette_fighter_idle_right",
             "idle_left": "corvette_fighter_idle_left",
@@ -84,6 +87,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "flak_tank_idle_right",
             "idle_left": "flak_tank_idle_left",
@@ -103,6 +107,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "heavy_commando_idle_right",
             "idle_left": "heavy_commando_idle_left",
@@ -122,6 +127,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "hunter_support_idle_right",
             "idle_left": "hunter_support_idle_left",
@@ -141,6 +147,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "intrepid_idle_right",
             "idle_left": "intrepid_idle_left",
@@ -160,6 +167,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "lancer_tank_idle_right",
             "idle_left": "lancer_tank_idle_left",
@@ -179,6 +187,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "mortar_truck_idle_right",
             "idle_left": "mortar_truck_idle_left",
@@ -198,6 +207,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "raptor_fighter_idle_right",
             "idle_left": "raptor_fighter_idle_left",
@@ -217,6 +227,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "rocket_truck_idle_right",
             "idle_left": "rocket_truck_idle_left",
@@ -236,6 +247,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "scorpion_tank_idle_right",
             "idle_left": "scorpion_tank_idle_left",
@@ -255,6 +267,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "spider_tank_idle_right",
             "idle_left": "spider_tank_idle_left",
@@ -274,6 +287,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "stealth_tank_idle_right",
             "idle_left": "stealth_tank_idle_left",
@@ -293,6 +307,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "strike_commando_idle_right",
             "idle_left": "strike_commando_idle_left",
@@ -312,6 +327,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "turret_idle_right",
             "idle_left": "turret_idle_left",
@@ -331,6 +347,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "u_boat_idle_right",
             "idle_left": "u_boat_idle_left",
@@ -350,6 +367,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "vulture_drone_idle_right",
             "idle_left": "vulture_drone_idle_left",
@@ -369,6 +387,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "warmachine_idle_right",
             "idle_left": "warmachine_idle_left",
@@ -388,6 +407,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "albatross_transport_idle_right",
             "idle_left": "albatross_transport_idle_left",
@@ -403,6 +423,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "blockade_idle_right",
             "idle_left": "blockade_idle_left",
@@ -418,6 +439,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "jammer_truck_idle_right",
             "idle_left": "jammer_truck_idle_left",
@@ -433,6 +455,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "traits": [],
         "sprites": {
             "idle_right": "leviathan_barge_idle_right",
             "idle_left": "leviathan_barge_idle_left",

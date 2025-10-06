@@ -9,5 +9,6 @@
     "ROCKS": { "name": "TILE_NAME_ROCKS", "desc": "TILE_DESC_ROCKS", "climate": "NONE", "terrain": [] },
     "RIVER": { "name": "TILE_NAME_RIVER", "desc": "TILE_DESC_RIVER", "climate": "NONE", "terrain": [] },
     "ROAD": { "name": "TILE_NAME_ROAD", "desc": "TILE_DESC_ROAD", "climate": "NONE", "terrain": [] },
+    "BRIDGE": { "name": "TILE_NAME_BRIDGE", "desc": "TILE_DESC_BRIDGE", "climate": "NONE", "terrain": [] },
     "VOLCANO": { "name": "TILE_NAME_VOLCANO", "desc": "TILE_DESC_VOLCANO", "climate": "HELLISH", "terrain": [] }
 }
