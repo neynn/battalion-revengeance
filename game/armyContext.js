@@ -156,12 +156,11 @@ ArmyContext.prototype.getAnimationForm = function(tileID) {
     const tileMeta = this.tileManager.getMeta(tileID);
 
     if(tileMeta) {
-        const { graphics } = tileMeta;
-        const [atlas, texture] = graphics;
-        const setForm = this.resources.tileFormConditions[atlas];
+        const { texture, tile } = tileMeta;
+        const setForm = this.resources.tileFormConditions[texture];
 
         if(setForm) {
-            const animationForm = setForm[texture];
+            const animationForm = setForm[tile];
 
             if(animationForm) {
                 return animationForm;

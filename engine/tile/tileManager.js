@@ -27,16 +27,15 @@ TileManager.prototype.load = function(tileAtlases, tileMeta, autotilers) {
     const textureMap = this.resources.createTextures(tileAtlases);
 
     for(let i = 0; i < tileMeta.length; i++) {
-        const { graphics } = tileMeta[i];
-        const [atlasID, frameID] = graphics;
+        const { texture, tile } = tileMeta[i];
         const container = new TileContainer();
-        const atlasConfig = tileAtlases[atlasID];
+        const textureConfig = tileAtlases[texture];
 
-        if(atlasConfig) {
-            container.init(atlasConfig, frameID);
+        if(textureConfig) {
+            container.init(textureConfig, tile);
         }
 
-        const textureID = textureMap[atlasID];
+        const textureID = textureMap[texture];
         const frameCount = container.getFrameCount();
 
         if(frameCount > 0) {
@@ -55,11 +54,11 @@ TileManager.prototype.load = function(tileAtlases, tileMeta, autotilers) {
 
         this.containers.push(container);
 
-        if(!this.metaInversion[atlasID]) {
-            this.metaInversion[atlasID] = {};
+        if(!this.metaInversion[texture]) {
+            this.metaInversion[texture] = {};
         }
 
-        this.metaInversion[atlasID][frameID] = i + 1;
+        this.metaInversion[texture][tile] = i + 1;
     }
 
     if(!autotilers) {
@@ -68,8 +67,7 @@ TileManager.prototype.load = function(tileAtlases, tileMeta, autotilers) {
     }
     
     for(const autotilerID in autotilers) {
-        const config = autotilers[autotilerID];
-        const autotiler = this.createAutotiler(config);
+        const autotiler = this.createAutotiler(autotilers[autotilerID]);
 
         this.autotilers.set(autotilerID, autotiler);
     }
@@ -189,12 +187,11 @@ TileManager.prototype.getAutotilerByID = function(autotilerID) {
 TileManager.prototype.getAutotilerByTile = function(tileID) {
     const tileMeta = this.getMeta(tileID);
 
-    if(!tileMeta) {
-        return null;
+    if(tileMeta) {
+        const { autotiler = null } = tileMeta;
+
+        return this.getAutotilerByID(autotiler);
     }
 
-    const autotilerID = tileMeta.autotiler;
-    const autotiler = this.getAutotilerByID(autotilerID);
-
-    return autotiler;
+    return null;
 }

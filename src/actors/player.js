@@ -1,6 +1,7 @@
 import { ContextHelper } from "../../engine/camera/contextHelper.js";
 import { EntityHelper } from "../../engine/entity/entityHelper.js";
 import { StateMachine } from "../../engine/state/stateMachine.js";
+import { TypeRegistry } from "../type/typeRegistry.js";
 import { BattalionActor } from "./battalionActor.js";
 import { IdleState } from "./player/idle.js";
 import { SelectState } from "./player/select.js";
@@ -121,7 +122,7 @@ Player.prototype.addNodeMapRender = function(nodeMap) {
 
     for(const [index, node] of nodeMap) {
         const { x, y, flags } = node;
-        const id = flags === -1 ? 2 : 1;
+        const id = flags === -1 ? TypeRegistry.TILE_ID.OVERLAY_ATTACK : TypeRegistry.TILE_ID.OVERLAY_MOVE;
     
         this.camera.selectOverlay.add(id, x, y);
     }
