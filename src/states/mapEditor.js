@@ -17,8 +17,10 @@ MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
     const context = CameraHelper.createEditCamera(gameContext);
     const camera = context.getCamera();
     const mapEditor = new BattalionMapEditor();
-    const controller = new BattaltionEditorController(mapEditor, tileManager.getInversion());
+    const controller = new BattaltionEditorController(mapEditor);
+    const hiddenSets = [];
 
+    mapEditor.initBrushSets(tileManager.getInversion(), hiddenSets);
     mapEditor.events.on(MapEditor.EVENT.BRUSH_UPDATE, (brush) => camera.onBrushUpdate(brush));
     mapEditor.events.on(MapEditor.EVENT.PALLET_UPDATE, (pallet) => console.log(pallet));
  

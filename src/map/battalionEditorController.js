@@ -4,7 +4,7 @@ import { BattalionContext } from "../battalionContext.js";
 import { BattalionMap } from "./battalionMap.js";
 import { MapSpawner } from "./mapSpawner.js";
 
-export const BattaltionEditorController = function(mapEditor, brushSets) {
+export const BattaltionEditorController = function(mapEditor) {
     MapEditorController.call(this, mapEditor);
 
     this.maxWidth = 100;
@@ -27,7 +27,6 @@ export const BattaltionEditorController = function(mapEditor, brushSets) {
     };
 
     this.editor.setBrushSizes([0, 1, 2, 3, 4]);
-    this.editor.initBrushSets(brushSets, []);
     this.buttonHandler.createButton(BattaltionEditorController.LAYER_BUTTON.L1, BattalionMap.LAYER.GROUND, "TEXT_L1");
     this.buttonHandler.createButton(BattaltionEditorController.LAYER_BUTTON.L2, BattalionMap.LAYER.DECORATION, "TEXT_L2");
     this.buttonHandler.createButton(BattaltionEditorController.LAYER_BUTTON.L3, BattalionMap.LAYER.CLOUD, "TEXT_L3");   

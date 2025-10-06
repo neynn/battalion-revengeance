@@ -333,7 +333,7 @@ ArmyMap.prototype.updateShoreTiles = function(gameContext, tileX, tileY, range) 
                 if(isFormValid) {
                     const conversionID = gameContext.getConversionID(groundID, teamID);
 
-                    if(tileManager.hasMeta(conversionID)) {
+                    if(tileManager.hasTile(conversionID)) {
                         this.placeTile(conversionID, ArmyMap.LAYER.GROUND, j, i);
                     }
                 }
@@ -351,7 +351,7 @@ ArmyMap.prototype.convertGraphicToTeam = function(gameContext, tileX, tileY) {
         const tileID = this.getTile(layerID, tileX, tileY);
         const conversionID = gameContext.getConversionID(tileID, teamID);
 
-        if(tileManager.hasMeta(conversionID)) {
+        if(tileManager.hasTile(conversionID)) {
             this.placeTile(conversionID, layerID, tileX, tileY);
         }
     }

@@ -400,9 +400,9 @@
             "ANIMATION_0": {"frameTime": 0.15, "frames": ["0", "1", "2", "3"]}
         }
     },
-    "battalion_bg": {
+    "background": {
         "directory": ["assets", "tiles", "battalion"],
-        "source": "battalion_bg.png",
+        "source": "background.png",
         "frameTime": 0.03,
         "regions": {
             "grass": {"x":0,"y":0,"w":56,"h":56},

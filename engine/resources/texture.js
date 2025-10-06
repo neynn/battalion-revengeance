@@ -46,8 +46,8 @@ Texture.prototype.loadColoredImage = function(copyBitmap, schema) {
     if(this.state === Texture.STATE.EMPTY) {
         this.state = Texture.STATE.LOADING;
 
-        const bitmapData = ColorHelper.getBitmapData(copyBitmap);
-        const mappedData = ColorHelper.mapFullColors(bitmapData, this.regions, schema);
+        const bitmapData = ColorHelper.createBitmapData(copyBitmap);
+        const mappedData = ColorHelper.mapFullBitmap(bitmapData, this.regions, schema);
 
         createImageBitmap(mappedData)
         .then(bitmap => this.setBitmapData(bitmap))

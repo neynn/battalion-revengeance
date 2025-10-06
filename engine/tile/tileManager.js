@@ -16,6 +16,15 @@ TileManager.TILE_ID = {
     INVALID: -1
 };
 
+TileManager.prototype.update = function(gameContext) {
+    const { timer } = gameContext;
+    const realTime = timer.getRealTime();
+
+    for(let i = 0; i < this.activeTiles.length; i++) {
+        this.activeTiles[i].updateFrameIndex(realTime);
+    }
+}
+
 TileManager.prototype.load = function(tileAtlases, tileMeta, autotilers) {
     if(!tileAtlases || !tileMeta) {
         console.warn("TileAtlases/TileMeta does not exist!");
@@ -66,49 +75,7 @@ TileManager.prototype.load = function(tileAtlases, tileMeta, autotilers) {
         this.autotilers.set(autotilerID, autotiler);
     }
 
-    this.enableAnimations();
-}
-
-TileManager.prototype.enableAnimations = function() {
-    this.activeTiles.length = 0;
-
-    for(let i = 0; i < this.tiles.length; i++) {
-        if(this.tiles[i].frameCount > 1) {
-            this.activeTiles.push(this.tiles[i]);
-        }
-    }
-}
-
-TileManager.prototype.disableAnimations = function() {
-    for(let i = 0; i < this.activeTiles.length; i++) {
-        this.activeTiles[i].reset();
-    }
-
-    this.activeTiles.length = 0;
-}
-
-TileManager.prototype.update = function(gameContext) {
-    const { timer } = gameContext;
-    const realTime = timer.getRealTime();
-
-    for(let i = 0; i < this.activeTiles.length; i++) {
-        this.activeTiles[i].updateFrameIndex(realTime);
-    }
-}
-
-TileManager.prototype.getTile = function(tileID) {
-    const index = tileID - 1;
-
-    if(index < 0 || index >= this.tiles.length) {
-        return TileManager.EMPTY_TILE;
-    }
-
-    return this.tiles[index];
-}
-
-TileManager.prototype.getTileCount = function() {
-    //+1 because 0 is treated as an empty tile -> counting begins at 1.
-    return this.tiles.length + 1;
+    this.enableAllTiles();
 }
 
 TileManager.prototype.createAutotiler = function(config) {
@@ -141,8 +108,66 @@ TileManager.prototype.createAutotiler = function(config) {
     return autotiler;
 }
 
+TileManager.prototype.disableTile = function(tileID) {
+    for(let i = 0; i < this.activeTiles.length; i++) {
+        if(this.activeTiles[i].id === tileID) {
+            this.activeTiles[i].reset();
+            this.activeTiles[i] = this.activeTiles[this.activeTiles.length - 1];
+            this.activeTiles.pop();
+            break;
+        }
+    }
+}
+
+TileManager.prototype.enableTile = function(tileID) {
+    const tile = this.getTile(tileID);
+
+    if(tile !== TileManager.EMPTY_TILE) {
+        for(let i = 0; i < this.activeTiles.length; i++) {
+            if(this.activeTiles[i].id === tileID) {
+                return;
+            }
+        }
+
+        this.activeTiles.push(tile);
+    }
+}
+
+TileManager.prototype.enableAllTiles = function() {
+    this.activeTiles.length = 0;
+
+    for(let i = 0; i < this.tiles.length; i++) {
+        if(this.tiles[i].frameCount > 1) {
+            this.activeTiles.push(this.tiles[i]);
+        }
+    }
+}
+
+TileManager.prototype.disableAllTiles = function() {
+    for(let i = 0; i < this.activeTiles.length; i++) {
+        this.activeTiles[i].reset();
+    }
+
+    this.activeTiles.length = 0;
+}
+
 TileManager.prototype.getInversion = function() {
     return this.metaInversion;
+}
+
+TileManager.prototype.getTile = function(tileID) {
+    const index = tileID - 1;
+
+    if(index < 0 || index >= this.tiles.length) {
+        return TileManager.EMPTY_TILE;
+    }
+
+    return this.tiles[index];
+}
+
+TileManager.prototype.getTileCount = function() {
+    //+1 because 0 is treated as an empty tile -> counting begins at 1.
+    return this.tiles.length + 1;
 }
 
 TileManager.prototype.getTileIDByArray = function(overlay) {
@@ -172,7 +197,7 @@ TileManager.prototype.getTileID = function(atlasID, textureID) {
     return tileID;
 }
 
-TileManager.prototype.hasMeta = function(tileID) {
+TileManager.prototype.hasTile = function(tileID) {
     const index = tileID - 1;
 
     return index >= 0 && index < this.tiles.length;

@@ -1,7 +1,7 @@
 [
-    { "type": "GRASS", "texture": "battalion_bg", "tile": "grass" },
-    { "type": "BOREAL", "texture": "battalion_bg", "tile": "boreal" },
-    { "type": "ARCTIC", "texture": "battalion_bg", "tile": "arctic" },
+    { "type": "GRASS", "texture": "background", "tile": "grass" },
+    { "type": "BOREAL", "texture": "background", "tile": "boreal" },
+    { "type": "ARCTIC", "texture": "background", "tile": "arctic" },
 
     { "type": "ROAD", "autotiler": "battalion_road", "texture": "road", "tile": "0" },
     { "type": "ROAD", "autotiler": "battalion_road", "texture": "road", "tile": "1" },

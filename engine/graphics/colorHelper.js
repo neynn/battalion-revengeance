@@ -33,7 +33,7 @@ export const ColorHelper = {
             }
         }
     },
-    getBitmapData: function(bitmap) {
+    createBitmapData: function(bitmap) {
         const { width, height } = bitmap;
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
@@ -68,7 +68,7 @@ export const ColorHelper = {
             }
         }
     },
-    mapFullColors: function(imageData, colorMap) {
+    mapFullBitmap: function(imageData, colorMap) {
         const { data, width, height } = imageData;
         const copy = new Uint8ClampedArray(data.length);
 
@@ -77,7 +77,7 @@ export const ColorHelper = {
 
         return new ImageData(copy, width, height);
     },
-    mapRegionColors: function(imageData, regions, colorMap) {
+    mapBitmapRegions: function(imageData, regions, colorMap) {
         const { data, width, height } = imageData;
         const copy = new Uint8ClampedArray(data.length);
 
