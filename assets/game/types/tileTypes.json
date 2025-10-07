@@ -4,83 +4,143 @@
         "desc": "TILE_DESC_NONE",
         "climate": "NONE",
         "terrain": [],
-        "passability": []
+        "passability": {}
     },
     "GRASS": {
         "name": "TILE_NAME_GRASS",
         "desc": "TILE_DESC_GRASS",
         "climate": "TEMPERATE",
         "terrain": ["UNEVEN"],
-        "passability": ["FOOT", "WHEELED", "TRACKED", "FLIGHT", "AMPHIBIOUS"]
+        "passability": {
+            "FOOT": 1,
+            "WHEELED": 1,
+            "TRACKED": 1,
+            "FLIGHT": 1,
+            "AMPHIBIOUS": 1
+        }
     },
     "BOREAL": {
         "name": "TILE_NAME_BOREAL",
         "desc": "TILE_DESC_BOREAL",
         "climate": "BOREAL",
         "terrain": ["UNEVEN"],
-        "passability": ["FOOT", "WHEELED", "TRACKED", "FLIGHT", "AMPHIBIOUS"]
+        "passability": {
+            "FOOT": 1,
+            "WHEELED": 1,
+            "TRACKED": 1,
+            "FLIGHT": 1,
+            "AMPHIBIOUS": 1
+        }
     },
     "ARCTIC": {
         "name": "TILE_NAME_ARCTIC",
         "desc": "TILE_DESC_ARCTIC",
         "climate": "ARCTIC",
         "terrain": ["UNEVEN"],
-        "passability": ["FOOT", "WHEELED", "TRACKED", "FLIGHT", "AMPHIBIOUS"]
+        "passability": {
+            "FOOT": 1,
+            "WHEELED": 1,
+            "TRACKED": 1,
+            "FLIGHT": 1,
+            "AMPHIBIOUS": 1
+        }
     },
     "SHORE": {
         "name": "TILE_NAME_SHORE",
         "desc": "TILE_DESC_SHORE",
         "climate": "NONE", 
         "terrain": ["UNEVEN"],
-        "passability": ["FOOT", "WHEELED", "TRACKED", "FLIGHT", "RUDDER", "HEAVY_RUDDER", "AMPHIBIOUS"]
+        "passability": {
+            "FOOT": 1,
+            "WHEELED": 1,
+            "TRACKED": 1,
+            "FLIGHT": 1,
+            "RUDDER": 1,
+            "HEAVY_RUDDER": 1,
+            "AMPHIBIOUS": 1
+        }
     },
     "ISLAND": {
         "name": "TILE_NAME_ISLAND",
         "desc": "TILE_DESC_ISLAND",
         "climate": "TEMPERATE",
         "terrain": [],
-        "passability": ["FLIGHT", "RUDDER", "HEAVY_RUDDER", "AMPHIBIOUS"]
+        "passability": {
+            "FLIGHT": 1,
+            "RUDDER": 1,
+            "HEAVY_RUDDER": 1,
+            "AMPHIBIOUS": 1
+        }
     },
     "SWIRL": {
         "name": "TILE_NAME_SWIRL",
         "desc": "TILE_DESC_SWIRL",
         "climate": "NONE",
         "terrain": [],
-        "passability": ["FLIGHT", "RUDDER", "HEAVY_RUDDER", "AMPHIBIOUS"]
+        "passability": {
+            "FLIGHT": 1,
+            "RUDDER": 1,
+            "HEAVY_RUDDER": 1,
+            "AMPHIBIOUS": 1
+        }
     },
     "ROCKS": {
         "name": "TILE_NAME_ROCKS",
         "desc": "TILE_DESC_ROCKS",
         "climate": "NONE",
         "terrain": [],
-        "passability": ["FLIGHT", "RUDDER", "HEAVY_RUDDER", "AMPHIBIOUS"]
+        "passability": {
+            "FLIGHT": 1,
+            "RUDDER": 1,
+            "HEAVY_RUDDER": 1,
+            "AMPHIBIOUS": 1
+        }
     },
     "RIVER": {
         "name": "TILE_NAME_RIVER",
         "desc": "TILE_DESC_RIVER",
         "climate": "NONE",
         "terrain": [],
-        "passability": ["FLIGHT", "RUDDER", "HEAVY_RUDDER", "AMPHIBIOUS"]
+        "passability": {
+            "FLIGHT": 1,
+            "RUDDER": 1,
+            "HEAVY_RUDDER": 1,
+            "AMPHIBIOUS": 1
+        }
     },
     "ROAD": {
         "name": "TILE_NAME_ROAD",
         "desc": "TILE_DESC_ROAD",
         "climate": "NONE",
         "terrain": [],
-        "passability": ["FOOT", "WHEELED", "TRACKED", "FLIGHT", "AMPHIBIOUS"]
+        "passability": {
+            "FOOT": 1,
+            "WHEELED": 1,
+            "TRACKED": 1,
+            "FLIGHT": 1,
+            "AMPHIBIOUS": 1
+        }
     },
     "BRIDGE": {
         "name": "TILE_NAME_BRIDGE",
         "desc": "TILE_DESC_BRIDGE",
         "climate": "NONE",
         "terrain": [],
-        "passability": ["FOOT", "WHEELED", "TRACKED", "FLIGHT", "RUDDER", "HEAVY_RUDDER", "AMPHIBIOUS"]
+        "passability": {
+            "FOOT": 1,
+            "WHEELED": 1,
+            "TRACKED": 1,
+            "FLIGHT": 1,
+            "RUDDER": 1,
+            "HEAVY_RUDDER": 1,
+            "AMPHIBIOUS": 1
+        }
     },
     "VOLCANO": {
         "name": "TILE_NAME_VOLCANO",
         "desc": "TILE_DESC_VOLCANO",
         "climate": "HELLISH",
         "terrain": [],
-        "passability": []
+        "passability": {}
     }
 }

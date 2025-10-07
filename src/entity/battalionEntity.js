@@ -30,6 +30,8 @@ export const BattalionEntity = function(id, sprite) {
     this.traits = [];
 }
 
+BattalionEntity.MAX_MOVE_COST = 999;
+
 BattalionEntity.DIRECTION_TYPE = {
     NORTH: "NORTH",
     EAST: "EAST",
@@ -357,7 +359,6 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
             const neighborID = worldMap.getIndex(neighborX, neighborY);
 
             if(neighborID !== -1) {
-                let nextCost = 1;
                 let tileType = typeCache.get(neighborID);
 
                 if(!tileType) {
@@ -366,10 +367,8 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
                 }
                 
                 const { terrain, passability } = tileType;
+                let nextCost = passability[this.movementType] ?? BattalionEntity.MAX_MOVE_COST;
 
-                if(!passability.includes(this.movementType)) {
-                    nextCost += 99;
-                }
                 //TODO: Implement pathfinding updates.
                 if(tileType.terrain.includes(TypeRegistry.TERRAIN_TYPE.UNEVEN)) {
                     nextCost += 0.2;
