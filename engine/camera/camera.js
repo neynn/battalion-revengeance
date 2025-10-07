@@ -11,6 +11,7 @@ export const Camera = function() {
     this.worldHeight = 0;
     this.viewportMode = Camera.VIEWPORT_MODE.DRAG;
     this.viewportType = Camera.VIEWPORT_TYPE.BOUND;
+    this.isActive = true;
 }
 
 Camera.VIEWPORT_TYPE = {
@@ -25,6 +26,14 @@ Camera.VIEWPORT_MODE = {
 };
 
 Camera.prototype.update = function(gameContext, renderContext) {}
+
+Camera.prototype.disable = function() {
+    this.isActive = false;
+}
+
+Camera.prototype.enable = function() {
+    this.isActive = true;
+}
 
 Camera.prototype.floorRenderCoordinates = function() {
     this.screenX = Math.floor(this.viewportX);

@@ -469,5 +469,7 @@ BattalionEntity.prototype.getDamageTo = function(gameContext, target) {
         const { moveDamage, armorDamage } = traitType;
     }
 
+    //TODO: Special logic like "Absorber", "Suicide", "SupplyDistribution"
+
     return damage;
 }

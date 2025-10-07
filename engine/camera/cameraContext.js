@@ -230,6 +230,10 @@ CameraContext.prototype.setResolution = function(width, height) {
 }
 
 CameraContext.prototype.update = function(gameContext, display) {
+    if(!this.camera.isActive) {
+        return;
+    }
+    
     switch(this.displayMode) { 
         case CameraContext.DISPLAY_MODE.RESOLUTION_DEPENDENT: {
             display.translate(this.positionX, this.positionY);
