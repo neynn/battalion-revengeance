@@ -12,7 +12,8 @@ export const BattalionEntity = function(id, sprite) {
     this.maxHealth = 1;
     this.damage = 0;
     this.range = 0;
-    this.morale = 0;
+    this.moraleAmplifier = 1;
+    this.moraleType = TypeRegistry.MORALE_TYPE.NONE;
     this.weaponType = TypeRegistry.WEAPON_TYPE.NONE;
     this.armorType = TypeRegistry.ARMOR_TYPE.NONE;
     this.movementSpeed = 56;
@@ -31,7 +32,7 @@ export const BattalionEntity = function(id, sprite) {
     this.traits = [];
 }
 
-BattalionEntity.MAX_MOVE_COST = 999;
+BattalionEntity.MAX_MOVE_COST = 99;
 
 BattalionEntity.DIRECTION_TYPE = {
     NORTH: "NORTH",
@@ -434,7 +435,7 @@ BattalionEntity.prototype.getPath = function(gameContext, nodes, targetX, target
     let lastY = targetY;
     let currentNode = nodes.get(targetNode.parent);
 
-    while(currentNode !== undefined && i < 100) {
+    while(currentNode !== undefined && i < BattalionEntity.MAX_MOVE_COST) {
         const { x, y, parent } = currentNode;
         const deltaX = lastX - x;
         const deltaY = lastY - y;
@@ -457,19 +458,24 @@ BattalionEntity.prototype.getPath = function(gameContext, nodes, targetX, target
 
 BattalionEntity.prototype.getDamageTo = function(gameContext, target) {
     const { typeRegistry } = gameContext;
+    const weaponType = typeRegistry.getType(this.weaponType, TypeRegistry.CATEGORY.WEAPON);
 
     let damage = this.damage;
-    const weaponType = typeRegistry.getType(this.weaponType, TypeRegistry.CATEGORY.WEAPON);
-    const armorMultiplier = weaponType.armor[target.armorType] ?? 1;
 
-    damage *= armorMultiplier;
+    damage *= weaponType.armor[target.armorType] ?? 1;
+    damage *= this.moraleAmplifier;
 
     for(let i = 0; i < this.traits.length; i++) {
         const traitType = typeRegistry.getType(this.traits[i], TypeRegistry.CATEGORY.TRAIT);
         const { moveDamage, armorDamage } = traitType;
+        const moveAmplifier = moveDamage[target.movementType] ?? 1;
+        const armorAmpligier = armorDamage[target.armorType] ?? 1;
+
+        damage *= moveAmplifier;
+        damage *= armorAmpligier;
     }
 
-    //TODO: Special logic like "Absorber", "Suicide", "SupplyDistribution"
+    //TODO: Special logic like "Absorber", "Suicide", "SupplyDistribution".
 
     return damage;
 }

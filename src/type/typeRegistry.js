@@ -119,7 +119,8 @@ export const TypeRegistry = function() {
         [TypeRegistry.CATEGORY.POWER]: new TypeCategory(TypeRegistry.CATEGORY.POWER, TypeRegistry.POWER_TYPE),
         [TypeRegistry.CATEGORY.CURRENCY]: new TypeCategory(TypeRegistry.CATEGORY.CURRENCY, TypeRegistry.CURRENCY_TYPE),
         [TypeRegistry.CATEGORY.FACTION]: new TypeCategory(TypeRegistry.CATEGORY.FACTION, TypeRegistry.FACTION_TYPE),
-        [TypeRegistry.CATEGORY.BUILDING]: new TypeCategory(TypeRegistry.CATEGORY.BUILDING, TypeRegistry.BUILDING_TYPE)
+        [TypeRegistry.CATEGORY.BUILDING]: new TypeCategory(TypeRegistry.CATEGORY.BUILDING, TypeRegistry.BUILDING_TYPE),
+        [TypeRegistry.CATEGORY.MORALE]: new TypeCategory(TypeRegistry.CATEGORY.MORALE, TypeRegistry.MORALE_TYPE)
     };
 
     this.loadCategory(SCHEMA_TYPES, TypeRegistry.CATEGORY.SCHEMA);
@@ -130,6 +131,10 @@ TypeRegistry.LAYER_TYPE = {
     SEA: 1,
     LAND: 2,
     COUNT: 3
+};
+
+TypeRegistry.MORALE_TYPE = {
+    NONE: "NONE"
 };
 
 TypeRegistry.TILE_ID = {
@@ -204,7 +209,8 @@ TypeRegistry.CATEGORY = {
     POWER: "POWER",
     CURRENCY: "CURRENCY",
     FACTION: "FACTION",
-    BUILDING: "BUILDING"
+    BUILDING: "BUILDING",
+    MORALE: "MORALE"
 };
 
 TypeRegistry.BUILDING_TYPE = {
