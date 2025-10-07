@@ -454,3 +454,20 @@ BattalionEntity.prototype.getPath = function(gameContext, nodes, targetX, target
 
     return path.reverse();
 }
+
+BattalionEntity.prototype.getDamageTo = function(gameContext, target) {
+    const { typeRegistry } = gameContext;
+
+    let damage = this.damage;
+    const weaponType = typeRegistry.getType(this.weaponType, TypeRegistry.CATEGORY.WEAPON);
+    const armorMultiplier = weaponType.armor[target.armorType] ?? 1;
+
+    damage *= armorMultiplier;
+
+    for(let i = 0; i < this.traits.length; i++) {
+        const traitType = typeRegistry.getType(this.traits[i], TypeRegistry.CATEGORY.TRAIT);
+        const { moveDamage, armorDamage } = traitType;
+    }
+
+    return damage;
+}
