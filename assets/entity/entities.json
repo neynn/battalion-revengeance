@@ -6,7 +6,7 @@
         "weaponType": "NONE",
         "armorType": "NONE",
         "movementRange": 3,
-        "movementType": "STATIONARY",
+        "movementType": "TRACKED",
         "traits": ["INERTIAL"],
         "sprites": {
             "idle_right": "annihilator_tank_idle_right",

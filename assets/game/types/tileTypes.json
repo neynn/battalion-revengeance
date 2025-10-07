@@ -1,14 +1,86 @@
 {
-    "NONE": { "name": "TILE_NAME_NONE", "desc": "TILE_DESC_NONE", "climate": "NONE", "terrain": [] },
-    "GRASS": { "name": "TILE_NAME_GRASS", "desc": "TILE_DESC_GRASS", "climate": "TEMPERATE", "terrain": ["UNEVEN"] },
-    "BOREAL": { "name": "TILE_NAME_BOREAL", "desc": "TILE_DESC_BOREAL", "climate": "BOREAL", "terrain": ["UNEVEN"] },
-    "ARCTIC": { "name": "TILE_NAME_ARCTIC", "desc": "TILE_DESC_ARCTIC", "climate": "ARCTIC", "terrain": ["UNEVEN"] },
-    "SHORE": { "name": "TILE_NAME_SHORE", "desc": "TILE_DESC_SHORE", "climate": "NONE", "terrain": ["UNEVEN"] },
-    "ISLAND": { "name": "TILE_NAME_ISLAND", "desc": "TILE_DESC_ISLAND", "climate": "TEMPERATE", "terrain": [] },
-    "SWIRL": { "name": "TILE_NAME_SWIRL", "desc": "TILE_DESC_SWIRL", "climate": "NONE", "terrain": [] },
-    "ROCKS": { "name": "TILE_NAME_ROCKS", "desc": "TILE_DESC_ROCKS", "climate": "NONE", "terrain": [] },
-    "RIVER": { "name": "TILE_NAME_RIVER", "desc": "TILE_DESC_RIVER", "climate": "NONE", "terrain": [] },
-    "ROAD": { "name": "TILE_NAME_ROAD", "desc": "TILE_DESC_ROAD", "climate": "NONE", "terrain": [] },
-    "BRIDGE": { "name": "TILE_NAME_BRIDGE", "desc": "TILE_DESC_BRIDGE", "climate": "NONE", "terrain": [] },
-    "VOLCANO": { "name": "TILE_NAME_VOLCANO", "desc": "TILE_DESC_VOLCANO", "climate": "HELLISH", "terrain": [] }
+    "NONE": { 
+        "name": "TILE_NAME_NONE",
+        "desc": "TILE_DESC_NONE",
+        "climate": "NONE",
+        "terrain": [],
+        "passability": []
+    },
+    "GRASS": {
+        "name": "TILE_NAME_GRASS",
+        "desc": "TILE_DESC_GRASS",
+        "climate": "TEMPERATE",
+        "terrain": ["UNEVEN"],
+        "passability": ["FOOT", "WHEELED", "TRACKED", "FLIGHT", "AMPHIBIOUS"]
+    },
+    "BOREAL": {
+        "name": "TILE_NAME_BOREAL",
+        "desc": "TILE_DESC_BOREAL",
+        "climate": "BOREAL",
+        "terrain": ["UNEVEN"],
+        "passability": ["FOOT", "WHEELED", "TRACKED", "FLIGHT", "AMPHIBIOUS"]
+    },
+    "ARCTIC": {
+        "name": "TILE_NAME_ARCTIC",
+        "desc": "TILE_DESC_ARCTIC",
+        "climate": "ARCTIC",
+        "terrain": ["UNEVEN"],
+        "passability": ["FOOT", "WHEELED", "TRACKED", "FLIGHT", "AMPHIBIOUS"]
+    },
+    "SHORE": {
+        "name": "TILE_NAME_SHORE",
+        "desc": "TILE_DESC_SHORE",
+        "climate": "NONE", 
+        "terrain": ["UNEVEN"],
+        "passability": ["FOOT", "WHEELED", "TRACKED", "FLIGHT", "RUDDER", "HEAVY_RUDDER", "AMPHIBIOUS"]
+    },
+    "ISLAND": {
+        "name": "TILE_NAME_ISLAND",
+        "desc": "TILE_DESC_ISLAND",
+        "climate": "TEMPERATE",
+        "terrain": [],
+        "passability": ["FLIGHT", "RUDDER", "HEAVY_RUDDER", "AMPHIBIOUS"]
+    },
+    "SWIRL": {
+        "name": "TILE_NAME_SWIRL",
+        "desc": "TILE_DESC_SWIRL",
+        "climate": "NONE",
+        "terrain": [],
+        "passability": ["FLIGHT", "RUDDER", "HEAVY_RUDDER", "AMPHIBIOUS"]
+    },
+    "ROCKS": {
+        "name": "TILE_NAME_ROCKS",
+        "desc": "TILE_DESC_ROCKS",
+        "climate": "NONE",
+        "terrain": [],
+        "passability": ["FLIGHT", "RUDDER", "HEAVY_RUDDER", "AMPHIBIOUS"]
+    },
+    "RIVER": {
+        "name": "TILE_NAME_RIVER",
+        "desc": "TILE_DESC_RIVER",
+        "climate": "NONE",
+        "terrain": [],
+        "passability": ["FLIGHT", "RUDDER", "HEAVY_RUDDER", "AMPHIBIOUS"]
+    },
+    "ROAD": {
+        "name": "TILE_NAME_ROAD",
+        "desc": "TILE_DESC_ROAD",
+        "climate": "NONE",
+        "terrain": [],
+        "passability": ["FOOT", "WHEELED", "TRACKED", "FLIGHT", "AMPHIBIOUS"]
+    },
+    "BRIDGE": {
+        "name": "TILE_NAME_BRIDGE",
+        "desc": "TILE_DESC_BRIDGE",
+        "climate": "NONE",
+        "terrain": [],
+        "passability": ["FOOT", "WHEELED", "TRACKED", "FLIGHT", "RUDDER", "HEAVY_RUDDER", "AMPHIBIOUS"]
+    },
+    "VOLCANO": {
+        "name": "TILE_NAME_VOLCANO",
+        "desc": "TILE_DESC_VOLCANO",
+        "climate": "HELLISH",
+        "terrain": [],
+        "passability": []
+    }
 }

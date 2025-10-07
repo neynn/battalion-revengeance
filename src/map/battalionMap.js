@@ -71,7 +71,7 @@ BattalionMap.prototype.getTerrainTags = function(gameContext, tileX, tileY) {
         return [];
     }
 
-    const { tileManager } = gameContext;
+    const { tileManager, typeRegistry } = gameContext;
     const layers = [BattalionMap.LAYER.CLOUD, BattalionMap.LAYER.DECORATION, BattalionMap.LAYER.GROUND];
 
     for(const layerID of layers) {
@@ -79,11 +79,22 @@ BattalionMap.prototype.getTerrainTags = function(gameContext, tileX, tileY) {
         const { type } = tileManager.getTile(typeID);
 
         if(type !== null && type !== TypeRegistry.TILE_TYPE.NONE) {
-            return TypeHelper.getTerrainTags(gameContext, type);
+            const tileType = typeRegistry.getType(type, TypeRegistry.CATEGORY.TILE);
+
+            if(tileType) {
+                return tileType.terrain ?? [];
+            }
         }
     }
 
     return [];
+}
+
+BattalionMap.prototype.getTileTypeObject = function(gameContext, tileX, tileY) {
+    const { typeRegistry } = gameContext;
+    const typeID = this.getTileType(gameContext, tileX, tileY);
+
+    return typeRegistry.getType(typeID, TypeRegistry.CATEGORY.TILE);
 }
 
 BattalionMap.prototype.getTileType = function(gameContext, tileX, tileY) {

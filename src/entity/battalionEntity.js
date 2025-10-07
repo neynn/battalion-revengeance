@@ -336,7 +336,8 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
     const startNode = createNode(startID, this.tileX, this.tileY, 0, null, null, 0);
     const queue = [startNode];
     const visitedCost = new Map();
-    const terrainCache = new Map();
+
+    const typeCache = new Map();
 
     nodeMap.set(startID, startNode);
     visitedCost.set(startID, 0);
@@ -357,16 +358,21 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
 
             if(neighborID !== -1) {
                 let nextCost = 1;
-                let terrain = terrainCache.get(neighborID);
+                let tileType = typeCache.get(neighborID);
 
-                if(!terrain) {
-                    terrain = worldMap.getTerrainTags(gameContext, neighborX, neighborY);
-                    terrainCache.set(neighborID, terrain);
+                if(!tileType) {
+                    tileType = worldMap.getTileTypeObject(gameContext, neighborX, neighborY);
+                    typeCache.set(neighborID, tileType);
                 }
+                
+                const { terrain, passability } = tileType;
 
+                if(!passability.includes(this.movementType)) {
+                    nextCost += 99;
+                }
                 //TODO: Implement pathfinding updates.
-                if(terrain.includes(TypeRegistry.TERRAIN_TYPE.UNEVEN)) {
-                    nextCost += 1.2;
+                if(tileType.terrain.includes(TypeRegistry.TERRAIN_TYPE.UNEVEN)) {
+                    nextCost += 0.2;
                 }
 
                 if(nextCost < 1) {
@@ -397,7 +403,7 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
         }
     }
 
-    console.log(terrainCache)
+    console.log(typeCache)
 }
 
 BattalionEntity.prototype.getPath = function(gameContext, nodes, targetX, targetY) {
