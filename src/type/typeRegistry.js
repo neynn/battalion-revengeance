@@ -232,7 +232,7 @@ TypeRegistry.FACTION_TYPE = {
     GOLD: "GOLD",
     CYAN: "CYAN",
     PINK: "PINK",
-    WHILE: "WHITE",
+    WHITE: "WHITE",
     PURPLE: "PURPLE",
     BLACK: "BLACK",
     GRAY: "GRAY",

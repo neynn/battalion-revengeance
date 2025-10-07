@@ -2,6 +2,12 @@ export const TypeCategory = function(name, values) {
     this.name = name;
     this.values = values;
     this.types = {};
+
+    for(const valueName in values) {
+        if(valueName !== values[valueName]) {
+            console.log(`Wrong enum! ${valueName} does not match ${values[valueName]} in ${name}!`);
+        }
+    }
 }
 
 TypeCategory.prototype.hasType = function(typeID) {
@@ -26,7 +32,7 @@ TypeCategory.prototype.setTypes = function(types) {
 
         this.types[typeName] = types[typeName];
     }
-}
+} 
 
 TypeCategory.prototype.getType = function(typeID) {
     const type = this.types[typeID];
