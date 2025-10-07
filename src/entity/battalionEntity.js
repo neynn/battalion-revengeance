@@ -30,7 +30,10 @@ export const BattalionEntity = function(id, sprite) {
     this.state = BattalionEntity.STATE.IDLE;
     this.teamID = null;
     this.traits = [];
+    this.isCloaked = false;
 }
+
+BattalionEntity.MAX_TRAITS = 4;
 
 BattalionEntity.MAX_MOVE_COST = 99;
 
@@ -155,7 +158,7 @@ BattalionEntity.prototype.loadTraits = function() {
     const traits = this.config.traits;
 
     if(traits) {
-        for(let i = 0; i < traits.length; i++) {
+        for(let i = 0; i < traits.length && i < BattalionEntity.MAX_TRAITS; i++) {
             const traitID = TypeRegistry.TRAIT_TYPE[traits[i]];
 
             if(traitID !== undefined) {
@@ -376,8 +379,8 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
                     //TODO: Implement entity blocking/flying over. Z-Levels?
 
                     for(let i = 0; i < terrain.length; i++) {
-                        const { movement } = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
-                        const terrainModifier = movement[this.movementType] ?? 0;
+                        const { moveCost } = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
+                        const terrainModifier = moveCost[this.movementType] ?? 0;
 
                         nextCost += terrainModifier;
                     }
@@ -488,63 +491,113 @@ const ATTACK_TYPE = {
     COUNTER: 1
 };
 
+const DAMAGE_AMPLIFIER = {
+    SCHWERPUNKT: 1.4,
+    STEALTH: 2
+};
+
+BattalionEntity.prototype.isHidden = function() {
+    return this.isCloaked;
+}
+
 BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, attackType) {
     const { world, typeRegistry } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
 
-    let damageAplifier = 1;
+    let damageAmplifier = 1;
 
     if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.INDOMITABLE)) {
-        //Health damage.
-        damageAplifier *= this.health / this.maxHealth;
+        //Health factor.
+        damageAmplifier *= this.health / this.maxHealth;
     }
 
     const weaponType = typeRegistry.getType(this.weaponType, TypeRegistry.CATEGORY.WEAPON);
 
-    //Armor and Morale damage.
-    damageAplifier *= weaponType.armorDamage[target.armorType] ?? 1;
-    damageAplifier *= this.moraleAmplifier;
+    //Armor and Morale factor.
+    damageAmplifier *= weaponType.armorDamage[target.armorType] ?? 1;
+    damageAmplifier *= this.moraleAmplifier;
 
-    const climateID = worldMap.getClimateID(gameContext, this.tileX, this.tileY);
-    const climateType = typeRegistry.getType(climateID, TypeRegistry.CATEGORY.CLIMATE);
+    const climateType = worldMap.getClimateTypeObject(gameContext, this.tileX, this.tileY);
     const { logisticFactor } = climateType;
     
-    //Logistic damage.
-    damageAplifier *= logisticFactor;
+    //Logistic factor.
+    damageAmplifier *= logisticFactor;
 
     for(let i = 0; i < this.traits.length; i++) {
         const { moveDamage, armorDamage } = typeRegistry.getType(this.traits[i], TypeRegistry.CATEGORY.TRAIT);
         const moveAmplifier = moveDamage[target.movementType] ?? 1;
         const armorAmplifier = armorDamage[target.armorType] ?? 1;
 
-        //Trait movement + armor damage.
-        damageAplifier *= moveAmplifier;
-        damageAplifier *= armorAmplifier;
+        //Trait movement + armor factor.
+        damageAmplifier *= moveAmplifier;
+        damageAmplifier *= armorAmplifier;
     }
 
-    //Protection factor of the defenders tile.
+    const { terrain } = world.getTileTypeObject(gameContext, target.tileX, target.tileY);
+
+    for(let i = 0; i < terrain.length; i++) {
+        const { moveProtection } = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
+        const protectionAmplifier = moveProtection[target.movementType] ?? 1;
+
+        //Terrain protection factor.
+        damageAmplifier *= protectionAmplifier;
+    }
+
+    //Commando trait (terrain based).
     //Steer (don't really like this one).
 
     switch(attackType) {
         case ATTACK_TYPE.INITIATE: {
-            //Stealth multiplier. (2* if cloaked).
-            //Schwerpunkt multiplier. (1.4* if enemy has "FOOT").
-            break;
-        }
-        case ATTACK_TYPE.COUNTER: {
-            //None as for now.
+            //Schwerpunkt factor.
+            if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SCHWERPUNKT) && target.movementType === TypeRegistry.MOVEMENT_TYPE.FOOT) {
+                damageAmplifier *= DAMAGE_AMPLIFIER.SCHWERPUNKT;
+            }
+
+            //Stealth factor.
+            if(this.isCloaked) {
+                damageAmplifier *= DAMAGE_AMPLIFIER.STEALTH;
+            }
+
             break;
         }
     }
 
-    return damageAplifier;
+    return damageAmplifier;
 }
 
-BattalionEntity.prototype.getDamageTo = function(gameContext, target) {
-    const damageAplifier = this.getDamageAmplifier(gameContext, target);
+BattalionEntity.prototype.getDamageTo = function(gameContext, target, attackType) {
+    const damageAmplifier = this.getDamageAmplifier(gameContext, target);
 
-    let damage = this.damage * damageAplifier;
+    let damage = this.damage * damageAmplifier;
+
+	if(
+		target.hasTrait(TypeRegistry.TRAIT_TYPE.CEMENTED_STEEL_ARMOR) &&
+		!this.hasTrait(TypeRegistry.TRAIT_TYPE.SUPPLY_DISTRIBUTION) &&
+		!this.hasTrait(TypeRegistry.TRAIT_TYPE.CAVITATION_EXPLOSION)
+	) {
+		damage -= 20;
+	}
+
+    if(damage < 0) {
+		damage = 0;
+	}
+
+    //Unknown calculation.
+	if(
+        damage > 25 &&
+        target.movementType === TypeRegistry.MOVEMENT_TYPE.FLIGHT &&
+        !this.hasTrait(TypeRegistry.TRAIT_TYPE.ANTI_AIR)
+    ) {
+		damage = 25;
+	}
+
+    if(
+        attackType === ATTACK_TYPE.INITIATE &&
+        this.hasTrait(TypeRegistry.TRAIT_TYPE.SUPPLY_DISTRIBUTION)
+    ) {
+        damage *= -1;
+    }
 
     //TODO: Special logic like "Absorber", "Suicide", "SupplyDistribution".
 

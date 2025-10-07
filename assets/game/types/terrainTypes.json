@@ -3,7 +3,10 @@
         "name": "TRAIT_NAME_UNEVEN",
         "desc": "TRAIT_DESC_UNEVEN",
         "icon": "Assets/Traits/Uneven.png",
-        "movement": {
+        "moveProtection": {
+            
+        },
+        "moveCost": {
             "TRACKED": 0.2,
             "WHEELED": 0.2
         }
@@ -12,60 +15,90 @@
         "name": "TRAIT_NAME_RUGGED",
         "desc": "TRAIT_DESC_RUGGED",
         "icon": "Assets/Traits/Rugged.png",
-        "movement": {}
+        "moveProtection": {
+            
+        },
+        "moveCost": {}
     },
     "PRECIPITOUS": {
         "name": "TRAIT_NAME_PRECIPITOUS",
         "desc": "TRAIT_DESC_PRECIPITOUS",
         "icon": "Assets/Traits/Precipitous.png",
-        "movement": {}
+        "moveProtection": {
+            
+        },
+        "moveCost": {}
     },
     "IMPASSABLE": {
         "name": "TRAIT_NAME_IMPASSABLE",
         "desc": "TRAIT_DESC_IMPASSABLE",
         "icon": "Assets/Traits/Impassable.png",
-        "movement": {}
+        "moveProtection": {
+            
+        },
+        "moveCost": {}
     },
     "TRICKY_WATERS": {
         "name": "TRAIT_NAME_TRICKY_WATERS",
         "desc": "TRAIT_DESC_TRICKY_WATERS",
         "icon": "Assets/Traits/Tricky Waters.png",
-        "movement": {}
+        "moveProtection": {
+            
+        },
+        "moveCost": {}
     },
     "CONCEALMENT": {
         "name": "TRAIT_NAME_CONCEALMENT",
         "desc": "TRAIT_DESC_CONCEALMENT",
         "icon": "Assets/Traits/Concealment.png",
-        "movement": {}
+        "moveProtection": {
+            
+        },
+        "moveCost": {}
     },
     "NAVAL_CONCEALMENT": {
         "name": "TRAIT_NAME_NAVAL_CONCEALMENT",
         "desc": "TRAIT_DESC_NAVAL_CONCEALMENT",
         "icon": "Assets/Traits/Naval Concealment.png",
-        "movement": {}
+        "moveProtection": {
+            
+        },
+        "moveCost": {}
     },
     "BUNKER": {
         "name": "TRAIT_NAME_BUNKER",
         "desc": "TRAIT_DESC_BUNKER",
         "icon": "Assets/Traits/Bunker.png",
-        "movement": {}
+        "moveProtection": {
+            
+        },
+        "moveCost": {}
     },
     "SHALLOW": {
         "name": "TRAIT_NAME_SHALLOW",
         "desc": "TRAIT_DESC_SHALLOW",
         "icon": "Assets/Traits/Shallow.png",
-        "movement": {}
+        "moveProtection": {
+            
+        },
+        "moveCost": {}
     },
     "VANTAGE": {
         "name": "TRAIT_NAME_VANTAGE",
         "desc": "TRAIT_DESC_VANTAGE",
         "icon": "Assets/Traits/Vantage.png",
-        "movement": {}
+        "moveProtection": {
+            
+        },
+        "moveCost": {}
     },
     "DANGEROUS": {
         "name": "TRAIT_NAME_DANGEROUS",
         "desc": "TRAIT_DESC_DANGEROUS",
         "icon": "Assets/Traits/Dangerous.png",
-        "movement": {}
+        "moveProtection": {
+            
+        },
+        "moveCost": {}
     }
 }

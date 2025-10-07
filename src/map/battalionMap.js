@@ -36,7 +36,14 @@ BattalionMap.prototype.setClimate = function(local, global) {
     this.globalClimate = global ?? TypeRegistry.CLIMATE_TYPE.NONE;
 }
 
-BattalionMap.prototype.getClimateID = function(gameContext, tileX, tileY) {
+BattalionMap.prototype.getClimateTypeObject = function(gameContext, tileX, tileY) {
+    const { typeRegistry } = gameContext;
+    const typeID = this.getClimateType(gameContext, tileX, tileY);
+
+    return typeRegistry.getType(typeID, TypeRegistry.CATEGORY.CLIMATE);
+}
+
+BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
     if(this.globalClimate !== TypeRegistry.CLIMATE_TYPE.NONE) {
         return this.globalClimate;
     }
@@ -118,7 +125,7 @@ BattalionMap.prototype.getTileType = function(gameContext, tileX, tileY) {
 }
 
 BattalionMap.prototype.getTileName = function(gameContext, tileX, tileY) {
-    const { language, typeRegistry } = gameContext;
+    const { language } = gameContext;
 
     if(this.isTileOutOfBounds(tileX, tileY)) {
         return language.get("MISSING_TILE_NAME");
@@ -132,8 +139,7 @@ BattalionMap.prototype.getTileName = function(gameContext, tileX, tileY) {
         }
     }
 
-    const typeID = this.getTileType(gameContext, tileX, tileY);
-    const tileType = typeRegistry.getType(typeID, TypeRegistry.CATEGORY.TILE);
+    const tileType = this.getTileTypeObject(gameContext, tileX, tileY);
 
     if(tileType && tileType.name) {
         return language.get(tileType.name);
@@ -143,7 +149,7 @@ BattalionMap.prototype.getTileName = function(gameContext, tileX, tileY) {
 }
 
 BattalionMap.prototype.getTileDesc = function(gameContext, tileX, tileY) {
-    const { language, typeRegistry } = gameContext;
+    const { language } = gameContext;
 
     if(this.isTileOutOfBounds(tileX, tileY)) {
         return language.get("MISSING_TILE_DESC");
@@ -157,8 +163,7 @@ BattalionMap.prototype.getTileDesc = function(gameContext, tileX, tileY) {
         }
     }
 
-    const typeID = this.getTileType(gameContext, tileX, tileY);
-    const tileType = typeRegistry.getType(typeID, TypeRegistry.CATEGORY.TILE);
+    const tileType = this.getTileTypeObject(gameContext, tileX, tileY);
 
     if(tileType && tileType.desc) {
         return language.get(tileType.desc);

@@ -24,7 +24,7 @@ IdleState.prototype.onTileClick = function(gameContext, stateMachine, tileX, til
         "x": tileX,
         "y": tileY,
         "terrain": worldMap.getTerrainTags(gameContext, tileX, tileY),
-        "climate": worldMap.getClimateID(gameContext, tileX, tileY),
+        "climate": worldMap.getClimateType(gameContext, tileX, tileY),
         "type": worldMap.getTileType(gameContext, tileX, tileY),
         "name": worldMap.getTileName(gameContext, tileX, tileY),
         "desc": worldMap.getTileDesc(gameContext, tileX, tileY),
