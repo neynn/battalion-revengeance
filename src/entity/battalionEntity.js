@@ -24,6 +24,7 @@ export const BattalionEntity = function(id, sprite) {
     this.sprite = sprite;
     this.tileX = -1;
     this.tileY = -1;
+    this.tileZ = -1;
     this.direction = BattalionEntity.DIRECTION.EAST;
     this.state = BattalionEntity.STATE.IDLE;
     this.teamID = null;
@@ -323,7 +324,7 @@ const createNode = function(id, x, y, cost, type, parent, flags) {
 }
 
 BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
-    const { world } = gameContext;
+    const { world, typeRegistry } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
 
@@ -369,9 +370,17 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
                 const { terrain, passability } = tileType;
                 let nextCost = passability[this.movementType] ?? BattalionEntity.MAX_MOVE_COST;
 
-                //TODO: Implement pathfinding updates.
-                if(tileType.terrain.includes(TypeRegistry.TERRAIN_TYPE.UNEVEN)) {
-                    nextCost += 0.2;
+                if(nextCost !== BattalionEntity.MAX_MOVE_COST) {
+                    const flags = flagMap.getFlag(neighborX, neighborY);
+                    //TODO: Implement entity blocking/flying over. Z-Levels?
+
+                    for(let i = 0; i < terrain.length; i++) {
+                        const terrainType = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
+                        const { movement } = terrainType;
+                        const terrainModifier = movement[this.movementType] ?? 0;
+
+                        nextCost += terrainModifier;
+                    }
                 }
 
                 if(nextCost < 1) {
@@ -382,8 +391,6 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
 
                 if(neighborCost <= this.movementRange) {
                     const bestCost = visitedCost.get(neighborID);
-                    const mapFlag = flagMap.getFlag(neighborX, neighborY);
-                    //All tiles have a minCost of 1. This means they must ALL be inside the flag map.
 
                     if(bestCost === undefined || neighborCost < bestCost) {
                         const childNode = createNode(neighborID, neighborX, neighborY, neighborCost, type, id, 0);

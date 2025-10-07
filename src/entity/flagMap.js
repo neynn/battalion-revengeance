@@ -10,7 +10,9 @@ export const EntityFlagMap = function(startX, startY, range) {
 
 EntityFlagMap.FLAG = {
     SELF: 1 << 0,
-    OUT_OF_BOUNDS: 1 << 1
+    OUT_OF_BOUNDS: 1 << 1,
+    ENTITY_BLOCK: 1 << 2,
+    ENTITY_PASS: 1 << 3
 };
 
 EntityFlagMap.prototype.getFlag = function(tileX, tileY) {
