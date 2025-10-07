@@ -3,7 +3,7 @@
         "name": "TRAIT_NAME_NO_WEAPON",
         "desc": "TRAIT_DESC_NO_WEAPON",
         "icon": "Assets/Traits/.png",
-        "armor": {
+        "armorDamage": {
             "LIGHT": 0,
             "MEDIUM": 0,
             "HEAVY": 0
@@ -13,7 +13,7 @@
         "name": "TRAIT_NAME_LIGHT_WEAPON",
         "desc": "TRAIT_DESC_LIGHT_WEAPON",
         "icon": "Assets/Traits/.png",
-        "armor": {
+        "armorDamage": {
             "LIGHT": 1.5,
             "MEDIUM": 1,
             "HEAVY": 0.5
@@ -23,7 +23,7 @@
         "name": "TRAIT_NAME_MEDIUM_WEAPON",
         "desc": "TRAIT_DESC_MEDIUM_WEAPON",
         "icon": "Assets/Traits/.png",
-        "armor": {
+        "armorDamage": {
             "LIGHT": 1,
             "MEDIUM": 1,
             "HEAVY": 1
@@ -33,7 +33,7 @@
         "name": "TRAIT_NAME_HEAVY_WEAPON",
         "desc": "TRAIT_DESC_HEAVY_WEAPON",
         "icon": "Assets/Traits/.png",
-        "armor": {
+        "armorDamage": {
             "LIGHT": 0.5,
             "MEDIUM": 1,
             "HEAVY": 1.5

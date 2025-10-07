@@ -376,8 +376,7 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
                     //TODO: Implement entity blocking/flying over. Z-Levels?
 
                     for(let i = 0; i < terrain.length; i++) {
-                        const terrainType = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
-                        const { movement } = terrainType;
+                        const { movement } = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
                         const terrainModifier = movement[this.movementType] ?? 0;
 
                         nextCost += terrainModifier;
@@ -456,24 +455,96 @@ BattalionEntity.prototype.getPath = function(gameContext, nodes, targetX, target
     return path.reverse();
 }
 
-BattalionEntity.prototype.getDamageTo = function(gameContext, target) {
-    const { typeRegistry } = gameContext;
+BattalionEntity.prototype.getTerrainTags = function(gameContext) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const tags = new Set();
+
+    if(!worldMap) {
+        return tags;
+    }
+
+    const startX = this.tileX;
+    const startY = this.tileY;
+    const endX = startX + this.config.dimX ?? 1;
+    const endY = startY + this.config.dimY ?? 1;
+
+    for(let i = startY; i < endY; i++) {
+        for(let j = startX; j < endX; j++) {
+            const terrainTags = worldMap.getTerrainTags(gameContext, j, i);
+
+            for(let i = 0; i < terrainTags.length; i++) {
+                tags.add(terrainTags[i]);
+            }
+        }
+    }
+
+    return tags;
+}
+
+const ATTACK_TYPE = {
+    INITIATE: 0,
+    COUNTER: 1
+};
+
+BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, attackType) {
+    const { world, typeRegistry } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+
+    let damageAplifier = 1;
+
+    if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.INDOMITABLE)) {
+        //Health damage.
+        damageAplifier *= this.health / this.maxHealth;
+    }
+
     const weaponType = typeRegistry.getType(this.weaponType, TypeRegistry.CATEGORY.WEAPON);
 
-    let damage = this.damage;
+    //Armor and Morale damage.
+    damageAplifier *= weaponType.armorDamage[target.armorType] ?? 1;
+    damageAplifier *= this.moraleAmplifier;
 
-    damage *= weaponType.armor[target.armorType] ?? 1;
-    damage *= this.moraleAmplifier;
+    const climateID = worldMap.getClimateID(gameContext, this.tileX, this.tileY);
+    const climateType = typeRegistry.getType(climateID, TypeRegistry.CATEGORY.CLIMATE);
+    const { logisticFactor } = climateType;
+    
+    //Logistic damage.
+    damageAplifier *= logisticFactor;
 
     for(let i = 0; i < this.traits.length; i++) {
-        const traitType = typeRegistry.getType(this.traits[i], TypeRegistry.CATEGORY.TRAIT);
-        const { moveDamage, armorDamage } = traitType;
+        const { moveDamage, armorDamage } = typeRegistry.getType(this.traits[i], TypeRegistry.CATEGORY.TRAIT);
         const moveAmplifier = moveDamage[target.movementType] ?? 1;
-        const armorAmpligier = armorDamage[target.armorType] ?? 1;
+        const armorAmplifier = armorDamage[target.armorType] ?? 1;
 
-        damage *= moveAmplifier;
-        damage *= armorAmpligier;
+        //Trait movement + armor damage.
+        damageAplifier *= moveAmplifier;
+        damageAplifier *= armorAmplifier;
     }
+
+    //Protection factor of the defenders tile.
+    //Steer (don't really like this one).
+
+    switch(attackType) {
+        case ATTACK_TYPE.INITIATE: {
+            //Stealth multiplier. (2* if cloaked).
+            //Schwerpunkt multiplier. (1.4* if enemy has "FOOT").
+            break;
+        }
+        case ATTACK_TYPE.COUNTER: {
+            //None as for now.
+            break;
+        }
+    }
+
+    return damageAplifier;
+}
+
+BattalionEntity.prototype.getDamageTo = function(gameContext, target) {
+    const damageAplifier = this.getDamageAmplifier(gameContext, target);
+
+    let damage = this.damage * damageAplifier;
 
     //TODO: Special logic like "Absorber", "Suicide", "SupplyDistribution".
 

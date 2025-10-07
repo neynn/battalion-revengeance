@@ -36,7 +36,7 @@ BattalionMap.prototype.setClimate = function(local, global) {
     this.globalClimate = global ?? TypeRegistry.CLIMATE_TYPE.NONE;
 }
 
-BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
+BattalionMap.prototype.getClimateID = function(gameContext, tileX, tileY) {
     if(this.globalClimate !== TypeRegistry.CLIMATE_TYPE.NONE) {
         return this.globalClimate;
     }

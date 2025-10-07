@@ -4,359 +4,323 @@
         "desc": "TRAIT_DESC_LOGISTIC_CHALLENGE",
         "icon": "Assets/Traits/Logistic Challenge.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "LOGISTIC_NIGHTMARE": {
         "name": "TRAIT_NAME_LOGISTIC_NIGHTMARE",
         "desc": "TRAIT_DESC_LOGISTIC_NIGHTMARE",
         "icon": "Assets/Traits/Logistic Nightmare.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "FINANCIAL_CENTER": {
         "name": "TRAIT_NAME_FINANCIAL_CENTER",
         "desc": "TRAIT_DESC_FINANCIAL_CENTER",
         "icon": "Assets/Traits/Financial Center.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "FISCAL_CENTER": {
         "name": "TRAIT_NAME_FISCAL_CENTER",
         "desc": "TRAIT_DESC_FISCAL_CENTER",
         "icon": "Assets/Traits/Fiscal Center.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "FIDUCIARY_CENTER": {
         "name": "TRAIT_NAME_FIDUCIARY_CENTER",
         "desc": "TRAIT_DESC_FIDUCIARY_CENTER",
         "icon": "Assets/Traits/Fiduciary Center.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "CONQUEROR": {
         "name": "TRAIT_NAME_CONQUEROR",
         "desc": "TRAIT_DESC_CONQUEROR",
         "icon": "Assets/Traits/Conqueror.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "SKYSWEEPER": {
         "name": "TRAIT_NAME_SKYSWEEPER",
         "desc": "TRAIT_DESC_SKYSWEEPER",
         "icon": "Assets/Traits/Skysweeper.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "DEPTH_CHARGE": {
         "name": "TRAIT_NAME_DEPTH_CHARGE",
         "desc": "TRAIT_DESC_DEPTH_CHARGE",
         "icon": "Assets/Traits/Depth Charge.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "SONAR": {
         "name": "TRAIT_NAME_SONAR",
         "desc": "TRAIT_DESC_SONAR",
         "icon": "Assets/Traits/Sonar.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "RADAR": {
         "name": "TRAIT_NAME_RADAR",
         "desc": "TRAIT_DESC_RADAR",
         "icon": "Assets/Traits/Radar.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "ANTI_INFANTRY": {
         "name": "TRAIT_NAME_ANTI_INFANTRY",
         "desc": "TRAIT_DESC_ANTI_INFANTRY",
         "icon": "Assets/Traits/Anti-Infantry.png",
-        "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "moveDamage": {
+            "FOOT": 3
+        },
+        "armorDamage": {}
     },
     "ANTI_TANK": {
         "name": "TRAIT_NAME_ANTI_TANK",
         "desc": "TRAIT_DESC_ANTI_TANK",
         "icon": "Assets/Traits/Anti-Tank.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "ANTI_AIR": {
         "name": "TRAIT_NAME_ANTI_AIR",
         "desc": "TRAIT_DESC_ANTI_AIR",
         "icon": "Assets/Traits/Anti-Air.png",
-        "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "moveDamage": {
+            "FLIGHT": 2
+        },
+        "armorDamage": {}
     },
     "ANTI_SHIP": {
         "name": "TRAIT_NAME_ANTI_SHIP",
         "desc": "TRAIT_DESC_ANTI_SHIP",
         "icon": "Assets/Traits/Anti-Ship.png",
-        "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "moveDamage": {
+            "RUDDER": 3,
+            "HEAVY_RUDDER": 3
+        },
+        "armorDamage": {}
     },
     "ANTI_STRUCTURE": {
         "name": "TRAIT_NAME_ANTI_STRUCTURE",
         "desc": "TRAIT_DESC_ANTI_STRUCTURE",
         "icon": "Assets/Traits/Anti-Structure.png",
-        "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "moveDamage": {
+            "STATIONARY": 2
+        },
+        "armorDamage": {}
     },
     "STEALTH": {
         "name": "TRAIT_NAME_STEALTH",
         "desc": "TRAIT_DESC_STEALTH",
         "icon": "Assets/Traits/Stealth.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "SUBMERGED": {
         "name": "TRAIT_NAME_SUBMERGED",
         "desc": "TRAIT_DESC_SUBMERGED",
         "icon": "Assets/Traits/Submerged.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "COMMANDO": {
         "name": "TRAIT_NAME_COMMANDO",
         "desc": "TRAIT_DESC_COMMANDO",
         "icon": "Assets/Traits/Commando.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "CRAB": {
         "name": "TRAIT_NAME_CRAB",
         "desc": "TRAIT_DESC_CRAB",
         "icon": "Assets/Traits/Crab.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "STEER": {
         "name": "TRAIT_NAME_STEER",
         "desc": "TRAIT_DESC_STEER",
         "icon": "Assets/Traits/Steer.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "INDOMITABLE": {
         "name": "TRAIT_NAME_INDOMITABLE",
         "desc": "TRAIT_DESC_INDOMITABLE",
         "icon": "Assets/Traits/Indomitable.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "SCHWERPUNKT": {
         "name": "TRAIT_NAME_SCHWERPUNKT",
         "desc": "TRAIT_DESC_SCHWERPUNKT",
         "icon": "Assets/Traits/Schwerpunkt.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "BEWEGUNGSKRIEG": {
         "name": "TRAIT_NAME_BEWEGUNGSKRIEG",
         "desc": "TRAIT_DESC_BEWEGUNGSKRIEG",
         "icon": "Assets/Traits/Bewegungskrieg.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "MOBILE_BATTERY": {
         "name": "TRAIT_NAME_MOBILE_BATTERY",
         "desc": "TRAIT_DESC_MOBILE_BATTERY",
         "icon": "Assets/Traits/Mobile Battery.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "STREAMLINED": {
         "name": "TRAIT_NAME_STREAMLINED",
         "desc": "TRAIT_DESC_STREAMLINED",
         "icon": "Assets/Traits/Streamlined.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "CEMENTED_STEEL_ARMOR": {
         "name": "TRAIT_NAME_CEMENTED_STEEL_ARMOR",
         "desc": "TRAIT_DESC_CEMENTED_STEEL_ARMOR",
         "icon": "Assets/Traits/Cemented Steel Armor.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "CAVITATION_EXPLOSION": {
         "name": "TRAIT_NAME_CAVITATION_EXPLOSION",
         "desc": "TRAIT_DESC_CAVITATION_EXPLOSION",
         "icon": "Assets/Traits/Cavitation Explosion.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "SEABOUND": {
         "name": "TRAIT_NAME_SEABOUND",
         "desc": "TRAIT_DESC_SEABOUND",
         "icon": "Assets/Traits/Seabound.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "SELF_DESTRUCT": {
         "name": "TRAIT_NAME_SELF_DESTRUCT",
         "desc": "TRAIT_DESC_SELF_DESTRUCT",
         "icon": "Assets/Traits/Self-Destruct.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "DISPERSION": {
         "name": "TRAIT_NAME_DISPERSION",
         "desc": "TRAIT_DESC_DISPERSION",
         "icon": "Assets/Traits/Dispersion.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "JUDGEMENT": {
         "name": "TRAIT_NAME_JUDGEMENT",
         "desc": "TRAIT_DESC_JUDGEMENT",
         "icon": "Assets/Traits/JUDGEMENT.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "SUPPLY_DISTRIBUTION": {
         "name": "TRAIT_NAME_SUPPLY_DISTRIBUTION",
         "desc": "TRAIT_DESC_SUPPLY_DISTRIBUTION",
         "icon": "Assets/Traits/Supply Distribution.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "INERTIAL": {
         "name": "TRAIT_NAME_INERTIAL",
         "desc": "TRAIT_DESC_INERTIAL",
         "icon": "Assets/Traits/Inertial.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "STEAMBLAST": {
         "name": "TRAIT_NAME_STREAMBLAST",
         "desc": "TRAIT_DESC_STREAMBLAST",
         "icon": "Assets/Traits/Streamblast.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "AIRBORNE": {
         "name": "TRAIT_NAME_AIRBORNE",
         "desc": "TRAIT_DESC_AIRBORNE",
         "icon": "Assets/Traits/Airborne.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "HEROIC": {
         "name": "TRAIT_NAME_HEROIC",
         "desc": "TRAIT_DESC_HEROIC",
         "icon": "Assets/Traits/Heroic.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "TANK_HUNTER": {
         "name": "TRAIT_NAME_TANK_HUNTER",
         "desc": "TRAIT_DESC_TANK_HUNTER",
         "icon": "Assets/Traits/Tank-Hunter.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "NAVAL_TRANSPORT": {
         "name": "TRAIT_NAME_NAVAL_TRANSPORT",
         "desc": "TRAIT_DESC_NAVAL_TRANSPORT",
         "icon": "Assets/Traits/Naval Transport.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "AIR_TRANSPORT": {
         "name": "TRAIT_NAME_AIR_TRANSPORT",
         "desc": "TRAIT_DESC_AIR_TRANSPORT",
         "icon": "Assets/Traits/Air Transport.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "UNBUILT": {
         "name": "TRAIT_NAME_UNBUILT",
         "desc": "TRAIT_DESC_UNBUILT",
         "icon": "Assets/Traits/Unbuilt.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "TANK_POOPER": {
         "name": "TRAIT_NAME_TANK_POOPER",
         "desc": "TRAIT_DESC_TANK_POOPER",
         "icon": "Assets/Traits/Tank Pooper.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "ABSORBER": {
         "name": "TRAIT_NAME_ABSORBER",
         "desc": "TRAIT_DESC_ABSORBER",
         "icon": "Assets/Traits/Absorber.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "TERRIFYING": {
         "name": "TRAIT_NAME_TERRIFYING",
         "desc": "TRAIT_DESC_TERRIFYING",
         "icon": "Assets/Traits/Terrifying.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "LYNCHPIN": {
         "name": "TRAIT_NAME_LYNCHPIN",
         "desc": "TRAIT_DESC_LYNCHPIN",
         "icon": "Assets/Traits/Lynchpin.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     },
     "INFLAMING": {
         "name": "TRAIT_NAME_INFLAMING",
         "desc": "TRAIT_DESC_INFLAMING",
         "icon": "Assets/Traits/Inflaming.png",
         "moveDamage": {},
-        "armorDamage": {},
-        "weaponDamage": {}
+        "armorDamage": {}
     }
 }
