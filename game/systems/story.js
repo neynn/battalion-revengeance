@@ -16,7 +16,7 @@ StorySystem.saveSnapshot = function(gameContext) {
     const maps = [];
 
     turnManager.forAllActors((actor) => actors.push(actor.save()));
-    entityManager.forAllEntities((entity) => entities.push(SpawnSystem.getSpawnConfig(gameContext, entity)));
+    entityManager.forEachEntity((entity) => entities.push(SpawnSystem.getSpawnConfig(gameContext, entity)));
     mapManager.forAllMaps((map) => maps.push(map.save()));
 
     return {

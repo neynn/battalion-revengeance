@@ -131,3 +131,7 @@ GameContext.prototype.addDebug = function() {
     router.on("DEBUG_SPRITES", () => Renderer.DEBUG.SPRITES = 1 - Renderer.DEBUG.SPRITES);
     router.on("DEBUG_INFO", () => Renderer.DEBUG.INFO = 1 - Renderer.DEBUG.INFO);
 }
+
+GameContext.prototype.getActiveMap = function() {
+    return this.world.mapManager.getActiveMap();
+}

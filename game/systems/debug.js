@@ -18,7 +18,7 @@ DebugSystem.killAllEntities = function(gameContext) {
     const { world } = gameContext;
     const { entityManager, eventBus } = world;
 
-    entityManager.forAllEntities((entity) => eventBus.emit(ArmyEventHandler.TYPE.ENTITY_DEATH, EntityDeathEvent.createEvent(entity.getID(), "DEBUG")));
+    entityManager.forEachEntity((entity) => eventBus.emit(ArmyEventHandler.TYPE.ENTITY_DEATH, EntityDeathEvent.createEvent(entity.getID(), "DEBUG")));
 }
 
 /**

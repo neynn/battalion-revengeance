@@ -90,7 +90,7 @@ PlayerFireMissionState.prototype.showBlockedEntities = function(gameContext, pla
 
     camera.clearOverlay(PlayCamera.OVERLAY.FIRE_MISSION);
 
-    entityManager.forAllEntities((entity) => {
+    entityManager.forEachEntity((entity) => {
         const isTargetable = FireMissionSystem.isTargetable(entity);
 
         if(!isTargetable) {

@@ -19,6 +19,11 @@ export const SpriteManager = function(resourceLoader) {
 
 SpriteManager.EMPTY_LAYER = [];
 
+SpriteManager.prototype.forEachSprite = function(onCall) {
+    if(typeof onCall === "function") {
+        this.pool.forAllReserved(onCall);
+    }
+}
 SpriteManager.prototype.getAlias = function(spriteID, schemaID) {
     return spriteID + "::" + schemaID;
 };

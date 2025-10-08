@@ -14,8 +14,9 @@ const getRandomEntityType = function(gameContext) {
 }
 
 export const EntitySpawner = {
-    createSpawnConfig: function(type, tileX, tileY, direction) {
+    createSpawnConfig: function(id, type, tileX, tileY, direction) {
         return {
+            "id": id,
             "x": tileX,
             "y": tileY,
             "type": type,
@@ -131,7 +132,7 @@ export const EntitySpawner = {
 
         return null;
     },
-    loadEntity: function(gameContext, config, customID = null) {
+    loadEntity: function(gameContext, config, customID, externalID) {
         const { 
             x = -1,
             y = -1,
@@ -142,7 +143,7 @@ export const EntitySpawner = {
             desc = null
         } = config;
         const ownerID = TeamSpawner.getActorID(gameContext, owner);
-        const spawnConfig = EntitySpawner.createSpawnConfig(type, x, y, direction);
+        const spawnConfig = EntitySpawner.createSpawnConfig(externalID, type, x, y, direction);
         const entity = EntitySpawner.spawnEntity(gameContext, spawnConfig, ownerID);
 
         if(entity) {
@@ -172,17 +173,6 @@ export const EntitySpawner = {
 
                 return building;
             });
-        }
-    },
-    debugEntities: function(gameContext, ownerID) {
-        for(let i = 0; i < 1; i++) {
-            for(let j = 0; j < 1; j++) {
-                const entityType = getRandomEntityType(gameContext);
-                const config = EntitySpawner.createSpawnConfig(entityType, j, i);
-                const entity = EntitySpawner.spawnEntity(gameContext, config, ownerID);
-
-                console.log(config, entity);
-            }
         }
     }
 };

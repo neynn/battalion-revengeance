@@ -1,6 +1,5 @@
 import { EventEmitter } from "../events/eventEmitter.js";
 import { Logger } from "../logger.js";
-import { Entity } from "./entity.js";
 
 export const EntityManager = function() {
     this.traits = {};
@@ -66,7 +65,15 @@ EntityManager.prototype.registerComponent = function(componentID, componentClass
     this.components.set(componentID, componentClass);
 }
 
-EntityManager.prototype.forAllEntities = function(onCall) {
+EntityManager.prototype.forEachType = function(onCall) {
+    if(typeof onCall === "function") {
+        for(const typeName in this.entityTypes) {
+            onCall(this.entityTypes[typeName]);
+        }
+    }
+}
+
+EntityManager.prototype.forEachEntity = function(onCall) {
     if(typeof onCall === "function") {
         for(let i = 0; i < this.entities.length; ++i) {
             onCall(this.entities[i]);

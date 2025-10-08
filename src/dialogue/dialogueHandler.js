@@ -96,9 +96,10 @@ DialogueHandler.prototype.showNextEntry = function(gameContext) {
         return;
     }
 
-    const { language, portraitHandler, world } = gameContext;
+    const { client, language, portraitHandler, world } = gameContext;
+    const { soundPlayer } = client;
     const { turnManager } = world;
-    const { narrator, text } = this.currentDialogue[this.currentIndex];
+    const { narrator, text, voice } = this.currentDialogue[this.currentIndex];
     const translation = language.get(text, LanguageHandler.TAG_TYPE.MAP);
     const actorType = turnManager.getActorType(narrator);
 
@@ -116,6 +117,10 @@ DialogueHandler.prototype.showNextEntry = function(gameContext) {
 
     this.fullCurrentText = translation;
     this.currentText = this.skipUnveiling ? translation : "";
+
+    if(voice) {
+        soundPlayer.play(voice);
+    }
 }
 
 DialogueHandler.prototype.showFullText = function() {
