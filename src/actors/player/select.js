@@ -57,7 +57,7 @@ SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, t
 
 SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {
     if(!isAlly) {
-        //Attack
+        //Queue an attack action
         stateMachine.setNextState(gameContext, Player.STATE.IDLE);
         return;
     }

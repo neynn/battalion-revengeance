@@ -4,7 +4,7 @@
         "desc": "TRAIT_DESC_UNEVEN",
         "icon": "Assets/Traits/Uneven.png",
         "moveProtection": {
-            
+
         },
         "moveCost": {
             "TRACKED": 0.2,
@@ -16,7 +16,7 @@
         "desc": "TRAIT_DESC_RUGGED",
         "icon": "Assets/Traits/Rugged.png",
         "moveProtection": {
-            
+
         },
         "moveCost": {}
     },
@@ -25,7 +25,7 @@
         "desc": "TRAIT_DESC_PRECIPITOUS",
         "icon": "Assets/Traits/Precipitous.png",
         "moveProtection": {
-            
+
         },
         "moveCost": {}
     },
@@ -34,7 +34,7 @@
         "desc": "TRAIT_DESC_IMPASSABLE",
         "icon": "Assets/Traits/Impassable.png",
         "moveProtection": {
-            
+
         },
         "moveCost": {}
     },
@@ -43,7 +43,7 @@
         "desc": "TRAIT_DESC_TRICKY_WATERS",
         "icon": "Assets/Traits/Tricky Waters.png",
         "moveProtection": {
-            
+
         },
         "moveCost": {}
     },
@@ -52,7 +52,7 @@
         "desc": "TRAIT_DESC_CONCEALMENT",
         "icon": "Assets/Traits/Concealment.png",
         "moveProtection": {
-            
+
         },
         "moveCost": {}
     },
@@ -61,7 +61,7 @@
         "desc": "TRAIT_DESC_NAVAL_CONCEALMENT",
         "icon": "Assets/Traits/Naval Concealment.png",
         "moveProtection": {
-            
+
         },
         "moveCost": {}
     },
@@ -70,7 +70,7 @@
         "desc": "TRAIT_DESC_BUNKER",
         "icon": "Assets/Traits/Bunker.png",
         "moveProtection": {
-            
+
         },
         "moveCost": {}
     },
@@ -79,7 +79,7 @@
         "desc": "TRAIT_DESC_SHALLOW",
         "icon": "Assets/Traits/Shallow.png",
         "moveProtection": {
-            
+
         },
         "moveCost": {}
     },
@@ -88,7 +88,7 @@
         "desc": "TRAIT_DESC_VANTAGE",
         "icon": "Assets/Traits/Vantage.png",
         "moveProtection": {
-            
+
         },
         "moveCost": {}
     },
@@ -97,7 +97,7 @@
         "desc": "TRAIT_DESC_DANGEROUS",
         "icon": "Assets/Traits/Dangerous.png",
         "moveProtection": {
-            
+
         },
         "moveCost": {}
     }

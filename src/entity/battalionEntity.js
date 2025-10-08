@@ -534,7 +534,7 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
         damageAmplifier *= armorAmplifier;
     }
 
-    const { terrain } = world.getTileTypeObject(gameContext, target.tileX, target.tileY);
+    const { terrain } = worldMap.getTileTypeObject(gameContext, target.tileX, target.tileY);
 
     for(let i = 0; i < terrain.length; i++) {
         const { moveProtection } = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
@@ -566,7 +566,7 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
     return damageAmplifier;
 }
 
-BattalionEntity.prototype.getDamageTo = function(gameContext, target, attackType) {
+BattalionEntity.prototype.getDamage = function(gameContext, target, attackType) {
     const damageAmplifier = this.getDamageAmplifier(gameContext, target);
 
     let damage = this.damage * damageAmplifier;
