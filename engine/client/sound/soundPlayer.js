@@ -18,18 +18,18 @@ SoundPlayer.prototype.load = function(soundTypes) {
 }
 
 SoundPlayer.prototype.exit = function() {
-    this.loadedSounds.forEach(sound => sound.clearInstances());
+    this.loadedSounds.forEach(sound => sound.stop());
     this.activeSounds.clear();
 }
 
-SoundPlayer.prototype.promiseAudioBuffer = function(path) {
-    return fetch(path)
-    .then(response => response.arrayBuffer())
-    .then(arrayBuffer => this.audioContext.decodeAudioData(arrayBuffer));
-}
+SoundPlayer.prototype.bufferAudio = async function(audioID) {
+    const soundType = this.sounds[audioID];
 
-SoundPlayer.prototype.bufferAudio = async function(audioID, meta) {
-    const { directory, source, volume, allowStacking } = meta; 
+    if(!soundType) {
+        return Promise.resolve(null);
+    }
+
+    const { directory, source, volume = this.volume, allowStacking } = soundType; 
 
     if(this.loadedSounds.has(audioID)) {
         return Promise.resolve(this.loadedSounds.get(audioID));
@@ -37,7 +37,7 @@ SoundPlayer.prototype.bufferAudio = async function(audioID, meta) {
     
     const path = PathHandler.getPath(directory, source);
 
-    return this.promiseAudioBuffer(path)
+    return PathHandler.promiseAudioBuffer(path, this.audioContext)
     .then(audioBuffer => {
         const sound = new Sound(audioBuffer, volume, allowStacking);
 
@@ -114,46 +114,40 @@ SoundPlayer.prototype.getRandomSoundID = function(soundList) {
     return soundList[randomIndex];
 }
 
-SoundPlayer.prototype.play = async function(sounds, volume) {
+SoundPlayer.prototype.stop = function(soundID) {
+    const soundObject = this.loadedSounds.get(soundID);
+
+    if(soundObject) {
+        soundObject.stop();
+    }
+}
+
+SoundPlayer.prototype.play = function(sounds) {
     switch(typeof sounds) {
         case "string": {
-            this.playSound(sounds, volume);
-            break;
+            this.playSound(sounds);
+            return sounds;
         }
         case "object": {
             const soundID = this.getRandomSoundID(sounds);
 
             if(soundID) {
-                this.playSound(soundID, volume);
+                this.playSound(soundID);
             }
-            break;
+
+            return soundID;
         }
         default: {
             console.warn("Unknown input!");
-            break;
+            return null;
         }
     }
 }
 
-SoundPlayer.prototype.playSound = async function(audioID, volume = this.volume) {
-    const soundType = this.sounds[audioID];
+SoundPlayer.prototype.playSound = async function(audioID) {
+    const sound = await this.bufferAudio(audioID);
 
-    if(!soundType) {
-        return;
+    if(sound) {
+        sound.play(this.audioContext);
     }
-
-    const sound = await this.bufferAudio(audioID, soundType);
-
-    sound.volume = volume;
-    sound.play(this.audioContext);
-}
-
-SoundPlayer.prototype.loadSound = async function(audioID) {
-    const soundType = this.sounds[audioID];
-
-    if(!soundType) {
-        return null;
-    }
-
-    return this.bufferAudio(audioID, soundType);
 }

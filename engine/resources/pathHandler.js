@@ -24,5 +24,10 @@ export const PathHandler = {
     },
     promiseJSON: function(path) {
         return fetch(path).then(response => response.json()).catch(error => null);
+    },
+    promiseAudioBuffer: function(path, context) {
+        return fetch(path)
+        .then(response => response.arrayBuffer())
+        .then(arrayBuffer => context.decodeAudioData(arrayBuffer));
     }
 };

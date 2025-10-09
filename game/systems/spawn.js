@@ -111,7 +111,7 @@ const loadEntitySounds = function(gameContext, entity) {
         for(let i = 0; i < soundList.length; i++) {
             const soundID = soundList[i];
 
-            soundPlayer.loadSound(soundID);
+            soundPlayer.bufferAudio(soundID);
         }
     }
 }

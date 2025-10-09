@@ -9,7 +9,7 @@ Sound.prototype.onInstanceStart = function(instanceID) {}
 
 Sound.prototype.onInstanceEnd = function(instanceID) {}
 
-Sound.prototype.clearInstances = function() {
+Sound.prototype.stop = function() {
     this.instances.forEach(instance => instance.stop());
 }
 

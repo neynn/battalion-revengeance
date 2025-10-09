@@ -655,6 +655,8 @@ BattalionEntity.prototype.playMoveSound = function(gameContext) {
     const moveSound = this.config.sounds?.move;
 
     if(moveSound) {
-        soundPlayer.play(moveSound);
+        return soundPlayer.play(moveSound);
     }
+
+    return null;
 }

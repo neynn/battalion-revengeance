@@ -8,6 +8,7 @@ export const MoveAction = function() {
     this.path = [];
     this.pathIndex = 0;
     this.distanceMoved = 0;
+    this.soundID = null;
 }
 
 MoveAction.TRAVEL_DISTANCE = 56;
@@ -22,19 +23,12 @@ MoveAction.prototype.onStart = function(gameContext, data, id) {
     const entity = entityManager.getEntity(entityID);
 
     entity.reduceMove();
-    entity.playMoveSound(gameContext);
     EntitySpawner.removeEntity(gameContext, entity);
 
+    this.soundID = entity.playMoveSound(gameContext);
     this.path = path;
     this.pathIndex = this.path.length - 1;
     this.entity = entity;
-
-    const { deltaX, deltaY } = this.path[this.pathIndex];
-    const directionChanged = this.entity.updateDirectionByDelta(deltaX, deltaY);
-
-    if(directionChanged) {
-        this.entity.updateSprite(gameContext);
-    }
 }
 
 MoveAction.prototype.onUpdate = function(gameContext, data, id) {
@@ -78,6 +72,8 @@ MoveAction.prototype.onEnd = function(gameContext, data, id) {
     this.entity.updateSprite(gameContext);
 
     EntitySpawner.placeEntity(gameContext, this.entity);
+
+    gameContext.client.soundPlayer.stop(this.soundID);
 
     this.path = [];
     this.pathIndex = 0;
