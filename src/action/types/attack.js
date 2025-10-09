@@ -27,10 +27,11 @@ AttackAction.prototype.onStart = function(gameContext, data, id) {
     const entity = entityManager.getEntity(entityID);
     const target = entityManager.getEntity(targetID);
 
+    entity.sprite.lockEnd();
     entity.reduceMove();
-    entity.lookAt(gameContext, target);
-    entity.toFire(gameContext);
+    entity.lookAt(target);
     entity.playFireSound(gameContext);
+    entity.toFire(gameContext);
 
     this.entity = entity;
 }
@@ -44,6 +45,7 @@ AttackAction.prototype.isFinished = function(gameContext, executionRequest) {
 }
 
 AttackAction.prototype.onEnd = function(gameContext, data, id) {
+    this.entity.sprite.unlockEnd();
     this.entity.toIdle(gameContext);
     this.entity = null;
 }

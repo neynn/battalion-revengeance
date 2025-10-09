@@ -1,5 +1,6 @@
 import { getRandomElement } from "../../engine/math/math.js";
-import { SchemaSprite } from "../sprite/schemaSprite.js";
+import { BuildingSprite } from "../sprite/buildingSprite.js";
+import { EntitySprite } from "../sprite/entitySprite.js";
 import { TeamSpawner } from "../team/teamSpawner.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { BattalionEntity } from "./battalionEntity.js";
@@ -44,7 +45,7 @@ export const EntitySpawner = {
         const { id, type, x, y, direction } = config;
 
         const entity = entityManager.createEntity((entityID, entityType) => {
-            const entitySprite = new SchemaSprite();
+            const entitySprite = new EntitySprite();
             const entityObject = new BattalionEntity(entityID, entitySprite);
 
             entityObject.loadConfig(entityType);
@@ -165,7 +166,7 @@ export const EntitySpawner = {
             worldMap.createBuilding(x, y, () => {
                 const buildingType = typeRegistry.getType(type, TypeRegistry.CATEGORY.BUILDING);
                 const { sprite } = buildingType;
-                const buildingSprite = new SchemaSprite();
+                const buildingSprite = new BuildingSprite();
                 const building = new Building(name, buildingType, buildingSprite);
 
                 buildingSprite.init(gameContext, sprite, colorID, color, TypeRegistry.LAYER_TYPE.BUILDING);

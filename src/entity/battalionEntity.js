@@ -123,7 +123,11 @@ BattalionEntity.prototype.loadConfig = function(config) {
     this.weaponType = TypeRegistry.WEAPON_TYPE[weaponType] ? weaponType : TypeRegistry.WEAPON_TYPE.NONE;
     this.armorType = TypeRegistry.ARMOR_TYPE[armorType] ? armorType : TypeRegistry.ARMOR_TYPE.NONE;
     this.movementType = TypeRegistry.MOVEMENT_TYPE[movementType] ? movementType : TypeRegistry.MOVEMENT_TYPE.STATIONARY;
-    this.movementRange = 100//movementRange ?? 1;
+    this.movementRange = movementRange ?? 1;
+}
+
+BattalionEntity.prototype.setCustomID = function(id) {
+    this.customID = id;
 }
 
 BattalionEntity.prototype.setCustomText = function(name, desc) {
@@ -166,10 +170,6 @@ BattalionEntity.prototype.getDisplayName = function(gameContext) {
     }
 
     return language.get("MISSING_ENTITY_NAME");
-}
-
-BattalionEntity.prototype.setCustomID = function(id) {
-    this.customID = id;
 }
 
 BattalionEntity.prototype.removeTraits = function() {
@@ -267,20 +267,17 @@ BattalionEntity.prototype.setDirection = function(direction) {
 BattalionEntity.prototype.toIdle = function(gameContext) {
     this.state = BattalionEntity.STATE.IDLE;
     this.updateSprite(gameContext);
-    this.sprite.parent.thawEnd();
 }
 
 BattalionEntity.prototype.toMove = function(gameContext) {
     this.movementSpeed = BattalionEntity.DEFAULT_MOVEMENT_SPEED;
     this.state = BattalionEntity.STATE.MOVE;
     this.updateSprite(gameContext);
-    this.sprite.parent.thawEnd();
 }
 
 BattalionEntity.prototype.toFire = function(gameContext) {
     this.state = BattalionEntity.STATE.FIRE;
     this.updateSprite(gameContext);
-    this.sprite.parent.freezeEnd();
 }
 
 BattalionEntity.prototype.updateDirectionByDelta = function(deltaX, deltaY) {
@@ -472,8 +469,6 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
             }
         }
     }
-
-    console.log(typeCache)
 }
 
 BattalionEntity.prototype.getPath = function(gameContext, nodes, targetX, targetY) {
@@ -655,12 +650,11 @@ BattalionEntity.prototype.getDamage = function(gameContext, target, attackType) 
     return damage;
 }
 
-BattalionEntity.prototype.lookAt = function(gameContext, entity) {
+BattalionEntity.prototype.lookAt = function(entity) {
     const deltaX = entity.tileX - this.tileX;
     const deltaY = entity.tileY - this.tileY;
 
     this.updateDirectionByDelta(deltaX, deltaY);
-    this.updateSprite(gameContext);
 }
 
 BattalionEntity.prototype.playMoveSound = function(gameContext) {

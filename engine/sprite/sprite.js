@@ -35,7 +35,7 @@ Sprite.FLAG = {
     STATIC: 1 << 1,
     EXPIRE: 1 << 2,
     DESTROY: 1 << 3,
-    FREEZE_END: 1 << 4
+    LOOP_LOCK: 1 << 4
 };
 
 Sprite.RENDER_PLACEHOLDER = 0;
@@ -248,17 +248,17 @@ Sprite.prototype.unflip = function() {
     this.flags &= ~Sprite.FLAG.FLIP;
 }
 
-Sprite.prototype.freezeEnd = function() {
-    this.flags |= Sprite.FLAG.FREEZE_END;
+Sprite.prototype.lockLoop = function() {
+    this.flags |= Sprite.FLAG.LOOP_LOCK;
 }
 
-Sprite.prototype.thawEnd = function() {
-    this.flags &= ~Sprite.FLAG.FREEZE_END;
+Sprite.prototype.freeLoop = function() {
+    this.flags &= ~Sprite.FLAG.LOOP_LOCK;
 }
 
 Sprite.prototype.updateFrame = function(floatFrames) {
     if(!this.hasFlag(Sprite.FLAG.STATIC)) {
-        if(this.loopCount <= 0 || !this.hasFlag(Sprite.FLAG.FREEZE_END)) {
+        if(this.loopCount <= 0 || !this.hasFlag(Sprite.FLAG.LOOP_LOCK)) {
             this.floatFrame += floatFrames;
             this.currentFrame = Math.floor(this.floatFrame % this.frameCount);
 
@@ -269,7 +269,7 @@ Sprite.prototype.updateFrame = function(floatFrames) {
                     this.floatFrame -= this.frameCount * skippedLoops;
                     this.loopCount += skippedLoops;
 
-                    if(skippedLoops > 0 && this.hasFlag(Sprite.FLAG.FREEZE_END)) {
+                    if(skippedLoops > 0 && this.hasFlag(Sprite.FLAG.LOOP_LOCK)) {
                         this.floatFrame = this.frameCount - 1;
                         this.currentFrame = this.frameCount - 1;
                     }
