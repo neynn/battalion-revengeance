@@ -123,25 +123,20 @@ SoundPlayer.prototype.stop = function(soundID) {
 }
 
 SoundPlayer.prototype.play = function(sounds) {
-    switch(typeof sounds) {
-        case "string": {
-            this.playSound(sounds);
-            return sounds;
-        }
-        case "object": {
-            const soundID = this.getRandomSoundID(sounds);
+    if(Array.isArray(sounds)) {
+        const soundID = this.getRandomSoundID(sounds);
 
-            if(soundID) {
-                this.playSound(soundID);
-            }
+        if(soundID) {
+            this.playSound(soundID);
+        }
 
-            return soundID;
-        }
-        default: {
-            console.warn("Unknown input!");
-            return null;
-        }
+
+        return soundID;
     }
+
+    this.playSound(sounds);
+
+    return sounds;
 }
 
 SoundPlayer.prototype.playSound = async function(audioID) {

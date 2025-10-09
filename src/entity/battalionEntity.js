@@ -16,7 +16,7 @@ export const BattalionEntity = function(id, sprite) {
     this.moraleType = TypeRegistry.MORALE_TYPE.NONE;
     this.weaponType = TypeRegistry.WEAPON_TYPE.NONE;
     this.armorType = TypeRegistry.ARMOR_TYPE.NONE;
-    this.movementSpeed = 280;
+    this.movementSpeed = BattalionEntity.DEFAULT_MOVEMENT_SPEED;
     this.movementRange = 1;
     this.movementType = TypeRegistry.MOVEMENT_TYPE.STATIONARY;
     this.customName = null;
@@ -34,9 +34,11 @@ export const BattalionEntity = function(id, sprite) {
     this.movesLeft = 0;
 }
 
+BattalionEntity.DEFAULT_MOVEMENT_SPEED = 224;
+
 BattalionEntity.MAX_TRAITS = 4;
 
-BattalionEntity.MAX_MOVE_COST = 99;
+BattalionEntity.MAX_MOVE_COST = 999;
 
 BattalionEntity.DIRECTION_TYPE = {
     NORTH: "NORTH",
@@ -82,7 +84,7 @@ BattalionEntity.prototype.loadConfig = function(config) {
     this.weaponType = TypeRegistry.WEAPON_TYPE[weaponType] ? weaponType : TypeRegistry.WEAPON_TYPE.NONE;
     this.armorType = TypeRegistry.ARMOR_TYPE[armorType] ? armorType : TypeRegistry.ARMOR_TYPE.NONE;
     this.movementType = TypeRegistry.MOVEMENT_TYPE[movementType] ? movementType : TypeRegistry.MOVEMENT_TYPE.STATIONARY;
-    this.movementRange = movementRange ?? 1;
+    this.movementRange = 100//movementRange ?? 1;
 }
 
 BattalionEntity.prototype.setCustomText = function(name, desc) {
@@ -229,6 +231,7 @@ BattalionEntity.prototype.toIdle = function(gameContext) {
 }
 
 BattalionEntity.prototype.toMove = function(gameContext) {
+    this.movementSpeed = BattalionEntity.DEFAULT_MOVEMENT_SPEED;
     this.state = BattalionEntity.STATE.MOVE;
     this.updateSprite(gameContext);
 }
@@ -680,4 +683,46 @@ BattalionEntity.prototype.playFireSound = function(gameContext) {
     }
 
     return null;
+}
+
+BattalionEntity.prototype.playSound = function(gameContext) {
+    const { client } = gameContext;
+    const { soundPlayer } = client;
+    let sound = null;
+
+    switch(this.state) {
+        case BattalionEntity.STATE.IDLE: {
+            break;
+        }
+        case BattalionEntity.STATE.MOVE: {
+            sound = this.config.sounds?.move;
+            break;
+        }
+        case BattalionEntity.STATE.FIRE: {
+            this.config.sounds?.fire;
+            break;
+        }
+    }
+
+    if(sound) {
+        soundPlayer.play(sound);
+    }
+}
+
+BattalionEntity.prototype.bufferAudio = function(gameContext) {
+    const { client } = gameContext;
+    const { soundPlayer } = client;
+    const sounds = this.config.sounds ?? {};
+
+    for(const soundName in sounds) {
+        const sound = sounds[soundName];
+
+        if(Array.isArray(sound)) {
+            for(let i = 0; i < sound.length; i++) {
+                soundPlayer.bufferAudio(sound[i]);
+            }
+        } else {
+            soundPlayer.bufferAudio(sound);
+        }
+    }
 }

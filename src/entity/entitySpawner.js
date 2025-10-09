@@ -149,6 +149,7 @@ export const EntitySpawner = {
         if(entity) {
             entity.setCustomText(name, desc);
             entity.setCustomID(customID);
+            entity.bufferAudio(gameContext);
         }
 
         return entity;

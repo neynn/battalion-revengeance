@@ -49,7 +49,7 @@ export const CameraHelper = {
 
         context.setPositionMode(CameraContext.POSITION_MODE.AUTO_CENTER);
         context.setDisplayMode(CameraContext.DISPLAY_MODE.RESOLUTION_FIXED);
-        context.setScaleMode(CameraContext.SCALE_MODE.FRACTURED);
+        context.setScaleMode(CameraContext.SCALE_MODE.NONE);
         context.setResolution(560, 560);
 
         camera.bindViewport();

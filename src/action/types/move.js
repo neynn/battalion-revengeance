@@ -8,7 +8,6 @@ export const MoveAction = function() {
     this.path = [];
     this.pathIndex = 0;
     this.distanceMoved = 0;
-    this.soundID = null;
 }
 
 MoveAction.TRAVEL_DISTANCE = 56;
@@ -23,10 +22,10 @@ MoveAction.prototype.onStart = function(gameContext, data, id) {
     const entity = entityManager.getEntity(entityID);
 
     entity.reduceMove();
+    entity.playMoveSound(gameContext);
     entity.toMove(gameContext);
     EntitySpawner.removeEntity(gameContext, entity);
 
-    this.soundID = entity.playMoveSound(gameContext);
     this.path = path;
     this.pathIndex = this.path.length - 1;
     this.entity = entity;
@@ -63,8 +62,7 @@ MoveAction.prototype.isFinished = function(gameContext, executionRequest) {
 }
 
 MoveAction.prototype.onEnd = function(gameContext, data, id) {
-    const { transform2D, client } = gameContext;
-    const { soundPlayer } = client;
+    const { transform2D } = gameContext;
     const { deltaX, deltaY, tileX, tileY } = this.path[0];
     const position = transform2D.transformTileToWorld(tileX, tileY);
 
@@ -73,14 +71,12 @@ MoveAction.prototype.onEnd = function(gameContext, data, id) {
     this.entity.updateDirectionByDelta(deltaX, deltaY);
     this.entity.toIdle(gameContext);
 
-    soundPlayer.stop(this.soundID);
     EntitySpawner.placeEntity(gameContext, this.entity);
 
     this.path = [];
     this.pathIndex = 0;
     this.entity = null;
     this.distanceMoved = 0;
-    this.soundID = null;
 }
 
 MoveAction.prototype.getValidated = function(gameContext, requestData) {
