@@ -223,10 +223,19 @@ BattalionEntity.prototype.setDirection = function(direction) {
     return false;
 }
 
-BattalionEntity.prototype.setState = function(state) {
-    if(Object.values(BattalionEntity.STATE).includes(state)) {
-        this.state = state;
-    }
+BattalionEntity.prototype.toIdle = function(gameContext) {
+    this.state = BattalionEntity.STATE.IDLE;
+    this.updateSprite(gameContext);
+}
+
+BattalionEntity.prototype.toMove = function(gameContext) {
+    this.state = BattalionEntity.STATE.MOVE;
+    this.updateSprite(gameContext);
+}
+
+BattalionEntity.prototype.toFire = function(gameContext) {
+    this.state = BattalionEntity.STATE.IDLE;
+    this.updateSprite(gameContext);
 }
 
 BattalionEntity.prototype.updateDirectionByDelta = function(deltaX, deltaY) {
@@ -656,6 +665,18 @@ BattalionEntity.prototype.playMoveSound = function(gameContext) {
 
     if(moveSound) {
         return soundPlayer.play(moveSound);
+    }
+
+    return null;
+}
+
+BattalionEntity.prototype.playFireSound = function(gameContext) {
+    const { client } = gameContext;
+    const { soundPlayer } = client;
+    const fireSound = this.config.sounds?.fire;
+
+    if(fireSound) {
+        return soundPlayer.play(fireSound);
     }
 
     return null;
