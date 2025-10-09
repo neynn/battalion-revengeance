@@ -49,14 +49,15 @@ export const CameraHelper = {
 
         context.setPositionMode(CameraContext.POSITION_MODE.AUTO_CENTER);
         context.setDisplayMode(CameraContext.DISPLAY_MODE.RESOLUTION_FIXED);
-        context.setScaleMode(CameraContext.SCALE_MODE.WHOLE);
+        context.setScaleMode(CameraContext.SCALE_MODE.FRACTURED);
         context.setResolution(560, 560);
-    
+
         camera.bindViewport();
         camera.setTileSize(tileWidth, tileHeight);
     
         CameraHelper.tryLoadingWorldSize(gameContext, camera);
         ContextHelper.createDrag(gameContext, contextID, Cursor.BUTTON.LEFT);
+        context.refresh();
 
         return context;
     }

@@ -55,7 +55,7 @@ export const EntitySpawner = {
 
             entitySprite.init(gameContext, spriteID, colorID, color, TypeRegistry.LAYER_TYPE.LAND);
             entityObject.setTile(x, y);
-            entityObject.setPosition(spawnPosition);
+            entityObject.setPositionVec(spawnPosition);
             entityObject.loadTraits();
 
             return entityObject;

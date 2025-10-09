@@ -152,6 +152,11 @@ Graph.prototype.getID = function() {
     return this.id;
 }
 
+Graph.prototype.updatePosition = function(deltaX, deltaY) {
+    this.positionX += deltaX;
+    this.positionY += deltaY;
+}
+
 Graph.prototype.setPosition = function(positionX, positionY) {
     this.positionX = positionX;
     this.positionY = positionY;

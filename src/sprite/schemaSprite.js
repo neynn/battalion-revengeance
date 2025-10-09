@@ -57,6 +57,12 @@ SchemaSprite.prototype.updateType = function(gameContext, spriteType) {
     }
 }
 
+SchemaSprite.prototype.updatePosition = function(deltaX, deltaY) {
+    if(this.parent) {
+        this.parent.updatePosition(deltaX, deltaY);
+    }
+}
+
 SchemaSprite.prototype.setPosition = function(positionX, positionY) {
     if(this.parent) {
         this.parent.setPosition(positionX, positionY);

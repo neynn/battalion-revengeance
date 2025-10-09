@@ -16,7 +16,7 @@ export const BattalionEntity = function(id, sprite) {
     this.moraleType = TypeRegistry.MORALE_TYPE.NONE;
     this.weaponType = TypeRegistry.WEAPON_TYPE.NONE;
     this.armorType = TypeRegistry.ARMOR_TYPE.NONE;
-    this.movementSpeed = 56;
+    this.movementSpeed = 280;
     this.movementRange = 1;
     this.movementType = TypeRegistry.MOVEMENT_TYPE.STATIONARY;
     this.customName = null;
@@ -179,10 +179,26 @@ BattalionEntity.prototype.setTile = function(tileX, tileY) {
     this.tileY = tileY;
 }
 
-BattalionEntity.prototype.setPosition = function(positionVector) {
+BattalionEntity.prototype.updatePosition = function(deltaX, deltaY) {
+    this.sprite.updatePosition(deltaX, deltaY);
+}
+
+BattalionEntity.prototype.setPosition = function(positionX, positionY) {
+    this.sprite.setPosition(positionX, positionY);
+}
+
+BattalionEntity.prototype.setPositionVec = function(positionVector) {
     const { x, y } = positionVector;
 
     this.sprite.setPosition(x, y);
+}
+
+BattalionEntity.prototype.hasMoveLeft = function() {
+    return this.movesLeft > 0;
+}
+
+BattalionEntity.prototype.reduceMove = function() {
+    return this.movesLeft--;
 }
 
 BattalionEntity.prototype.setDirectionByName = function(name) {
@@ -194,14 +210,38 @@ BattalionEntity.prototype.setDirectionByName = function(name) {
 }
 
 BattalionEntity.prototype.setDirection = function(direction) {
+    if(this.direction === direction) {
+        return false;
+    }
+
     if(Object.values(BattalionEntity.DIRECTION).includes(direction)) {
         this.direction = direction;
+
+        return true;
     }
+
+    return false;
 }
 
 BattalionEntity.prototype.setState = function(state) {
     if(Object.values(BattalionEntity.STATE).includes(state)) {
         this.state = state;
+    }
+}
+
+BattalionEntity.prototype.updateDirectionByDelta = function(deltaX, deltaY) {
+    if(deltaX !== 0) {
+        if(deltaX < 0) {
+            return this.setDirection(BattalionEntity.DIRECTION.WEST);
+        } else if(deltaX > 0) {
+            return this.setDirection(BattalionEntity.DIRECTION.EAST);
+        }
+    } else if(deltaY !== 0) {
+        if(deltaY < 0) {
+            return this.setDirection(BattalionEntity.DIRECTION.NORTH);
+        } else if(deltaY > 0) {
+            return this.setDirection(BattalionEntity.DIRECTION.SOUTH);
+        }
     }
 }
 
@@ -267,7 +307,7 @@ BattalionEntity.prototype.setTeam = function(teamID) {
 }
 
 BattalionEntity.prototype.onTurnStart = function(gameContext) {
-    this.movesLeft = 1;
+    this.movesLeft = 100;
 
     console.log("My turn started", this);
 } 
@@ -607,4 +647,14 @@ BattalionEntity.prototype.getDamage = function(gameContext, target, attackType) 
     //TODO: Special logic like "Absorber", "Suicide", "SupplyDistribution".
 
     return damage;
+}
+
+BattalionEntity.prototype.playMoveSound = function(gameContext) {
+    const { client } = gameContext;
+    const { soundPlayer } = client;
+    const moveSound = this.config.sounds?.move;
+
+    if(moveSound) {
+        soundPlayer.play(moveSound);
+    }
 }
