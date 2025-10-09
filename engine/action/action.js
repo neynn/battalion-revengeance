@@ -11,8 +11,10 @@ Action.PRIORITY = {
     HIGH: 2
 };
 
+Action.prototype.onValid = function(gameContext) {}
+Action.prototype.onInvalid = function(gameContext) {}
 Action.prototype.onStart = function(gameContext, actionData, requestID) {}
 Action.prototype.onEnd = function(gameContext, actionData, requestID) {}
 Action.prototype.onUpdate = function(gameContext, actionData, requestID) {}
 Action.prototype.isFinished = function(gameContext, executionRequest) {}
-Action.prototype.getValidated = function(gameContext, actionRequest) {}
+Action.prototype.getValidated = function(gameContext, requestData) {}

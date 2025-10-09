@@ -2,6 +2,7 @@ import { EntityManager } from "../engine/entity/entityManager.js";
 import { GameContext } from "../engine/gameContext.js";
 import { LanguageHandler } from "../engine/language/languageHandler.js";
 import { TurnManager } from "../engine/turn/turnManager.js";
+import { MoveAction } from "./action/types/move.js";
 import { PortraitHandler } from "./actors/portraitHandler.js";
 import { DialogueHandler } from "./dialogue/dialogueHandler.js";
 import { EventHandler } from "./event/eventHandler.js";
@@ -47,6 +48,8 @@ BattalionContext.prototype.init = function(resources) {
     for(let i = 0; i < TypeRegistry.LAYER_TYPE.COUNT; i++) {
         this.spriteManager.addLayer();
     }
+
+    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.MOVE, new MoveAction());
 
     this.language.registerLanguage(LanguageHandler.LANGUAGE.ENGLISH, {});
     this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);

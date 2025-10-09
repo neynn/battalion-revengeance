@@ -31,6 +31,7 @@ export const BattalionEntity = function(id, sprite) {
     this.teamID = null;
     this.traits = [];
     this.isCloaked = false;
+    this.movesLeft = 0;
 }
 
 BattalionEntity.MAX_TRAITS = 4;
@@ -266,10 +267,14 @@ BattalionEntity.prototype.setTeam = function(teamID) {
 }
 
 BattalionEntity.prototype.onTurnStart = function(gameContext) {
+    this.movesLeft = 1;
+
     console.log("My turn started", this);
 } 
 
 BattalionEntity.prototype.onTurnEnd = function(gameContext) {
+    this.movesLeft = 0;
+
     console.log("My turn ended", this);
 }
 
@@ -455,7 +460,7 @@ BattalionEntity.prototype.getPath = function(gameContext, nodes, targetX, target
         currentNode = nodes.get(parent);
     }
 
-    return path.reverse();
+    return path;
 }
 
 BattalionEntity.prototype.getTerrainTags = function(gameContext) {

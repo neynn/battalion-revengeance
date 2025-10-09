@@ -216,19 +216,21 @@ ActionQueue.prototype.createExecutionRequest = function(gameContext, request) {
     const { type, data } = request;
     const actionType = this.actionTypes.get(type);
 
-    if(!actionType) {
-        return null;
-    }
+    if(actionType) {
+        const validatedData = actionType.getValidated(gameContext, data);
 
-    const validatedData = actionType.getValidated(gameContext, data);
+        if(validatedData) {
+            actionType.onValid(gameContext);
 
-    if(!validatedData) {
+            return new ExecutionRequest(this.nextID++, type, validatedData);
+        }
+
+        actionType.onInvalid(gameContext);
+
         this.events.emit(ActionQueue.EVENT.EXECUTION_ERROR, request);
-
-        return null;
     }
 
-    return new ExecutionRequest(this.nextID++, type, validatedData);
+    return null;
 }
 
 ActionQueue.prototype.registerAction = function(typeID, handler) {

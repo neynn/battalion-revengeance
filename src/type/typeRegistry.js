@@ -137,6 +137,10 @@ TypeRegistry.MORALE_TYPE = {
     NONE: "NONE"
 };
 
+TypeRegistry.ACTION_TYPE = {
+    MOVE: "MOVE"
+};
+
 TypeRegistry.TILE_ID = {
     NONE: 0,
     GRASS: 1,

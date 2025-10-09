@@ -4,6 +4,7 @@ export const ExecutionRequest = function(id, type, data) {
     this.data = data;
     this.state = ExecutionRequest.STATE.NONE;
     this.timePassed = 0;
+    this.actorID = null;
 }
 
 ExecutionRequest.STATE = {
@@ -11,6 +12,10 @@ ExecutionRequest.STATE = {
     RUNNING: 1,
     FINISHED: 2
 };
+
+ExecutionRequest.prototype.setActor = function(actorID) {
+    this.actorID = actorID;
+}
 
 ExecutionRequest.prototype.advance = function(deltaTime) {
     this.timePassed += deltaTime;

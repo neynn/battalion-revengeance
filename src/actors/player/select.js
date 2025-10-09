@@ -1,3 +1,4 @@
+import { ActionHelper } from "../../action/actionHelper.js";
 import { Player } from "../player.js";
 import { PlayerState } from "./playerState.js";
 
@@ -50,9 +51,13 @@ SelectState.prototype.openContextMenu = function(gameContext, stateMachine, enti
 }
 
 SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, tileY) {
+    const player = stateMachine.getContext();
     const path = this.entity.getPath(gameContext, this.nodeMap, tileX, tileY);
 
-    console.log(path);
+    if(path.length !== 0) {
+        ActionHelper.tryEnqueueRequest(gameContext, player.getID(), ActionHelper.createMoveRequest(this.entity.getID(), tileX, tileY));
+        stateMachine.setNextState(gameContext, Player.STATE.IDLE);
+    }
 }
 
 SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {
