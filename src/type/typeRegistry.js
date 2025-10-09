@@ -138,7 +138,8 @@ TypeRegistry.MORALE_TYPE = {
 };
 
 TypeRegistry.ACTION_TYPE = {
-    MOVE: "MOVE"
+    MOVE: "MOVE",
+    ATTACK: "ATTACK"
 };
 
 TypeRegistry.TILE_ID = {

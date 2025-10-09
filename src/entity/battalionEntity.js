@@ -5,6 +5,45 @@ import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { EntityFlagMap } from "./flagMap.js";
 
+const ATTACK_TYPE = {
+    INITIATE: 0,
+    COUNTER: 1
+};
+
+const DAMAGE_AMPLIFIER = {
+    SCHWERPUNKT: 1.4,
+    STEALTH: 2
+};
+
+const mGetLowestCostNode = function(queue) {
+    let lowestNode = queue[0];
+    let lowestIndex = 0;
+
+    for(let i = 1; i < queue.length; i++) {
+        if(queue[i].cost < queue[lowestIndex].cost) {
+            lowestNode = queue[i];
+            lowestIndex = i;
+        }
+    }
+
+    queue[lowestIndex] = queue[queue.length - 1];
+    queue.pop();
+
+    return lowestNode;
+}
+
+const createNode = function(id, x, y, cost, type, parent, flags) {
+    return {
+        "id": id,
+        "x": x,
+        "y": y,
+        "cost": cost,
+        "type": type,
+        "parent": parent,
+        "flags": flags
+    }
+}
+
 export const BattalionEntity = function(id, sprite) {
     Entity.call(this, id, "");
 
@@ -228,33 +267,27 @@ BattalionEntity.prototype.setDirection = function(direction) {
 BattalionEntity.prototype.toIdle = function(gameContext) {
     this.state = BattalionEntity.STATE.IDLE;
     this.updateSprite(gameContext);
+    this.sprite.parent.thawEnd();
 }
 
 BattalionEntity.prototype.toMove = function(gameContext) {
     this.movementSpeed = BattalionEntity.DEFAULT_MOVEMENT_SPEED;
     this.state = BattalionEntity.STATE.MOVE;
     this.updateSprite(gameContext);
+    this.sprite.parent.thawEnd();
 }
 
 BattalionEntity.prototype.toFire = function(gameContext) {
-    this.state = BattalionEntity.STATE.IDLE;
+    this.state = BattalionEntity.STATE.FIRE;
     this.updateSprite(gameContext);
+    this.sprite.parent.freezeEnd();
 }
 
 BattalionEntity.prototype.updateDirectionByDelta = function(deltaX, deltaY) {
-    if(deltaX !== 0) {
-        if(deltaX < 0) {
-            return this.setDirection(BattalionEntity.DIRECTION.WEST);
-        } else if(deltaX > 0) {
-            return this.setDirection(BattalionEntity.DIRECTION.EAST);
-        }
-    } else if(deltaY !== 0) {
-        if(deltaY < 0) {
-            return this.setDirection(BattalionEntity.DIRECTION.NORTH);
-        } else if(deltaY > 0) {
-            return this.setDirection(BattalionEntity.DIRECTION.SOUTH);
-        }
-    }
+    if(deltaY < 0) return this.setDirection(BattalionEntity.DIRECTION.NORTH);
+    if(deltaY > 0) return this.setDirection(BattalionEntity.DIRECTION.SOUTH);
+    if(deltaX < 0) return this.setDirection(BattalionEntity.DIRECTION.WEST);
+    if(deltaX > 0) return this.setDirection(BattalionEntity.DIRECTION.EAST);
 }
 
 BattalionEntity.prototype.getSpriteTypeID = function() {
@@ -353,35 +386,6 @@ BattalionEntity.prototype.isSelectable = function() {
 
 BattalionEntity.prototype.isDead = function() {
     return this.health <= 0;
-}
-
-const mGetLowestCostNode = function(queue) {
-    let lowestNode = queue[0];
-    let lowestIndex = 0;
-
-    for(let i = 1; i < queue.length; i++) {
-        if(queue[i].cost < queue[lowestIndex].cost) {
-            lowestNode = queue[i];
-            lowestIndex = i;
-        }
-    }
-
-    queue[lowestIndex] = queue[queue.length - 1];
-    queue.pop();
-
-    return lowestNode;
-}
-
-const createNode = function(id, x, y, cost, type, parent, flags) {
-    return {
-        "id": id,
-        "x": x,
-        "y": y,
-        "cost": cost,
-        "type": type,
-        "parent": parent,
-        "flags": flags
-    }
 }
 
 BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
@@ -543,16 +547,6 @@ BattalionEntity.prototype.getTerrainTags = function(gameContext) {
     return tags;
 }
 
-const ATTACK_TYPE = {
-    INITIATE: 0,
-    COUNTER: 1
-};
-
-const DAMAGE_AMPLIFIER = {
-    SCHWERPUNKT: 1.4,
-    STEALTH: 2
-};
-
 BattalionEntity.prototype.isHidden = function() {
     return this.isCloaked;
 }
@@ -661,16 +655,22 @@ BattalionEntity.prototype.getDamage = function(gameContext, target, attackType) 
     return damage;
 }
 
+BattalionEntity.prototype.lookAt = function(gameContext, entity) {
+    const deltaX = entity.tileX - this.tileX;
+    const deltaY = entity.tileY - this.tileY;
+
+    this.updateDirectionByDelta(deltaX, deltaY);
+    this.updateSprite(gameContext);
+}
+
 BattalionEntity.prototype.playMoveSound = function(gameContext) {
     const { client } = gameContext;
     const { soundPlayer } = client;
     const moveSound = this.config.sounds?.move;
 
     if(moveSound) {
-        return soundPlayer.play(moveSound);
+        soundPlayer.play(moveSound);
     }
-
-    return null;
 }
 
 BattalionEntity.prototype.playFireSound = function(gameContext) {
@@ -679,33 +679,7 @@ BattalionEntity.prototype.playFireSound = function(gameContext) {
     const fireSound = this.config.sounds?.fire;
 
     if(fireSound) {
-        return soundPlayer.play(fireSound);
-    }
-
-    return null;
-}
-
-BattalionEntity.prototype.playSound = function(gameContext) {
-    const { client } = gameContext;
-    const { soundPlayer } = client;
-    let sound = null;
-
-    switch(this.state) {
-        case BattalionEntity.STATE.IDLE: {
-            break;
-        }
-        case BattalionEntity.STATE.MOVE: {
-            sound = this.config.sounds?.move;
-            break;
-        }
-        case BattalionEntity.STATE.FIRE: {
-            this.config.sounds?.fire;
-            break;
-        }
-    }
-
-    if(sound) {
-        soundPlayer.play(sound);
+        soundPlayer.play(fireSound);
     }
 }
 

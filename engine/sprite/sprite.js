@@ -34,7 +34,8 @@ Sprite.FLAG = {
     FLIP: 1 << 0,
     STATIC: 1 << 1,
     EXPIRE: 1 << 2,
-    DESTROY: 1 << 3
+    DESTROY: 1 << 3,
+    FREEZE_END: 1 << 4
 };
 
 Sprite.RENDER_PLACEHOLDER = 0;
@@ -141,11 +142,12 @@ Sprite.prototype.init = function(container, lastCallTime, DEBUG_NAME) {
         const { x, y, w, h } = bounds;
 
         this.container = container;
+        this.lastCallTime = lastCallTime;
         this.frameCount = frameCount;
         this.frameTime = frameTime;
         this.floatFrame = 0;
         this.currentFrame = 0;
-        this.lastCallTime = lastCallTime;
+        this.loopCount = 0;
         this.DEBUG_NAME = DEBUG_NAME;
         this.setBounds(x, y, w, h);
     }
@@ -246,21 +248,36 @@ Sprite.prototype.unflip = function() {
     this.flags &= ~Sprite.FLAG.FLIP;
 }
 
+Sprite.prototype.freezeEnd = function() {
+    this.flags |= Sprite.FLAG.FREEZE_END;
+}
+
+Sprite.prototype.thawEnd = function() {
+    this.flags &= ~Sprite.FLAG.FREEZE_END;
+}
+
 Sprite.prototype.updateFrame = function(floatFrames) {
     if(!this.hasFlag(Sprite.FLAG.STATIC)) {
-        this.floatFrame += floatFrames;
-        this.currentFrame = Math.floor(this.floatFrame % this.frameCount);
+        if(this.loopCount <= 0 || !this.hasFlag(Sprite.FLAG.FREEZE_END)) {
+            this.floatFrame += floatFrames;
+            this.currentFrame = Math.floor(this.floatFrame % this.frameCount);
 
-        if(floatFrames !== 0) {
-            if(this.floatFrame >= this.frameCount) {
-                const skippedLoops = Math.floor(this.floatFrame / this.frameCount);
+            if(floatFrames !== 0) {
+                if(this.floatFrame >= this.frameCount) {
+                    const skippedLoops = Math.floor(this.floatFrame / this.frameCount);
 
-                this.floatFrame -= this.frameCount * skippedLoops;
-                this.loopCount += skippedLoops;
-            }
+                    this.floatFrame -= this.frameCount * skippedLoops;
+                    this.loopCount += skippedLoops;
 
-            if(this.loopCount > this.loopLimit && this.hasFlag(Sprite.FLAG.EXPIRE)) {
-                this.terminate();
+                    if(skippedLoops > 0 && this.hasFlag(Sprite.FLAG.FREEZE_END)) {
+                        this.floatFrame = this.frameCount - 1;
+                        this.currentFrame = this.frameCount - 1;
+                    }
+                }
+
+                if(this.loopCount > this.loopLimit && this.hasFlag(Sprite.FLAG.EXPIRE)) {
+                    this.terminate();
+                }
             }
         }
     }
@@ -270,4 +287,8 @@ Sprite.prototype.setFrameTime = function(frameTime) {
     if(frameTime > 0) {
         this.frameTime = frameTime;
     }
+}
+
+Sprite.prototype.hasFinishedOnce = function() {
+    return this.loopCount > 0;
 }
