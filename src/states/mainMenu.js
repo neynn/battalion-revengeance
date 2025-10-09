@@ -15,7 +15,7 @@ MainMenuState.prototype.loadUI = function(gameContext, stateMachine) {
     mainMenuInterface.addClick("BUTTON_PLAY", () => stateMachine.setNextState(gameContext, BattalionContext.STATE.PLAY));
     mainMenuInterface.addClick("BUTTON_EDIT", () => stateMachine.setNextState(gameContext, BattalionContext.STATE.MAP_EDITOR));
     mainMenuInterface.addClick("BUTTON_EXTRA", () => {
-        soundPlayer.play("sound_red_stormtrooper_death");
+        //soundPlayer.play("sound_red_stormtrooper_death");
         musicPlayer.playPlaylist("EPIC_NAVAL");
     });
 

@@ -8,6 +8,9 @@
         "movementRange": 3,
         "movementType": "TRACKED",
         "traits": ["INERTIAL"],
+        "sounds": {
+            "move": ["massive_tank_move_1", "massive_tank_move_2", "massive_tank_move_3"]
+        },
         "sprites": {
             "idle_right": "annihilator_tank_idle_right",
             "idle_left": "annihilator_tank_idle_left",

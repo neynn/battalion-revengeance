@@ -1,5 +1,4 @@
 import { AssetLoader } from "./engine/resources/assetLoader.js";
-import { ArmyContext } from "./game/armyContext.js";
 import { generateAnimations, generateAutoSheet, makeProdFile, packerToJSONSprites, packerToJSONTiles, saveEntities, saveSprites2, saveSprites3 } from "./helpers.js";
 import { PathHandler } from "./engine/resources/pathHandler.js";
 import { BattalionContext } from "./src/battalionContext.js";

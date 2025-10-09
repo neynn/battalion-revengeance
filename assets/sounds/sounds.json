@@ -1,3 +1,5 @@
 {
-    "sound_red_stormtrooper_death": { "directory": ["assets", "sounds"], "source": "commando_enemy_death.mp3", "allowStacking": true, "volume": 1 }
+    "massive_tank_move_1": { "directory": ["assets", "sounds"], "source": "massive_tank_move_1.mp3", "allowStacking": true, "volume": 1 },
+    "massive_tank_move_2": { "directory": ["assets", "sounds"], "source": "massive_tank_move_2.mp3", "allowStacking": true, "volume": 1 },
+    "massive_tank_move_3": { "directory": ["assets", "sounds"], "source": "massive_tank_move_3.mp3", "allowStacking": true, "volume": 1 }
 }

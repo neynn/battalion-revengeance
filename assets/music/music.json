@@ -1,6 +1,6 @@
 {
     "pizza": { "volume": 0.2, "directory": ["assets", "music", "other"], "source": "pizza.mp3" },
-    "italian_brainrot": { "volume": 0.2, "directory": ["assets", "music", "other"], "source": "italian_brainrot.mp3" },
+    "italian_brainrot": { "volume": 0.1, "directory": ["assets", "music", "other"], "source": "italian_brainrot.mp3" },
     "AlMalhamaAlKubra1": { "volume": 0.3, "directory": ["assets", "music"], "source": "AlMalhamaAlKubra1.mp3" },
     "AlMalhamaAlKubra2": { "volume": 0.3, "directory": ["assets", "music"], "source": "AlMalhamaAlKubra2.mp3" },
     "AlMalhamaAlKubra3": { "volume": 0.3, "directory": ["assets", "music"], "source": "AlMalhamaAlKubra3.mp3" },
