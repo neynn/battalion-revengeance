@@ -29,6 +29,7 @@
     "factionTypes": { "directory": ["assets", "game", "types"], "source": "factionTypes.json" },
     "moraleTypes": { "directory": ["assets", "game", "types"], "source": "moraleTypes.json" },
     "movementTypes": { "directory": ["assets", "game", "types"], "source": "movementTypes.json" },
+    "narratorTypes": { "directory": ["assets", "game", "types"], "source": "narratorTypes.json" },
     "nationTypes": { "directory": ["assets", "game", "types"], "source": "nationTypes.json" },
     "powerTypes": { "directory": ["assets", "game", "types"], "source": "powerTypes.json" },
     "terrainTypes": { "directory": ["assets", "game", "types"], "source": "terrainTypes.json" },

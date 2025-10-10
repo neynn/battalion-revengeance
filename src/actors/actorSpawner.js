@@ -2,35 +2,14 @@ import { CameraHelper } from "../camera/cameraHelper.js";
 import { BattalionActor } from "./battalionActor.js";
 import { Player } from "./player.js";
 
+const ACTOR_TYPE = {
+    PLAYER: "Player",
+    OTHER_PLAYER: "OtherPlayer",
+    AI: "AI"
+};
+
 export const ActorSpawner = {
-    createActor: function(gameContext, config) {
-        const { world, teamManager, portraitHandler } = gameContext;
-        const { turnManager } = world;
-        const { type, id, team } = config;
-        const teamObject = teamManager.getTeam(team);
-
-        if(!teamObject || teamObject.hasActor()) {
-            console.log(`Team ${team} does not exist!`);
-            return null;
-        }
-
-        const actor = turnManager.createActor((actorID, actorType) => {
-            const { portrait } = actorType;
-            const actorObject = new BattalionActor(actorID);
-
-            actorObject.setTeam(team);
-            teamObject.setActor(actorID);
-
-            if(portrait) {
-                actorObject.portrait = portraitHandler.getPortraitTexture(portrait);
-            }
-
-            return actorObject;
-        }, type, id);
-
-        return actor;
-    },
-    createPlayer: function(gameContext, config) {
+    createAI: function(gameContext, config, customID) {
         const { world, teamManager } = gameContext;
         const { turnManager } = world;
         const { type, id, team } = config;
@@ -41,20 +20,49 @@ export const ActorSpawner = {
             return null;
         }
 
-        const player = turnManager.createActor((actorID, actorType) => {
+        const actor = turnManager.createActor((actorID, actorType) => {
+            const actorObject = new BattalionActor(actorID);
+
+            teamObject.setActor(actorID);
+            actorObject.setConfig(actorType);
+            actorObject.setTeam(team);
+            actorObject.setCustomID(customID);
+
+            return actorObject;
+        }, ACTOR_TYPE.AI, id);
+
+        actor.loadNarrator(gameContext, type);
+
+        return actor;
+    },
+    createPlayer: function(gameContext, config, customID) {
+        const { world, teamManager } = gameContext;
+        const { turnManager } = world;
+        const { type, id, team } = config;
+        const teamObject = teamManager.getTeam(team);
+
+        if(!teamObject || teamObject.hasActor()) {
+            console.log(`Team ${team} does not exist!`);
+            return null;
+        }
+
+        const actor = turnManager.createActor((actorID, actorType) => {
             const context = CameraHelper.createPlayCamera(gameContext);
             const camera = context.getCamera();
-            const actor = new Player(actorID, actorType, camera);
+            const actorObject = new Player(actorID, camera);
 
-            actor.setTeam(team);
             teamObject.setActor(actorID);
+            actorObject.setConfig(actorType);
+            actorObject.setTeam(team);
+            actorObject.setCustomID(customID);
 
-            return actor;
-        }, type, id);
+            return actorObject;
+        }, ACTOR_TYPE.PLAYER, id);
 
-        player.loadKeybinds(gameContext);
-        player.states.setNextState(gameContext, Player.STATE.IDLE);
+        actor.loadNarrator(gameContext, type);
+        actor.loadKeybinds(gameContext);
+        actor.states.setNextState(gameContext, Player.STATE.IDLE);
 
-        return player;
+        return actor;
     }
 };

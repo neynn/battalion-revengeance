@@ -58,18 +58,10 @@ export const MapSpawner = {
             const config = actors[actorName];   
 
             if(!playerCreated && actorName === PLAYER_NAME) {
-                const actor = ActorSpawner.createPlayer(gameContext, config);
-
-                if(actor) {
-                    actor.setCustomID(actorName);
-                    playerCreated = true;
-                }
+                ActorSpawner.createPlayer(gameContext, config, actorName);
+                playerCreated = true;
             } else {
-                const actor = ActorSpawner.createActor(gameContext, config);
-
-                if(actor) {
-                    actor.setCustomID(actorName);
-                }
+                ActorSpawner.createAI(gameContext, config, actorName);
             }
         }
 

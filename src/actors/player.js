@@ -6,10 +6,9 @@ import { BattalionActor } from "./battalionActor.js";
 import { IdleState } from "./player/idle.js";
 import { SelectState } from "./player/select.js";
 
-export const Player = function(id, config, camera) {
+export const Player = function(id, camera) {
     BattalionActor.call(this, id);
 
-    this.config = config;
     this.camera = camera;
     this.inspectedEntity = null;
 

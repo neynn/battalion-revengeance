@@ -1,4 +1,5 @@
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
+import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const DialogueHandler = function() {
     this.prelogue = [];
@@ -96,15 +97,14 @@ DialogueHandler.prototype.showNextEntry = function(gameContext) {
         return;
     }
 
-    const { client, language, portraitHandler, world } = gameContext;
+    const { client, language, portraitHandler, typeRegistry } = gameContext;
     const { soundPlayer } = client;
-    const { turnManager } = world;
     const { narrator, text, voice } = this.currentDialogue[this.currentIndex];
     const translation = language.get(text, LanguageHandler.TAG_TYPE.MAP);
-    const actorType = turnManager.getActorType(narrator);
+    const narratorType = typeRegistry.getType(narrator, TypeRegistry.CATEGORY.NARRATOR);
 
-    if(actorType) {
-        const { portrait, name } = actorType;
+    if(narratorType) {
+        const { portrait, name } = narratorType;
         const portraitTexture = portraitHandler.getPortraitTexture(portrait);
         const nameTranslation = language.get(name);
 

@@ -71,6 +71,7 @@ BattalionContext.prototype.init = function(resources) {
     this.typeRegistry.loadCategory(resources.factionTypes, TypeRegistry.CATEGORY.FACTION);
     this.typeRegistry.loadCategory(resources.buildingTypes, TypeRegistry.CATEGORY.BUILDING);
     this.typeRegistry.loadCategory(resources.moraleTypes, TypeRegistry.CATEGORY.MORALE);
+    this.typeRegistry.loadCategory(resources.narratorTypes, TypeRegistry.CATEGORY.NARRATOR);
 
     this.states.addState(BattalionContext.STATE.MAIN_MENU, new MainMenuState());
     this.states.addState(BattalionContext.STATE.MAP_EDITOR, new MapEditorState());

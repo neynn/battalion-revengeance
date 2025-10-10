@@ -1,12 +1,5 @@
 {
-    "Player": {
-        "name": "ACTOR_NAME_PLAYER",
-        "desc": "ACTOR_DESC_PLAYER",
-        "portrait": "Kanye"
-    },
-    "Kanye": {
-        "name": "ACTOR_NAME_KANYE",
-        "desc": "ACTOR_DESC_KANYE",
-        "portrait": "Kanye"
-    }
+    "Player": {},
+    "OtherPlayer": {},
+    "AI": {}
 }

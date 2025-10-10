@@ -120,7 +120,8 @@ export const TypeRegistry = function() {
         [TypeRegistry.CATEGORY.CURRENCY]: new TypeCategory(TypeRegistry.CATEGORY.CURRENCY, TypeRegistry.CURRENCY_TYPE),
         [TypeRegistry.CATEGORY.FACTION]: new TypeCategory(TypeRegistry.CATEGORY.FACTION, TypeRegistry.FACTION_TYPE),
         [TypeRegistry.CATEGORY.BUILDING]: new TypeCategory(TypeRegistry.CATEGORY.BUILDING, TypeRegistry.BUILDING_TYPE),
-        [TypeRegistry.CATEGORY.MORALE]: new TypeCategory(TypeRegistry.CATEGORY.MORALE, TypeRegistry.MORALE_TYPE)
+        [TypeRegistry.CATEGORY.MORALE]: new TypeCategory(TypeRegistry.CATEGORY.MORALE, TypeRegistry.MORALE_TYPE),
+        [TypeRegistry.CATEGORY.NARRATOR]: new TypeCategory(TypeRegistry.CATEGORY.NARRATOR, TypeRegistry.NARRATOR_TYPE)
     };
 
     this.loadCategory(SCHEMA_TYPES, TypeRegistry.CATEGORY.SCHEMA);
@@ -195,6 +196,10 @@ TypeRegistry.TILE_ID = {
     OVERLAY_ATTACK: 96
 };
 
+TypeRegistry.NARRATOR_TYPE = {
+    KANYE: "KANYE"
+};
+
 TypeRegistry.EVENT_TYPE = {
     DIALOGUE: "DIALOGUE",
     EXPLODE_TILE: "EXPLODE_TILE",
@@ -215,7 +220,8 @@ TypeRegistry.CATEGORY = {
     CURRENCY: "CURRENCY",
     FACTION: "FACTION",
     BUILDING: "BUILDING",
-    MORALE: "MORALE"
+    MORALE: "MORALE",
+    NARRATOR: "NARRATOR"
 };
 
 TypeRegistry.BUILDING_TYPE = {

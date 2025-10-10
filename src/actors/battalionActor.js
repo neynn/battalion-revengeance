@@ -1,4 +1,5 @@
 import { Actor } from "../../engine/turn/actor.js";
+import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const BattalionActor = function(id) {
     Actor.call(this, id);
@@ -7,6 +8,7 @@ export const BattalionActor = function(id) {
     this.teamID = null;
     this.portrait = null;
     this.customID = null;
+    this.narrator = null;
 }
 
 BattalionActor.prototype = Object.create(Actor.prototype);
@@ -84,3 +86,14 @@ BattalionActor.prototype.activeUpdate = function(gameContext, remainingActions) 
     this.requestTurnEnd();
 }
 
+BattalionActor.prototype.loadNarrator = function(gameContext, typeID) {
+    const { portraitHandler, typeRegistry } = gameContext;
+    const narratorType = typeRegistry.getType(typeID, TypeRegistry.CATEGORY.NARRATOR);
+
+    if(narratorType) {
+        const { portrait } = narratorType;
+
+        this.narrator = narratorType;
+        this.portrait = portraitHandler.getPortraitTexture(portrait); 
+    }
+}

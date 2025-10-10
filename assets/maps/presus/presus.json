@@ -8,9 +8,9 @@
         "DRAGOON": { "nation": "ELAM", "color": "BRONZE" }
     },
     "actors": {
-        "PLAYER": { "team": "SOMERTIN", "type": "Player" },
-        "NPC": { "team": "TRANSKAL", "type": "Kanye" },
-        "DRAGOON": { "team": "DRAGOON", "type": "Kanye" }
+        "PLAYER": { "team": "SOMERTIN", "type": "PLAYER" },
+        "NPC": { "team": "TRANSKAL", "type": "KANYE" },
+        "DRAGOON": { "team": "DRAGOON", "type": "KANYE" }
     },
     "entities": {
         "BOAT_1": { "x": 1, "y": 1, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "u_boat", "owner": "PLAYER" },
@@ -26,16 +26,16 @@
         "CAPTURE_0_0": { "type": "CAPTURE", "x": 0, "y": 0 }
     },
     "prelogue": [
-        { "narrator": "Kanye", "text": "PRESUS_PRELOGUE_1" },
-        { "narrator": "Kanye", "text": "PRESUS_PRELOGUE_2" }
+        { "narrator": "KANYE", "text": "PRESUS_PRELOGUE_1" },
+        { "narrator": "KANYE", "text": "PRESUS_PRELOGUE_2" }
     ],
     "postlogue": [
-        { "narrator": "Kanye", "text": "PRESUS_POSTLOGUE_1" },
-        { "narrator": "Kanye", "text": "PRESUS_POSTLOGUE_2" }
+        { "narrator": "KANYE", "text": "PRESUS_POSTLOGUE_1" },
+        { "narrator": "KANYE", "text": "PRESUS_POSTLOGUE_2" }
     ],
     "defeat": [
-        { "narrator": "Kanye", "text": "PRESUS_DEFEAT_1" },
-        { "narrator": "Kanye", "text": "PRESUS_DEFEAT_2" }
+        { "narrator": "KANYE", "text": "PRESUS_DEFEAT_1" },
+        { "narrator": "KANYE", "text": "PRESUS_DEFEAT_2" }
     ],
     "localization": [
         { "x": 0, "y": 0, "name": "TILE_NAME_TEST" },
