@@ -1,4 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
+import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { EntitySpawner } from "../../entity/entitySpawner.js";
 
 export const MoveAction = function() {
@@ -22,7 +23,7 @@ MoveAction.prototype.onStart = function(gameContext, data, id) {
     const entity = entityManager.getEntity(entityID);
 
     entity.reduceMove();
-    entity.playMoveSound(gameContext);
+    entity.playSound(gameContext, BattalionEntity.SOUND_TYPE.MOVE);
     entity.toMove(gameContext);
     EntitySpawner.removeEntity(gameContext, entity);
 
@@ -62,7 +63,7 @@ MoveAction.prototype.isFinished = function(gameContext, executionRequest) {
 }
 
 MoveAction.prototype.onEnd = function(gameContext, data, id) {
-    const { transform2D } = gameContext;
+    const { transform2D, teamManager } = gameContext;
     const { deltaX, deltaY, tileX, tileY } = this.path[0];
     const position = transform2D.transformTileToWorld(tileX, tileY);
 
@@ -72,6 +73,7 @@ MoveAction.prototype.onEnd = function(gameContext, data, id) {
     this.entity.toIdle(gameContext);
 
     EntitySpawner.placeEntity(gameContext, this.entity);
+    teamManager.onEntityMove(gameContext, this.entity);
 
     this.path = [];
     this.pathIndex = 0;

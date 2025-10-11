@@ -164,6 +164,25 @@ WorldMap.prototype.isTileOccupied = function(tileX, tileY) {
     return list.length > 0;
 }
 
+WorldMap.prototype.hasEntity = function(tileX, tileY, entityID) {
+    if(this.isTileOutOfBounds(tileX, tileY)) {
+        return false;
+    }
+
+    const index = this.getIndex(tileX, tileY);
+    const list = this.entities.get(index);
+
+    if(list) {
+        for(let i = 0; i < list.length; i++) {
+            if(list[i] === entityID) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+} 
+
 WorldMap.prototype.removeEntity = function(tileX, tileY, rangeX, rangeY, entityID) {
     for(let i = 0; i < rangeY; i++) {
         const locationY = tileY + i;
@@ -180,9 +199,7 @@ WorldMap.prototype.removeEntity = function(tileX, tileY, rangeX, rangeY, entityI
                 }
             
                 for(let i = 0; i < list.length; i++) {
-                    const entry = list[i];
-            
-                    if(entry === entityID) {
+                    if(list[i] === entityID) {
                         list.splice(i, 1);
                         break;
                     }
@@ -312,14 +329,14 @@ WorldMap.prototype.getAllEntitiesInArea = function(startX, startY, endX, endY) {
 }
 
 WorldMap.prototype.getUniqueEntitiesInArea = function(startX, startY, endX, endY) {
-    const entities = new Set();
+    const entities = [];
 
     for(let i = startY; i < endY; i++) {
         for(let j = startX; j < endX; j++) {
             const entityID = this.getTopEntity(j, i);
 
-            if(entityID !== null && !entities.has(entityID)) {
-                entities.add(entityID);
+            if(entityID !== null && !entities.includes(entityID)) {
+                entities.push(entityID);
             }
         }
     }

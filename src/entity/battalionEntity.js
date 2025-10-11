@@ -50,7 +50,8 @@ export const BattalionEntity = function(id, sprite) {
     this.health = 1;
     this.maxHealth = 1;
     this.damage = 0;
-    this.range = 0;
+    this.minRange = 0;
+    this.maxRange = 0;
     this.moraleAmplifier = 1;
     this.moraleType = TypeRegistry.MORALE_TYPE.NONE;
     this.weaponType = TypeRegistry.WEAPON_TYPE.NONE;
@@ -79,13 +80,6 @@ BattalionEntity.MAX_TRAITS = 4;
 
 BattalionEntity.MAX_MOVE_COST = 999;
 
-BattalionEntity.DIRECTION_TYPE = {
-    NORTH: "NORTH",
-    EAST: "EAST",
-    SOUTH: "SOUTH",
-    WEST: "WEST"
-};
-
 BattalionEntity.DIRECTION = {
     NORTH: 1 << 0,
     EAST: 1 << 1,
@@ -110,11 +104,16 @@ BattalionEntity.SPRITE_TYPE = {
     FIRE_UP: "fire_up",
 };
 
+BattalionEntity.SOUND_TYPE = {
+    MOVE: 0,
+    FIRE: 1
+};
+
 BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
 
 BattalionEntity.prototype.loadConfig = function(config) {
-    const { health, movementRange, movementType, damage, weaponType, armorType } = config;
+    const { health, movementRange, movementType, damage, weaponType, armorType, minRange, maxRange } = config;
 
     this.config = config;
     this.health = health ?? 1;
@@ -124,13 +123,13 @@ BattalionEntity.prototype.loadConfig = function(config) {
     this.armorType = TypeRegistry.ARMOR_TYPE[armorType] ? armorType : TypeRegistry.ARMOR_TYPE.NONE;
     this.movementType = TypeRegistry.MOVEMENT_TYPE[movementType] ? movementType : TypeRegistry.MOVEMENT_TYPE.STATIONARY;
     this.movementRange = movementRange ?? 1;
+    this.minRange = minRange ?? 2;
+    this.maxRange = maxRange ?? 3;
 }
 
-BattalionEntity.prototype.setCustomID = function(id) {
+BattalionEntity.prototype.setCustomInfo = function(id, name, desc) {
     this.customID = id;
-}
 
-BattalionEntity.prototype.setCustomText = function(name, desc) {
     if(name) {
         this.customName = name;
     }
@@ -240,14 +239,6 @@ BattalionEntity.prototype.hasMoveLeft = function() {
 
 BattalionEntity.prototype.reduceMove = function() {
     return this.movesLeft--;
-}
-
-BattalionEntity.prototype.setDirectionByName = function(name) {
-    const direction = BattalionEntity.DIRECTION[name];
-
-    if(direction !== undefined) {
-        this.direction = direction;
-    }
 }
 
 BattalionEntity.prototype.setDirection = function(direction) {
@@ -657,27 +648,28 @@ BattalionEntity.prototype.lookAt = function(entity) {
     this.updateDirectionByDelta(deltaX, deltaY);
 }
 
-BattalionEntity.prototype.playMoveSound = function(gameContext) {
+BattalionEntity.prototype.playSound = function(gameContext, soundType) {
     const { client } = gameContext;
     const { soundPlayer } = client;
-    const moveSound = this.config.sounds?.move;
+    let sound = null;
 
-    if(moveSound) {
-        soundPlayer.play(moveSound);
+    switch(soundType) {
+        case BattalionEntity.SOUND_TYPE.MOVE: {
+            sound = this.config.sounds?.move;
+            break;
+        }
+        case BattalionEntity.SOUND_TYPE.FIRE: {
+            sound = this.config.sounds?.fire;
+            break;
+        }
+    }
+
+    if(sound) {
+        soundPlayer.play(sound);
     }
 }
 
-BattalionEntity.prototype.playFireSound = function(gameContext) {
-    const { client } = gameContext;
-    const { soundPlayer } = client;
-    const fireSound = this.config.sounds?.fire;
-
-    if(fireSound) {
-        soundPlayer.play(fireSound);
-    }
-}
-
-BattalionEntity.prototype.bufferAudio = function(gameContext) {
+BattalionEntity.prototype.bufferSounds = function(gameContext) {
     const { client } = gameContext;
     const { soundPlayer } = client;
     const sounds = this.config.sounds ?? {};
@@ -693,4 +685,25 @@ BattalionEntity.prototype.bufferAudio = function(gameContext) {
             soundPlayer.bufferAudio(sound);
         }
     }
+}
+
+BattalionEntity.prototype.getDistanceToTile = function(tileX, tileY) {
+    const deltaX = Math.abs(this.tileX - tileX);
+    const deltaY = Math.abs(this.tileY - tileY);
+
+    return deltaX + deltaY;
+}
+
+BattalionEntity.prototype.getDistanceToEntity = function(entity) {
+    const entityX = entity.tileX;
+    const entityY = entity.tileY;
+    const distance = this.getDistanceToTile(entityX, entityY);
+    
+    return distance;
+}
+
+BattalionEntity.prototype.isEntityInRange = function(entity) {
+    const distance = this.getDistanceToEntity(entity);
+    
+    return distance >= this.minRange && distance <= this.maxRange;
 }

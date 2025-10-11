@@ -22,11 +22,16 @@ DefendObjective.prototype.onMove = function(gameContext, entity, teamID) {
         return;
     }
 
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const entityID = entity.getID();
+
     for(const target of this.targets) {
         const { goal } = target;
         const { x, y } = goal;
 
-        if(entity.occupiesTile(x, y)) {
+        if(worldMap.hasEntity(x, y, entityID)) {
             this.fail();
             break;
         }

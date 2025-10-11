@@ -145,9 +145,10 @@ TeamManager.prototype.updateStatus = function(gameContext) {
     for(let i = 0; i < this.activeTeams.length; i++) {
         const teamID = this.activeTeams[i];
         const team = this.getTeam(teamID);
-        const status = team.updateStatus();
 
-        if(status === Team.STATUS.LOSER) {
+        team.updateStatus();
+
+        if(team.isLoser()) {
             losers.push(teamID);
         }
     }

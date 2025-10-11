@@ -47,9 +47,10 @@ export const EntitySpawner = {
         const entity = entityManager.createEntity((entityID, entityType) => {
             const entitySprite = new EntitySprite();
             const entityObject = new BattalionEntity(entityID, entitySprite);
-
+            const directionValue = BattalionEntity.DIRECTION[direction] ?? BattalionEntity.DIRECTION.EAST;
+        
             entityObject.loadConfig(entityType);
-            entityObject.setDirectionByName(direction);
+            entityObject.setDirection(directionValue);
 
             const spriteID = entityObject.getSpriteID();
             const spawnPosition = transform2D.transformTileToWorld(x, y);
@@ -139,7 +140,7 @@ export const EntitySpawner = {
             y = -1,
             owner = null,
             type = null,
-            direction = BattalionEntity.DIRECTION_TYPE.EAST,
+            direction = "EAST",
             name = null,
             desc = null
         } = config;
@@ -148,9 +149,8 @@ export const EntitySpawner = {
         const entity = EntitySpawner.spawnEntity(gameContext, spawnConfig, ownerID);
 
         if(entity) {
-            entity.setCustomText(name, desc);
-            entity.setCustomID(customID);
-            entity.bufferAudio(gameContext);
+            entity.setCustomInfo(customID, name, desc);
+            entity.bufferSounds(gameContext);
         }
 
         return entity;

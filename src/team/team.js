@@ -56,47 +56,41 @@ Team.prototype.hasAnyObjective = function() {
 
 Team.prototype.loadAsNation = function(gameContext, nationID) {
     const { typeRegistry } = gameContext;
+    const nationType = typeRegistry.getType(nationID, TypeRegistry.CATEGORY.NATION);
 
-    if(nationID) {
-        const nationType = typeRegistry.getType(nationID, TypeRegistry.CATEGORY.NATION);
+    if(nationType) {
+        const { color, faction, currency } = nationType;
+        const factionType = typeRegistry.getType(faction, TypeRegistry.CATEGORY.FACTION)
+        const currencyType = typeRegistry.getType(currency, TypeRegistry.CATEGORY.CURRENCY);
+        const isColorSet = this.setColor(gameContext, color);
 
-        if(nationType) {
-            const { color, faction, currency } = nationType;
-            const factionType = typeRegistry.getType(faction, TypeRegistry.CATEGORY.FACTION)
-            const currencyType = typeRegistry.getType(currency, TypeRegistry.CATEGORY.CURRENCY);
-            const isColorSet = this.setColor(gameContext, color);
+        this.nation = nationType;
 
-            this.nation = nationType;
+        if(factionType) {
+            this.faction = factionType;
 
-            if(factionType) {
-                this.faction = factionType;
-
-                if(!isColorSet) {
-                    this.setColor(gameContext, factionType.color);
-                }
+            if(!isColorSet) {
+                this.setColor(gameContext, factionType.color);
             }
+        }
 
-            if(currencyType) {
-                const { exchangeRate } = currencyType;
+        if(currencyType) {
+            const { exchangeRate } = currencyType;
 
-                this.exchangeRate = exchangeRate;
-            }
+            this.exchangeRate = exchangeRate;
         }
     }
 }
 
 Team.prototype.loadAsFaction = function(gameContext, factionID) {
     const { typeRegistry } = gameContext;
+    const factionType = typeRegistry.getType(factionID, TypeRegistry.CATEGORY.FACTION);
 
-    if(factionID) {
-        const factionType = typeRegistry.getType(factionID, TypeRegistry.CATEGORY.FACTION);
+    if(factionType) {
+        const { color } = factionType;
 
-        if(factionType) {
-            const { color } = factionType;
-
-            this.faction = factionType;
-            this.setColor(gameContext, color);
-        }
+        this.faction = factionType;
+        this.setColor(gameContext, color);
     }
 }
 

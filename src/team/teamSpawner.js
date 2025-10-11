@@ -14,8 +14,13 @@ export const TeamSpawner = {
             return null;
         }
 
-        team.loadAsNation(gameContext, nation);
-        team.loadAsFaction(gameContext, faction);
+        if(nation) {
+            team.loadAsNation(gameContext, nation);
+        }
+
+        if(faction) {
+            team.loadAsFaction(gameContext, faction);
+        }       
 
         if(customColor) {
             team.setCustomColor(customColor);

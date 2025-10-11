@@ -1,4 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
+import { BattalionEntity } from "../../entity/battalionEntity.js";
 
 export const AttackAction = function() {
     Action.call(this);
@@ -30,7 +31,7 @@ AttackAction.prototype.onStart = function(gameContext, data, id) {
     entity.sprite.lockEnd();
     entity.reduceMove();
     entity.lookAt(target);
-    entity.playFireSound(gameContext);
+    entity.playSound(gameContext, BattalionEntity.SOUND_TYPE.FIRE);
     entity.toFire(gameContext);
 
     this.entity = entity;
@@ -45,6 +46,8 @@ AttackAction.prototype.isFinished = function(gameContext, executionRequest) {
 }
 
 AttackAction.prototype.onEnd = function(gameContext, data, id) {
+    //If status === dead then teamManager.onEntityDeath();
+    
     this.entity.sprite.unlockEnd();
     this.entity.toIdle(gameContext);
     this.entity = null;
@@ -59,7 +62,7 @@ AttackAction.prototype.getValidated = function(gameContext, requestData) {
     if(entity && entity.hasMoveLeft()) {
         const target = entityManager.getEntity(targetID);
 
-        if(target) {
+        if(target && entity.isEntityInRange(target)) {
             return {
                 "entityID": entityID,
                 "targetID": targetID,
