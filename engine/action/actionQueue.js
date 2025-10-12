@@ -9,6 +9,7 @@ export const ActionQueue = function() {
     this.executionQueue = new Queue(ActionQueue.MAX_ACTIONS);
     this.current = null;
     this.isSkipping = false;
+    this.ignoreNext = false;
     this.state = ActionQueue.STATE.ACTIVE;
 
     this.events = new EventEmitter();
@@ -111,13 +112,15 @@ ActionQueue.prototype.processExecution = function(gameContext) {
 }
 
 ActionQueue.prototype.handleActionEnd = function(gameContext) {
-    const { next } = this.current;
+    if(!this.ignoreNext) {
+        const { next } = this.current;
 
-    for(let i = next.length - 1; i >= 0; i--) {
-        const executionRequest = this.createExecutionRequest(gameContext, next[i]);
+        for(let i = next.length - 1; i >= 0; i--) {
+            const executionRequest = this.createExecutionRequest(gameContext, next[i]);
 
-        if(executionRequest) {
-            this.enqueue(executionRequest, Action.PRIORITY.HIGH);
+            if(executionRequest) {
+                this.enqueue(executionRequest, Action.PRIORITY.HIGH);
+            }
         }
     }
 

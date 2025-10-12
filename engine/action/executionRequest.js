@@ -43,9 +43,17 @@ ExecutionRequest.prototype.setState = function(stateID) {
 }
 
 ExecutionRequest.prototype.toJSON = function() {
+    const next = [];
+
+    for(let i = 0; i < this.next.length; i++) {
+        next[i] = this.next[i].toJSON();
+    }
+
     return {
         "id": this.id,
         "type": this.type,
-        "data": this.data
+        "data": this.data,
+        "actorID": this.actorID,
+        "next": next
     }
 }
