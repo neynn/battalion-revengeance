@@ -106,7 +106,8 @@ BattalionEntity.SPRITE_TYPE = {
 
 BattalionEntity.SOUND_TYPE = {
     MOVE: 0,
-    FIRE: 1
+    FIRE: 1,
+    CLOAK: 2
 };
 
 BattalionEntity.prototype = Object.create(Entity.prototype);
@@ -533,10 +534,6 @@ BattalionEntity.prototype.getTerrainTags = function(gameContext) {
     return tags;
 }
 
-BattalionEntity.prototype.isHidden = function() {
-    return this.isCloaked;
-}
-
 BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, attackType) {
     const { world, typeRegistry } = gameContext;
     const { mapManager } = world;
@@ -662,6 +659,10 @@ BattalionEntity.prototype.playSound = function(gameContext, soundType) {
             sound = this.config.sounds?.fire;
             break;
         }
+        case BattalionEntity.SOUND_TYPE.CLOAK: {
+            sound = this.config.sounds?.cloak;
+            break;
+        }
     }
 
     if(sound) {
@@ -706,4 +707,24 @@ BattalionEntity.prototype.isEntityInRange = function(entity) {
     const distance = this.getDistanceToEntity(entity);
     
     return distance >= this.minRange && distance <= this.maxRange;
+}
+
+BattalionEntity.prototype.isHidden = function() {
+    return this.isCloaked;
+}
+
+BattalionEntity.prototype.cloak = function() {
+    this.isCloaked = true;
+}
+
+BattalionEntity.prototype.uncloak = function() {
+    this.isCloaked = false;
+}
+
+BattalionEntity.prototype.setOpacity = function(opacity) {
+    this.sprite.setOpacity(opacity);
+}
+
+BattalionEntity.prototype.canCloak = function() {
+    return !this.isCloaked && this.hasTrait(TypeRegistry.TRAIT_TYPE.STEALTH);
 }

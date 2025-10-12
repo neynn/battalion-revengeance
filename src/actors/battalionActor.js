@@ -8,7 +8,7 @@ export const BattalionActor = function(id) {
     this.teamID = null;
     this.portrait = null;
     this.customID = null;
-    this.narrator = null;
+    this.commander = null;
 }
 
 BattalionActor.prototype = Object.create(Actor.prototype);
@@ -88,12 +88,12 @@ BattalionActor.prototype.activeUpdate = function(gameContext, remainingActions) 
 
 BattalionActor.prototype.loadNarrator = function(gameContext, typeID) {
     const { portraitHandler, typeRegistry } = gameContext;
-    const narratorType = typeRegistry.getType(typeID, TypeRegistry.CATEGORY.NARRATOR);
+    const commanderType = typeRegistry.getType(typeID, TypeRegistry.CATEGORY.COMMANDER);
 
-    if(narratorType) {
-        const { portrait } = narratorType;
+    if(commanderType) {
+        const { portrait } = commanderType;
 
-        this.narrator = narratorType;
+        this.commander = commanderType;
         this.portrait = portraitHandler.getPortraitTexture(portrait); 
     }
 }

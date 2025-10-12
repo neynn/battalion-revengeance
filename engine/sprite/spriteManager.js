@@ -271,6 +271,27 @@ SpriteManager.prototype.createSharedSprite = function(typeID) {
     return sprite;
 }
 
+SpriteManager.prototype.createEmptySprite = function(layerID = null) {
+    const sprite = this.pool.reserveElement();
+
+    if(!sprite) {
+        Logger.log(Logger.CODE.ENGINE_ERROR, "SpritePool is full!", "SpriteManager.prototype.createSprite", null);
+        return null;
+    }
+
+    sprite.reset();
+
+    if(layerID !== null) {
+        this.addToLayer(sprite, layerID);
+    }
+
+    const spriteID = sprite.getID();
+
+    this.spriteTracker.add(spriteID);
+
+    return sprite;
+}
+
 SpriteManager.prototype.createSprite = function(typeID, layerID = null) {
     const sprite = this.pool.reserveElement();
 

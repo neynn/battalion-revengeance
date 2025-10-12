@@ -101,10 +101,10 @@ DialogueHandler.prototype.showNextEntry = function(gameContext) {
     const { soundPlayer } = client;
     const { narrator, text, voice } = this.currentDialogue[this.currentIndex];
     const translation = language.get(text, LanguageHandler.TAG_TYPE.MAP);
-    const narratorType = typeRegistry.getType(narrator, TypeRegistry.CATEGORY.NARRATOR);
+    const commanderType = typeRegistry.getType(narrator, TypeRegistry.CATEGORY.COMMANDER);
 
-    if(narratorType) {
-        const { portrait, name } = narratorType;
+    if(commanderType) {
+        const { portrait, name } = commanderType;
         const portraitTexture = portraitHandler.getPortraitTexture(portrait);
         const nameTranslation = language.get(name);
 

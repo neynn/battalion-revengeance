@@ -121,7 +121,7 @@ export const TypeRegistry = function() {
         [TypeRegistry.CATEGORY.FACTION]: new TypeCategory(TypeRegistry.CATEGORY.FACTION, TypeRegistry.FACTION_TYPE),
         [TypeRegistry.CATEGORY.BUILDING]: new TypeCategory(TypeRegistry.CATEGORY.BUILDING, TypeRegistry.BUILDING_TYPE),
         [TypeRegistry.CATEGORY.MORALE]: new TypeCategory(TypeRegistry.CATEGORY.MORALE, TypeRegistry.MORALE_TYPE),
-        [TypeRegistry.CATEGORY.NARRATOR]: new TypeCategory(TypeRegistry.CATEGORY.NARRATOR, TypeRegistry.NARRATOR_TYPE)
+        [TypeRegistry.CATEGORY.COMMANDER]: new TypeCategory(TypeRegistry.CATEGORY.COMMANDER, TypeRegistry.COMMANDER_TYPE)
     };
 
     this.loadCategory(SCHEMA_TYPES, TypeRegistry.CATEGORY.SCHEMA);
@@ -140,7 +140,8 @@ TypeRegistry.MORALE_TYPE = {
 
 TypeRegistry.ACTION_TYPE = {
     MOVE: "MOVE",
-    ATTACK: "ATTACK"
+    ATTACK: "ATTACK",
+    CLOAK: "CLOAK"
 };
 
 TypeRegistry.TILE_ID = {
@@ -196,7 +197,7 @@ TypeRegistry.TILE_ID = {
     OVERLAY_ATTACK: 96
 };
 
-TypeRegistry.NARRATOR_TYPE = {
+TypeRegistry.COMMANDER_TYPE = {
     KANYE: "KANYE"
 };
 
@@ -221,7 +222,7 @@ TypeRegistry.CATEGORY = {
     FACTION: "FACTION",
     BUILDING: "BUILDING",
     MORALE: "MORALE",
-    NARRATOR: "NARRATOR"
+    COMMANDER: "COMMANDER"
 };
 
 TypeRegistry.BUILDING_TYPE = {

@@ -3,6 +3,7 @@ import { GameContext } from "../engine/gameContext.js";
 import { LanguageHandler } from "../engine/language/languageHandler.js";
 import { TurnManager } from "../engine/turn/turnManager.js";
 import { AttackAction } from "./action/types/attack.js";
+import { CloakAction } from "./action/types/cloak.js";
 import { MoveAction } from "./action/types/move.js";
 import { PortraitHandler } from "./actors/portraitHandler.js";
 import { DialogueHandler } from "./dialogue/dialogueHandler.js";
@@ -52,7 +53,8 @@ BattalionContext.prototype.init = function(resources) {
 
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.MOVE, new MoveAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.ATTACK, new AttackAction());
-    
+    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.CLOAK, new CloakAction());
+
     this.language.registerLanguage(LanguageHandler.LANGUAGE.ENGLISH, {});
     this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);
 
@@ -71,7 +73,7 @@ BattalionContext.prototype.init = function(resources) {
     this.typeRegistry.loadCategory(resources.factionTypes, TypeRegistry.CATEGORY.FACTION);
     this.typeRegistry.loadCategory(resources.buildingTypes, TypeRegistry.CATEGORY.BUILDING);
     this.typeRegistry.loadCategory(resources.moraleTypes, TypeRegistry.CATEGORY.MORALE);
-    this.typeRegistry.loadCategory(resources.narratorTypes, TypeRegistry.CATEGORY.NARRATOR);
+    this.typeRegistry.loadCategory(resources.commanderTypes, TypeRegistry.CATEGORY.COMMANDER);
 
     this.states.addState(BattalionContext.STATE.MAIN_MENU, new MainMenuState());
     this.states.addState(BattalionContext.STATE.MAP_EDITOR, new MapEditorState());

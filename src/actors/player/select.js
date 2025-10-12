@@ -62,7 +62,7 @@ SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, t
 
 SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {
     if(!isAlly) {
-        ActionHelper.tryEnqueueRequest(gameContext, stateMachine.getContext().getID(), ActionHelper.createAttackRequest(this.entity.getID(), entity.getID()));
+        ActionHelper.tryEnqueueRequest(gameContext, stateMachine.getContext().getID(), ActionHelper.createCloakRequest(this.entity.getID()));
         stateMachine.setNextState(gameContext, Player.STATE.IDLE);
         return;
     }

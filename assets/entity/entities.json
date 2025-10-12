@@ -288,9 +288,9 @@
         "damage": 0,
         "weaponType": "NONE",
         "armorType": "NONE",
-        "movementRange": 1,
-        "movementType": "STATIONARY",
-        "traits": [],
+        "movementRange": 5,
+        "movementType": "TRACKED",
+        "traits": ["STEALTH"],
         "sprites": {
             "idle_right": "stealth_tank_idle_right",
             "idle_left": "stealth_tank_idle_left",

@@ -1,6 +1,5 @@
 import { getRandomElement } from "../../engine/math/math.js";
-import { BuildingSprite } from "../sprite/buildingSprite.js";
-import { EntitySprite } from "../sprite/entitySprite.js";
+import { SchemaSprite } from "../sprite/schemaSprite.js";
 import { TeamSpawner } from "../team/teamSpawner.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { BattalionEntity } from "./battalionEntity.js";
@@ -40,22 +39,20 @@ export const EntitySpawner = {
         return owners;
     },
     createEntity: function(gameContext, config, colorID, color) {
-        const { world, transform2D } = gameContext;
+        const { world, transform2D, spriteManager } = gameContext;
         const { entityManager } = world;
         const { id, type, x, y, direction } = config;
 
         const entity = entityManager.createEntity((entityID, entityType) => {
-            const entitySprite = new EntitySprite();
+            const visualSprite = spriteManager.createEmptySprite(TypeRegistry.LAYER_TYPE.LAND);
+            const entitySprite = new SchemaSprite(visualSprite, null, colorID, color);
             const entityObject = new BattalionEntity(entityID, entitySprite);
             const directionValue = BattalionEntity.DIRECTION[direction] ?? BattalionEntity.DIRECTION.EAST;
-        
-            entityObject.loadConfig(entityType);
-            entityObject.setDirection(directionValue);
-
-            const spriteID = entityObject.getSpriteID();
             const spawnPosition = transform2D.transformTileToWorld(x, y);
 
-            entitySprite.init(gameContext, spriteID, colorID, color, TypeRegistry.LAYER_TYPE.LAND);
+            entityObject.loadConfig(entityType);
+            entityObject.setDirection(directionValue);
+            entityObject.toIdle(gameContext);
             entityObject.setTile(x, y);
             entityObject.setPositionVec(spawnPosition);
             entityObject.loadTraits();
@@ -166,10 +163,10 @@ export const EntitySpawner = {
             worldMap.createBuilding(x, y, () => {
                 const buildingType = typeRegistry.getType(type, TypeRegistry.CATEGORY.BUILDING);
                 const { sprite } = buildingType;
-                const buildingSprite = new BuildingSprite();
+                const visualSprite = SchemaSprite.createVisual(gameContext, sprite, colorID, color, TypeRegistry.LAYER_TYPE.BUILDING);
+                const buildingSprite = new SchemaSprite(visualSprite, sprite, colorID, color);
                 const building = new Building(name, buildingType, buildingSprite);
 
-                buildingSprite.init(gameContext, sprite, colorID, color, TypeRegistry.LAYER_TYPE.BUILDING);
                 building.setTile(gameContext, x, y);
                 building.setTeam(team);
 

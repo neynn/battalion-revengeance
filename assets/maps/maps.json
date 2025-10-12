@@ -12,5 +12,12 @@
         "language": {
             "en-US": "presus_en.json"
         }
+    },
+    "kanye_911": {
+        "directory": ["assets", "maps", "kanye_911"],
+        "source": "kanye_911.json",
+        "language": {
+            "en-US": "kanye_911_en.json"
+        }
     }
 }

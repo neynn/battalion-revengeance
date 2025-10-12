@@ -33,5 +33,10 @@ export const ActionHelper = {
         });
         
         return request;
+    },
+    createCloakRequest: function(entityID) {
+        return new ActionRequest(TypeRegistry.ACTION_TYPE.CLOAK, {
+            "entityID": entityID
+        });
     }
 };

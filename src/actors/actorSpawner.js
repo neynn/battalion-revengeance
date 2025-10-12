@@ -55,6 +55,7 @@ export const ActorSpawner = {
             actorObject.setConfig(actorType);
             actorObject.setTeam(team);
             actorObject.setCustomID(customID);
+            camera.addPerspective(team);
 
             return actorObject;
         }, ACTOR_TYPE.PLAYER, id);
