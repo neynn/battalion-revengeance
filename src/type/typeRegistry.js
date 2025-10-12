@@ -141,7 +141,8 @@ TypeRegistry.MORALE_TYPE = {
 TypeRegistry.ACTION_TYPE = {
     MOVE: "MOVE",
     ATTACK: "ATTACK",
-    CLOAK: "CLOAK"
+    CLOAK: "CLOAK",
+    DIALOGUE: "DIALOGUE"
 };
 
 TypeRegistry.TILE_ID = {

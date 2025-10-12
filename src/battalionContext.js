@@ -4,6 +4,7 @@ import { LanguageHandler } from "../engine/language/languageHandler.js";
 import { TurnManager } from "../engine/turn/turnManager.js";
 import { AttackAction } from "./action/types/attack.js";
 import { CloakAction } from "./action/types/cloak.js";
+import { DialogueAction } from "./action/types/dialogue.js";
 import { MoveAction } from "./action/types/move.js";
 import { PortraitHandler } from "./actors/portraitHandler.js";
 import { DialogueHandler } from "./dialogue/dialogueHandler.js";
@@ -54,6 +55,7 @@ BattalionContext.prototype.init = function(resources) {
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.MOVE, new MoveAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.ATTACK, new AttackAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.CLOAK, new CloakAction());
+    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.DIALOGUE, new DialogueAction());
 
     this.language.registerLanguage(LanguageHandler.LANGUAGE.ENGLISH, {});
     this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);
