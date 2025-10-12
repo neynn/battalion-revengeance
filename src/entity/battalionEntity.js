@@ -378,8 +378,8 @@ BattalionEntity.prototype.isDead = function() {
 }
 
 BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
-    const { world, typeRegistry } = gameContext;
-    const { mapManager } = world;
+    const { world, typeRegistry, teamManager } = gameContext;
+    const { mapManager, entityManager } = world;
     const worldMap = mapManager.getActiveMap();
 
     nodeMap.clear();
@@ -388,7 +388,7 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
         return;
     }
 
-    const flagMap = new EntityFlagMap(this.tileX, this.tileY, this.movementRange);
+    //const flagMap = new EntityFlagMap(this.tileX, this.tileY, this.movementRange);
     const startID = worldMap.getIndex(this.tileX, this.tileY);
     const startNode = createNode(startID, this.tileX, this.tileY, 0, null, null, 0);
     const queue = [startNode];
@@ -414,6 +414,7 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
             const neighborID = worldMap.getIndex(neighborX, neighborY);
 
             if(neighborID !== -1) {
+                let nextCost = cost;
                 let tileType = typeCache.get(neighborID);
 
                 if(!tileType) {
@@ -422,17 +423,30 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
                 }
                 
                 const { terrain, passability } = tileType;
-                let nextCost = passability[this.movementType] ?? BattalionEntity.MAX_MOVE_COST;
 
-                if(nextCost !== BattalionEntity.MAX_MOVE_COST) {
-                    const flags = flagMap.getFlag(neighborX, neighborY);
-                    //TODO: Implement entity blocking/flying over. Z-Levels?
+                nextCost += passability[this.movementType] ?? BattalionEntity.MAX_MOVE_COST;
 
+                if(nextCost < BattalionEntity.MAX_MOVE_COST) {
                     for(let i = 0; i < terrain.length; i++) {
                         const { moveCost } = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
                         const terrainModifier = moveCost[this.movementType] ?? 0;
 
                         nextCost += terrainModifier;
+                    }
+
+                    {
+                        const entityID = worldMap.getTopEntity(neighborX, neighborY);
+                        const entity = entityManager.getEntity(entityID);
+                        
+                        if(entity)   {
+                            const { teamID } = entity;
+                            const isAlly = teamManager.isAlly(this.teamID, teamID);
+
+                            //TODO: Bypassing, team checks.
+                            if(!isAlly) {
+                                nextCost += BattalionEntity.MAX_MOVE_COST;
+                            }
+                        }
                     }
                 }
 
@@ -440,21 +454,19 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
                     nextCost = 1;
                 }
 
-                const neighborCost = cost + nextCost;
-
-                if(neighborCost <= this.movementRange) {
+                if(nextCost <= this.movementRange) {
                     const bestCost = visitedCost.get(neighborID);
 
-                    if(bestCost === undefined || neighborCost < bestCost) {
-                        const childNode = createNode(neighborID, neighborX, neighborY, neighborCost, type, id, 0);
+                    if(bestCost === undefined || nextCost < bestCost) {
+                        const childNode = createNode(neighborID, neighborX, neighborY, nextCost, type, id, 0);
 
                         queue.push(childNode);
-                        visitedCost.set(neighborID, neighborCost);
+                        visitedCost.set(neighborID, nextCost);
                         nodeMap.set(neighborID, childNode);
                     }
                 } else if(!nodeMap.has(neighborID)) {
                     //This is unreachable.
-                    const childNode = createNode(neighborID, neighborX, neighborY, neighborCost, type, id, -1);
+                    const childNode = createNode(neighborID, neighborX, neighborY, nextCost, type, id, -1);
 
                     nodeMap.set(neighborID, childNode);
                 }

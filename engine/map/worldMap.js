@@ -165,10 +165,6 @@ WorldMap.prototype.isTileOccupied = function(tileX, tileY) {
 }
 
 WorldMap.prototype.hasEntity = function(tileX, tileY, entityID) {
-    if(this.isTileOutOfBounds(tileX, tileY)) {
-        return false;
-    }
-
     const index = this.getIndex(tileX, tileY);
     const list = this.entities.get(index);
 
