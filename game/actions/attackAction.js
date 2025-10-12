@@ -40,7 +40,7 @@ AttackAction.prototype.isFinished = function(gameContext, request) {
     return request.timePassed >= timeRequired;
 }
 
-AttackAction.prototype.getValidated = function(gameContext, request) {
+AttackAction.prototype.validate = function(gameContext, request) {
     const { entityID, actorID } = request;
     const { world } = gameContext; 
     const { entityManager } = world;

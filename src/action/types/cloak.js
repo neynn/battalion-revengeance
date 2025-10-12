@@ -46,18 +46,15 @@ CloakAction.prototype.onEnd = function(gameContext, data, id) {
     this.opacity = 1;
 }
 
-CloakAction.prototype.getValidated = function(gameContext, requestData) {
+CloakAction.prototype.validate = function(gameContext, executionRequest, requestData) {
     const { world } = gameContext;
     const { entityManager } = world;
     const { entityID } = requestData;
     const entity = entityManager.getEntity(entityID);
 
     if(entity && entity.canCloak()) {
-        return {
+        executionRequest.setData({
             "entityID": entityID
-        }
+        });
     }
-
-
-    return null;
 }

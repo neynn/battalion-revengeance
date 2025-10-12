@@ -39,7 +39,7 @@ CollectAction.prototype.isFinished = function(gameContext, request) {
     return request.timePassed >= timeRequired;
 }
 
-CollectAction.prototype.getValidated = function(gameContext, request) {
+CollectAction.prototype.validate = function(gameContext, request) {
     const { world }  = gameContext;
     const { entityManager, turnManager } = world;
     const { actorID, entityID } = request;

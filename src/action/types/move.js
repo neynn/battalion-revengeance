@@ -1,6 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { EntitySpawner } from "../../entity/entitySpawner.js";
+import { ActionHelper } from "../actionHelper.js";
 
 export const MoveAction = function() {
     Action.call(this);
@@ -81,7 +82,7 @@ MoveAction.prototype.onEnd = function(gameContext, data, id) {
     this.distanceMoved = 0;
 }
 
-MoveAction.prototype.getValidated = function(gameContext, requestData) {
+MoveAction.prototype.validate = function(gameContext, executionRequest, requestData) {
     const { world } = gameContext;
     const { entityManager } = world;
     const { entityID, targetX, targetY } = requestData;
@@ -95,15 +96,16 @@ MoveAction.prototype.getValidated = function(gameContext, requestData) {
         const path = entity.getPath(gameContext, nodeMap, targetX, targetY);
 
         if(path.length !== 0) {
-            return {
+            executionRequest.setData({
                 "entityID": entityID,
                 "targetX": targetX,
                 "targetY": targetY,
                 "path": path
+            });
+
+            if(entity.canCloak()) {
+                executionRequest.addNext(ActionHelper.createCloakRequest(entityID));
             }
         }
     }
-
-
-    return null;
 }

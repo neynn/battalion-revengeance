@@ -733,6 +733,20 @@ BattalionEntity.prototype.uncloak = function() {
     this.isCloaked = false;
 }
 
+BattalionEntity.prototype.cloakInstant = function() {
+    if(!this.isCloaked) {
+        this.sprite.setOpacity(0);
+        this.isCloaked = true;
+    }
+}
+
+BattalionEntity.prototype.uncloakInstant = function() {
+    if(this.isCloaked) {
+        this.sprite.setOpacity(1);
+        this.isCloaked = false;
+    }
+}
+
 BattalionEntity.prototype.setOpacity = function(opacity) {
     this.sprite.setOpacity(opacity);
 }

@@ -153,9 +153,22 @@ ActionQueue.prototype.processExecution = function(gameContext) {
         actionType.onEnd(gameContext, data, id);
 
         this.current.setState(ExecutionRequest.STATE.FINISHED);
+        this.handleChainedActions(gameContext);
         this.events.emit(ActionQueue.EVENT.EXECUTION_COMPLETE, this.current);
         this.state = ActionQueue.STATE.ACTIVE;
         this.clearCurrent();
+    }
+}
+
+ActionQueue.prototype.handleChainedActions = function(gameContext) {
+    const { next } = this.current;
+
+    for(let i = next.length - 1; i >= 0; i--) {
+        const executionRequest = this.createExecutionRequest(gameContext, next[i]);
+
+        if(executionRequest) {
+            this.enqueue(executionRequest, Action.PRIORITY.HIGH);
+        }
     }
 }
 
@@ -217,12 +230,14 @@ ActionQueue.prototype.createExecutionRequest = function(gameContext, request) {
     const actionType = this.actionTypes.get(type);
 
     if(actionType) {
-        const validatedData = actionType.getValidated(gameContext, data);
+        const executionRequest = new ExecutionRequest(this.nextID++, type);
 
-        if(validatedData) {
+        actionType.validate(gameContext, executionRequest, data);
+
+        if(executionRequest.isValid()) {
             actionType.onValid(gameContext);
 
-            return new ExecutionRequest(this.nextID++, type, validatedData);
+            return executionRequest;
         }
 
         actionType.onInvalid(gameContext);
@@ -256,26 +271,36 @@ ActionQueue.prototype.clearCurrent = function() {
     this.current = null;
 }
 
-ActionQueue.prototype.enqueue = function(request) {
-    if(this.executionQueue.isFull()) {
+ActionQueue.prototype.enqueue = function(execution, forcedPriority = Action.PRIORITY.NONE) {
+    if(!this.executionQueue.isFull()) {
+        if(forcedPriority !== Action.PRIORITY.NONE) {
+            this.enqueueByPriority(execution, forcedPriority);
+        } else {
+            const { type } = execution;
+            const priority = this.getPriority(type);
+
+            this.enqueueByPriority(execution, priority);
+        }
+    } else {
         console.error({
             "error": "The execution queue is full. Item has been discarded!",
-            "item": request
+            "item": execution
         });
-
-        return;
     }
+}
 
-    const { type } = request;
-    const priority = this.getPriority(type);
-
+ActionQueue.prototype.enqueueByPriority = function(execution, priority) {
     switch(priority) {
         case Action.PRIORITY.HIGH: {
-            this.executionQueue.enqueueFirst(request);
+            this.executionQueue.enqueueFirst(execution);
+            break;
+        }
+        case Action.PRIORITY.NORMAL: {
+            this.executionQueue.enqueueLast(execution);
             break;
         }
         case Action.PRIORITY.LOW: {
-            this.executionQueue.enqueueLast(request);
+            this.executionQueue.enqueueLast(execution);
             break;
         }
         default: {

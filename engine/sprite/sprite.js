@@ -126,6 +126,7 @@ Sprite.prototype.reset = function() {
     this.boundsW = 0;
     this.boundsH = 0;
     this.flags = Sprite.FLAG.NONE;
+    this.opacity = 1;
     this.setPosition(0, 0);
     this.show();
 }

@@ -29,7 +29,7 @@ CounterAttackAction.prototype.onEnd = function(gameContext, data, id) {
     this.entity = null;
 }
 
-CounterAttackAction.prototype.getValidated = function(gameContext, requestData) {
+CounterAttackAction.prototype.validate = function(gameContext, requestData) {
     const { world } = gameContext;
     const { entityManager } = world;
     const { entityID, targetID } = requestData;

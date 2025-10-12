@@ -66,7 +66,7 @@ MoveAction.prototype.isFinished = function(gameContext, request) {
     return moveComponent.isPathDone();
 }
 
-MoveAction.prototype.getValidated = function(gameContext, request) {
+MoveAction.prototype.validate = function(gameContext, request) {
     const { world } = gameContext;
     const { entityManager } = world;
     const { actorID, entityID, targetX, targetY } = request;

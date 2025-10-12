@@ -41,7 +41,7 @@ AttackAction.prototype.onEnd = function(gameContext, data, id) {
     this.entity = null;
 }
 
-AttackAction.prototype.getValidated = function(gameContext, requestData) {
+AttackAction.prototype.validate = function(gameContext, executionRequest, requestData) {
     const { world } = gameContext;
     const { entityManager } = world;
     const { entityID, targetID } = requestData;
@@ -51,14 +51,11 @@ AttackAction.prototype.getValidated = function(gameContext, requestData) {
         const target = entityManager.getEntity(targetID);
 
         if(target && entity.isEntityInRange(target)) {
-            return {
+            executionRequest.setData({
                 "entityID": entityID,
                 "targetID": targetID,
                 "targets": [] //These are target resolvers
-            }
+            });
         }
     }
-
-
-    return null;
 }

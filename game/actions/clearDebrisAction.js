@@ -29,7 +29,7 @@ ClearDebrisAction.prototype.isFinished = function(gameContext, request) {
     return request.timePassed >= timeRequired;
 }
 
-ClearDebrisAction.prototype.getValidated = function(gameContext, request) {
+ClearDebrisAction.prototype.validate = function(gameContext, request) {
     const { tileX, tileY, actorID } = request;
     const isCleanable = DebrisSystem.isCleanable(gameContext, tileX, tileY, actorID)
 

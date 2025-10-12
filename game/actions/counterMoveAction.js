@@ -34,7 +34,7 @@ CounterMoveAction.prototype.isFinished = function(gameContext, request) {
     return request.timePassed >= timeRequired;
 }
 
-CounterMoveAction.prototype.getValidated = function(gameContext, template) {
+CounterMoveAction.prototype.validate = function(gameContext, template) {
     const { entityID } = template;
     const { world } = gameContext; 
     const { entityManager } = world;

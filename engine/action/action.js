@@ -8,7 +8,8 @@ export const Action = function() {
 Action.PRIORITY = {
     NONE: 0,
     LOW: 1,
-    HIGH: 2
+    NORMAL: 2,
+    HIGH: 3
 };
 
 Action.prototype.onValid = function(gameContext) {}
@@ -17,4 +18,4 @@ Action.prototype.onStart = function(gameContext, actionData, requestID) {}
 Action.prototype.onEnd = function(gameContext, actionData, requestID) {}
 Action.prototype.onUpdate = function(gameContext, actionData, requestID) {}
 Action.prototype.isFinished = function(gameContext, executionRequest) {}
-Action.prototype.getValidated = function(gameContext, requestData) {}
+Action.prototype.validate = function(gameContext, executionRequest, data) {}

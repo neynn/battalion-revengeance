@@ -37,7 +37,7 @@ ConstructionAction.prototype.isFinished = function(gameContext, request) {
     return request.timePassed >= constructionDuration;
 }
 
-ConstructionAction.prototype.getValidated = function(gameContext, request) {
+ConstructionAction.prototype.validate = function(gameContext, request) {
     const { world } = gameContext;
     const { entityManager } = world;
     const { entityID } = request;

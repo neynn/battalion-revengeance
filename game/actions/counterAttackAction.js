@@ -34,7 +34,7 @@ CounterAttackAction.prototype.isFinished = function(gameContext, request) {
     return request.timePassed >= timeRequired;
 }
 
-CounterAttackAction.prototype.getValidated = function(gameContext, template) {
+CounterAttackAction.prototype.validate = function(gameContext, template) {
     const { entityID } = template;
     const { world } = gameContext; 
     const { entityManager } = world;

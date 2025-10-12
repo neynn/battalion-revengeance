@@ -18,21 +18,17 @@ export const ActionHelper = {
         }
     },
     createAttackRequest: function(entityID, targetID) {
-        const request = new ActionRequest(TypeRegistry.ACTION_TYPE.ATTACK, {
+        return new ActionRequest(TypeRegistry.ACTION_TYPE.ATTACK, {
             "entityID": entityID,
             "targetID": targetID
         });
-
-        return request;
     },
     createMoveRequest: function(entityID, targetX, targetY) {
-        const request = new ActionRequest(TypeRegistry.ACTION_TYPE.MOVE, {
+        return new ActionRequest(TypeRegistry.ACTION_TYPE.MOVE, {
             "entityID": entityID,
             "targetX": targetX,
             "targetY": targetY
         });
-        
-        return request;
     },
     createCloakRequest: function(entityID) {
         return new ActionRequest(TypeRegistry.ACTION_TYPE.CLOAK, {

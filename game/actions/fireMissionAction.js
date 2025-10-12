@@ -29,7 +29,7 @@ FireMissionAction.prototype.isFinished = function(gameContext, request) {
     return true || request.timePassed >= timeRequired;
 }
 
-FireMissionAction.prototype.getValidated = function(gameContext, request) {
+FireMissionAction.prototype.validate = function(gameContext, request) {
     const { actorID, callID, tileX, tileY } = request;
     const fireMission = gameContext.getFireMissionType(callID);
 
