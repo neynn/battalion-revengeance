@@ -6,9 +6,7 @@ import { Action } from "./action.js";
 export const ActionQueue = function() {
     this.nextID = 0;
     this.actionTypes = new Map();
-    this.maxInstantActions = 100;
-    this.immediateQueue = new Queue(100);
-    this.executionQueue = new Queue(100);
+    this.executionQueue = new Queue(ActionQueue.MAX_ACTIONS);
     this.current = null;
     this.isSkipping = false;
     this.state = ActionQueue.STATE.ACTIVE;
@@ -19,6 +17,8 @@ export const ActionQueue = function() {
     this.events.register(ActionQueue.EVENT.EXECUTION_RUNNING);
     this.events.register(ActionQueue.EVENT.EXECUTION_COMPLETE);
 }
+
+ActionQueue.MAX_ACTIONS = 100;
 
 ActionQueue.STATE = {
     NONE: 0,
@@ -34,52 +34,9 @@ ActionQueue.EVENT = {
     EXECUTION_COMPLETE: "EXECUTION_COMPLETE"
 };
 
-ActionQueue.prototype.isSendable = function(typeID) {
-    const actionType = this.actionTypes.get(typeID);
-
-    if(!actionType) {
-        return false;
-    }
-
-    return actionType.isSendable;
-}
-
-ActionQueue.prototype.updateInstant = function(gameContext) {
-    let instantActionsExecuted = 0;
-
-    while(instantActionsExecuted < this.maxInstantActions && this.current) {
-        const { type } = this.current;
-        const isInstant = this.getInstant(type);
-
-        if(!isInstant) {
-            break;
-        }
-
-        this.flushExecution(gameContext);
-        this.current = this.executionQueue.getNext();
-
-        if(!this.current && !this.immediateQueue.isEmpty()) {
-            this.updateImmediateQueue(gameContext);
-            this.current = this.executionQueue.getNext();
-        }
-
-        instantActionsExecuted++;
-    }
-
-    const limitReached = instantActionsExecuted === this.maxInstantActions && this.current && this.getInstant(this.current.type);
-
-    return limitReached;
-}
-
 ActionQueue.prototype.update = function(gameContext) {
     if(!this.current) {
         this.current = this.executionQueue.getNext();
-    }
-
-    const limitReached = this.updateInstant(gameContext);
-
-    if(limitReached) {
-        return;
     }
 
     switch(this.state) {
@@ -96,8 +53,6 @@ ActionQueue.prototype.update = function(gameContext) {
             break;
         }
     }
-
-    this.updateImmediateQueue(gameContext);
 }
 
 ActionQueue.prototype.flushExecution = function(gameContext) {
@@ -114,9 +69,7 @@ ActionQueue.prototype.flushExecution = function(gameContext) {
     actionType.onStart(gameContext, data, id);
     actionType.onEnd(gameContext, data, id);
 
-    this.current.setState(ExecutionRequest.STATE.FINISHED);
-    this.events.emit(ActionQueue.EVENT.EXECUTION_COMPLETE, this.current);
-    this.clearCurrent();
+    this.handleActionEnd(gameContext);
 }
 
 ActionQueue.prototype.startExecution = function(gameContext) {
@@ -152,15 +105,12 @@ ActionQueue.prototype.processExecution = function(gameContext) {
     if(this.isSkipping || actionType.isFinished(gameContext, this.current)) {
         actionType.onEnd(gameContext, data, id);
 
-        this.current.setState(ExecutionRequest.STATE.FINISHED);
-        this.handleChainedActions(gameContext);
-        this.events.emit(ActionQueue.EVENT.EXECUTION_COMPLETE, this.current);
+        this.handleActionEnd(gameContext);
         this.state = ActionQueue.STATE.ACTIVE;
-        this.clearCurrent();
     }
 }
 
-ActionQueue.prototype.handleChainedActions = function(gameContext) {
+ActionQueue.prototype.handleActionEnd = function(gameContext) {
     const { next } = this.current;
 
     for(let i = next.length - 1; i >= 0; i--) {
@@ -170,59 +120,11 @@ ActionQueue.prototype.handleChainedActions = function(gameContext) {
             this.enqueue(executionRequest, Action.PRIORITY.HIGH);
         }
     }
-}
 
-ActionQueue.prototype.addImmediateRequest = function(request) {
-    const { type } = request;
-    const actionType = this.actionTypes.get(type);
-
-    if(!actionType) {
-        return;
-    }
-
-    this.immediateQueue.enqueueLast(request);
-}
-
-ActionQueue.prototype.updateImmediateQueue = function(gameContext) {
-    if(this.current) {
-        return;
-    }
-
-    this.immediateQueue.filterUntilFirstHit(request => {
-        const executionRequest = this.createExecutionRequest(gameContext, request);
-
-        if(executionRequest) {
-            this.enqueue(executionRequest);
-
-            return true;
-        }
-
-        return false;
-    });
-}
-
-ActionQueue.prototype.getInstant = function(typeID) {
-    const actionType = this.actionTypes.get(typeID);
-
-    if(!actionType) {
-        return false;
-    }
-
-    const { isInstant } = actionType;
-
-    return isInstant;
-}
-
-ActionQueue.prototype.getPriority = function(typeID) {
-    const actionType = this.actionTypes.get(typeID);
-
-    if(!actionType) {
-        return Action.PRIORITY.NONE;
-    }
-
-    const { priority } = actionType;
-
-    return priority;
+    this.current.setState(ExecutionRequest.STATE.FINISHED);
+    this.events.emit(ActionQueue.EVENT.EXECUTION_COMPLETE, this.current);
+    this.isSkipping = false;
+    this.current = null;
 }
 
 ActionQueue.prototype.createExecutionRequest = function(gameContext, request) {
@@ -259,16 +161,11 @@ ActionQueue.prototype.registerAction = function(typeID, handler) {
 
 ActionQueue.prototype.exit = function() {
     this.events.muteAll();
-    this.immediateQueue.clear();
     this.executionQueue.clear();
     this.state = ActionQueue.STATE.ACTIVE;
-    this.clearCurrent();
-    this.nextID = 0;
-}
-
-ActionQueue.prototype.clearCurrent = function() {
     this.isSkipping = false;
     this.current = null;
+    this.nextID = 0;
 }
 
 ActionQueue.prototype.enqueue = function(execution, forcedPriority = Action.PRIORITY.NONE) {
@@ -326,4 +223,26 @@ ActionQueue.prototype.skip = function() {
     if(this.isRunning()) {
         this.isSkipping = true;
     }
+}
+
+ActionQueue.prototype.isSendable = function(typeID) {
+    const actionType = this.actionTypes.get(typeID);
+
+    if(!actionType) {
+        return false;
+    }
+
+    return actionType.isSendable;
+}
+
+ActionQueue.prototype.getPriority = function(typeID) {
+    const actionType = this.actionTypes.get(typeID);
+
+    if(!actionType) {
+        return Action.PRIORITY.NONE;
+    }
+
+    const { priority } = actionType;
+
+    return priority;
 }

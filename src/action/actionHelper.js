@@ -2,25 +2,11 @@ import { ActionRequest } from "../../engine/action/actionRequest.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const ActionHelper = {
-    tryEnqueueRequest: function(gameContext, actorID, request) {
-        const { world } = gameContext;
-        const { actionQueue, turnManager } = world;
-
-        if(!actionQueue.isRunning()) {
-            if(turnManager.isActor(actorID)) {
-                const executionRequest = actionQueue.createExecutionRequest(gameContext, request);
-
-                if(executionRequest) {
-                    executionRequest.setActor(actorID);
-                    actionQueue.enqueue(executionRequest);
-                }
-            }
-        }
-    },
-    createAttackRequest: function(entityID, targetID) {
+    createAttackRequest: function(entityID, targetID, attackType) {
         return new ActionRequest(TypeRegistry.ACTION_TYPE.ATTACK, {
             "entityID": entityID,
-            "targetID": targetID
+            "targetID": targetID,
+            "attackType": attackType
         });
     },
     createMoveRequest: function(entityID, targetX, targetY) {

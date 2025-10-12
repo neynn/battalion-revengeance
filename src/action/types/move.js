@@ -103,6 +103,7 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
                 "path": path
             });
 
+            //TODO: Interception.
             if(entity.canCloak()) {
                 executionRequest.addNext(ActionHelper.createCloakRequest(entityID));
             }

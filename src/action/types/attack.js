@@ -1,5 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
+import { ActionHelper } from "../actionHelper.js";
 
 export const AttackAction = function() {
     Action.call(this);
@@ -7,6 +8,11 @@ export const AttackAction = function() {
     this.entity = null;
     this.targets = [];
 }
+
+AttackAction.ATTACK_TYPE = {
+    INITIATE: 0,
+    COUNTER: 1
+};
 
 AttackAction.prototype = Object.create(Action.prototype);
 AttackAction.prototype.constructor = AttackAction;
@@ -44,18 +50,41 @@ AttackAction.prototype.onEnd = function(gameContext, data, id) {
 AttackAction.prototype.validate = function(gameContext, executionRequest, requestData) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID, targetID } = requestData;
+    const { entityID, targetID, attackType } = requestData;
     const entity = entityManager.getEntity(entityID);
+    const target = entityManager.getEntity(targetID);
 
-    if(entity && entity.hasMoveLeft()) {
-        const target = entityManager.getEntity(targetID);
+    if(!entity || !target) {
+        return;
+    }
 
-        if(target && entity.isEntityInRange(target)) {
-            executionRequest.setData({
-                "entityID": entityID,
-                "targetID": targetID,
-                "targets": [] //These are target resolvers
-            });
+    switch(attackType) {
+        case AttackAction.ATTACK_TYPE.INITIATE: {
+            if(entity.hasMoveLeft() && entity.isEntityInRange(target)) {
+                executionRequest.setData({
+                    "entityID": entityID,
+                    "targetID": targetID,
+                    "targets": [] //These are target resolvers
+                });
+
+                //TODO: Check if target can counter -> add counter attack as next.
+                const counterAttack = ActionHelper.createAttackRequest(targetID, entityID, AttackAction.ATTACK_TYPE.COUNTER);
+
+                executionRequest.addNext(counterAttack);
+            }
+
+            break;
+        }
+        case AttackAction.ATTACK_TYPE.COUNTER: {
+            if(entity.isEntityInRange(target)) {
+                executionRequest.setData({
+                    "entityID": entityID,
+                    "targetID": targetID,
+                    "targets": [] //These are target resolvers
+                });
+            }
+
+            break;
         }
     }
 }

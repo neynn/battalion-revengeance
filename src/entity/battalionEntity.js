@@ -2,13 +2,9 @@ import { Entity } from "../../engine/entity/entity.js";
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { FloodFill } from "../../engine/pathfinders/floodFill.js";
+import { AttackAction } from "../action/types/attack.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { EntityFlagMap } from "./flagMap.js";
-
-const ATTACK_TYPE = {
-    INITIATE: 0,
-    COUNTER: 1
-};
 
 const DAMAGE_AMPLIFIER = {
     SCHWERPUNKT: 1.4,
@@ -124,8 +120,8 @@ BattalionEntity.prototype.loadConfig = function(config) {
     this.armorType = TypeRegistry.ARMOR_TYPE[armorType] ? armorType : TypeRegistry.ARMOR_TYPE.NONE;
     this.movementType = TypeRegistry.MOVEMENT_TYPE[movementType] ? movementType : TypeRegistry.MOVEMENT_TYPE.STATIONARY;
     this.movementRange = movementRange ?? 1;
-    this.minRange = minRange ?? 2;
-    this.maxRange = maxRange ?? 3;
+    this.minRange = 1//minRange ?? 2;
+    this.maxRange = 1//maxRange ?? 3;
 }
 
 BattalionEntity.prototype.setCustomInfo = function(id, name, desc) {
@@ -594,7 +590,7 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
     //Steer (don't really like this one).
 
     switch(attackType) {
-        case ATTACK_TYPE.INITIATE: {
+        case AttackAction.ATTACK_TYPE.INITIATE: {
             //Schwerpunkt factor.
             if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SCHWERPUNKT) && target.movementType === TypeRegistry.MOVEMENT_TYPE.FOOT) {
                 damageAmplifier *= DAMAGE_AMPLIFIER.SCHWERPUNKT;
@@ -639,7 +635,7 @@ BattalionEntity.prototype.getDamage = function(gameContext, target, attackType) 
 	}
 
     if(
-        attackType === ATTACK_TYPE.INITIATE &&
+        attackType === AttackAction.ATTACK_TYPE.INITIATE &&
         this.hasTrait(TypeRegistry.TRAIT_TYPE.SUPPLY_DISTRIBUTION)
     ) {
         damage *= -1;

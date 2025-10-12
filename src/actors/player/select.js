@@ -1,4 +1,5 @@
 import { ActionHelper } from "../../action/actionHelper.js";
+import { AttackAction } from "../../action/types/attack.js";
 import { Player } from "../player.js";
 import { PlayerState } from "./playerState.js";
 
@@ -55,14 +56,19 @@ SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, t
     const path = this.entity.getPath(gameContext, this.nodeMap, tileX, tileY);
 
     if(path.length !== 0) {
-        ActionHelper.tryEnqueueRequest(gameContext, player.getID(), ActionHelper.createMoveRequest(this.entity.getID(), tileX, tileY));
+        const request = ActionHelper.createMoveRequest(this.entity.getID(), tileX, tileY);
+
+        player.tryEnqueueRequest(gameContext, request);
         stateMachine.setNextState(gameContext, Player.STATE.IDLE);
     }
 }
 
 SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {
     if(!isAlly) {
-        ActionHelper.tryEnqueueRequest(gameContext, stateMachine.getContext().getID(), ActionHelper.createCloakRequest(this.entity.getID()));
+        const player = stateMachine.getContext();
+        const request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.ATTACK_TYPE.INITIATE);
+
+        player.tryEnqueueRequest(gameContext, request);
         stateMachine.setNextState(gameContext, Player.STATE.IDLE);
         return;
     }
