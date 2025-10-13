@@ -24,7 +24,8 @@ DialogueHandler.STATE = {
 DialogueHandler.TYPE = {
     PRELOGUE: 0,
     POSTLOGUE: 1,
-    DEFEAT: 2
+    DEFEAT: 2,
+    CUSTOM: 3
 };
 
 DialogueHandler.prototype.loadPrelogue = function(prelogue) {
@@ -43,25 +44,21 @@ DialogueHandler.prototype.exit = function() {
     this.prelogue = [];
     this.postlogue = [];
     this.defeat = [];
+    
+    this.currentDialogue = [];
+    this.currentIndex = -1;
+    this.currentPortrait = null;
+    this.currentName = "";
+    this.currentText = "";
+    this.fullCurrentText = "";
 }
 
-DialogueHandler.prototype.play = function(gameContext, type) {
+DialogueHandler.prototype.getDialogue = function(type) {
     switch(type) {
-        case DialogueHandler.TYPE.PRELOGUE: {
-            this.playDialogue(gameContext, this.prelogue);
-            break;
-        }
-        case DialogueHandler.TYPE.POSTLOGUE: {
-            this.playDialogue(gameContext, this.postlogue);
-            break;
-        }
-        case DialogueHandler.TYPE.DEFEAT: {
-            this.playDialogue(gameContext, this.defeat);
-            break;
-        }
-        default: {
-            break;
-        }
+        case DialogueHandler.TYPE.PRELOGUE: return this.prelogue;
+        case DialogueHandler.TYPE.POSTLOGUE: return this.postlogue;
+        case DialogueHandler.TYPE.DEFEAT: return this.defeat;
+        default: return [];
     }
 }
 
@@ -89,11 +86,14 @@ DialogueHandler.prototype.playDialogue = function(gameContext, dialogue) {
     }
 }
 
+DialogueHandler.prototype.isFinished = function() {
+    return this.currentDialogue.length !== 0 && this.currentIndex >= this.currentDialogue.length;
+}
+
 DialogueHandler.prototype.showNextEntry = function(gameContext) {
     this.currentIndex++;
 
-    if(this.currentIndex >= this.currentDialogue.length) {
-        this.reset();
+    if(this.isFinished()) {
         return;
     }
 
@@ -127,10 +127,15 @@ DialogueHandler.prototype.showFullText = function() {
     this.currentText = this.fullCurrentText;
 }
 
-DialogueHandler.prototype.advanceLetter = function() {
-    if(this.currentText.length < this.fullCurrentText.length) {
+DialogueHandler.prototype.revealLetters = function(letters = 0) {
+    while(letters > 0 && this.currentText.length < this.fullCurrentText.length) {
         this.currentText += this.fullCurrentText[this.currentText.length];
+        letters--;
     }
+}
+
+DialogueHandler.prototype.isEnabled = function() {
+    return this.state === DialogueHandler.STATE.ENABLED;
 }
 
 DialogueHandler.prototype.reset = function() {

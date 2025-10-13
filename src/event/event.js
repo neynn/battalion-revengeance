@@ -1,3 +1,5 @@
+import { ActionHelper } from "../action/actionHelper.js";
+import { DialogueHandler } from "../dialogue/dialogueHandler.js";
 import { EntitySpawner } from "../entity/entitySpawner.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
@@ -27,8 +29,6 @@ Event.prototype.triggerByRound = function(gameContext, round) {
 }
 
 Event.prototype.trigger = function(gameContext) {
-    const { dialogueHandler } = gameContext;
-
     for(let i = 0; i < this.triggers.length; i++) {
         const { type } = this.triggers[i];
 
@@ -36,7 +36,7 @@ Event.prototype.trigger = function(gameContext) {
             case TypeRegistry.EvENT_TYPE.DIALOGUE: {
                 const { dialogue, target } = this.triggers[i];
 
-                dialogueHandler.playDialogue(gameContext, dialogue);
+                ActionHelper.createCustomDialogue(gameContext, dialogue);
                 break;
             }
             case TypeRegistry.EvENT_TYPE.EXPLODE_TILE: {
