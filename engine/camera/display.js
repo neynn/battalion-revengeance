@@ -15,6 +15,8 @@ export const Display = function() {
     this.translateY = 0;
 }
 
+Display.BASE_SCALE = 1;
+
 Display.COLOR = {
     BLACK: "#000000",
     DARK_GRAY: "#111111"
@@ -180,4 +182,40 @@ Display.prototype.strokeShape = function(shape, drawX, drawY, width, height) {
             break;
         }
     }
+}
+
+Display.prototype.getScaleWhole = function(targetWidth, targetHeight) {
+    let scale = Display.BASE_SCALE;
+    let scaleX = Math.floor(targetWidth / this.width);
+    let scaleY = Math.floor(targetHeight / this.height);
+
+    if(scaleX < scaleY) {
+        scale = scaleX;
+    } else {
+        scale = scaleY;
+    }
+
+    if(scale < Display.BASE_SCALE) {
+        scale = Display.BASE_SCALE;
+    }
+
+    return scale;
+}
+
+Display.prototype.getScaleFractured = function(targetWidth, targetHeight) {
+    let scale = Display.BASE_SCALE;
+    let scaleX = targetWidth / this.width;
+    let scaleY = targetHeight / this.height;
+
+    if(scaleX < scaleY) {
+        scale = scaleX;
+    } else {
+        scale = scaleY;
+    }
+
+    if(scale < Display.BASE_SCALE) {
+        scale = Display.BASE_SCALE;
+    }
+
+    return scale;
 }

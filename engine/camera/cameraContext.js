@@ -9,7 +9,7 @@ export const CameraContext = function(id, camera) {
     this.positionX = 0;
     this.positionY = 0;
     this.display = new Display();
-    this.scale = CameraContext.BASE_SCALE;
+    this.scale = Display.BASE_SCALE;
     this.scaleMode = CameraContext.SCALE_MODE.NONE;
     this.positionMode = CameraContext.POSITION_MODE.FIXED;
     this.displayMode = CameraContext.DISPLAY_MODE.RESOLUTION_DEPENDENT;
@@ -17,8 +17,6 @@ export const CameraContext = function(id, camera) {
     this.isDragging = false;
     this.nodes = [];
 }
-
-CameraContext.BASE_SCALE = 1;
 
 CameraContext.POSITION_MODE = {
     FIXED: 0,
@@ -35,37 +33,6 @@ CameraContext.SCALE_MODE = {
     WHOLE: 1,
     FRACTURED: 2
 };
-
-CameraContext.prototype.getScale = function(width, height) {
-    let scale = CameraContext.BASE_SCALE;
-    let scaleX = CameraContext.BASE_SCALE;
-    let scaleY = CameraContext.BASE_SCALE;
-
-    switch(this.scaleMode) {
-        case CameraContext.SCALE_MODE.FRACTURED: {
-            scaleX = width / this.display.width;
-            scaleY = height / this.display.height;
-            break;
-        }
-        case CameraContext.SCALE_MODE.WHOLE: {
-            scaleX = Math.floor(width / this.display.width);
-            scaleY = Math.floor(height / this.display.height);
-            break;
-        }
-    }
-
-    if(scaleX < scaleY) {
-        scale = scaleX;
-    } else {
-        scale = scaleY;
-    }
-
-    if(scale < CameraContext.BASE_SCALE) {
-        scale = CameraContext.BASE_SCALE;
-    }
-
-    return scale;
-}
 
 CameraContext.prototype.getID = function() {
     return this.id;
@@ -131,7 +98,7 @@ CameraContext.prototype.dragCamera = function(deltaX, deltaY) {
 
 CameraContext.prototype.reloadScale = function() {
     if(this.displayMode === CameraContext.DISPLAY_MODE.RESOLUTION_DEPENDENT) {
-        this.scale = CameraContext.BASE_SCALE;
+        this.scale = Display.BASE_SCALE;
         return;
     }
 
@@ -143,7 +110,16 @@ CameraContext.prototype.reloadScale = function() {
         height -= this.positionY;
     }
 
-    this.scale = this.getScale(width, height);
+    switch(this.scaleMode) {
+        case CameraContext.SCALE_MODE.FRACTURED: {
+            this.scale = this.display.getScaleFractured(width, height);
+            break;
+        }
+        case CameraContext.SCALE_MODE.WHOLE: {
+            this.scale = this.display.getScaleWhole(width, height);
+            break;
+        }
+    }
 }
 
 CameraContext.prototype.refresh = function() {
