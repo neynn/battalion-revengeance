@@ -89,7 +89,7 @@ CameraContext.prototype.setPosition = function(x, y) {
     this.positionY = Math.floor(y);
 
     for(let i = 0; i < this.nodes.length; i++) {
-        this.nodes[i].onPositionUpdate(this);
+        this.nodes[i].onUpdate(this);
     }
 }
 
@@ -294,7 +294,7 @@ CameraContext.prototype.clearNodes = function() {
 CameraContext.prototype.addNode = function(node) {
     this.nodes.push(node);
 
-    node.onAdd(this);
+    node.onUpdate(this);
 }
 
 CameraContext.prototype.getTopEdge = function() {

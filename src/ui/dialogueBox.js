@@ -7,17 +7,10 @@ export const DialogueBox = function() {
 DialogueBox.prototype = Object.create(ContextNode.prototype);
 DialogueBox.prototype.constructor = DialogueBox;
 
-DialogueBox.prototype.anchor = function(context) {
+
+DialogueBox.prototype.onUpdate = function(context) {
     const positionX = context.getLeftEdge();
     const positionY = context.getBottomEdgeOfCamera() - 200;
     
     this.setPosition(positionX, positionY);
-}
-
-DialogueBox.prototype.onAdd = function(context) {
-    this.anchor(context);
-}
-
-DialogueBox.prototype.onPositionUpdate = function(context) {
-    this.anchor(context);
 }
