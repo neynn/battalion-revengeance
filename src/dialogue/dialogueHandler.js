@@ -90,10 +90,23 @@ DialogueHandler.prototype.isFinished = function() {
     return this.currentDialogue.length !== 0 && this.currentIndex >= this.currentDialogue.length;
 }
 
+DialogueHandler.prototype.onSkipButton = function() {
+    this.reset();
+}
+
+DialogueHandler.prototype.onNextButton = function(gameContext) {
+    if(this.currentText.length === this.fullCurrentText.length) {
+        this.showNextEntry(gameContext);
+    } else {
+        this.showFullText();
+    }
+}
+
 DialogueHandler.prototype.showNextEntry = function(gameContext) {
     this.currentIndex++;
 
     if(this.isFinished()) {
+        this.reset();
         return;
     }
 

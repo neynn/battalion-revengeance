@@ -58,7 +58,7 @@ SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, t
     if(path.length !== 0) {
         const request = ActionHelper.createMoveRequest(this.entity.getID(), tileX, tileY);
 
-        player.tryEnqueueRequest(gameContext, request);
+        player.queueRequest(request);
         stateMachine.setNextState(gameContext, Player.STATE.IDLE);
     }
 }
@@ -68,7 +68,7 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
         const player = stateMachine.getContext();
         const request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.ATTACK_TYPE.INITIATE);
 
-        player.tryEnqueueRequest(gameContext, request);
+        player.queueRequest(request);
         stateMachine.setNextState(gameContext, Player.STATE.IDLE);
         return;
     }

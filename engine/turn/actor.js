@@ -4,6 +4,7 @@ export const Actor = function(id) {
     this.endRequested = false;
     this.maxActions = 1;
     this.turn = 0;
+    this.actionRequests = [];
 }
 
 Actor.prototype.load = function(blob) {}
@@ -49,6 +50,34 @@ Actor.prototype.setConfig = function(config) {
         this.config = config;
     }
 } 
+
+Actor.prototype.queueRequest = function(request) {
+    this.actionRequests.push(request);
+}
+
+Actor.prototype.tryEnqueueAction = function(gameContext) {
+    const { world } = gameContext;
+    const { actionQueue, turnManager } = world;
+
+    if(!turnManager.isActor(this.id)) {
+        return false;
+    }
+
+    for(let i = 0; i < this.actionRequests.length; i++) {
+        const executionRequest = actionQueue.createExecutionRequest(gameContext, this.actionRequests[i]);
+
+        if(executionRequest) {
+            executionRequest.setActor(this.id);
+            actionQueue.enqueue(executionRequest);
+
+            this.actionRequests.splice(0, i + 1);
+            
+            return true;
+        }
+    }
+
+    return false;
+}
 
 Actor.prototype.onNextTurn = function(gameContext, turn) {}
 Actor.prototype.onNextRound = function(gameContext, round) {}

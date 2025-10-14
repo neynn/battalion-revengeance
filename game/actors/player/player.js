@@ -16,11 +16,9 @@ import { MissionHandler } from "./mission/missionHandler.js";
 import { PlayerSellState } from "./states/sell.js";
 import { PlayerDebugState } from "./states/debug.js";
 import { PlayerPlaceState } from "./states/place.js";
-import { MissionGroup } from "./mission/missionGroup.js";
 import { ArmyContext } from "../../armyContext.js";
 import { UnitLimitHandler } from "./unitLimit/unitLimitHandler.js";
 import { ActionRequestEvent } from "../../events/actionRequest.js";
-import { MissionCompleteEvent } from "../../events/missionComplete.js";
 
 export const Player = function(id, camera) {
     Actor.call(this, id);

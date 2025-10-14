@@ -97,17 +97,3 @@ BattalionActor.prototype.loadNarrator = function(gameContext, typeID) {
         this.portrait = portraitHandler.getPortraitTexture(portrait); 
     }
 }
-
-BattalionActor.prototype.tryEnqueueRequest = function(gameContext, request) {
-    const { world } = gameContext;
-    const { actionQueue, turnManager } = world;
-
-    if(turnManager.isActor(this.id)) {
-        const executionRequest = actionQueue.createExecutionRequest(gameContext, request);
-
-        if(executionRequest) {
-            executionRequest.setActor(this.id);
-            actionQueue.enqueue(executionRequest);
-        }
-    }
-}
