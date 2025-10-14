@@ -1,6 +1,7 @@
 import { CameraContext } from "../../engine/camera/cameraContext.js";
 import { ContextHelper } from "../../engine/camera/contextHelper.js";
 import { Cursor } from "../../engine/client/cursor.js";
+import { DialogueBox } from "../ui/dialogueBox.js";
 import { BattalionCamera } from "./battalionCamera.js";
 import { EditCamera } from "./editCamera.js";
 
@@ -58,6 +59,8 @@ export const CameraHelper = {
         CameraHelper.tryLoadingWorldSize(gameContext, camera);
         ContextHelper.createDrag(gameContext, contextID, Cursor.BUTTON.LEFT);
         context.refresh();
+
+        context.addNode(new DialogueBox());
 
         return context;
     }

@@ -15,6 +15,7 @@ export const CameraContext = function(id, camera) {
     this.displayMode = CameraContext.DISPLAY_MODE.RESOLUTION_DEPENDENT;
     this.display.init(1, 1, Display.TYPE.BUFFER);
     this.isDragging = false;
+    this.nodes = [];
 }
 
 CameraContext.BASE_SCALE = 1;
@@ -86,6 +87,10 @@ CameraContext.prototype.getWorldPosition = function(screenX, screenY) {
 CameraContext.prototype.setPosition = function(x, y) {
     this.positionX = Math.floor(x);
     this.positionY = Math.floor(y);
+
+    for(let i = 0; i < this.nodes.length; i++) {
+        this.nodes[i].onPositionUpdate(this);
+    }
 }
 
 CameraContext.prototype.setSize = function(width, height) {
@@ -280,4 +285,38 @@ CameraContext.prototype.isColliding = function(mouseX, mouseY, mouseRange) {
     );
 
     return isColliding;
+}
+
+CameraContext.prototype.clearNodes = function() {
+    this.nodes.length = 0;
+}
+
+CameraContext.prototype.addNode = function(node) {
+    this.nodes.push(node);
+
+    node.onAdd(this);
+}
+
+CameraContext.prototype.getTopEdge = function() {
+    return this.positionY;
+}
+
+CameraContext.prototype.getLeftEdge = function() {
+    return this.positionX;
+}
+
+CameraContext.prototype.getRightEdge = function() {
+    return this.width + this.positionX;
+}
+
+CameraContext.prototype.getBottomEdge = function() {
+    return this.height + this.positionY;
+}
+
+CameraContext.prototype.getBottomEdgeOfCamera = function() {
+     return this.camera.viewportHeight * this.scale + this.positionY;
+}
+
+CameraContext.prototype.getRightEdgeOfCamera = function() {
+    return this.camera.viewportWidth * this.scale + this.positionX;
 }

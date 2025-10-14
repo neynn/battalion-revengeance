@@ -5,6 +5,7 @@ export const Actor = function(id) {
     this.maxActions = 1;
     this.turn = 0;
     this.actionRequests = [];
+    this.maxRequests = 10;
 }
 
 Actor.prototype.load = function(blob) {}
@@ -52,7 +53,9 @@ Actor.prototype.setConfig = function(config) {
 } 
 
 Actor.prototype.queueRequest = function(request) {
-    this.actionRequests.push(request);
+    if(this.actionRequests.length < this.maxRequests) {
+        this.actionRequests.push(request);
+    }
 }
 
 Actor.prototype.tryEnqueueAction = function(gameContext) {
