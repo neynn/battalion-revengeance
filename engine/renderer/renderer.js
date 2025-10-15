@@ -1,18 +1,21 @@
-import { Display } from "./camera/display.js";
-import { EffectManager } from "./effects/effectManager.js";
-import { CameraContext } from "./camera/cameraContext.js";
-import { Camera2D } from "./camera/camera2D.js";
-import { ContextHelper } from "./camera/contextHelper.js";
+import { Display } from "../camera/display.js";
+import { EffectManager } from "../effects/effectManager.js";
+import { CameraContext } from "../camera/cameraContext.js";
+import { Camera2D } from "../camera/camera2D.js";
+import { ContextHelper } from "../camera/contextHelper.js";
+import { RenderRoot } from "./renderRoot.js";
 
 export const Renderer = function(windowWidth, windowHeight) {
     this.nextID = 0;
     this.contexts = [];
     this.windowWidth = windowWidth;
     this.windowHeight = windowHeight;
-
     this.display = new Display();
     this.display.init(this.windowWidth, this.windowHeight, Display.TYPE.DISPLAY);
-
+    this.root = new RenderRoot();
+    this.root.addToDocument();
+    this.root.addChild(this.display.canvas);
+    this.root.setSize(this.windowWidth, this.windowHeight);
     this.effectManager = new EffectManager();
 }
 
@@ -32,6 +35,11 @@ Renderer.FPS_COLOR = {
 
 Renderer.prototype.exit = function() {
     this.nextID = 0;
+
+    for(let i = 0; i < this.contexts.length; i++) {
+        this.removeRoot(this.contexts[i].root);
+    }
+
     this.contexts.length = 0;
 }
 
@@ -61,12 +69,24 @@ Renderer.prototype.hasContext = function(contextID) {
     return false;
 }
 
+Renderer.prototype.removeRoot = function(root) {
+    const children = root.getChildren();
+
+    for(let i = 0; i < children.length; i++) {
+        this.root.addChild(children[i]);
+    }
+
+    this.root.removeChild(root.element);
+}
+
 Renderer.prototype.createContext = function(camera) {
     const contextID = this.nextID++;
-    const context = new CameraContext(contextID, camera);
+    const root = new RenderRoot();
+    const context = new CameraContext(contextID, camera, root);
 
-    context.setSize(this.windowWidth, this.windowHeight);
+    context.onWindowResize(this.windowWidth, this.windowHeight);
 
+    this.root.addChild(root.element);
     this.contexts.push(context);
 
     return context;
@@ -78,6 +98,7 @@ Renderer.prototype.destroyContext = function(contextID) {
         const id = context.getID();
 
         if(id === contextID) {
+            this.removeRoot(context.root);
             this.contexts.splice(i, 1);
             return;
         }
@@ -153,10 +174,11 @@ Renderer.prototype.drawInfo = function(gameContext) {
 Renderer.prototype.onWindowResize = function(width, height) {
     this.windowWidth = width;
     this.windowHeight = height;
+    this.root.setSize(width, height);
     this.display.onWindowResize(width, height);
 
     for(let i = 0; i < this.contexts.length; i++) {
-        this.contexts[i].onWindowResize(this.display.width, this.display.height);
+        this.contexts[i].onWindowResize(width, height);
     }
 }
 

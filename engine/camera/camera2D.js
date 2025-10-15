@@ -1,5 +1,5 @@
 import { clampValue } from "../math/math.js";
-import { Renderer } from "../renderer.js";
+import { Renderer } from "../renderer/renderer.js";
 import { Camera } from "./camera.js";
 
 export const Camera2D = function() {

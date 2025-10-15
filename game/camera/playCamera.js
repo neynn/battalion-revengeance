@@ -1,7 +1,7 @@
 import { Overlay } from "../../engine/camera/overlay.js";
 import { EntityHelper } from "../../engine/entity/entityHelper.js";
 import { Layer } from "../../engine/map/layer.js";
-import { Renderer } from "../../engine/renderer.js";
+import { Renderer } from "../../engine/renderer/renderer.js";
 import { ArmyCamera } from "../armyCamera.js";
 import { ArmyMap } from "../init/armyMap.js";
 import { PathfinderSystem } from "../systems/pathfinder.js";

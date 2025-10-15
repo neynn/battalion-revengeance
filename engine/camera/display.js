@@ -69,19 +69,6 @@ Display.prototype.unflip = function() {
     }
 }
 
-Display.prototype.fromDocument = function(canvasID) {
-    if(this.type === Display.TYPE.NONE) {
-        const canvas = document.getElementById(canvasID);
-
-        if(canvas) {
-            this.type = Display.TYPE.CUSTOM;
-            this.canvas = canvas;
-            this.context = canvas.getContext("2d");
-            this.resize(canvas.width, canvas.height);
-        }
-    }
-}
-
 Display.prototype.clear = function() {
     if(this.type !== Display.TYPE.NONE) {
         this.context.fillStyle = this.color;
@@ -120,8 +107,6 @@ Display.prototype.init = function(width, height, type) {
                 event.preventDefault();
                 event.stopPropagation();
             }
-
-            document.body.appendChild(this.canvas);
         }
     }
 }

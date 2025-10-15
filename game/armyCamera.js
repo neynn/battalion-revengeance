@@ -1,4 +1,4 @@
-import { Renderer } from "../engine/renderer.js";
+import { Renderer } from "../engine/renderer/renderer.js";
 import { Camera2D } from "../engine/camera/camera2D.js";
 import { DEBRIS_TYPE } from "./enums.js";
 

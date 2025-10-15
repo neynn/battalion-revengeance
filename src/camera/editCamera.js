@@ -1,6 +1,6 @@
 import { ContextHelper } from "../../engine/camera/contextHelper.js";
 import { Pallet } from "../../engine/map/editor/pallet.js";
-import { Renderer } from "../../engine/renderer.js";
+import { Renderer } from "../../engine/renderer/renderer.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { BattalionCamera } from "./battalionCamera.js";

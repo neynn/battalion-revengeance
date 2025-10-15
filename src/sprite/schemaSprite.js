@@ -1,4 +1,4 @@
-import { Renderer } from "../../engine/renderer.js";
+import { Renderer } from "../../engine/renderer/renderer.js";
 import { SpriteHelper } from "../../engine/sprite/spriteHelper.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 

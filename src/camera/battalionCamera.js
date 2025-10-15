@@ -1,6 +1,6 @@
 import { Camera2D } from "../../engine/camera/camera2D.js";
 import { Overlay } from "../../engine/camera/overlay.js";
-import { Renderer } from "../../engine/renderer.js";
+import { Renderer } from "../../engine/renderer/renderer.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 

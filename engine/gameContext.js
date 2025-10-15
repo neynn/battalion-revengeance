@@ -5,7 +5,7 @@ import { UIManager } from "./ui/uiManager.js";
 import { StateMachine } from "./state/stateMachine.js";
 import { Timer } from "./timer.js";
 import { TileManager } from "./tile/tileManager.js";
-import { Renderer } from "./renderer.js";
+import { Renderer } from "./renderer/renderer.js";
 import { World } from "./world.js";
 import { LanguageHandler } from "./language/languageHandler.js";
 import { Transform2D } from "./math/transform2D.js";

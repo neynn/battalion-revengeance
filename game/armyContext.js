@@ -18,8 +18,6 @@ import { CounterMoveAction } from "./actions/counterMoveAction.js";
 import { ArmyEntity } from "./init/armyEntity.js";
 import { ProductionComponent } from "./components/production.js";
 import { TileManager } from "../engine/tile/tileManager.js";
-import { Renderer } from "../engine/renderer.js";
-import { Logger } from "../engine/logger.js";
 import { ArmyEventHandler } from "./armyEventHandler.js";
 import { FireMissionAction } from "./actions/fireMissionAction.js";
 import { ClearDebrisAction } from "./actions/clearDebrisAction.js";
