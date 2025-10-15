@@ -10,7 +10,7 @@ export const Display = function() {
     this.centerY = 0;
     this.type = Display.TYPE.NONE;
     this.color = Display.COLOR.DARK_GRAY;
-    this.state = Display.STATE.UNFLIPPED;
+    this.flipState = Display.STATE.UNFLIPPED;
     this.translateX = 0;
     this.translateY = 0;
 }
@@ -38,63 +38,6 @@ Display.isTypeValid = function(type) {
     return type !== Display.TYPE.NONE && Object.values(Display.TYPE).includes(type);
 }
 
-Display.prototype.save = function() {
-    this.context.save();
-}
-
-Display.prototype.reset = function() {
-    this.context.restore();
-    this.state = Display.STATE.UNFLIPPED;
-    this.translateX = 0;
-    this.translateY = 0;
-}
-
-Display.prototype.translate = function(translateX, translateY) {
-    this.context.translate(translateX, translateY);
-    this.translateX = translateX;
-    this.translateY = translateY;
-}
-
-Display.prototype.flip = function() {
-    if(this.state === Display.STATE.UNFLIPPED) {
-        this.state = Display.STATE.FLIPPED;
-        this.context.setTransform(-1, 0, 0, 1, this.translateX, this.translateY);
-    }
-}
-
-Display.prototype.unflip = function() {
-    if(this.state === Display.STATE.FLIPPED) {
-        this.state = Display.STATE.UNFLIPPED;
-        this.context.setTransform(1, 0, 0, 1, this.translateX, this.translateY);
-    }
-}
-
-Display.prototype.clear = function() {
-    if(this.type !== Display.TYPE.NONE) {
-        this.context.fillStyle = this.color;
-        this.context.fillRect(0, 0, this.width, this.height);
-    }
-}
-
-Display.prototype.onWindowResize = function(width, height) {
-    if(this.type !== Display.TYPE.CUSTOM) {
-        this.resize(width, height);
-    }
-}
-
-Display.prototype.resize = function(width, height) {
-    if(this.type !== Display.TYPE.NONE) {
-        this.clear();
-        this.canvas.width = width;
-        this.canvas.height = height;
-        this.width = width;
-        this.height = height;
-        this.centerX = width / 2;
-        this.centerY = height / 2;
-        this.context.imageSmoothingEnabled = false;
-    }
-}
-
 Display.prototype.init = function(width, height, type) {
     if(this.type === Display.TYPE.NONE && Display.isTypeValid(type)) {
         this.type = type;
@@ -108,6 +51,57 @@ Display.prototype.init = function(width, height, type) {
                 event.stopPropagation();
             }
         }
+    }
+}
+
+Display.prototype.save = function() {
+    this.context.save();
+}
+
+Display.prototype.reset = function() {
+    this.context.restore();
+    this.flipState = Display.STATE.UNFLIPPED;
+    this.translateX = 0;
+    this.translateY = 0;
+}
+
+Display.prototype.translate = function(translateX, translateY) {
+    this.context.translate(translateX, translateY);
+    this.translateX = translateX;
+    this.translateY = translateY;
+}
+
+Display.prototype.flip = function() {
+    if(this.flipState === Display.STATE.UNFLIPPED) {
+        this.flipState = Display.STATE.FLIPPED;
+        this.context.setTransform(-1, 0, 0, 1, this.translateX, this.translateY);
+    }
+}
+
+Display.prototype.unflip = function() {
+    if(this.flipState === Display.STATE.FLIPPED) {
+        this.flipState = Display.STATE.UNFLIPPED;
+        this.context.setTransform(1, 0, 0, 1, this.translateX, this.translateY);
+    }
+}
+
+Display.prototype.clear = function() {
+    if(this.type !== Display.TYPE.NONE) {
+        this.context.fillStyle = this.color;
+        this.context.fillRect(0, 0, this.width, this.height);
+    }
+}
+
+Display.prototype.resize = function(width, height) {
+    if(this.type !== Display.TYPE.NONE) {
+        this.clear();
+        this.canvas.width = width;
+        this.canvas.height = height;
+        this.width = width;
+        this.height = height;
+        this.centerX = width / 2;
+        this.centerY = height / 2;
+        this.context.imageSmoothingEnabled = false;
     }
 }
 

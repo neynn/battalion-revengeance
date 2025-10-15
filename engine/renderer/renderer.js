@@ -175,7 +175,7 @@ Renderer.prototype.onWindowResize = function(width, height) {
     this.windowWidth = width;
     this.windowHeight = height;
     this.root.setSize(width, height);
-    this.display.onWindowResize(width, height);
+    this.display.resize(width, height);
 
     for(let i = 0; i < this.contexts.length; i++) {
         this.contexts[i].onWindowResize(width, height);

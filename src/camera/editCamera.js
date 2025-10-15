@@ -33,7 +33,6 @@ EditCamera.prototype.update = function(gameContext, display) {
 
     this.updateWorldBounds();
     this.clampWorldBounds();
-    this.floorRenderCoordinates();
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.GROUND));
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
     this.drawSpriteBatch(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.BUILDING), realTime, deltaTime);

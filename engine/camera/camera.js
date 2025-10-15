@@ -35,11 +35,6 @@ Camera.prototype.enable = function() {
     this.isActive = true;
 }
 
-Camera.prototype.floorRenderCoordinates = function() {
-    this.screenX = Math.floor(this.viewportX);
-    this.screenY = Math.floor(this.viewportY);
-}
-
 Camera.prototype.applyBounds = function() {
     if(this.viewportType === Camera.VIEWPORT_TYPE.BOUND) {
         if(this.viewportX < 0) {
@@ -111,8 +106,9 @@ Camera.prototype.moveViewport = function(viewportX, viewportY) {
     if(this.viewportMode !== Camera.VIEWPORT_MODE.FIXED) {
         this.viewportX = viewportX;
         this.viewportY = viewportY;
-
         this.applyBounds();
+        this.screenX = Math.floor(this.viewportX);
+        this.screenY = Math.floor(this.viewportY);
     }
 }
 

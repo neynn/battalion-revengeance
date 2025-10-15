@@ -52,7 +52,7 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
 
 BattalionCamera.prototype.update = function(gameContext, display) {
     const { world, timer, spriteManager, tileManager } = gameContext;
-    const { mapManager, entityManager } = world;
+    const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
 
     if(!worldMap) {
@@ -65,7 +65,6 @@ BattalionCamera.prototype.update = function(gameContext, display) {
 
     this.updateWorldBounds();
     this.clampWorldBounds();
-    this.floorRenderCoordinates();
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.GROUND));
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.CLOUD));
@@ -84,13 +83,17 @@ BattalionCamera.prototype.update = function(gameContext, display) {
 BattalionCamera.prototype.drawBuildings = function(display, worldMap, realTime, deltaTime) {
     const { buildings } = worldMap;
     const length = buildings.length;
+    const viewportLeftEdge = this.screenX;
+    const viewportTopEdge = this.screenY;
+    const viewportRightEdge = viewportLeftEdge + this.viewportWidth;
+    const viewportBottomEdge = viewportTopEdge + this.viewportHeight
 
     for(let i = 0; i < length; i++) {
         const { sprite } = buildings[i];
-        const { parent } = sprite;
+        const isVisible = sprite.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
 
-        if(parent) {
-            this.drawSprite(display, parent, realTime, deltaTime);
+        if(isVisible) {
+            sprite.draw(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
         }
     }
 }

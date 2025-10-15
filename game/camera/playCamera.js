@@ -47,7 +47,6 @@ PlayCamera.prototype.update = function(gameContext, display) {
 
     this.updateWorldBounds();
     this.clampWorldBounds();
-    this.floorRenderCoordinates();
     this.drawLayer(tileManager, display, worldMap.getLayer(ArmyMap.LAYER.GROUND));
 
     if(gameContext.settings.drawBorder) {
