@@ -1,5 +1,6 @@
 {
     "massive_tank_move_1": { "directory": ["assets", "sounds"], "source": "massive_tank_move_1.mp3", "allowStacking": true, "volume": 1 },
     "massive_tank_move_2": { "directory": ["assets", "sounds"], "source": "massive_tank_move_2.mp3", "allowStacking": true, "volume": 1 },
-    "massive_tank_move_3": { "directory": ["assets", "sounds"], "source": "massive_tank_move_3.mp3", "allowStacking": true, "volume": 1 }
+    "massive_tank_move_3": { "directory": ["assets", "sounds"], "source": "massive_tank_move_3.mp3", "allowStacking": true, "volume": 1 },
+    "aleph_move": { "directory": ["assets", "sounds"], "source": "aleph_move.mp3", "allowStacking": true, "volume": 0.6 }
 }

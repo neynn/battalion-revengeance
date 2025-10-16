@@ -9,7 +9,7 @@
         "movementType": "FLIGHT",
         "traits": [],
         "sounds": {
-            "move": ["massive_tank_move_1", "massive_tank_move_2", "massive_tank_move_3"]
+            "move": "aleph_move"
         },
         "sprites": {
             "idle_right": "aleph_idle_right",

@@ -4,7 +4,6 @@ import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { AttackAction } from "../action/types/attack.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
-import { EntityFlagMap } from "./flagMap.js";
 
 const DAMAGE_AMPLIFIER = {
     SCHWERPUNKT: 1.4,
@@ -110,7 +109,7 @@ BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
 
 BattalionEntity.prototype.loadConfig = function(config) {
-    const { health, movementRange, movementType, damage, weaponType, armorType, minRange, maxRange } = config;
+    const { health, movementRange, movementType, damage, weaponType, armorType, minRange, maxRange, movementSpeed } = config;
 
     this.config = config;
     this.health = health ?? 1;
@@ -120,8 +119,13 @@ BattalionEntity.prototype.loadConfig = function(config) {
     this.armorType = TypeRegistry.ARMOR_TYPE[armorType] ? armorType : TypeRegistry.ARMOR_TYPE.NONE;
     this.movementType = TypeRegistry.MOVEMENT_TYPE[movementType] ? movementType : TypeRegistry.MOVEMENT_TYPE.STATIONARY;
     this.movementRange = movementRange ?? 1;
-    this.minRange = 1//minRange ?? 2;
-    this.maxRange = 1//maxRange ?? 3;
+    this.minRange = minRange ?? 1;
+    this.maxRange = maxRange ?? 1;
+    this.movementSpeed = movementSpeed ?? BattalionEntity.DEFAULT_MOVEMENT_SPEED;
+
+    if(this.maxRange < this.minRange) {
+        this.maxRange = this.minRange;
+    }
 }
 
 BattalionEntity.prototype.setCustomInfo = function(id, name, desc) {
