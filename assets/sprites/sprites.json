@@ -1108,5 +1108,29 @@
         "bounds": {"x":0,"y":20,"w":56,"h":96},
         "frameTime": 0.2,
         "autoFrames": {"start": 1,"jump": 1,"repeat": 12}
+    },
+    "aleph_idle_right": {
+        "texture": "aleph_right",
+        "bounds": {"x": 0,"y":0,"w":59,"h":56},
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "aleph_idle_down": {
+        "texture": "aleph_down",
+        "bounds": {"x": 0,"y":0,"w":57,"h":56},
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "aleph_idle_left": {
+        "texture": "aleph_left",
+        "bounds": {"x": 0,"y":0,"w":59,"h":56},
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "aleph_idle_up": {
+        "texture": "aleph_up",
+        "bounds": {"x":0,"y":0,"w":59,"h":56},
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
     }
 }

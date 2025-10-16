@@ -1,4 +1,27 @@
 {
+    "aleph": {
+        "id": "aleph",
+        "health": 10,
+        "damage": 0,
+        "weaponType": "NONE",
+        "armorType": "NONE",
+        "movementRange": 5,
+        "movementType": "FLIGHT",
+        "traits": [],
+        "sounds": {
+            "move": ["massive_tank_move_1", "massive_tank_move_2", "massive_tank_move_3"]
+        },
+        "sprites": {
+            "idle_right": "aleph_idle_right",
+            "idle_left": "aleph_idle_left",
+            "idle_down": "aleph_idle_down",
+            "idle_up": "aleph_idle_up",
+            "fire_right": "aleph_fire_right",
+            "fire_left": "aleph_fire_left",
+            "fire_down": "aleph_fire_down",
+            "fire_up": "aleph_fire_up"
+        }
+    },
     "annihilator_tank": {
         "id": "annihilator_tank",
         "health": 10,

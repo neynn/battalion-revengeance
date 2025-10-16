@@ -552,5 +552,53 @@
             "rows": 3,
             "columns": 4
         }
+    },
+    "aleph_down": {
+        "directory": ["assets","sprites","textures","aleph"],
+        "source": "aleph_down.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 57,
+            "frameHeight": 56,
+            "rows": 4,
+            "columns": 1
+        }
+    },
+    "aleph_left": {
+        "directory": ["assets","sprites","textures","aleph"],
+        "source": "aleph_left.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 59,
+            "frameHeight": 56,
+            "rows": 4,
+            "columns": 1
+        }
+    },
+    "aleph_right": {
+        "directory": ["assets","sprites","textures","aleph"],
+        "source": "aleph_right.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 59,
+            "frameHeight": 56,
+            "rows": 4,
+            "columns": 1
+        }
+    },
+    "aleph_up": {
+        "directory": ["assets","sprites","textures","aleph"],
+        "source": "aleph_up.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 59,
+            "frameHeight": 56,
+            "rows": 4,
+            "columns": 1
+        }
     }
 }
