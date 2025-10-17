@@ -1,7 +1,6 @@
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
-import { TypeHelper } from "../type/typeHelper.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const BattalionMap = function(id) {
@@ -49,7 +48,7 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
     }
 
     if(!this.isTileOutOfBounds(tileX, tileY)) {
-        const { tileManager } = gameContext;
+        const { tileManager, typeRegistry } = gameContext;
         const layers = [BattalionMap.LAYER.CLOUD, BattalionMap.LAYER.DECORATION, BattalionMap.LAYER.GROUND];
 
         for(const layerID of layers) {
@@ -57,10 +56,14 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
             const { type } = tileManager.getTile(typeID);
 
             if(type !== null) {
-                const climate = TypeHelper.getClimateType(gameContext, type);
+                const typeObject = typeRegistry.getType(type, TypeRegistry.CATEGORY.TILE);
 
-                if(climate !== TypeRegistry.CLIMATE_TYPE.NONE) {
-                    return climate;
+                if(typeObject) {
+                    const { climate = TypeRegistry.CLIMATE_TYPE.NONE } = typeObject;
+
+                    if(climate !== TypeRegistry.CLIMATE_TYPE.NONE) {
+                        return climate;
+                    }
                 }
             }
         }
@@ -73,7 +76,7 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
     return TypeRegistry.CLIMATE_TYPE.TEMPERATE;
 }
 
-BattalionMap.prototype.getTerrainTags = function(gameContext, tileX, tileY) {
+BattalionMap.prototype.getTerrainTypes = function(gameContext, tileX, tileY) {
     if(this.isTileOutOfBounds(tileX, tileY)) {
         return [];
     }

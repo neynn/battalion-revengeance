@@ -518,7 +518,7 @@ BattalionEntity.prototype.getPath = function(gameContext, nodes, targetX, target
     return path;
 }
 
-BattalionEntity.prototype.getTerrainTags = function(gameContext) {
+BattalionEntity.prototype.getTerrainTypes = function(gameContext) {
     const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
@@ -535,10 +535,10 @@ BattalionEntity.prototype.getTerrainTags = function(gameContext) {
 
     for(let i = startY; i < endY; i++) {
         for(let j = startX; j < endX; j++) {
-            const terrainTags = worldMap.getTerrainTags(gameContext, j, i);
+            const terrainTypes = worldMap.getTerrainTypes(gameContext, j, i);
 
-            for(let i = 0; i < terrainTags.length; i++) {
-                tags.add(terrainTags[i]);
+            for(let i = 0; i < terrainTypes.length; i++) {
+                tags.add(terrainTypes[i]);
             }
         }
     }
@@ -753,4 +753,20 @@ BattalionEntity.prototype.setOpacity = function(opacity) {
 
 BattalionEntity.prototype.canCloak = function() {
     return !this.isCloaked && this.hasTrait(TypeRegistry.TRAIT_TYPE.STEALTH);
+}
+
+BattalionEntity.prototype.getMaxRange = function(gameContext) {
+    const { typeRegistry } = gameContext;
+    const terrainTypes = this.getTerrainTypes(gameContext);
+    let range = this.maxRange;
+
+    for(const terrainType of terrainTypes) {
+        const terrainTypeObject = typeRegistry.getType(terrainType, TypeRegistry.CATEGORY.TERRAIN);
+
+        if(terrainTypeObject) {
+            //Check if RANGE_BOOST and if this.weaponType is in RANGE_BOOST
+        }
+    }
+
+    return range;
 }

@@ -23,7 +23,7 @@ IdleState.prototype.onTileClick = function(gameContext, stateMachine, tileX, til
     const test = {
         "x": tileX,
         "y": tileY,
-        "terrain": worldMap.getTerrainTags(gameContext, tileX, tileY),
+        "terrain": worldMap.getTerrainTypes(gameContext, tileX, tileY),
         "climate": worldMap.getClimateType(gameContext, tileX, tileY),
         "type": worldMap.getTileType(gameContext, tileX, tileY),
         "name": worldMap.getTileName(gameContext, tileX, tileY),
