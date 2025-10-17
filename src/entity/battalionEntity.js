@@ -764,9 +764,13 @@ BattalionEntity.prototype.getMaxRange = function(gameContext) {
         const terrainTypeObject = typeRegistry.getType(terrainType, TypeRegistry.CATEGORY.TERRAIN);
 
         if(terrainTypeObject) {
-            //Check if RANGE_BOOST and if this.weaponType is in RANGE_BOOST
+            range += terrainTypeObject.rangeBoost ?? 0;
         }
     }
 
+    if(range < this.minRange) {
+        range = this.minRange;
+    }
+    
     return range;
 }
