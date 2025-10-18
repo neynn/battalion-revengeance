@@ -7,6 +7,8 @@ export const SchemaSprite = function(visual, spriteID, schemaID, schema) {
     this.spriteID = spriteID;
     this.schemaID = schemaID;
     this.schema = schema;
+    this.positionX = 0;
+    this.positionY = 0;
 }
 
 SchemaSprite.createVisual = function(gameContext, spriteID, schemaID, schema, layerID) {
@@ -14,6 +16,16 @@ SchemaSprite.createVisual = function(gameContext, spriteID, schemaID, schema, la
         return SpriteHelper.createSpriteWithAlias(gameContext, spriteID, schemaID, layerID);
     } else {
         return SpriteHelper.createColoredSprite(gameContext, spriteID, schemaID, schema, layerID);
+    }
+}
+
+SchemaSprite.prototype.preload = function(gameContext, spriteID) {
+    const { spriteManager } = gameContext;
+
+    if(this.schemaID === TypeRegistry.SCHEMA_TYPE.RED) {
+        spriteManager.createSpriteAlias(spriteID, this.schemaID);
+    } else {
+        spriteManager.createCopyTexture(spriteID, this.schemaID, this.schema);
     }
 }
 
@@ -41,10 +53,14 @@ SchemaSprite.prototype.updateType = function(gameContext, spriteType) {
 
 SchemaSprite.prototype.updatePosition = function(deltaX, deltaY) {
     this.visual.updatePosition(deltaX, deltaY);
+    this.positionX += deltaX;
+    this.positionY += deltaY;
 }
 
 SchemaSprite.prototype.setPosition = function(positionX, positionY) {
     this.visual.setPosition(positionX, positionY);
+    this.positionX = positionX;
+    this.positionY = positionY;
 }
 
 SchemaSprite.prototype.updateVisual = function(gameContext) {

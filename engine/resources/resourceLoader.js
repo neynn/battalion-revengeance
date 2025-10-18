@@ -19,6 +19,10 @@ ResourceLoader.EVENT = {
     TEXTURE_ERROR: "TEXTURE_ERROR"
 };
 
+ResourceLoader.prototype.getTotalKBUsed = function() {
+    console.log(this.textureRegistry.getSizeBytes() / 1024);
+}
+
 ResourceLoader.prototype.getCopyTexture = function(textureName) {
     return this.textureRegistry.getCopyTexture(textureName);
 }

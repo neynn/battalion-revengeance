@@ -42,6 +42,10 @@ Texture.createImageData = function(bitmap) {
     return pixelArray;
 }
 
+Texture.prototype.getSizeBytes = function() {
+    return this.width * this.height * 4;
+}
+
 Texture.prototype.loadColoredImage = function(copyBitmap, schema) {
     if(this.state === Texture.STATE.EMPTY) {
         this.state = Texture.STATE.LOADING;

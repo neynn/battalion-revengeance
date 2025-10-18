@@ -1,4 +1,5 @@
 import { getRandomElement } from "../../engine/math/math.js";
+import { EntitySprite } from "../sprite/entitySprite.js";
 import { SchemaSprite } from "../sprite/schemaSprite.js";
 import { TeamSpawner } from "../team/teamSpawner.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
@@ -45,7 +46,7 @@ export const EntitySpawner = {
 
         const entity = entityManager.createEntity((entityID, entityType) => {
             const visualSprite = spriteManager.createEmptySprite(TypeRegistry.LAYER_TYPE.LAND);
-            const entitySprite = new SchemaSprite(visualSprite, null, colorID, color);
+            const entitySprite = new EntitySprite(visualSprite, null, colorID, color);
             const entityObject = new BattalionEntity(entityID, entitySprite);
             const directionValue = BattalionEntity.DIRECTION[direction] ?? BattalionEntity.DIRECTION.EAST;
             const spawnPosition = transform2D.transformTileToWorld(x, y);
@@ -148,6 +149,7 @@ export const EntitySpawner = {
         if(entity) {
             entity.setCustomInfo(customID, name, desc);
             entity.bufferSounds(gameContext);
+            entity.bufferSprites(gameContext);
         }
 
         return entity;

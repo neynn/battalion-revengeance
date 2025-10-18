@@ -13,6 +13,18 @@ TextureRegistry.DEFAULT_TEXTURE_TYPE = ".png";
 TextureRegistry.EMPTY_ATLAS_TEXTURE = new AtlasTexture(TextureRegistry.EMPTY_ID, "", {});
 TextureRegistry.EMPTY_TEXTURE = new Texture(TextureRegistry.EMPTY_ID, "");
 
+TextureRegistry.prototype.getSizeBytes = function() {
+    let bytes = 0;
+
+    for(let i = 0; i < this.textures.length; i++) {
+        bytes += this.textures[i].getSizeBytes();
+    }
+
+    this.copyTextures.forEach(texture => bytes += texture.getSizeBytes());
+
+    return bytes;
+}
+
 TextureRegistry.prototype.getCopyTexture = function(textureName) {
     const texture = this.copyTextures.get(textureName);
 

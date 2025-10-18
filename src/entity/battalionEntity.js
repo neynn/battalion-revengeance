@@ -126,6 +126,20 @@ BattalionEntity.prototype.loadConfig = function(config) {
     if(this.maxRange < this.minRange) {
         this.maxRange = this.minRange;
     }
+
+    this.setHealth(this.health);
+}
+
+BattalionEntity.prototype.setHealth = function(health) {
+    if(health < 0) {
+        this.health = 0;
+    } else if(health > this.maxHealth) {
+        this.health = this.maxHealth;
+    } else {
+        this.health = health;
+    }
+
+    this.sprite.onHealthUpdate(this.health, this.maxHealth);
 }
 
 BattalionEntity.prototype.setCustomInfo = function(id, name, desc) {
@@ -699,6 +713,18 @@ BattalionEntity.prototype.bufferSounds = function(gameContext) {
         }
     }
 }
+
+BattalionEntity.prototype.bufferSprites = function(gameContext) {
+    const spriteNames = Object.values(BattalionEntity.SPRITE_TYPE);
+
+    for(const spriteName of spriteNames) {
+        const spriteID = this.config.sprites[spriteName];
+
+        if(spriteID) {
+            this.sprite.preload(gameContext, spriteID);
+        }
+    }
+ }
 
 BattalionEntity.prototype.getDistanceToTile = function(tileX, tileY) {
     const deltaX = Math.abs(this.tileX - tileX);
