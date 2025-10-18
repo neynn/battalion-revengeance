@@ -4,10 +4,11 @@ import { BattalionEntity } from "../../entity/battalionEntity.js";
 export const CloakAction = function() {
     Action.call(this);
 
-    this.entity = null;
     this.opacity = 1;
-    this.cloakRate = 3;
+    this.entity = null;
 }
+
+CloakAction.FADE_RATE = 3;
 
 CloakAction.prototype = Object.create(Action.prototype);
 CloakAction.prototype.constructor = CloakAction;
@@ -28,7 +29,7 @@ CloakAction.prototype.onUpdate = function(gameContext, data, id) {
     const { timer } = gameContext;
     const fixedDeltaTime = timer.getFixedDeltaTime();
 
-    this.opacity -= this.cloakRate * fixedDeltaTime;
+    this.opacity -= CloakAction.FADE_RATE * fixedDeltaTime;
 
     if(this.opacity < 0) {
         this.opacity = 0;
@@ -38,7 +39,7 @@ CloakAction.prototype.onUpdate = function(gameContext, data, id) {
 }
 
 CloakAction.prototype.isFinished = function(gameContext, executionRequest) {
-    return this.opacity === 0;
+    return this.opacity <= 0;
 }
 
 CloakAction.prototype.onEnd = function(gameContext, data, id) {

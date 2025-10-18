@@ -81,7 +81,7 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
             this.openContextMenu(gameContext, stateMachine, entity);
         }
     } else {
-        if(isControlled && entity.isSelectable()) {
+        if(isControlled && !entity.isDead()) {
             this.closeContextMenu(gameContext);
             this.selectEntity(gameContext, stateMachine, entity);
         } else {

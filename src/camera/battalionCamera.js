@@ -26,14 +26,19 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
     const viewportTopEdge = this.screenY;
     const viewportRightEdge = viewportLeftEdge + this.viewportWidth;
     const viewportBottomEdge = viewportTopEdge + this.viewportHeight
+    const visibleEntities = [];
 
     for(let i = 0; i < entities.length; i++) {
-        const { teamID, sprite, isCloaked } = entities[i];
+        const { sprite } = entities[i];
         const isVisible = sprite.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
 
-        if(!isVisible) {
-            continue;
+        if(isVisible) {
+            visibleEntities.push(entities[i]);
         }
+    }
+
+    for(let i = 0; i < visibleEntities.length; i++) {
+        const { teamID, sprite, isCloaked } = visibleEntities[i];
 
         if(isCloaked && this.perspectives.has(teamID)) {
             const previousAlpha = sprite.getOpacity();
@@ -71,7 +76,7 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     this.drawSpriteBatchYSorted(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.BUILDING), realTime, deltaTime);
     this.drawOverlay(tileManager, context, this.selectOverlay);
     this.drawEntities(gameContext, display, realTime, deltaTime);
-
+    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.GFX), realTime, deltaTime);
     //this.drawSpriteBatchYSorted(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.SEA), realTime, deltaTime);
     //this.drawSpriteBatchYSorted(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.LAND), realTime, deltaTime);
 

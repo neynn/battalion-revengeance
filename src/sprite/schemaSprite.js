@@ -52,15 +52,15 @@ SchemaSprite.prototype.updateType = function(gameContext, spriteType) {
 }
 
 SchemaSprite.prototype.updatePosition = function(deltaX, deltaY) {
-    this.visual.updatePosition(deltaX, deltaY);
     this.positionX += deltaX;
     this.positionY += deltaY;
+    this.visual.setPosition(this.positionX, this.positionY);
 }
 
 SchemaSprite.prototype.setPosition = function(positionX, positionY) {
-    this.visual.setPosition(positionX, positionY);
     this.positionX = positionX;
     this.positionY = positionY;
+    this.visual.setPosition(this.positionX, this.positionY);
 }
 
 SchemaSprite.prototype.updateVisual = function(gameContext) {

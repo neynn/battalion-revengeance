@@ -28,6 +28,11 @@ export const ActionHelper = {
             "dialogue": dialogue
         });
     },
+    createDeathRequest: function(gameContext, entities) {
+        return new ActionRequest(TypeRegistry.ACTION_TYPE.DEATH, {
+            "entities": entities
+        });
+    },
     createCustomDialogue: function(gameContext, dialogue = null) {
         const { world } =  gameContext;
         const { actionQueue } = world;

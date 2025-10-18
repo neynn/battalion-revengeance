@@ -131,7 +131,8 @@ TypeRegistry.LAYER_TYPE = {
     BUILDING: 0,
     SEA: 1,
     LAND: 2,
-    COUNT: 3
+    GFX: 3,
+    COUNT: 4
 };
 
 TypeRegistry.MORALE_TYPE = {
@@ -142,7 +143,8 @@ TypeRegistry.ACTION_TYPE = {
     MOVE: "MOVE",
     ATTACK: "ATTACK",
     CLOAK: "CLOAK",
-    DIALOGUE: "DIALOGUE"
+    DIALOGUE: "DIALOGUE",
+    DEATH: "DEATH"
 };
 
 TypeRegistry.TILE_ID = {

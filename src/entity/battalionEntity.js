@@ -130,6 +130,18 @@ BattalionEntity.prototype.loadConfig = function(config) {
     this.setHealth(this.health);
 }
 
+BattalionEntity.prototype.getRemainingHealth = function(damage) {
+    const health = this.health - damage;
+
+    if(health < 0) {
+        return 0;
+    } else if(health > this.maxHealth) {
+        return this.maxHealth;
+    }
+
+    return health;
+}
+
 BattalionEntity.prototype.setHealth = function(health) {
     if(health < 0) {
         this.health = 0;
@@ -383,12 +395,8 @@ BattalionEntity.prototype.isColliding = function(target, range = 0) {
     );;
 }
 
-BattalionEntity.prototype.isSelectable = function() {
-    return !this.isMarkedForDestroy && !this.isDead();
-}
-
 BattalionEntity.prototype.isDead = function() {
-    return this.health <= 0;
+    return this.health <= 0 && !this.isMarkedForDestroy;
 }
 
 BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
@@ -621,13 +629,20 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
 
             break;
         }
+        case AttackAction.ATTACK_TYPE.COUNTER: {
+            break;
+        }
+        default:  {
+            console.warn("Unsupported attack type!", attackType);
+            break;
+        }
     }
 
     return damageAmplifier;
 }
 
 BattalionEntity.prototype.getDamage = function(gameContext, target, attackType) {
-    const damageAmplifier = this.getDamageAmplifier(gameContext, target);
+    const damageAmplifier = this.getDamageAmplifier(gameContext, target, attackType);
 
     let damage = this.damage * damageAmplifier;
 
@@ -739,12 +754,6 @@ BattalionEntity.prototype.getDistanceToEntity = function(entity) {
     const distance = this.getDistanceToTile(entityX, entityY);
     
     return distance;
-}
-
-BattalionEntity.prototype.isEntityInRange = function(entity) {
-    const distance = this.getDistanceToEntity(entity);
-    
-    return distance >= this.minRange && distance <= this.maxRange;
 }
 
 BattalionEntity.prototype.isHidden = function() {

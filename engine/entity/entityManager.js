@@ -104,7 +104,9 @@ EntityManager.prototype.getEntity = function(entityID) {
     const targetID = entity.getID();
 
     if(entityID === targetID) {
-        return entity;
+        if(!entity.isMarkedForDestroy) {
+            return entity;
+        }
     }
 
     for(let i = 0; i < this.entities.length; ++i) {
@@ -113,7 +115,10 @@ EntityManager.prototype.getEntity = function(entityID) {
 
         if(currentID === entityID) {
             this.entityMap.set(entityID, i);
-            return entity;
+
+            if(!entity.isMarkedForDestroy) {
+                return entity;
+            }
         }
     }
 

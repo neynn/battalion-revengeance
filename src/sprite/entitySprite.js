@@ -37,8 +37,6 @@ EntitySprite.prototype.onHealthUpdate = function(currentHealth, maxHealth) {
     if(this.healthFactor > 1) {
         this.healthFactor = 1;
     }
-
-    this.healthFactor = 0.60;
 }
 
 EntitySprite.prototype.drawHealth = function(display, viewportLeftEdge, viewportTopEdge) {
@@ -77,7 +75,7 @@ EntitySprite.prototype.draw = function(display, viewportLeftEdge, viewportTopEdg
     this.visual.update(realTime, deltaTime);
     this.visual.draw(display, viewportLeftEdge, viewportTopEdge);
 
-    if(this.healthFactor < 1) {
+    if(this.healthFactor !== 0) {
         this.drawHealth(display, viewportLeftEdge, viewportTopEdge);
     }
     
