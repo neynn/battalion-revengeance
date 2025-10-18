@@ -1,22 +1,17 @@
 import { Action } from "../../../engine/action/action.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
+import { TypeRegistry } from "../../type/typeRegistry.js";
 import { ActionHelper } from "../actionHelper.js";
 
 export const AttackAction = function() {
     Action.call(this);
 
     this.entity = null;
-    this.resolutions = [];
 }
 
 AttackAction.ATTACK_TYPE = {
     INITIATE: 0,
     COUNTER: 1
-};
-
-AttackAction.RESOLUTION_STATE = {
-    ALIVE: 0,
-    DEAD: 1
 };
 
 AttackAction.prototype = Object.create(Action.prototype);
@@ -25,7 +20,7 @@ AttackAction.prototype.constructor = AttackAction;
 AttackAction.prototype.onStart = function(gameContext, data, id) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID, targetID, resolutions } = data;
+    const { entityID, targetID, resolutions, uncloak } = data;
     const entity = entityManager.getEntity(entityID);
     const target = entityManager.getEntity(targetID);
 
@@ -36,13 +31,16 @@ AttackAction.prototype.onStart = function(gameContext, data, id) {
     entity.toFire(gameContext);
 
     this.entity = entity;
-    this.resolutions = resolutions;
 
     for(let i = 0; i < resolutions.length; i++) {
         const { entityID, health } = resolutions[i];
         const targetObject = entityManager.getEntity(entityID);
 
         targetObject.setHealth(health);
+    }
+
+    if(uncloak) {
+        entity.uncloakInstant();
     }
 }
 
@@ -92,6 +90,13 @@ AttackAction.prototype.mGetInitiateResolutions = function(gameContext, entity, t
                 "entityID": target.getID(),
                 "health": remainingHealth
             });
+
+            if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.SELF_DESTRUCT)) {
+                resolutions.push({
+                    "entityID": entity.getID(),
+                    "health": 0
+                });
+            }
         }
     }
 }
@@ -107,6 +112,7 @@ AttackAction.prototype.validate = function(gameContext, executionRequest, reques
         return;
     }
 
+    let uncloak = false;
     const resolutions = [];
 
     switch(attackType) {
@@ -115,6 +121,10 @@ AttackAction.prototype.validate = function(gameContext, executionRequest, reques
                 this.mGetInitiateResolutions(gameContext, entity, target, resolutions);
 
                 if(resolutions.length !== 0) {
+                    if(entity.isCloaked) {
+                        uncloak = true;
+                    }
+
                     //TODO: Check if target can counter -> add counter attack as next.
                     const counterAttack = ActionHelper.createAttackRequest(targetID, entityID, AttackAction.ATTACK_TYPE.COUNTER);
 
@@ -130,28 +140,29 @@ AttackAction.prototype.validate = function(gameContext, executionRequest, reques
         }
     }
 
-    if(resolutions.length !== 0) {
-        executionRequest.setData({
-            "entityID": entityID,
-            "targetID": targetID,
-            "resolutions": resolutions
-        });
-
+    if(resolutions.length > 0) {
         const deadEntities = [];
 
         for(let i = 0; i < resolutions.length; i++) {
             const { entityID, health } = resolutions[i];
-            const state = health > 0 ? AttackAction.RESOLUTION_STATE.ALIVE : AttackAction.RESOLUTION_STATE.DEAD;
 
-            if(state === AttackAction.RESOLUTION_STATE.DEAD) {
+            if(health <= 0) {
                 deadEntities.push(entityID);
             }
         }
 
-        if(deadEntities.length !== 0) {
+        if(deadEntities.length > 0) {
             const deathRequest = ActionHelper.createDeathRequest(gameContext, deadEntities);
 
             executionRequest.addNext(deathRequest);
         }
+
+        executionRequest.setData({
+            "entityID": entityID,
+            "targetID": targetID,
+            "resolutions": resolutions,
+            "attackType": attackType,
+            "uncloak": uncloak
+        });
     }
 }

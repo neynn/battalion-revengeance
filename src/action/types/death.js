@@ -31,6 +31,8 @@ DeathAction.prototype.onStart = function(gameContext, data, id) {
             sprite.expire();
         }
 
+        entity.setHealth(0);
+
         this.entities.push(entity);
     }
 }
