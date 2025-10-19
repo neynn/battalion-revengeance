@@ -1,5 +1,4 @@
 import { Action } from "../../../engine/action/action.js";
-import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { EntitySpawner } from "../../entity/entitySpawner.js";
 import { ActionHelper } from "../actionHelper.js";
 
@@ -23,8 +22,7 @@ MoveAction.prototype.onStart = function(gameContext, data, id) {
     const { entityID, path } = data;
     const entity = entityManager.getEntity(entityID);
 
-    entity.playSound(gameContext, BattalionEntity.SOUND_TYPE.MOVE);
-    entity.toMove(gameContext);
+    entity.playMove(gameContext);
     EntitySpawner.removeEntity(gameContext, entity);
 
     this.path = path;
@@ -70,7 +68,7 @@ MoveAction.prototype.onEnd = function(gameContext, data, id) {
     this.entity.setTile(tileX, tileY);
     this.entity.setPositionVec(position);
     this.entity.updateDirectionByDelta(deltaX, deltaY);
-    this.entity.toIdle(gameContext);
+    this.entity.playIdle(gameContext);
     this.entity.reduceMove();
 
     EntitySpawner.placeEntity(gameContext, this.entity);

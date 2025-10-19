@@ -294,6 +294,6 @@ Sprite.prototype.setFrameTime = function(frameTime) {
     }
 }
 
-Sprite.prototype.hasFinishedOnce = function() {
-    return this.loopCount > 0;
+Sprite.prototype.isFinished = function() {
+    return this.currentFrame === (this.frameCount - 1);
 }

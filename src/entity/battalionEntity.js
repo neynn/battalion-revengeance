@@ -69,6 +69,8 @@ export const BattalionEntity = function(id, sprite) {
     this.movesLeft = 0;
 }
 
+BattalionEntity.EXPLOSION_ID = "explosion";
+
 BattalionEntity.DEFAULT_MOVEMENT_SPEED = 224;
 
 BattalionEntity.MAX_TRAITS = 4;
@@ -85,7 +87,8 @@ BattalionEntity.DIRECTION = {
 BattalionEntity.STATE = {
     IDLE: 0,
     MOVE: 1,
-    FIRE: 2
+    FIRE: 2,
+    DEAD: 3
 };
 
 BattalionEntity.SPRITE_TYPE = {
@@ -102,8 +105,16 @@ BattalionEntity.SPRITE_TYPE = {
 BattalionEntity.SOUND_TYPE = {
     MOVE: 0,
     FIRE: 1,
-    CLOAK: 2
+    CLOAK: 2,
+    DEATH: 3
 };
+
+BattalionEntity.SOUND_TABLE = {
+    [BattalionEntity.SOUND_TYPE.MOVE]: "move",
+    [BattalionEntity.SOUND_TYPE.FIRE]: "fire",
+    [BattalionEntity.SOUND_TYPE.CLOAK]: "cloak",
+    [BattalionEntity.SOUND_TYPE.DEATH]: "death",
+}
 
 BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
@@ -296,20 +307,47 @@ BattalionEntity.prototype.setDirection = function(direction) {
     return false;
 }
 
-BattalionEntity.prototype.toIdle = function(gameContext) {
+BattalionEntity.prototype.playIdle = function(gameContext) {
     this.state = BattalionEntity.STATE.IDLE;
     this.updateSprite(gameContext);
+    this.sprite.unlockEnd();
 }
 
-BattalionEntity.prototype.toMove = function(gameContext) {
+BattalionEntity.prototype.playMove = function(gameContext) {
     this.movementSpeed = BattalionEntity.DEFAULT_MOVEMENT_SPEED;
     this.state = BattalionEntity.STATE.MOVE;
     this.updateSprite(gameContext);
+    this.playSound(gameContext, BattalionEntity.SOUND_TYPE.MOVE);
 }
 
-BattalionEntity.prototype.toFire = function(gameContext) {
+BattalionEntity.prototype.playDeath = function(gameContext) {
+    const { spriteManager, transform2D } = gameContext;
+
+    this.state = BattalionEntity.STATE.DEAD;
+    this.playSound(gameContext, BattalionEntity.SOUND_TYPE.DEATH);
+
+    const sprite = spriteManager.createSprite(BattalionEntity.EXPLOSION_ID, TypeRegistry.LAYER_TYPE.GFX);
+
+    if(sprite) {
+        const { x, y } = transform2D.transformTileToWorld(this.tileX, this.tileY);
+
+        sprite.setPosition(x, y);
+        sprite.expire();
+    }
+}
+
+BattalionEntity.prototype.playAttack = function(gameContext) {
     this.state = BattalionEntity.STATE.FIRE;
+    this.playSound(gameContext, BattalionEntity.SOUND_TYPE.FIRE);
     this.updateSprite(gameContext);
+    this.sprite.lockEnd();
+}
+
+BattalionEntity.prototype.playCounter = function(gameContext) {
+    this.state = BattalionEntity.STATE.FIRE;
+    this.playSound(gameContext, BattalionEntity.SOUND_TYPE.FIRE);
+    this.updateSprite(gameContext);
+    this.sprite.lockEnd();
 }
 
 BattalionEntity.prototype.updateDirectionByDelta = function(deltaX, deltaY) {
@@ -319,7 +357,7 @@ BattalionEntity.prototype.updateDirectionByDelta = function(deltaX, deltaY) {
     if(deltaX > 0) return this.setDirection(BattalionEntity.DIRECTION.EAST);
 }
 
-BattalionEntity.prototype.getSpriteTypeID = function() {
+BattalionEntity.prototype.getSpriteType = function() {
     switch(this.state) {
         case BattalionEntity.STATE.IDLE: {
             switch(this.direction) {
@@ -353,27 +391,17 @@ BattalionEntity.prototype.getSpriteTypeID = function() {
     return BattalionEntity.SPRITE_TYPE.IDLE_RIGHT;
 }
 
-BattalionEntity.prototype.getSpriteID = function() {
-    const spriteTypeID = this.getSpriteTypeID();
-    const spriteID = this.config.sprites[spriteTypeID];
-
-    if(spriteID === undefined) {
-        return null;
-    }
-
-    return spriteID;
-}
-
-BattalionEntity.prototype.updateSchema = function(gameContext, schemaID, schema) {
-    this.sprite.updateSchema(gameContext, schemaID, schema);
-}
-
 BattalionEntity.prototype.updateSprite = function(gameContext) {
-    const spriteID = this.getSpriteID();
+    const spriteType = this.getSpriteType();
+    const spriteID = this.config.sprites[spriteType];
 
     if(spriteID) {
         this.sprite.updateType(gameContext, spriteID);
     }
+}
+
+BattalionEntity.prototype.updateSchema = function(gameContext, schemaID, schema) {
+    this.sprite.updateSchema(gameContext, schemaID, schema);
 }
 
 BattalionEntity.prototype.setTeam = function(teamID) {
@@ -382,11 +410,14 @@ BattalionEntity.prototype.setTeam = function(teamID) {
 
 BattalionEntity.prototype.onTurnStart = function(gameContext) {
     this.refreshMoves(100);
+    //this.sprite.thaw();
+
     console.log("My turn started", this);
 } 
 
 BattalionEntity.prototype.onTurnEnd = function(gameContext) {
     this.movesLeft = 0;
+    //this.sprite.freeze();
 
     console.log("My turn ended", this);
 }
@@ -596,7 +627,7 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
     const weaponType = typeRegistry.getType(this.weaponType, TypeRegistry.CATEGORY.WEAPON);
 
     //Armor and Morale factor.
-    damageAmplifier *= weaponType.armorDamage[target.armorType] ?? 1;
+    damageAmplifier *= weaponType.armorResistance[target.armorType] ?? 1;
     damageAmplifier *= this.moraleAmplifier;
 
     const climateType = worldMap.getClimateTypeObject(gameContext, this.tileX, this.tileY);
@@ -702,25 +733,14 @@ BattalionEntity.prototype.lookAt = function(entity) {
 BattalionEntity.prototype.playSound = function(gameContext, soundType) {
     const { client } = gameContext;
     const { soundPlayer } = client;
-    let sound = null;
+    const soundCategory = BattalionEntity.SOUND_TABLE[soundType];
 
-    switch(soundType) {
-        case BattalionEntity.SOUND_TYPE.MOVE: {
-            sound = this.config.sounds?.move;
-            break;
-        }
-        case BattalionEntity.SOUND_TYPE.FIRE: {
-            sound = this.config.sounds?.fire;
-            break;
-        }
-        case BattalionEntity.SOUND_TYPE.CLOAK: {
-            sound = this.config.sounds?.cloak;
-            break;
-        }
-    }
+    if(soundCategory) {
+        const soundID = this.config.sounds?.[soundCategory];
 
-    if(sound) {
-        soundPlayer.play(sound);
+        if(soundID) {
+            soundPlayer.play(soundID);
+        }
     }
 }
 

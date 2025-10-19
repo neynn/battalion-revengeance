@@ -2,5 +2,6 @@
     "NONE": { "name": "TRAIT_NAME_NO_ARMOR", "desc": "TRAIT_DESC_NO_ARMOR", "icon": "Assets/Traits/.png" },
     "LIGHT": { "name": "TRAIT_NAME_LIGHT_ARMOR", "desc": "TRAIT_DESC_LIGHT_ARMOR", "icon": "Assets/Traits/.png" },
     "MEDIUM": { "name": "TRAIT_NAME_MEDIUM_ARMOR", "desc": "TRAIT_DESC_MEDIUM_ARMOR", "icon": "Assets/Traits/.png" },
-    "HEAVY": { "name": "TRAIT_NAME_HEAVY_ARMOR", "desc": "TRAIT_DESC_HEAVY_ARMOR", "icon": "Assets/Traits/.png" }
+    "HEAVY": { "name": "TRAIT_NAME_HEAVY_ARMOR", "desc": "TRAIT_DESC_HEAVY_ARMOR", "icon": "Assets/Traits/.png" },
+    "OMEGA": { "name": "TRAIT_NAME_OMEGA_ARMOR", "desc": "TRAIT_DESC_OMEGA_ARMOR", "icon": "Assets/Traits/.png" }
 }

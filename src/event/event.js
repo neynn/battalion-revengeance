@@ -33,18 +33,18 @@ Event.prototype.trigger = function(gameContext) {
         const { type } = this.triggers[i];
 
         switch(type) {
-            case TypeRegistry.EvENT_TYPE.DIALOGUE: {
+            case TypeRegistry.EVENT_TYPE.DIALOGUE: {
                 const { dialogue, target } = this.triggers[i];
 
                 ActionHelper.createCustomDialogue(gameContext, dialogue);
                 break;
             }
-            case TypeRegistry.EvENT_TYPE.EXPLODE_TILE: {
+            case TypeRegistry.EVENT_TYPE.EXPLODE_TILE: {
                 const { layer, x, y } = this.triggers[i];
                 //Play explode sfx and set tile x y at layer l to 0.
                 break;
             }
-            case TypeRegistry.EvENT_TYPE.SPAWN_ENTITY: {
+            case TypeRegistry.EVENT_TYPE.SPAWN_ENTITY: {
                 const { setup } = this.triggers[i];
 
                 EntitySpawner.loadEntity(gameContext, setup, null);

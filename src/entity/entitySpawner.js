@@ -53,7 +53,7 @@ export const EntitySpawner = {
 
             entityObject.loadConfig(entityType);
             entityObject.setDirection(directionValue);
-            entityObject.toIdle(gameContext);
+            entityObject.playIdle(gameContext);
             entityObject.setTile(x, y);
             entityObject.setPositionVec(spawnPosition);
             entityObject.loadTraits();

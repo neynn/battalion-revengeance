@@ -1,5 +1,4 @@
 import { Action } from "../../../engine/action/action.js";
-import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { TypeRegistry } from "../../type/typeRegistry.js";
 import { ActionHelper } from "../actionHelper.js";
 
@@ -7,6 +6,8 @@ export const AttackAction = function() {
     Action.call(this);
 
     this.entity = null;
+    this.sprite = null;
+    this.resolutions = [];
 }
 
 AttackAction.ATTACK_EFFECT = "small_attack";
@@ -28,21 +29,31 @@ AttackAction.prototype.createWeaponSprite = function(gameContext, entity, target
         const { x, y } = transform2D.transformTileToWorld(tileX, tileY);
 
         sprite.setPosition(x, y);
-        sprite.expire();
+        sprite.lock();
+
+        this.sprite = sprite;
     }
 }
 
 AttackAction.prototype.onStart = function(gameContext, data, id) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID, targetID, resolutions, uncloak } = data;
+    const { entityID, targetID, resolutions, uncloak, attackType } = data;
     const entity = entityManager.getEntity(entityID);
     const target = entityManager.getEntity(targetID);
 
-    entity.sprite.lockEnd();
     entity.lookAt(target);
-    entity.playSound(gameContext, BattalionEntity.SOUND_TYPE.FIRE);
-    entity.toFire(gameContext);
+
+    switch(attackType) {
+        case AttackAction.ATTACK_TYPE.INITIATE: {
+            entity.playAttack(gameContext);
+            break;
+        }
+        case AttackAction.ATTACK_TYPE.COUNTER: {
+            entity.playCounter(gameContext);
+            break;
+        }
+    }
 
     this.entity = entity;
     this.resolutions = resolutions;
@@ -56,7 +67,7 @@ AttackAction.prototype.onStart = function(gameContext, data, id) {
 AttackAction.prototype.onUpdate = function(gameContext, data, id) {}
 
 AttackAction.prototype.isFinished = function(gameContext, executionRequest) {
-    return this.entity.sprite.hasLoopedOnce();
+    return !this.sprite || this.sprite.isFinished();
 }
 
 AttackAction.prototype.onEnd = function(gameContext, data, id) {
@@ -71,14 +82,14 @@ AttackAction.prototype.onEnd = function(gameContext, data, id) {
         targetObject.setHealth(health);
     }
 
-    this.entity.sprite.unlockEnd();
-    this.entity.toIdle(gameContext);
+    this.entity.playIdle(gameContext);
 
     if(attackType === AttackAction.ATTACK_TYPE.INITIATE) {
         this.entity.reduceMove();
     }
 
     this.entity = null;
+    this.sprite = null;
     this.resolutions = [];
 }
 

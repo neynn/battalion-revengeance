@@ -6,6 +6,8 @@ export const EntitySprite = function(visual, spriteID, schemaID, schema) {
     SchemaSprite.call(this, visual, spriteID, schemaID, schema);
 
     this.healthFactor = 1;
+    this.isFrozen = false;
+    //this.freeze();
 }
 
 EntitySprite.BLOCK = {
@@ -103,6 +105,17 @@ EntitySprite.prototype.drawNormal = function(display, viewportLeftEdge, viewport
     if(Renderer.DEBUG.SPRITES) {
         this.visual.debug(display, viewportLeftEdge, viewportTopEdge);
     }
+}
+
+EntitySprite.prototype.freeze = function() {
+    this.visual.setFrame(0);
+    this.visual.freeze();
+    this.isFrozen = true;
+}
+
+EntitySprite.prototype.thaw = function() {
+    this.visual.thaw();
+    this.isFrozen = false;
 }
 
 EntitySprite.prototype.pause = function() {

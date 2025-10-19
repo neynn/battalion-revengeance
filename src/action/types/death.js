@@ -9,29 +9,20 @@ export const DeathAction = function() {
     this.entities = [];
 }
 
-DeathAction.EXPLOSION_ID = "explosion";
 DeathAction.FADE_RATE = 1.5;
 
 DeathAction.prototype = Object.create(Action.prototype);
 DeathAction.prototype.constructor = DeathAction;
 
 DeathAction.prototype.onStart = function(gameContext, data, id) {
-    const { world, spriteManager, transform2D } = gameContext;
+    const { world } = gameContext;
     const { entityManager } = world;
     const { entities } = data;
 
     for(let i = 0; i < entities.length; i++) {
         const entity = entityManager.getEntity(entities[i]);
-        const sprite = spriteManager.createSprite(DeathAction.EXPLOSION_ID, TypeRegistry.LAYER_TYPE.GFX);
 
-        if(sprite) {
-            const { tileX, tileY } = entity;
-            const { x, y } = transform2D.transformTileToWorld(tileX, tileY);
-
-            sprite.setPosition(x, y);
-            sprite.expire();
-        }
-
+        entity.playDeath(gameContext);
         entity.setHealth(0);
 
         this.entities.push(entity);

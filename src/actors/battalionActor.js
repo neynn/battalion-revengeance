@@ -1,4 +1,5 @@
 import { Actor } from "../../engine/turn/actor.js";
+import { ActionHelper } from "../action/actionHelper.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const BattalionActor = function(id) {
@@ -13,6 +14,12 @@ export const BattalionActor = function(id) {
 
 BattalionActor.prototype = Object.create(Actor.prototype);
 BattalionActor.prototype.constructor = BattalionActor;
+
+BattalionActor.prototype.surrender = function(gameContext) {
+    const deathRequest = ActionHelper.createDeathRequest(gameContext, this.entities);
+
+    this.queueRequest(deathRequest);
+}
 
 BattalionActor.prototype.setCustomID = function(id) {
     this.customID = id;

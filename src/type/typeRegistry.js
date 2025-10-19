@@ -358,7 +358,8 @@ TypeRegistry.ARMOR_TYPE = {
     NONE: "NONE",
     LIGHT: "LIGHT",
     MEDIUM: "MEDIUM",
-    HEAVY: "HEAVY"
+    HEAVY: "HEAVY",
+    OMEGA: "OMEGA"
 };
 
 TypeRegistry.WEAPON_TYPE = {
