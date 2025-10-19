@@ -13,10 +13,10 @@ export const SpriteManager = function(resourceLoader) {
     this.sharedSprites = [];
     this.timestamp = 0;
     this.pool = new ObjectPool(1024, (index) => new Sprite(index, "EMPTY_SPRITE"));
-    this.pool.allocate();
     this.layers = [];
 }
 
+SpriteManager.ALIAS_SEPERATOR = "::";
 SpriteManager.EMPTY_SPRITE = new Sprite(-1, "EMPTY_SPRITE");
 SpriteManager.EMPTY_LAYER = [];
 
@@ -25,11 +25,12 @@ SpriteManager.prototype.forEachSprite = function(onCall) {
         this.pool.forAllReserved(onCall);
     }
 }
-SpriteManager.prototype.getAlias = function(spriteID, schemaID) {
-    return spriteID + "::" + schemaID;
-};
 
-SpriteManager.prototype.addSpriteEntry = function(spriteID, containerIndex, textureID, alias = "::") {
+SpriteManager.prototype.getAlias = function(spriteID, schemaID) {
+    return spriteID + SpriteManager.ALIAS_SEPERATOR + schemaID;
+}
+
+SpriteManager.prototype.addSpriteEntry = function(spriteID, containerIndex, textureID, alias = SpriteManager.ALIAS_SEPERATOR) {
     this.spriteMap.set(spriteID, {
         "index": containerIndex,
         "textureID": textureID,
@@ -256,7 +257,6 @@ SpriteManager.prototype.createSharedSprite = function(typeID) {
     const sprite = this.pool.reserveElement();
 
     if(!sprite) {
-        Logger.log(Logger.CODE.ENGINE_ERROR, "SpritePool is full!", "SpriteManager.prototype.createSprite", null);
         return SpriteManager.EMPTY_SPRITE;
     }
 
@@ -276,7 +276,6 @@ SpriteManager.prototype.createEmptySprite = function(layerID = null) {
     const sprite = this.pool.reserveElement();
 
     if(!sprite) {
-        Logger.log(Logger.CODE.ENGINE_ERROR, "SpritePool is full!", "SpriteManager.prototype.createSprite", null);
         return SpriteManager.EMPTY_SPRITE;
     }
 
@@ -297,7 +296,6 @@ SpriteManager.prototype.createSprite = function(typeID, layerID = null) {
     const sprite = this.pool.reserveElement();
 
     if(!sprite) {
-        Logger.log(Logger.CODE.ENGINE_ERROR, "SpritePool is full!", "SpriteManager.prototype.createSprite", null);
         return SpriteManager.EMPTY_SPRITE;
     }
 

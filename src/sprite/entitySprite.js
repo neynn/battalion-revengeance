@@ -17,12 +17,14 @@ EntitySprite.BLOCK = {
     GAP: 1
 };
 
-EntitySprite.HEALTH_COLOR = {
-    BACKGROUND: "#000000",
-    GOOD: "#00ff00",
-    WARN: "#ffff00",
-    LOW: "#ff0000",
-};
+EntitySprite.HEALTH_THRESHOLDS = [
+    { "above": 0.75, "color": "#00ff00" },
+    { "above": 0.5, "color": "#ffff00"},
+    { "above": 0.25, "color": "#ff8800"},
+    { "above": 0, "color": "#ff0000" }
+];
+
+EntitySprite.BACKGROUND_COLOR = "#000000";
 
 EntitySprite.HEALTH = {
     PERCENT_GOOD: 0.66,
@@ -53,15 +55,23 @@ EntitySprite.prototype.drawHealth = function(display, viewportLeftEdge, viewport
     const healthX = this.positionX - viewportLeftEdge + EntitySprite.HEALTH_OFFSET.X;
     const healthY = this.positionY - viewportTopEdge + EntitySprite.HEALTH_OFFSET.Y;
 
-    context.fillStyle = EntitySprite.HEALTH_COLOR.BACKGROUND;
+    context.fillStyle = EntitySprite.BACKGROUND_COLOR;
     context.fillRect(healthX, healthY, EntitySprite.HEALTH.WIDTH, EntitySprite.HEALTH.HEIGHT);
 
-    if(this.healthFactor > EntitySprite.HEALTH.PERCENT_GOOD) {
-        context.fillStyle = EntitySprite.HEALTH_COLOR.GOOD;
-    } else if(this.healthFactor > EntitySprite.HEALTH.PERCENT_WARN) {
-        context.fillStyle = EntitySprite.HEALTH_COLOR.WARN;
-    } else {
-        context.fillStyle = EntitySprite.HEALTH_COLOR.LOW;
+    let colorFound = false;
+
+    for(let i = 0; i < EntitySprite.HEALTH_THRESHOLDS.length; i++) {
+        const { above, color } = EntitySprite.HEALTH_THRESHOLDS[i];
+
+        if(this.healthFactor >= above) {
+            context.fillStyle = color;
+            colorFound = true;
+            break;
+        }
+    }
+
+    if(!colorFound) {
+        context.fillStyle = EntitySprite.BACKGROUND_COLOR;
     }
 
     let blockX = healthX + EntitySprite.HEALTH.WIDTH;
