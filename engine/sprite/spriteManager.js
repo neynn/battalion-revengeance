@@ -17,6 +17,7 @@ export const SpriteManager = function(resourceLoader) {
     this.layers = [];
 }
 
+SpriteManager.EMPTY_SPRITE = new Sprite(-1, "EMPTY_SPRITE");
 SpriteManager.EMPTY_LAYER = [];
 
 SpriteManager.prototype.forEachSprite = function(onCall) {
@@ -256,7 +257,7 @@ SpriteManager.prototype.createSharedSprite = function(typeID) {
 
     if(!sprite) {
         Logger.log(Logger.CODE.ENGINE_ERROR, "SpritePool is full!", "SpriteManager.prototype.createSprite", null);
-        return null;
+        return SpriteManager.EMPTY_SPRITE;
     }
 
     sprite.reset();
@@ -276,7 +277,7 @@ SpriteManager.prototype.createEmptySprite = function(layerID = null) {
 
     if(!sprite) {
         Logger.log(Logger.CODE.ENGINE_ERROR, "SpritePool is full!", "SpriteManager.prototype.createSprite", null);
-        return null;
+        return SpriteManager.EMPTY_SPRITE;
     }
 
     sprite.reset();
@@ -297,7 +298,7 @@ SpriteManager.prototype.createSprite = function(typeID, layerID = null) {
 
     if(!sprite) {
         Logger.log(Logger.CODE.ENGINE_ERROR, "SpritePool is full!", "SpriteManager.prototype.createSprite", null);
-        return null;
+        return SpriteManager.EMPTY_SPRITE;
     }
 
     sprite.reset();
@@ -467,7 +468,7 @@ SpriteManager.prototype.getSharedSprite = function(spriteID) {
         }
     }
     
-    return null;
+    return SpriteManager.EMPTY_SPRITE;
 }
 
 SpriteManager.prototype.clearShared = function() {

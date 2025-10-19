@@ -1,6 +1,7 @@
 import { Camera2D } from "../../engine/camera/camera2D.js";
 import { Overlay } from "../../engine/camera/overlay.js";
 import { Renderer } from "../../engine/renderer/renderer.js";
+import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
@@ -13,10 +14,18 @@ export const BattalionCamera = function() {
     this.mainPerspective = null;
     this.priorityEntities = [];
     this.regularEntities = [];
+    this.markerSprite = SpriteManager.EMPTY_SPRITE;
+    this.weakMarkerSprite = SpriteManager.EMPTY_SPRITE;
 }
 
 BattalionCamera.prototype = Object.create(Camera2D.prototype);
 BattalionCamera.prototype.constructor = BattalionCamera;
+
+BattalionCamera.prototype.loadSprites = function(gameContext) {
+    const { spriteManager } = gameContext;
+
+    this.markerSprite = spriteManager.createSprite("marker");
+}
 
 BattalionCamera.prototype.addPerspective = function(teamID) {
     this.perspectives.add(teamID);
@@ -27,7 +36,7 @@ BattalionCamera.prototype.setMainPerspective = function(teamID) {
 }
 
 BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime, deltaTime) {
-    const { world, spriteCollection } = gameContext;
+    const { world } = gameContext;
     const { entityManager } = world;
     const { entities } = entityManager;
     const viewportLeftEdge = this.screenX;
@@ -58,11 +67,19 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
             sprite.drawNormal(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
         }
 
-        if(movesLeft > 0 && teamID === this.mainPerspective) {
-            const markerX = positionX - viewportLeftEdge;
-            const markerY = positionY - viewportTopEdge;
-        
-            spriteCollection.drawMarker(display, markerX, markerY);
+        const markerX = positionX - viewportLeftEdge;
+        const markerY = positionY - viewportTopEdge;
+
+        if(teamID === this.mainPerspective) {
+            if(movesLeft > 0 && this.markerSprite) {
+                display.setAlpha(1);
+                this.markerSprite.onDraw(display, markerX, markerY);
+            }
+        } else {
+            if(this.weakMarkerSprite) {
+                display.setAlpha(1);
+                this.weakMarkerSprite.onDraw(display, markerX, markerY);
+            }
         }
     }
 

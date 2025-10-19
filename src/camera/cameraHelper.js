@@ -54,7 +54,8 @@ export const CameraHelper = {
 
         camera.bindViewport();
         camera.setTileSize(tileWidth, tileHeight);
-    
+        camera.loadSprites(gameContext);
+
         CameraHelper.tryLoadingWorldSize(gameContext, camera);
         ContextHelper.createDrag(gameContext, contextID, Cursor.BUTTON.LEFT);
         context.refresh();

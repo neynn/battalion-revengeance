@@ -11,11 +11,10 @@ PlayState.prototype = Object.create(State.prototype);
 PlayState.prototype.constructor = PlayState;
 
 PlayState.prototype.onEnter = async function(gameContext, stateMachine, transition) {
-    const { client, spriteCollection } = gameContext;
+    const { client } = gameContext;
     const { router } = client;
     //const context = CameraHelper.createPlayCamera(gameContext);
 
-    spriteCollection.create(gameContext);
     MapSpawner.createMapByID(gameContext, "presus").then(map => {});
     router.on("ESCAPE", () => stateMachine.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));
 
