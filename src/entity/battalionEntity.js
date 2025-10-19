@@ -265,7 +265,21 @@ BattalionEntity.prototype.hasMoveLeft = function() {
 }
 
 BattalionEntity.prototype.reduceMove = function() {
-    return this.movesLeft--;
+    this.movesLeft--;
+
+    if(this.movesLeft <= 0) {
+        this.sprite.pause();
+    }
+
+    return this.movesLeft;
+}
+
+BattalionEntity.prototype.refreshMoves = function(moves) {
+    this.movesLeft = moves;
+
+    if(this.movesLeft > 0) {
+        this.sprite.resume();
+    }
 }
 
 BattalionEntity.prototype.setDirection = function(direction) {
@@ -367,8 +381,7 @@ BattalionEntity.prototype.setTeam = function(teamID) {
 }
 
 BattalionEntity.prototype.onTurnStart = function(gameContext) {
-    this.movesLeft = 100;
-
+    this.refreshMoves(100);
     console.log("My turn started", this);
 } 
 

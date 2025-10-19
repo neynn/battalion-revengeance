@@ -1,0 +1,4 @@
+export const PLAYER_PREFERENCE = {
+    FORCE_HEALTH_DRAW: 1,
+    DISABLE_IDLE_ANIMATIONS: 0 //TODO: Implement!
+};

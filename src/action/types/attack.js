@@ -9,6 +9,8 @@ export const AttackAction = function() {
     this.entity = null;
 }
 
+AttackAction.ATTACK_EFFECT = "small_attack";
+
 AttackAction.ATTACK_TYPE = {
     INITIATE: 0,
     COUNTER: 1
@@ -16,6 +18,19 @@ AttackAction.ATTACK_TYPE = {
 
 AttackAction.prototype = Object.create(Action.prototype);
 AttackAction.prototype.constructor = AttackAction;
+
+AttackAction.prototype.createWeaponSprite = function(gameContext, entity, target) {
+    const { spriteManager, transform2D } = gameContext;
+    const sprite = spriteManager.createSprite(AttackAction.ATTACK_EFFECT, TypeRegistry.LAYER_TYPE.GFX);
+
+    if(sprite) {
+        const { tileX, tileY } = target;
+        const { x, y } = transform2D.transformTileToWorld(tileX, tileY);
+
+        sprite.setPosition(x, y);
+        sprite.expire();
+    }
+}
 
 AttackAction.prototype.onStart = function(gameContext, data, id) {
     const { world } = gameContext;
@@ -25,13 +40,13 @@ AttackAction.prototype.onStart = function(gameContext, data, id) {
     const target = entityManager.getEntity(targetID);
 
     entity.sprite.lockEnd();
-    entity.reduceMove();
     entity.lookAt(target);
     entity.playSound(gameContext, BattalionEntity.SOUND_TYPE.FIRE);
     entity.toFire(gameContext);
 
     this.entity = entity;
     this.resolutions = resolutions;
+    this.createWeaponSprite(gameContext, entity, target);
 
     if(uncloak) {
         entity.uncloakInstant();
@@ -47,6 +62,7 @@ AttackAction.prototype.isFinished = function(gameContext, executionRequest) {
 AttackAction.prototype.onEnd = function(gameContext, data, id) {
     const { world } = gameContext;
     const { entityManager } = world;
+    const { attackType } = data;
 
     for(let i = 0; i < this.resolutions.length; i++) {
         const { entityID, health } = this.resolutions[i];
@@ -57,6 +73,11 @@ AttackAction.prototype.onEnd = function(gameContext, data, id) {
 
     this.entity.sprite.unlockEnd();
     this.entity.toIdle(gameContext);
+
+    if(attackType === AttackAction.ATTACK_TYPE.INITIATE) {
+        this.entity.reduceMove();
+    }
+
     this.entity = null;
     this.resolutions = [];
 }

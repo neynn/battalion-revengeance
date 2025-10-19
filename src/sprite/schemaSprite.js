@@ -81,11 +81,11 @@ SchemaSprite.prototype.setOpacity = function(opacity) {
 }
 
 SchemaSprite.prototype.lockEnd = function() {
-    this.visual.lockLoop();
+    this.visual.lock();
 }
 
 SchemaSprite.prototype.unlockEnd = function() {
-    this.visual.freeLoop();
+    this.visual.unlock();
 }
 
 SchemaSprite.prototype.isVisible = function(x, y, w, h) {

@@ -76,7 +76,10 @@ Sprite.prototype.onUpdate = function(timestamp, deltaTime) {
     const passedFrames = passedTime / this.frameTime;
 
     this.lastCallTime = timestamp;
-    this.updateFrame(passedFrames);
+
+    if(!this.hasFlag(Sprite.FLAG.STATIC)) {
+        this.updateFrame(passedFrames);
+    }
 }
 
 Sprite.prototype.onDebug = function(display, localX, localY) {
@@ -249,37 +252,38 @@ Sprite.prototype.unflip = function() {
     this.flags &= ~Sprite.FLAG.FLIP;
 }
 
-Sprite.prototype.lockLoop = function() {
+Sprite.prototype.lock = function() {
+    this.loopCount = 0;
     this.flags |= Sprite.FLAG.LOOP_LOCK;
 }
 
-Sprite.prototype.freeLoop = function() {
+Sprite.prototype.unlock = function() {
     this.flags &= ~Sprite.FLAG.LOOP_LOCK;
 }
 
 Sprite.prototype.updateFrame = function(floatFrames) {
-    if(!this.hasFlag(Sprite.FLAG.STATIC)) {
-        if(this.loopCount <= 0 || !this.hasFlag(Sprite.FLAG.LOOP_LOCK)) {
-            this.floatFrame += floatFrames;
-            this.currentFrame = Math.floor(this.floatFrame % this.frameCount);
+    if(this.loopCount > 0 && this.hasFlag(Sprite.FLAG.LOOP_LOCK)) {
+        return;
+    }
 
-            if(floatFrames !== 0) {
-                if(this.floatFrame >= this.frameCount) {
-                    const skippedLoops = Math.floor(this.floatFrame / this.frameCount);
+    this.floatFrame += floatFrames;
+    this.currentFrame = Math.floor(this.floatFrame % this.frameCount);
 
-                    this.floatFrame -= this.frameCount * skippedLoops;
-                    this.loopCount += skippedLoops;
+    if(floatFrames !== 0) {
+        if(this.floatFrame >= this.frameCount) {
+            const skippedLoops = Math.floor(this.floatFrame / this.frameCount);
 
-                    if(skippedLoops > 0 && this.hasFlag(Sprite.FLAG.LOOP_LOCK)) {
-                        this.floatFrame = this.frameCount - 1;
-                        this.currentFrame = this.frameCount - 1;
-                    }
-                }
+            this.floatFrame -= this.frameCount * skippedLoops;
+            this.loopCount += skippedLoops;
 
-                if(this.loopCount > this.loopLimit && this.hasFlag(Sprite.FLAG.EXPIRE)) {
-                    this.terminate();
-                }
+            if(skippedLoops > 0 && this.hasFlag(Sprite.FLAG.LOOP_LOCK)) {
+                this.floatFrame = this.frameCount - 1;
+                this.currentFrame = this.frameCount - 1;
             }
+        }
+
+        if(this.loopCount > this.loopLimit && this.hasFlag(Sprite.FLAG.EXPIRE)) {
+            this.terminate();
         }
     }
 }

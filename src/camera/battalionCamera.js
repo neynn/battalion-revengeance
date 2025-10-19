@@ -10,6 +10,7 @@ export const BattalionCamera = function() {
 
     this.selectOverlay = new Overlay();
     this.perspectives = new Set();
+    this.mainPerspective = null;
     this.priorityEntities = [];
     this.regularEntities = [];
 }
@@ -21,14 +22,19 @@ BattalionCamera.prototype.addPerspective = function(teamID) {
     this.perspectives.add(teamID);
 }
 
+BattalionCamera.prototype.setMainPerspective = function(teamID) {
+    this.mainPerspective = teamID;
+}
+
 BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime, deltaTime) {
-    const { world } = gameContext;
+    const { world, spriteManager } = gameContext;
     const { entityManager } = world;
     const { entities } = entityManager;
     const viewportLeftEdge = this.screenX;
     const viewportTopEdge = this.screenY;
     const viewportRightEdge = viewportLeftEdge + this.viewportWidth;
     const viewportBottomEdge = viewportTopEdge + this.viewportHeight
+    const selectorSprite = spriteManager.createSharedSprite("marker"); //TODO: PROPERLY
 
     for(let i = 0; i < entities.length; i++) {
         const { sprite, state } = entities[i];
@@ -44,37 +50,29 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
     }
 
     for(let i = 0; i < this.regularEntities.length; i++) {
-        const { teamID, sprite, isCloaked } = this.regularEntities[i];
+        const { teamID, sprite, isCloaked, movesLeft } = this.regularEntities[i];
+        const { positionX, positionY } = sprite;
 
         if(isCloaked && this.perspectives.has(teamID)) {
-            const previousAlpha = sprite.getOpacity();
-
-            if(previousAlpha < 0.5) {
-                sprite.setOpacity(0.5);
-                sprite.draw(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
-                sprite.setOpacity(previousAlpha);
-                continue;
-            }
+            sprite.drawCloaked(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+        } else {
+            sprite.drawNormal(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
         }
 
-        sprite.draw(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+        if(movesLeft > 0 && teamID === this.mainPerspective) {
+            display.setAlpha(1);
+            selectorSprite.onDraw(display, positionX - viewportLeftEdge, positionY - viewportTopEdge);
+        }
     }
 
     for(let i = 0; i < this.priorityEntities.length; i++) {
         const { teamID, sprite, isCloaked } = this.priorityEntities[i];
 
         if(isCloaked && this.perspectives.has(teamID)) {
-            const previousAlpha = sprite.getOpacity();
-
-            if(previousAlpha < 0.5) {
-                sprite.setOpacity(0.5);
-                sprite.draw(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
-                sprite.setOpacity(previousAlpha);
-                continue;
-            }
+            sprite.drawCloaked(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+        } else {
+            sprite.drawNormal(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
         }
-
-        sprite.draw(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
     }
 
     this.regularEntities.length = 0;

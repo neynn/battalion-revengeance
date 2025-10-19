@@ -1109,6 +1109,18 @@
         "frameTime": 0.1,
         "autoFrames": {"start": 1,"jump": 1,"repeat": 12}
     },
+    "small_attack": {
+        "texture": "small_attack",
+        "bounds": {"x":0,"y":0,"w":56,"h":56},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 8}
+    },
+    "marker": {
+        "texture": "marker",
+        "bounds": {"x":0,"y":0,"w":56,"h":56},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 1}
+    },
     "aleph_idle_right": {
         "texture": "aleph_right",
         "bounds": {"x": 0,"y":0,"w":59,"h":56},

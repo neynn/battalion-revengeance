@@ -23,7 +23,6 @@ MoveAction.prototype.onStart = function(gameContext, data, id) {
     const { entityID, path } = data;
     const entity = entityManager.getEntity(entityID);
 
-    entity.reduceMove();
     entity.playSound(gameContext, BattalionEntity.SOUND_TYPE.MOVE);
     entity.toMove(gameContext);
     EntitySpawner.removeEntity(gameContext, entity);
@@ -72,6 +71,7 @@ MoveAction.prototype.onEnd = function(gameContext, data, id) {
     this.entity.setPositionVec(position);
     this.entity.updateDirectionByDelta(deltaX, deltaY);
     this.entity.toIdle(gameContext);
+    this.entity.reduceMove();
 
     EntitySpawner.placeEntity(gameContext, this.entity);
     teamManager.onEntityMove(gameContext, this.entity);

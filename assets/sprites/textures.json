@@ -542,7 +542,7 @@
         }
     },
     "explosion": {
-        "directory": ["assets","sprites","textures"],
+        "directory": ["assets","sprites","textures","effects"],
         "source": "explosion.png",
         "autoRegions": {
             "startX": 0,
@@ -551,6 +551,30 @@
             "frameHeight": 96,
             "rows": 3,
             "columns": 4
+        }
+    },
+    "small_attack": {
+        "directory": ["assets","sprites","textures","effects"],
+        "source": "small_attack.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 2,
+            "columns": 4
+        }
+    },
+    "marker": {
+        "directory": ["assets","sprites","textures","effects"],
+        "source": "marker.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 1,
+            "columns": 1
         }
     },
     "aleph_down": {
