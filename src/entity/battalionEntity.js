@@ -313,6 +313,11 @@ BattalionEntity.prototype.playIdle = function(gameContext) {
     this.sprite.unlockEnd();
 }
 
+BattalionEntity.prototype.playCloak = function(gameContext) {
+    this.isCloaked = true;
+    this.playSound(gameContext, BattalionEntity.SOUND_TYPE.CLOAK);
+}
+
 BattalionEntity.prototype.playMove = function(gameContext) {
     this.movementSpeed = BattalionEntity.DEFAULT_MOVEMENT_SPEED;
     this.state = BattalionEntity.STATE.MOVE;
@@ -791,14 +796,6 @@ BattalionEntity.prototype.getDistanceToEntity = function(entity) {
 
 BattalionEntity.prototype.isHidden = function() {
     return this.isCloaked;
-}
-
-BattalionEntity.prototype.cloak = function() {
-    this.isCloaked = true;
-}
-
-BattalionEntity.prototype.uncloak = function() {
-    this.isCloaked = false;
 }
 
 BattalionEntity.prototype.cloakInstant = function() {

@@ -1,6 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
 import { EntitySpawner } from "../../entity/entitySpawner.js";
-import { TypeRegistry } from "../../type/typeRegistry.js";
 
 export const DeathAction = function() {
     Action.call(this);
