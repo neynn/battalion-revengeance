@@ -51,7 +51,7 @@ export const BattalionEntity = function(id, sprite) {
     this.moraleType = TypeRegistry.MORALE_TYPE.NONE;
     this.weaponType = TypeRegistry.WEAPON_TYPE.NONE;
     this.armorType = TypeRegistry.ARMOR_TYPE.NONE;
-    this.movementSpeed = BattalionEntity.DEFAULT_MOVEMENT_SPEED;
+    this.movementSpeed = BattalionEntity.DEFAULT.MOVEMENT_SPEED;
     this.movementRange = 1;
     this.movementType = TypeRegistry.MOVEMENT_TYPE.STATIONARY;
     this.customName = null;
@@ -69,9 +69,10 @@ export const BattalionEntity = function(id, sprite) {
     this.movesLeft = 0;
 }
 
-BattalionEntity.EXPLOSION_ID = "explosion";
-
-BattalionEntity.DEFAULT_MOVEMENT_SPEED = 224;
+BattalionEntity.DEFAULT = {
+    MOVEMENT_SPEED: 224,
+    EXPLOSION_ID: "explosion"
+};
 
 BattalionEntity.MAX_TRAITS = 4;
 
@@ -109,6 +110,11 @@ BattalionEntity.SOUND_TYPE = {
     DEATH: 3
 };
 
+BattalionEntity.DEFAULT_SOUNDS = {
+    [BattalionEntity.SOUND_TYPE.CLOAK]: "cloak",
+    [BattalionEntity.SOUND_TYPE.DEATH]: "explosion"
+};
+
 BattalionEntity.SOUND_TABLE = {
     [BattalionEntity.SOUND_TYPE.MOVE]: "move",
     [BattalionEntity.SOUND_TYPE.FIRE]: "fire",
@@ -132,7 +138,7 @@ BattalionEntity.prototype.loadConfig = function(config) {
     this.movementRange = movementRange ?? 1;
     this.minRange = minRange ?? 1;
     this.maxRange = maxRange ?? 1;
-    this.movementSpeed = movementSpeed ?? BattalionEntity.DEFAULT_MOVEMENT_SPEED;
+    this.movementSpeed = movementSpeed ?? BattalionEntity.DEFAULT.MOVEMENT_SPEED;
 
     if(this.maxRange < this.minRange) {
         this.maxRange = this.minRange;
@@ -319,7 +325,7 @@ BattalionEntity.prototype.playCloak = function(gameContext) {
 }
 
 BattalionEntity.prototype.playMove = function(gameContext) {
-    this.movementSpeed = BattalionEntity.DEFAULT_MOVEMENT_SPEED;
+    this.movementSpeed = BattalionEntity.DEFAULT.MOVEMENT_SPEED;
     this.state = BattalionEntity.STATE.MOVE;
     this.updateSprite(gameContext);
     this.playSound(gameContext, BattalionEntity.SOUND_TYPE.MOVE);
@@ -331,7 +337,7 @@ BattalionEntity.prototype.playDeath = function(gameContext) {
     this.state = BattalionEntity.STATE.DEAD;
     this.playSound(gameContext, BattalionEntity.SOUND_TYPE.DEATH);
 
-    const sprite = spriteManager.createSprite(BattalionEntity.EXPLOSION_ID, TypeRegistry.LAYER_TYPE.GFX);
+    const sprite = spriteManager.createSprite(BattalionEntity.DEFAULT.EXPLOSION_ID, TypeRegistry.LAYER_TYPE.GFX);
 
     if(sprite) {
         const { x, y } = transform2D.transformTileToWorld(this.tileX, this.tileY);
@@ -748,13 +754,18 @@ BattalionEntity.prototype.playSound = function(gameContext, soundType) {
     const { client } = gameContext;
     const { soundPlayer } = client;
     const soundCategory = BattalionEntity.SOUND_TABLE[soundType];
+    let soundID = null;
 
     if(soundCategory) {
-        const soundID = this.config.sounds?.[soundCategory];
+        soundID = this.config.sounds?.[soundCategory];
+    }
 
-        if(soundID) {
-            soundPlayer.play(soundID);
-        }
+    if(!soundID) {
+        soundID = BattalionEntity.DEFAULT_SOUNDS[soundType];
+    }
+
+    if(soundID) {
+        soundPlayer.play(soundID);
     }
 }
 

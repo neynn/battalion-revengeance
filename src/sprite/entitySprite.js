@@ -24,6 +24,8 @@ EntitySprite.HEALTH_THRESHOLDS = [
     { "above": 0, "color": "#ff0000" }
 ];
 
+EntitySprite.DEFAULT_HEALTH_COLOR = "#ffffff";
+
 EntitySprite.BACKGROUND_COLOR = "#000000";
 
 EntitySprite.HEALTH = {
@@ -71,7 +73,7 @@ EntitySprite.prototype.drawHealth = function(display, viewportLeftEdge, viewport
     }
 
     if(!colorFound) {
-        context.fillStyle = EntitySprite.BACKGROUND_COLOR;
+        context.fillStyle = EntitySprite.DEFAULT_HEALTH_COLOR;
     }
 
     let blockX = healthX + EntitySprite.HEALTH.WIDTH;
