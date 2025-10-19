@@ -590,13 +590,14 @@ BattalionEntity.prototype.getPath = function(gameContext, nodes, targetX, target
 }
 
 BattalionEntity.prototype.getTerrainTypes = function(gameContext) {
-    const { world } = gameContext;
+    const { world, typeRegistry } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
+    const types = [];
     const tags = new Set();
 
     if(!worldMap) {
-        return tags;
+        return types;
     }
 
     const startX = this.tileX;
@@ -614,7 +615,15 @@ BattalionEntity.prototype.getTerrainTypes = function(gameContext) {
         }
     }
 
-    return tags;
+    for(const typeID of tags) {
+        const type = typeRegistry.getType(typeID, TypeRegistry.CATEGORY.TERRAIN);
+
+        if(type) {
+            types.push(type);
+        }
+    }
+
+    return types;
 }
 
 BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, attackType) {
@@ -821,16 +830,11 @@ BattalionEntity.prototype.canCloak = function() {
 }
 
 BattalionEntity.prototype.getMaxRange = function(gameContext) {
-    const { typeRegistry } = gameContext;
     const terrainTypes = this.getTerrainTypes(gameContext);
     let range = this.maxRange;
 
-    for(const terrainType of terrainTypes) {
-        const terrainTypeObject = typeRegistry.getType(terrainType, TypeRegistry.CATEGORY.TERRAIN);
-
-        if(terrainTypeObject) {
-            range += terrainTypeObject.rangeBoost ?? 0;
-        }
+    for(let i = 0; i < terrainTypes.length; i++) {
+        range += terrainTypes[i].rangeBoost ?? 0;
     }
 
     if(range < this.minRange) {
@@ -838,4 +842,11 @@ BattalionEntity.prototype.getMaxRange = function(gameContext) {
     }
     
     return range;
+}
+
+BattalionEntity.prototype.onArrive = function(gameContext) {
+    const terrainTypes = this.getTerrainTypes(gameContext);
+
+    //TODO: After a move ended, this checks the tile for any properties like damage_on_land
+    //TODO: Also add an attack after move. Move can carry an attack target, which gets put as "next", if not uncloaked by a stealth unit.
 }

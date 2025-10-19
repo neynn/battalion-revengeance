@@ -70,6 +70,7 @@ MoveAction.prototype.onEnd = function(gameContext, data, id) {
     this.entity.updateDirectionByDelta(deltaX, deltaY);
     this.entity.playIdle(gameContext);
     this.entity.reduceMove();
+    this.entity.onArrive(gameContext);
 
     EntitySpawner.placeEntity(gameContext, this.entity);
     teamManager.onEntityMove(gameContext, this.entity);

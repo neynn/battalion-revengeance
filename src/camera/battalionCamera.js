@@ -27,14 +27,13 @@ BattalionCamera.prototype.setMainPerspective = function(teamID) {
 }
 
 BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime, deltaTime) {
-    const { world, spriteManager } = gameContext;
+    const { world, spriteCollection } = gameContext;
     const { entityManager } = world;
     const { entities } = entityManager;
     const viewportLeftEdge = this.screenX;
     const viewportTopEdge = this.screenY;
     const viewportRightEdge = viewportLeftEdge + this.viewportWidth;
     const viewportBottomEdge = viewportTopEdge + this.viewportHeight
-    const selectorSprite = spriteManager.createSharedSprite("marker"); //TODO: PROPERLY
 
     for(let i = 0; i < entities.length; i++) {
         const { sprite, state } = entities[i];
@@ -60,8 +59,10 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
         }
 
         if(movesLeft > 0 && teamID === this.mainPerspective) {
-            display.setAlpha(1);
-            selectorSprite.onDraw(display, positionX - viewportLeftEdge, positionY - viewportTopEdge);
+            const markerX = positionX - viewportLeftEdge;
+            const markerY = positionY - viewportTopEdge;
+        
+            spriteCollection.drawMarker(display, markerX, markerY);
         }
     }
 

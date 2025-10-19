@@ -10,6 +10,7 @@ import { MoveAction } from "./action/types/move.js";
 import { PortraitHandler } from "./actors/portraitHandler.js";
 import { DialogueHandler } from "./dialogue/dialogueHandler.js";
 import { EventHandler } from "./event/eventHandler.js";
+import { SpriteCollection } from "./sprite/spriteCollection.js";
 import { MainMenuState } from "./states/mainMenu.js";
 import { MapEditorState } from "./states/mapEditor.js";
 import { PlayState } from "./states/play.js";
@@ -25,6 +26,7 @@ export const BattalionContext = function() {
     this.portraitHandler = new PortraitHandler();
     this.eventHandler = new EventHandler();
     this.dialogueHandler = new DialogueHandler();
+    this.spriteCollection = new SpriteCollection();
 
     this.world.entityManager.events.on(EntityManager.EVENT.ENTITY_DESTROY, (id) => {
         this.world.turnManager.forAllActors(actor => actor.removeEntity(id));
