@@ -308,7 +308,7 @@
     "stealth_tank": {
         "id": "stealth_tank",
         "health": 10,
-        "damage": 20,
+        "damage": 4,
         "weaponType": "NONE",
         "armorType": "NONE",
         "movementRange": 5,

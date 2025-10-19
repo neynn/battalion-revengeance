@@ -1,6 +1,7 @@
 import { Camera2D } from "../../engine/camera/camera2D.js";
 import { Overlay } from "../../engine/camera/overlay.js";
 import { Renderer } from "../../engine/renderer/renderer.js";
+import { BattalionEntity } from "../entity/battalionEntity.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
@@ -9,6 +10,8 @@ export const BattalionCamera = function() {
 
     this.selectOverlay = new Overlay();
     this.perspectives = new Set();
+    this.priorityEntities = [];
+    this.regularEntities = [];
 }
 
 BattalionCamera.prototype = Object.create(Camera2D.prototype);
@@ -26,19 +29,22 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
     const viewportTopEdge = this.screenY;
     const viewportRightEdge = viewportLeftEdge + this.viewportWidth;
     const viewportBottomEdge = viewportTopEdge + this.viewportHeight
-    const visibleEntities = [];
 
     for(let i = 0; i < entities.length; i++) {
-        const { sprite } = entities[i];
+        const { sprite, state } = entities[i];
         const isVisible = sprite.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
 
         if(isVisible) {
-            visibleEntities.push(entities[i]);
+            if(state === BattalionEntity.STATE.IDLE) {
+                this.regularEntities.push(entities[i]);
+            } else {
+                this.priorityEntities.push(entities[i]);
+            }
         }
     }
 
-    for(let i = 0; i < visibleEntities.length; i++) {
-        const { teamID, sprite, isCloaked } = visibleEntities[i];
+    for(let i = 0; i < this.regularEntities.length; i++) {
+        const { teamID, sprite, isCloaked } = this.regularEntities[i];
 
         if(isCloaked && this.perspectives.has(teamID)) {
             const previousAlpha = sprite.getOpacity();
@@ -53,6 +59,26 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
 
         sprite.draw(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
     }
+
+    for(let i = 0; i < this.priorityEntities.length; i++) {
+        const { teamID, sprite, isCloaked } = this.priorityEntities[i];
+
+        if(isCloaked && this.perspectives.has(teamID)) {
+            const previousAlpha = sprite.getOpacity();
+
+            if(previousAlpha < 0.5) {
+                sprite.setOpacity(0.5);
+                sprite.draw(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+                sprite.setOpacity(previousAlpha);
+                continue;
+            }
+        }
+
+        sprite.draw(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+    }
+
+    this.regularEntities.length = 0;
+    this.priorityEntities.length = 0;
 }
 
 BattalionCamera.prototype.update = function(gameContext, display) {

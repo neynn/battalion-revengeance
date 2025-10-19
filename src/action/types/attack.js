@@ -31,13 +31,7 @@ AttackAction.prototype.onStart = function(gameContext, data, id) {
     entity.toFire(gameContext);
 
     this.entity = entity;
-
-    for(let i = 0; i < resolutions.length; i++) {
-        const { entityID, health } = resolutions[i];
-        const targetObject = entityManager.getEntity(entityID);
-
-        targetObject.setHealth(health);
-    }
+    this.resolutions = resolutions;
 
     if(uncloak) {
         entity.uncloakInstant();
@@ -51,11 +45,20 @@ AttackAction.prototype.isFinished = function(gameContext, executionRequest) {
 }
 
 AttackAction.prototype.onEnd = function(gameContext, data, id) {
-    //If status === dead then teamManager.onEntityDeath();
+    const { world } = gameContext;
+    const { entityManager } = world;
+
+    for(let i = 0; i < this.resolutions.length; i++) {
+        const { entityID, health } = this.resolutions[i];
+        const targetObject = entityManager.getEntity(entityID);
+
+        targetObject.setHealth(health);
+    }
 
     this.entity.sprite.unlockEnd();
     this.entity.toIdle(gameContext);
     this.entity = null;
+    this.resolutions = [];
 }
 
 AttackAction.prototype.mGetCounterResolutions = function(gameContext, entity, target, resolutions) {
