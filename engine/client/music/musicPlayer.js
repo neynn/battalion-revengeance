@@ -1,8 +1,10 @@
+import { clampValue } from "../../math/math.js";
 import { PathHandler } from "../../resources/pathHandler.js";
+import { MockAudio } from "./mockAudio.js";
 import { MusicTrack } from "./musicTrack.js";
 
 export const MusicPlayer = function() {
-    this.volume = 1;
+    this.masterVolume = 0.5;
     this.tracks = {};
     this.playlists = {};
     this.loadedTracks = new Map();
@@ -13,6 +15,8 @@ export const MusicPlayer = function() {
     this.state = MusicPlayer.STATE.NONE;
     this.mode = MusicPlayer.MODE.SINGLE;
 }
+
+MusicPlayer.EMPTY_TRACK = new MusicTrack(new MockAudio(), 0, false);
 
 MusicPlayer.DEBUG = 1;
 
@@ -47,10 +51,11 @@ MusicPlayer.prototype.loadTrack = function(trackID) {
         if(MusicPlayer.DEBUG) {
             console.warn(`Track ${trackID} does not exist!`);
         }
+
         return null;
     }
 
-    const { directory, source, volume = this.volume, isLooping = false } = meta;
+    const { directory, source, volume = MusicTrack.VOLUME.MAX, isLooping = false } = meta;
     const path = PathHandler.getPath(directory, source);
     const audio = new Audio(path);
     const track = new MusicTrack(audio, volume, isLooping);
@@ -80,7 +85,7 @@ MusicPlayer.prototype.play = function(trackID) {
 
     switch(this.state) {
         case MusicPlayer.STATE.NONE: {
-            track.play();
+            track.play(this.masterVolume);
             break;
         }
         case MusicPlayer.STATE.MUTED: {
@@ -115,14 +120,10 @@ MusicPlayer.prototype.getShuffledPlaylist = function(playlist) {
 }
 
 MusicPlayer.prototype.forceStopCurrentTrack = function() {
-    if(this.currentTrack) {
-        const track = this.loadedTracks.get(this.currentTrack);
+    this.getTrack(this.currentTrack).reset();
 
-        this.previousTrack = this.currentTrack;
-        this.currentTrack = null;
-
-        track.reset();
-    } 
+    this.previousTrack = this.currentTrack;
+    this.currentTrack = null;
 }
 
 MusicPlayer.prototype.isCurrentPlaylistTrack = function(trackID) {
@@ -148,22 +149,25 @@ MusicPlayer.prototype.runPlaylist = function() {
         const trackID = this.currentPlaylist[this.playlistIndex];
 
         this.playlistIndex++;
-
         this.play(trackID);
 
-        if(this.loadedTracks.has(trackID)) {
+        if(this.currentTrack === trackID) {
             break;
         }
     }
 }
 
 MusicPlayer.prototype.onTrackFinish = function(trackID) {
+    if(trackID !== this.currentTrack) {
+        return;
+    }
+
     this.previousTrack = this.currentTrack;
     this.currentTrack = null;
 
     switch(this.mode) {
         case MusicPlayer.MODE.SINGLE: {
-            const track = this.loadedTracks.get(trackID);
+            const track = this.getTrack(trackID);
 
             if(track.isLooping) {
                 this.play(trackID);
@@ -172,14 +176,10 @@ MusicPlayer.prototype.onTrackFinish = function(trackID) {
             break;
         }
         case MusicPlayer.MODE.PLAYLIST: {
-            const isCurrentPlaylistTrack = this.isCurrentPlaylistTrack(trackID);
-
-            if(isCurrentPlaylistTrack) {
-                if(this.currentPlaylist.length !== 0 && this.playlistIndex === this.currentPlaylist.length) {
-                    const shuffledPlaylist = this.getShuffledPlaylist(this.currentPlaylist);
-        
+            if(this.isCurrentPlaylistTrack(trackID)) {
+                if(this.currentPlaylist.length !== 0 && this.playlistIndex === this.currentPlaylist.length) {        
                     this.playlistIndex = 0;
-                    this.currentPlaylist = shuffledPlaylist;
+                    this.currentPlaylist = this.getShuffledPlaylist(this.currentPlaylist);
                 }
         
                 setTimeout(() => this.runPlaylist(), 0);
@@ -197,9 +197,7 @@ MusicPlayer.prototype.stop = function() {
 }
 
 MusicPlayer.prototype.playTrack = function(musicID) {
-    const meta = this.tracks[musicID];
-
-    if(!meta) {
+    if(!this.tracks[musicID]) {
         if(MusicPlayer.DEBUG) {
             console.warn(`Track ${trackID} does not exist!`);
         }
@@ -249,77 +247,58 @@ MusicPlayer.prototype.toggleMute = function() {
     return this.state;
 }
 
-MusicPlayer.prototype.unmute = function() {
-    if(this.currentTrack) {
-        const track = this.loadedTracks.get(this.currentTrack);
+MusicPlayer.prototype.getTrack = function(trackID) {
+    const track = this.loadedTracks.get(trackID);
 
-        track.unmute();
+    if(!track) {
+        return MusicPlayer.EMPTY_TRACK;
     }
 
+    return track;
+}
+
+MusicPlayer.prototype.unmute = function() {
+    this.getTrack(this.currentTrack).unmute(this.masterVolume);
     this.state = MusicPlayer.STATE.NONE;
 }
 
 MusicPlayer.prototype.mute = function() {
-    if(this.currentTrack) {
-        const track = this.loadedTracks.get(this.currentTrack);
-
-        track.mute();
-    }
-
+    this.getTrack(this.currentTrack).mute();
     this.state = MusicPlayer.STATE.MUTED;
 }
 
 MusicPlayer.prototype.forward = function(seconds) {
-    if(this.currentTrack) {
-        const track = this.loadedTracks.get(this.currentTrack);
-
-        track.audio.currentTime += seconds;
-    }
+    this.getTrack(this.currentTrack).forward(seconds);
 }
 
 MusicPlayer.prototype.backward = function(seconds) {
-    if(this.currentTrack) {
-        const track = this.loadedTracks.get(this.currentTrack);
-        const time = track.audio.currentTime - seconds;
+    this.getTrack(this.currentTrack).backward(seconds);
+}
 
-        if(time < 0) {
-            track.audio.currentTime = 0;    
-        } else {
-            track.audio.currentTime = time;
-        }
-    }
+MusicPlayer.prototype.restart = function() {
+    this.getTrack(this.currentTrack).restart();
+}
+
+MusicPlayer.prototype.pause = function() {
+    this.getTrack(this.currentTrack).pause();
+} 
+
+MusicPlayer.prototype.resume = function() {
+    this.getTrack(this.currentTrack).play(this.masterVolume);
 }
 
 MusicPlayer.prototype.skip = function() {
     if(this.currentTrack) {
-        const track = this.loadedTracks.get(this.currentTrack);
-
-        track.reset();
+        this.getTrack(this.currentTrack).reset();
         this.onTrackFinish(this.currentTrack);
     }
 }
 
-MusicPlayer.prototype.restart = function() {
-    if(this.currentTrack) {
-        const track = this.loadedTracks.get(this.currentTrack);
+MusicPlayer.prototype.setMasterVolume = function(volume) {
+    this.masterVolume = clampValue(volume, MusicTrack.VOLUME.MAX, MusicTrack.VOLUME.MIN);
 
-        track.audio.currentTime = 0;
-    }
-}
-
-MusicPlayer.prototype.pause = function() {
-    if(this.currentTrack) {
-        const track = this.loadedTracks.get(this.currentTrack);
-
-        track.pause();
-    }
-} 
-
-MusicPlayer.prototype.resume = function() {
-    if(this.currentTrack) {
-        const track = this.loadedTracks.get(this.currentTrack);
-
-        track.play();
+    if(this.state !== MusicPlayer.STATE.MUTED) {
+        this.getTrack(this.currentTrack).setVolume(this.masterVolume);
     }
 }
 
