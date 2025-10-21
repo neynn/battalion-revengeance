@@ -46,7 +46,6 @@ export const BattalionEntity = function(id, sprite) {
     this.health = EntityType.DEFAULT.HEALTH;
     this.maxHealth = EntityType.DEFAULT.HEALTH;
     this.damage = EntityType.DEFAULT.DAMAGE;
-    this.movementSpeed = EntityType.DEFAULT.MOVEMENT_SPEED;
     this.movementRange = EntityType.DEFAULT.MOVEMENT_RANGE;
     this.moraleType = TypeRegistry.MORALE_TYPE.NONE;
     this.moraleAmplifier = 1;
@@ -62,6 +61,7 @@ export const BattalionEntity = function(id, sprite) {
     this.teamID = null;
     this.isCloaked = false;
     this.movesLeft = 0;
+    this.transportID = null;
 }
 
 BattalionEntity.MAX_MOVE_COST = 99;
@@ -116,14 +116,13 @@ BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
 
 BattalionEntity.prototype.loadConfig = function(config) {
-    const { health, movementRange, damage, movementSpeed } = config;
+    const { health, movementRange, damage } = config;
 
     this.config = config;
     this.health = health;
     this.maxHealth = health;
     this.damage = damage;
     this.movementRange = movementRange;
-    this.movementSpeed = movementSpeed;
 
     if(this.movementRange >= BattalionEntity.MAX_MOVE_COST) {
         this.movementRange = BattalionEntity.MAX_MOVE_COST;
@@ -280,7 +279,6 @@ BattalionEntity.prototype.playCloak = function(gameContext) {
 }
 
 BattalionEntity.prototype.playMove = function(gameContext) {
-    this.movementSpeed = EntityType.DEFAULT.MOVEMENT_SPEED;
     this.state = BattalionEntity.STATE.MOVE;
     this.updateSprite(gameContext);
     this.playSound(gameContext, BattalionEntity.SOUND_TYPE.MOVE);
@@ -834,10 +832,40 @@ BattalionEntity.prototype.getMaxRange = function(gameContext) {
     return range;
 }
 
+BattalionEntity.prototype.getDistanceMoved = function(deltaTime) {
+    return this.config.movementSpeed * deltaTime;
+}
+
+BattalionEntity.prototype.fromTransport = function(gameContext) {
+    if(this.transportID !== null) {
+        const { world } = gameContext;
+        const { entityManager } = world;
+        const transportType = entityManager.getEntityType(this.transportID);
+        const previousHealthFactor = this.health / this.maxHealth;
+
+        this.loadConfig(transportType);
+        this.setHealth(this.maxHealth * previousHealthFactor);
+        this.playIdle(gameContext);
+        this.transportID = null;
+    }
+}
+
+BattalionEntity.prototype.toWaterTransport = function(gameContext) {
+    if(this.transportID === null) {
+        const { world } = gameContext;
+        const { entityManager } = world;
+        const transportType = entityManager.getEntityType(TypeRegistry.ENTITY_TYPE.LEVIATHAN_BARGE);
+        const previousHealthFactor = this.health / this.maxHealth;
+
+        this.transportID = this.config.id;
+        this.loadConfig(transportType);
+        this.setHealth(this.maxHealth * previousHealthFactor);
+        this.playIdle(gameContext);
+    }
+}
+
 BattalionEntity.prototype.onArrive = function(gameContext) {
     const terrainTypes = this.getTerrainTypes(gameContext);
-
     //TODO: After a move ended, this checks the tile for any properties like damage_on_land
     //TODO: Also add an attack after move. Move can carry an attack target, which gets put as "next", if not uncloaked by a stealth unit.
 }
-

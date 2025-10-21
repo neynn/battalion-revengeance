@@ -9,6 +9,7 @@
     "tank_fire": { "directory": ["assets", "sounds"], "source": "tank_fire.mp3", "allowStacking": true, "volume": 0.6 },
     "flak_fire": { "directory": ["assets", "sounds"], "source": "flak_fire.mp3", "allowStacking": true, "volume": 0.6 },
     "tracked_move": { "directory": ["assets", "sounds"], "source": "tracked_move.mp3", "allowStacking": true, "volume": 0.6 },
+    "rudder_move": { "directory": ["assets", "sounds"], "source": "rudder_move.mp3", "allowStacking": true, "volume": 0.6 },
     "raptor_move": { "directory": ["assets", "sounds"], "source": "raptor_move.mp3", "allowStacking": true, "volume": 0.6 },
     "raptor_fire": { "directory": ["assets", "sounds"], "source": "raptor_fire.mp3", "allowStacking": true, "volume": 0.6 },
     "cloak": { "directory": ["assets", "sounds"], "source": "cloak.mp3", "allowStacking": true, "volume": 0.6 },

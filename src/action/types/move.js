@@ -34,7 +34,7 @@ MoveAction.prototype.onUpdate = function(gameContext, data, id) {
     const { timer, transform2D } = gameContext;
     const deltaTime = timer.getFixedDeltaTime();
     const { deltaX, deltaY } = this.path[this.pathIndex]; 
-    const distanceMoved = this.entity.movementSpeed * deltaTime;
+    const distanceMoved = this.entity.getDistanceMoved(deltaTime);
     const directionChanged = this.entity.updateDirectionByDelta(deltaX, deltaY);
 
     if(directionChanged) {

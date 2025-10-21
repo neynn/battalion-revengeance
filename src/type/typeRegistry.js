@@ -200,6 +200,10 @@ TypeRegistry.TILE_ID = {
     OVERLAY_ATTACK: 96
 };
 
+TypeRegistry.ENTITY_TYPE = {
+    LEVIATHAN_BARGE: "leviathan_barge"
+};
+
 TypeRegistry.COMMANDER_TYPE = {
     KANYE: "KANYE"
 };
