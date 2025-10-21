@@ -105,10 +105,10 @@ BattalionEntity.SPRITE_TYPE = {
 };
 
 BattalionEntity.SOUND_TYPE = {
-    MOVE: 0,
-    FIRE: 1,
-    CLOAK: 2,
-    DEATH: 3
+    MOVE: "move",
+    FIRE: "fire",
+    CLOAK: "cloak",
+    DEATH: "death"
 };
 
 BattalionEntity.DEFAULT_SPRITES = {
@@ -120,13 +120,6 @@ BattalionEntity.DEFAULT_SOUNDS = {
     [BattalionEntity.SOUND_TYPE.CLOAK]: "cloak",
     [BattalionEntity.SOUND_TYPE.DEATH]: "explosion"
 };
-
-BattalionEntity.SOUND_TABLE = {
-    [BattalionEntity.SOUND_TYPE.MOVE]: "move",
-    [BattalionEntity.SOUND_TYPE.FIRE]: "fire",
-    [BattalionEntity.SOUND_TYPE.CLOAK]: "cloak",
-    [BattalionEntity.SOUND_TYPE.DEATH]: "death",
-}
 
 BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
@@ -780,12 +773,7 @@ BattalionEntity.prototype.lookAt = function(entity) {
 BattalionEntity.prototype.playSound = function(gameContext, soundType) {
     const { client } = gameContext;
     const { soundPlayer } = client;
-    const soundCategory = BattalionEntity.SOUND_TABLE[soundType];
-    let soundID = null;
-
-    if(soundCategory) {
-        soundID = this.config.sounds?.[soundCategory];
-    }
+    let soundID = this.config.sounds?.[soundType];;
 
     if(!soundID) {
         soundID = BattalionEntity.DEFAULT_SOUNDS[soundType];
