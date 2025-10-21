@@ -960,5 +960,101 @@
             "rows": 8,
             "columns": 1
         }
+    },
+    "entwicklung_down": {
+        "directory": ["assets","sprites","textures","entwicklung"],
+        "source": "entwicklung_down.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 4,
+            "columns": 1
+        }
+    },
+    "entwicklung_left": {
+        "directory": ["assets","sprites","textures","entwicklung"],
+        "source": "entwicklung_left.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 4,
+            "columns": 1
+        }
+    },
+    "entwicklung_right": {
+        "directory": ["assets","sprites","textures","entwicklung"],
+        "source": "entwicklung_right.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 4,
+            "columns": 1
+        }
+    },
+    "entwicklung_up": {
+        "directory": ["assets","sprites","textures","entwicklung"],
+        "source": "entwicklung_up.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 4,
+            "columns": 1
+        }
+    },
+    "entwicklung_fire_down": {
+        "directory": ["assets","sprites","textures","entwicklung"],
+        "source": "entwicklung_fire_down.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 95,
+            "frameHeight": 83,
+            "rows": 8,
+            "columns": 1
+        }
+    },
+    "entwicklung_fire_left": {
+        "directory": ["assets","sprites","textures","entwicklung"],
+        "source": "entwicklung_fire_left.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 95,
+            "frameHeight": 83,
+            "rows": 8,
+            "columns": 1
+        }
+    },
+    "entwicklung_fire_right": {
+        "directory": ["assets","sprites","textures","entwicklung"],
+        "source": "entwicklung_fire_right.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 95,
+            "frameHeight": 83,
+            "rows": 8,
+            "columns": 1
+        }
+    },
+    "entwicklung_fire_up": {
+        "directory": ["assets","sprites","textures","entwicklung"],
+        "source": "entwicklung_fire_up.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 95,
+            "frameHeight": 83,
+            "rows": 8,
+            "columns": 1
+        }
     }
 }

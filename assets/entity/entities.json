@@ -251,6 +251,29 @@
             "fire_up": "turret_fire_up"
         }
     },
+    "entwicklung": {
+        "health": 170,
+        "damage": 65,
+        "weaponType": "MEDIUM",
+        "armorType": "HEAVY",
+        "movementRange": 7,
+        "movementType": "TRACKED",
+        "traits": ["SCHWERPUNKT", "BEWEGUNGSKRIEG", "MOBILE_BATTERY", "TERRIFYING"],
+        "sounds": {
+            "move": "entwicklung_move",
+            "fire": "entwicklung_fire"
+        },
+        "sprites": {
+            "idle_right": "entwicklung_idle_right",
+            "idle_left": "entwicklung_idle_left",
+            "idle_down": "entwicklung_idle_down",
+            "idle_up": "entwicklung_idle_up",
+            "fire_right": "entwicklung_fire_right",
+            "fire_left": "entwicklung_fire_left",
+            "fire_down": "entwicklung_fire_down",
+            "fire_up": "entwicklung_fire_up"
+        }
+    },
     "annihilator_tank": {
         "health": 120,
         "damage": 50,
