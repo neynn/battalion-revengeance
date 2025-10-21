@@ -106,7 +106,7 @@
         "traits": ["STREAMLINED", "SCHWERPUNKT", "BEWEGUNGSKRIEG"],
         "sounds": {
             "move": "tracked_move",
-            "fire": "asekara_fire"
+            "fire": "tank_fire"
         },
         "sprites": {
             "idle_right": "scorpion_tank_idle_right",
@@ -166,6 +166,30 @@
             "fire_left": "flak_tank_fire_left",
             "fire_down": "flak_tank_fire_down",
             "fire_up": "flak_tank_fire_up"
+        }
+    },
+    "tank_hunter": {
+        "id": "tank_hunter",
+        "health": 100,
+        "damage": 35,
+        "weaponType": "MEDIUM",
+        "armorType": "MEDIUM",
+        "movementRange": 5,
+        "movementType": "TRACKED",
+        "traits": ["ANTI_TANK"],
+        "sounds": {
+            "move": "tracked_move",
+            "fire": "tank_fire"
+        },
+        "sprites": {
+            "idle_right": "lancer_tank_idle_right",
+            "idle_left": "lancer_tank_idle_left",
+            "idle_down": "lancer_tank_idle_down",
+            "idle_up": "lancer_tank_idle_up",
+            "fire_right": "lancer_tank_fire_right",
+            "fire_left": "lancer_tank_fire_left",
+            "fire_down": "lancer_tank_fire_down",
+            "fire_up": "lancer_tank_fire_up"
         }
     },
     "annihilator_tank": {
@@ -289,26 +313,6 @@
             "fire_left": "intrepid_fire_left",
             "fire_down": "intrepid_fire_down",
             "fire_up": "intrepid_fire_up"
-        }
-    },
-    "lancer_tank": {
-        "id": "lancer_tank",
-        "health": 10,
-        "damage": 0,
-        "weaponType": "NONE",
-        "armorType": "NONE",
-        "movementRange": 1,
-        "movementType": "STATIONARY",
-        "traits": [],
-        "sprites": {
-            "idle_right": "lancer_tank_idle_right",
-            "idle_left": "lancer_tank_idle_left",
-            "idle_down": "lancer_tank_idle_down",
-            "idle_up": "lancer_tank_idle_up",
-            "fire_right": "lancer_tank_fire_right",
-            "fire_left": "lancer_tank_fire_left",
-            "fire_down": "lancer_tank_fire_down",
-            "fire_up": "lancer_tank_fire_up"
         }
     },
     "mortar_truck": {
