@@ -4,7 +4,7 @@ import { Logger } from "../logger.js";
 export const EntityManager = function() {
     this.traits = {};
     this.archetypes = {};
-    this.entityTypes = {};
+    this.entityTypes = new Map();
     this.components = new Map();
 
     this.nextID = 0;
@@ -25,11 +25,7 @@ EntityManager.ID = {
     INVALID: -1
 };
 
-EntityManager.prototype.load = function(entityTypes, traits, archetypes) {
-    if(entityTypes) {
-        this.entityTypes = entityTypes;
-    }
-
+EntityManager.prototype.load = function(traits, archetypes) {
     if(traits) {
         this.traits = traits;
     }
@@ -39,8 +35,12 @@ EntityManager.prototype.load = function(entityTypes, traits, archetypes) {
     }    
 }
 
+EntityManager.prototype.addEntityType = function(typeID, type) {
+    this.entityTypes.set(typeID, type);
+}
+
 EntityManager.prototype.getEntityType = function(typeID) {
-    const entityType = this.entityTypes[typeID];
+    const entityType = this.entityTypes.get(typeID);
 
     if(!entityType) {
         return null;
@@ -63,14 +63,6 @@ EntityManager.prototype.registerComponent = function(componentID, componentClass
     }
 
     this.components.set(componentID, componentClass);
-}
-
-EntityManager.prototype.forEachType = function(onCall) {
-    if(typeof onCall === "function") {
-        for(const typeName in this.entityTypes) {
-            onCall(this.entityTypes[typeName]);
-        }
-    }
 }
 
 EntityManager.prototype.forEachEntity = function(onCall) {

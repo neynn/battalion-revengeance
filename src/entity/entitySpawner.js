@@ -52,7 +52,6 @@ export const EntitySpawner = {
             entityObject.loadConfig(entityType);
             entityObject.setTile(x, y);
             entityObject.setPositionVec(spawnPosition);
-            entityObject.loadTraits();
 
             return entityObject;
         }, type, id);
@@ -76,8 +75,8 @@ export const EntitySpawner = {
         const worldMap = mapManager.getActiveMap();
 
         if(worldMap) {
-            const sizeX = entity.config.dimX ?? 1;
-            const sizeY = entity.config.dimY ?? 1;
+            const sizeX = entity.config.dimX;
+            const sizeY = entity.config.dimY;
             const entityID = entity.getID();
 
             worldMap.addEntity(entity.tileX, entity.tileY, sizeX, sizeY, entityID);
@@ -89,8 +88,8 @@ export const EntitySpawner = {
         const worldMap = mapManager.getActiveMap();
 
         if(worldMap) {
-            const sizeX = entity.config.dimX ?? 1;
-            const sizeY = entity.config.dimY ?? 1;
+            const sizeX = entity.config.dimX;
+            const sizeY = entity.config.dimY;
             const entityID = entity.getID();
 
             worldMap.removeEntity(entity.tileX, entity.tileY, sizeX, sizeY, entityID);

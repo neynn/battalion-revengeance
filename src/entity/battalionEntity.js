@@ -4,6 +4,7 @@ import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { AttackAction } from "../action/types/attack.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
+import { EntityType } from "./entityType.js";
 
 const DAMAGE_AMPLIFIER = {
     SCHWERPUNKT: 1.4,
@@ -42,18 +43,13 @@ const createNode = function(id, x, y, cost, type, parent, flags) {
 export const BattalionEntity = function(id, sprite) {
     Entity.call(this, id, "");
 
-    this.health = BattalionEntity.DEFAULT.HEALTH;
-    this.maxHealth = BattalionEntity.DEFAULT.HEALTH;
-    this.damage = BattalionEntity.DEFAULT.DAMAGE;
-    this.minRange = BattalionEntity.DEFAULT.MIN_RANGE;
-    this.maxRange = BattalionEntity.DEFAULT.MAX_RANGE;
-    this.moraleAmplifier = 1;
+    this.health = EntityType.DEFAULT.HEALTH;
+    this.maxHealth = EntityType.DEFAULT.HEALTH;
+    this.damage = EntityType.DEFAULT.DAMAGE;
+    this.movementSpeed = EntityType.DEFAULT.MOVEMENT_SPEED;
+    this.movementRange = EntityType.DEFAULT.MOVEMENT_RANGE;
     this.moraleType = TypeRegistry.MORALE_TYPE.NONE;
-    this.weaponType = TypeRegistry.WEAPON_TYPE.NONE;
-    this.armorType = TypeRegistry.ARMOR_TYPE.NONE;
-    this.movementSpeed = BattalionEntity.DEFAULT.MOVEMENT_SPEED;
-    this.movementRange = BattalionEntity.DEFAULT.MOVEMENT_RANGE;
-    this.movementType = TypeRegistry.MOVEMENT_TYPE.STATIONARY;
+    this.moraleAmplifier = 1;
     this.customName = null;
     this.customDesc = null;
     this.customID = null;
@@ -64,21 +60,9 @@ export const BattalionEntity = function(id, sprite) {
     this.direction = BattalionEntity.DIRECTION.EAST;
     this.state = BattalionEntity.STATE.IDLE;
     this.teamID = null;
-    this.traits = [];
     this.isCloaked = false;
     this.movesLeft = 0;
 }
-
-BattalionEntity.DEFAULT = {
-    MOVEMENT_SPEED: 224,
-    MIN_RANGE: 1,
-    MAX_RANGE: 1,
-    DAMAGE: 0,
-    MOVEMENT_RANGE: 0,
-    HEALTH: 1
-};
-
-BattalionEntity.MAX_TRAITS = 4;
 
 BattalionEntity.MAX_MOVE_COST = 99;
 
@@ -132,29 +116,30 @@ BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
 
 BattalionEntity.prototype.loadConfig = function(config) {
-    const { health, movementRange, movementType, damage, weaponType, armorType, minRange, maxRange, movementSpeed } = config;
+    const { health, movementRange, damage, movementSpeed } = config;
 
     this.config = config;
-    this.health = health ?? BattalionEntity.DEFAULT.HEALTH;
-    this.maxHealth = health ?? BattalionEntity.DEFAULT.HEALTH;
-    this.damage = damage ?? BattalionEntity.DEFAULT.DAMAGE;
-    this.weaponType = TypeRegistry.WEAPON_TYPE[weaponType] ? weaponType : TypeRegistry.WEAPON_TYPE.NONE;
-    this.armorType = TypeRegistry.ARMOR_TYPE[armorType] ? armorType : TypeRegistry.ARMOR_TYPE.NONE;
-    this.movementType = TypeRegistry.MOVEMENT_TYPE[movementType] ? movementType : TypeRegistry.MOVEMENT_TYPE.STATIONARY;
-    this.movementRange = movementRange ?? BattalionEntity.DEFAULT.MOVEMENT_RANGE;
-    this.minRange = minRange ?? BattalionEntity.DEFAULT.MIN_RANGE;
-    this.maxRange = maxRange ?? BattalionEntity.DEFAULT.MAX_RANGE;
-    this.movementSpeed = movementSpeed ?? BattalionEntity.DEFAULT.MOVEMENT_SPEED;
-
-    if(this.maxRange < this.minRange) {
-        this.maxRange = this.minRange;
-    }
+    this.health = health;
+    this.maxHealth = health;
+    this.damage = damage;
+    this.movementRange = movementRange;
+    this.movementSpeed = movementSpeed;
 
     if(this.movementRange >= BattalionEntity.MAX_MOVE_COST) {
         this.movementRange = BattalionEntity.MAX_MOVE_COST;
     }
 
     this.setHealth(this.health);
+}
+
+BattalionEntity.prototype.isRangeEnough = function(gameContext, entity) {
+    const distance = this.getDistanceToEntity(entity);
+
+    if(distance < this.config.minRange) {
+        return false;
+    }
+
+    return distance <= this.getMaxRange(gameContext);
 }
 
 BattalionEntity.prototype.isAnimationFinished = function() {
@@ -200,13 +185,7 @@ BattalionEntity.prototype.getDisplayDesc = function(gameContext) {
         return language.get(this.customDesc, LanguageHandler.TAG_TYPE.MAP);
     }
 
-    const sharedTag = this.config.desc;
-
-    if(sharedTag) {
-        return language.get(sharedTag);
-    }
-
-    return language.get("MISSING_ENTITY_DESC");
+    return language.get(this.config.desc);
 }
 
 BattalionEntity.prototype.getDisplayName = function(gameContext) {
@@ -216,51 +195,17 @@ BattalionEntity.prototype.getDisplayName = function(gameContext) {
         return language.get(this.customName, LanguageHandler.TAG_TYPE.MAP);
     }
 
-    const sharedTag = this.config.name;
-
-    if(sharedTag) {
-        return language.get(sharedTag);
-    }
-
-    return language.get("MISSING_ENTITY_NAME");
-}
-
-BattalionEntity.prototype.removeTraits = function() {
-    this.traits.length = 0;
+    return language.get(this.config.name);
 }
 
 BattalionEntity.prototype.hasTrait = function(traitID) {
-    for(let i = 0; i < this.traits.length; i++) {
-        if(this.traits[i] === traitID) {
+    for(let i = 0; i < this.config.traits.length; i++) {
+        if(this.config.traits[i] === traitID) {
             return true;
         }
     }
 
     return false;
-}
-
-BattalionEntity.prototype.removeTrait = function(traitID) {
-    for(let i = 0; i < this.traits.length; i++) {
-        if(this.traits[i] === traitID) {
-            this.traits[i] = this.traits[this.traits.length - 1];
-            this.traits.pop();
-            break;
-        }
-    }
-}
-
-BattalionEntity.prototype.loadTraits = function() {
-    const traits = this.config.traits;
-
-    if(traits) {
-        for(let i = 0; i < traits.length && i < BattalionEntity.MAX_TRAITS; i++) {
-            const traitID = TypeRegistry.TRAIT_TYPE[traits[i]];
-
-            if(traitID !== undefined) {
-                this.traits.push(traitID);
-            }
-        }
-    }
 }
 
 BattalionEntity.prototype.destroy = function() {
@@ -335,7 +280,7 @@ BattalionEntity.prototype.playCloak = function(gameContext) {
 }
 
 BattalionEntity.prototype.playMove = function(gameContext) {
-    this.movementSpeed = BattalionEntity.DEFAULT.MOVEMENT_SPEED;
+    this.movementSpeed = EntityType.DEFAULT.MOVEMENT_SPEED;
     this.state = BattalionEntity.STATE.MOVE;
     this.updateSprite(gameContext);
     this.playSound(gameContext, BattalionEntity.SOUND_TYPE.MOVE);
@@ -414,7 +359,7 @@ BattalionEntity.prototype.getSpriteType = function() {
 }
 
 BattalionEntity.prototype.getDeathSprite = function() {
-    let sprite = this.config.sprites?.death;
+    let sprite = this.config.sprites.death;
 
     if(!sprite) {
         sprite = BattalionEntity.DEFAULT_SPRITES[BattalionEntity.SPRITE_TYPE.DEATH];
@@ -424,7 +369,7 @@ BattalionEntity.prototype.getDeathSprite = function() {
 }
 
 BattalionEntity.prototype.getAttackSprite = function() {
-    let sprite = this.config.sprites?.attack;
+    let sprite = this.config.sprites.attack;
 
     if(!sprite) {
         sprite = BattalionEntity.DEFAULT_SPRITES[BattalionEntity.SPRITE_TYPE.ATTACK];
@@ -465,7 +410,7 @@ BattalionEntity.prototype.onTurnEnd = function(gameContext) {
 }
 
 BattalionEntity.prototype.occupiesTile = function(tileX, tileY) {
-    return isRectangleRectangleIntersect(tileX, tileY, 1, 1, this.tileX, this.tileY, this.config.dimX ?? 1, this.config.dimY ?? 1);
+    return isRectangleRectangleIntersect(tileX, tileY, 1, 1, this.tileX, this.tileY, this.config.dimX, this.config.dimY);
 }
 
 BattalionEntity.prototype.isColliding = function(target, range = 0) {
@@ -532,12 +477,12 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
                 
                 const { terrain, passability } = tileType;
 
-                nextCost += passability[this.movementType] ?? BattalionEntity.MAX_MOVE_COST;
+                nextCost += passability[this.config.movementType] ?? BattalionEntity.MAX_MOVE_COST;
 
                 if(nextCost < BattalionEntity.MAX_MOVE_COST) {
                     for(let i = 0; i < terrain.length; i++) {
                         const { moveCost } = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
-                        const terrainModifier = moveCost[this.movementType] ?? 0;
+                        const terrainModifier = moveCost[this.config.movementType] ?? 0;
 
                         nextCost += terrainModifier;
                     }
@@ -639,8 +584,8 @@ BattalionEntity.prototype.getTerrainTypes = function(gameContext) {
 
     const startX = this.tileX;
     const startY = this.tileY;
-    const endX = startX + this.config.dimX ?? 1;
-    const endY = startY + this.config.dimY ?? 1;
+    const endX = startX + this.config.dimX;
+    const endY = startY + this.config.dimY;
 
     for(let i = startY; i < endY; i++) {
         for(let j = startX; j < endX; j++) {
@@ -680,7 +625,7 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
         }
     }
 
-    const weaponType = typeRegistry.getType(this.weaponType, TypeRegistry.CATEGORY.WEAPON);
+    const weaponType = typeRegistry.getType(this.config.weaponType, TypeRegistry.CATEGORY.WEAPON);
 
     //Armor and Morale factor.
     damageAmplifier *= weaponType.armorResistance[target.armorType] ?? 1;
@@ -692,8 +637,8 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
     //Logistic factor.
     damageAmplifier *= logisticFactor;
 
-    for(let i = 0; i < this.traits.length; i++) {
-        const { moveDamage, armorDamage } = typeRegistry.getType(this.traits[i], TypeRegistry.CATEGORY.TRAIT);
+    for(let i = 0; i < this.config.traits.length; i++) {
+        const { moveDamage, armorDamage } = typeRegistry.getType(this.config.traits[i], TypeRegistry.CATEGORY.TRAIT);
         const moveAmplifier = moveDamage[target.movementType] ?? 1;
         const armorAmplifier = armorDamage[target.armorType] ?? 1;
 
@@ -789,7 +734,7 @@ BattalionEntity.prototype.lookAt = function(entity) {
 BattalionEntity.prototype.playSound = function(gameContext, soundType) {
     const { client } = gameContext;
     const { soundPlayer } = client;
-    let soundID = this.config.sounds?.[soundType];;
+    let soundID = this.config.sounds[soundType];
 
     if(!soundID) {
         soundID = BattalionEntity.DEFAULT_SOUNDS[soundType];
@@ -803,10 +748,9 @@ BattalionEntity.prototype.playSound = function(gameContext, soundType) {
 BattalionEntity.prototype.bufferSounds = function(gameContext) {
     const { client } = gameContext;
     const { soundPlayer } = client;
-    const sounds = this.config.sounds ?? {};
 
-    for(const soundName in sounds) {
-        const sound = sounds[soundName];
+    for(const soundName in this.config.sounds) {
+        const sound = this.config.sounds[soundName];
 
         if(Array.isArray(sound)) {
             for(let i = 0; i < sound.length; i++) {
@@ -828,7 +772,7 @@ BattalionEntity.prototype.bufferSprites = function(gameContext) {
             this.sprite.preload(gameContext, spriteID);
         }
     }
- }
+}
 
 BattalionEntity.prototype.getDistanceToTile = function(tileX, tileY) {
     const deltaX = Math.abs(this.tileX - tileX);
@@ -872,19 +816,19 @@ BattalionEntity.prototype.canCloak = function() {
 }
 
 BattalionEntity.prototype.canAttack = function() {
-    return this.damage !== 0 && this.weaponType !== TypeRegistry.WEAPON_TYPE.NONE;
+    return this.damage !== 0 && this.config.weaponType !== TypeRegistry.WEAPON_TYPE.NONE;
 }
 
 BattalionEntity.prototype.getMaxRange = function(gameContext) {
     const terrainTypes = this.getTerrainTypes(gameContext);
-    let range = this.maxRange;
+    let range = this.config.maxRange;
 
     for(let i = 0; i < terrainTypes.length; i++) {
         range += terrainTypes[i].rangeBoost ?? 0;
     }
 
-    if(range < this.minRange) {
-        range = this.minRange;
+    if(range < this.config.minRange) {
+        range = this.config.minRange;
     }
     
     return range;

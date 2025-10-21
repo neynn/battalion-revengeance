@@ -89,12 +89,8 @@ AttackAction.prototype.onEnd = function(gameContext, data, id) {
 }
 
 AttackAction.prototype.mGetCounterResolutions = function(gameContext, entity, target, resolutions) {
-    const { minRange } = entity;
-    const maxRange = entity.getMaxRange(gameContext);
-    const distance = entity.getDistanceToEntity(target)
-
     if(!entity.isDead() && !target.isDead()) {
-        if(distance >= minRange && distance <= maxRange) {
+        if(entity.isRangeEnough(gameContext, target)) {
             const damage = entity.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.COUNTER);
             const remainingHealth = target.getHealthAfter(damage);
 
@@ -107,12 +103,8 @@ AttackAction.prototype.mGetCounterResolutions = function(gameContext, entity, ta
 }
 
 AttackAction.prototype.mGetInitiateResolutions = function(gameContext, entity, target, resolutions) {
-    const { minRange } = entity;
-    const maxRange = entity.getMaxRange(gameContext);
-    const distance = entity.getDistanceToEntity(target)
-
     if(!entity.isDead() && !target.isDead()) {
-        if(distance >= minRange && distance <= maxRange) {
+        if(entity.isRangeEnough(gameContext, target)) {
             const damage = entity.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.INITIATE);
             const remainingHealth = target.getHealthAfter(damage);
 
