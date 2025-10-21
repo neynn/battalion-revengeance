@@ -1,4 +1,28 @@
 {
+    "meme_bureaucrat": {
+        "id": "meme_bureaucrat",
+        "health": 30,
+        "damage": 15,
+        "weaponType": "LIGHT",
+        "armorType": "LIGHT",
+        "movementRange": 8,
+        "movementType": "TRACKED",
+        "traits": [],
+        "sounds": {
+            "move": "cockroach_move",
+            "fire": "cockroach_fire"
+        },
+        "sprites": {
+            "idle_right": "cockroach_idle_right",
+            "idle_left": "cockroach_idle_left",
+            "idle_down": "cockroach_idle_down",
+            "idle_up": "cockroach_idle_up",
+            "fire_right": "cockroach_fire_right",
+            "fire_left": "cockroach_fire_left",
+            "fire_down": "cockroach_fire_down",
+            "fire_up": "cockroach_fire_up"
+        }
+    },
     "cockroach": {
         "id": "cockroach",
         "health": 50,
@@ -33,7 +57,32 @@
         "movementType": "FLIGHT",
         "traits": ["JUDGEMENT", "INDOMITABLE", "SELF_DESTRUCT", "INERTIAL"],
         "sounds": {
-            "move": "aleph_move"
+            "move": "aleph_move",
+            "fire": "aleph_fire"
+        },
+        "sprites": {
+            "idle_right": "aleph_idle_right",
+            "idle_left": "aleph_idle_left",
+            "idle_down": "aleph_idle_down",
+            "idle_up": "aleph_idle_up",
+            "fire_right": "aleph_fire_right",
+            "fire_left": "aleph_fire_left",
+            "fire_down": "aleph_fire_down",
+            "fire_up": "aleph_fire_up"
+        }
+    },
+    "condor_bomber": {
+        "id": "condor_bomber",
+        "health": 50,
+        "damage": 35,
+        "weaponType": "MEDIUM",
+        "armorType": "LIGHT",
+        "movementRange": 6,
+        "movementType": "FLIGHT",
+        "traits": ["CAVITATION_EXPLOSION"],
+        "sounds": {
+            "move": "aleph_move",
+            "fire": "aleph_fire"
         },
         "sprites": {
             "idle_right": "aleph_idle_right",
@@ -87,26 +136,6 @@
             "fire_left": "battle_cruiser_fire_left",
             "fire_down": "battle_cruiser_fire_down",
             "fire_up": "battle_cruiser_fire_up"
-        }
-    },
-    "condor_bomber": {
-        "id": "condor_bomber",
-        "health": 10,
-        "damage": 0,
-        "weaponType": "NONE",
-        "armorType": "NONE",
-        "movementRange": 1,
-        "movementType": "STATIONARY",
-        "traits": [],
-        "sprites": {
-            "idle_right": "condor_bomber_idle_right",
-            "idle_left": "condor_bomber_idle_left",
-            "idle_down": "condor_bomber_idle_down",
-            "idle_up": "condor_bomber_idle_up",
-            "fire_right": "condor_bomber_fire_right",
-            "fire_left": "condor_bomber_fire_left",
-            "fire_down": "condor_bomber_fire_down",
-            "fire_up": "condor_bomber_fire_up"
         }
     },
     "corvette_fighter": {

@@ -15,13 +15,14 @@ const getRandomEntityType = function(gameContext) {
 }
 
 export const EntitySpawner = {
-    createSpawnConfig: function(id, type, tileX, tileY, direction) {
+    createSpawnConfig: function(id, type, tileX, tileY, direction, health) {
         return {
             "id": id,
             "x": tileX,
             "y": tileY,
             "type": type,
-            "direction": direction
+            "direction": direction,
+            "health": health
         };
     },
     getOwnersOf: function(gameContext, entityID) {
@@ -42,7 +43,7 @@ export const EntitySpawner = {
     createEntity: function(gameContext, config, colorID, color) {
         const { world, transform2D, spriteManager } = gameContext;
         const { entityManager } = world;
-        const { id, type, x, y, direction } = config;
+        const { id, type, x, y, direction, health } = config;
 
         const entity = entityManager.createEntity((entityID, entityType) => {
             const visualSprite = spriteManager.createEmptySprite(TypeRegistry.LAYER_TYPE.LAND);
@@ -57,6 +58,10 @@ export const EntitySpawner = {
             entityObject.setTile(x, y);
             entityObject.setPositionVec(spawnPosition);
             entityObject.loadTraits();
+
+            if(health !== -1) {
+                entityObject.setHealth(health);
+            }
 
             return entityObject;
         }, type, id);
@@ -140,10 +145,11 @@ export const EntitySpawner = {
             type = null,
             direction = "EAST",
             name = null,
-            desc = null
+            desc = null,
+            health = -1
         } = config;
         const ownerID = TeamSpawner.getActorID(gameContext, owner);
-        const spawnConfig = EntitySpawner.createSpawnConfig(externalID, type, x, y, direction);
+        const spawnConfig = EntitySpawner.createSpawnConfig(externalID, type, x, y, direction, health);
         const entity = EntitySpawner.spawnEntity(gameContext, spawnConfig, ownerID);
 
         if(entity) {

@@ -146,23 +146,19 @@ BattalionEntity.prototype.loadConfig = function(config) {
     this.setHealth(this.health);
 }
 
-BattalionEntity.prototype.getRemainingHealth = function(damage) {
-    const health = this.health - damage;
+BattalionEntity.prototype.getHealthAfter = function(damage) {
+    const delta = this.health - damage;
 
-    if(health < 0) {
+    if(delta < 0) {
         return 0;
-    } else if(health > this.maxHealth) {
-        return this.maxHealth;
     }
 
-    return health;
+    return delta;
 }
 
 BattalionEntity.prototype.setHealth = function(health) {
     if(health < 0) {
         this.health = 0;
-    } else if(health > this.maxHealth) {
-        this.health = this.maxHealth;
     } else {
         this.health = health;
     }
@@ -660,8 +656,13 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
     let damageAmplifier = 1;
 
     if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.INDOMITABLE)) {
-        //Health factor.
-        damageAmplifier *= this.health / this.maxHealth;
+        const healthFactor = this.health / this.maxHealth;
+
+        if(healthFactor > 1) {
+            damageAmplifier *= 1;
+        } else {
+            damageAmplifier *= healthFactor;
+        }
     }
 
     const weaponType = typeRegistry.getType(this.weaponType, TypeRegistry.CATEGORY.WEAPON);
