@@ -146,6 +146,10 @@ BattalionEntity.prototype.loadConfig = function(config) {
     this.setHealth(this.health);
 }
 
+BattalionEntity.prototype.isAnimationFinished = function() {
+    return this.sprite.visual.isFinished();
+}
+
 BattalionEntity.prototype.getHealthAfter = function(damage) {
     const delta = this.health - damage;
 

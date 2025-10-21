@@ -6,7 +6,6 @@ export const AttackAction = function() {
     Action.call(this);
 
     this.entity = null;
-    this.sprite = null;
     this.resolutions = [];
 }
 
@@ -28,9 +27,7 @@ AttackAction.prototype.createWeaponSprite = function(gameContext, entity, target
         const { x, y } = transform2D.transformTileToWorld(tileX, tileY);
 
         sprite.setPosition(x, y);
-        sprite.lock();
-
-        this.sprite = sprite;
+        sprite.expire();
     }
 }
 
@@ -66,7 +63,7 @@ AttackAction.prototype.onStart = function(gameContext, data, id) {
 AttackAction.prototype.onUpdate = function(gameContext, data, id) {}
 
 AttackAction.prototype.isFinished = function(gameContext, executionRequest) {
-    return !this.sprite || this.sprite.isFinished();
+    return this.entity.isAnimationFinished();
 }
 
 AttackAction.prototype.onEnd = function(gameContext, data, id) {
@@ -87,9 +84,7 @@ AttackAction.prototype.onEnd = function(gameContext, data, id) {
         this.entity.reduceMove();
     }
 
-    this.sprite.terminate();
     this.entity = null;
-    this.sprite = null;
     this.resolutions = [];
 }
 

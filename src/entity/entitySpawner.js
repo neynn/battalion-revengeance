@@ -15,14 +15,12 @@ const getRandomEntityType = function(gameContext) {
 }
 
 export const EntitySpawner = {
-    createSpawnConfig: function(id, type, tileX, tileY, direction, health) {
+    createSpawnConfig: function(id, type, tileX, tileY) {
         return {
             "id": id,
-            "x": tileX,
-            "y": tileY,
             "type": type,
-            "direction": direction,
-            "health": health
+            "x": tileX,
+            "y": tileY
         };
     },
     getOwnersOf: function(gameContext, entityID) {
@@ -43,25 +41,18 @@ export const EntitySpawner = {
     createEntity: function(gameContext, config, colorID, color) {
         const { world, transform2D, spriteManager } = gameContext;
         const { entityManager } = world;
-        const { id, type, x, y, direction, health } = config;
+        const { id, type, x, y } = config;
 
         const entity = entityManager.createEntity((entityID, entityType) => {
             const visualSprite = spriteManager.createEmptySprite(TypeRegistry.LAYER_TYPE.LAND);
             const entitySprite = new EntitySprite(visualSprite, null, colorID, color);
             const entityObject = new BattalionEntity(entityID, entitySprite);
-            const directionValue = BattalionEntity.DIRECTION[direction] ?? BattalionEntity.DIRECTION.EAST;
             const spawnPosition = transform2D.transformTileToWorld(x, y);
 
             entityObject.loadConfig(entityType);
-            entityObject.setDirection(directionValue);
-            entityObject.playIdle(gameContext);
             entityObject.setTile(x, y);
             entityObject.setPositionVec(spawnPosition);
             entityObject.loadTraits();
-
-            if(health !== -1) {
-                entityObject.setHealth(health);
-            }
 
             return entityObject;
         }, type, id);
@@ -141,21 +132,31 @@ export const EntitySpawner = {
         const { 
             x = -1,
             y = -1,
-            owner = null,
             type = null,
-            direction = "EAST",
+            owner = null,
+            direction = null,
             name = null,
             desc = null,
             health = -1
         } = config;
         const ownerID = TeamSpawner.getActorID(gameContext, owner);
-        const spawnConfig = EntitySpawner.createSpawnConfig(externalID, type, x, y, direction, health);
+        const spawnConfig = EntitySpawner.createSpawnConfig(externalID, type, x, y);
         const entity = EntitySpawner.spawnEntity(gameContext, spawnConfig, ownerID);
 
         if(entity) {
-            entity.setCustomInfo(customID, name, desc);
             entity.bufferSounds(gameContext);
             entity.bufferSprites(gameContext);
+            entity.setCustomInfo(customID, name, desc);
+
+            if(direction !== null) {
+                entity.setDirection(BattalionEntity.DIRECTION[direction]);
+            }
+
+            if(health !== -1) {
+                entity.setHealth(health);
+            }
+
+            entity.playIdle(gameContext);
         }
 
         return entity;
