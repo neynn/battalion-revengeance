@@ -113,7 +113,8 @@ BattalionEntity.SOUND_TYPE = {
     MOVE: "move",
     FIRE: "fire",
     CLOAK: "cloak",
-    DEATH: "death"
+    DEATH: "death",
+    RECRUIT: "recruit"
 };
 
 BattalionEntity.DEFAULT_SPRITES = {
@@ -123,7 +124,8 @@ BattalionEntity.DEFAULT_SPRITES = {
 
 BattalionEntity.DEFAULT_SOUNDS = {
     [BattalionEntity.SOUND_TYPE.CLOAK]: "cloak",
-    [BattalionEntity.SOUND_TYPE.DEATH]: "explosion"
+    [BattalionEntity.SOUND_TYPE.DEATH]: "explosion",
+    [BattalionEntity.SOUND_TYPE.RECRUIT]: null //TODO: Implement
 };
 
 BattalionEntity.prototype = Object.create(Entity.prototype);

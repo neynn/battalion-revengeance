@@ -22,6 +22,44 @@ SpriteManager.ALIAS_SEPERATOR = "::";
 SpriteManager.EMPTY_SPRITE = new Sprite(-1, "EMPTY_SPRITE");
 SpriteManager.EMPTY_LAYER = [];
 
+SpriteManager.prototype.load = function(textures, sprites) {
+    if(!textures || !sprites) {
+        Logger.log(Logger.CODE.ENGINE_WARN, "Textures/Sprites do not exist!", "SpriteManager.prototype.load", null);
+        return;
+    }
+
+    const textureMap = this.resources.createTextures(textures);
+    
+    for(const spriteID in sprites) {
+        const spriteConfig = sprites[spriteID];
+        const { texture, bounds, frameTime, spriteTime, frames, autoFrames } = spriteConfig;
+        const textureID = textureMap[texture];
+
+        if(textureID === undefined || (!frames && !autoFrames)) {
+            console.warn(`Texture ${texture} of sprite ${spriteID} does not exist!`);
+            continue;
+        }
+
+        const textureObject = this.resources.getTextureByID(textureID);
+        const regionFrames = frames !== undefined ? textureObject.getFrames(frames) : textureObject.getFramesAuto(autoFrames);
+
+        if(regionFrames.length !== 0) {
+            const spriteContainer = new SpriteContainer(spriteID, bounds, regionFrames);
+
+            if(spriteTime !== undefined) {
+                spriteContainer.setSpriteTime(spriteTime);
+            } else {
+                spriteContainer.setFrameTime(frameTime);
+            }
+
+            this.containers.push(spriteContainer);
+            this.addSpriteEntry(spriteID, this.containers.length - 1, textureID);
+        } else {
+            console.warn(`Sprite ${spriteID} has no frames!`);
+        }
+    }
+}
+
 SpriteManager.prototype.forEachSprite = function(onCall) {
     if(typeof onCall === "function") {
         this.pool.forAllReserved(onCall);
@@ -111,44 +149,6 @@ SpriteManager.prototype.createCopyTexture = function(spriteID, schemaID, schema)
     }
 
     return copyTexture;
-}
-
-SpriteManager.prototype.load = function(textures, sprites) {
-    if(!textures || !sprites) {
-        Logger.log(Logger.CODE.ENGINE_WARN, "Textures/Sprites do not exist!", "SpriteManager.prototype.load", null);
-        return;
-    }
-
-    const textureMap = this.resources.createTextures(textures);
-    
-    for(const spriteID in sprites) {
-        const spriteConfig = sprites[spriteID];
-        const { texture, bounds, frameTime, spriteTime, frames, autoFrames } = spriteConfig;
-        const textureID = textureMap[texture];
-
-        if(textureID === undefined || (!frames && !autoFrames)) {
-            console.warn(`Texture ${texture} of sprite ${spriteID} does not exist!`);
-            continue;
-        }
-
-        const textureObject = this.resources.getTextureByID(textureID);
-        const regionFrames = frames !== undefined ? textureObject.getFrames(frames) : textureObject.getFramesAuto(autoFrames);
-
-        if(regionFrames.length !== 0) {
-            const spriteContainer = new SpriteContainer(spriteID, bounds, regionFrames);
-
-            if(spriteTime !== undefined) {
-                spriteContainer.setSpriteTime(spriteTime);
-            } else {
-                spriteContainer.setFrameTime(frameTime);
-            }
-
-            this.containers.push(spriteContainer);
-            this.addSpriteEntry(spriteID, this.containers.length - 1, textureID);
-        } else {
-            console.warn(`Sprite ${spriteID} has no frames!`);
-        }
-    }
 }
 
 SpriteManager.prototype.update = function(gameContext) {

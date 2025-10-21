@@ -631,9 +631,9 @@
         "autoRegions": {
             "startX": 0,
             "startY": 0,
-            "frameWidth": 56,
+            "frameWidth": 57,
             "frameHeight": 112,
-            "rows": 12,
+            "rows": 16,
             "columns": 1
         }
     },
@@ -645,7 +645,7 @@
             "startY": 0,
             "frameWidth": 112,
             "frameHeight": 56,
-            "rows": 12,
+            "rows": 16,
             "columns": 1
         }
     },
@@ -657,13 +657,61 @@
             "startY": 0,
             "frameWidth": 112,
             "frameHeight": 56,
-            "rows": 12,
+            "rows": 16,
             "columns": 1
         }
     },
     "aleph_fire_up": {
         "directory": ["assets","sprites","textures","aleph"],
         "source": "aleph_fire_up.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 59,
+            "frameHeight": 112,
+            "rows": 16,
+            "columns": 1
+        }
+    },
+    "condor_fire_down": {
+        "directory": ["assets","sprites","textures","condor"],
+        "source": "condor_fire_down.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 56,
+            "frameHeight": 112,
+            "rows": 12,
+            "columns": 1
+        }
+    },
+    "condor_fire_left": {
+        "directory": ["assets","sprites","textures","condor"],
+        "source": "condor_fire_left.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 112,
+            "frameHeight": 56,
+            "rows": 12,
+            "columns": 1
+        }
+    },
+    "condor_fire_right": {
+        "directory": ["assets","sprites","textures","condor"],
+        "source": "condor_fire_right.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 112,
+            "frameHeight": 56,
+            "rows": 12,
+            "columns": 1
+        }
+    },
+    "condor_fire_up": {
+        "directory": ["assets","sprites","textures","condor"],
+        "source": "condor_fire_up.png",
         "autoRegions": {
             "startX": 0,
             "startY": 0,

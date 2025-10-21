@@ -89,10 +89,10 @@
             "idle_left": "aleph_idle_left",
             "idle_down": "aleph_idle_down",
             "idle_up": "aleph_idle_up",
-            "fire_right": "aleph_fire_right",
-            "fire_left": "aleph_fire_left",
-            "fire_down": "aleph_fire_down",
-            "fire_up": "aleph_fire_up"
+            "fire_right": "condor_fire_right",
+            "fire_left": "condor_fire_left",
+            "fire_down": "condor_fire_down",
+            "fire_up": "condor_fire_up"
         }
     },
     "asekara_tank": {
