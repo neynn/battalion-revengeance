@@ -227,6 +227,30 @@
             "idle_up": "leviathan_barge_idle_up"
         }
     },
+    "turret": {
+        "health": 150,
+        "damage": 30,
+        "weaponType": "MEDIUM",
+        "armorType": "MEDIUM",
+        "minRange": 2,
+        "maxRange": 5,
+        "movementType": "STATIONARY",
+        "traits": [],
+        "sounds": {
+            "move": "turret_move",
+            "fire": "turret_fire"
+        },
+        "sprites": {
+            "idle_right": "turret_idle_right",
+            "idle_left": "turret_idle_left",
+            "idle_down": "turret_idle_down",
+            "idle_up": "turret_idle_up",
+            "fire_right": "turret_fire_right",
+            "fire_left": "turret_fire_left",
+            "fire_down": "turret_fire_down",
+            "fire_up": "turret_fire_up"
+        }
+    },
     "annihilator_tank": {
         "health": 120,
         "damage": 50,
@@ -437,25 +461,6 @@
             "fire_left": "strike_commando_fire_left",
             "fire_down": "strike_commando_fire_down",
             "fire_up": "strike_commando_fire_up"
-        }
-    },
-    "turret": {
-        "health": 10,
-        "damage": 0,
-        "weaponType": "NONE",
-        "armorType": "NONE",
-        "movementRange": 1,
-        "movementType": "STATIONARY",
-        "traits": [],
-        "sprites": {
-            "idle_right": "turret_idle_right",
-            "idle_left": "turret_idle_left",
-            "idle_down": "turret_idle_down",
-            "idle_up": "turret_idle_up",
-            "fire_right": "turret_fire_right",
-            "fire_left": "turret_fire_left",
-            "fire_down": "turret_fire_down",
-            "fire_up": "turret_fire_up"
         }
     },
     "u_boat": {

@@ -12,6 +12,8 @@
     "rudder_move": { "directory": ["assets", "sounds"], "source": "rudder_move.mp3", "allowStacking": true, "volume": 0.6 },
     "raptor_move": { "directory": ["assets", "sounds"], "source": "raptor_move.mp3", "allowStacking": true, "volume": 0.6 },
     "raptor_fire": { "directory": ["assets", "sounds"], "source": "raptor_fire.mp3", "allowStacking": true, "volume": 0.6 },
+    "turret_move": { "directory": ["assets", "sounds"], "source": "turret_move.mp3", "allowStacking": false, "volume": 0.6 },
+    "turret_fire": { "directory": ["assets", "sounds"], "source": "turret_fire.mp3", "allowStacking": true, "volume": 0.6 },
     "cloak": { "directory": ["assets", "sounds"], "source": "cloak.mp3", "allowStacking": true, "volume": 0.6 },
     "explosion": { "directory": ["assets", "sounds"], "source": "explosion.mp3", "allowStacking": true, "volume": 0.6 }
 }

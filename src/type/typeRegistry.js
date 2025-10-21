@@ -201,7 +201,9 @@ TypeRegistry.TILE_ID = {
 };
 
 TypeRegistry.ENTITY_TYPE = {
-    LEVIATHAN_BARGE: "leviathan_barge"
+    LEVIATHAN_BARGE: "leviathan_barge",
+    PELICAN_TRANSPORT: "pelican_transport",
+    STORK_TRANSPORT: "stork_transport"
 };
 
 TypeRegistry.COMMANDER_TYPE = {

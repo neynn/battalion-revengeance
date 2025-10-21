@@ -112,6 +112,12 @@ BattalionEntity.DEFAULT_SOUNDS = {
     [BattalionEntity.SOUND_TYPE.RECRUIT]: null //TODO: Implement
 };
 
+BattalionEntity.TRANSPORT_TYPE = {
+    BARGE: 0,
+    PELICAN: 1,
+    STORK: 2
+}
+
 BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
 
@@ -850,15 +856,34 @@ BattalionEntity.prototype.fromTransport = function(gameContext) {
     }
 }
 
-BattalionEntity.prototype.toWaterTransport = function(gameContext) {
+BattalionEntity.prototype.toTransport = function(gameContext, transportType) {
     if(this.transportID === null) {
         const { world } = gameContext;
         const { entityManager } = world;
-        const transportType = entityManager.getEntityType(TypeRegistry.ENTITY_TYPE.LEVIATHAN_BARGE);
         const previousHealthFactor = this.health / this.maxHealth;
+        let transportConfig = null;
+
+        switch(transportType) {
+            case BattalionEntity.TRANSPORT_TYPE.BARGE: {
+                transportConfig = entityManager.getEntityType(TypeRegistry.ENTITY_TYPE.LEVIATHAN_BARGE);
+                break;
+            }
+            case BattalionEntity.TRANSPORT_TYPE.PELICAN: {
+                transportConfig = entityManager.getEntityType(TypeRegistry.ENTITY_TYPE.PELICAN_TRANSPORT);
+                break;
+            }
+            case BattalionEntity.TRANSPORT_TYPE.STORK: {
+                transportConfig = entityManager.getEntityType(TypeRegistry.ENTITY_TYPE.STORK_TRANSPORT);
+                break;
+            }
+            default: {
+                transportConfig = entityManager.getEntityType(TypeRegistry.ENTITY_TYPE.LEVIATHAN_BARGE);
+                break;
+            }
+        }
 
         this.transportID = this.config.id;
-        this.loadConfig(transportType);
+        this.loadConfig(transportConfig);
         this.setHealth(this.maxHealth * previousHealthFactor);
         this.playIdle(gameContext);
     }
