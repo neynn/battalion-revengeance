@@ -12,10 +12,12 @@ export const SpriteManager = function(resourceLoader) {
     this.containers = [];
     this.sharedSprites = [];
     this.timestamp = 0;
+    this.nextCleanup = 0;
     this.pool = new ObjectPool(1024, (index) => new Sprite(index, "EMPTY_SPRITE"));
     this.layers = [];
 }
 
+SpriteManager.SECONDS_TO_CLEANUP = 5;
 SpriteManager.ALIAS_SEPERATOR = "::";
 SpriteManager.EMPTY_SPRITE = new Sprite(-1, "EMPTY_SPRITE");
 SpriteManager.EMPTY_LAYER = [];
@@ -153,7 +155,6 @@ SpriteManager.prototype.update = function(gameContext) {
     const { timer } = gameContext;
     const realTime = timer.getRealTime();
     const deltaTime = timer.getDeltaTime();
-    const removedSprites = [];
 
     this.timestamp = realTime;
 
@@ -164,16 +165,22 @@ SpriteManager.prototype.update = function(gameContext) {
         sprite.update(realTime, deltaTime);
     }
 
-    for(const index of this.pool.reservedElements) {
-        const sprite = this.pool.elements[index];
+    if(this.timestamp >= this.nextCleanup) {
+        const removedSprites = [];
 
-        if(sprite.hasFlag(Sprite.FLAG.DESTROY)) {
-            removedSprites.push(index);
+        for(const index of this.pool.reservedElements) {
+            const sprite = this.pool.elements[index];
+
+            if(sprite.hasFlag(Sprite.FLAG.DESTROY)) {
+                removedSprites.push(index);
+            }
         }
-    }
 
-    for(let i = 0; i < removedSprites.length; i++) {
-        this.destroySprite(removedSprites[i]);
+        for(let i = 0; i < removedSprites.length; i++) {
+            this.destroySprite(removedSprites[i]);
+        }
+
+        this.nextCleanup = this.timestamp + SpriteManager.SECONDS_TO_CLEANUP;
     }
 }
 
