@@ -95,6 +95,54 @@
             "fire_up": "aleph_fire_up"
         }
     },
+    "asekara_tank": {
+        "id": "asekara_tank",
+        "health": 100,
+        "damage": 35,
+        "weaponType": "MEDIUM",
+        "armorType": "MEDIUM",
+        "movementRange": 5,
+        "movementType": "TRACKED",
+        "traits": ["STREAMLINED", "SCHWERPUNKT", "BEWEGUNGSKRIEG"],
+        "sounds": {
+            "move": "asekara_move",
+            "fire": "asekara_fire"
+        },
+        "sprites": {
+            "idle_right": "scorpion_tank_idle_right",
+            "idle_left": "scorpion_tank_idle_left",
+            "idle_down": "scorpion_tank_idle_down",
+            "idle_up": "scorpion_tank_idle_up",
+            "fire_right": "scorpion_tank_fire_right",
+            "fire_left": "scorpion_tank_fire_left",
+            "fire_down": "scorpion_tank_fire_down",
+            "fire_up": "scorpion_tank_fire_up"
+        }
+    },
+    "raptor_fighter": {
+        "id": "raptor_fighter",
+        "health": 50,
+        "damage": 15,
+        "weaponType": "LIGHT",
+        "armorType": "LIGHT",
+        "movementRange": 8,
+        "movementType": "FLIGHT",
+        "traits": ["SKYSWEEPER"],
+        "sounds": {
+            "move": "raptor_move",
+            "fire": "raptor_fire"
+        },
+        "sprites": {
+            "idle_right": "raptor_fighter_idle_right",
+            "idle_left": "raptor_fighter_idle_left",
+            "idle_down": "raptor_fighter_idle_down",
+            "idle_up": "raptor_fighter_idle_up",
+            "fire_right": "raptor_fighter_fire_right",
+            "fire_left": "raptor_fighter_fire_left",
+            "fire_down": "raptor_fighter_fire_down",
+            "fire_up": "raptor_fighter_fire_up"
+        }
+    },
     "annihilator_tank": {
         "id": "annihilator_tank",
         "health": 10,
@@ -278,26 +326,6 @@
             "fire_up": "mortar_truck_fire_up"
         }
     },
-    "raptor_fighter": {
-        "id": "raptor_fighter",
-        "health": 10,
-        "damage": 0,
-        "weaponType": "NONE",
-        "armorType": "NONE",
-        "movementRange": 1,
-        "movementType": "STATIONARY",
-        "traits": [],
-        "sprites": {
-            "idle_right": "raptor_fighter_idle_right",
-            "idle_left": "raptor_fighter_idle_left",
-            "idle_down": "raptor_fighter_idle_down",
-            "idle_up": "raptor_fighter_idle_up",
-            "fire_right": "raptor_fighter_fire_right",
-            "fire_left": "raptor_fighter_fire_left",
-            "fire_down": "raptor_fighter_fire_down",
-            "fire_up": "raptor_fighter_fire_up"
-        }
-    },
     "rocket_truck": {
         "id": "rocket_truck",
         "health": 10,
@@ -316,26 +344,6 @@
             "fire_left": "rocket_truck_fire_left",
             "fire_down": "rocket_truck_fire_down",
             "fire_up": "rocket_truck_fire_up"
-        }
-    },
-    "scorpion_tank": {
-        "id": "scorpion_tank",
-        "health": 10,
-        "damage": 0,
-        "weaponType": "NONE",
-        "armorType": "NONE",
-        "movementRange": 1,
-        "movementType": "STATIONARY",
-        "traits": [],
-        "sprites": {
-            "idle_right": "scorpion_tank_idle_right",
-            "idle_left": "scorpion_tank_idle_left",
-            "idle_down": "scorpion_tank_idle_down",
-            "idle_up": "scorpion_tank_idle_up",
-            "fire_right": "scorpion_tank_fire_right",
-            "fire_left": "scorpion_tank_fire_left",
-            "fire_down": "scorpion_tank_fire_down",
-            "fire_up": "scorpion_tank_fire_up"
         }
     },
     "spider_tank": {
