@@ -1,6 +1,5 @@
 {
     "meme_bureaucrat": {
-        "id": "meme_bureaucrat",
         "health": 30,
         "damage": 15,
         "weaponType": "LIGHT",
@@ -24,7 +23,6 @@
         }
     },
     "cockroach": {
-        "id": "cockroach",
         "health": 50,
         "damage": 15,
         "weaponType": "LIGHT",
@@ -48,7 +46,6 @@
         }
     },
     "aleph": {
-        "id": "aleph",
         "health": 50,
         "damage": 5000,
         "weaponType": "HEAVY",
@@ -72,7 +69,6 @@
         }
     },
     "condor_bomber": {
-        "id": "condor_bomber",
         "health": 50,
         "damage": 35,
         "weaponType": "MEDIUM",
@@ -96,7 +92,6 @@
         }
     },
     "asekara_tank": {
-        "id": "asekara_tank",
         "health": 100,
         "damage": 35,
         "weaponType": "MEDIUM",
@@ -120,7 +115,6 @@
         }
     },
     "raptor_fighter": {
-        "id": "raptor_fighter",
         "health": 50,
         "damage": 15,
         "weaponType": "LIGHT",
@@ -144,7 +138,6 @@
         }
     },
     "flak_tank": {
-        "id": "flak_tank",
         "health": 60,
         "damage": 20,
         "maxRange": 3,
@@ -169,7 +162,6 @@
         }
     },
     "tank_hunter": {
-        "id": "tank_hunter",
         "health": 100,
         "damage": 35,
         "weaponType": "MEDIUM",
@@ -193,7 +185,6 @@
         }
     },
     "annihilator_tank": {
-        "id": "annihilator_tank",
         "health": 120,
         "damage": 50,
         "weaponType": "HEAVY",
@@ -216,7 +207,6 @@
         }
     },
     "battle_cruiser": {
-        "id": "battle_cruiser",
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -236,7 +226,6 @@
         }
     },
     "corvette_fighter": {
-        "id": "corvette_fighter",
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -256,7 +245,6 @@
         }
     },
     "heavy_commando": {
-        "id": "heavy_commando",
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -276,7 +264,6 @@
         }
     },
     "hunter_support": {
-        "id": "hunter_support",
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -296,7 +283,6 @@
         }
     },
     "intrepid": {
-        "id": "intrepid",
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -316,7 +302,6 @@
         }
     },
     "mortar_truck": {
-        "id": "mortar_truck",
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -336,7 +321,6 @@
         }
     },
     "rocket_truck": {
-        "id": "rocket_truck",
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -356,7 +340,6 @@
         }
     },
     "spider_tank": {
-        "id": "spider_tank",
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -376,7 +359,6 @@
         }
     },
     "stealth_tank": {
-        "id": "stealth_tank",
         "health": 10,
         "damage": 4,
         "weaponType": "NONE",
@@ -396,7 +378,6 @@
         }
     },
     "strike_commando": {
-        "id": "strike_commando",
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -416,7 +397,6 @@
         }
     },
     "turret": {
-        "id": "turret",
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -436,7 +416,6 @@
         }
     },
     "u_boat": {
-        "id": "u_boat",
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -456,7 +435,6 @@
         }
     },
     "vulture_drone": {
-        "id": "vulture_drone",
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -476,7 +454,6 @@
         }
     },
     "warmachine": {
-        "id": "warmachine",
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -496,7 +473,6 @@
         }
     },
     "albatross_transport": {
-        "id": "albatross_transport",
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -512,7 +488,6 @@
         }
     },
     "blockade": {
-        "id": "blockade",
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -528,7 +503,6 @@
         }
     },
     "jammer_truck": {
-        "id": "jammer_truck",
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -544,7 +518,6 @@
         }
     },
     "leviathan_barge": {
-        "id": "leviathan_barge",
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",

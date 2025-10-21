@@ -50,6 +50,7 @@
         "desc": "TILE_DESC_SHORE",
         "climate": "NONE", 
         "terrain": ["UNEVEN"],
+        "allowBargePickup": true,
         "passability": {
             "FOOT": 1,
             "WHEELED": 1,
