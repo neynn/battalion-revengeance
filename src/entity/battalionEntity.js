@@ -70,8 +70,7 @@ export const BattalionEntity = function(id, sprite) {
 }
 
 BattalionEntity.DEFAULT = {
-    MOVEMENT_SPEED: 224,
-    EXPLOSION_ID: "explosion"
+    MOVEMENT_SPEED: 224
 };
 
 BattalionEntity.MAX_TRAITS = 4;
@@ -101,6 +100,8 @@ BattalionEntity.SPRITE_TYPE = {
     FIRE_LEFT: "fire_left",
     FIRE_DOWN: "fire_down",
     FIRE_UP: "fire_up",
+    ATTACK: "attack",
+    DEATH: "death"
 };
 
 BattalionEntity.SOUND_TYPE = {
@@ -108,6 +109,11 @@ BattalionEntity.SOUND_TYPE = {
     FIRE: 1,
     CLOAK: 2,
     DEATH: 3
+};
+
+BattalionEntity.DEFAULT_SPRITES = {
+    [BattalionEntity.SPRITE_TYPE.ATTACK]: "small_attack",
+    [BattalionEntity.SPRITE_TYPE.DEATH]: "explosion"
 };
 
 BattalionEntity.DEFAULT_SOUNDS = {
@@ -333,11 +339,12 @@ BattalionEntity.prototype.playMove = function(gameContext) {
 
 BattalionEntity.prototype.playDeath = function(gameContext) {
     const { spriteManager, transform2D } = gameContext;
+    const spriteType = this.getDeathSprite();
 
     this.state = BattalionEntity.STATE.DEAD;
     this.playSound(gameContext, BattalionEntity.SOUND_TYPE.DEATH);
 
-    const sprite = spriteManager.createSprite(BattalionEntity.DEFAULT.EXPLOSION_ID, TypeRegistry.LAYER_TYPE.GFX);
+    const sprite = spriteManager.createSprite(spriteType, TypeRegistry.LAYER_TYPE.GFX);
 
     if(sprite) {
         const { x, y } = transform2D.transformTileToWorld(this.tileX, this.tileY);
@@ -400,6 +407,26 @@ BattalionEntity.prototype.getSpriteType = function() {
     }
 
     return BattalionEntity.SPRITE_TYPE.IDLE_RIGHT;
+}
+
+BattalionEntity.prototype.getDeathSprite = function() {
+    let sprite = this.config.sprites?.death;
+
+    if(!sprite) {
+        sprite = BattalionEntity.DEFAULT_SPRITES[BattalionEntity.SPRITE_TYPE.DEATH];
+    }
+
+    return sprite;
+}
+
+BattalionEntity.prototype.getAttackSprite = function() {
+    let sprite = this.config.sprites?.attack;
+
+    if(!sprite) {
+        sprite = BattalionEntity.DEFAULT_SPRITES[BattalionEntity.SPRITE_TYPE.ATTACK];
+    }
+
+    return sprite;
 }
 
 BattalionEntity.prototype.updateSprite = function(gameContext) {

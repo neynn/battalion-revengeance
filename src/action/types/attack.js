@@ -10,8 +10,6 @@ export const AttackAction = function() {
     this.resolutions = [];
 }
 
-AttackAction.ATTACK_EFFECT = "small_attack";
-
 AttackAction.ATTACK_TYPE = {
     INITIATE: 0,
     COUNTER: 1
@@ -22,7 +20,8 @@ AttackAction.prototype.constructor = AttackAction;
 
 AttackAction.prototype.createWeaponSprite = function(gameContext, entity, target) {
     const { spriteManager, transform2D } = gameContext;
-    const sprite = spriteManager.createSprite(AttackAction.ATTACK_EFFECT, TypeRegistry.LAYER_TYPE.GFX);
+    const attackEffect = entity.getAttackSprite();
+    const sprite = spriteManager.createSprite(attackEffect, TypeRegistry.LAYER_TYPE.GFX);
 
     if(sprite) {
         const { tileX, tileY } = target;
@@ -88,6 +87,7 @@ AttackAction.prototype.onEnd = function(gameContext, data, id) {
         this.entity.reduceMove();
     }
 
+    this.sprite.terminate();
     this.entity = null;
     this.sprite = null;
     this.resolutions = [];
