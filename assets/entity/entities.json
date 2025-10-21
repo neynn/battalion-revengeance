@@ -1,13 +1,37 @@
 {
+    "cockroach": {
+        "id": "cockroach",
+        "health": 50,
+        "damage": 15,
+        "weaponType": "LIGHT",
+        "armorType": "LIGHT",
+        "movementRange": 8,
+        "movementType": "TRACKED",
+        "traits": ["STREAMLINED"],
+        "sounds": {
+            "move": "cockroach_move",
+            "fire": "cockroach_fire"
+        },
+        "sprites": {
+            "idle_right": "cockroach_idle_right",
+            "idle_left": "cockroach_idle_left",
+            "idle_down": "cockroach_idle_down",
+            "idle_up": "cockroach_idle_up",
+            "fire_right": "cockroach_fire_right",
+            "fire_left": "cockroach_fire_left",
+            "fire_down": "cockroach_fire_down",
+            "fire_up": "cockroach_fire_up"
+        }
+    },
     "aleph": {
         "id": "aleph",
-        "health": 10,
-        "damage": 3,
-        "weaponType": "NONE",
-        "armorType": "NONE",
-        "movementRange": 5,
+        "health": 50,
+        "damage": 5000,
+        "weaponType": "HEAVY",
+        "armorType": "LIGHT",
+        "movementRange": 6,
         "movementType": "FLIGHT",
-        "traits": [],
+        "traits": ["JUDGEMENT", "INDOMITABLE", "SELF_DESTRUCT", "INERTIAL"],
         "sounds": {
             "move": "aleph_move"
         },

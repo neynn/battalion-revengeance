@@ -1144,5 +1144,53 @@
         "bounds": {"x":0,"y":0,"w":59,"h":56},
         "frameTime": 0.2,
         "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "cockroach_idle_right": {
+        "texture": "cockroach_right",
+        "bounds": {"x": 0,"y":0,"w":56,"h":56},
+        "frameTime": 0.15,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "cockroach_idle_down": {
+        "texture": "cockroach_down",
+        "bounds": {"x": 0,"y":0,"w":56,"h":56},
+        "frameTime": 0.15,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "cockroach_idle_left": {
+        "texture": "cockroach_left",
+        "bounds": {"x": 0,"y":0,"w":56,"h":56},
+        "frameTime": 0.15,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "cockroach_idle_up": {
+        "texture": "cockroach_up",
+        "bounds": {"x":0,"y":0,"w":56,"h":56},
+        "frameTime": 0.15,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "cockroach_fire_right": {
+        "texture": "cockroach_fire_right",
+        "bounds": {"x": 0,"y":0,"w":56,"h":56},
+        "frameTime": 0.2,
+        "frames": ["1","2","3","2","3","2","3","1"]
+    },
+    "cockroach_fire_down": {
+        "texture": "cockroach_fire_down",
+        "bounds": {"x": 0,"y":0,"w":56,"h":56},
+        "frameTime": 0.2,
+        "frames": ["1","2","3","2","3","2","3","1"]
+    },
+    "cockroach_fire_left": {
+        "texture": "cockroach_fire_left",
+        "bounds": {"x": 0,"y":0,"w":56,"h":56},
+        "frameTime": 0.2,
+        "frames": ["1","2","3","2","3","2","3","1"]
+    },
+    "cockroach_fire_up": {
+        "texture": "cockroach_fire_up",
+        "bounds": {"x":0,"y":0,"w":56,"h":56},
+        "frameTime": 0.2,
+        "frames": ["1","2","3","2","3","2","3","1"]
     }
 }

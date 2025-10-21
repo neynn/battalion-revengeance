@@ -130,7 +130,7 @@ SpriteManager.prototype.load = function(textures, sprites) {
         }
 
         const textureObject = this.resources.getTextureByID(textureID);
-        const regionFrames = autoFrames !== undefined ? textureObject.getFramesAuto(autoFrames) : textureObject.getFrames(frames);
+        const regionFrames = frames !== undefined ? textureObject.getFrames(frames) : textureObject.getFramesAuto(autoFrames);
 
         if(regionFrames.length !== 0) {
             const spriteContainer = new SpriteContainer(spriteID, bounds, regionFrames);
