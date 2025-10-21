@@ -42,17 +42,17 @@ const createNode = function(id, x, y, cost, type, parent, flags) {
 export const BattalionEntity = function(id, sprite) {
     Entity.call(this, id, "");
 
-    this.health = 1;
-    this.maxHealth = 1;
-    this.damage = 0;
-    this.minRange = 0;
-    this.maxRange = 0;
+    this.health = BattalionEntity.DEFAULT.HEALTH;
+    this.maxHealth = BattalionEntity.DEFAULT.HEALTH;
+    this.damage = BattalionEntity.DEFAULT.DAMAGE;
+    this.minRange = BattalionEntity.DEFAULT.MIN_RANGE;
+    this.maxRange = BattalionEntity.DEFAULT.MAX_RANGE;
     this.moraleAmplifier = 1;
     this.moraleType = TypeRegistry.MORALE_TYPE.NONE;
     this.weaponType = TypeRegistry.WEAPON_TYPE.NONE;
     this.armorType = TypeRegistry.ARMOR_TYPE.NONE;
     this.movementSpeed = BattalionEntity.DEFAULT.MOVEMENT_SPEED;
-    this.movementRange = 1;
+    this.movementRange = BattalionEntity.DEFAULT.MOVEMENT_RANGE;
     this.movementType = TypeRegistry.MOVEMENT_TYPE.STATIONARY;
     this.customName = null;
     this.customDesc = null;
@@ -70,12 +70,17 @@ export const BattalionEntity = function(id, sprite) {
 }
 
 BattalionEntity.DEFAULT = {
-    MOVEMENT_SPEED: 224
+    MOVEMENT_SPEED: 224,
+    MIN_RANGE: 1,
+    MAX_RANGE: 1,
+    DAMAGE: 0,
+    MOVEMENT_RANGE: 0,
+    HEALTH: 1
 };
 
 BattalionEntity.MAX_TRAITS = 4;
 
-BattalionEntity.MAX_MOVE_COST = 999;
+BattalionEntity.MAX_MOVE_COST = 99;
 
 BattalionEntity.DIRECTION = {
     NORTH: 1 << 0,
@@ -128,19 +133,23 @@ BattalionEntity.prototype.loadConfig = function(config) {
     const { health, movementRange, movementType, damage, weaponType, armorType, minRange, maxRange, movementSpeed } = config;
 
     this.config = config;
-    this.health = health ?? 1;
-    this.maxHealth = health ?? 1;
-    this.damage = damage ?? 0;
+    this.health = health ?? BattalionEntity.DEFAULT.HEALTH;
+    this.maxHealth = health ?? BattalionEntity.DEFAULT.HEALTH;
+    this.damage = damage ?? BattalionEntity.DEFAULT.DAMAGE;
     this.weaponType = TypeRegistry.WEAPON_TYPE[weaponType] ? weaponType : TypeRegistry.WEAPON_TYPE.NONE;
     this.armorType = TypeRegistry.ARMOR_TYPE[armorType] ? armorType : TypeRegistry.ARMOR_TYPE.NONE;
     this.movementType = TypeRegistry.MOVEMENT_TYPE[movementType] ? movementType : TypeRegistry.MOVEMENT_TYPE.STATIONARY;
-    this.movementRange = movementRange ?? 1;
-    this.minRange = minRange ?? 1;
-    this.maxRange = maxRange ?? 1;
+    this.movementRange = movementRange ?? BattalionEntity.DEFAULT.MOVEMENT_RANGE;
+    this.minRange = minRange ?? BattalionEntity.DEFAULT.MIN_RANGE;
+    this.maxRange = maxRange ?? BattalionEntity.DEFAULT.MAX_RANGE;
     this.movementSpeed = movementSpeed ?? BattalionEntity.DEFAULT.MOVEMENT_SPEED;
 
     if(this.maxRange < this.minRange) {
         this.maxRange = this.minRange;
+    }
+
+    if(this.movementRange >= BattalionEntity.MAX_MOVE_COST) {
+        this.movementRange = BattalionEntity.MAX_MOVE_COST;
     }
 
     this.setHealth(this.health);
@@ -860,6 +869,10 @@ BattalionEntity.prototype.canCloak = function() {
     return !this.isCloaked && this.hasTrait(TypeRegistry.TRAIT_TYPE.STEALTH);
 }
 
+BattalionEntity.prototype.canAttack = function() {
+    return this.damage !== 0 && this.weaponType !== TypeRegistry.WEAPON_TYPE.NONE;
+}
+
 BattalionEntity.prototype.getMaxRange = function(gameContext) {
     const terrainTypes = this.getTerrainTypes(gameContext);
     let range = this.maxRange;
@@ -881,3 +894,4 @@ BattalionEntity.prototype.onArrive = function(gameContext) {
     //TODO: After a move ended, this checks the tile for any properties like damage_on_land
     //TODO: Also add an attack after move. Move can carry an attack target, which gets put as "next", if not uncloaked by a stealth unit.
 }
+

@@ -105,7 +105,7 @@
         "movementType": "TRACKED",
         "traits": ["STREAMLINED", "SCHWERPUNKT", "BEWEGUNGSKRIEG"],
         "sounds": {
-            "move": "asekara_move",
+            "move": "tracked_move",
             "fire": "asekara_fire"
         },
         "sprites": {
@@ -141,6 +141,31 @@
             "fire_left": "raptor_fighter_fire_left",
             "fire_down": "raptor_fighter_fire_down",
             "fire_up": "raptor_fighter_fire_up"
+        }
+    },
+    "flak_tank": {
+        "id": "flak_tank",
+        "health": 60,
+        "damage": 20,
+        "maxRange": 3,
+        "weaponType": "LIGHT",
+        "armorType": "MEDIUM",
+        "movementRange": 5,
+        "movementType": "TRACKED",
+        "traits": ["SKYSWEEPER", "ANTI_AIR"],
+        "sounds": {
+            "move": "tracked_move",
+            "fire": "flak_fire"
+        },
+        "sprites": {
+            "idle_right": "flak_tank_idle_right",
+            "idle_left": "flak_tank_idle_left",
+            "idle_down": "flak_tank_idle_down",
+            "idle_up": "flak_tank_idle_up",
+            "fire_right": "flak_tank_fire_right",
+            "fire_left": "flak_tank_fire_left",
+            "fire_down": "flak_tank_fire_down",
+            "fire_up": "flak_tank_fire_up"
         }
     },
     "annihilator_tank": {
@@ -204,26 +229,6 @@
             "fire_left": "corvette_fighter_fire_left",
             "fire_down": "corvette_fighter_fire_down",
             "fire_up": "corvette_fighter_fire_up"
-        }
-    },
-    "flak_tank": {
-        "id": "flak_tank",
-        "health": 10,
-        "damage": 0,
-        "weaponType": "NONE",
-        "armorType": "NONE",
-        "movementRange": 1,
-        "movementType": "STATIONARY",
-        "traits": [],
-        "sprites": {
-            "idle_right": "flak_tank_idle_right",
-            "idle_left": "flak_tank_idle_left",
-            "idle_down": "flak_tank_idle_down",
-            "idle_up": "flak_tank_idle_up",
-            "fire_right": "flak_tank_fire_right",
-            "fire_left": "flak_tank_fire_left",
-            "fire_down": "flak_tank_fire_down",
-            "fire_up": "flak_tank_fire_up"
         }
     },
     "heavy_commando": {

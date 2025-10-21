@@ -138,7 +138,7 @@ AttackAction.prototype.validate = function(gameContext, executionRequest, reques
     const entity = entityManager.getEntity(entityID);
     const target = entityManager.getEntity(targetID);
 
-    if(!entity || !target) {
+    if(!entity || !target || !entity.canAttack()) {
         return;
     }
 
