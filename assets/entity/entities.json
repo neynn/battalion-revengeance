@@ -83,10 +83,10 @@
             "fire": "aleph_fire"
         },
         "sprites": {
-            "idle_right": "aleph_idle_right",
-            "idle_left": "aleph_idle_left",
-            "idle_down": "aleph_idle_down",
-            "idle_up": "aleph_idle_up",
+            "idle_right": "condor_idle_right",
+            "idle_left": "condor_idle_left",
+            "idle_down": "condor_idle_down",
+            "idle_up": "condor_idle_up",
             "fire_right": "condor_fire_right",
             "fire_left": "condor_fire_left",
             "fire_down": "condor_fire_down",

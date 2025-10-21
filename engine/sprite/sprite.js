@@ -61,8 +61,7 @@ Sprite.prototype.onDraw = function(display, localX, localY) {
     }
 
     if(this.texture && this.texture.bitmap) {
-        const currentFrame = this.container.frames[this.currentFrame];
-        const { x, y, w, h } = currentFrame;
+        const { x, y, w, h } = this.container.frames[this.currentFrame];
 
         context.drawImage(this.texture.bitmap, x, y, w, h, renderX, renderY, w, h);
     } else if(Sprite.RENDER_PLACEHOLDER) {

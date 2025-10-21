@@ -1169,6 +1169,30 @@
         "frameTime": 0.08,
         "autoFrames": {"start": 1,"jump": 1,"repeat": 16}
     },
+    "condor_idle_right": {
+        "texture": "condor_right",
+        "bounds": {"x":0,"y":0,"w":56,"h":56},
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "condor_idle_down": {
+        "texture": "condor_down",
+        "bounds": {"x":0,"y":0,"w":56,"h":56},
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "condor_idle_left": {
+        "texture": "condor_left",
+        "bounds": {"x":0,"y":0,"w":56,"h":56},
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "condor_idle_up": {
+        "texture": "condor_up",
+        "bounds": {"x":0,"y":0,"w":56,"h":56},
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
     "condor_fire_right": {
         "texture": "condor_fire_right",
         "bounds": {"x": 0,"y":0,"w":112,"h":56},
@@ -1241,32 +1265,30 @@
         "frameTime": 0.1,
         "frames": ["1","2","3","2","3","2","3","1"]
     },
-
     "ampac_idle_right": {
         "texture": "ampac_right",
         "bounds": {"x": 0,"y":0,"w":63,"h":56},
-        "frameTime": 0.15,
+        "frameTime": 0.2,
         "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
     },
     "ampac_idle_down": {
         "texture": "ampac_down",
         "bounds": {"x": -3,"y":0,"w":63,"h":56},
-        "frameTime": 0.15,
+        "frameTime": 0.2,
         "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
     },
     "ampac_idle_left": {
         "texture": "ampac_left",
         "bounds": {"x": -7,"y":0,"w":63,"h":56},
-        "frameTime": 0.15,
+        "frameTime": 0.2,
         "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
     },
     "ampac_idle_up": {
         "texture": "ampac_up",
         "bounds": {"x":-3,"y":0,"w":63,"h":56},
-        "frameTime": 0.15,
+        "frameTime": 0.2,
         "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
     },
-
     "ampac_fire_right": {
         "texture": "ampac_fire_right",
         "bounds": {"x": 0,"y":-2,"w":80,"h":60},
