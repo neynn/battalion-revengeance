@@ -186,6 +186,29 @@
             "fire_up": "lancer_tank_fire_up"
         }
     },
+    "ampac": {
+        "health": 100,
+        "damage": 35,
+        "weaponType": "HEAVY",
+        "armorType": "MEDIUM",
+        "movementRange": 5,
+        "movementType": "TRACKED",
+        "traits": ["ANTI_TANK", "TANK_HUNTER", "STREAMLINED"],
+        "sounds": {
+            "move": "tracked_move",
+            "fire": "tank_fire"
+        },
+        "sprites": {
+            "idle_right": "ampac_idle_right",
+            "idle_left": "ampac_idle_left",
+            "idle_down": "ampac_idle_down",
+            "idle_up": "ampac_idle_up",
+            "fire_right": "ampac_fire_right",
+            "fire_left": "ampac_fire_left",
+            "fire_down": "ampac_fire_down",
+            "fire_up": "ampac_fire_up"
+        }
+    },
     "leviathan_barge": {
         "health": 100,
         "damage": 0,

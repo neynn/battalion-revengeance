@@ -816,5 +816,102 @@
             "rows": 8,
             "columns": 1
         }
+    },
+
+    "ampac_down": {
+        "directory": ["assets","sprites","textures","ampac"],
+        "source": "ampac_down.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 63,
+            "frameHeight": 56,
+            "rows": 4,
+            "columns": 1
+        }
+    },
+    "ampac_left": {
+        "directory": ["assets","sprites","textures","ampac"],
+        "source": "ampac_left.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 63,
+            "frameHeight": 56,
+            "rows": 4,
+            "columns": 1
+        }
+    },
+    "ampac_right": {
+        "directory": ["assets","sprites","textures","ampac"],
+        "source": "ampac_right.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 63,
+            "frameHeight": 56,
+            "rows": 4,
+            "columns": 1
+        }
+    },
+    "ampac_up": {
+        "directory": ["assets","sprites","textures","ampac"],
+        "source": "ampac_up.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 63,
+            "frameHeight": 56,
+            "rows": 4,
+            "columns": 1
+        }
+    },
+    "ampac_fire_down": {
+        "directory": ["assets","sprites","textures","ampac"],
+        "source": "ampac_fire_down.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 80,
+            "frameHeight": 60,
+            "rows": 8,
+            "columns": 1
+        }
+    },
+    "ampac_fire_left": {
+        "directory": ["assets","sprites","textures","ampac"],
+        "source": "ampac_fire_left.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 80,
+            "frameHeight": 60,
+            "rows": 8,
+            "columns": 1
+        }
+    },
+    "ampac_fire_right": {
+        "directory": ["assets","sprites","textures","ampac"],
+        "source": "ampac_fire_right.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 80,
+            "frameHeight": 60,
+            "rows": 8,
+            "columns": 1
+        }
+    },
+    "ampac_fire_up": {
+        "directory": ["assets","sprites","textures","ampac"],
+        "source": "ampac_fire_up.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 80,
+            "frameHeight": 60,
+            "rows": 8,
+            "columns": 1
+        }
     }
 }
