@@ -480,13 +480,17 @@
         }
     },
     "stealth_tank": {
-        "health": 10,
-        "damage": 4,
-        "weaponType": "NONE",
-        "armorType": "NONE",
+        "health": 80,
+        "damage": 40,
+        "weaponType": "MEDIUM",
+        "armorType": "MEDIUM",
         "movementRange": 5,
         "movementType": "TRACKED",
         "traits": ["STEALTH"],
+        "sounds": {
+            "move": "tracked_move",
+            "fire": "tank_fire"
+        },
         "sprites": {
             "idle_right": "stealth_tank_idle_right",
             "idle_left": "stealth_tank_idle_left",

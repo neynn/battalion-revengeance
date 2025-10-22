@@ -435,15 +435,13 @@ BattalionEntity.prototype.isDead = function() {
 }
 
 BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
+    if(this.isDead() || !this.canMove()) {
+        return;
+    }
+
     const { world, typeRegistry, teamManager } = gameContext;
     const { mapManager, entityManager } = world;
     const worldMap = mapManager.getActiveMap();
-
-    nodeMap.clear();
-
-    if(this.isDead()) {
-        return;
-    }
 
     //const flagMap = new EntityFlagMap(this.tileX, this.tileY, this.movementRange);
     const startID = worldMap.getIndex(this.tileX, this.tileY);
@@ -731,8 +729,14 @@ BattalionEntity.prototype.getDamage = function(gameContext, target, attackType) 
 BattalionEntity.prototype.lookAt = function(entity) {
     const deltaX = entity.tileX - this.tileX;
     const deltaY = entity.tileY - this.tileY;
+    const distanceX = Math.abs(deltaX);
+    const distanceY = Math.abs(deltaY);
 
-    this.updateDirectionByDelta(deltaX, deltaY);
+    if(distanceX > distanceY) {
+        this.updateDirectionByDelta(deltaX, 0);
+    } else { 
+        this.updateDirectionByDelta(0, deltaY);
+    }
 }
 
 BattalionEntity.prototype.playSound = function(gameContext, soundType) {
@@ -822,6 +826,10 @@ BattalionEntity.prototype.canCloak = function() {
 BattalionEntity.prototype.canAttack = function() {
     return this.damage !== 0 && this.config.weaponType !== TypeRegistry.WEAPON_TYPE.NONE;
 }
+
+BattalionEntity.prototype.canMove = function() {
+    return this.movementRange !== 0 && this.config.movementType !== TypeRegistry.MOVEMENT_TYPE.STATIONARY;
+}   
 
 BattalionEntity.prototype.getMaxRange = function(gameContext) {
     const terrainTypes = this.getTerrainTypes(gameContext);

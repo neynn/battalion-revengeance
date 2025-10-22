@@ -37,6 +37,7 @@ SelectState.prototype.onEnter = function(gameContext, stateMachine, enterData) {
 SelectState.prototype.selectEntity = function(gameContext, stateMachine, entity) {
     const player = stateMachine.getContext();
 
+    this.nodeMap.clear();
     this.entity = entity;
     this.entity.mGetNodeMap(gameContext, this.nodeMap);
 
