@@ -1,6 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
 import { EntitySpawner } from "../../entity/entitySpawner.js";
 import { ActionHelper } from "../actionHelper.js";
+import { AttackAction } from "./attack.js";
 
 export const MoveAction = function() {
     Action.call(this);
@@ -93,14 +94,14 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
     //If it manages to validate, then behave as normal.
 
     if(entity && entity.hasMoveLeft()) {
-        if(!attackTarget) {
-            const nodeMap = new Map();
+        const nodeMap = new Map();
 
-            entity.mGetNodeMap(gameContext, nodeMap);
+        entity.mGetNodeMap(gameContext, nodeMap);
 
-            const path = entity.getPath(gameContext, nodeMap, targetX, targetY);
+        const path = entity.getPath(gameContext, nodeMap, targetX, targetY);
 
-            if(path.length !== 0) {
+        if(path.length !== 0) {
+            if(!attackTarget) {
                 executionRequest.setData({
                     "entityID": entityID,
                     "targetX": targetX,
@@ -113,11 +114,24 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
                 if(entity.canCloak()) {
                     executionRequest.addNext(ActionHelper.createCloakRequest(entityID));
                 }
+            } else if(!entity.isRanged()){
+                executionRequest.setData({
+                    "entityID": entityID,
+                    "targetX": targetX,
+                    "targetY": targetY,
+                    "path": path,
+                    "cost": 0 //Cost is 0 because there is an attack target.
+                });
+
+                //The type should be initiate_move to allow the resetting of cost.
+                //So: Cost must be set by an event.
+                //OR: Cost is 1 from the move action and the initiate_move does not care for cost?
+                executionRequest.addNext(ActionHelper.createAttackRequest(entityID, attackTarget, AttackAction.ATTACK_TYPE.INITIATE))
             }
-        } else {
-            //No attack target, so immediately queue an attackAction as next.
-            //Move does NOT decide where the entity moves (targetX, targetY) because the player can still decide the neighboring spot to the entity.
-            //BUT! Only non-ranged units are allowed to follow-up with an attack.
         }
+
+        //No attack target, so immediately queue an attackAction as next.
+        //Move does NOT decide where the entity moves (targetX, targetY) because the player can still decide the neighboring spot to the entity.
+        //BUT! Only non-ranged units are allowed to follow-up with an attack.
     }
 }

@@ -145,19 +145,9 @@ Player.prototype.addNodeMapRender = function(nodeMap) {
     }
 }
 
-Player.prototype.showPath = function(gameContext, entity, nodeMap, targetX, targetY) { 
-    const { tileManager, world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-    const index = worldMap.getIndex(targetX, targetY);
-    const targetNode = nodeMap.get(index);
-
-    if(!targetNode || targetNode.flags === -1) {
-        return;
-    }
-
+Player.prototype.showPath = function(gameContext, path, entityX, entityY) { 
+    const { tileManager } = gameContext;
     const autotiler = tileManager.getAutotilerByID("battalion_path");
-    const path = entity.getPath(gameContext, nodeMap, targetX, targetY).reverse();
     let tileID = 0;
 
     this.camera.pathOverlay.clear();
@@ -168,7 +158,7 @@ Player.prototype.showPath = function(gameContext, entity, nodeMap, targetX, targ
         //I am sorry.
         if(i === 0) {
             tileID = autotiler.run(tileX, tileY, (nextX, nextY) => {
-                if(entity.tileX === nextX && entity.tileY === nextY) {
+                if(entityX === nextX && entityY === nextY) {
                     return Autotiler.RESPONSE.VALID;
                 }
 
@@ -222,5 +212,5 @@ Player.prototype.showPath = function(gameContext, entity, nodeMap, targetX, targ
         tileID = tileManager.getTileID("path", "8");
     }
 
-    this.camera.pathOverlay.add(tileID, entity.tileX, entity.tileY);
+    this.camera.pathOverlay.add(tileID, entityX, entityY);
 }

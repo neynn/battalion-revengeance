@@ -6,6 +6,8 @@ import { PlayerState } from "./playerState.js";
 export const SelectState = function() {
     PlayerState.call(this);
 
+    this.lastValidX = -1;
+    this.lastValidY = -1;
     this.entity = null;
     this.nodeMap = new Map();
 }
@@ -14,6 +16,8 @@ SelectState.prototype = Object.create(PlayerState.prototype);
 SelectState.prototype.constructor = SelectState;
 
 SelectState.prototype.onExit = function(gameContext, stateMachine) {
+    this.lastValidX = -1;
+    this.lastValidY = -1;
     this.entity = null;
     this.nodeMap.clear();
 }
@@ -49,9 +53,24 @@ SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, t
 }
 
 SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, tileY) {
-    const player = stateMachine.getContext();
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const targetNode = this.nodeMap.get(worldMap.getIndex(tileX, tileY));
 
-    player.showPath(gameContext, this.entity, this.nodeMap, tileX, tileY);
+    //TODO: Add flags like blocked_by_entity.
+    if(targetNode && targetNode.flags !== -1) {
+        const player = stateMachine.getContext();
+        const path = this.entity.getPath(gameContext, this.nodeMap, tileX, tileY).reverse();
+
+        player.showPath(gameContext, path, this.entity.tileX, this.entity.tileY);
+
+        //Valid path, save the tileX and tileY for later use.
+        if(path.length !== 0) {
+            this.lastValidX = tileX;
+            this.lastValidY = tileY;
+        }
+    }
 }
 
 SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {
@@ -69,8 +88,12 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
             //The range is not enough
             if(!entity.isRanged()) {
                 //The entity is a melee attacker
+                //x is the last x of the cursor and y is the last y of the cursor.
                 //TODO: Try queueing a move action TOWARDS the entity if the LAST tileX, tileY of the cursor was NOT next to the targets position.
                 //TODO: Keep track of cursor tileX, tileY
+                const request = ActionHelper.createMoveRequest(this.entity.getID(), this.lastValidX, this.lastValidY, entity.getID());
+
+                player.queueRequest(request);
             }
         }
 
