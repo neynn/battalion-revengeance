@@ -1,6 +1,7 @@
 import { ContextHelper } from "../../engine/camera/contextHelper.js";
 import { EntityHelper } from "../../engine/entity/entityHelper.js";
 import { StateMachine } from "../../engine/state/stateMachine.js";
+import { Autotiler } from "../../engine/tile/autotiler.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { BattalionActor } from "./battalionActor.js";
 import { IdleState } from "./player/idle.js";
@@ -146,14 +147,52 @@ Player.prototype.addNodeMapRender = function(nodeMap) {
 
 Player.prototype.showPath = function(gameContext, entity, nodeMap, targetX, targetY) { 
     const { tileManager } = gameContext;
-    const autotiler = tileManager.getAutotilerByID("path");
-    const path = entity.getPath(gameContext, nodeMap, targetX, targetY);
+    const autotiler = tileManager.getAutotilerByID("battalion_road");
+    const path = entity.getPath(gameContext, nodeMap, targetX, targetY).reverse();
 
     this.camera.pathOverlay.clear();
 
     for(let i = 0; i < path.length; i++) {
         const { deltaX, deltaY, tileX, tileY } = path[i];
+        let tileID = 0;
 
-        this.camera.pathOverlay.add(5, tileX, tileY);
+        //I am sorry.
+        if(i === 0) {
+            tileID = autotiler.run(tileX, tileY, (nextX, nextY) => {
+                if(entity.tileX === nextX && entity.tileY === nextY) {
+                    return Autotiler.RESPONSE.VALID;
+                }
+
+                if(i < path.length - 1) {
+                    const next = path[i + 1];
+
+                    if(next.tileX === nextX && next.tileY === nextY) {
+                        return Autotiler.RESPONSE.VALID;
+                    }
+                }
+
+                return Autotiler.RESPONSE.INVALID;
+            });
+        } else {
+            tileID = autotiler.run(tileX, tileY, (nextX, nextY) => {
+                const previous = path[i - 1];
+
+                if(previous.tileX === nextX && previous.tileY === nextY) {
+                    return Autotiler.RESPONSE.VALID;
+                }
+
+                if(i < path.length - 1) {
+                    const next = path[i + 1];
+                    
+                    if(next.tileX === nextX && next.tileY === nextY) {
+                        return Autotiler.RESPONSE.VALID;
+                    }
+                }
+
+                return Autotiler.RESPONSE.INVALID;
+            });
+        }
+
+        this.camera.pathOverlay.add(tileID, tileX, tileY);
     }
 }
