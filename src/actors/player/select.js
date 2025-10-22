@@ -7,7 +7,6 @@ export const SelectState = function() {
     PlayerState.call(this);
 
     this.entity = null;
-    this.inContextMenu = false;
     this.nodeMap = new Map();
 }
 
@@ -17,15 +16,6 @@ SelectState.prototype.constructor = SelectState;
 SelectState.prototype.onExit = function(gameContext, stateMachine) {
     this.entity = null;
     this.nodeMap.clear();
-    this.closeContextMenu(gameContext);
-}
-
-SelectState.prototype.closeContextMenu = function(gameContext) {
-    if(!this.inContextMenu) {
-        return;
-    }
-
-    this.inContextMenu = false;
 }
 
 SelectState.prototype.onEnter = function(gameContext, stateMachine, enterData) {
@@ -42,14 +32,8 @@ SelectState.prototype.selectEntity = function(gameContext, stateMachine, entity)
     this.entity.mGetNodeMap(gameContext, this.nodeMap);
 
     player.addNodeMapRender(this.nodeMap);
-}
 
-SelectState.prototype.openContextMenu = function(gameContext, stateMachine, entity) {
-    const player = stateMachine.getContext();
-
-    this.inContextMenu = true;
-
-    player.clearNodeMapRender();
+    this.onTileChange(gameContext, stateMachine, this.entity.tileX, this.entity.tileY);
 }
 
 SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, tileY) {
@@ -82,14 +66,9 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
 
     //this.entity is always controlled!
     if(entity === this.entity) {
-        if(this.inContextMenu) {
-            stateMachine.setNextState(gameContext, Player.STATE.IDLE);
-        } else {
-            this.openContextMenu(gameContext, stateMachine, entity);
-        }
+        stateMachine.setNextState(gameContext, Player.STATE.IDLE);
     } else {
         if(isControlled && !entity.isDead()) {
-            this.closeContextMenu(gameContext);
             this.selectEntity(gameContext, stateMachine, entity);
         } else {
             stateMachine.setNextState(gameContext, Player.STATE.IDLE);

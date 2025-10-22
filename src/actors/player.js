@@ -146,7 +146,16 @@ Player.prototype.addNodeMapRender = function(nodeMap) {
 }
 
 Player.prototype.showPath = function(gameContext, entity, nodeMap, targetX, targetY) { 
-    const { tileManager } = gameContext;
+    const { tileManager, world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const index = worldMap.getIndex(targetX, targetY);
+    const targetNode = nodeMap.get(index);
+
+    if(!targetNode || targetNode.flags === -1) {
+        return;
+    }
+
     const autotiler = tileManager.getAutotilerByID("battalion_path");
     const path = entity.getPath(gameContext, nodeMap, targetX, targetY).reverse();
     let tileID = 0;
