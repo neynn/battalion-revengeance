@@ -22,9 +22,14 @@ PlayerState.prototype.onEvent = function(gameContext, stateMachine, eventID, eve
             this.onTileClick(gameContext, stateMachine, eventData.x, eventData.y);
             break;
         }
+        case Player.EVENT.TILE_CHANGE: {
+            this.onTileChange(gameContext, stateMachine, eventData.x, eventData.y);
+            break;
+        }
     }
 }
 
 PlayerState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {}
 PlayerState.prototype.onBuildingClick = function(gameContext, stateMachine, building) {}
 PlayerState.prototype.onTileClick = function(gameContext, stateMachine, tileX, tileY) {}
+PlayerState.prototype.onTileChange = function(gameContext, stateMachine, tileX, tileY) {}

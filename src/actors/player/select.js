@@ -64,6 +64,13 @@ SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, t
     }
 }
 
+SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, tileY) {
+    const path = this.entity.getPath(gameContext, this.nodeMap, tileX, tileY);
+
+    //TODO: Draw path.
+    console.log(path);
+}
+
 SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {
     if(!isAlly) {
         const player = stateMachine.getContext();

@@ -9,6 +9,8 @@ import { SelectState } from "./player/select.js";
 export const Player = function(id, camera) {
     BattalionActor.call(this, id);
 
+    this.tileX = -1;
+    this.tileY = -1;
     this.camera = camera;
     this.inspectedEntity = null;
 
@@ -20,7 +22,8 @@ export const Player = function(id, camera) {
 Player.EVENT = {
     ENTITY_CLICK: 0,
     BUILDING_CLICK: 1,
-    TILE_CLICK: 2
+    TILE_CLICK: 2,
+    TILE_CHANGE: 3
 };
 
 Player.STATE = {
@@ -49,13 +52,12 @@ Player.prototype.inspectTile = function(gameContext, tileX, tileY) {
     this.inspectedEntity = null;
 }
 
-Player.prototype.onClick = function(gameContext, worldMap, tile) {
-    const { x, y } = tile;
-    const entity = EntityHelper.getTileEntity(gameContext, x, y);
+Player.prototype.onClick = function(gameContext, worldMap, tileX, tileY) {
+    const entity = EntityHelper.getTileEntity(gameContext, tileX, tileY);
 
     if(entity) {
         if(this.inspectedEntity === entity) {
-            this.inspectTile(gameContext, x, y);
+            this.inspectTile(gameContext, tileX, tileY);
         } else {
             this.inspectEntity(gameContext, entity);        
         }
@@ -70,14 +72,14 @@ Player.prototype.onClick = function(gameContext, worldMap, tile) {
         return;
     }
 
-    const building = worldMap.getBuilding(x, y);
+    const building = worldMap.getBuilding(tileX, tileY);
 
     if(building) {
         this.states.eventEnter(gameContext, Player.EVENT.BUILDING_CLICK, { "building": building });
         return;
     }
 
-    this.states.eventEnter(gameContext, Player.EVENT.TILE_CLICK, { "x": x, "y": y });
+    this.states.eventEnter(gameContext, Player.EVENT.TILE_CLICK, { "x": tileX, "y": tileY });
 }
 
 Player.prototype.loadKeybinds = function(gameContext) {
@@ -92,8 +94,9 @@ Player.prototype.loadKeybinds = function(gameContext) {
 
         if(worldMap) {
             const tile = ContextHelper.getMouseTile(gameContext);
+            const { x, y } = tile;
 
-            this.onClick(gameContext, worldMap, tile);
+            this.onClick(gameContext, worldMap, x, y);
         }
     });
 }
@@ -103,6 +106,17 @@ Player.prototype.activeUpdate = function(gameContext, remainingActions) {
 }
 
 Player.prototype.update = function(gameContext) {
+    const { x, y } = ContextHelper.getMouseTile(gameContext);
+
+    if(x !== this.tileX || y !== this.tileY) {
+        this.states.eventEnter(gameContext, Player.EVENT.TILE_CHANGE, {
+            "x": x,
+            "y": y
+        });
+    }
+
+    this.tileX = x;
+    this.tileY = y;
     this.states.update(gameContext);
 }
 
