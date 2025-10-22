@@ -107,10 +107,10 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
                     "targetX": targetX,
                     "targetY": targetY,
                     "path": path,
-                    "cost": 1 //Cost is 1 because there is no attack target.
+                    "cost": 1
                 });
 
-                //TODO: Interception. Also only cloak if the move does NOT have an
+                //TODO: Interception and uncloak.
                 if(entity.canCloak()) {
                     executionRequest.addNext(ActionHelper.createCloakRequest(entityID));
                 }
@@ -120,18 +120,15 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
                     "targetX": targetX,
                     "targetY": targetY,
                     "path": path,
-                    "cost": 0 //Cost is 0 because there is an attack target.
+                    "cost": 0
                 });
 
                 //The type should be initiate_move to allow the resetting of cost.
                 //So: Cost must be set by an event.
-                //OR: Cost is 1 from the move action and the initiate_move does not care for cost?
-                executionRequest.addNext(ActionHelper.createAttackRequest(entityID, attackTarget, AttackAction.ATTACK_TYPE.INITIATE))
+                //Or: Cost is 1 from the move action and the initiate_move does not care for cost?
+                //OR: Reducing cost is an action itself...
+                executionRequest.addNext(ActionHelper.createAttackRequest(entityID, attackTarget, AttackAction.ATTACK_TYPE.INITIATE));
             }
         }
-
-        //No attack target, so immediately queue an attackAction as next.
-        //Move does NOT decide where the entity moves (targetX, targetY) because the player can still decide the neighboring spot to the entity.
-        //BUT! Only non-ranged units are allowed to follow-up with an attack.
     }
 }

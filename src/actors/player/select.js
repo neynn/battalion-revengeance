@@ -1,5 +1,7 @@
+import { FlagHelper } from "../../../engine/flagHelper.js";
 import { ActionHelper } from "../../action/actionHelper.js";
 import { AttackAction } from "../../action/types/attack.js";
+import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { Player } from "../player.js";
 import { PlayerState } from "./playerState.js";
 
@@ -59,16 +61,19 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
     const targetNode = this.nodeMap.get(worldMap.getIndex(tileX, tileY));
 
     //TODO: Add flags like blocked_by_entity.
-    if(targetNode && targetNode.flags !== -1) {
+    //TODO: Check if hovering on an entity. If so, do not update the path.
+    if(targetNode && !FlagHelper.hasFlag(targetNode.flags, BattalionEntity.PATH_FLAG.UNREACHABLE)) {
         const player = stateMachine.getContext();
         const path = this.entity.getPath(gameContext, this.nodeMap, tileX, tileY).reverse();
 
         player.showPath(gameContext, path, this.entity.tileX, this.entity.tileY);
 
-        //Valid path, save the tileX and tileY for later use.
         if(path.length !== 0) {
             this.lastValidX = tileX;
             this.lastValidY = tileY;
+        } else {
+            this.lastValidX = -1;
+            this.lastValidY = -1;
         }
     }
 }
@@ -77,20 +82,18 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
     if(!isAlly) {
         const player = stateMachine.getContext();
 
-        //If this.entity is a melee attacker and NOT in range to attack, then try to find a way to move towards the target.
-        //With ranged units, then only check if the attack can happen.
+        if(this.entity.isRanged()) {
+            if(this.entity.isRangeEnough(gameContext, entity)) {
+                const request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.ATTACK_TYPE.INITIATE);
 
-        if(this.entity.isRangeEnough(gameContext, entity)) {
-            const request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.ATTACK_TYPE.INITIATE);
-
-            player.queueRequest(request);
+                player.queueRequest(request);
+            }
         } else {
-            //The range is not enough
-            if(!entity.isRanged()) {
-                //The entity is a melee attacker
-                //x is the last x of the cursor and y is the last y of the cursor.
-                //TODO: Try queueing a move action TOWARDS the entity if the LAST tileX, tileY of the cursor was NOT next to the targets position.
-                //TODO: Keep track of cursor tileX, tileY
+            if(this.lastValidX === -1 && this.lastValidY === -1) {
+                const request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.ATTACK_TYPE.INITIATE);
+
+                player.queueRequest(request);
+            } else {
                 const request = ActionHelper.createMoveRequest(this.entity.getID(), this.lastValidX, this.lastValidY, entity.getID());
 
                 player.queueRequest(request);
@@ -101,7 +104,6 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
         return;
     }
 
-    //this.entity is always controlled!
     if(entity === this.entity) {
         stateMachine.setNextState(gameContext, Player.STATE.IDLE);
     } else {

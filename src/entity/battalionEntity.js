@@ -1,4 +1,5 @@
 import { Entity } from "../../engine/entity/entity.js";
+import { FlagHelper } from "../../engine/flagHelper.js";
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { FloodFill } from "../../engine/pathfinders/floodFill.js";
@@ -434,6 +435,12 @@ BattalionEntity.prototype.isDead = function() {
     return this.health <= 0 && !this.isMarkedForDestroy;
 }
 
+BattalionEntity.PATH_FLAG = {
+    NONE: 0b00000000,
+    UNREACHABLE: 1 << 0,
+    START: 1 << 1
+};
+
 BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
     if(this.isDead() || !this.canMove()) {
         return;
@@ -445,7 +452,7 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
 
     //const flagMap = new EntityFlagMap(this.tileX, this.tileY, this.movementRange);
     const startID = worldMap.getIndex(this.tileX, this.tileY);
-    const startNode = createNode(startID, this.tileX, this.tileY, 0, null, null, 0);
+    const startNode = createNode(startID, this.tileX, this.tileY, 0, null, null, BattalionEntity.PATH_FLAG.START);
     const queue = [startNode];
     const visitedCost = new Map();
 
@@ -513,7 +520,7 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
                     const bestCost = visitedCost.get(neighborID);
 
                     if(bestCost === undefined || nextCost < bestCost) {
-                        const childNode = createNode(neighborID, neighborX, neighborY, nextCost, type, id, 0);
+                        const childNode = createNode(neighborID, neighborX, neighborY, nextCost, type, id, BattalionEntity.PATH_FLAG.NONE);
 
                         queue.push(childNode);
                         visitedCost.set(neighborID, nextCost);
@@ -521,7 +528,7 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
                     }
                 } else if(!nodeMap.has(neighborID)) {
                     //This is unreachable.
-                    const childNode = createNode(neighborID, neighborX, neighborY, nextCost, type, id, -1);
+                    const childNode = createNode(neighborID, neighborX, neighborY, nextCost, type, id, BattalionEntity.PATH_FLAG.UNREACHABLE);
 
                     nodeMap.set(neighborID, childNode);
                 }
@@ -544,7 +551,10 @@ BattalionEntity.prototype.getPath = function(gameContext, nodes, targetX, target
     const targetNode = nodes.get(index);
 
     //TODO: Logic for hovering ON an enemy entity -> if attackRange = 1, then find any neighboring tile.
-    if(!targetNode || targetNode.flags === -1) {
+    //It's not always the best path that gets chosen, the player can freely choose their path
+    //BUT: Once it is impossible to go onto a tile, a new path will be automatically chosen.
+    //SO: Move does not create a path, it just gets a path and validates it.
+    if(!targetNode || FlagHelper.hasFlag(targetNode.flags, BattalionEntity.PATH_FLAG.UNREACHABLE)) {
         return path;
     }
 
