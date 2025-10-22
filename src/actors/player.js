@@ -130,6 +130,7 @@ Player.prototype.onNextRound = function(gameContext, round) {
 
 Player.prototype.clearNodeMapRender = function() {
     this.camera.selectOverlay.clear();
+    this.camera.pathOverlay.clear();
 }
 
 Player.prototype.addNodeMapRender = function(nodeMap) {
@@ -140,5 +141,19 @@ Player.prototype.addNodeMapRender = function(nodeMap) {
         const id = flags === -1 ? TypeRegistry.TILE_ID.OVERLAY_ATTACK : TypeRegistry.TILE_ID.OVERLAY_MOVE;
     
         this.camera.selectOverlay.add(id, x, y);
+    }
+}
+
+Player.prototype.showPath = function(gameContext, entity, nodeMap, targetX, targetY) { 
+    const { tileManager } = gameContext;
+    const autotiler = tileManager.getAutotilerByID("path");
+    const path = entity.getPath(gameContext, nodeMap, targetX, targetY);
+
+    this.camera.pathOverlay.clear();
+
+    for(let i = 0; i < path.length; i++) {
+        const { deltaX, deltaY, tileX, tileY } = path[i];
+
+        this.camera.pathOverlay.add(5, tileX, tileY);
     }
 }

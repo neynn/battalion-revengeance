@@ -543,6 +543,7 @@ BattalionEntity.prototype.getPath = function(gameContext, nodes, targetX, target
     const index = worldMap.getIndex(targetX, targetY);
     const targetNode = nodes.get(index);
 
+    //TODO: Logic for hovering ON an enemy entity -> if attackRange = 1, then find any neighboring tile.
     if(!targetNode || targetNode.flags === -1) {
         return path;
     }
