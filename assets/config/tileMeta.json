@@ -100,5 +100,22 @@
     { "type": "NONE", "texture": "overlay", "tile": "0" },
     { "type": "NONE", "texture": "overlay", "tile": "1" },
     { "type": "NONE", "texture": "overlay", "tile": "2" },
-    { "type": "NONE", "texture": "overlay", "tile": "3" }
+    { "type": "NONE", "texture": "overlay", "tile": "3" },
+
+    { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "0" },
+    { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "1" },
+    { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "2" },
+    { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "3" },
+    { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "4" },
+    { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "5" },
+    { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "6" },
+    { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "7" },
+    { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "8" },
+    { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "9" },
+    { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "10" },
+    { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "11" },
+    { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "12" },
+    { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "13" },
+    { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "14" },
+    { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "15" }
 ]

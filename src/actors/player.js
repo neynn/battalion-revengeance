@@ -147,14 +147,14 @@ Player.prototype.addNodeMapRender = function(nodeMap) {
 
 Player.prototype.showPath = function(gameContext, entity, nodeMap, targetX, targetY) { 
     const { tileManager } = gameContext;
-    const autotiler = tileManager.getAutotilerByID("battalion_road");
+    const autotiler = tileManager.getAutotilerByID("battalion_path");
     const path = entity.getPath(gameContext, nodeMap, targetX, targetY).reverse();
+    let tileID = 0;
 
     this.camera.pathOverlay.clear();
 
     for(let i = 0; i < path.length; i++) {
-        const { deltaX, deltaY, tileX, tileY } = path[i];
-        let tileID = 0;
+        const { tileX, tileY } = path[i];
 
         //I am sorry.
         if(i === 0) {
@@ -195,4 +195,23 @@ Player.prototype.showPath = function(gameContext, entity, nodeMap, targetX, targ
 
         this.camera.pathOverlay.add(tileID, tileX, tileY);
     }
+
+    //Put the starting node.
+    if(path.length !== 0) {
+        const { deltaX, deltaY } = path[0];
+
+        if(deltaX === 1) {
+            tileID = tileManager.getTileID("path", "5");
+        } else if(deltaX === -1) {
+            tileID = tileManager.getTileID("path", "7");
+        } else if(deltaY === 1) {
+            tileID = tileManager.getTileID("path", "6");
+        } else if(deltaY === -1) {
+            tileID = tileManager.getTileID("path", "4");
+        }
+    } else {
+        tileID = tileManager.getTileID("path", "8");
+    }
+
+    this.camera.pathOverlay.add(tileID, entity.tileX, entity.tileY);
 }

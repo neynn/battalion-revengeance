@@ -1,4 +1,43 @@
 {
+    "battalion_path": {
+        "type": "MIN_4",
+        "members": [
+            ["path", "0"],
+            ["path", "1"],
+            ["path", "2"],
+            ["path", "3"],
+            ["path", "4"],
+            ["path", "5"],
+            ["path", "6"],
+            ["path", "7"],
+            ["path", "8"],
+            ["path", "9"],
+            ["path", "10"],
+            ["path", "11"],
+            ["path", "12"],
+            ["path", "13"],
+            ["path", "14"],
+            ["path", "15"]
+        ],
+        "values": {
+            "0": ["path", "8"],
+            "1": ["path", "13"],
+            "2": ["path", "12"],
+            "3": ["path", "3"],
+            "4": ["path", "14"],
+            "5": ["path", "0"],
+            "6": ["path", "9"],
+            "7": null,
+            "8": ["path", "11"],
+            "9": ["path", "10"],
+            "10": ["path", "2"],
+            "11": null,
+            "12": ["path", "1"],
+            "13": null,
+            "14": null,
+            "15": null
+        }
+    },
     "battalion_road": {
         "type": "MIN_4",
         "members": [
