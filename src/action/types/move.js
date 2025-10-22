@@ -63,13 +63,14 @@ MoveAction.prototype.isFinished = function(gameContext, executionRequest) {
 MoveAction.prototype.onEnd = function(gameContext, data, id) {
     const { transform2D, teamManager } = gameContext;
     const { deltaX, deltaY, tileX, tileY } = this.path[0];
+    const { cost } = data;
     const position = transform2D.transformTileToWorld(tileX, tileY);
 
     this.entity.setTile(tileX, tileY);
     this.entity.setPositionVec(position);
     this.entity.updateDirectionByDelta(deltaX, deltaY);
     this.entity.playIdle(gameContext);
-    this.entity.reduceMove();
+    this.entity.reduceMove(cost);
     this.entity.onArrive(gameContext);
 
     EntitySpawner.placeEntity(gameContext, this.entity);
@@ -84,28 +85,39 @@ MoveAction.prototype.onEnd = function(gameContext, data, id) {
 MoveAction.prototype.validate = function(gameContext, executionRequest, requestData) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID, targetX, targetY } = requestData;
+    const { entityID, targetX, targetY, attackTarget } = requestData;
     const entity = entityManager.getEntity(entityID);
 
+    //If attackTarget, then set the cost of the move action to 0 and immediately queue an attack as next.
+    //The attack type is immediate_move which  if it fails to evaluate, then reduce the entities moves by 1 since move had a cost of 0.
+    //If it manages to validate, then behave as normal.
+
     if(entity && entity.hasMoveLeft()) {
-        const nodeMap = new Map();
+        if(!attackTarget) {
+            const nodeMap = new Map();
 
-        entity.mGetNodeMap(gameContext, nodeMap);
+            entity.mGetNodeMap(gameContext, nodeMap);
 
-        const path = entity.getPath(gameContext, nodeMap, targetX, targetY);
+            const path = entity.getPath(gameContext, nodeMap, targetX, targetY);
 
-        if(path.length !== 0) {
-            executionRequest.setData({
-                "entityID": entityID,
-                "targetX": targetX,
-                "targetY": targetY,
-                "path": path
-            });
+            if(path.length !== 0) {
+                executionRequest.setData({
+                    "entityID": entityID,
+                    "targetX": targetX,
+                    "targetY": targetY,
+                    "path": path,
+                    "cost": 1 //Cost is 1 because there is no attack target.
+                });
 
-            //TODO: Interception.
-            if(entity.canCloak()) {
-                executionRequest.addNext(ActionHelper.createCloakRequest(entityID));
+                //TODO: Interception. Also only cloak if the move does NOT have an
+                if(entity.canCloak()) {
+                    executionRequest.addNext(ActionHelper.createCloakRequest(entityID));
+                }
             }
+        } else {
+            //No attack target, so immediately queue an attackAction as next.
+            //Move does NOT decide where the entity moves (targetX, targetY) because the player can still decide the neighboring spot to the entity.
+            //BUT! Only non-ranged units are allowed to follow-up with an attack.
         }
     }
 }

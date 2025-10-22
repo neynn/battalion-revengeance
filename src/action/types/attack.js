@@ -81,7 +81,7 @@ AttackAction.prototype.onEnd = function(gameContext, data, id) {
     this.entity.playIdle(gameContext);
 
     if(attackType === AttackAction.ATTACK_TYPE.INITIATE) {
-        this.entity.reduceMove();
+        this.entity.reduceMove(1);
     }
 
     this.entity = null;

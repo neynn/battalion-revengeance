@@ -41,7 +41,7 @@ SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, t
     const path = this.entity.getPath(gameContext, this.nodeMap, tileX, tileY);
 
     if(path.length !== 0) {
-        const request = ActionHelper.createMoveRequest(this.entity.getID(), tileX, tileY);
+        const request = ActionHelper.createMoveRequest(this.entity.getID(), tileX, tileY, null);
 
         player.queueRequest(request);
         stateMachine.setNextState(gameContext, Player.STATE.IDLE);
@@ -57,9 +57,23 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
 SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {
     if(!isAlly) {
         const player = stateMachine.getContext();
-        const request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.ATTACK_TYPE.INITIATE);
 
-        player.queueRequest(request);
+        //If this.entity is a melee attacker and NOT in range to attack, then try to find a way to move towards the target.
+        //With ranged units, then only check if the attack can happen.
+
+        if(this.entity.isRangeEnough(gameContext, entity)) {
+            const request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.ATTACK_TYPE.INITIATE);
+
+            player.queueRequest(request);
+        } else {
+            //The range is not enough
+            if(!entity.isRanged()) {
+                //The entity is a melee attacker
+                //TODO: Try queueing a move action TOWARDS the entity if the LAST tileX, tileY of the cursor was NOT next to the targets position.
+                //TODO: Keep track of cursor tileX, tileY
+            }
+        }
+
         stateMachine.setNextState(gameContext, Player.STATE.IDLE);
         return;
     }

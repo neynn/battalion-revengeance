@@ -241,8 +241,8 @@ BattalionEntity.prototype.hasMoveLeft = function() {
     return this.movesLeft > 0;
 }
 
-BattalionEntity.prototype.reduceMove = function() {
-    this.movesLeft--;
+BattalionEntity.prototype.reduceMove = function(delta = 1) {
+    this.movesLeft -= delta;
 
     if(this.movesLeft <= 0) {
         this.sprite.pause();
@@ -903,3 +903,7 @@ BattalionEntity.prototype.onArrive = function(gameContext) {
     //TODO: After a move ended, this checks the tile for any properties like damage_on_land
     //TODO: Also add an attack after move. Move can carry an attack target, which gets put as "next", if not uncloaked by a stealth unit.
 }
+
+BattalionEntity.prototype.isRanged = function() {
+    return this.config.maxRange !== 1 && this.config.weaponType !== TypeRegistry.WEAPON_TYPE.NONE;
+} 

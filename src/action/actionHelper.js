@@ -10,11 +10,12 @@ export const ActionHelper = {
             "attackType": attackType
         });
     },
-    createMoveRequest: function(entityID, targetX, targetY) {
+    createMoveRequest: function(entityID, targetX, targetY, attackTarget) {
         return new ActionRequest(TypeRegistry.ACTION_TYPE.MOVE, {
             "entityID": entityID,
             "targetX": targetX,
-            "targetY": targetY
+            "targetY": targetY,
+            "attackTarget": attackTarget
         });
     },
     createCloakRequest: function(entityID) {
