@@ -10,11 +10,10 @@ export const ActionHelper = {
             "attackType": attackType
         });
     },
-    createMoveRequest: function(entityID, targetX, targetY, attackTarget) {
+    createMoveRequest: function(entityID, path, attackTarget) {
         return new ActionRequest(TypeRegistry.ACTION_TYPE.MOVE, {
             "entityID": entityID,
-            "targetX": targetX,
-            "targetY": targetY,
+            "path": path,
             "attackTarget": attackTarget
         });
     },

@@ -1,4 +1,5 @@
 import { Entity } from "../../engine/entity/entity.js";
+import { EntityHelper } from "../../engine/entity/entityHelper.js";
 import { FlagHelper } from "../../engine/flagHelper.js";
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
@@ -441,12 +442,19 @@ BattalionEntity.PATH_FLAG = {
     START: 1 << 1
 };
 
+BattalionEntity.prototype.isAllyWith = function(gameContext, entity) {
+    const { teamManager } = gameContext;
+    const { teamID } = entity;
+
+    return teamManager.isAlly(this.teamID, teamID);
+}
+
 BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
     if(this.isDead() || !this.canMove()) {
         return;
     }
 
-    const { world, typeRegistry, teamManager } = gameContext;
+    const { world, typeRegistry } = gameContext;
     const { mapManager, entityManager } = world;
     const worldMap = mapManager.getActiveMap();
 
@@ -501,8 +509,7 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
                         const entity = entityManager.getEntity(entityID);
                         
                         if(entity)   {
-                            const { teamID } = entity;
-                            const isAlly = teamManager.isAlly(this.teamID, teamID);
+                            const isAlly = this.isAllyWith(gameContext, entity);
 
                             //TODO: Bypassing, team checks.
                             if(!isAlly) {
@@ -537,7 +544,7 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
     }
 }
 
-BattalionEntity.prototype.getPath = function(gameContext, nodes, targetX, targetY) {
+BattalionEntity.prototype.createPath = function(gameContext, nodes, targetX, targetY) {
     const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
@@ -550,10 +557,6 @@ BattalionEntity.prototype.getPath = function(gameContext, nodes, targetX, target
     const index = worldMap.getIndex(targetX, targetY);
     const targetNode = nodes.get(index);
 
-    //TODO: Logic for hovering ON an enemy entity -> if attackRange = 1, then find any neighboring tile.
-    //It's not always the best path that gets chosen, the player can freely choose their path
-    //BUT: Once it is impossible to go onto a tile, a new path will be automatically chosen.
-    //SO: Move does not create a path, it just gets a path and validates it.
     if(!targetNode || FlagHelper.hasFlag(targetNode.flags, BattalionEntity.PATH_FLAG.UNREACHABLE)) {
         return path;
     }
@@ -582,6 +585,35 @@ BattalionEntity.prototype.getPath = function(gameContext, nodes, targetX, target
     }
 
     return path;
+}
+
+BattalionEntity.prototype.validatePath = function(gameContext, path) {
+    if(path.length === 0) {
+        return false;
+    }
+
+    const targetX = path[0].tileX;
+    const targetY = path[0].tileY;
+    const tileEntity = EntityHelper.getTileEntity(gameContext, targetX, targetY);
+
+    if(tileEntity) {
+        return false;
+    }
+
+    for(let i = path.length - 1; i >= 0; i--) {
+        const { deltaX, deltaY, tileX, tileY } = path[i];
+        const tileEntity = EntityHelper.getTileEntity(gameContext, tileX, tileY);
+
+        if(tileEntity) {
+            //IsFriend?
+            //TODO: Logic for hovering ON an enemy entity -> if attackRange = 1, then find any neighboring tile.
+            //It's not always the best path that gets chosen, the player can freely choose their path
+            //BUT: Once it is impossible to go onto a tile, a new path will be automatically chosen.
+            //SO: Move does not create a path, it just gets a path and validates it.
+        }
+    }
+
+    return true;
 }
 
 BattalionEntity.prototype.getTerrainTypes = function(gameContext) {

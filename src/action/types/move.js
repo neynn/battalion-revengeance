@@ -86,7 +86,7 @@ MoveAction.prototype.onEnd = function(gameContext, data, id) {
 MoveAction.prototype.validate = function(gameContext, executionRequest, requestData) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID, targetX, targetY, attackTarget } = requestData;
+    const { entityID, path, attackTarget } = requestData;
     const entity = entityManager.getEntity(entityID);
 
     //If attackTarget, then set the cost of the move action to 0 and immediately queue an attack as next.
@@ -94,18 +94,12 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
     //If it manages to validate, then behave as normal.
 
     if(entity && entity.hasMoveLeft()) {
-        const nodeMap = new Map();
+        const isValid = entity.validatePath(gameContext, path);
 
-        entity.mGetNodeMap(gameContext, nodeMap);
-
-        const path = entity.getPath(gameContext, nodeMap, targetX, targetY);
-
-        if(path.length !== 0) {
+        if(isValid) {
             if(!attackTarget) {
                 executionRequest.setData({
                     "entityID": entityID,
-                    "targetX": targetX,
-                    "targetY": targetY,
                     "path": path,
                     "cost": 1
                 });
@@ -117,8 +111,6 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
             } else if(!entity.isRanged()){
                 executionRequest.setData({
                     "entityID": entityID,
-                    "targetX": targetX,
-                    "targetY": targetY,
                     "path": path,
                     "cost": 0
                 });
