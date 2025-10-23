@@ -13,6 +13,8 @@ export const WorldMap = function(id) {
     this.flags = 0;
 }
 
+WorldMap.OUT_OF_BOUNDS = -1;
+
 WorldMap.prototype.getConfig = function() {
     return this.config;
 }
@@ -56,14 +58,14 @@ WorldMap.prototype.saveLayers = function() {
 WorldMap.prototype.applyAutotiler = function(autotiler, tileX, tileY, layerID, isInverted) {
     const tileID = this.getTile(layerID, tileX, tileY);
 
-    if(tileID === -1 || !autotiler.hasMember(tileID)) {
+    if(tileID === WorldMap.OUT_OF_BOUNDS || !autotiler.hasMember(tileID)) {
         return TileManager.TILE_ID.EMPTY;
     }
 
     const responseID = autotiler.run(tileX, tileY, (x, y) => {
         const nextID = this.getTile(layerID, x, y);
 
-        if(nextID === -1) {
+        if(nextID === WorldMap.OUT_OF_BOUNDS) {
             if(isInverted) {
                 return Autotiler.RESPONSE.INVALID;
             } else {
@@ -114,7 +116,7 @@ WorldMap.prototype.getTileCoords = function(index) {
 
 WorldMap.prototype.getIndex = function(tileX, tileY) {
     if(this.isTileOutOfBounds(tileX, tileY)) {
-        return -1;
+        return WorldMap.OUT_OF_BOUNDS;
     }
 
     return tileY * this.width + tileX;
@@ -187,7 +189,7 @@ WorldMap.prototype.removeEntity = function(tileX, tileY, rangeX, rangeY, entityI
             const locationX = tileX + j;
             const index = this.getIndex(locationX, locationY);
 
-            if(index !== -1) {
+            if(index !== WorldMap.OUT_OF_BOUNDS) {
                 const list = this.entities.get(index);
 
                 if(!list) {
@@ -217,7 +219,7 @@ WorldMap.prototype.addEntity = function(tileX, tileY, rangeX, rangeY, entityID) 
             const locationX = tileX + j;
             const index = this.getIndex(locationX, locationY);
 
-            if(index !== -1) {
+            if(index !== WorldMap.OUT_OF_BOUNDS) {
                 const list = this.entities.get(index);
 
                 if(!list) {
@@ -294,12 +296,12 @@ WorldMap.prototype.getTile = function(layerID, tileX, tileY) {
 
     if(!layer) {
         console.warn(`Layer ${layerID} does not exist!`);
-        return -1;
+        return WorldMap.OUT_OF_BOUNDS;
     }
 
     if(this.isTileOutOfBounds(tileX, tileY)) {
         console.warn(`Tile [${tileY}|${tileX}] is out of bounds!`);
-        return -1;
+        return WorldMap.OUT_OF_BOUNDS;
     }
 
     const index = tileY * this.width + tileX;

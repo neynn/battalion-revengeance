@@ -94,9 +94,7 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
     //If it manages to validate, then behave as normal.
 
     if(entity && entity.hasMoveLeft()) {
-        const isValid = entity.validatePath(gameContext, path);
-
-        if(isValid) {
+        if(entity.isPathValid(gameContext, path)) {
             if(!attackTarget) {
                 executionRequest.setData({
                     "entityID": entityID,

@@ -2,6 +2,7 @@ import { Entity } from "../../engine/entity/entity.js";
 import { EntityHelper } from "../../engine/entity/entityHelper.js";
 import { FlagHelper } from "../../engine/flagHelper.js";
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
+import { WorldMap } from "../../engine/map/worldMap.js";
 import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { AttackAction } from "../action/types/attack.js";
@@ -66,6 +67,13 @@ export const BattalionEntity = function(id, sprite) {
     this.transportID = null;
 }
 
+BattalionEntity.PATH_FLAG = {
+    NONE: 0b00000000,
+    UNREACHABLE: 1 << 0,
+    START: 1 << 1
+};
+
+BattalionEntity.MIN_MOVE_COST = 1;
 BattalionEntity.MAX_MOVE_COST = 99;
 
 BattalionEntity.DIRECTION = {
@@ -436,12 +444,6 @@ BattalionEntity.prototype.isDead = function() {
     return this.health <= 0 && !this.isMarkedForDestroy;
 }
 
-BattalionEntity.PATH_FLAG = {
-    NONE: 0b00000000,
-    UNREACHABLE: 1 << 0,
-    START: 1 << 1
-};
-
 BattalionEntity.prototype.isAllyWith = function(gameContext, entity) {
     const { teamManager } = gameContext;
     const { teamID } = entity;
@@ -449,21 +451,55 @@ BattalionEntity.prototype.isAllyWith = function(gameContext, entity) {
     return teamManager.isAlly(this.teamID, teamID);
 }
 
+BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType, tileX, tileY) {
+    const { world, typeRegistry } = gameContext;
+    const { entityManager } = world;
+    const { terrain, passability } = tileType;
+    let tileCost = passability[this.config.movementType] ?? BattalionEntity.MAX_MOVE_COST;
+
+    if(tileCost < BattalionEntity.MAX_MOVE_COST) {
+        for(let i = 0; i < terrain.length; i++) {
+            const { moveCost } = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
+            const terrainModifier = moveCost[this.config.movementType] ?? 0;
+
+            tileCost += terrainModifier;
+        }
+
+        {
+            const entityID = worldMap.getTopEntity(tileX, tileY);
+            const entity = entityManager.getEntity(entityID);
+            
+            if(entity)   {
+                const isAlly = this.isAllyWith(gameContext, entity);
+
+                //TODO: Bypassing, team checks.
+                if(!isAlly) {
+                    tileCost += BattalionEntity.MAX_MOVE_COST;
+                }
+            }
+        }
+    }
+
+    if(tileCost < BattalionEntity.MIN_MOVE_COST) {
+        tileCost = BattalionEntity.MIN_MOVE_COST;
+    }
+
+    return tileCost;
+}
+
 BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
     if(this.isDead() || !this.canMove()) {
         return;
     }
 
-    const { world, typeRegistry } = gameContext;
-    const { mapManager, entityManager } = world;
+    const { world } = gameContext;
+    const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
 
-    //const flagMap = new EntityFlagMap(this.tileX, this.tileY, this.movementRange);
     const startID = worldMap.getIndex(this.tileX, this.tileY);
     const startNode = createNode(startID, this.tileX, this.tileY, 0, null, null, BattalionEntity.PATH_FLAG.START);
     const queue = [startNode];
     const visitedCost = new Map();
-
     const typeCache = new Map();
 
     nodeMap.set(startID, startNode);
@@ -483,68 +519,41 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
             const neighborY = y + deltaY;
             const neighborID = worldMap.getIndex(neighborX, neighborY);
 
-            if(neighborID !== -1) {
-                let nextCost = cost;
-                let tileType = typeCache.get(neighborID);
+            //Neighbor is out of bounds.
+            if(neighborID === WorldMap.OUT_OF_BOUNDS) {
+                continue;
+            }
 
-                if(!tileType) {
-                    tileType = worldMap.getTileTypeObject(gameContext, neighborX, neighborY);
-                    typeCache.set(neighborID, tileType);
-                }
-                
-                const { terrain, passability } = tileType;
+            let tileType = typeCache.get(neighborID);
 
-                nextCost += passability[this.config.movementType] ?? BattalionEntity.MAX_MOVE_COST;
+            if(!tileType) {
+                tileType = worldMap.getTileTypeObject(gameContext, neighborX, neighborY);
+                typeCache.set(neighborID, tileType);
+            }
 
-                if(nextCost < BattalionEntity.MAX_MOVE_COST) {
-                    for(let i = 0; i < terrain.length; i++) {
-                        const { moveCost } = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
-                        const terrainModifier = moveCost[this.config.movementType] ?? 0;
+            const tileCost = cost + this.getTileCost(gameContext, worldMap, tileType, neighborX, neighborY);
 
-                        nextCost += terrainModifier;
-                    }
+            if(tileCost <= this.movementRange) {
+                const bestCost = visitedCost.get(neighborID);
 
-                    {
-                        const entityID = worldMap.getTopEntity(neighborX, neighborY);
-                        const entity = entityManager.getEntity(entityID);
-                        
-                        if(entity)   {
-                            const isAlly = this.isAllyWith(gameContext, entity);
+                if(bestCost === undefined || tileCost < bestCost) {
+                    const childNode = createNode(neighborID, neighborX, neighborY, tileCost, type, id, BattalionEntity.PATH_FLAG.NONE);
 
-                            //TODO: Bypassing, team checks.
-                            if(!isAlly) {
-                                nextCost += BattalionEntity.MAX_MOVE_COST;
-                            }
-                        }
-                    }
-                }
-
-                if(nextCost < 1) {
-                    nextCost = 1;
-                }
-
-                if(nextCost <= this.movementRange) {
-                    const bestCost = visitedCost.get(neighborID);
-
-                    if(bestCost === undefined || nextCost < bestCost) {
-                        const childNode = createNode(neighborID, neighborX, neighborY, nextCost, type, id, BattalionEntity.PATH_FLAG.NONE);
-
-                        queue.push(childNode);
-                        visitedCost.set(neighborID, nextCost);
-                        nodeMap.set(neighborID, childNode);
-                    }
-                } else if(!nodeMap.has(neighborID)) {
-                    //This is unreachable.
-                    const childNode = createNode(neighborID, neighborX, neighborY, nextCost, type, id, BattalionEntity.PATH_FLAG.UNREACHABLE);
-
+                    queue.push(childNode);
+                    visitedCost.set(neighborID, tileCost);
                     nodeMap.set(neighborID, childNode);
                 }
+            } else if(!nodeMap.has(neighborID)) {
+                //This is unreachable.
+                const childNode = createNode(neighborID, neighborX, neighborY, tileCost, type, id, BattalionEntity.PATH_FLAG.UNREACHABLE);
+
+                nodeMap.set(neighborID, childNode);
             }
         }
     }
 }
 
-BattalionEntity.prototype.createPath = function(gameContext, nodes, targetX, targetY) {
+BattalionEntity.prototype.getBestPath = function(gameContext, nodes, targetX, targetY) {
     const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
@@ -587,7 +596,7 @@ BattalionEntity.prototype.createPath = function(gameContext, nodes, targetX, tar
     return path;
 }
 
-BattalionEntity.prototype.validatePath = function(gameContext, path) {
+BattalionEntity.prototype.isPathValid = function(gameContext, path) {
     if(path.length === 0) {
         return false;
     }
@@ -600,16 +609,43 @@ BattalionEntity.prototype.validatePath = function(gameContext, path) {
         return false;
     }
 
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    let currentX = this.tileX;
+    let currentY = this.tileY;
+    let totalCost = 0;
+
     for(let i = path.length - 1; i >= 0; i--) {
         const { deltaX, deltaY, tileX, tileY } = path[i];
-        const tileEntity = EntityHelper.getTileEntity(gameContext, tileX, tileY);
+        const totalDelta = Math.abs(deltaX) + Math.abs(deltaY);
 
-        if(tileEntity) {
-            //IsFriend?
-            //TODO: Logic for hovering ON an enemy entity -> if attackRange = 1, then find any neighboring tile.
-            //It's not always the best path that gets chosen, the player can freely choose their path
-            //BUT: Once it is impossible to go onto a tile, a new path will be automatically chosen.
-            //SO: Move does not create a path, it just gets a path and validates it.
+        //Entities can only move one tile at a time.
+        if(totalDelta > 1) {
+            return false;
+        }
+
+        //Are tileX and tileY correct?
+        if(currentX + deltaX !== tileX || currentY + deltaY !== tileY) {
+            return false;
+        }
+
+        currentX += deltaX;
+        currentY += deltaY;
+
+        const index = worldMap.getIndex(currentX, currentY);
+
+        //The target is out of bounds
+        if(index === WorldMap.OUT_OF_BOUNDS) {
+            return false;
+        }
+
+        const tileType = worldMap.getTileTypeObject(gameContext, tileX, tileY);
+
+        totalCost += this.getTileCost(gameContext, worldMap, tileType, tileX, tileY);
+
+        if(totalCost > this.movementRange) {
+            return false;
         }
     }
 

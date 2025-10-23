@@ -46,7 +46,7 @@ SelectState.prototype.selectEntity = function(gameContext, stateMachine, entity)
 SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, tileY) {
     if(this.lastValidX === tileX && this.lastValidY === tileY) {
         const player = stateMachine.getContext();
-        const path = this.entity.createPath(gameContext, this.nodeMap, this.lastValidX, this.lastValidY);
+        const path = this.entity.getBestPath(gameContext, this.nodeMap, this.lastValidX, this.lastValidY);
 
         if(path.length !== 0) {
             const request = ActionHelper.createMoveRequest(this.entity.getID(), path, null);
@@ -87,14 +87,8 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
     //TODO: Each tile gets put ON the path, if its a delta of exactly one
     //Check tile delta, if its 1 AND the tile is NOT in the path, then add it to it.
     if(targetNode && !FlagHelper.hasFlag(targetNode.flags, BattalionEntity.PATH_FLAG.UNREACHABLE)) {
-        const delta = this.getTileDelta(tileX, tileY);
-
-        if(delta === 1) {
-
-        }
-
         const player = stateMachine.getContext();
-        const path = this.entity.createPath(gameContext, this.nodeMap, tileX, tileY).reverse();
+        const path = this.entity.getBestPath(gameContext, this.nodeMap, tileX, tileY).reverse();
 
         player.showPath(gameContext, path, this.entity.tileX, this.entity.tileY);
 
@@ -124,7 +118,7 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
 
                 player.queueRequest(request);
             } else {
-                const path = this.entity.createPath(gameContext, this.nodeMap, this.lastValidX, this.lastValidY);
+                const path = this.entity.getBestPath(gameContext, this.nodeMap, this.lastValidX, this.lastValidY);
                 const request = ActionHelper.createMoveRequest(this.entity.getID(), path, entity.getID());
 
                 player.queueRequest(request);
