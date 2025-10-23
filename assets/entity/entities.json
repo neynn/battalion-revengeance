@@ -324,6 +324,24 @@
             "fire_up": "battle_cruiser_fire_up"
         }
     },
+    "jammer_truck": {
+        "health": 50,
+        "damage": 0,
+        "weaponType": "NONE",
+        "armorType": "LIGHT",
+        "movementRange": 5,
+        "movementType": "WHEELED",
+        "traits": [],
+        "sounds": {
+            "move": "turret_move"
+        },
+        "sprites": {
+            "idle_right": "jammer_truck_idle_right",
+            "idle_left": "jammer_truck_idle_left",
+            "idle_down": "jammer_truck_idle_down",
+            "idle_up": "jammer_truck_idle_up"
+        }
+    },
     "annihilator_tank": {
         "health": 120,
         "damage": 50,
@@ -606,21 +624,6 @@
             "idle_left": "blockade_idle_left",
             "idle_down": "blockade_idle_down",
             "idle_up": "blockade_idle_up"
-        }
-    },
-    "jammer_truck": {
-        "health": 10,
-        "damage": 0,
-        "weaponType": "NONE",
-        "armorType": "NONE",
-        "movementRange": 1,
-        "movementType": "STATIONARY",
-        "traits": [],
-        "sprites": {
-            "idle_right": "jammer_truck_idle_right",
-            "idle_left": "jammer_truck_idle_left",
-            "idle_down": "jammer_truck_idle_down",
-            "idle_up": "jammer_truck_idle_up"
         }
     }
 }

@@ -1,7 +1,8 @@
-export const Sound = function(buffer, volume) {
+export const Sound = function(buffer, volume, allowStacking) {
     this.instanceID = 0;
     this.buffer = buffer;
     this.volume = volume;
+    this.allowStacking = allowStacking;
     this.instances = new Map();
 }
 
@@ -14,6 +15,10 @@ Sound.prototype.stop = function() {
 }
 
 Sound.prototype.play = function(context) {
+    if(this.instances.size > 0 && !this.allowStacking) {
+        return;
+    }
+
     const { destination, currentTime } = context;
     const gainNode = context.createGain();
     const sourceNode = context.createBufferSource();

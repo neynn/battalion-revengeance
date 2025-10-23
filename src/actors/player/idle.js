@@ -12,7 +12,7 @@ IdleState.prototype.constructor = IdleState;
 IdleState.prototype.onEnter = function(gameContext, stateMachine, enterData) {
     const player = stateMachine.getContext();
 
-    player.clearNodeMapRender();
+    player.clearOverlays();
 }
 
 IdleState.prototype.onTileClick = function(gameContext, stateMachine, tileX, tileY) {

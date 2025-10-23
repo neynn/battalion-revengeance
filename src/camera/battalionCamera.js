@@ -11,14 +11,13 @@ export const BattalionCamera = function() {
 
     this.pathOverlay = new Overlay();
     this.selectOverlay = new Overlay();
+    this.jammerOverlay = new Overlay();
     this.perspectives = new Set();
     this.mainPerspective = null;
     this.priorityEntities = [];
     this.regularEntities = [];
     this.markerSprite = SpriteManager.EMPTY_SPRITE;
     this.weakMarkerSprite = SpriteManager.EMPTY_SPRITE;
-    this.jammerID = TypeRegistry.TILE_ID.JAMMER;
-    this.showJammers = false;
 }
 
 BattalionCamera.prototype = Object.create(Camera2D.prototype);
@@ -36,21 +35,6 @@ BattalionCamera.prototype.addPerspective = function(teamID) {
 
 BattalionCamera.prototype.setMainPerspective = function(teamID) {
     this.mainPerspective = teamID;
-}
-
-BattalionCamera.prototype.drawJammers = function(tileManager, context, worldMap) {
-    const { jammerFields } = worldMap;
-
-    for(const [index, field] of jammerFields) {
-        const { tileX, tileY } = field;
-
-        if(tileX >= this.startX && tileX <= this.endX && tileY >= this.startY && tileY <= this.endY) {
-            const renderX = this.tileWidth * tileX;
-            const renderY = this.tileHeight * tileY;
-
-            this.drawTileSafe(tileManager, this.jammerID, context, renderX, renderY);
-        }
-    }
 }
 
 BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime, deltaTime) {
@@ -134,11 +118,7 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.CLOUD));
     this.drawOverlay(tileManager, context, this.selectOverlay);
-    
-    if(this.jammerID !== 0) {
-        this.drawJammers(tileManager, context, worldMap);
-    }
-
+    this.drawOverlay(tileManager, context, this.jammerOverlay);
     this.drawOverlay(tileManager, context, this.pathOverlay);
     this.drawSpriteBatchYSorted(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.BUILDING), realTime, deltaTime);
     this.drawEntities(gameContext, display, realTime, deltaTime);

@@ -25,6 +25,7 @@ MoveAction.prototype.onStart = function(gameContext, data, id) {
 
     entity.playMove(gameContext);
     EntitySpawner.removeEntity(gameContext, entity);
+    entity.onDepart(gameContext);
 
     this.path = path;
     this.pathIndex = this.path.length - 1;

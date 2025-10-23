@@ -986,12 +986,6 @@ BattalionEntity.prototype.toTransport = function(gameContext, transportType) {
     }
 }
 
-BattalionEntity.prototype.onArrive = function(gameContext) {
-    const terrainTypes = this.getTerrainTypes(gameContext);
-    //TODO: After a move ended, this checks the tile for any properties like damage_on_land
-    //TODO: Also add an attack after move. Move can carry an attack target, which gets put as "next", if not uncloaked by a stealth unit.
-}
-
 BattalionEntity.prototype.isRanged = function() {
     return this.config.maxRange > 1 && this.config.weaponType !== TypeRegistry.WEAPON_TYPE.NONE;
 } 
@@ -1004,4 +998,44 @@ BattalionEntity.prototype.isNodeValid = function(node) {
     }
 
     return true;
+}
+
+BattalionEntity.prototype.onInitialPlace = function(gameContext) {
+    this.placeJammer(gameContext);
+}
+
+BattalionEntity.prototype.placeJammer = function(gameContext) {
+    const worldMap = gameContext.getActiveMap();
+
+    //TODO: Use traits.
+    if(this.config.id === "jammer_truck") {
+        worldMap.fill2D(this.tileX, this.tileY, 2, (tileX, tileY) => {
+            worldMap.addJammer(tileX, tileY);
+        });
+    }
+}
+
+BattalionEntity.prototype.removeJammer = function(gameContext) {
+    const worldMap = gameContext.getActiveMap();
+
+    if(this.config.id === "jammer_truck") {
+        worldMap.fill2D(this.tileX, this.tileY, 2, (tileX, tileY) => {
+            worldMap.removeJammer(tileX, tileY);
+        });
+    }
+}
+
+BattalionEntity.prototype.onDeath = function(gameContext) {
+    this.removeJammer(gameContext);
+}
+
+BattalionEntity.prototype.onDepart = function(gameContext) {
+    this.removeJammer(gameContext);
+}
+
+BattalionEntity.prototype.onArrive = function(gameContext) {
+    this.placeJammer(gameContext);
+    const terrainTypes = this.getTerrainTypes(gameContext);
+    //TODO: After a move ended, this checks the tile for any properties like damage_on_land
+    //TODO: Also add an attack after move. Move can carry an attack target, which gets put as "next", if not uncloaked by a stealth unit.
 }

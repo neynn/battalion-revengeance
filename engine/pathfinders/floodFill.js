@@ -70,6 +70,41 @@ FloodFill.flattenTree = function(startNode) {
     return walkedNodes;
 }
 
+FloodFill.fill2D = function(startX, startY, mapWidth, mapHeight, range, onFill) {
+    const queue = [];
+    const visited = new Set();
+    let index = 0;
+
+    visited.add(startY * mapWidth + startX);
+    queue.push({ "x": startX, "y": startY, "cost": 0 });
+
+    if(FloodFill.isNodeInBounds(startX, startY, mapWidth, mapHeight)) {
+        onFill(startX, startY);
+    }
+
+    while(index < queue.length) {
+        const { x, y, cost } = queue[index++];
+        const neighborCost = cost + 1;
+
+        if(neighborCost > range) {
+            continue;
+        }
+
+        for(let i = 0; i < FloodFill.NEIGHBORS.length; i++) {
+            const [deltaX, deltaY] = FloodFill.NEIGHBORS[i];
+            const neighborX = x + deltaX;
+            const neighborY = y + deltaY;
+            const neighborID = neighborY * mapWidth + neighborX;
+
+            if(!visited.has(neighborID) && FloodFill.isNodeInBounds(neighborX, neighborY, mapWidth, mapHeight)) {
+                onFill(neighborX, neighborY);
+                visited.add(neighborID);
+                queue.push({ "x": neighborX, "y": neighborY, "cost": neighborCost });
+            } 
+        }
+    }
+}
+
 FloodFill.prototype.search = function(startX, startY, gLimit, mapWidth, mapHeight, onCheck) {
     const queue = [];
     const visitedNodes = new Set();

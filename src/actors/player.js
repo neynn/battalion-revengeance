@@ -40,10 +40,21 @@ Player.prototype = Object.create(BattalionActor.prototype);
 Player.prototype.constructor = Player;
 
 Player.prototype.inspectEntity = function(gameContext, entity) {
+    const worldMap = gameContext.getActiveMap();
+    const { tileX, tileY } = entity;
     this.inspectedEntity = entity;
 
     const displayName = entity.getDisplayName(gameContext);
     const displayDesc = entity.getDisplayDesc(gameContext);
+
+    this.camera.jammerOverlay.clear();
+
+    //TODO: Use JAMMER trait.
+    if(this.inspectedEntity.config.id === "jammer_truck") {
+        worldMap.fill2D(tileX, tileY, 2, (x, y) => {
+            this.camera.jammerOverlay.add(TypeRegistry.TILE_ID.JAMMER, x, y);
+        });
+    }
 
     console.log(displayName, displayDesc);
     console.log("Inspected Entity", entity);
@@ -57,12 +68,6 @@ Player.prototype.onClick = function(gameContext, worldMap, tileX, tileY) {
     const entity = EntityHelper.getTileEntity(gameContext, tileX, tileY);
 
     if(entity) {
-        if(this.inspectedEntity === entity) {
-            this.inspectTile(gameContext, tileX, tileY);
-        } else {
-            this.inspectEntity(gameContext, entity);        
-        }
-
         const { teamManager } = gameContext;
         const { teamID } = entity;
         const entityID = entity.getID();
@@ -70,6 +75,13 @@ Player.prototype.onClick = function(gameContext, worldMap, tileX, tileY) {
         const isControlled = this.hasEntity(entityID);
 
         this.states.eventEnter(gameContext, Player.EVENT.ENTITY_CLICK, { "entity": entity, "isAlly": isAlly, "isControlled": isControlled });
+
+        if(this.inspectedEntity === entity) {
+            this.inspectTile(gameContext, tileX, tileY);
+        } else {
+            this.inspectEntity(gameContext, entity);        
+        }
+
         return;
     }
 
@@ -129,13 +141,14 @@ Player.prototype.onNextRound = function(gameContext, round) {
     console.log("IT IS ROUND " + round);
 }
 
-Player.prototype.clearNodeMapRender = function() {
+Player.prototype.clearOverlays = function() {
     this.camera.selectOverlay.clear();
     this.camera.pathOverlay.clear();
+    this.camera.jammerOverlay.clear();
 }
 
 Player.prototype.addNodeMapRender = function(nodeMap, entity) {
-    this.clearNodeMapRender();
+    this.clearOverlays();
 
     for(const [index, node] of nodeMap) {
         const { x, y } = node;

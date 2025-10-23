@@ -156,6 +156,7 @@ export const EntitySpawner = {
             }
 
             entity.playIdle(gameContext);
+            entity.onInitialPlace(gameContext);
         }
 
         return entity;

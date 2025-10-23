@@ -22,6 +22,7 @@ DeathAction.prototype.onStart = function(gameContext, data, id) {
         const entity = entityManager.getEntity(entities[i]);
 
         entity.playDeath(gameContext);
+        entity.onDeath(gameContext);
         entity.setHealth(0);
 
         this.entities.push(entity);

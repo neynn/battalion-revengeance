@@ -1,3 +1,4 @@
+import { FloodFill } from "../pathfinders/floodFill.js";
 import { Autotiler } from "../tile/autotiler.js";
 import { TileManager } from "../tile/tileManager.js";
 import { MapHelper } from "./mapHelper.js";
@@ -381,4 +382,8 @@ WorldMap.prototype.loadLayers = function(gameContext, layerData) {
 
         layer.decode(layerData[layerID]);
     }
+}
+
+WorldMap.prototype.fill2D = function(tileX, tileY, range, onFill) {
+    FloodFill.fill2D(tileX, tileY, this.width, this.height, range, onFill);
 }
