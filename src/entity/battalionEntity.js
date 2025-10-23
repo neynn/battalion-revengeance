@@ -987,5 +987,5 @@ BattalionEntity.prototype.onArrive = function(gameContext) {
 }
 
 BattalionEntity.prototype.isRanged = function() {
-    return this.config.maxRange !== 1 && this.config.weaponType !== TypeRegistry.WEAPON_TYPE.NONE;
+    return this.config.maxRange > 1 && this.config.weaponType !== TypeRegistry.WEAPON_TYPE.NONE;
 } 
