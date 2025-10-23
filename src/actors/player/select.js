@@ -1,5 +1,6 @@
 import { EntityHelper } from "../../../engine/entity/entityHelper.js";
 import { FlagHelper } from "../../../engine/flagHelper.js";
+import { FloodFill } from "../../../engine/pathfinders/floodFill.js";
 import { ActionHelper } from "../../action/actionHelper.js";
 import { AttackAction } from "../../action/types/attack.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
@@ -102,6 +103,52 @@ SelectState.prototype.splitPath = function(targetX, targetY) {
     return false;
 }
 
+SelectState.prototype.isAttackPathValid = function(gameContext, entity) {
+    if(this.path.length === 0) {
+        return this.entity.getDistanceToEntity(entity) === 1;
+    }
+
+    const finalX = this.path[0].tileX;
+    const finalY = this.path[0].tileY;
+    const deltaX = Math.abs(entity.tileX - finalX);
+    const deltaY = Math.abs(entity.tileY - finalY);
+
+    return (deltaX + deltaY) === 1 && this.entity.isPathValid(gameContext, this.path);
+}
+
+SelectState.prototype.setOptimalAttackPath = function(gameContext, entity) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const { tileX, tileY } = entity;
+    let bestNode = null;
+
+    for(const [deltaX, deltaY, type] of FloodFill.NEIGHBORS) {
+        const neighborX = tileX + deltaX;
+        const neighborY = tileY + deltaY;
+        const isOccupied = worldMap.isTileOccupied(neighborX, neighborY);
+
+        if(!isOccupied) {
+            const index = worldMap.getIndex(neighborX, neighborY);
+            const node = this.nodeMap.get(index);
+
+            if(node && !FlagHelper.hasFlag(node.flags, BattalionEntity.PATH_FLAG.UNREACHABLE)) {
+                if(!bestNode) {
+                    bestNode = node;
+                } else if(node.cost < bestNode.cost) {
+                    bestNode = node;
+                }
+            }
+        }
+    }
+
+    if(bestNode) {
+        this.path = this.entity.getBestPath(gameContext, this.nodeMap, bestNode.x, bestNode.y);
+    } else {
+        this.path.length = 0;
+    }
+}
+
 SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, tileY) {
     const { world } = gameContext;
     const { mapManager } = world;
@@ -110,13 +157,15 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
     const targetNode = this.nodeMap.get(worldMap.getIndex(tileX, tileY));
     const entity = EntityHelper.getTileEntity(gameContext, tileX, tileY);
 
-    if(entity) {
-        if(!this.entity.isAllyWith(gameContext, entity)) {
-            //TODO: If my entity is melee unit, then look if it is already next to the target.
-            //If it is not then try to find the optimal way.
-            //If there is no way, reset the path.
-            return;
+    if(entity && !this.entity.isAllyWith(gameContext, entity)) {
+        if(this.entity.isRanged()) {
+            this.path.length = 0;
+        } else if(!this.isAttackPathValid(gameContext, entity)){
+            this.setOptimalAttackPath(gameContext, entity);
         }
+
+        player.showPath(gameContext, this.path, this.entity.tileX, this.entity.tileY);
+        return;
     }
 
     if(!targetNode || FlagHelper.hasFlag(targetNode.flags, BattalionEntity.PATH_FLAG.UNREACHABLE)) {
