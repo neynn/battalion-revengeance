@@ -246,31 +246,22 @@ BattalionMap.prototype.getBuilding = function(targetX, targetY) {
     return null;
 }
 
-BattalionMap.prototype.createJammerField = function(tileX, tileY) {
-    const index = this.getIndex(tileX, tileY);
-
-    if(index !== WorldMap.OUT_OF_BOUNDS && !this.jammerFields.has(index)) {
-        const jammerField = new JammerField(tileX, tileY);
-
-        this.jammerFields.set(index, jammerField);
-
-        return jammerField;
-    }
-
-    return null;
-}
-
 BattalionMap.prototype.addJammer = function(tileX, tileY) {
     const index = this.getIndex(tileX, tileY);
-    let jammerField = this.jammerFields.get(index);
 
-    if(!jammerField) {
-        jammerField = this.createJammerField(tileX, tileY);
+    if(index !== WorldMap.OUT_OF_BOUNDS) {
+        const jammerField = this.jammerFields.get(index);
+
+        if(jammerField) {
+            jammerField.addBlocker();
+        } else {
+            const newField = new JammerField(tileX, tileY);
+
+            newField.addBlocker();
+
+            this.jammerFields.set(index, newField);
+        }
     }
-
-    if(jammerField) {
-        jammerField.addBlocker();
-    } 
 }
 
 BattalionMap.prototype.removeJammer = function(tileX, tileY) {

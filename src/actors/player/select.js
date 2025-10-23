@@ -37,6 +37,7 @@ SelectState.prototype.selectEntity = function(gameContext, stateMachine, entity)
     this.entity.mGetNodeMap(gameContext, this.nodeMap);
 
     player.addNodeMapRender(this.nodeMap, this.entity);
+    player.showJammer(gameContext, entity);
 
     this.onTileChange(gameContext, stateMachine, this.entity.tileX, this.entity.tileY);
 }

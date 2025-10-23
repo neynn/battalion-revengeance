@@ -122,23 +122,12 @@ Player.prototype.showJammer = function(gameContext, entity) {
 
 Player.prototype.update = function(gameContext) {
     const { x, y } = ContextHelper.getMouseTile(gameContext);
-    const entity = EntityHelper.getTileEntity(gameContext, x, y);
 
     if(x !== this.tileX || y !== this.tileY) {
-        if(entity) {
-            this.showJammer(gameContext, entity);
-        } else {
-            this.camera.jammerOverlay.clear();
-        }
-
         this.states.eventEnter(gameContext, Player.EVENT.TILE_CHANGE, {
             "x": x,
             "y": y
         });
-    }
-
-    if(!entity) {
-        this.camera.jammerOverlay.clear();
     }
 
     this.tileX = x;

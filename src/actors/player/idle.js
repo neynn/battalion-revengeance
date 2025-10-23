@@ -35,7 +35,13 @@ IdleState.prototype.onTileClick = function(gameContext, stateMachine, tileX, til
 }
 
 IdleState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {
-    if(isControlled && !entity.isDead()) {
-        stateMachine.setNextState(gameContext, Player.STATE.SELECT, { "entity": entity });
+    const player = stateMachine.getContext();
+
+    if(isControlled) {
+        if(!entity.isDead()) {
+            stateMachine.setNextState(gameContext, Player.STATE.SELECT, { "entity": entity });
+        }
+    } else {
+        player.showJammer(gameContext, entity);
     }
 }
