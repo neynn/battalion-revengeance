@@ -73,6 +73,7 @@ BattalionEntity.PATH_FLAG = {
     START: 1 << 1
 };
 
+BattalionEntity.JAMMER_RANGE = 2;
 BattalionEntity.MIN_MOVE_COST = 1;
 BattalionEntity.MAX_MOVE_COST = 99;
 
@@ -1007,9 +1008,8 @@ BattalionEntity.prototype.onInitialPlace = function(gameContext) {
 BattalionEntity.prototype.placeJammer = function(gameContext) {
     const worldMap = gameContext.getActiveMap();
 
-    //TODO: Use traits.
-    if(this.config.id === "jammer_truck") {
-        worldMap.fill2D(this.tileX, this.tileY, 2, (tileX, tileY) => {
+    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.JAMMER)) {
+        worldMap.fill2D(this.tileX, this.tileY, BattalionEntity.JAMMER_RANGE, (tileX, tileY) => {
             worldMap.addJammer(tileX, tileY);
         });
     }
@@ -1018,8 +1018,8 @@ BattalionEntity.prototype.placeJammer = function(gameContext) {
 BattalionEntity.prototype.removeJammer = function(gameContext) {
     const worldMap = gameContext.getActiveMap();
 
-    if(this.config.id === "jammer_truck") {
-        worldMap.fill2D(this.tileX, this.tileY, 2, (tileX, tileY) => {
+    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.JAMMER)) {
+        worldMap.fill2D(this.tileX, this.tileY, BattalionEntity.JAMMER_RANGE, (tileX, tileY) => {
             worldMap.removeJammer(tileX, tileY);
         });
     }

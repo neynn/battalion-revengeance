@@ -1,4 +1,11 @@
 {
+    "JAMMER": {
+        "name": "TRAIT_NAME_JAMMER",
+        "desc": "TRAIT_DESC_JAMMER",
+        "icon": null,
+        "moveDamage": {},
+        "armorDamage": {}
+    },
     "LOGISTIC_CHALLENGE": {
         "name": "TRAIT_NAME_LOGISTIC_CHALLENGE",
         "desc": "TRAIT_DESC_LOGISTIC_CHALLENGE",

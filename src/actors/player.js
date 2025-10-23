@@ -2,6 +2,7 @@ import { ContextHelper } from "../../engine/camera/contextHelper.js";
 import { EntityHelper } from "../../engine/entity/entityHelper.js";
 import { StateMachine } from "../../engine/state/stateMachine.js";
 import { Autotiler } from "../../engine/tile/autotiler.js";
+import { BattalionEntity } from "../entity/battalionEntity.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { BattalionActor } from "./battalionActor.js";
 import { IdleState } from "./player/idle.js";
@@ -40,21 +41,10 @@ Player.prototype = Object.create(BattalionActor.prototype);
 Player.prototype.constructor = Player;
 
 Player.prototype.inspectEntity = function(gameContext, entity) {
-    const worldMap = gameContext.getActiveMap();
-    const { tileX, tileY } = entity;
     this.inspectedEntity = entity;
 
     const displayName = entity.getDisplayName(gameContext);
     const displayDesc = entity.getDisplayDesc(gameContext);
-
-    this.camera.jammerOverlay.clear();
-
-    //TODO: Use JAMMER trait.
-    if(this.inspectedEntity.config.id === "jammer_truck") {
-        worldMap.fill2D(tileX, tileY, 2, (x, y) => {
-            this.camera.jammerOverlay.add(TypeRegistry.TILE_ID.JAMMER, x, y);
-        });
-    }
 
     console.log(displayName, displayDesc);
     console.log("Inspected Entity", entity);
@@ -68,6 +58,12 @@ Player.prototype.onClick = function(gameContext, worldMap, tileX, tileY) {
     const entity = EntityHelper.getTileEntity(gameContext, tileX, tileY);
 
     if(entity) {
+        if(this.inspectedEntity === entity) {
+            this.inspectTile(gameContext, tileX, tileY);
+        } else {
+            this.inspectEntity(gameContext, entity);        
+        }
+
         const { teamManager } = gameContext;
         const { teamID } = entity;
         const entityID = entity.getID();
@@ -75,13 +71,6 @@ Player.prototype.onClick = function(gameContext, worldMap, tileX, tileY) {
         const isControlled = this.hasEntity(entityID);
 
         this.states.eventEnter(gameContext, Player.EVENT.ENTITY_CLICK, { "entity": entity, "isAlly": isAlly, "isControlled": isControlled });
-
-        if(this.inspectedEntity === entity) {
-            this.inspectTile(gameContext, tileX, tileY);
-        } else {
-            this.inspectEntity(gameContext, entity);        
-        }
-
         return;
     }
 
@@ -118,14 +107,38 @@ Player.prototype.activeUpdate = function(gameContext, remainingActions) {
     this.tryEnqueueAction(gameContext);
 }
 
+Player.prototype.showJammer = function(gameContext, entity) {
+    const { tileX, tileY } = entity;
+    const worldMap = gameContext.getActiveMap();
+
+    this.camera.jammerOverlay.clear();
+
+    if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.JAMMER)) {
+        worldMap.fill2D(tileX, tileY, BattalionEntity.JAMMER_RANGE, (nextX, nextY) => {
+            this.camera.jammerOverlay.add(TypeRegistry.TILE_ID.JAMMER, nextX, nextY);
+        });
+    }
+}
+
 Player.prototype.update = function(gameContext) {
     const { x, y } = ContextHelper.getMouseTile(gameContext);
+    const entity = EntityHelper.getTileEntity(gameContext, x, y);
 
     if(x !== this.tileX || y !== this.tileY) {
+        if(entity) {
+            this.showJammer(gameContext, entity);
+        } else {
+            this.camera.jammerOverlay.clear();
+        }
+
         this.states.eventEnter(gameContext, Player.EVENT.TILE_CHANGE, {
             "x": x,
             "y": y
         });
+    }
+
+    if(!entity) {
+        this.camera.jammerOverlay.clear();
     }
 
     this.tileX = x;
