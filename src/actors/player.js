@@ -108,16 +108,23 @@ Player.prototype.activeUpdate = function(gameContext, remainingActions) {
 }
 
 Player.prototype.showJammer = function(gameContext, entity) {
-    const { tileX, tileY } = entity;
+    if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.JAMMER)) {
+        const { tileX, tileY } = entity;
+
+        this.showJammerAt(gameContext, tileX, tileY);
+    } else {
+        this.camera.jammerOverlay.clear();
+    }
+}
+
+Player.prototype.showJammerAt = function(gameContext, jammerX, jammerY) {
     const worldMap = gameContext.getActiveMap();
 
     this.camera.jammerOverlay.clear();
 
-    if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.JAMMER)) {
-        worldMap.fill2D(tileX, tileY, BattalionEntity.JAMMER_RANGE, (nextX, nextY) => {
-            this.camera.jammerOverlay.add(TypeRegistry.TILE_ID.JAMMER, nextX, nextY);
-        });
-    }
+    worldMap.fill2D(jammerX, jammerY, BattalionEntity.JAMMER_RANGE, (nextX, nextY) => {
+        this.camera.jammerOverlay.add(TypeRegistry.TILE_ID.JAMMER, nextX, nextY);
+    });
 }
 
 Player.prototype.update = function(gameContext) {

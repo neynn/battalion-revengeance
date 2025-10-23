@@ -3,6 +3,7 @@ import { FloodFill } from "../../../engine/pathfinders/floodFill.js";
 import { ActionHelper } from "../../action/actionHelper.js";
 import { AttackAction } from "../../action/types/attack.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
+import { TypeRegistry } from "../../type/typeRegistry.js";
 import { Player } from "../player.js";
 import { PlayerState } from "./playerState.js";
 
@@ -60,28 +61,28 @@ SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, t
     }
 }
 
-SelectState.prototype.getDeltaY = function(nextY) {
-    let deltaY = 0;
+SelectState.prototype.getPathX = function() {
+    let pathX = 0;
 
     if(this.path.length === 0) {
-        deltaY = nextY - this.entity.tileY;
+        pathX = this.entity.tileX;
     } else {
-        deltaY = nextY - this.path[0].tileY;
+        pathX = this.path[0].tileX;
     }
 
-    return deltaY;
+    return pathX;
 }
 
-SelectState.prototype.getDeltaX = function(nextX) {
-    let deltaX = 0;
+SelectState.prototype.getPathY = function() {
+    let pathY = 0;
 
     if(this.path.length === 0) {
-        deltaX = nextX - this.entity.tileX;
+        pathY = this.entity.tileY;
     } else {
-        deltaX = nextX - this.path[0].tileX;
+        pathY = this.path[0].tileY;
     }
 
-    return deltaX;
+    return pathY;
 }
 
 SelectState.prototype.splitPath = function(targetX, targetY) {
@@ -172,8 +173,8 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
         return;
     }
 
-    const deltaX = this.getDeltaX(tileX);
-    const deltaY = this.getDeltaY(tileY);
+    const deltaX = tileX - this.getPathX();
+    const deltaY = tileY - this.getPathY();
     const absDelta = Math.abs(deltaX) + Math.abs(deltaY);
 
     if(absDelta === 1 && this.path.length > 0) {
@@ -191,6 +192,19 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
     }
 
     player.showPath(gameContext, this.path, this.entity.tileX, this.entity.tileY);
+
+    if(this.entity.hasTrait(TypeRegistry.TRAIT_TYPE.JAMMER)) {
+        const pathX = this.getPathX();
+        const pathY = this.getPathY();
+
+        player.showJammerAt(gameContext, pathX, pathY);
+    }
+}
+
+SelectState.prototype.onBuildingClick = function(gameContext, stateMachine, building) {
+    const { tileX, tileY } = building;
+
+    this.onTileClick(gameContext, stateMachine, tileX, tileY);
 }
 
 SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {
@@ -220,6 +234,7 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
 
     if(entity === this.entity) {
         stateMachine.setNextState(gameContext, Player.STATE.IDLE);
+        //TODO: Open ContextMenu.
     } else {
         if(isControlled && !entity.isDead()) {
             this.selectEntity(gameContext, stateMachine, entity);
