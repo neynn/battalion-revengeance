@@ -207,8 +207,9 @@ TypeRegistry.TILE_ID = {
     PATH_RIGHT: 102,
     PATH_DOWN: 103,
     PATH_LEFT: 104,
-    PATH_CENTER: 105
-    //next: 112
+    PATH_CENTER: 105,
+
+    JAMMER: 113
 };
 
 TypeRegistry.ENTITY_TYPE = {

@@ -17,7 +17,7 @@ export const BattalionCamera = function() {
     this.regularEntities = [];
     this.markerSprite = SpriteManager.EMPTY_SPRITE;
     this.weakMarkerSprite = SpriteManager.EMPTY_SPRITE;
-    this.jammerID = TypeRegistry.TILE_ID.PATH_CENTER;
+    this.jammerID = TypeRegistry.TILE_ID.JAMMER;
     this.showJammers = false;
 }
 

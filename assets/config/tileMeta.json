@@ -117,5 +117,7 @@
     { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "12" },
     { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "13" },
     { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "14" },
-    { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "15" }
+    { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "15" },
+
+    { "type": "NONE", "texture": "jammer", "tile": "0" }
 ]
