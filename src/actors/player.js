@@ -147,9 +147,11 @@ Player.prototype.addNodeMapRender = function(nodeMap) {
     }
 }
 
-Player.prototype.showPath = function(gameContext, path, entityX, entityY) { 
+Player.prototype.showPath = function(gameContext, oPath, entityX, entityY) { 
     const { tileManager } = gameContext;
     const autotiler = tileManager.getAutotilerByID("battalion_path");
+    const path = oPath.toReversed();
+
     let tileID = 0;
 
     this.camera.pathOverlay.clear();

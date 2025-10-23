@@ -128,6 +128,15 @@ BattalionEntity.TRANSPORT_TYPE = {
     STORK: 2
 }
 
+BattalionEntity.createStep = function(deltaX, deltaY, tileX, tileY) {
+    return {
+        "deltaX": deltaX,
+        "deltaY": deltaY,
+        "tileX": tileX,
+        "tileY": tileY
+    }
+}
+
 BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
 
@@ -580,12 +589,7 @@ BattalionEntity.prototype.getBestPath = function(gameContext, nodes, targetX, ta
         const deltaX = lastX - x;
         const deltaY = lastY - y;
 
-        path.push({
-            "deltaX": deltaX,
-            "deltaY": deltaY,
-            "tileX": lastX,
-            "tileY": lastY
-        });
+        path.push(BattalionEntity.createStep(deltaX, deltaY, lastX, lastY));
 
         i++;
         lastX = x;

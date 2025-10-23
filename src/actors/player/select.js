@@ -9,8 +9,7 @@ import { PlayerState } from "./playerState.js";
 export const SelectState = function() {
     PlayerState.call(this);
 
-    this.lastValidX = -1;
-    this.lastValidY = -1;
+    this.path = [];
     this.entity = null;
     this.nodeMap = new Map();
 }
@@ -19,8 +18,7 @@ SelectState.prototype = Object.create(PlayerState.prototype);
 SelectState.prototype.constructor = SelectState;
 
 SelectState.prototype.onExit = function(gameContext, stateMachine) {
-    this.lastValidX = -1;
-    this.lastValidY = -1;
+    this.path = [];
     this.entity = null;
     this.nodeMap.clear();
 }
@@ -43,13 +41,17 @@ SelectState.prototype.selectEntity = function(gameContext, stateMachine, entity)
     this.onTileChange(gameContext, stateMachine, this.entity.tileX, this.entity.tileY);
 }
 
-SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, tileY) {
-    if(this.lastValidX === tileX && this.lastValidY === tileY) {
-        const player = stateMachine.getContext();
-        const path = this.entity.getBestPath(gameContext, this.nodeMap, this.lastValidX, this.lastValidY);
+SelectState.prototype.isTargetValid = function(targetX, targetY) {
+    return this.path.length !== 0 && this.path[0].tileX === targetX && this.path[0].tileY === targetY;
+}
 
-        if(path.length !== 0) {
-            const request = ActionHelper.createMoveRequest(this.entity.getID(), path, null);
+SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, tileY) {
+    if(this.isTargetValid(tileX, tileY)) {
+        const isValid = this.entity.isPathValid(gameContext, this.path);
+
+        if(isValid) {
+            const player = stateMachine.getContext();
+            const request = ActionHelper.createMoveRequest(this.entity.getID(), this.path, null);
 
             player.queueRequest(request);
             stateMachine.setNextState(gameContext, Player.STATE.IDLE);
@@ -57,72 +59,110 @@ SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, t
     }
 }
 
-SelectState.prototype.getTileDelta = function(tileX, tileY) {
-    if(this.lastValidX === -1 && this.lastValidY === -1) {
-        return 0;
+SelectState.prototype.getDeltaY = function(nextY) {
+    let deltaY = 0;
+
+    if(this.path.length === 0) {
+        deltaY = nextY - this.entity.tileY;
+    } else {
+        deltaY = nextY - this.path[0].tileY;
     }
 
-    const deltaX = Math.abs(this.lastValidX - tileX);
-    const deltaY = Math.abs(this.lastValidY - tileY);
+    return deltaY;
+}
 
-    return deltaX + deltaY;
+SelectState.prototype.getDeltaX = function(nextX) {
+    let deltaX = 0;
+
+    if(this.path.length === 0) {
+        deltaX = nextX - this.entity.tileX;
+    } else {
+        deltaX = nextX - this.path[0].tileX;
+    }
+
+    return deltaX;
+}
+
+SelectState.prototype.splitPath = function(targetX, targetY) {
+    if(targetX === this.entity.tileX && targetY === this.entity.tileY) {
+        this.path.length = 0;
+        return true;
+    }
+
+    const path = this.path.toReversed();
+
+    for(let i = 0; i < path.length; i++) {
+        if(path[i].tileX === targetX && path[i].tileY === targetY) {
+            path.length = i + 1;
+            this.path = path.toReversed();
+            return true;
+        }
+    }
+
+    return false;
 }
 
 SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, tileY) {
     const { world } = gameContext;
     const { mapManager } = world;
+    const player = stateMachine.getContext();
     const worldMap = mapManager.getActiveMap();
     const targetNode = this.nodeMap.get(worldMap.getIndex(tileX, tileY));
     const entity = EntityHelper.getTileEntity(gameContext, tileX, tileY);
 
     if(entity) {
         if(!this.entity.isAllyWith(gameContext, entity)) {
-            //TODO: if the player hovers on an enemy and the lastValid is on an ally, then find the best path to the target
+            //TODO: If my entity is melee unit, then look if it is already next to the target.
+            //If it is not then try to find the optimal way.
+            //If there is no way, reset the path.
             return;
         }
     }
 
-    //TODO: Add flags like blocked_by_entity.
-    //TODO: Check if hovering on an entity. If so, do not update the path.
-    //TODO: Each tile gets put ON the path, if its a delta of exactly one
-    //Check tile delta, if its 1 AND the tile is NOT in the path, then add it to it.
-    if(targetNode && !FlagHelper.hasFlag(targetNode.flags, BattalionEntity.PATH_FLAG.UNREACHABLE)) {
-        const player = stateMachine.getContext();
-        const path = this.entity.getBestPath(gameContext, this.nodeMap, tileX, tileY).reverse();
-
-        player.showPath(gameContext, path, this.entity.tileX, this.entity.tileY);
-
-        if(path.length !== 0) {
-            this.lastValidX = tileX;
-            this.lastValidY = tileY;
-        } else {
-            this.lastValidX = -1;
-            this.lastValidY = -1;
-        }
+    if(!targetNode || FlagHelper.hasFlag(targetNode.flags, BattalionEntity.PATH_FLAG.UNREACHABLE)) {
+        return;
     }
+
+    const deltaX = this.getDeltaX(tileX);
+    const deltaY = this.getDeltaY(tileY);
+    const absDelta = Math.abs(deltaX) + Math.abs(deltaY);
+
+    if(absDelta === 1 && this.path.length > 1) {
+        const isSplit = this.splitPath(tileX, tileY);
+
+        if(!isSplit) {
+            this.path.unshift(BattalionEntity.createStep(deltaX, deltaY, tileX, tileY));
+
+            if(!this.entity.isPathValid(gameContext, this.path)) {
+                this.path = this.entity.getBestPath(gameContext, this.nodeMap, tileX, tileY);
+            }
+        }
+    } else {
+        this.path = this.entity.getBestPath(gameContext, this.nodeMap, tileX, tileY);
+    }
+
+    player.showPath(gameContext, this.path, this.entity.tileX, this.entity.tileY);
 }
 
 SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {
     if(!isAlly) {
         const player = stateMachine.getContext();
+        let request = null;
 
         if(this.entity.isRanged()) {
             if(this.entity.isRangeEnough(gameContext, entity)) {
-                const request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.ATTACK_TYPE.INITIATE);
-
-                player.queueRequest(request);
+                request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.ATTACK_TYPE.INITIATE);
             }
         } else {
-            if(this.lastValidX === -1 && this.lastValidY === -1) {
-                const request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.ATTACK_TYPE.INITIATE);
-
-                player.queueRequest(request);
+            if(this.path.length === 0) {
+                request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.ATTACK_TYPE.INITIATE);
             } else {
-                const path = this.entity.getBestPath(gameContext, this.nodeMap, this.lastValidX, this.lastValidY);
-                const request = ActionHelper.createMoveRequest(this.entity.getID(), path, entity.getID());
-
-                player.queueRequest(request);
+                request = ActionHelper.createMoveRequest(this.entity.getID(), this.path, entity.getID());
             }
+        }
+
+        if(request) {
+            player.queueRequest(request);
         }
 
         stateMachine.setNextState(gameContext, Player.STATE.IDLE);
