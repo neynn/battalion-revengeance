@@ -2,6 +2,7 @@ import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
+import { JammerField } from "./jammerField.js";
 
 export const BattalionMap = function(id) {
     WorldMap.call(this, id);
@@ -12,6 +13,7 @@ export const BattalionMap = function(id) {
     this.climate = TypeRegistry.CLIMATE_TYPE.NONE;
     this.localization = [];
     this.buildings = [];
+    this.jammerFields = new Map();
     this.music = null;
 }
 
@@ -194,7 +196,7 @@ BattalionMap.prototype.loadLocalization = function(localization) {
         const { x = -1, y = -1, name = null, desc = null } = localization[i];
         const index = this.getIndex(x, y);
 
-        if(index !== -1) {
+        if(index !== WorldMap.OUT_OF_BOUNDS) {
             if(!indices.has(index)) {
                 this.localization.push({
                     "x": x,
@@ -214,7 +216,7 @@ BattalionMap.prototype.loadLocalization = function(localization) {
 BattalionMap.prototype.createBuilding = function(tileX, tileY, onCreate) {
     const index = this.getIndex(tileX, tileY);
 
-    if(index !== -1) {
+    if(index !== WorldMap.OUT_OF_BOUNDS) {
         if(!this.getBuilding(tileX, tileY)) {
             const building = onCreate();
 
@@ -230,7 +232,7 @@ BattalionMap.prototype.createBuilding = function(tileX, tileY, onCreate) {
 BattalionMap.prototype.getBuilding = function(targetX, targetY) {
     const index = this.getIndex(targetX, targetY);
 
-    if(index !== -1) {
+    if(index !== WorldMap.OUT_OF_BOUNDS) {
         for(let i = 0; i < this.buildings.length; i++) {
             const building = this.buildings[i];
             const { tileX, tileY } = building;
@@ -242,4 +244,52 @@ BattalionMap.prototype.getBuilding = function(targetX, targetY) {
     }
 
     return null;
+}
+
+BattalionMap.prototype.createJammerField = function(tileX, tileY) {
+    const index = this.getIndex(tileX, tileY);
+
+    if(index !== WorldMap.OUT_OF_BOUNDS && !this.jammerFields.has(index)) {
+        const jammerField = new JammerField(tileX, tileY);
+
+        this.jammerFields.set(index, jammerField);
+
+        return jammerField;
+    }
+
+    return null;
+}
+
+BattalionMap.prototype.addJammer = function(tileX, tileY) {
+    const index = this.getIndex(tileX, tileY);
+    let jammerField = this.jammerFields.get(index);
+
+    if(!jammerField) {
+        jammerField = this.createJammerField(tileX, tileY);
+    }
+
+    if(jammerField) {
+        jammerField.addBlocker();
+    } 
+}
+
+BattalionMap.prototype.removeJammer = function(tileX, tileY) {
+    const index = this.getIndex(tileX, tileY);
+    const jammerField = this.jammerFields.get(index);
+
+    if(jammerField) {
+        jammerField.removeBlocker();
+
+        if(jammerField.blockers === 0) {
+            this.jammerFields.delete(index);
+        }
+    }
+}
+
+BattalionMap.prototype.isJammed = function(tileX, tileY, movementType) {
+    const index = this.getIndex(tileX, tileY);
+    const jammerField = this.jammerFields.get(index);
+    const isJammed = jammerField && jammerField.isJammed(movementType);
+
+    return isJammed;
 }

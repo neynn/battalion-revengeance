@@ -147,6 +147,10 @@ TypeRegistry.ACTION_TYPE = {
     DEATH: "DEATH"
 };
 
+TypeRegistry.AUTOTILER_ID = {
+    PATH: "battalion_path"
+};
+
 TypeRegistry.TILE_ID = {
     NONE: 0,
     GRASS: 1,
@@ -197,7 +201,14 @@ TypeRegistry.TILE_ID = {
     OVERLAY_MOVE: 93,
     OVERLAY_MOVE_ATTACK: 94,
     OVERLAY_ATTACK_LIGHT: 95,
-    OVERLAY_ATTACK: 96
+    OVERLAY_ATTACK: 96,
+
+    PATH_UP: 101,
+    PATH_RIGHT: 102,
+    PATH_DOWN: 103,
+    PATH_LEFT: 104,
+    PATH_CENTER: 105
+    //next: 112
 };
 
 TypeRegistry.ENTITY_TYPE = {

@@ -466,26 +466,30 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
     const { terrain, passability } = tileType;
     let tileCost = passability[this.config.movementType] ?? BattalionEntity.MAX_MOVE_COST;
 
-    if(tileCost < BattalionEntity.MAX_MOVE_COST) {
-        for(let i = 0; i < terrain.length; i++) {
-            const { moveCost } = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
-            const terrainModifier = moveCost[this.config.movementType] ?? 0;
+    if(tileCost === BattalionEntity.MAX_MOVE_COST) {
+        return BattalionEntity.MAX_MOVE_COST;
+    }
 
-            tileCost += terrainModifier;
-        }
+    if(worldMap.isJammed(tileX, tileY, this.config.movementType)) {
+        return BattalionEntity.MAX_MOVE_COST;
+    }
+    
+    for(let i = 0; i < terrain.length; i++) {
+        const { moveCost } = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
+        const terrainModifier = moveCost[this.config.movementType] ?? 0;
 
-        {
-            const entityID = worldMap.getTopEntity(tileX, tileY);
-            const entity = entityManager.getEntity(entityID);
-            
-            if(entity)   {
-                const isAlly = this.isAllyWith(gameContext, entity);
+        tileCost += terrainModifier;
+    }
 
-                //TODO: Bypassing, team checks.
-                if(!isAlly) {
-                    tileCost += BattalionEntity.MAX_MOVE_COST;
-                }
-            }
+    const entityID = worldMap.getTopEntity(tileX, tileY);
+    const entity = entityManager.getEntity(entityID);
+    
+    if(entity)   {
+        const isAlly = this.isAllyWith(gameContext, entity);
+
+        //TODO: Bypassing, team checks.
+        if(!isAlly) {
+            tileCost += BattalionEntity.MAX_MOVE_COST;
         }
     }
 
@@ -533,6 +537,7 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
                 continue;
             }
 
+            let flags = BattalionEntity.PATH_FLAG.NONE;
             let tileType = typeCache.get(neighborID);
 
             if(!tileType) {
@@ -546,15 +551,16 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
                 const bestCost = visitedCost.get(neighborID);
 
                 if(bestCost === undefined || tileCost < bestCost) {
-                    const childNode = createNode(neighborID, neighborX, neighborY, tileCost, type, id, BattalionEntity.PATH_FLAG.NONE);
+                    const childNode = createNode(neighborID, neighborX, neighborY, tileCost, type, id, flags);
 
                     queue.push(childNode);
                     visitedCost.set(neighborID, tileCost);
                     nodeMap.set(neighborID, childNode);
                 }
             } else if(!nodeMap.has(neighborID)) {
-                //This is unreachable.
-                const childNode = createNode(neighborID, neighborX, neighborY, tileCost, type, id, BattalionEntity.PATH_FLAG.UNREACHABLE);
+                flags |= BattalionEntity.PATH_FLAG.UNREACHABLE;
+
+                const childNode = createNode(neighborID, neighborX, neighborY, tileCost, type, id, flags);
 
                 nodeMap.set(neighborID, childNode);
             }
@@ -575,7 +581,7 @@ BattalionEntity.prototype.getBestPath = function(gameContext, nodes, targetX, ta
     const index = worldMap.getIndex(targetX, targetY);
     const targetNode = nodes.get(index);
 
-    if(!targetNode || FlagHelper.hasFlag(targetNode.flags, BattalionEntity.PATH_FLAG.UNREACHABLE)) {
+    if(!targetNode || !this.isNodeValid(targetNode)) {
         return path;
     }
 
@@ -989,3 +995,13 @@ BattalionEntity.prototype.onArrive = function(gameContext) {
 BattalionEntity.prototype.isRanged = function() {
     return this.config.maxRange > 1 && this.config.weaponType !== TypeRegistry.WEAPON_TYPE.NONE;
 } 
+
+BattalionEntity.prototype.isNodeValid = function(node) {
+    const { flags } = node;
+
+    if(FlagHelper.hasFlag(flags, BattalionEntity.PATH_FLAG.UNREACHABLE)) {
+        return false;
+    }
+
+    return true;
+}

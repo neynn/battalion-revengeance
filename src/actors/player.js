@@ -1,9 +1,7 @@
 import { ContextHelper } from "../../engine/camera/contextHelper.js";
 import { EntityHelper } from "../../engine/entity/entityHelper.js";
-import { FlagHelper } from "../../engine/flagHelper.js";
 import { StateMachine } from "../../engine/state/stateMachine.js";
 import { Autotiler } from "../../engine/tile/autotiler.js";
-import { BattalionEntity } from "../entity/battalionEntity.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { BattalionActor } from "./battalionActor.js";
 import { IdleState } from "./player/idle.js";
@@ -136,20 +134,22 @@ Player.prototype.clearNodeMapRender = function() {
     this.camera.pathOverlay.clear();
 }
 
-Player.prototype.addNodeMapRender = function(nodeMap) {
+Player.prototype.addNodeMapRender = function(nodeMap, entity) {
     this.clearNodeMapRender();
 
     for(const [index, node] of nodeMap) {
-        const { x, y, flags } = node;
-        const id = FlagHelper.hasFlag(flags, BattalionEntity.PATH_FLAG.UNREACHABLE) ? TypeRegistry.TILE_ID.OVERLAY_ATTACK : TypeRegistry.TILE_ID.OVERLAY_MOVE;
-    
+        const { x, y } = node;
+        const id = entity.isNodeValid(node) ? TypeRegistry.TILE_ID.OVERLAY_MOVE : TypeRegistry.TILE_ID.OVERLAY_ATTACK;
+        
+        //TODO: ADD JAMMED!!!
+
         this.camera.selectOverlay.add(id, x, y);
     }
 }
 
 Player.prototype.showPath = function(gameContext, oPath, entityX, entityY) { 
     const { tileManager } = gameContext;
-    const autotiler = tileManager.getAutotilerByID("battalion_path");
+    const autotiler = tileManager.getAutotilerByID(TypeRegistry.AUTOTILER_ID.PATH);
     const path = oPath.toReversed();
 
     let tileID = 0;
@@ -204,16 +204,16 @@ Player.prototype.showPath = function(gameContext, oPath, entityX, entityY) {
         const { deltaX, deltaY } = path[0];
 
         if(deltaX === 1) {
-            tileID = tileManager.getTileID("path", "5");
+            tileID = TypeRegistry.TILE_ID.PATH_RIGHT;
         } else if(deltaX === -1) {
-            tileID = tileManager.getTileID("path", "7");
+            tileID = TypeRegistry.TILE_ID.PATH_LEFT;
         } else if(deltaY === 1) {
-            tileID = tileManager.getTileID("path", "6");
+            tileID = TypeRegistry.TILE_ID.PATH_DOWN;
         } else if(deltaY === -1) {
-            tileID = tileManager.getTileID("path", "4");
+            tileID = TypeRegistry.TILE_ID.PATH_UP;
         }
     } else {
-        tileID = tileManager.getTileID("path", "8");
+        tileID = TypeRegistry.TILE_ID.PATH_CENTER;
     }
 
     this.camera.pathOverlay.add(tileID, entityX, entityY);

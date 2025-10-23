@@ -1,5 +1,4 @@
 import { EntityHelper } from "../../../engine/entity/entityHelper.js";
-import { FlagHelper } from "../../../engine/flagHelper.js";
 import { FloodFill } from "../../../engine/pathfinders/floodFill.js";
 import { ActionHelper } from "../../action/actionHelper.js";
 import { AttackAction } from "../../action/types/attack.js";
@@ -37,7 +36,7 @@ SelectState.prototype.selectEntity = function(gameContext, stateMachine, entity)
     this.entity = entity;
     this.entity.mGetNodeMap(gameContext, this.nodeMap);
 
-    player.addNodeMapRender(this.nodeMap);
+    player.addNodeMapRender(this.nodeMap, this.entity);
 
     this.onTileChange(gameContext, stateMachine, this.entity.tileX, this.entity.tileY);
 }
@@ -132,7 +131,7 @@ SelectState.prototype.setOptimalAttackPath = function(gameContext, entity) {
             const index = worldMap.getIndex(neighborX, neighborY);
             const node = this.nodeMap.get(index);
 
-            if(node && !FlagHelper.hasFlag(node.flags, BattalionEntity.PATH_FLAG.UNREACHABLE)) {
+            if(node && this.entity.isNodeValid(node)) {
                 if(!bestNode) {
                     bestNode = node;
                 } else if(node.cost < bestNode.cost) {
@@ -168,7 +167,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
         return;
     }
 
-    if(!targetNode || FlagHelper.hasFlag(targetNode.flags, BattalionEntity.PATH_FLAG.UNREACHABLE)) {
+    if(!targetNode || !this.entity.isNodeValid(targetNode)) {
         return;
     }
 
@@ -176,7 +175,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
     const deltaY = this.getDeltaY(tileY);
     const absDelta = Math.abs(deltaX) + Math.abs(deltaY);
 
-    if(absDelta === 1 && this.path.length > 1) {
+    if(absDelta === 1 && this.path.length > 0) {
         const isSplit = this.splitPath(tileX, tileY);
 
         if(!isSplit) {
