@@ -72,7 +72,8 @@ BattalionEntity.FLAG = {
     HAS_MOVED: 1 << 0,
     HAS_ATTACKED: 1 << 1,
     IS_CLOAKED: 1 << 2,
-    BEWEGUNGSKRIEG_TRIGGERED: 1 << 3
+    BEWEGUNGSKRIEG_TRIGGERED: 1 << 3,
+    ELUSIVE_TRIGGERED: 1 << 4
 };
 
 BattalionEntity.PATH_FLAG = {
@@ -1027,7 +1028,7 @@ BattalionEntity.prototype.onMoveEnd = function(gameContext) {
 }
 
 BattalionEntity.prototype.onAttackEnd = function(gameContext) {
-    this.setFlag(BattalionEntity.FLAG.HAS_ATTACKED);
+    this.setFlag(BattalionEntity.FLAG.HAS_ATTACKED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
 }
 
 BattalionEntity.prototype.onCounterEnd = function(gameContext) {
@@ -1043,9 +1044,14 @@ BattalionEntity.prototype.onAttackReceived = function(gameContext, entityID) {
     }
 }
 
+BattalionEntity.prototype.resetTriggerFlags = function() {
+    this.removeFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
+}
+
 BattalionEntity.prototype.onTurnStart = function(gameContext) {
     this.lastAttacker = EntityManager.ID.INVALID;
-    this.removeFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ATTACKED | BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED);
+    this.removeFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ATTACKED);
+    this.resetTriggerFlags();
     //this.sprite.thaw();
 
     console.log("My turn started", this);
@@ -1063,5 +1069,12 @@ BattalionEntity.prototype.triggerBewegungskrieg = function() {
     if(!this.hasFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED)) {
         this.removeFlag(BattalionEntity.FLAG.HAS_ATTACKED | BattalionEntity.FLAG.HAS_MOVED);
         this.setFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED);
+    }
+}
+
+BattalionEntity.prototype.triggerElusive = function() {
+    if(!this.hasFlag(BattalionEntity.FLAG.ELUSIVE_TRIGGERED)) {
+        this.removeFlag(BattalionEntity.FLAG.HAS_MOVED);
+        this.setFlag(BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
     }
 }

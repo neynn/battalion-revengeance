@@ -399,6 +399,7 @@ TypeRegistry.MOVEMENT_TYPE = {
 };
 
 TypeRegistry.TRAIT_TYPE = {
+    ELUSIVE: "ELUSIVE",
     JAMMER: "JAMMER",
     INERTIAL: "INERTIAL",
     INDOMITABLE: "INDOMITABLE",

@@ -1,5 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
+import { FlagHelper } from "../../../engine/flagHelper.js";
 import { EntitySpawner } from "../../entity/entitySpawner.js";
+import { TypeRegistry } from "../../type/typeRegistry.js";
 import { ActionHelper } from "../actionHelper.js";
 import { AttackAction } from "./attack.js";
 
@@ -11,6 +13,11 @@ export const MoveAction = function() {
     this.pathIndex = 0;
     this.distanceMoved = 0;
 }
+
+MoveAction.FLAG = {
+    NONE: 0,
+    ELUSIVE: 1 << 0
+};
 
 MoveAction.TRAVEL_DISTANCE = 56;
 
@@ -64,6 +71,7 @@ MoveAction.prototype.isFinished = function(gameContext, executionRequest) {
 
 MoveAction.prototype.onEnd = function(gameContext, data, id) {
     const { transform2D, teamManager } = gameContext;
+    const { flags } = data;
     const { deltaX, deltaY, tileX, tileY } = this.path[0];
     const position = transform2D.transformTileToWorld(tileX, tileY);
 
@@ -72,6 +80,10 @@ MoveAction.prototype.onEnd = function(gameContext, data, id) {
     this.entity.updateDirectionByDelta(deltaX, deltaY);
     this.entity.playIdle(gameContext);
     this.entity.onMoveEnd(gameContext);
+
+    if(FlagHelper.hasFlag(flags, MoveAction.FLAG.ELUSIVE)) {
+        this.entity.triggerElusive();
+    }
 
     EntitySpawner.placeEntity(gameContext, this.entity);
     teamManager.onEntityMove(gameContext, this.entity);
@@ -90,17 +102,26 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
     const isValid = entity && entity.canAct() && entity.canMove() && entity.isPathValid(gameContext, path);
 
     if(isValid) {
-        if(entity.isRanged()) {
+        let flags = MoveAction.FLAG.NONE;
+
+        if(attackTarget !== null) {
+            if(!entity.isRanged()) {
+                executionRequest.addNext(ActionHelper.createAttackRequest(entityID, attackTarget, AttackAction.COMMAND.CHAIN_AFTER_MOVE));
+            }
+        } else {
             if(entity.canCloak()) {
                 executionRequest.addNext(ActionHelper.createCloakRequest(entityID));
             }
-        } else if(attackTarget !== null) {
-            executionRequest.addNext(ActionHelper.createAttackRequest(entityID, attackTarget, AttackAction.COMMAND.CHAIN_AFTER_MOVE));
+
+            if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
+                flags = FlagHelper.setFlag(flags, MoveAction.FLAG.ELUSIVE);
+            }
         }
 
         executionRequest.setData({
             "entityID": entityID,
-            "path": path
+            "path": path,
+            "flags": flags
         });
     }
 }

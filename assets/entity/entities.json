@@ -7,7 +7,7 @@
         "movementSpeed": 392,
         "movementRange": 8,
         "movementType": "TRACKED",
-        "traits": [],
+        "traits": ["ELUSIVE"],
         "sounds": {
             "move": "cockroach_move",
             "fire": "cockroach_fire"
@@ -31,7 +31,7 @@
         "movementSpeed": 392,
         "movementRange": 8,
         "movementType": "TRACKED",
-        "traits": ["STREAMLINED"],
+        "traits": ["ELUSIVE", "STREAMLINED"],
         "sounds": {
             "move": "cockroach_move",
             "fire": "cockroach_fire"

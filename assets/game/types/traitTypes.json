@@ -6,6 +6,13 @@
         "moveDamage": {},
         "armorDamage": {}
     },
+    "ELUSIVE": {
+        "name": "TRAIT_NAME_ELUSIVE",
+        "desc": "TRAIT_DESC_ELUSIVE",
+        "icon": null,
+        "moveDamage": {},
+        "armorDamage": {}
+    },
     "LOGISTIC_CHALLENGE": {
         "name": "TRAIT_NAME_LOGISTIC_CHALLENGE",
         "desc": "TRAIT_DESC_LOGISTIC_CHALLENGE",
