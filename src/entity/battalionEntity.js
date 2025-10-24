@@ -1,5 +1,6 @@
 import { Entity } from "../../engine/entity/entity.js";
 import { EntityHelper } from "../../engine/entity/entityHelper.js";
+import { EntityManager } from "../../engine/entity/entityManager.js";
 import { FlagHelper } from "../../engine/flagHelper.js";
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
@@ -62,10 +63,17 @@ export const BattalionEntity = function(id, sprite) {
     this.direction = BattalionEntity.DIRECTION.EAST;
     this.state = BattalionEntity.STATE.IDLE;
     this.teamID = null;
-    this.isCloaked = false;
-    this.movesLeft = 0;
     this.transportID = null;
+    this.lastAttacker = -1;
 }
+
+BattalionEntity.FLAG = {
+    NONE: 0,
+    HAS_MOVED: 1 << 0,
+    HAS_ATTACKED: 1 << 1,
+    IS_CLOAKED: 1 << 2,
+    BEWEGUNGSKRIEG_TRIGGERED: 1 << 3
+};
 
 BattalionEntity.PATH_FLAG = {
     NONE: 0b00000000,
@@ -257,28 +265,6 @@ BattalionEntity.prototype.setPositionVec = function(positionVector) {
     this.sprite.setPosition(x, y);
 }
 
-BattalionEntity.prototype.hasMoveLeft = function() {
-    return this.movesLeft > 0;
-}
-
-BattalionEntity.prototype.reduceMove = function(delta = 1) {
-    this.movesLeft -= delta;
-
-    if(this.movesLeft <= 0) {
-        this.sprite.pause();
-    }
-
-    return this.movesLeft;
-}
-
-BattalionEntity.prototype.refreshMoves = function(moves) {
-    this.movesLeft = moves;
-
-    if(this.movesLeft > 0) {
-        this.sprite.resume();
-    }
-}
-
 BattalionEntity.prototype.setDirection = function(direction) {
     if(this.direction === direction) {
         return false;
@@ -300,7 +286,7 @@ BattalionEntity.prototype.playIdle = function(gameContext) {
 }
 
 BattalionEntity.prototype.playCloak = function(gameContext) {
-    this.isCloaked = true;
+    this.setFlag(BattalionEntity.FLAG.IS_CLOAKED);
     this.playSound(gameContext, BattalionEntity.SOUND_TYPE.CLOAK);
 }
 
@@ -417,20 +403,6 @@ BattalionEntity.prototype.updateSchema = function(gameContext, schemaID, schema)
 
 BattalionEntity.prototype.setTeam = function(teamID) {
     this.teamID = teamID;
-}
-
-BattalionEntity.prototype.onTurnStart = function(gameContext) {
-    this.refreshMoves(100);
-    //this.sprite.thaw();
-
-    console.log("My turn started", this);
-} 
-
-BattalionEntity.prototype.onTurnEnd = function(gameContext) {
-    this.movesLeft = 0;
-    //this.sprite.freeze();
-
-    console.log("My turn ended", this);
 }
 
 BattalionEntity.prototype.occupiesTile = function(tileX, tileY) {
@@ -704,6 +676,10 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
     const { world, typeRegistry } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
+    const targetArmor = target.config.armorType;
+    const targetMove = target.config.movementType;
+    const targetX = target.tileX;
+    const targetY = target.tileY;
 
     let damageAmplifier = 1;
 
@@ -720,7 +696,7 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
     const weaponType = typeRegistry.getType(this.config.weaponType, TypeRegistry.CATEGORY.WEAPON);
 
     //Armor and Morale factor.
-    damageAmplifier *= weaponType.armorResistance[target.armorType] ?? 1;
+    damageAmplifier *= weaponType.armorResistance[targetArmor] ?? 1;
     damageAmplifier *= this.moraleAmplifier;
 
     const climateType = worldMap.getClimateTypeObject(gameContext, this.tileX, this.tileY);
@@ -731,19 +707,19 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
 
     for(let i = 0; i < this.config.traits.length; i++) {
         const { moveDamage, armorDamage } = typeRegistry.getType(this.config.traits[i], TypeRegistry.CATEGORY.TRAIT);
-        const moveAmplifier = moveDamage[target.movementType] ?? 1;
-        const armorAmplifier = armorDamage[target.armorType] ?? 1;
+        const moveAmplifier = moveDamage[targetMove] ?? 1;
+        const armorAmplifier = armorDamage[targetArmor] ?? 1;
 
         //Trait movement + armor factor.
         damageAmplifier *= moveAmplifier;
         damageAmplifier *= armorAmplifier;
     }
 
-    const { terrain } = worldMap.getTileTypeObject(gameContext, target.tileX, target.tileY);
+    const { terrain } = worldMap.getTileTypeObject(gameContext, targetX, targetY);
 
     for(let i = 0; i < terrain.length; i++) {
         const { moveProtection } = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
-        const protectionAmplifier = moveProtection[target.movementType] ?? 1;
+        const protectionAmplifier = moveProtection[targetMove] ?? 1;
 
         //Terrain protection factor.
         damageAmplifier *= protectionAmplifier;
@@ -755,12 +731,12 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
     switch(attackType) {
         case AttackAction.ATTACK_TYPE.INITIATE: {
             //Schwerpunkt factor.
-            if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SCHWERPUNKT) && target.movementType === TypeRegistry.MOVEMENT_TYPE.FOOT) {
+            if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SCHWERPUNKT) && targetMove === TypeRegistry.MOVEMENT_TYPE.FOOT) {
                 damageAmplifier *= DAMAGE_AMPLIFIER.SCHWERPUNKT;
             }
 
             //Stealth factor.
-            if(this.isCloaked) {
+            if(this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
                 damageAmplifier *= DAMAGE_AMPLIFIER.STEALTH;
             }
 
@@ -779,8 +755,8 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
 }
 
 BattalionEntity.prototype.getDamage = function(gameContext, target, attackType) {
+    const targetMove = target.config.movementType;
     const damageAmplifier = this.getDamageAmplifier(gameContext, target, attackType);
-
     let damage = this.damage * damageAmplifier;
 
 	if(
@@ -798,7 +774,7 @@ BattalionEntity.prototype.getDamage = function(gameContext, target, attackType) 
     //Unknown calculation.
 	if(
         damage > 25 &&
-        target.movementType === TypeRegistry.MOVEMENT_TYPE.FLIGHT &&
+        targetMove === TypeRegistry.MOVEMENT_TYPE.FLIGHT &&
         !this.hasTrait(TypeRegistry.TRAIT_TYPE.ANTI_AIR)
     ) {
 		damage = 25;
@@ -887,21 +863,17 @@ BattalionEntity.prototype.getDistanceToEntity = function(entity) {
     return distance;
 }
 
-BattalionEntity.prototype.isHidden = function() {
-    return this.isCloaked;
-}
-
 BattalionEntity.prototype.cloakInstant = function() {
-    if(!this.isCloaked) {
+    if(!this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
         this.sprite.setOpacity(0);
-        this.isCloaked = true;
+        this.setFlag(BattalionEntity.FLAG.IS_CLOAKED);
     }
 }
 
 BattalionEntity.prototype.uncloakInstant = function() {
-    if(this.isCloaked) {
+    if(this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
         this.sprite.setOpacity(1);
-        this.isCloaked = false;
+        this.removeFlag(BattalionEntity.FLAG.IS_CLOAKED);
     }
 }
 
@@ -910,7 +882,7 @@ BattalionEntity.prototype.setOpacity = function(opacity) {
 }
 
 BattalionEntity.prototype.canCloak = function() {
-    return !this.isCloaked && this.hasTrait(TypeRegistry.TRAIT_TYPE.STEALTH);
+    return !this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.hasTrait(TypeRegistry.TRAIT_TYPE.STEALTH);
 }
 
 BattalionEntity.prototype.canAttack = function() {
@@ -919,7 +891,15 @@ BattalionEntity.prototype.canAttack = function() {
 
 BattalionEntity.prototype.canMove = function() {
     return this.movementRange !== 0 && this.config.movementType !== TypeRegistry.MOVEMENT_TYPE.STATIONARY;
-}   
+}
+
+BattalionEntity.prototype.canAct = function() {
+    return !this.hasFlag(BattalionEntity.FLAG.HAS_ATTACKED | BattalionEntity.FLAG.HAS_MOVED);
+}
+
+BattalionEntity.prototype.isSelectable = function() {
+    return this.canAct() && !this.isDead();
+}
 
 BattalionEntity.prototype.getMaxRange = function(gameContext) {
     const terrainTypes = this.getTerrainTypes(gameContext);
@@ -1001,10 +981,6 @@ BattalionEntity.prototype.isNodeValid = function(node) {
     return true;
 }
 
-BattalionEntity.prototype.onInitialPlace = function(gameContext) {
-    this.placeJammer(gameContext);
-}
-
 BattalionEntity.prototype.placeJammer = function(gameContext) {
     const worldMap = gameContext.getActiveMap();
 
@@ -1025,17 +1001,67 @@ BattalionEntity.prototype.removeJammer = function(gameContext) {
     }
 }
 
+BattalionEntity.prototype.wasAttackedBy = function(entityID) {
+    return this.lastAttacker === entityID;
+}
+
+BattalionEntity.prototype.onInitialPlace = function(gameContext) {
+    this.placeJammer(gameContext);
+}
+
 BattalionEntity.prototype.onDeath = function(gameContext) {
     this.removeJammer(gameContext);
 }
 
-BattalionEntity.prototype.onDepart = function(gameContext) {
+BattalionEntity.prototype.onMoveStart = function(gameContext) {
     this.removeJammer(gameContext);
 }
 
-BattalionEntity.prototype.onArrive = function(gameContext) {
+BattalionEntity.prototype.onMoveEnd = function(gameContext) {
     this.placeJammer(gameContext);
-    const terrainTypes = this.getTerrainTypes(gameContext);
+    this.setFlag(BattalionEntity.FLAG.HAS_MOVED);
+
     //TODO: After a move ended, this checks the tile for any properties like damage_on_land
     //TODO: Also add an attack after move. Move can carry an attack target, which gets put as "next", if not uncloaked by a stealth unit.
+    const terrainTypes = this.getTerrainTypes(gameContext);
+}
+
+BattalionEntity.prototype.onAttackEnd = function(gameContext) {
+    this.setFlag(BattalionEntity.FLAG.HAS_ATTACKED);
+}
+
+BattalionEntity.prototype.onCounterEnd = function(gameContext) {
+    this.lastAttacker = EntityManager.ID.INVALID;
+}
+
+BattalionEntity.prototype.onAttackReceived = function(gameContext, entityID) {
+    if(entityID === this.id) {
+        console.log("SELD-DAMAGE!");
+    } else {
+        this.lastAttacker = entityID;
+        console.log("ATTACKED BY:", entityID);
+    }
+}
+
+BattalionEntity.prototype.onTurnStart = function(gameContext) {
+    this.lastAttacker = EntityManager.ID.INVALID;
+    this.removeFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ATTACKED | BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED);
+    //this.sprite.thaw();
+
+    console.log("My turn started", this);
+} 
+
+BattalionEntity.prototype.onTurnEnd = function(gameContext) {
+    this.lastAttacker = EntityManager.ID.INVALID;
+    this.setFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ATTACKED);
+    //this.sprite.freeze();
+
+    console.log("My turn ended", this);
+}
+
+BattalionEntity.prototype.triggerBewegungskrieg = function() {
+    if(!this.hasFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED)) {
+        this.removeFlag(BattalionEntity.FLAG.HAS_ATTACKED | BattalionEntity.FLAG.HAS_MOVED);
+        this.setFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED);
+    }
 }

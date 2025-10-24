@@ -61,10 +61,11 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
     }
 
     for(let i = 0; i < this.regularEntities.length; i++) {
-        const { teamID, sprite, isCloaked, movesLeft } = this.regularEntities[i];
+        const entity = this.regularEntities[i];
+        const { teamID, sprite } = entity;
         const { positionX, positionY } = sprite;
 
-        if(isCloaked && this.perspectives.has(teamID)) {
+        if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.perspectives.has(teamID)) {
             sprite.drawCloaked(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
         } else {
             sprite.drawNormal(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
@@ -74,7 +75,7 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
         const markerY = positionY - viewportTopEdge;
 
         if(teamID === this.mainPerspective) {
-            if(movesLeft > 0 && this.markerSprite) {
+            if(entity.canAct() && this.markerSprite) {
                 display.setAlpha(1);
                 this.markerSprite.onDraw(display, markerX, markerY);
             }
@@ -87,9 +88,10 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
     }
 
     for(let i = 0; i < this.priorityEntities.length; i++) {
-        const { teamID, sprite, isCloaked } = this.priorityEntities[i];
+        const entity = this.priorityEntities[i];
+        const { teamID, sprite } = entity;
 
-        if(isCloaked && this.perspectives.has(teamID)) {
+        if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.perspectives.has(teamID)) {
             sprite.drawCloaked(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
         } else {
             sprite.drawNormal(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);

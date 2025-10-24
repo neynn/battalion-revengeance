@@ -214,11 +214,11 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
 
         if(this.entity.isRanged()) {
             if(this.entity.isRangeEnough(gameContext, entity)) {
-                request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.ATTACK_TYPE.INITIATE);
+                request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.COMMAND.INITIATE);
             }
         } else {
             if(this.path.length === 0) {
-                request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.ATTACK_TYPE.INITIATE);
+                request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.COMMAND.INITIATE);
             } else {
                 request = ActionHelper.createMoveRequest(this.entity.getID(), this.path, entity.getID());
             }
@@ -236,7 +236,7 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
         stateMachine.setNextState(gameContext, Player.STATE.IDLE);
         //TODO: Open ContextMenu.
     } else {
-        if(isControlled && !entity.isDead()) {
+        if(isControlled && entity.isSelectable()) {
             this.selectEntity(gameContext, stateMachine, entity);
         } else {
             stateMachine.setNextState(gameContext, Player.STATE.IDLE);

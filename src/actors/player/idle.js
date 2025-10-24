@@ -38,7 +38,7 @@ IdleState.prototype.onEntityClick = function(gameContext, stateMachine, entity, 
     const player = stateMachine.getContext();
 
     if(isControlled) {
-        if(!entity.isDead()) {
+        if(entity.isSelectable()) {
             stateMachine.setNextState(gameContext, Player.STATE.SELECT, { "entity": entity });
         }
     } else {

@@ -23,9 +23,9 @@ MoveAction.prototype.onStart = function(gameContext, data, id) {
     const { entityID, path } = data;
     const entity = entityManager.getEntity(entityID);
 
-    entity.playMove(gameContext);
     EntitySpawner.removeEntity(gameContext, entity);
-    entity.onDepart(gameContext);
+    entity.playMove(gameContext);
+    entity.onMoveStart(gameContext);
 
     this.path = path;
     this.pathIndex = this.path.length - 1;
@@ -65,15 +65,13 @@ MoveAction.prototype.isFinished = function(gameContext, executionRequest) {
 MoveAction.prototype.onEnd = function(gameContext, data, id) {
     const { transform2D, teamManager } = gameContext;
     const { deltaX, deltaY, tileX, tileY } = this.path[0];
-    const { cost } = data;
     const position = transform2D.transformTileToWorld(tileX, tileY);
 
     this.entity.setTile(tileX, tileY);
     this.entity.setPositionVec(position);
     this.entity.updateDirectionByDelta(deltaX, deltaY);
     this.entity.playIdle(gameContext);
-    this.entity.reduceMove(cost);
-    this.entity.onArrive(gameContext);
+    this.entity.onMoveEnd(gameContext);
 
     EntitySpawner.placeEntity(gameContext, this.entity);
     teamManager.onEntityMove(gameContext, this.entity);
@@ -89,37 +87,20 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
     const { entityManager } = world;
     const { entityID, path, attackTarget } = requestData;
     const entity = entityManager.getEntity(entityID);
+    const isValid = entity && entity.canAct() && entity.canMove() && entity.isPathValid(gameContext, path);
 
-    //If attackTarget, then set the cost of the move action to 0 and immediately queue an attack as next.
-    //The attack type is immediate_move which  if it fails to evaluate, then reduce the entities moves by 1 since move had a cost of 0.
-    //If it manages to validate, then behave as normal.
-
-    if(entity && entity.hasMoveLeft()) {
-        if(entity.isPathValid(gameContext, path)) {
-            if(!attackTarget) {
-                executionRequest.setData({
-                    "entityID": entityID,
-                    "path": path,
-                    "cost": 1
-                });
-
-                //TODO: Interception and uncloak.
-                if(entity.canCloak()) {
-                    executionRequest.addNext(ActionHelper.createCloakRequest(entityID));
-                }
-            } else if(!entity.isRanged()){
-                executionRequest.setData({
-                    "entityID": entityID,
-                    "path": path,
-                    "cost": 0
-                });
-
-                //The type should be initiate_move to allow the resetting of cost.
-                //So: Cost must be set by an event.
-                //Or: Cost is 1 from the move action and the initiate_move does not care for cost?
-                //OR: Reducing cost is an action itself...
-                executionRequest.addNext(ActionHelper.createAttackRequest(entityID, attackTarget, AttackAction.ATTACK_TYPE.INITIATE));
+    if(isValid) {
+        if(entity.isRanged()) {
+            if(entity.canCloak()) {
+                executionRequest.addNext(ActionHelper.createCloakRequest(entityID));
             }
+        } else if(attackTarget !== null) {
+            executionRequest.addNext(ActionHelper.createAttackRequest(entityID, attackTarget, AttackAction.COMMAND.CHAIN_AFTER_MOVE));
         }
+
+        executionRequest.setData({
+            "entityID": entityID,
+            "path": path
+        });
     }
 }

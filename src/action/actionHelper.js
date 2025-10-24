@@ -3,11 +3,11 @@ import { DialogueHandler } from "../dialogue/dialogueHandler.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const ActionHelper = {
-    createAttackRequest: function(entityID, targetID, attackType) {
+    createAttackRequest: function(entityID, targetID, command) {
         return new ActionRequest(TypeRegistry.ACTION_TYPE.ATTACK, {
             "entityID": entityID,
             "targetID": targetID,
-            "attackType": attackType
+            "command": command
         });
     },
     createMoveRequest: function(entityID, path, attackTarget) {
