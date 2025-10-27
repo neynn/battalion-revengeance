@@ -1,3 +1,4 @@
+import { CommanderType } from "./commanderType.js";
 import { TerrainType } from "./terrainType.js";
 import { TileType } from "./tileType.js";
 import { TraitType } from "./traitType.js";
@@ -111,12 +112,12 @@ const SCHEMA_TYPES = {
 
 export const TypeRegistry = function() {
     this.categories = {
-        [TypeRegistry.CATEGORY.TRAIT]: new TypeCategory(TypeRegistry.CATEGORY.TRAIT, TypeRegistry.TRAIT_TYPE),
+        [TypeRegistry.CATEGORY.TRAIT]: new TypeCategory(TypeRegistry.CATEGORY.TRAIT, TypeRegistry.TRAIT_TYPE, TypeRegistry.STUB.TRAIT),
         [TypeRegistry.CATEGORY.MOVEMENT]: new TypeCategory(TypeRegistry.CATEGORY.MOVEMENT, TypeRegistry.MOVEMENT_TYPE),
-        [TypeRegistry.CATEGORY.WEAPON]: new TypeCategory(TypeRegistry.CATEGORY.WEAPON, TypeRegistry.WEAPON_TYPE),
+        [TypeRegistry.CATEGORY.WEAPON]: new TypeCategory(TypeRegistry.CATEGORY.WEAPON, TypeRegistry.WEAPON_TYPE, TypeRegistry.STUB.WEAPON),
         [TypeRegistry.CATEGORY.ARMOR]: new TypeCategory(TypeRegistry.CATEGORY.ARMOR, TypeRegistry.ARMOR_TYPE),
-        [TypeRegistry.CATEGORY.TERRAIN]: new TypeCategory(TypeRegistry.CATEGORY.TERRAIN, TypeRegistry.TERRAIN_TYPE),
-        [TypeRegistry.CATEGORY.TILE]: new TypeCategory(TypeRegistry.CATEGORY.TILE, TypeRegistry.TILE_TYPE),
+        [TypeRegistry.CATEGORY.TERRAIN]: new TypeCategory(TypeRegistry.CATEGORY.TERRAIN, TypeRegistry.TERRAIN_TYPE, TypeRegistry.STUB.TERRAIN),
+        [TypeRegistry.CATEGORY.TILE]: new TypeCategory(TypeRegistry.CATEGORY.TILE, TypeRegistry.TILE_TYPE, TypeRegistry.STUB.TILE),
         [TypeRegistry.CATEGORY.CLIMATE]: new TypeCategory(TypeRegistry.CATEGORY.CLIMATE, TypeRegistry.CLIMATE_TYPE),
         [TypeRegistry.CATEGORY.SCHEMA]: new TypeCategory(TypeRegistry.CATEGORY.SCHEMA, TypeRegistry.SCHEMA_TYPE),
         [TypeRegistry.CATEGORY.NATION]: new TypeCategory(TypeRegistry.CATEGORY.NATION, TypeRegistry.NATION_TYPE),
@@ -125,11 +126,12 @@ export const TypeRegistry = function() {
         [TypeRegistry.CATEGORY.FACTION]: new TypeCategory(TypeRegistry.CATEGORY.FACTION, TypeRegistry.FACTION_TYPE),
         [TypeRegistry.CATEGORY.BUILDING]: new TypeCategory(TypeRegistry.CATEGORY.BUILDING, TypeRegistry.BUILDING_TYPE),
         [TypeRegistry.CATEGORY.MORALE]: new TypeCategory(TypeRegistry.CATEGORY.MORALE, TypeRegistry.MORALE_TYPE),
-        [TypeRegistry.CATEGORY.COMMANDER]: new TypeCategory(TypeRegistry.CATEGORY.COMMANDER, TypeRegistry.COMMANDER_TYPE)
+        [TypeRegistry.CATEGORY.COMMANDER]: new TypeCategory(TypeRegistry.CATEGORY.COMMANDER, TypeRegistry.COMMANDER_TYPE, TypeRegistry.STUB.COMMANDER)
     };
 }
 
 TypeRegistry.STUB = {
+    COMMANDER: new CommanderType("ERROR_COMMANDER", {}),
     WEAPON: new WeaponType("ERROR_WEAPON", {}),
     TRAIT: new TraitType("ERROR_TRAIT", {}),
     TILE: new TileType("ERROR_TILE", {}),
@@ -484,21 +486,25 @@ TypeRegistry.prototype.load = function(resources) {
     this.loadCategory(resources.factionTypes, TypeRegistry.CATEGORY.FACTION);
     this.loadCategory(resources.buildingTypes, TypeRegistry.CATEGORY.BUILDING);
     this.loadCategory(resources.moraleTypes, TypeRegistry.CATEGORY.MORALE);
-    this.loadCategory(resources.commanderTypes, TypeRegistry.CATEGORY.COMMANDER);
+    this.categories[TypeRegistry.CATEGORY.COMMANDER].loadTypes(resources.commanderTypes, CommanderType);
 }
 
 TypeRegistry.prototype.getTerrainType = function(typeID) {
-    return this.categories[TypeRegistry.CATEGORY.TERRAIN].getType(typeID) || TypeRegistry.STUB.TERRAIN;
+    return this.categories[TypeRegistry.CATEGORY.TERRAIN].getType(typeID);
 }
 
 TypeRegistry.prototype.getTileType = function(typeID) {
-    return this.categories[TypeRegistry.CATEGORY.TILE].getType(typeID) || TypeRegistry.STUB.TILE;
+    return this.categories[TypeRegistry.CATEGORY.TILE].getType(typeID);
 }
 
 TypeRegistry.prototype.getTraitType = function(typeID) {
-    return this.categories[TypeRegistry.CATEGORY.TRAIT].getType(typeID) || TypeRegistry.STUB.TRAIT;
+    return this.categories[TypeRegistry.CATEGORY.TRAIT].getType(typeID);
 }
 
 TypeRegistry.prototype.getWeaponType = function(typeID) {
-    return this.categories[TypeRegistry.CATEGORY.WEAPON].getType(typeID) || TypeRegistry.STUB.WEAPON;
+    return this.categories[TypeRegistry.CATEGORY.WEAPON].getType(typeID);
+}
+
+TypeRegistry.prototype.getCommanderType = function(typeID) {
+    return this.categories[TypeRegistry.CATEGORY.COMMANDER].getType(typeID);
 }

@@ -1,6 +1,7 @@
-export const TypeCategory = function(id, values) {
+export const TypeCategory = function(id, values, stub) {
     this.id = id;
     this.values = values;
+    this.stub = stub;
     this.types = {};
 
     for(const valueName in values) {
@@ -12,10 +13,6 @@ export const TypeCategory = function(id, values) {
 
 TypeCategory.prototype.hasType = function(typeID) {
     return this.types[typeID] !== undefined;
-}
-
-TypeCategory.prototype.logMissingType = function(typeID) {
-    console.log(`Type ${typeID} is not registered in category ${this.id}!`);
 }
 
 TypeCategory.prototype.logMissingEnum = function(typeID) {
@@ -50,9 +47,8 @@ TypeCategory.prototype.getType = function(typeID) {
     const type = this.types[typeID];
 
     if(!type) {
-        this.logMissingType(typeID);
-
-        return null;
+        console.error(`Type ${typeID} is not registered in category ${this.id}! Using stub!`);
+        return this.stub;
     }
 
     return type;

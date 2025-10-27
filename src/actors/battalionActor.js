@@ -95,12 +95,9 @@ BattalionActor.prototype.activeUpdate = function(gameContext, remainingActions) 
 
 BattalionActor.prototype.loadNarrator = function(gameContext, typeID) {
     const { portraitHandler, typeRegistry } = gameContext;
-    const commanderType = typeRegistry.getType(typeID, TypeRegistry.CATEGORY.COMMANDER);
+    const commanderType = typeRegistry.getCommanderType(typeID);
+    const { portrait } = commanderType;
 
-    if(commanderType) {
-        const { portrait } = commanderType;
-
-        this.commander = commanderType;
-        this.portrait = portraitHandler.getPortraitTexture(portrait); 
-    }
+    this.commander = commanderType;
+    this.portrait = portraitHandler.getPortraitTexture(portrait); 
 }

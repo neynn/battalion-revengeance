@@ -114,20 +114,14 @@ DialogueHandler.prototype.showNextEntry = function(gameContext) {
     const { soundPlayer } = client;
     const { narrator, text, voice } = this.currentDialogue[this.currentIndex];
     const translation = language.get(text, LanguageHandler.TAG_TYPE.MAP);
-    const commanderType = typeRegistry.getType(narrator, TypeRegistry.CATEGORY.COMMANDER);
+    
+    const commanderType = typeRegistry.getCommanderType(narrator);
+    const { portrait, name } = commanderType;
+    const portraitTexture = portraitHandler.getPortraitTexture(portrait);
+    const nameTranslation = language.get(name);
 
-    if(commanderType) {
-        const { portrait, name } = commanderType;
-        const portraitTexture = portraitHandler.getPortraitTexture(portrait);
-        const nameTranslation = language.get(name);
-
-        this.currentName = nameTranslation;
-        this.currentPortrait = portraitTexture;
-    } else {
-        this.currentName = "";
-        this.currentPortrait = null;
-    }
-
+    this.currentName = nameTranslation;
+    this.currentPortrait = portraitTexture;
     this.fullCurrentText = translation;
     this.currentText = this.skipUnveiling ? translation : "";
 
