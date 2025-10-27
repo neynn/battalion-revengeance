@@ -399,6 +399,8 @@ TypeRegistry.MOVEMENT_TYPE = {
 };
 
 TypeRegistry.TRAIT_TYPE = {
+    HEROIC: "HEROIC",
+    SLUGGER: "SLUGGER",
     ELUSIVE: "ELUSIVE",
     JAMMER: "JAMMER",
     INERTIAL: "INERTIAL",

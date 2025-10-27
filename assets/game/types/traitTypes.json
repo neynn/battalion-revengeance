@@ -1,4 +1,11 @@
 {
+    "SLUGGER": {
+        "name": "TRAIT_NAME_SLUGGER",
+        "desc": "TRAIT_DESC_SLUGGER",
+        "icon": null,
+        "moveDamage": {},
+        "armorDamage": {}
+    },
     "JAMMER": {
         "name": "TRAIT_NAME_JAMMER",
         "desc": "TRAIT_DESC_JAMMER",
@@ -10,41 +17,6 @@
         "name": "TRAIT_NAME_ELUSIVE",
         "desc": "TRAIT_DESC_ELUSIVE",
         "icon": null,
-        "moveDamage": {},
-        "armorDamage": {}
-    },
-    "LOGISTIC_CHALLENGE": {
-        "name": "TRAIT_NAME_LOGISTIC_CHALLENGE",
-        "desc": "TRAIT_DESC_LOGISTIC_CHALLENGE",
-        "icon": "Assets/Traits/Logistic Challenge.png",
-        "moveDamage": {},
-        "armorDamage": {}
-    },
-    "LOGISTIC_NIGHTMARE": {
-        "name": "TRAIT_NAME_LOGISTIC_NIGHTMARE",
-        "desc": "TRAIT_DESC_LOGISTIC_NIGHTMARE",
-        "icon": "Assets/Traits/Logistic Nightmare.png",
-        "moveDamage": {},
-        "armorDamage": {}
-    },
-    "FINANCIAL_CENTER": {
-        "name": "TRAIT_NAME_FINANCIAL_CENTER",
-        "desc": "TRAIT_DESC_FINANCIAL_CENTER",
-        "icon": "Assets/Traits/Financial Center.png",
-        "moveDamage": {},
-        "armorDamage": {}
-    },
-    "FISCAL_CENTER": {
-        "name": "TRAIT_NAME_FISCAL_CENTER",
-        "desc": "TRAIT_DESC_FISCAL_CENTER",
-        "icon": "Assets/Traits/Fiscal Center.png",
-        "moveDamage": {},
-        "armorDamage": {}
-    },
-    "FIDUCIARY_CENTER": {
-        "name": "TRAIT_NAME_FIDUCIARY_CENTER",
-        "desc": "TRAIT_DESC_FIDUCIARY_CENTER",
-        "icon": "Assets/Traits/Fiduciary Center.png",
         "moveDamage": {},
         "armorDamage": {}
     },
@@ -154,6 +126,7 @@
         "name": "TRAIT_NAME_CRAB",
         "desc": "TRAIT_DESC_CRAB",
         "icon": "Assets/Traits/Crab.png",
+        "note": "This trait is purely cosmetic.",
         "moveDamage": {},
         "armorDamage": {}
     },
@@ -217,6 +190,7 @@
         "name": "TRAIT_NAME_SEABOUND",
         "desc": "TRAIT_DESC_SEABOUND",
         "icon": "Assets/Traits/Seabound.png",
+        "note": "This trait is not implemented.",
         "moveDamage": {},
         "armorDamage": {}
     },
@@ -231,6 +205,7 @@
         "name": "TRAIT_NAME_DISPERSION",
         "desc": "TRAIT_DESC_DISPERSION",
         "icon": "Assets/Traits/Dispersion.png",
+        "note": "This trait is not implemented.",
         "moveDamage": {},
         "armorDamage": {}
     },
@@ -238,6 +213,7 @@
         "name": "TRAIT_NAME_JUDGEMENT",
         "desc": "TRAIT_DESC_JUDGEMENT",
         "icon": "Assets/Traits/JUDGEMENT.png",
+        "note": "This trait is purely cosmetic.",
         "moveDamage": {},
         "armorDamage": {}
     },
@@ -245,6 +221,7 @@
         "name": "TRAIT_NAME_SUPPLY_DISTRIBUTION",
         "desc": "TRAIT_DESC_SUPPLY_DISTRIBUTION",
         "icon": "Assets/Traits/Supply Distribution.png",
+        "note": "This trait is not implemented.",
         "moveDamage": {},
         "armorDamage": {}
     },
@@ -255,10 +232,11 @@
         "moveDamage": {},
         "armorDamage": {}
     },
-    "STEAMBLAST": {
+    "STREAMBLAST": {
         "name": "TRAIT_NAME_STREAMBLAST",
         "desc": "TRAIT_DESC_STREAMBLAST",
         "icon": "Assets/Traits/Streamblast.png",
+        "note": "This trait is not implemented.",
         "moveDamage": {},
         "armorDamage": {}
     },
@@ -266,6 +244,7 @@
         "name": "TRAIT_NAME_AIRBORNE",
         "desc": "TRAIT_DESC_AIRBORNE",
         "icon": "Assets/Traits/Airborne.png",
+        "note": "This trait will be removed.",
         "moveDamage": {},
         "armorDamage": {}
     },
@@ -287,6 +266,7 @@
         "name": "TRAIT_NAME_NAVAL_TRANSPORT",
         "desc": "TRAIT_DESC_NAVAL_TRANSPORT",
         "icon": "Assets/Traits/Naval Transport.png",
+        "note": "This trait is purely cosmetic.",
         "moveDamage": {},
         "armorDamage": {}
     },
@@ -294,6 +274,7 @@
         "name": "TRAIT_NAME_AIR_TRANSPORT",
         "desc": "TRAIT_DESC_AIR_TRANSPORT",
         "icon": "Assets/Traits/Air Transport.png",
+        "note": "This trait is purely cosmetic.",
         "moveDamage": {},
         "armorDamage": {}
     },
@@ -301,6 +282,7 @@
         "name": "TRAIT_NAME_UNBUILT",
         "desc": "TRAIT_DESC_UNBUILT",
         "icon": "Assets/Traits/Unbuilt.png",
+        "note": "This trait is purely cosmetic.",
         "moveDamage": {},
         "armorDamage": {}
     },
@@ -308,6 +290,7 @@
         "name": "TRAIT_NAME_TANK_POOPER",
         "desc": "TRAIT_DESC_TANK_POOPER",
         "icon": "Assets/Traits/Tank Pooper.png",
+        "note": "This trait is purely cosmetic. (WarMachine)",
         "moveDamage": {},
         "armorDamage": {}
     },
@@ -315,6 +298,7 @@
         "name": "TRAIT_NAME_ABSORBER",
         "desc": "TRAIT_DESC_ABSORBER",
         "icon": "Assets/Traits/Absorber.png",
+        "note": "This trait is not implemented.",
         "moveDamage": {},
         "armorDamage": {}
     },
@@ -322,6 +306,7 @@
         "name": "TRAIT_NAME_TERRIFYING",
         "desc": "TRAIT_DESC_TERRIFYING",
         "icon": "Assets/Traits/Terrifying.png",
+        "note": "This trait is not implemented.",
         "moveDamage": {},
         "armorDamage": {}
     },
@@ -329,6 +314,7 @@
         "name": "TRAIT_NAME_LYNCHPIN",
         "desc": "TRAIT_DESC_LYNCHPIN",
         "icon": "Assets/Traits/Lynchpin.png",
+        "note": "This trait is not implemented.",
         "moveDamage": {},
         "armorDamage": {}
     },
@@ -336,6 +322,31 @@
         "name": "TRAIT_NAME_INFLAMING",
         "desc": "TRAIT_DESC_INFLAMING",
         "icon": "Assets/Traits/Inflaming.png",
+        "note": "This trait is not implemented.",
+        "moveDamage": {},
+        "armorDamage": {}
+    },
+    "FINANCIAL_CENTER": {
+        "name": "TRAIT_NAME_FINANCIAL_CENTER",
+        "desc": "TRAIT_DESC_FINANCIAL_CENTER",
+        "icon": "Assets/Traits/Financial Center.png",
+        "note": "This trait is not implemented.",
+        "moveDamage": {},
+        "armorDamage": {}
+    },
+    "FISCAL_CENTER": {
+        "name": "TRAIT_NAME_FISCAL_CENTER",
+        "desc": "TRAIT_DESC_FISCAL_CENTER",
+        "icon": "Assets/Traits/Fiscal Center.png",
+        "note": "This trait is not implemented.",
+        "moveDamage": {},
+        "armorDamage": {}
+    },
+    "FIDUCIARY_CENTER": {
+        "name": "TRAIT_NAME_FIDUCIARY_CENTER",
+        "desc": "TRAIT_DESC_FIDUCIARY_CENTER",
+        "icon": "Assets/Traits/Fiduciary Center.png",
+        "note": "This trait is not implemented.",
         "moveDamage": {},
         "armorDamage": {}
     }

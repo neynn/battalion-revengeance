@@ -10,6 +10,8 @@ import { AttackAction } from "../action/types/attack.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { EntityType } from "./entityType.js";
 
+const HEROIC_THRESHOLD = 1;
+
 const DAMAGE_AMPLIFIER = {
     SCHWERPUNKT: 1.4,
     STEALTH: 2
@@ -136,7 +138,7 @@ BattalionEntity.TRANSPORT_TYPE = {
     BARGE: 0,
     PELICAN: 1,
     STORK: 2
-}
+};
 
 BattalionEntity.createStep = function(deltaX, deltaY, tileX, tileY) {
     return {
@@ -181,13 +183,18 @@ BattalionEntity.prototype.isAnimationFinished = function() {
 }
 
 BattalionEntity.prototype.getHealthAfter = function(damage) {
-    const delta = this.health - damage;
+    const health = this.health - damage;
 
-    if(delta < 0) {
+    if(health <= 0) {
+
+        if(this.health > HEROIC_THRESHOLD && this.hasTrait(TypeRegistry.TRAIT_TYPE.HEROIC)) {
+            return 1;
+        }
+
         return 0;
     }
 
-    return delta;
+    return health;
 }
 
 BattalionEntity.prototype.setHealth = function(health) {
@@ -703,6 +710,10 @@ BattalionEntity.prototype.isAllowedToCounter = function(gameContext, target) {
         return false;
     }
 
+    if(target.hasTrait(TypeRegistry.TRAIT_TYPE.MOBILE_BATTERY) && this.isRanged()) {
+        return false;
+    }
+
     return true;
 }
 
@@ -718,12 +729,14 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
     let damageAmplifier = 1;
 
     if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.INDOMITABLE)) {
-        const healthFactor = this.health / this.maxHealth;
+        if(attackType !== AttackAction.ATTACK_TYPE.COUNTER || !this.hasTrait(TypeRegistry.TRAIT_TYPE.SLUGGER)) {
+            const healthFactor = this.health / this.maxHealth;
 
-        if(healthFactor > 1) {
-            damageAmplifier *= 1;
-        } else {
-            damageAmplifier *= healthFactor;
+            if(healthFactor > 1) {
+                damageAmplifier *= 1;
+            } else {
+                damageAmplifier *= healthFactor;
+            }
         }
     }
 
@@ -735,10 +748,12 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
     //Morale factor.
     damageAmplifier *= this.moraleAmplifier;
 
-    const logisticFactor = worldMap.getLogisticFactor(gameContext, this.tileX, this.tileY);
-    
-    //Logistic factor.
-    damageAmplifier *= logisticFactor;
+    //Logistic factor. Applies only to non-commandos.
+    if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.COMMANDO)) {
+        const logisticFactor = worldMap.getLogisticFactor(gameContext, this.tileX, this.tileY);
+        
+        damageAmplifier *= logisticFactor;
+    }
 
     //Attacker traits.
     for(let i = 0; i < this.config.traits.length; i++) {
@@ -758,7 +773,7 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
         const { moveProtection } = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
 
         //Terrain factor.
-        damageAmplifier *= moveProtection[targetMove] ?? 1;;
+        damageAmplifier *= moveProtection[targetMove] ?? 1;
     }
 
     //Commando trait (terrain based).
