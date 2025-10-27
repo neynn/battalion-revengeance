@@ -1,4 +1,5 @@
 import { CommanderType } from "./commanderType.js";
+import { FactionType } from "./factionType.js";
 import { NationType } from "./nationType.js";
 import { TerrainType } from "./terrainType.js";
 import { TileType } from "./tileType.js";
@@ -124,7 +125,7 @@ export const TypeRegistry = function() {
         [TypeRegistry.CATEGORY.NATION]: new TypeCategory(TypeRegistry.CATEGORY.NATION, TypeRegistry.NATION_TYPE, TypeRegistry.STUB.NATION),
         [TypeRegistry.CATEGORY.POWER]: new TypeCategory(TypeRegistry.CATEGORY.POWER, TypeRegistry.POWER_TYPE),
         [TypeRegistry.CATEGORY.CURRENCY]: new TypeCategory(TypeRegistry.CATEGORY.CURRENCY, TypeRegistry.CURRENCY_TYPE),
-        [TypeRegistry.CATEGORY.FACTION]: new TypeCategory(TypeRegistry.CATEGORY.FACTION, TypeRegistry.FACTION_TYPE),
+        [TypeRegistry.CATEGORY.FACTION]: new TypeCategory(TypeRegistry.CATEGORY.FACTION, TypeRegistry.FACTION_TYPE, TypeRegistry.STUB.FACTION),
         [TypeRegistry.CATEGORY.BUILDING]: new TypeCategory(TypeRegistry.CATEGORY.BUILDING, TypeRegistry.BUILDING_TYPE),
         [TypeRegistry.CATEGORY.MORALE]: new TypeCategory(TypeRegistry.CATEGORY.MORALE, TypeRegistry.MORALE_TYPE),
         [TypeRegistry.CATEGORY.COMMANDER]: new TypeCategory(TypeRegistry.CATEGORY.COMMANDER, TypeRegistry.COMMANDER_TYPE, TypeRegistry.STUB.COMMANDER)
@@ -132,6 +133,7 @@ export const TypeRegistry = function() {
 }
 
 TypeRegistry.STUB = {
+    FACTION: new FactionType("ERROR_FACTION", {}),
     NATION: new NationType("ERROR_NATION", {}),
     COMMANDER: new CommanderType("ERROR_COMMANDER", {}),
     WEAPON: new WeaponType("ERROR_WEAPON", {}),
@@ -485,7 +487,7 @@ TypeRegistry.prototype.load = function(resources) {
     this.categories[TypeRegistry.CATEGORY.NATION].loadTypes(resources.nationTypes, NationType);
     this.loadCategory(resources.powerTypes, TypeRegistry.CATEGORY.POWER);
     this.loadCategory(resources.currencyTypes, TypeRegistry.CATEGORY.CURRENCY);
-    this.loadCategory(resources.factionTypes, TypeRegistry.CATEGORY.FACTION);
+    this.categories[TypeRegistry.CATEGORY.FACTION].loadTypes(resources.factionTypes, FactionType);
     this.loadCategory(resources.buildingTypes, TypeRegistry.CATEGORY.BUILDING);
     this.loadCategory(resources.moraleTypes, TypeRegistry.CATEGORY.MORALE);
     this.categories[TypeRegistry.CATEGORY.COMMANDER].loadTypes(resources.commanderTypes, CommanderType);
@@ -514,3 +516,8 @@ TypeRegistry.prototype.getCommanderType = function(typeID) {
 TypeRegistry.prototype.getNationType = function(typeID) {
     return this.categories[TypeRegistry.CATEGORY.NATION].getType(typeID);
 }
+
+TypeRegistry.prototype.getFactionType = function(typeID) {
+    return this.categories[TypeRegistry.CATEGORY.FACTION].getType(typeID);
+}
+

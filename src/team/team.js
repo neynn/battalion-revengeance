@@ -59,18 +59,15 @@ Team.prototype.loadAsNation = function(gameContext, nationID) {
     const nationType = typeRegistry.getNationType(nationID);
     const { color, faction, currency } = nationType;
 
-    const factionType = typeRegistry.getType(faction, TypeRegistry.CATEGORY.FACTION)
+    const factionType = typeRegistry.getFactionType(faction);
     const currencyType = typeRegistry.getType(currency, TypeRegistry.CATEGORY.CURRENCY);
     const isColorSet = this.setColor(gameContext, color);
 
     this.nation = nationType;
+    this.faction = factionType;
 
-    if(factionType) {
-        this.faction = factionType;
-
-        if(!isColorSet) {
-            this.setColor(gameContext, factionType.color);
-        }
+    if(!isColorSet) {
+        this.setColor(gameContext, factionType.color);
     }
 
     if(currencyType) {
@@ -82,14 +79,11 @@ Team.prototype.loadAsNation = function(gameContext, nationID) {
 
 Team.prototype.loadAsFaction = function(gameContext, factionID) {
     const { typeRegistry } = gameContext;
-    const factionType = typeRegistry.getType(factionID, TypeRegistry.CATEGORY.FACTION);
+    const factionType = typeRegistry.getFactionType(factionID);
+    const { color } = factionType;
 
-    if(factionType) {
-        const { color } = factionType;
-
-        this.faction = factionType;
-        this.setColor(gameContext, color);
-    }
+    this.faction = factionType;
+    this.setColor(gameContext, color);
 }
 
 Team.prototype.getDisplayName = function(gameContext) {
