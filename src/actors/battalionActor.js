@@ -1,6 +1,5 @@
 import { Actor } from "../../engine/turn/actor.js";
 import { ActionHelper } from "../action/actionHelper.js";
-import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const BattalionActor = function(id) {
     Actor.call(this, id);
@@ -93,7 +92,7 @@ BattalionActor.prototype.activeUpdate = function(gameContext, remainingActions) 
     this.requestTurnEnd();
 }
 
-BattalionActor.prototype.loadNarrator = function(gameContext, typeID) {
+BattalionActor.prototype.loadCommander = function(gameContext, typeID) {
     const { portraitHandler, typeRegistry } = gameContext;
     const commanderType = typeRegistry.getCommanderType(typeID);
     const { portrait } = commanderType;

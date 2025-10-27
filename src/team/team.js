@@ -56,29 +56,27 @@ Team.prototype.hasAnyObjective = function() {
 
 Team.prototype.loadAsNation = function(gameContext, nationID) {
     const { typeRegistry } = gameContext;
-    const nationType = typeRegistry.getType(nationID, TypeRegistry.CATEGORY.NATION);
+    const nationType = typeRegistry.getNationType(nationID);
+    const { color, faction, currency } = nationType;
 
-    if(nationType) {
-        const { color, faction, currency } = nationType;
-        const factionType = typeRegistry.getType(faction, TypeRegistry.CATEGORY.FACTION)
-        const currencyType = typeRegistry.getType(currency, TypeRegistry.CATEGORY.CURRENCY);
-        const isColorSet = this.setColor(gameContext, color);
+    const factionType = typeRegistry.getType(faction, TypeRegistry.CATEGORY.FACTION)
+    const currencyType = typeRegistry.getType(currency, TypeRegistry.CATEGORY.CURRENCY);
+    const isColorSet = this.setColor(gameContext, color);
 
-        this.nation = nationType;
+    this.nation = nationType;
 
-        if(factionType) {
-            this.faction = factionType;
+    if(factionType) {
+        this.faction = factionType;
 
-            if(!isColorSet) {
-                this.setColor(gameContext, factionType.color);
-            }
+        if(!isColorSet) {
+            this.setColor(gameContext, factionType.color);
         }
+    }
 
-        if(currencyType) {
-            const { exchangeRate } = currencyType;
+    if(currencyType) {
+        const { exchangeRate } = currencyType;
 
-            this.exchangeRate = exchangeRate;
-        }
+        this.exchangeRate = exchangeRate;
     }
 }
 

@@ -31,7 +31,7 @@ export const ActorSpawner = {
             return actorObject;
         }, ACTOR_TYPE.AI, id);
 
-        actor.loadNarrator(gameContext, type);
+        actor.loadCommander(gameContext, type);
 
         return actor;
     },
@@ -61,7 +61,7 @@ export const ActorSpawner = {
             return actorObject;
         }, ACTOR_TYPE.PLAYER, id);
 
-        actor.loadNarrator(gameContext, type);
+        actor.loadCommander(gameContext, type);
         actor.loadKeybinds(gameContext);
         actor.states.setNextState(gameContext, Player.STATE.IDLE);
 

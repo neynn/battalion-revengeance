@@ -1,4 +1,5 @@
 import { CommanderType } from "./commanderType.js";
+import { NationType } from "./nationType.js";
 import { TerrainType } from "./terrainType.js";
 import { TileType } from "./tileType.js";
 import { TraitType } from "./traitType.js";
@@ -120,7 +121,7 @@ export const TypeRegistry = function() {
         [TypeRegistry.CATEGORY.TILE]: new TypeCategory(TypeRegistry.CATEGORY.TILE, TypeRegistry.TILE_TYPE, TypeRegistry.STUB.TILE),
         [TypeRegistry.CATEGORY.CLIMATE]: new TypeCategory(TypeRegistry.CATEGORY.CLIMATE, TypeRegistry.CLIMATE_TYPE),
         [TypeRegistry.CATEGORY.SCHEMA]: new TypeCategory(TypeRegistry.CATEGORY.SCHEMA, TypeRegistry.SCHEMA_TYPE),
-        [TypeRegistry.CATEGORY.NATION]: new TypeCategory(TypeRegistry.CATEGORY.NATION, TypeRegistry.NATION_TYPE),
+        [TypeRegistry.CATEGORY.NATION]: new TypeCategory(TypeRegistry.CATEGORY.NATION, TypeRegistry.NATION_TYPE, TypeRegistry.STUB.NATION),
         [TypeRegistry.CATEGORY.POWER]: new TypeCategory(TypeRegistry.CATEGORY.POWER, TypeRegistry.POWER_TYPE),
         [TypeRegistry.CATEGORY.CURRENCY]: new TypeCategory(TypeRegistry.CATEGORY.CURRENCY, TypeRegistry.CURRENCY_TYPE),
         [TypeRegistry.CATEGORY.FACTION]: new TypeCategory(TypeRegistry.CATEGORY.FACTION, TypeRegistry.FACTION_TYPE),
@@ -131,6 +132,7 @@ export const TypeRegistry = function() {
 }
 
 TypeRegistry.STUB = {
+    NATION: new NationType("ERROR_NATION", {}),
     COMMANDER: new CommanderType("ERROR_COMMANDER", {}),
     WEAPON: new WeaponType("ERROR_WEAPON", {}),
     TRAIT: new TraitType("ERROR_TRAIT", {}),
@@ -480,7 +482,7 @@ TypeRegistry.prototype.load = function(resources) {
     this.categories[TypeRegistry.CATEGORY.TILE].loadTypes(resources.tileTypes, TileType);
     this.categories[TypeRegistry.CATEGORY.TRAIT].loadTypes(resources.traitTypes, TraitType);
     this.categories[TypeRegistry.CATEGORY.WEAPON].loadTypes(resources.weaponTypes, WeaponType);
-    this.loadCategory(resources.nationTypes, TypeRegistry.CATEGORY.NATION);
+    this.categories[TypeRegistry.CATEGORY.NATION].loadTypes(resources.nationTypes, NationType);
     this.loadCategory(resources.powerTypes, TypeRegistry.CATEGORY.POWER);
     this.loadCategory(resources.currencyTypes, TypeRegistry.CATEGORY.CURRENCY);
     this.loadCategory(resources.factionTypes, TypeRegistry.CATEGORY.FACTION);
@@ -507,4 +509,8 @@ TypeRegistry.prototype.getWeaponType = function(typeID) {
 
 TypeRegistry.prototype.getCommanderType = function(typeID) {
     return this.categories[TypeRegistry.CATEGORY.COMMANDER].getType(typeID);
+}
+
+TypeRegistry.prototype.getNationType = function(typeID) {
+    return this.categories[TypeRegistry.CATEGORY.NATION].getType(typeID);
 }
