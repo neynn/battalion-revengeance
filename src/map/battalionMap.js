@@ -44,6 +44,13 @@ BattalionMap.prototype.getClimateTypeObject = function(gameContext, tileX, tileY
     return typeRegistry.getType(typeID, TypeRegistry.CATEGORY.CLIMATE);
 }
 
+BattalionMap.prototype.getLogisticFactor = function(gameContext, tileX, tileY) {
+    const climateType = this.getClimateTypeObject(gameContext, tileX, tileY);
+    const { logisticFactor = 1 } = climateType;
+    
+    return logisticFactor;
+}
+
 BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
     if(this.globalClimate !== TypeRegistry.CLIMATE_TYPE.NONE) {
         return this.globalClimate;

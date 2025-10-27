@@ -673,6 +673,39 @@ BattalionEntity.prototype.getTerrainTypes = function(gameContext) {
     return types;
 }
 
+BattalionEntity.prototype.isTargetable = function(gameContext, target) {
+    if(this.isDead() || target.isDead()) {
+        return false;
+    }
+
+    if(!this.isRangeEnough(gameContext, target)) {
+        return false;
+    }
+
+    const targetMove = target.config.movementType;
+
+    if(targetMove === TypeRegistry.MOVEMENT_TYPE.FLIGHT && !this.hasTrait(TypeRegistry.TRAIT_TYPE.SKYSWEEPER)) {
+        return false;
+    }
+
+    return true;
+}
+
+BattalionEntity.prototype.isAllowedToCounter = function(gameContext, target) {
+    //Target should be the previous attacker.
+    const targetID = target.getID();
+
+    if(this.lastAttacker !== targetID) {
+        return false;
+    }
+
+    if(target.hasTrait(TypeRegistry.TRAIT_TYPE.TANK_HUNTER) && this.config.movementType === TypeRegistry.MOVEMENT_TYPE.TRACKED) {
+        return false;
+    }
+
+    return true;
+}
+
 BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, attackType) {
     const { world, typeRegistry } = gameContext;
     const { mapManager } = world;
@@ -696,34 +729,36 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
 
     const weaponType = typeRegistry.getType(this.config.weaponType, TypeRegistry.CATEGORY.WEAPON);
 
-    //Armor and Morale factor.
+    //Armor factor.
     damageAmplifier *= weaponType.armorResistance[targetArmor] ?? 1;
+
+    //Morale factor.
     damageAmplifier *= this.moraleAmplifier;
 
-    const climateType = worldMap.getClimateTypeObject(gameContext, this.tileX, this.tileY);
-    const { logisticFactor } = climateType;
+    const logisticFactor = worldMap.getLogisticFactor(gameContext, this.tileX, this.tileY);
     
     //Logistic factor.
     damageAmplifier *= logisticFactor;
 
+    //Attacker traits.
     for(let i = 0; i < this.config.traits.length; i++) {
         const { moveDamage, armorDamage } = typeRegistry.getType(this.config.traits[i], TypeRegistry.CATEGORY.TRAIT);
-        const moveAmplifier = moveDamage[targetMove] ?? 1;
-        const armorAmplifier = armorDamage[targetArmor] ?? 1;
+        
+        //Move factor.
+        damageAmplifier *= moveDamage[targetMove] ?? 1;
 
-        //Trait movement + armor factor.
-        damageAmplifier *= moveAmplifier;
-        damageAmplifier *= armorAmplifier;
+        //Armor factor.
+        damageAmplifier *= armorDamage[targetArmor] ?? 1;
     }
 
+    //Target tile.
     const { terrain } = worldMap.getTileTypeObject(gameContext, targetX, targetY);
 
     for(let i = 0; i < terrain.length; i++) {
         const { moveProtection } = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
-        const protectionAmplifier = moveProtection[targetMove] ?? 1;
 
-        //Terrain protection factor.
-        damageAmplifier *= protectionAmplifier;
+        //Terrain factor.
+        damageAmplifier *= moveProtection[targetMove] ?? 1;;
     }
 
     //Commando trait (terrain based).
@@ -1036,9 +1071,7 @@ BattalionEntity.prototype.onCounterEnd = function(gameContext) {
 }
 
 BattalionEntity.prototype.onAttackReceived = function(gameContext, entityID) {
-    if(entityID === this.id) {
-        console.log("SELD-DAMAGE!");
-    } else {
+    if(entityID !== this.id) {
         this.lastAttacker = entityID;
         console.log("ATTACKED BY:", entityID);
     }

@@ -88,7 +88,7 @@
         "desc": "TRAIT_DESC_ANTI_INFANTRY",
         "icon": "Assets/Traits/Anti-Infantry.png",
         "moveDamage": {
-            "FOOT": 3
+            "FOOT": 2
         },
         "armorDamage": {}
     },
@@ -96,7 +96,9 @@
         "name": "TRAIT_NAME_ANTI_TANK",
         "desc": "TRAIT_DESC_ANTI_TANK",
         "icon": "Assets/Traits/Anti-Tank.png",
-        "moveDamage": {},
+        "moveDamage": {
+            "TRACKED": 1.5
+        },
         "armorDamage": {}
     },
     "ANTI_AIR": {
@@ -113,8 +115,8 @@
         "desc": "TRAIT_DESC_ANTI_SHIP",
         "icon": "Assets/Traits/Anti-Ship.png",
         "moveDamage": {
-            "RUDDER": 3,
-            "HEAVY_RUDDER": 3
+            "RUDDER": 2,
+            "HEAVY_RUDDER": 1.5
         },
         "armorDamage": {}
     },

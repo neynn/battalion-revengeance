@@ -5,9 +5,7 @@ import { TypeRegistry } from "../../type/typeRegistry.js";
 import { ActionHelper } from "../actionHelper.js";
 
 const mGetCounterResolutions = function(gameContext, entity, target, resolutions, deadEntities) {
-    //TODO: Add counter validation. Target was the previous attacker.
-
-    if(entity.isRangeEnough(gameContext, target)) {
+    if(entity.isAllowedToCounter(gameContext, target) && entity.isTargetable(gameContext, target)) {
         const damage = entity.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.COUNTER);
         const remainingHealth = target.getHealthAfter(damage);
         const targetID = target.getID();
@@ -24,7 +22,7 @@ const mGetCounterResolutions = function(gameContext, entity, target, resolutions
 }
 
 const mGetInitiateResolutions = function(gameContext, entity, target, resolutions, deadEntities) {
-    if(entity.isRangeEnough(gameContext, target)) {
+    if(entity.isTargetable(gameContext, target)) {
         const damage = entity.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.INITIATE);
         const remainingHealth = target.getHealthAfter(damage);
         const targetID = target.getID();
@@ -132,23 +130,21 @@ AttackAction.prototype.onEnd = function(gameContext, data, id) {
     const { world } = gameContext;
     const { entityManager } = world;
     const { entityID, targetID, attackType, flags } = data;
-    const attackerID = entityID;
+    const target = entityManager.getEntity(targetID);
 
     for(let i = 0; i < this.resolutions.length; i++) {
         const { entityID, health } = this.resolutions[i];
         const targetObject = entityManager.getEntity(entityID);
 
         targetObject.setHealth(health);
-
-        if(attackType === AttackAction.ATTACK_TYPE.INITIATE) {
-            targetObject.onAttackReceived(gameContext, attackerID);
-        }
     }
 
     this.entity.playIdle(gameContext);
 
     switch(attackType) {
         case AttackAction.ATTACK_TYPE.INITIATE: {
+            target.onAttackReceived(gameContext, entityID);
+
             this.entity.onAttackEnd(gameContext);
 
             if(FlagHelper.hasFlag(flags, AttackAction.FLAG.BEWEGUNGSKRIEG)) {
@@ -174,7 +170,7 @@ AttackAction.prototype.validate = function(gameContext, executionRequest, reques
     const entity = entityManager.getEntity(entityID);
     const target = entityManager.getEntity(targetID);
 
-    if(!entity || !target || !entity.canAttack() || entity.isDead() || target.isDead()) {
+    if(!entity || !target || !entity.canAttack()) {
         return;
     }
 
@@ -229,12 +225,8 @@ AttackAction.prototype.validate = function(gameContext, executionRequest, reques
             break;
         }
         case AttackAction.COMMAND.COUNTER: {
-            if(entity.wasAttackedBy(targetID)) {
-                mGetCounterResolutions(gameContext, entity, target, resolutions, deadEntities);
-
-                attackType = AttackAction.ATTACK_TYPE.COUNTER;
-            }
-
+            mGetCounterResolutions(gameContext, entity, target, resolutions, deadEntities);
+            attackType = AttackAction.ATTACK_TYPE.COUNTER;
             break;
         }
     }

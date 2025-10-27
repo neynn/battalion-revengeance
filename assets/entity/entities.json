@@ -170,7 +170,7 @@
         "armorType": "MEDIUM",
         "movementRange": 5,
         "movementType": "TRACKED",
-        "traits": ["ANTI_TANK"],
+        "traits": ["ANTI_TANK", "TANK_HUNTER"],
         "sounds": {
             "move": "tracked_move",
             "fire": "tank_fire"
@@ -193,7 +193,7 @@
         "armorType": "MEDIUM",
         "movementRange": 5,
         "movementType": "TRACKED",
-        "traits": ["ANTI_TANK", "TANK_HUNTER", "STREAMLINED"],
+        "traits": ["ANTI_TANK", "STREAMLINED"],
         "sounds": {
             "move": "tracked_move",
             "fire": "tank_fire"
@@ -340,6 +340,29 @@
             "idle_left": "jammer_truck_idle_left",
             "idle_down": "jammer_truck_idle_down",
             "idle_up": "jammer_truck_idle_up"
+        }
+    },
+    "stealth_tank": {
+        "health": 80,
+        "damage": 40,
+        "weaponType": "MEDIUM",
+        "armorType": "MEDIUM",
+        "movementRange": 5,
+        "movementType": "TRACKED",
+        "traits": ["STEALTH"],
+        "sounds": {
+            "move": "tracked_move",
+            "fire": "tank_fire"
+        },
+        "sprites": {
+            "idle_right": "stealth_tank_idle_right",
+            "idle_left": "stealth_tank_idle_left",
+            "idle_down": "stealth_tank_idle_down",
+            "idle_up": "stealth_tank_idle_up",
+            "fire_right": "stealth_tank_fire_right",
+            "fire_left": "stealth_tank_fire_left",
+            "fire_down": "stealth_tank_fire_down",
+            "fire_up": "stealth_tank_fire_up"
         }
     },
     "annihilator_tank": {
@@ -495,29 +518,6 @@
             "fire_left": "spider_tank_fire_left",
             "fire_down": "spider_tank_fire_down",
             "fire_up": "spider_tank_fire_up"
-        }
-    },
-    "stealth_tank": {
-        "health": 80,
-        "damage": 40,
-        "weaponType": "MEDIUM",
-        "armorType": "MEDIUM",
-        "movementRange": 5,
-        "movementType": "TRACKED",
-        "traits": ["STEALTH"],
-        "sounds": {
-            "move": "tracked_move",
-            "fire": "tank_fire"
-        },
-        "sprites": {
-            "idle_right": "stealth_tank_idle_right",
-            "idle_left": "stealth_tank_idle_left",
-            "idle_down": "stealth_tank_idle_down",
-            "idle_up": "stealth_tank_idle_up",
-            "fire_right": "stealth_tank_fire_right",
-            "fire_left": "stealth_tank_fire_left",
-            "fire_down": "stealth_tank_fire_down",
-            "fire_up": "stealth_tank_fire_up"
         }
     },
     "strike_commando": {
