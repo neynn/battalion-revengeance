@@ -456,7 +456,7 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
     }
     
     for(let i = 0; i < terrain.length; i++) {
-        const { cost } = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
+        const { cost } = typeRegistry.getTerrainType(terrain[i]);
         const terrainModifier = cost[this.config.movementType] ?? 0;
 
         tileCost += terrainModifier;
@@ -670,11 +670,7 @@ BattalionEntity.prototype.getTerrainTypes = function(gameContext) {
     }
 
     for(const typeID of tags) {
-        const type = typeRegistry.getType(typeID, TypeRegistry.CATEGORY.TERRAIN);
-
-        if(type) {
-            types.push(type);
-        }
+        types.push(typeRegistry.getTerrainType(typeID));
     }
 
     return types;
@@ -762,7 +758,7 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
         }
     }
 
-    const weaponType = typeRegistry.getType(this.config.weaponType, TypeRegistry.CATEGORY.WEAPON);
+    const weaponType = typeRegistry.getWeaponType(this.config.weaponType);
 
     //Armor factor.
     damageAmplifier *= weaponType.armorResistance[targetArmor] ?? 1;
@@ -779,7 +775,7 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
 
     //Attacker traits.
     for(let i = 0; i < this.config.traits.length; i++) {
-        const { moveDamage, armorDamage } = typeRegistry.getType(this.config.traits[i], TypeRegistry.CATEGORY.TRAIT);
+        const { moveDamage, armorDamage } = typeRegistry.getTraitType(this.config.traits[i]);
         
         //Move factor.
         damageAmplifier *= moveDamage[targetMove] ?? 1;
@@ -792,7 +788,7 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
     const { terrain } = worldMap.getTileTypeObject(gameContext, targetX, targetY);
 
     for(let i = 0; i < terrain.length; i++) {
-        const { protection } = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
+        const { protection } = typeRegistry.getTerrainType(terrain[i]);
 
         //Terrain factor.
         damageAmplifier *= protection[targetMove] ?? 1;
@@ -979,7 +975,7 @@ BattalionEntity.prototype.getMaxRange = function(gameContext) {
     let range = this.config.maxRange;
 
     for(let i = 0; i < terrainTypes.length; i++) {
-        range += terrainTypes[i].rangeBoost ?? 0;
+        range += terrainTypes[i].rangeBoost;
     }
 
     if(range < this.config.minRange) {

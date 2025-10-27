@@ -1,6 +1,7 @@
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
+import { TileType } from "../type/tileType.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { JammerField } from "./jammerField.js";
 
@@ -65,14 +66,11 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
             const { type } = tileManager.getTile(typeID);
 
             if(type !== null) {
-                const typeObject = typeRegistry.getType(type, TypeRegistry.CATEGORY.TILE);
+                const typeObject = typeRegistry.getTileType(type);
+                const { climate } = typeObject;
 
-                if(typeObject) {
-                    const { climate = TypeRegistry.CLIMATE_TYPE.NONE } = typeObject;
-
-                    if(climate !== TypeRegistry.CLIMATE_TYPE.NONE) {
-                        return climate;
-                    }
+                if(climate !== TypeRegistry.CLIMATE_TYPE.NONE) {
+                    return climate;
                 }
             }
         }
@@ -98,11 +96,10 @@ BattalionMap.prototype.getTerrainTypes = function(gameContext, tileX, tileY) {
         const { type } = tileManager.getTile(typeID);
 
         if(type !== null && type !== TypeRegistry.TILE_TYPE.NONE) {
-            const tileType = typeRegistry.getType(type, TypeRegistry.CATEGORY.TILE);
+            const tileType = typeRegistry.getTileType(type);
+            const { terrain } = tileType;
 
-            if(tileType) {
-                return tileType.terrain ?? [];
-            }
+            return terrain;
         }
     }
 
@@ -113,7 +110,7 @@ BattalionMap.prototype.getTileTypeObject = function(gameContext, tileX, tileY) {
     const { typeRegistry } = gameContext;
     const typeID = this.getTileType(gameContext, tileX, tileY);
 
-    return typeRegistry.getType(typeID, TypeRegistry.CATEGORY.TILE);
+    return typeRegistry.getTileType(typeID);
 }
 
 BattalionMap.prototype.getTileType = function(gameContext, tileX, tileY) {
@@ -140,7 +137,7 @@ BattalionMap.prototype.getTileName = function(gameContext, tileX, tileY) {
     const { language } = gameContext;
 
     if(this.isTileOutOfBounds(tileX, tileY)) {
-        return language.get("MISSING_TILE_NAME");
+        return language.get(TileType.MISSING_NAME);
     }
 
     for(let i = 0; i < this.localization.length; i++) {
@@ -152,19 +149,16 @@ BattalionMap.prototype.getTileName = function(gameContext, tileX, tileY) {
     }
 
     const tileType = this.getTileTypeObject(gameContext, tileX, tileY);
+    const { name } = tileType;
 
-    if(tileType && tileType.name) {
-        return language.get(tileType.name);
-    }
-
-    return language.get("MISSING_TILE_NAME");
+    return language.get(name);
 }
 
 BattalionMap.prototype.getTileDesc = function(gameContext, tileX, tileY) {
     const { language } = gameContext;
 
     if(this.isTileOutOfBounds(tileX, tileY)) {
-        return language.get("MISSING_TILE_DESC");
+        return language.get(TileType.MISSING_DESC);
     }
 
     for(let i = 0; i < this.localization.length; i++) {
@@ -176,12 +170,9 @@ BattalionMap.prototype.getTileDesc = function(gameContext, tileX, tileY) {
     }
 
     const tileType = this.getTileTypeObject(gameContext, tileX, tileY);
+    const { desc } = tileType;
 
-    if(tileType && tileType.desc) {
-        return language.get(tileType.desc);
-    }
-
-    return language.get("MISSING_TILE_DESC");
+    return language.get(desc);
 }
 
 BattalionMap.prototype.removeLocalization = function(tileX, tileY) {

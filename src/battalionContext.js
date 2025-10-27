@@ -54,7 +54,9 @@ BattalionContext.prototype.init = function(resources) {
         this.spriteManager.addLayer();
     }
 
+    this.typeRegistry.load(resources);
     this.loadEntityTypes(resources.entities);
+
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.MOVE, new MoveAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.ATTACK, new AttackAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.CLOAK, new CloakAction());
@@ -65,21 +67,6 @@ BattalionContext.prototype.init = function(resources) {
     this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);
 
     this.portraitHandler.load(resources.portraits);
-
-    this.typeRegistry.loadCategory(resources.armorTypes, TypeRegistry.CATEGORY.ARMOR);
-    this.typeRegistry.loadCategory(resources.climateTypes, TypeRegistry.CATEGORY.CLIMATE);
-    this.typeRegistry.loadCategory(resources.movementTypes, TypeRegistry.CATEGORY.MOVEMENT);
-    this.typeRegistry.loadCategory(resources.terrainTypes, TypeRegistry.CATEGORY.TERRAIN);
-    this.typeRegistry.loadCategory(resources.tileTypes, TypeRegistry.CATEGORY.TILE);
-    this.typeRegistry.loadCategory(resources.traitTypes, TypeRegistry.CATEGORY.TRAIT);
-    this.typeRegistry.loadCategory(resources.weaponTypes, TypeRegistry.CATEGORY.WEAPON);
-    this.typeRegistry.loadCategory(resources.nationTypes, TypeRegistry.CATEGORY.NATION);
-    this.typeRegistry.loadCategory(resources.powerTypes, TypeRegistry.CATEGORY.POWER);
-    this.typeRegistry.loadCategory(resources.currencyTypes, TypeRegistry.CATEGORY.CURRENCY);
-    this.typeRegistry.loadCategory(resources.factionTypes, TypeRegistry.CATEGORY.FACTION);
-    this.typeRegistry.loadCategory(resources.buildingTypes, TypeRegistry.CATEGORY.BUILDING);
-    this.typeRegistry.loadCategory(resources.moraleTypes, TypeRegistry.CATEGORY.MORALE);
-    this.typeRegistry.loadCategory(resources.commanderTypes, TypeRegistry.CATEGORY.COMMANDER);
 
     this.states.addState(BattalionContext.STATE.MAIN_MENU, new MainMenuState());
     this.states.addState(BattalionContext.STATE.MAP_EDITOR, new MapEditorState());

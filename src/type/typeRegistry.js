@@ -1,4 +1,8 @@
+import { TerrainType } from "./terrainType.js";
+import { TileType } from "./tileType.js";
+import { TraitType } from "./traitType.js";
 import { TypeCategory } from "./typeCategory.js";
+import { WeaponType } from "./weaponType.js";
 
 const SCHEMA_TYPES = {
     "RED": {
@@ -123,9 +127,14 @@ export const TypeRegistry = function() {
         [TypeRegistry.CATEGORY.MORALE]: new TypeCategory(TypeRegistry.CATEGORY.MORALE, TypeRegistry.MORALE_TYPE),
         [TypeRegistry.CATEGORY.COMMANDER]: new TypeCategory(TypeRegistry.CATEGORY.COMMANDER, TypeRegistry.COMMANDER_TYPE)
     };
-
-    this.loadCategory(SCHEMA_TYPES, TypeRegistry.CATEGORY.SCHEMA);
 }
+
+TypeRegistry.STUB = {
+    WEAPON: new WeaponType("ERROR_WEAPON", {}),
+    TRAIT: new TraitType("ERROR_TRAIT", {}),
+    TILE: new TileType("ERROR_TILE", {}),
+    TERRAIN: new TerrainType("ERROR_TERRAIN", {})
+};
 
 TypeRegistry.LAYER_TYPE = {
     BUILDING: 0,
@@ -458,4 +467,38 @@ TypeRegistry.prototype.getType = function(typeID, categoryID) {
     }
 
     return this.categories[categoryID].getType(typeID);
+}
+
+TypeRegistry.prototype.load = function(resources) {
+    this.loadCategory(SCHEMA_TYPES, TypeRegistry.CATEGORY.SCHEMA);
+    this.loadCategory(resources.armorTypes, TypeRegistry.CATEGORY.ARMOR);
+    this.loadCategory(resources.climateTypes, TypeRegistry.CATEGORY.CLIMATE);
+    this.loadCategory(resources.movementTypes, TypeRegistry.CATEGORY.MOVEMENT);
+    this.categories[TypeRegistry.CATEGORY.TERRAIN].loadTypes(resources.terrainTypes, TerrainType);
+    this.categories[TypeRegistry.CATEGORY.TILE].loadTypes(resources.tileTypes, TileType);
+    this.categories[TypeRegistry.CATEGORY.TRAIT].loadTypes(resources.traitTypes, TraitType);
+    this.categories[TypeRegistry.CATEGORY.WEAPON].loadTypes(resources.weaponTypes, WeaponType);
+    this.loadCategory(resources.nationTypes, TypeRegistry.CATEGORY.NATION);
+    this.loadCategory(resources.powerTypes, TypeRegistry.CATEGORY.POWER);
+    this.loadCategory(resources.currencyTypes, TypeRegistry.CATEGORY.CURRENCY);
+    this.loadCategory(resources.factionTypes, TypeRegistry.CATEGORY.FACTION);
+    this.loadCategory(resources.buildingTypes, TypeRegistry.CATEGORY.BUILDING);
+    this.loadCategory(resources.moraleTypes, TypeRegistry.CATEGORY.MORALE);
+    this.loadCategory(resources.commanderTypes, TypeRegistry.CATEGORY.COMMANDER);
+}
+
+TypeRegistry.prototype.getTerrainType = function(typeID) {
+    return this.categories[TypeRegistry.CATEGORY.TERRAIN].getType(typeID) || TypeRegistry.STUB.TERRAIN;
+}
+
+TypeRegistry.prototype.getTileType = function(typeID) {
+    return this.categories[TypeRegistry.CATEGORY.TILE].getType(typeID) || TypeRegistry.STUB.TILE;
+}
+
+TypeRegistry.prototype.getTraitType = function(typeID) {
+    return this.categories[TypeRegistry.CATEGORY.TRAIT].getType(typeID) || TypeRegistry.STUB.TRAIT;
+}
+
+TypeRegistry.prototype.getWeaponType = function(typeID) {
+    return this.categories[TypeRegistry.CATEGORY.WEAPON].getType(typeID) || TypeRegistry.STUB.WEAPON;
 }
