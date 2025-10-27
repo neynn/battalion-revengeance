@@ -359,6 +359,7 @@ TypeRegistry.TILE_TYPE = {
 };
 
 TypeRegistry.TERRAIN_TYPE = {
+    SHIELDED: "SHIELDED",
     UNEVEN: "UNEVEN",
     RUGGED: "RUGGED",
     PRECIPITOUS: "PRECIPITOUS",

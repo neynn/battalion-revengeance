@@ -456,8 +456,8 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
     }
     
     for(let i = 0; i < terrain.length; i++) {
-        const { moveCost } = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
-        const terrainModifier = moveCost[this.config.movementType] ?? 0;
+        const { cost } = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
+        const terrainModifier = cost[this.config.movementType] ?? 0;
 
         tileCost += terrainModifier;
     }
@@ -695,7 +695,25 @@ BattalionEntity.prototype.isTargetable = function(gameContext, target) {
         return false;
     }
 
+    if(this.isRanged() && target.isProtectedFromRange(gameContext)) {
+        return false;
+    }
+
     return true;
+}
+
+BattalionEntity.prototype.isProtectedFromRange = function(gameContext) {
+    const terrainTypes = this.getTerrainTypes(gameContext);
+
+    for(let i = 0; i < terrainTypes.length; i++) {
+        const { rangeGuard } = terrainTypes[i];
+
+        if(rangeGuard) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 BattalionEntity.prototype.isAllowedToCounter = function(gameContext, target) {
@@ -774,10 +792,10 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
     const { terrain } = worldMap.getTileTypeObject(gameContext, targetX, targetY);
 
     for(let i = 0; i < terrain.length; i++) {
-        const { moveProtection } = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
+        const { protection } = typeRegistry.getType(terrain[i], TypeRegistry.CATEGORY.TERRAIN);
 
         //Terrain factor.
-        damageAmplifier *= moveProtection[targetMove] ?? 1;
+        damageAmplifier *= protection[targetMove] ?? 1;
     }
 
     //Commando trait (terrain based).
