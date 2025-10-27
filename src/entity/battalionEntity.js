@@ -699,6 +699,10 @@ BattalionEntity.prototype.isTargetable = function(gameContext, target) {
 }
 
 BattalionEntity.prototype.isAllowedToCounter = function(gameContext, target) {
+    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.BLIND_SPOT)) {
+        return false;
+    }
+
     //Target should be the previous attacker.
     const targetID = target.getID();
 

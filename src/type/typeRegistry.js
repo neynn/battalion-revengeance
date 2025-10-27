@@ -399,6 +399,7 @@ TypeRegistry.MOVEMENT_TYPE = {
 };
 
 TypeRegistry.TRAIT_TYPE = {
+    BLIND_SPOT: "BLIND_SPOT",
     HEROIC: "HEROIC",
     SLUGGER: "SLUGGER",
     ELUSIVE: "ELUSIVE",

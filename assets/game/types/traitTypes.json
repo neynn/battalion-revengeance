@@ -1,4 +1,11 @@
 {
+    "BLIND_SPOT": {
+        "name": "TRAIT_NAME_BLIND_SPOT",
+        "desc": "TRAIT_DESC_BLIND_SPOT",
+        "icon": null,
+        "moveDamage": {},
+        "armorDamage": {}
+    },
     "SLUGGER": {
         "name": "TRAIT_NAME_SLUGGER",
         "desc": "TRAIT_DESC_SLUGGER",
