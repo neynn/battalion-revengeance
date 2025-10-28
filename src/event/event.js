@@ -1,5 +1,4 @@
 import { ActionHelper } from "../action/actionHelper.js";
-import { DialogueHandler } from "../dialogue/dialogueHandler.js";
 import { EntitySpawner } from "../entity/entitySpawner.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 

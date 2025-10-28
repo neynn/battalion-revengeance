@@ -1,7 +1,7 @@
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
-import { TileType } from "../type/tileType.js";
+import { TileType } from "../type/parsed/tileType.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { JammerField } from "./jammerField.js";
 
@@ -38,16 +38,11 @@ BattalionMap.prototype.setClimate = function(local, global) {
     this.globalClimate = global ?? TypeRegistry.CLIMATE_TYPE.NONE;
 }
 
-BattalionMap.prototype.getClimateTypeObject = function(gameContext, tileX, tileY) {
+BattalionMap.prototype.getLogisticFactor = function(gameContext, tileX, tileY) {
     const { typeRegistry } = gameContext;
     const typeID = this.getClimateType(gameContext, tileX, tileY);
-
-    return typeRegistry.getType(typeID, TypeRegistry.CATEGORY.CLIMATE);
-}
-
-BattalionMap.prototype.getLogisticFactor = function(gameContext, tileX, tileY) {
-    const climateType = this.getClimateTypeObject(gameContext, tileX, tileY);
-    const { logisticFactor = 1 } = climateType;
+    const climateType = typeRegistry.getClimateType(typeID);
+    const { logisticFactor } = climateType;
     
     return logisticFactor;
 }

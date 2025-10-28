@@ -13,7 +13,7 @@ const gameContext = new BattalionContext();
 gameContext.loadResources(resources);
 gameContext.init(resources);
 
-console.log(assetLoader, gameContext);
+console.info(assetLoader, gameContext);
 
 /*["river"].forEach(name => {
 	PathHandler.promiseJSON("export/" + name + ".json").then(f => packerToJSONSprites(name, f));
