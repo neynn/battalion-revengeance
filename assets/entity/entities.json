@@ -49,7 +49,7 @@
     },
     "aleph": {
         "health": 50,
-        "damage": 5000,
+        "damage": 50,
         "weaponType": "HEAVY",
         "armorType": "LIGHT",
         "movementRange": 6,

@@ -221,7 +221,16 @@
         "desc": "TRAIT_DESC_JUDGEMENT",
         "icon": "Assets/Traits/JUDGEMENT.png",
         "note": "This trait is purely cosmetic.",
-        "moveDamage": {},
+        "moveDamage": {
+            "STATIONARY": 100,
+            "FOOT": 100,
+            "WHEELED": 100,
+            "TRACKED": 100,
+            "FLIGHT": 100,
+            "RUDDER": 100,
+            "HEAVY_RUDDER": 100,
+            "AMPHIBIOUS": 100
+        },
         "armorDamage": {}
     },
     "SUPPLY_DISTRIBUTION": {
