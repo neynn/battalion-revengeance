@@ -442,7 +442,7 @@ BattalionEntity.prototype.isAllyWith = function(gameContext, entity) {
 }
 
 BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType, tileX, tileY) {
-    const { world, typeRegistry } = gameContext;
+    const { world, typeRegistry, teamManager } = gameContext;
     const { entityManager } = world;
     const { terrain, passability } = tileType;
     let tileCost = passability[this.config.movementType] ?? BattalionEntity.MAX_MOVE_COST;
@@ -451,8 +451,18 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
         return BattalionEntity.MAX_MOVE_COST;
     }
 
-    if(worldMap.isJammed(tileX, tileY, this.config.movementType)) {
-        return BattalionEntity.MAX_MOVE_COST;
+    if(this.config.movementType === TypeRegistry.MOVEMENT_TYPE.FLIGHT) {
+        const jammerField = worldMap.getJammer(tileX, tileY);
+        const { blockers } = jammerField;
+
+        for(let i = 0; i < blockers.length; i++) {
+            const teamID = blockers[i];
+            const isAlly = teamManager.isAlly(this.teamID, teamID);
+
+            if(!isAlly) {
+                return BattalionEntity.MAX_MOVE_COST;
+            }
+        }
     }
     
     for(let i = 0; i < terrain.length; i++) {
@@ -1055,7 +1065,7 @@ BattalionEntity.prototype.placeJammer = function(gameContext) {
 
     if(this.hasTrait(TypeRegistry.TRAIT_TYPE.JAMMER)) {
         worldMap.fill2D(this.tileX, this.tileY, BattalionEntity.JAMMER_RANGE, (tileX, tileY) => {
-            worldMap.addJammer(tileX, tileY);
+            worldMap.addJammer(tileX, tileY, this.teamID);
         });
     }
 }
@@ -1065,7 +1075,7 @@ BattalionEntity.prototype.removeJammer = function(gameContext) {
 
     if(this.hasTrait(TypeRegistry.TRAIT_TYPE.JAMMER)) {
         worldMap.fill2D(this.tileX, this.tileY, BattalionEntity.JAMMER_RANGE, (tileX, tileY) => {
-            worldMap.removeJammer(tileX, tileY);
+            worldMap.removeJammer(tileX, tileY, this.teamID);
         });
     }
 }

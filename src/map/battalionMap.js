@@ -26,6 +26,8 @@ BattalionMap.LAYER = {
     TEAM: "team"
 };
 
+BattalionMap.STUB_JAMMER = new JammerField(-1, -1);
+
 BattalionMap.prototype = Object.create(WorldMap.prototype);
 BattalionMap.prototype.constructor = BattalionMap;
 
@@ -239,41 +241,44 @@ BattalionMap.prototype.getBuilding = function(targetX, targetY) {
     return null;
 }
 
-BattalionMap.prototype.addJammer = function(tileX, tileY) {
+BattalionMap.prototype.addJammer = function(tileX, tileY, teamID) {
     const index = this.getIndex(tileX, tileY);
 
     if(index !== WorldMap.OUT_OF_BOUNDS) {
         const jammerField = this.jammerFields.get(index);
 
         if(jammerField) {
-            jammerField.addBlocker();
+            jammerField.addBlocker(teamID);
         } else {
             const newField = new JammerField(tileX, tileY);
 
-            newField.addBlocker();
+            newField.addBlocker(teamID);
 
             this.jammerFields.set(index, newField);
         }
     }
 }
 
-BattalionMap.prototype.removeJammer = function(tileX, tileY) {
+BattalionMap.prototype.removeJammer = function(tileX, tileY, teamID) {
     const index = this.getIndex(tileX, tileY);
     const jammerField = this.jammerFields.get(index);
 
     if(jammerField) {
-        jammerField.removeBlocker();
+        jammerField.removeBlocker(teamID);
 
-        if(jammerField.blockers === 0) {
+        if(jammerField.isEmpty()) {
             this.jammerFields.delete(index);
         }
     }
 }
 
-BattalionMap.prototype.isJammed = function(tileX, tileY, movementType) {
+BattalionMap.prototype.getJammer = function(tileX, tileY) {
     const index = this.getIndex(tileX, tileY);
     const jammerField = this.jammerFields.get(index);
-    const isJammed = jammerField && jammerField.isJammed(movementType);
 
-    return isJammed;
+    if(!jammerField) {
+        return BattalionMap.STUB_JAMMER;
+    }
+
+    return jammerField;
 }

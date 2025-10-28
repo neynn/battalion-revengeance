@@ -1,23 +1,29 @@
-import { TypeRegistry } from "../type/typeRegistry.js";
-
 export const JammerField = function(tileX, tileY) {
     this.tileX = tileX;
     this.tileY = tileY;
-    this.blockers = 0;
+    this.blockers = [];
 }
 
-JammerField.prototype.removeBlocker = function() {
-    this.blockers--;
-
-    if(this.blockers === 0) {
-        this.blockers = 0;
+JammerField.prototype.removeBlocker = function(teamID) {
+    for(let i = 0; i < this.blockers.length; i++) {
+        if(this.blockers[i] === teamID) {
+            this.blockers[i] = this.blockers[this.blockers.length - 1];
+            this.blockers.pop();
+            break;
+        }
     }
 }
 
-JammerField.prototype.addBlocker = function() {
-    this.blockers++;
+JammerField.prototype.addBlocker = function(teamID) {
+    for(let i = 0; i < this.blockers.length; i++) {
+        if(this.blockers[i] === teamID) {
+            return;
+        }
+    }
+
+    this.blockers.push(teamID);
 }
 
-JammerField.prototype.isJammed = function(movementType) {
-    return movementType === TypeRegistry.MOVEMENT_TYPE.FLIGHT && this.blockers > 0;
+JammerField.prototype.isEmpty = function() {
+    return this.blockers.length === 0;
 }
