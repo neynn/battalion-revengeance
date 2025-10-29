@@ -1,4 +1,11 @@
 {
+    "TRACKING": {
+        "name": "TRAIT_NAME_TRACKING",
+        "desc": "TRAIT_DESC_TRACKING",
+        "icon": null,
+        "moveDamage": {},
+        "armorDamage": {}
+    },
     "BLIND_SPOT": {
         "name": "TRAIT_NAME_BLIND_SPOT",
         "desc": "TRAIT_DESC_BLIND_SPOT",

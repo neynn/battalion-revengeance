@@ -1,4 +1,30 @@
+import { FloodFill } from "../pathfinders/floodFill.js";
+
 export const EntityHelper = {
+    getEntitiesAround: function(gameContext, tileX, tileY) {
+        const { world } = gameContext;
+        const { entityManager, mapManager } = world;
+        const activeMap = mapManager.getActiveMap();
+        const entities = [];
+
+        if(!activeMap) {
+            return entities;
+        }
+
+        for(let i = 0; i < FloodFill.NEIGHBORS.length; i++) {
+            const [deltaX, deltaY, type] = FloodFill.NEIGHBORS[i];
+            const neighborX = deltaX + tileX;
+            const neighborY = deltaY + tileY;
+            const entityID = activeMap.getTopEntity(neighborX, neighborY);
+            const entity = entityManager.getEntity(entityID);
+
+            if(entity) {
+                entities.push(entity);
+            }
+        }
+
+        return entities;
+    },
     getTileEntity: function(gameContext, tileX, tileY) {
         const { world } = gameContext;
         const { entityManager, mapManager } = world;

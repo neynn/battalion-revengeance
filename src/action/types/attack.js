@@ -5,7 +5,7 @@ import { TypeRegistry } from "../../type/typeRegistry.js";
 import { ActionHelper } from "../actionHelper.js";
 
 const mGetCounterResolutions = function(gameContext, entity, target, resolutions, deadEntities) {
-    if(entity.isAllowedToCounter(gameContext, target) && entity.isTargetable(gameContext, target)) {
+    if(entity.isAllowedToCounter(target) && entity.canTarget(gameContext, target)) {
         const damage = entity.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.COUNTER);
         const remainingHealth = target.getHealthAfter(damage);
         const targetID = target.getID();
@@ -22,7 +22,7 @@ const mGetCounterResolutions = function(gameContext, entity, target, resolutions
 }
 
 const mGetInitiateResolutions = function(gameContext, entity, target, resolutions, deadEntities) {
-    if(entity.isTargetable(gameContext, target)) {
+    if(entity.canTarget(gameContext, target)) {
         const damage = entity.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.INITIATE);
         const remainingHealth = target.getHealthAfter(damage);
         const targetID = target.getID();
@@ -181,10 +181,8 @@ AttackAction.prototype.validate = function(gameContext, executionRequest, reques
 
     switch(command) {
         case AttackAction.COMMAND.CHAIN_AFTER_MOVE: {
-            if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && !entity.hasFlag(BattalionEntity.FLAG.HAS_ATTACKED)) {
-                if(!entity.isRanged()) {
-                    mGetInitiateResolutions(gameContext, entity, target, resolutions, deadEntities);
-                }
+            if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && !entity.hasFlag(BattalionEntity.FLAG.HAS_ATTACKED) && !entity.isRanged()) {
+                mGetInitiateResolutions(gameContext, entity, target, resolutions, deadEntities);
 
                 if(resolutions.length !== 0) {
                     if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
@@ -195,8 +193,6 @@ AttackAction.prototype.validate = function(gameContext, executionRequest, reques
                         flags = FlagHelper.setFlag(flags, AttackAction.FLAG.BEWEGUNGSKRIEG);
                     }
 
-                    //TODO: Check if target can counter -> add counter attack as next.
-                    //TODO: Disable countering for specific traits.
                     executionRequest.addNext(ActionHelper.createAttackRequest(targetID, entityID, AttackAction.COMMAND.COUNTER));
                 }
             }
@@ -216,8 +212,6 @@ AttackAction.prototype.validate = function(gameContext, executionRequest, reques
                         flags = FlagHelper.setFlag(flags, AttackAction.FLAG.BEWEGUNGSKRIEG);
                     }
 
-                    //TODO: Check if target can counter -> add counter attack as next.
-                    //TODO: Disable countering for specific traits.
                     executionRequest.addNext(ActionHelper.createAttackRequest(targetID, entityID, AttackAction.COMMAND.COUNTER));
                 }
             }

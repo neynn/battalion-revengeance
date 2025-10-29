@@ -23,6 +23,7 @@
     "ARCH_NAME_DECO": "Decoration",
     "ARCH_DESC_DECO": "Decoration",
 
+    "TRAIT_DESC_TRACKING": "This unit attacks any stealth units it finds.",
     "TRAIT_DESC_BLIND_SPOT": "This unit cannot counter.",
     "TRAIT_DESC_SLUGGER": "This unit counters with full power.",
     "TRAIT_DESC_JAMMER": "",

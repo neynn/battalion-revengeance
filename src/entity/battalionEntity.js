@@ -121,7 +121,8 @@ BattalionEntity.SOUND_TYPE = {
     FIRE: "fire",
     CLOAK: "cloak",
     DEATH: "death",
-    RECRUIT: "recruit"
+    RECRUIT: "recruit",
+    UNCLOAK: "uncloak"
 };
 
 BattalionEntity.DEFAULT_SPRITES = {
@@ -132,6 +133,7 @@ BattalionEntity.DEFAULT_SPRITES = {
 BattalionEntity.DEFAULT_SOUNDS = {
     [BattalionEntity.SOUND_TYPE.CLOAK]: "cloak",
     [BattalionEntity.SOUND_TYPE.DEATH]: "explosion",
+    [BattalionEntity.SOUND_TYPE.UNCLOAK]: "cloak", //TODO: Implement
     [BattalionEntity.SOUND_TYPE.RECRUIT]: null //TODO: Implement
 };
 
@@ -139,6 +141,12 @@ BattalionEntity.TRANSPORT_TYPE = {
     BARGE: 0,
     PELICAN: 1,
     STORK: 2
+};
+
+BattalionEntity.INTERCEPT = {
+    NONE: 0,
+    VALID: 1,
+    ILLEGAL: 2
 };
 
 BattalionEntity.createStep = function(deltaX, deltaY, tileX, tileY) {
@@ -468,11 +476,9 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
     const entityID = worldMap.getTopEntity(tileX, tileY);
     const entity = entityManager.getEntity(entityID);
     
-    if(entity)   {
-        const isAlly = this.isAllyWith(gameContext, entity);
-
-        //TODO: Bypassing, team checks.
-        if(!isAlly) {
+    if(entity) {
+        //Blocks on non-cloaked enemy units. Ignores cloaked enemy units and treats them as walkable.
+        if(!this.isAllyWith(gameContext, entity) && !entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
             tileCost += BattalionEntity.MAX_MOVE_COST;
         }
     }
@@ -516,7 +522,6 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
             const neighborY = y + deltaY;
             const neighborID = worldMap.getIndex(neighborX, neighborY);
 
-            //Neighbor is out of bounds.
             if(neighborID === WorldMap.OUT_OF_BOUNDS) {
                 continue;
             }
@@ -590,17 +595,27 @@ BattalionEntity.prototype.getBestPath = function(gameContext, nodes, targetX, ta
     return path;
 }
 
+BattalionEntity.prototype.isVisibleTo = function(gameContext, teamID) {
+    if(!this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+        return true;
+    }
+
+    const { teamManager } = gameContext;
+    const isAlly = teamManager.isAlly(this.teamID, teamID);
+
+    return isAlly;
+}
+
 BattalionEntity.prototype.isPathValid = function(gameContext, path) {
     if(path.length === 0) {
         return false;
     }
 
-    //TODO: What about stealth units blocking?
     const targetX = path[0].tileX;
     const targetY = path[0].tileY;
     const tileEntity = EntityHelper.getTileEntity(gameContext, targetX, targetY);
 
-    if(tileEntity) {
+    if(tileEntity && tileEntity.isVisibleTo(gameContext, this.teamID)) {
         return false;
     }
 
@@ -680,7 +695,7 @@ BattalionEntity.prototype.getTerrainTypes = function(gameContext) {
     return types;
 }
 
-BattalionEntity.prototype.isTargetable = function(gameContext, target) {
+BattalionEntity.prototype.canTarget = function(gameContext, target) {
     if(this.isDead() || target.isDead()) {
         return false;
     }
@@ -718,7 +733,7 @@ BattalionEntity.prototype.isProtectedFromRange = function(gameContext) {
     return false;
 }
 
-BattalionEntity.prototype.isAllowedToCounter = function(gameContext, target) {
+BattalionEntity.prototype.isAllowedToCounter = function(target) {
     if(this.hasTrait(TypeRegistry.TRAIT_TYPE.BLIND_SPOT)) {
         return false;
     }
@@ -964,6 +979,32 @@ BattalionEntity.prototype.canCloak = function() {
     return !this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.hasTrait(TypeRegistry.TRAIT_TYPE.STEALTH);
 }
 
+BattalionEntity.prototype.canCloakAt = function(gameContext, tileX, tileY) {
+    if(!this.canCloak()) {
+        return false;
+    }
+
+    const worldMap = gameContext.getActiveMap();
+
+    if(worldMap.isJammed(gameContext, tileX, tileY, this.teamID)) {
+        return false;
+    }
+
+    const nearbyEntities = EntityHelper.getEntitiesAround(gameContext, tileX, tileY);
+
+    for(let i = 0; i < nearbyEntities.length; i++) {
+        if(!this.isAllyWith(gameContext, nearbyEntities[i])) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+BattalionEntity.prototype.canCloakAtSelf = function(gameContext) {
+    return this.canCloakAt(gameContext, this.tileX, this.tileY);
+}
+
 BattalionEntity.prototype.canAttack = function() {
     return this.damage !== 0 && this.config.weaponType !== TypeRegistry.WEAPON_TYPE.NONE;
 }
@@ -974,6 +1015,61 @@ BattalionEntity.prototype.canMove = function() {
 
 BattalionEntity.prototype.canAct = function() {
     return !this.hasFlag(BattalionEntity.FLAG.HAS_ATTACKED | BattalionEntity.FLAG.HAS_MOVED);
+}
+
+BattalionEntity.prototype.getUncloakedEntites = function(gameContext, targetX, targetY) {
+    const { world } = gameContext;
+    const { entityManager } = world;
+    const worldMap = gameContext.getActiveMap();
+    let nearbyEntities = [];
+
+    if(BattalionEntity.JAMMER_RANGE > 1 && this.hasTrait(TypeRegistry.TRAIT_TYPE.JAMMER)) {
+        worldMap.fill2D(targetX, targetY, BattalionEntity.JAMMER_RANGE, (tileX, tileY) => {
+            const entityID = worldMap.getTopEntity(tileX, tileY);
+            const entity = entityManager.getEntity(entityID);
+            
+            if(entity) {
+                nearbyEntities.push(entity);
+            }
+        });
+    } else {
+        nearbyEntities = EntityHelper.getEntitiesAround(gameContext, targetX, targetY);
+    }
+
+    const uncloakedEntities = [];
+
+    for(let i = 0; i < nearbyEntities.length; i++) {
+        const entity = nearbyEntities[i];
+
+        if(!entity.isVisibleTo(gameContext, this.teamID)) {
+            uncloakedEntities.push(entity);
+        }
+    }
+
+    return uncloakedEntities;
+}
+
+BattalionEntity.prototype.mInterceptPath = function(gameContext, path) {
+    let elementsToDelete = path.length;
+
+    for(let i = path.length - 1; i >= 0; i--) {
+        const { tileX, tileY } = path[i];
+        const entity = EntityHelper.getTileEntity(gameContext, tileX, tileY);
+
+        if(!entity) {
+            elementsToDelete = i;
+        } else if(!entity.isVisibleTo(gameContext, this.teamID)) {
+            path.splice(0, elementsToDelete);
+
+            if(elementsToDelete !== i + 1) {
+                return BattalionEntity.INTERCEPT.ILLEGAL;
+            }
+
+            return BattalionEntity.INTERCEPT.VALID;
+        }
+    }
+
+    return BattalionEntity.INTERCEPT.NONE;
 }
 
 BattalionEntity.prototype.isSelectable = function() {
@@ -1116,18 +1212,13 @@ BattalionEntity.prototype.onCounterEnd = function(gameContext) {
 BattalionEntity.prototype.onAttackReceived = function(gameContext, entityID) {
     if(entityID !== this.id) {
         this.lastAttacker = entityID;
-        console.log("ATTACKED BY:", entityID);
     }
-}
-
-BattalionEntity.prototype.resetTriggerFlags = function() {
-    this.removeFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
 }
 
 BattalionEntity.prototype.onTurnStart = function(gameContext) {
     this.lastAttacker = EntityManager.ID.INVALID;
     this.removeFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ATTACKED);
-    this.resetTriggerFlags();
+    this.removeFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
     //this.sprite.thaw();
 
     console.log("My turn started", this);

@@ -5,7 +5,7 @@ export const UncloakAction = function() {
     Action.call(this);
 
     this.opacity = 0;
-    this.entity = null;
+    this.entities = [];
 }
 
 UncloakAction.FADE_RATE = 3;
@@ -16,12 +16,15 @@ UncloakAction.prototype.constructor = UncloakAction;
 UncloakAction.prototype.onStart = function(gameContext, data, id) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID  } = data;
-    const entity = entityManager.getEntity(entityID);
+    const { entities } = data;
 
-    entity.playSound(gameContext, BattalionEntity.SOUND_TYPE.CLOAK);
+    for(let i = 0; i < entities.length; i++) {
+        const entity = entityManager.getEntity(entities[i]);
 
-    this.entity = entity;
+        entity.playSound(gameContext, BattalionEntity.SOUND_TYPE.CLOAK);
+
+        this.entities.push(entity);
+    }
 }
 
 UncloakAction.prototype.onUpdate = function(gameContext, data, id) {
@@ -34,7 +37,9 @@ UncloakAction.prototype.onUpdate = function(gameContext, data, id) {
         this.opacity = 1;
     }
 
-    this.entity.setOpacity(this.opacity);
+    for(const entity of this.entities) {
+        entity.setOpacity(this.opacity);
+    }
 }
 
 UncloakAction.prototype.isFinished = function(gameContext, executionRequest) {
@@ -42,20 +47,32 @@ UncloakAction.prototype.isFinished = function(gameContext, executionRequest) {
 }
 
 UncloakAction.prototype.onEnd = function(gameContext, data, id) {
-    this.entity.uncloakInstant();
-    this.entity = null;
+    for(const entity of this.entities) {
+        entity.uncloakInstant();
+    }
+
+    this.entities.length = 0;
     this.opacity = 0;
 }
 
 UncloakAction.prototype.validate = function(gameContext, executionRequest, requestData) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID } = requestData;
-    const entity = entityManager.getEntity(entityID);
+    const { entities } = requestData;
+    const uncloakedEntities = [];
 
-    if(entity && entity.canUncloak()) {
+    for(let i = 0; i < entities.length; i++) {
+        const entityID = entities[i];
+        const entity = entityManager.getEntity(entityID);
+
+        if(entity && entity.canUncloak()) {
+            uncloakedEntities.push(entityID);
+        }
+    }
+
+    if(uncloakedEntities.length !== 0) {
         executionRequest.setData({
-            "entityID": entityID
+            "entities": uncloakedEntities
         });
     }
 }

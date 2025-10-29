@@ -22,9 +22,9 @@ export const ActionHelper = {
             "entityID": entityID
         });
     },
-    createUncloakRequest: function(entityID) {
+    createUncloakRequest: function(entities) {
         return new ActionRequest(TypeRegistry.ACTION_TYPE.UNCLOAK, {
-            "entityID": entityID
+            "entities": entities
         });
     },
     createDialogueRequest: function(type, dialogue = null) {

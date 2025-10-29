@@ -1,5 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
+import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { FlagHelper } from "../../../engine/flagHelper.js";
+import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { EntitySpawner } from "../../entity/entitySpawner.js";
 import { TypeRegistry } from "../../type/typeRegistry.js";
 import { ActionHelper } from "../actionHelper.js";
@@ -16,7 +18,8 @@ export const MoveAction = function() {
 
 MoveAction.FLAG = {
     NONE: 0,
-    ELUSIVE: 1 << 0
+    ELUSIVE: 1 << 0,
+    INTERCEPTED: 1 << 1
 };
 
 MoveAction.TRAVEL_DISTANCE = 56;
@@ -102,19 +105,43 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
     const isValid = entity && entity.canAct() && entity.canMove() && entity.isPathValid(gameContext, path);
 
     if(isValid) {
+        const intercept = entity.mInterceptPath(gameContext, path);
+
+        if(path.length === 0 || intercept === BattalionEntity.INTERCEPT.ILLEGAL) {
+            console.error("EDGE CASE: Stealth unit was too close!");
+            return;
+        }
+
+        const targetX = path[0].tileX;
+        const targetY = path[0].tileY;
         let flags = MoveAction.FLAG.NONE;
 
-        if(attackTarget !== null) {
-            if(!entity.isRanged()) {
-                executionRequest.addNext(ActionHelper.createAttackRequest(entityID, attackTarget, AttackAction.COMMAND.CHAIN_AFTER_MOVE));
+        const uncloakedEntities = entity.getUncloakedEntites(gameContext, targetX, targetY);
+        const uncloakedIDs = uncloakedEntities.map(e => e.getID());
+
+        if(uncloakedIDs.length === 0) {
+            if(attackTarget !== null) {
+                if(!entity.isRanged()) {
+                    executionRequest.addNext(ActionHelper.createAttackRequest(entityID, attackTarget, AttackAction.COMMAND.CHAIN_AFTER_MOVE));
+                }
+            } else {
+                if(entity.canCloakAt(gameContext, targetX, targetY)) {
+                    executionRequest.addNext(ActionHelper.createCloakRequest(entityID));
+                }
+
+                if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
+                    flags = FlagHelper.setFlag(flags, MoveAction.FLAG.ELUSIVE);
+                }
             }
         } else {
-            if(entity.canCloak()) {
-                executionRequest.addNext(ActionHelper.createCloakRequest(entityID));
-            }
+            executionRequest.addNext(ActionHelper.createUncloakRequest(uncloakedIDs));
 
-            if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
-                flags = FlagHelper.setFlag(flags, MoveAction.FLAG.ELUSIVE);
+            if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.TRACKING)) {
+                executionRequest.addNext(ActionHelper.createAttackRequest(entityID, uncloakedIDs[0], AttackAction.COMMAND.CHAIN_AFTER_MOVE));
+            } else {
+                if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
+                    flags = FlagHelper.setFlag(flags, MoveAction.FLAG.ELUSIVE);
+                }
             }
         }
 

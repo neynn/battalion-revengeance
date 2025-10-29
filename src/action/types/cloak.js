@@ -51,7 +51,7 @@ CloakAction.prototype.validate = function(gameContext, executionRequest, request
     const { entityID } = requestData;
     const entity = entityManager.getEntity(entityID);
 
-    if(entity && entity.canCloak()) {
+    if(entity && entity.canCloakAtSelf(gameContext)) {
         executionRequest.setData({
             "entityID": entityID
         });

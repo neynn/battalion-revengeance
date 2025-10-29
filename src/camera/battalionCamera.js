@@ -68,7 +68,8 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
         if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.perspectives.has(teamID)) {
             sprite.drawCloaked(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
         } else {
-            sprite.drawNormal(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+            sprite.drawCloaked(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+            //sprite.drawNormal(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
         }
 
         const markerX = positionX - viewportLeftEdge;

@@ -1,4 +1,3 @@
-import { EntityHelper } from "../../../engine/entity/entityHelper.js";
 import { FloodFill } from "../../../engine/pathfinders/floodFill.js";
 import { ActionHelper } from "../../action/actionHelper.js";
 import { AttackAction } from "../../action/types/attack.js";
@@ -156,7 +155,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
     const player = stateMachine.getContext();
     const worldMap = mapManager.getActiveMap();
     const targetNode = this.nodeMap.get(worldMap.getIndex(tileX, tileY));
-    const entity = EntityHelper.getTileEntity(gameContext, tileX, tileY);
+    const entity = player.getVisibleEntity(gameContext, tileX, tileY);
 
     if(entity && !this.entity.isAllyWith(gameContext, entity)) {
         if(this.entity.isRanged()) {
@@ -213,7 +212,7 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
         let request = null;
 
         if(this.entity.isRanged()) {
-            if(this.entity.isRangeEnough(gameContext, entity)) {
+            if(this.entity.canTarget(gameContext, entity)) {
                 request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.COMMAND.INITIATE);
             }
         } else {

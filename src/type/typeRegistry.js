@@ -424,6 +424,7 @@ TypeRegistry.MOVEMENT_TYPE = {
 };
 
 TypeRegistry.TRAIT_TYPE = {
+    TRACKING: "TRACKING",
     BLIND_SPOT: "BLIND_SPOT",
     HEROIC: "HEROIC",
     SLUGGER: "SLUGGER",

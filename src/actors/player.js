@@ -51,11 +51,12 @@ Player.prototype.inspectEntity = function(gameContext, entity) {
 }
 
 Player.prototype.inspectTile = function(gameContext, tileX, tileY) {
+    console.log("Inspected Tile");
     this.inspectedEntity = null;
 }
 
 Player.prototype.onClick = function(gameContext, worldMap, tileX, tileY) {
-    const entity = EntityHelper.getTileEntity(gameContext, tileX, tileY);
+    const entity = this.getVisibleEntity(gameContext, tileX, tileY);
 
     if(entity) {
         if(this.inspectedEntity === entity) {
@@ -81,6 +82,7 @@ Player.prototype.onClick = function(gameContext, worldMap, tileX, tileY) {
         return;
     }
 
+    this.inspectTile(gameContext, tileX, tileY);
     this.states.eventEnter(gameContext, Player.EVENT.TILE_CLICK, { "x": tileX, "y": tileY });
 }
 
@@ -239,4 +241,14 @@ Player.prototype.showPath = function(gameContext, oPath, entityX, entityY) {
     }
 
     this.camera.pathOverlay.add(tileID, entityX, entityY);
+}
+
+Player.prototype.getVisibleEntity = function(gameContext, tileX, tileY) {
+    const entity = EntityHelper.getTileEntity(gameContext, tileX, tileY);
+
+    if(entity && entity.isVisibleTo(gameContext, this.teamID)) {
+        return entity;
+    }
+
+    return null;
 }

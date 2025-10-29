@@ -365,6 +365,29 @@
             "fire_up": "stealth_tank_fire_up"
         }
     },
+    "heavy_commando": {
+        "health": 40,
+        "damage": 30,
+        "weaponType": "HEAVY",
+        "armorType": "LIGHT",
+        "movementRange": 5,
+        "movementType": "FOOT",
+        "sounds": {
+            "move": null,
+            "fire": null
+        },
+        "traits": ["TRACKING"],
+        "sprites": {
+            "idle_right": "heavy_commando_idle_right",
+            "idle_left": "heavy_commando_idle_left",
+            "idle_down": "heavy_commando_idle_down",
+            "idle_up": "heavy_commando_idle_up",
+            "fire_right": "heavy_commando_fire_right",
+            "fire_left": "heavy_commando_fire_left",
+            "fire_down": "heavy_commando_fire_down",
+            "fire_up": "heavy_commando_fire_up"
+        }
+    },
     "annihilator_tank": {
         "health": 120,
         "damage": 50,
@@ -404,25 +427,6 @@
             "fire_left": "corvette_fighter_fire_left",
             "fire_down": "corvette_fighter_fire_down",
             "fire_up": "corvette_fighter_fire_up"
-        }
-    },
-    "heavy_commando": {
-        "health": 10,
-        "damage": 0,
-        "weaponType": "NONE",
-        "armorType": "NONE",
-        "movementRange": 1,
-        "movementType": "STATIONARY",
-        "traits": [],
-        "sprites": {
-            "idle_right": "heavy_commando_idle_right",
-            "idle_left": "heavy_commando_idle_left",
-            "idle_down": "heavy_commando_idle_down",
-            "idle_up": "heavy_commando_idle_up",
-            "fire_right": "heavy_commando_fire_right",
-            "fire_left": "heavy_commando_fire_left",
-            "fire_down": "heavy_commando_fire_down",
-            "fire_up": "heavy_commando_fire_up"
         }
     },
     "hunter_support": {
