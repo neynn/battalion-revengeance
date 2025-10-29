@@ -41,13 +41,6 @@
         "moveDamage": {},
         "armorDamage": {}
     },
-    "CONQUEROR": {
-        "name": "TRAIT_NAME_CONQUEROR",
-        "desc": "TRAIT_DESC_CONQUEROR",
-        "icon": "Assets/Traits/Conqueror.png",
-        "moveDamage": {},
-        "armorDamage": {}
-    },
     "SKYSWEEPER": {
         "name": "TRAIT_NAME_SKYSWEEPER",
         "desc": "TRAIT_DESC_SKYSWEEPER",
@@ -66,13 +59,6 @@
         "name": "TRAIT_NAME_SONAR",
         "desc": "TRAIT_DESC_SONAR",
         "icon": "Assets/Traits/Sonar.png",
-        "moveDamage": {},
-        "armorDamage": {}
-    },
-    "RADAR": {
-        "name": "TRAIT_NAME_RADAR",
-        "desc": "TRAIT_DESC_RADAR",
-        "icon": "Assets/Traits/Radar.png",
         "moveDamage": {},
         "armorDamage": {}
     },
@@ -151,13 +137,6 @@
         "moveDamage": {},
         "armorDamage": {}
     },
-    "STEER": {
-        "name": "TRAIT_NAME_STEER",
-        "desc": "TRAIT_DESC_STEER",
-        "icon": "Assets/Traits/Steer.png",
-        "moveDamage": {},
-        "armorDamage": {}
-    },
     "INDOMITABLE": {
         "name": "TRAIT_NAME_INDOMITABLE",
         "desc": "TRAIT_DESC_INDOMITABLE",
@@ -183,13 +162,6 @@
         "name": "TRAIT_NAME_MOBILE_BATTERY",
         "desc": "TRAIT_DESC_MOBILE_BATTERY",
         "icon": "Assets/Traits/Mobile Battery.png",
-        "moveDamage": {},
-        "armorDamage": {}
-    },
-    "STREAMLINED": {
-        "name": "TRAIT_NAME_STREAMLINED",
-        "desc": "TRAIT_DESC_STREAMLINED",
-        "icon": "Assets/Traits/Streamlined.png",
         "moveDamage": {},
         "armorDamage": {}
     },
@@ -222,14 +194,6 @@
         "moveDamage": {},
         "armorDamage": {}
     },
-    "DISPERSION": {
-        "name": "TRAIT_NAME_DISPERSION",
-        "desc": "TRAIT_DESC_DISPERSION",
-        "icon": "Assets/Traits/Dispersion.png",
-        "note": "This trait is not implemented.",
-        "moveDamage": {},
-        "armorDamage": {}
-    },
     "JUDGEMENT": {
         "name": "TRAIT_NAME_JUDGEMENT",
         "desc": "TRAIT_DESC_JUDGEMENT",
@@ -244,6 +208,42 @@
             "HEAVY_RUDDER": 100,
             "AMPHIBIOUS": 100
         },
+        "armorDamage": {}
+    },
+    "RADAR": {
+        "name": "TRAIT_NAME_RADAR",
+        "desc": "TRAIT_DESC_RADAR",
+        "icon": "Assets/Traits/Radar.png",
+        "moveDamage": {},
+        "armorDamage": {}
+    },
+    "CONQUEROR": {
+        "name": "TRAIT_NAME_CONQUEROR",
+        "desc": "TRAIT_DESC_CONQUEROR",
+        "icon": "Assets/Traits/Conqueror.png",
+        "moveDamage": {},
+        "armorDamage": {}
+    },
+    "STEER": {
+        "name": "TRAIT_NAME_STEER",
+        "desc": "TRAIT_DESC_STEER",
+        "icon": "Assets/Traits/Steer.png",
+        "moveDamage": {},
+        "armorDamage": {}
+    },
+    "STREAMLINED": {
+        "name": "TRAIT_NAME_STREAMLINED",
+        "desc": "TRAIT_DESC_STREAMLINED",
+        "icon": "Assets/Traits/Streamlined.png",
+        "moveDamage": {},
+        "armorDamage": {}
+    },
+    "DISPERSION": {
+        "name": "TRAIT_NAME_DISPERSION",
+        "desc": "TRAIT_DESC_DISPERSION",
+        "icon": "Assets/Traits/Dispersion.png",
+        "note": "This trait is not implemented.",
+        "moveDamage": {},
         "armorDamage": {}
     },
     "SUPPLY_DISTRIBUTION": {
