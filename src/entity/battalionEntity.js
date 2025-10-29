@@ -7,6 +7,7 @@ import { WorldMap } from "../../engine/map/worldMap.js";
 import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { AttackAction } from "../action/types/attack.js";
+import { JammerField } from "../map/jammerField.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { EntityType } from "./entityType.js";
 
@@ -473,7 +474,9 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
     }
 
     if(this.config.movementType === TypeRegistry.MOVEMENT_TYPE.FLIGHT) {
-        if(worldMap.isJammed(gameContext, tileX, tileY, this.teamID)) {
+        const jammer = worldMap.getJammer(tileX, tileY);
+
+        if(jammer.isJammed(gameContext, this.teamID, JammerField.FLAG.AIRSPACE_BLOCKED)) {
             return BattalionEntity.MAX_MOVE_COST;
         }
     }
@@ -1013,8 +1016,10 @@ BattalionEntity.prototype.canCloakAt = function(gameContext, tileX, tileY) {
     }
 
     const worldMap = gameContext.getActiveMap();
+    const jammer = worldMap.getJammer(tileX, tileY);
+    const cloakFlags = this.getCloakFlags();
 
-    if(worldMap.isJammed(gameContext, tileX, tileY, this.teamID)) {
+    if(jammer.isJammed(gameContext, this.teamID, cloakFlags)) {
         return false;
     }
 
@@ -1045,23 +1050,52 @@ BattalionEntity.prototype.canAct = function() {
     return !this.hasFlag(BattalionEntity.FLAG.HAS_ATTACKED | BattalionEntity.FLAG.HAS_MOVED);
 }
 
+BattalionEntity.prototype.getCloakFlags = function() {
+    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.STEALTH)) {
+        if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SUBMERGED)) {
+            return JammerField.FLAG.SONAR;
+        }
+
+        return JammerField.FLAG.RADAR;
+    }
+
+    return JammerField.FLAG.NONE;
+}
+
+BattalionEntity.prototype.getUncloakFlags = function() {
+    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.STEALTH)) {
+        if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SUBMERGED)) {
+            return JammerField.FLAG.SONAR;
+        }
+
+        return JammerField.FLAG.RADAR;
+    }
+
+    return JammerField.FLAG.NONE;
+}
+
 BattalionEntity.prototype.getUncloakedEntites = function(gameContext, targetX, targetY) {
     const { world } = gameContext;
     const { entityManager } = world;
     const worldMap = gameContext.getActiveMap();
-    let nearbyEntities = [];
+    const nearbyEntities = EntityHelper.getEntitiesAround(gameContext, targetX, targetY);
+    const jammerFlags = this.getJammerFlags();
 
-    if(BattalionEntity.JAMMER_RANGE > 1 && this.hasTrait(TypeRegistry.TRAIT_TYPE.JAMMER)) {
+    //TODO: Maybe only let the radar trait handle uncloaking?
+
+    if(BattalionEntity.JAMMER_RANGE > 1 && jammerFlags !== JammerField.FLAG.NONE) {
         worldMap.fill2D(targetX, targetY, BattalionEntity.JAMMER_RANGE, (tileX, tileY) => {
             const entityID = worldMap.getTopEntity(tileX, tileY);
             const entity = entityManager.getEntity(entityID);
             
-            if(entity) {
-                nearbyEntities.push(entity);
+            if(entity && !nearbyEntities.includes(entity)) {
+                const uncloakFlags = entity.getUncloakFlags();
+
+                if((uncloakFlags & jammerFlags) === uncloakFlags) {
+                    nearbyEntities.push(entity);
+                }
             }
         });
-    } else {
-        nearbyEntities = EntityHelper.getEntitiesAround(gameContext, targetX, targetY);
     }
 
     const uncloakedEntities = [];
@@ -1174,22 +1208,45 @@ BattalionEntity.prototype.isRanged = function() {
     return this.config.maxRange > 1 && this.config.weaponType !== TypeRegistry.WEAPON_TYPE.NONE;
 } 
 
-BattalionEntity.prototype.placeJammer = function(gameContext) {
-    const worldMap = gameContext.getActiveMap();
+BattalionEntity.prototype.isJammer = function() {
+    return this.getJammerFlags() !== JammerField.FLAG.NONE;
+}
+
+BattalionEntity.prototype.getJammerFlags = function() {
+    let flags = JammerField.FLAG.NONE;
 
     if(this.hasTrait(TypeRegistry.TRAIT_TYPE.JAMMER)) {
+        flags |= JammerField.FLAG.RADAR;
+        flags |= JammerField.FLAG.AIRSPACE_BLOCKED;
+    }
+
+    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SONAR)) {
+        flags |= JammerField.FLAG.SONAR;
+    }
+
+    return flags;
+}
+
+BattalionEntity.prototype.placeJammer = function(gameContext) {
+    const jammerType = this.getJammerFlags();
+
+    if(jammerType !== JammerField.FLAG.NONE) {
+        const worldMap = gameContext.getActiveMap();
+
         worldMap.fill2D(this.tileX, this.tileY, BattalionEntity.JAMMER_RANGE, (tileX, tileY) => {
-            worldMap.addJammer(tileX, tileY, this.teamID);
+            worldMap.addJammer(tileX, tileY, this.teamID, jammerType);
         });
     }
 }
 
 BattalionEntity.prototype.removeJammer = function(gameContext) {
-    const worldMap = gameContext.getActiveMap();
+    const jammerType = this.getJammerFlags();
 
-    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.JAMMER)) {
+    if(jammerType !== JammerField.FLAG.NONE) {
+        const worldMap = gameContext.getActiveMap();
+
         worldMap.fill2D(this.tileX, this.tileY, BattalionEntity.JAMMER_RANGE, (tileX, tileY) => {
-            worldMap.removeJammer(tileX, tileY, this.teamID);
+            worldMap.removeJammer(tileX, tileY, this.teamID, jammerType);
         });
     }
 }

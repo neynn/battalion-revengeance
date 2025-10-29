@@ -192,7 +192,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
 
     player.showPath(gameContext, this.path, this.entity.tileX, this.entity.tileY);
 
-    if(this.entity.hasTrait(TypeRegistry.TRAIT_TYPE.JAMMER)) {
+    if(this.entity.isJammer()) {
         const pathX = this.getPathX();
         const pathY = this.getPathY();
 

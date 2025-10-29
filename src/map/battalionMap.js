@@ -241,30 +241,30 @@ BattalionMap.prototype.getBuilding = function(targetX, targetY) {
     return null;
 }
 
-BattalionMap.prototype.addJammer = function(tileX, tileY, teamID) {
+BattalionMap.prototype.addJammer = function(tileX, tileY, teamID, type) {
     const index = this.getIndex(tileX, tileY);
 
     if(index !== WorldMap.OUT_OF_BOUNDS) {
         const jammerField = this.jammerFields.get(index);
 
         if(jammerField) {
-            jammerField.addBlocker(teamID);
+            jammerField.addBlocker(teamID, type);
         } else {
             const newField = new JammerField(tileX, tileY);
 
-            newField.addBlocker(teamID);
+            newField.addBlocker(teamID, type);
 
             this.jammerFields.set(index, newField);
         }
     }
 }
 
-BattalionMap.prototype.removeJammer = function(tileX, tileY, teamID) {
+BattalionMap.prototype.removeJammer = function(tileX, tileY, teamID, type) {
     const index = this.getIndex(tileX, tileY);
     const jammerField = this.jammerFields.get(index);
 
     if(jammerField) {
-        jammerField.removeBlocker(teamID);
+        jammerField.removeBlocker(teamID, type);
 
         if(jammerField.isEmpty()) {
             this.jammerFields.delete(index);
@@ -281,19 +281,4 @@ BattalionMap.prototype.getJammer = function(tileX, tileY) {
     }
 
     return jammerField;
-}
-
-BattalionMap.prototype.isJammed = function(gameContext, tileX, tileY, teamID) {
-    const { teamManager } = gameContext;
-    const { blockers } = this.getJammer(tileX, tileY);
-
-    for(let i = 0; i < blockers.length; i++) {
-        const isAlly = teamManager.isAlly(teamID, blockers[i]);
-
-        if(!isAlly) {
-            return true;
-        }
-    }
-
-    return false;
 }

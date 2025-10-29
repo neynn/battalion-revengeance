@@ -110,7 +110,7 @@ Player.prototype.activeUpdate = function(gameContext, remainingActions) {
 }
 
 Player.prototype.showJammer = function(gameContext, entity) {
-    if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.JAMMER)) {
+    if(entity.isJammer()) {
         const { tileX, tileY } = entity;
 
         this.showJammerAt(gameContext, tileX, tileY);

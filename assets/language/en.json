@@ -32,7 +32,7 @@
     "TRAIT_DESC_CONQUEROR": "This unit can capture buildings.",
     "TRAIT_DESC_SKYSWEEPER": "This unit can attack aircraft.",
     "TRAIT_DESC_DEPTH_CHARGE": "This unit can attack submarines.",
-    "TRAIT_DESC_SONAR": "???",
+    "TRAIT_DESC_SONAR": "This unit uncovers submarines.",
     "TRAIT_DESC_RADAR": "???",
     "TRAIT_DESC_ANTI_INFANTRY": "Deals +100% damage against infantry.",
     "TRAIT_DESC_ANTI_TANK": "Deals +50% damage against tanks.",

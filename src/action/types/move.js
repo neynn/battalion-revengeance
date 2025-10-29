@@ -145,6 +145,9 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
             }
         }
 
+        //TODO: Add uncloak after moving.
+        //MOVE_CLOAKED -> UNCLOAK -> MOVE_UNCLOAKED
+        
         executionRequest.setData({
             "entityID": entityID,
             "path": path,

@@ -395,7 +395,11 @@
         "armorType": "LIGHT",
         "movementRange": 3,
         "movementType": "HEAVY_RUDDER",
-        "traits": ["STEALTH", "SEABOUND", "SUBMERGED"],
+        "sounds": {
+            "move": "rudder_move",
+            "fire": "entwicklung_fire"
+        },
+        "traits": ["STEALTH", "SEABOUND", "SUBMERGED", "DEPTH_CHARGE"],
         "sprites": {
             "idle_right": "u_boat_idle_right",
             "idle_left": "u_boat_idle_left",
