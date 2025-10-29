@@ -234,7 +234,6 @@
         "name": "TRAIT_NAME_JUDGEMENT",
         "desc": "TRAIT_DESC_JUDGEMENT",
         "icon": "Assets/Traits/JUDGEMENT.png",
-        "note": "This trait is purely cosmetic.",
         "moveDamage": {
             "STATIONARY": 100,
             "FOOT": 100,

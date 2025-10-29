@@ -28,7 +28,8 @@
         "HEAVY_COMMANDO": { "x": 2, "y": 1, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "heavy_commando", "owner": "PLAYER" },
 
         "BARGE": { "x": 5, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "leviathan_barge", "owner": "PLAYER" },
-        "BATTLESHIP": { "x": 4, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "battleship", "owner": "PLAYER" },
+        "U_BOAT": { "x": 3, "y": 5, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "u_boat", "owner": "PLAYER" },
+        "BATTLESHIP": { "x": 4, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "battleship", "owner": "NPC" },
         "SUPER_BATTLESHIP": { "x": 3, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "super_battleship", "owner": "PLAYER" },
         "HEAVY_COMMANDO2": { "x": 2, "y": 2, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "heavy_commando", "owner": "PLAYER" },
         "HEAVY_COMMANDO4": { "x": 1, "y": 2, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "heavy_commando", "owner": "PLAYER" },

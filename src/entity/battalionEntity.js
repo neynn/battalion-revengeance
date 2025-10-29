@@ -726,6 +726,17 @@ BattalionEntity.prototype.canTarget = function(gameContext, target) {
         return false;
     }
 
+    //Seabound entities can only attack RUDDER/HEAVY_RUDDER.
+    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SEABOUND)) {
+        if(targetMove !== TypeRegistry.MOVEMENT_TYPE.RUDDER && targetMove !== TypeRegistry.MOVEMENT_TYPE.HEAVY_RUDDER) {
+            return false;
+        }
+    }
+
+    //Special submarine case. Submarines can only be targeted by DEPTH_CHARGE.
+    if(target.hasTrait(TypeRegistry.TRAIT_TYPE.SUBMERGED) && !this.hasTrait(TypeRegistry.TRAIT_TYPE.DEPTH_CHARGE)) {
+        return false;
+    }
     //TODO: Add stealth check. Some units cannot target others if theyre stealthed.
     
     return true;
