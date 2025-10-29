@@ -34,6 +34,14 @@ const mGetCounterResolutions = function(gameContext, entity, target, resolutions
                 "entityID": entityID,
                 "health": overheatHealth
             });
+        } else if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ABSORBER)) {
+            const entityID = entity.getID();
+            const absorberHealth = entity.getAbsorberHealth(damage);
+
+            resolutions.push({
+                "entityID": entityID,
+                "health": absorberHealth
+            });
         }
     }
 }
@@ -64,6 +72,14 @@ const mGetInitiateResolutions = function(gameContext, entity, target, resolution
             resolutions.push({
                 "entityID": entityID,
                 "health": overheatHealth
+            });
+        } else if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ABSORBER)) {
+            const entityID = entity.getID();
+            const absorberHealth = entity.getAbsorberHealth(damage);
+
+            resolutions.push({
+                "entityID": entityID,
+                "health": absorberHealth
             });
         }
     }

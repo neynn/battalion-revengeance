@@ -199,14 +199,14 @@
         "desc": "TRAIT_DESC_JUDGEMENT",
         "icon": "Assets/Traits/JUDGEMENT.png",
         "moveDamage": {
-            "STATIONARY": 100,
-            "FOOT": 100,
-            "WHEELED": 100,
-            "TRACKED": 100,
-            "FLIGHT": 100,
-            "RUDDER": 100,
-            "HEAVY_RUDDER": 100,
-            "AMPHIBIOUS": 100
+            "STATIONARY": 1000,
+            "FOOT": 1000,
+            "WHEELED": 1000,
+            "TRACKED": 1000,
+            "FLIGHT": 1000,
+            "RUDDER": 1000,
+            "HEAVY_RUDDER": 1000,
+            "AMPHIBIOUS": 1000
         },
         "armorDamage": {}
     },
@@ -327,7 +327,6 @@
         "name": "TRAIT_NAME_ABSORBER",
         "desc": "TRAIT_DESC_ABSORBER",
         "icon": "Assets/Traits/Absorber.png",
-        "note": "This trait is not implemented.",
         "moveDamage": {},
         "armorDamage": {}
     },

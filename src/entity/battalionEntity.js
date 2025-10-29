@@ -11,6 +11,8 @@ import { JammerField } from "../map/jammerField.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { EntityType } from "./entityType.js";
 
+const ABSORBER_RATE = 0.2;
+
 const OVERHEAT_DAMAGE = 0.1;
 
 const HEROIC_THRESHOLD = 1;
@@ -765,7 +767,7 @@ BattalionEntity.prototype.isProtectedFromRange = function(gameContext) {
 }
 
 BattalionEntity.prototype.isAllowedToCounter = function(target) {
-    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.BLIND_SPOT)) {
+    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.BLIND_SPOT) || this.hasTrait(TypeRegistry.TRAIT_TYPE.SELF_DESTRUCT)) {
         return false;
     }
 
@@ -1320,4 +1322,14 @@ BattalionEntity.prototype.triggerElusive = function() {
 
 BattalionEntity.prototype.getOverheatDamage = function() {
     return this.maxHealth * OVERHEAT_DAMAGE;
+}
+
+BattalionEntity.prototype.getAbsorberHealth = function(damage) {
+    const health = this.health + damage * ABSORBER_RATE;
+
+    if(health > this.maxHealth) {
+        return this.maxHealth;
+    }
+
+    return health;
 }
