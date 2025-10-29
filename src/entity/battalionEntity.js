@@ -10,6 +10,8 @@ import { AttackAction } from "../action/types/attack.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { EntityType } from "./entityType.js";
 
+const OVERHEAT_DAMAGE = 0.1;
+
 const HEROIC_THRESHOLD = 1;
 
 const DAMAGE_AMPLIFIER = {
@@ -156,6 +158,16 @@ BattalionEntity.createStep = function(deltaX, deltaY, tileX, tileY) {
         "tileX": tileX,
         "tileY": tileY
     }
+}
+
+BattalionEntity.isNodeReachable = function(node) {
+    const { flags } = node;
+
+    if(FlagHelper.hasFlag(flags, BattalionEntity.PATH_FLAG.UNREACHABLE)) {
+        return false;
+    }
+
+    return true;
 }
 
 BattalionEntity.prototype = Object.create(Entity.prototype);
@@ -570,7 +582,7 @@ BattalionEntity.prototype.getBestPath = function(gameContext, nodes, targetX, ta
     const index = worldMap.getIndex(targetX, targetY);
     const targetNode = nodes.get(index);
 
-    if(!targetNode || !this.isNodeValid(targetNode)) {
+    if(!targetNode || !BattalionEntity.isNodeReachable(targetNode)) {
         return path;
     }
 
@@ -1146,16 +1158,6 @@ BattalionEntity.prototype.isRanged = function() {
     return this.config.maxRange > 1 && this.config.weaponType !== TypeRegistry.WEAPON_TYPE.NONE;
 } 
 
-BattalionEntity.prototype.isNodeValid = function(node) {
-    const { flags } = node;
-
-    if(FlagHelper.hasFlag(flags, BattalionEntity.PATH_FLAG.UNREACHABLE)) {
-        return false;
-    }
-
-    return true;
-}
-
 BattalionEntity.prototype.placeJammer = function(gameContext) {
     const worldMap = gameContext.getActiveMap();
 
@@ -1244,4 +1246,8 @@ BattalionEntity.prototype.triggerElusive = function() {
         this.removeFlag(BattalionEntity.FLAG.HAS_MOVED);
         this.setFlag(BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
     }
+}
+
+BattalionEntity.prototype.getOverheatDamage = function() {
+    return this.maxHealth * OVERHEAT_DAMAGE;
 }

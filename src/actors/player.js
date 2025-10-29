@@ -158,12 +158,12 @@ Player.prototype.clearOverlays = function() {
     this.camera.jammerOverlay.clear();
 }
 
-Player.prototype.addNodeMapRender = function(nodeMap, entity) {
+Player.prototype.addNodeMapRender = function(nodeMap) {
     this.clearOverlays();
 
     for(const [index, node] of nodeMap) {
         const { x, y } = node;
-        const id = entity.isNodeValid(node) ? TypeRegistry.TILE_ID.OVERLAY_MOVE : TypeRegistry.TILE_ID.OVERLAY_ATTACK;
+        const id = BattalionEntity.isNodeReachable(node) ? TypeRegistry.TILE_ID.OVERLAY_MOVE : TypeRegistry.TILE_ID.OVERLAY_ATTACK;
         
         //TODO: ADD JAMMED!!!
 

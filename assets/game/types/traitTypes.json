@@ -1,4 +1,11 @@
 {
+    "OVERHEAT": {
+        "name": "TRAIT_NAME_OVERHEAT",
+        "desc": "TRAIT_DESC_OVERHEAT",
+        "icon": null,
+        "moveDamage": {},
+        "armorDamage": {}
+    },
     "TRACKING": {
         "name": "TRAIT_NAME_TRACKING",
         "desc": "TRAIT_DESC_TRACKING",

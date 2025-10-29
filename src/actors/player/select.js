@@ -36,7 +36,7 @@ SelectState.prototype.selectEntity = function(gameContext, stateMachine, entity)
     this.entity = entity;
     this.entity.mGetNodeMap(gameContext, this.nodeMap);
 
-    player.addNodeMapRender(this.nodeMap, this.entity);
+    player.addNodeMapRender(this.nodeMap);
     player.showJammer(gameContext, entity);
 
     this.onTileChange(gameContext, stateMachine, this.entity.tileX, this.entity.tileY);
@@ -132,7 +132,7 @@ SelectState.prototype.setOptimalAttackPath = function(gameContext, entity) {
             const index = worldMap.getIndex(neighborX, neighborY);
             const node = this.nodeMap.get(index);
 
-            if(node && this.entity.isNodeValid(node)) {
+            if(node && BattalionEntity.isNodeReachable(node)) {
                 if(!bestNode) {
                     bestNode = node;
                 } else if(node.cost < bestNode.cost) {
@@ -168,7 +168,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
         return;
     }
 
-    if(!targetNode || !this.entity.isNodeValid(targetNode)) {
+    if(!targetNode || !BattalionEntity.isNodeReachable(targetNode)) {
         return;
     }
 

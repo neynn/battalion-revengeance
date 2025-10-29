@@ -4,7 +4,17 @@ import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { TypeRegistry } from "../../type/typeRegistry.js";
 import { ActionHelper } from "../actionHelper.js";
 
-const mGetCounterResolutions = function(gameContext, entity, target, resolutions, deadEntities) {
+const mGetDeadEntities = function(resolutions, deadEntities) {
+    for(let i = 0; i < resolutions.length; i++) {
+        const { entityID, health } = resolutions[i];
+
+        if(health <= 0) {
+            deadEntities.push(entityID);
+        }
+    }
+}
+
+const mGetCounterResolutions = function(gameContext, entity, target, resolutions) {
     if(entity.isAllowedToCounter(target) && entity.canTarget(gameContext, target)) {
         const damage = entity.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.COUNTER);
         const remainingHealth = target.getHealthAfter(damage);
@@ -15,13 +25,20 @@ const mGetCounterResolutions = function(gameContext, entity, target, resolutions
             "health": remainingHealth
         });
 
-        if(remainingHealth <= 0) {
-            deadEntities.push(targetID);
+        if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.OVERHEAT)) {
+            const entityID = entity.getID();
+            const overheatDamage = entity.getOverheatDamage();
+            const overheatHealth = entity.getHealthAfter(overheatDamage);
+
+            resolutions.push({
+                "entityID": entityID,
+                "health": overheatHealth
+            });
         }
     }
 }
 
-const mGetInitiateResolutions = function(gameContext, entity, target, resolutions, deadEntities) {
+const mGetInitiateResolutions = function(gameContext, entity, target, resolutions) {
     if(entity.canTarget(gameContext, target)) {
         const damage = entity.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.INITIATE);
         const remainingHealth = target.getHealthAfter(damage);
@@ -32,10 +49,6 @@ const mGetInitiateResolutions = function(gameContext, entity, target, resolution
             "health": remainingHealth
         });
 
-        if(remainingHealth <= 0) {
-            deadEntities.push(targetID);
-        }
-
         if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.SELF_DESTRUCT)) {
             const entityID = entity.getID();
 
@@ -43,8 +56,15 @@ const mGetInitiateResolutions = function(gameContext, entity, target, resolution
                 "entityID": entityID,
                 "health": 0
             });
+        } else if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.OVERHEAT)) {
+            const entityID = entity.getID();
+            const overheatDamage = entity.getOverheatDamage();
+            const overheatHealth = entity.getHealthAfter(overheatDamage);
 
-            deadEntities.push(entityID);
+            resolutions.push({
+                "entityID": entityID,
+                "health": overheatHealth
+            });
         }
     }
 }
@@ -182,7 +202,8 @@ AttackAction.prototype.validate = function(gameContext, executionRequest, reques
     switch(command) {
         case AttackAction.COMMAND.CHAIN_AFTER_MOVE: {
             if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && !entity.hasFlag(BattalionEntity.FLAG.HAS_ATTACKED) && !entity.isRanged()) {
-                mGetInitiateResolutions(gameContext, entity, target, resolutions, deadEntities);
+                mGetInitiateResolutions(gameContext, entity, target, resolutions);
+                mGetDeadEntities(resolutions, deadEntities);
 
                 if(resolutions.length !== 0) {
                     if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
@@ -201,7 +222,8 @@ AttackAction.prototype.validate = function(gameContext, executionRequest, reques
         }
         case AttackAction.COMMAND.INITIATE: {
             if(entity.canAct()) {
-                mGetInitiateResolutions(gameContext, entity, target, resolutions, deadEntities);
+                mGetInitiateResolutions(gameContext, entity, target, resolutions);
+                mGetDeadEntities(resolutions, deadEntities);
 
                 if(resolutions.length !== 0) {
                     if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
@@ -219,7 +241,9 @@ AttackAction.prototype.validate = function(gameContext, executionRequest, reques
             break;
         }
         case AttackAction.COMMAND.COUNTER: {
-            mGetCounterResolutions(gameContext, entity, target, resolutions, deadEntities);
+            mGetCounterResolutions(gameContext, entity, target, resolutions);
+            mGetDeadEntities(resolutions, deadEntities);
+
             attackType = AttackAction.ATTACK_TYPE.COUNTER;
             break;
         }

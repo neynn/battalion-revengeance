@@ -258,7 +258,7 @@
         "armorType": "HEAVY",
         "movementRange": 7,
         "movementType": "TRACKED",
-        "traits": ["SCHWERPUNKT", "BEWEGUNGSKRIEG", "MOBILE_BATTERY", "TERRIFYING"],
+        "traits": ["OVERHEAT", "BEWEGUNGSKRIEG", "MOBILE_BATTERY", "TERRIFYING"],
         "sounds": {
             "move": "entwicklung_move",
             "fire": "entwicklung_fire"
