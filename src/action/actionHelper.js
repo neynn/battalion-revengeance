@@ -22,6 +22,11 @@ export const ActionHelper = {
             "entityID": entityID
         });
     },
+    createUncloakRequest: function(entityID) {
+        return new ActionRequest(TypeRegistry.ACTION_TYPE.UNCLOAK, {
+            "entityID": entityID
+        });
+    },
     createDialogueRequest: function(type, dialogue = null) {
         return new ActionRequest(TypeRegistry.ACTION_TYPE.DIALOGUE, {
             "type": type,

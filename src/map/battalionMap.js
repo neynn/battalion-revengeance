@@ -282,3 +282,18 @@ BattalionMap.prototype.getJammer = function(tileX, tileY) {
 
     return jammerField;
 }
+
+BattalionMap.prototype.isJammed = function(gameContext, tileX, tileY, teamID) {
+    const { teamManager } = gameContext;
+    const { blockers } = this.getJammer(tileX, tileY);
+
+    for(let i = 0; i < blockers.length; i++) {
+        const isAlly = teamManager.isAlly(teamID, blockers[i]);
+
+        if(!isAlly) {
+            return true;
+        }
+    }
+
+    return false;
+}

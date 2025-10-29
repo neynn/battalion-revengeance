@@ -74,8 +74,9 @@ BattalionEntity.FLAG = {
     HAS_MOVED: 1 << 0,
     HAS_ATTACKED: 1 << 1,
     IS_CLOAKED: 1 << 2,
-    BEWEGUNGSKRIEG_TRIGGERED: 1 << 3,
-    ELUSIVE_TRIGGERED: 1 << 4
+    IS_SUBMERGED: 1 << 3,
+    BEWEGUNGSKRIEG_TRIGGERED: 1 << 4,
+    ELUSIVE_TRIGGERED: 1 << 5
 };
 
 BattalionEntity.PATH_FLAG = {
@@ -442,7 +443,7 @@ BattalionEntity.prototype.isAllyWith = function(gameContext, entity) {
 }
 
 BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType, tileX, tileY) {
-    const { world, typeRegistry, teamManager } = gameContext;
+    const { world, typeRegistry } = gameContext;
     const { entityManager } = world;
     const { terrain, passability } = tileType;
     let tileCost = passability[this.config.movementType] ?? BattalionEntity.MAX_MOVE_COST;
@@ -452,16 +453,8 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
     }
 
     if(this.config.movementType === TypeRegistry.MOVEMENT_TYPE.FLIGHT) {
-        const jammerField = worldMap.getJammer(tileX, tileY);
-        const { blockers } = jammerField;
-
-        for(let i = 0; i < blockers.length; i++) {
-            const teamID = blockers[i];
-            const isAlly = teamManager.isAlly(this.teamID, teamID);
-
-            if(!isAlly) {
-                return BattalionEntity.MAX_MOVE_COST;
-            }
+        if(worldMap.isJammed(gameContext, tileX, tileY, this.teamID)) {
+            return BattalionEntity.MAX_MOVE_COST;
         }
     }
     
@@ -602,6 +595,7 @@ BattalionEntity.prototype.isPathValid = function(gameContext, path) {
         return false;
     }
 
+    //TODO: What about stealth units blocking?
     const targetX = path[0].tileX;
     const targetY = path[0].tileY;
     const tileEntity = EntityHelper.getTileEntity(gameContext, targetX, targetY);
@@ -705,6 +699,8 @@ BattalionEntity.prototype.isTargetable = function(gameContext, target) {
         return false;
     }
 
+    //TODO: Add stealth check. Some units cannot target others if theyre stealthed.
+    
     return true;
 }
 
@@ -958,6 +954,10 @@ BattalionEntity.prototype.uncloakInstant = function() {
 
 BattalionEntity.prototype.setOpacity = function(opacity) {
     this.sprite.setOpacity(opacity);
+}
+
+BattalionEntity.prototype.canUncloak = function() {
+    return this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED);
 }
 
 BattalionEntity.prototype.canCloak = function() {

@@ -28,7 +28,7 @@
         "BATTLESHIP": { "x": 4, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "battleship", "owner": "PLAYER" },
         "SUPER_BATTLESHIP": { "x": 3, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "super_battleship", "owner": "PLAYER" },
         "TANK_1": { "x": 3, "y": 2, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "annihilator_tank", "owner": "PLAYER" },
-        "TANK_2": { "x": 4, "y": 1, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "stealth_tank", "owner": "PLAYER" },
+        "TANK_2": { "x": 4, "y": 1, "stealth": true, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "stealth_tank", "owner": "PLAYER" },
         "TANK_3": { "x": 5, "y": 1, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "tank_hunter", "owner": "NPC", "direction": "WEST" },
         "JAMMER_TRUCK_1": { "x": 6, "y": 5, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "jammer_truck", "owner": "PLAYER", "direction": "WEST" },
         "JAMMER_TRUCK_2": { "x": 7, "y": 1, "health": 100, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "jammer_truck", "owner": "NPC", "direction": "WEST" }

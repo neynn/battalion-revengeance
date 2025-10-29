@@ -167,7 +167,8 @@ TypeRegistry.ACTION_TYPE = {
     ATTACK: "ATTACK",
     CLOAK: "CLOAK",
     DIALOGUE: "DIALOGUE",
-    DEATH: "DEATH"
+    DEATH: "DEATH",
+    UNCLOAK: "UNCLOAK"
 };
 
 TypeRegistry.AUTOTILER_ID = {

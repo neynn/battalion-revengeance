@@ -136,7 +136,8 @@ export const EntitySpawner = {
             direction = null,
             name = null,
             desc = null,
-            health = -1
+            health = -1,
+            stealth = false
         } = config;
         const ownerID = TeamSpawner.getActorID(gameContext, owner);
         const spawnConfig = EntitySpawner.createSpawnConfig(externalID, type, x, y);
@@ -153,6 +154,10 @@ export const EntitySpawner = {
 
             if(health !== -1) {
                 entity.setHealth(health);
+            }
+
+            if(stealth && entity.canCloak()) {
+                entity.cloakInstant();
             }
 
             entity.playIdle(gameContext);

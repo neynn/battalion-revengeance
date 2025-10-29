@@ -7,6 +7,7 @@ import { CloakAction } from "./action/types/cloak.js";
 import { DeathAction } from "./action/types/death.js";
 import { DialogueAction } from "./action/types/dialogue.js";
 import { MoveAction } from "./action/types/move.js";
+import { UncloakAction } from "./action/types/uncloak.js";
 import { PortraitHandler } from "./actors/portraitHandler.js";
 import { DialogueHandler } from "./dialogue/dialogueHandler.js";
 import { EntityType } from "./entity/entityType.js";
@@ -62,6 +63,7 @@ BattalionContext.prototype.init = function(resources) {
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.CLOAK, new CloakAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.DIALOGUE, new DialogueAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.DEATH, new DeathAction());
+    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.UNCLOAK, new UncloakAction());
 
     this.language.registerLanguage(LanguageHandler.LANGUAGE.ENGLISH, {});
     this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);
