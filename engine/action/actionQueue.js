@@ -6,6 +6,7 @@ import { Action } from "./action.js";
 export const ActionQueue = function() {
     this.nextID = 0;
     this.actionTypes = new Map();
+    this.nextQueue = [];
     this.executionQueue = new Queue(ActionQueue.MAX_ACTIONS);
     this.current = null;
     this.isSkipping = false;
@@ -37,7 +38,7 @@ ActionQueue.EVENT = {
 
 ActionQueue.prototype.update = function(gameContext) {
     if(!this.current) {
-        this.current = this.executionQueue.getNext();
+        this.current = this.getNext(gameContext);
     }
 
     switch(this.state) {
@@ -56,6 +57,20 @@ ActionQueue.prototype.update = function(gameContext) {
     }
 }
 
+ActionQueue.prototype.getNext = function(gameContext) {
+    while(this.nextQueue.length !== 0) {
+        const request = this.nextQueue.pop();
+        const executionRequest = this.createExecutionRequest(gameContext, request);
+
+        if(executionRequest) {
+            this.enqueue(executionRequest, Action.PRIORITY.HIGH);
+            break;
+        }
+    }
+
+    return this.executionQueue.getNext();
+}
+
 ActionQueue.prototype.flushExecution = function(gameContext) {
     if(!this.current) {
         return;
@@ -70,7 +85,7 @@ ActionQueue.prototype.flushExecution = function(gameContext) {
     actionType.onStart(gameContext, data, id);
     actionType.onEnd(gameContext, data, id);
 
-    this.handleActionEnd(gameContext);
+    this.handleActionEnd();
 }
 
 ActionQueue.prototype.startExecution = function(gameContext) {
@@ -106,21 +121,17 @@ ActionQueue.prototype.processExecution = function(gameContext) {
     if(this.isSkipping || actionType.isFinished(gameContext, this.current)) {
         actionType.onEnd(gameContext, data, id);
 
-        this.handleActionEnd(gameContext);
+        this.handleActionEnd();
         this.state = ActionQueue.STATE.ACTIVE;
     }
 }
 
-ActionQueue.prototype.handleActionEnd = function(gameContext) {
+ActionQueue.prototype.handleActionEnd = function() {
     if(!this.ignoreNext) {
         const { next } = this.current;
 
         for(let i = next.length - 1; i >= 0; i--) {
-            const executionRequest = this.createExecutionRequest(gameContext, next[i]);
-
-            if(executionRequest) {
-                this.enqueue(executionRequest, Action.PRIORITY.HIGH);
-            }
+            this.nextQueue.push(next[i]);
         }
     }
 

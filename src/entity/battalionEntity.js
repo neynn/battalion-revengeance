@@ -712,17 +712,19 @@ BattalionEntity.prototype.canTarget = function(gameContext, target) {
         return false;
     }
 
+    //Stealth check. Cloaked units cannot be attacked.
+    if(target.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+        return false;
+    }
+
     if(!this.isRangeEnough(gameContext, target)) {
         return false;
     }
 
     const targetMove = target.config.movementType;
 
+    //Flight units can only be attacked with skysweeper.
     if(targetMove === TypeRegistry.MOVEMENT_TYPE.FLIGHT && !this.hasTrait(TypeRegistry.TRAIT_TYPE.SKYSWEEPER)) {
-        return false;
-    }
-
-    if(this.isRanged() && target.isProtectedFromRange(gameContext)) {
         return false;
     }
 
@@ -737,7 +739,10 @@ BattalionEntity.prototype.canTarget = function(gameContext, target) {
     if(target.hasTrait(TypeRegistry.TRAIT_TYPE.SUBMERGED) && !this.hasTrait(TypeRegistry.TRAIT_TYPE.DEPTH_CHARGE)) {
         return false;
     }
-    //TODO: Add stealth check. Some units cannot target others if theyre stealthed.
+
+    if(this.isRanged() && target.isProtectedFromRange(gameContext)) {
+        return false;
+    }
     
     return true;
 }
