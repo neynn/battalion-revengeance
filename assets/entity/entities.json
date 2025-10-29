@@ -77,7 +77,7 @@
         "armorType": "LIGHT",
         "movementRange": 6,
         "movementType": "FLIGHT",
-        "traits": ["CAVITATION_EXPLOSION"],
+        "traits": ["CAVITATION_EXPLOSION", "DEPTH_CHARGE"],
         "sounds": {
             "move": "aleph_move",
             "fire": "aleph_fire"

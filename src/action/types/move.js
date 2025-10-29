@@ -1,5 +1,4 @@
 import { Action } from "../../../engine/action/action.js";
-import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { FlagHelper } from "../../../engine/flagHelper.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { EntitySpawner } from "../../entity/entitySpawner.js";
@@ -18,8 +17,7 @@ export const MoveAction = function() {
 
 MoveAction.FLAG = {
     NONE: 0,
-    ELUSIVE: 1 << 0,
-    INTERCEPTED: 1 << 1
+    ELUSIVE: 1 << 0
 };
 
 MoveAction.TRAVEL_DISTANCE = 56;
@@ -116,7 +114,7 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
         const targetY = path[0].tileY;
         let flags = MoveAction.FLAG.NONE;
 
-        const uncloakedEntities = entity.getUncloakedEntites(gameContext, targetX, targetY);
+        const uncloakedEntities = entity.getUncloakedEntities(gameContext, targetX, targetY);
         const uncloakedIDs = uncloakedEntities.map(e => e.getID());
 
         if(uncloakedIDs.length === 0) {

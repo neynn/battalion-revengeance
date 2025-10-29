@@ -1074,39 +1074,36 @@ BattalionEntity.prototype.getUncloakFlags = function() {
     return JammerField.FLAG.NONE;
 }
 
-BattalionEntity.prototype.getUncloakedEntites = function(gameContext, targetX, targetY) {
+BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, targetY) {
     const { world } = gameContext;
     const { entityManager } = world;
     const worldMap = gameContext.getActiveMap();
-    const nearbyEntities = EntityHelper.getEntitiesAround(gameContext, targetX, targetY);
     const jammerFlags = this.getJammerFlags();
+    const searchRange = BattalionEntity.JAMMER_RANGE > 1 && jammerFlags !== JammerField.FLAG.NONE ? BattalionEntity.JAMMER_RANGE : 1;
+    const uncloakedEntities = [];
 
-    //TODO: Maybe only let the radar trait handle uncloaking?
+    worldMap.fill2D(targetX, targetY, searchRange, (tileX, tileY) => {
+        const entityID = worldMap.getTopEntity(tileX, tileY);
+        const entity = entityManager.getEntity(entityID);
+        
+        if(entity) {
+            const distance = entity.getDistanceToTile(targetX, targetY);
 
-    if(BattalionEntity.JAMMER_RANGE > 1 && jammerFlags !== JammerField.FLAG.NONE) {
-        worldMap.fill2D(targetX, targetY, BattalionEntity.JAMMER_RANGE, (tileX, tileY) => {
-            const entityID = worldMap.getTopEntity(tileX, tileY);
-            const entity = entityManager.getEntity(entityID);
-            
-            if(entity && !nearbyEntities.includes(entity)) {
+            if(distance === 1) {
+                if(!entity.isVisibleTo(gameContext, this.teamID)) {
+                    uncloakedEntities.push(entity);
+                }
+            } else if(jammerFlags !== JammerField.FLAG.NONE) {
                 const uncloakFlags = entity.getUncloakFlags();
 
                 if((uncloakFlags & jammerFlags) === uncloakFlags) {
-                    nearbyEntities.push(entity);
+                    if(!entity.isVisibleTo(gameContext, this.teamID)) {
+                        uncloakedEntities.push(entity);
+                    }
                 }
             }
-        });
-    }
-
-    const uncloakedEntities = [];
-
-    for(let i = 0; i < nearbyEntities.length; i++) {
-        const entity = nearbyEntities[i];
-
-        if(!entity.isVisibleTo(gameContext, this.teamID)) {
-            uncloakedEntities.push(entity);
         }
-    }
+    });
 
     return uncloakedEntities;
 }
