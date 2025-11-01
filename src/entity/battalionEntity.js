@@ -888,17 +888,17 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
     const targetX = target.tileX;
     const targetY = target.tileY;
 
+    let armorFactor = 1;
+    let terrainFactor = 1;
+    let logisticFactor = 1;
+    let healthFactor = 1;
     let damageAmplifier = 1;
 
     if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.INDOMITABLE)) {
-        if(attackType !== AttackAction.ATTACK_TYPE.COUNTER || !this.hasTrait(TypeRegistry.TRAIT_TYPE.SLUGGER)) {
-            const healthFactor = this.health / this.maxHealth;
+        healthFactor = this.health / this.maxHealth;
 
-            if(healthFactor > 1) {
-                damageAmplifier *= 1;
-            } else {
-                damageAmplifier *= healthFactor;
-            }
+        if(healthFactor > 1) {
+            healthFactor = 1;
         }
     }
     
@@ -909,14 +909,22 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
     if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.ARMOR_PIERCE)) {
         const weaponType = typeRegistry.getWeaponType(this.config.weaponType);
 
-        damageAmplifier *= weaponType.armorResistance[targetArmor] ?? 1;
+        armorFactor *= weaponType.armorResistance[targetArmor] ?? 1;
     }
 
     //Logistic factor. Applies only to non-commandos.
-    if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.COMMANDO)) {
-        const logisticFactor = worldMap.getLogisticFactor(gameContext, this.tileX, this.tileY);
-        
-        damageAmplifier *= logisticFactor;
+    if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.COMMANDO)) {        
+        logisticFactor = worldMap.getLogisticFactor(gameContext, this.tileX, this.tileY);
+    }
+
+    //Target tile.
+    const { terrain } = worldMap.getTileTypeObject(gameContext, targetX, targetY);
+
+    for(let i = 0; i < terrain.length; i++) {
+        const { protection } = typeRegistry.getTerrainType(terrain[i]);
+
+        //Terrain factor.
+        terrainFactor *= protection[targetMove] ?? 1;
     }
 
     //Attacker traits.
@@ -928,16 +936,6 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
 
         //Armor factor.
         damageAmplifier *= armorDamage[targetArmor] ?? 1;
-    }
-
-    //Target tile.
-    const { terrain } = worldMap.getTileTypeObject(gameContext, targetX, targetY);
-
-    for(let i = 0; i < terrain.length; i++) {
-        const { protection } = typeRegistry.getTerrainType(terrain[i]);
-
-        //Terrain factor.
-        damageAmplifier *= protection[targetMove] ?? 1;
     }
 
     //Steer trait. Reduces damage received by STEER for each tile the target can travel further. Up to STEER_MAX_REDUCTION.
@@ -972,6 +970,10 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
             break;
         }
         case AttackAction.ATTACK_TYPE.COUNTER: {
+            if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SLUGGER)) {
+                healthFactor = 1;
+            }
+
             break;
         }
         default:  {
@@ -979,6 +981,11 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
             break;
         }
     }
+
+    damageAmplifier *= armorFactor;
+    damageAmplifier *= terrainFactor;
+    damageAmplifier *= logisticFactor;
+    damageAmplifier *= healthFactor;
 
     return damageAmplifier;
 }
