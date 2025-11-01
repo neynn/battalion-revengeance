@@ -38,7 +38,7 @@
         "TANK_1": { "x": 3, "y": 2, "stealth": true, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "stealth_tank", "owner": "NPC" },
         "TANK_3": { "x": 4, "y": 2, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "tank_hunter", "owner": "NPC", "direction": "WEST" },
         "JAMMER_TRUCK_1": { "x": 6, "y": 5, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "jammer_truck", "owner": "PLAYER", "direction": "WEST" },
-        "JAMMER_TRUCK_2": { "x": 7, "y": 2, "health": 100, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "jammer_truck", "owner": "NPC", "direction": "WEST" },
+        "JAMMER_TRUCK_2": { "x": 7, "y": 1, "health": 100, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "jammer_truck", "owner": "NPC", "direction": "WEST" },
         "JAMMER_TRUCK_3": { "x": 7, "y": 5, "type": "jammer_truck", "owner": "DRAGOON", "direction": "WEST" }
     },
     "objectives": {

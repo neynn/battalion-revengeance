@@ -826,6 +826,12 @@ BattalionEntity.prototype.canTarget = function(gameContext, target) {
         }
     }
     
+    if(this.getAttackType() === BattalionEntity.ATTACK_TYPE.STREAMBLAST) {
+        if(!this.isAxisMeeting(target)) {
+            return false;
+        }
+    }
+
     return true;
 }
 
@@ -844,7 +850,7 @@ BattalionEntity.prototype.isProtectedFromRange = function(gameContext) {
 }
 
 BattalionEntity.prototype.isAllowedToCounter = function(target) {
-    //Special attack types cannot counter.
+    //Special attack types cannot counter and cannot be countered.
     if(this.getAttackType() !== BattalionEntity.ATTACK_TYPE.REGULAR || target.getAttackType() !== BattalionEntity.ATTACK_TYPE.REGULAR) {
         return false;
     }
@@ -1069,6 +1075,14 @@ BattalionEntity.prototype.bufferSprites = function(gameContext) {
             this.sprite.preload(gameContext, spriteID);
         }
     }
+}
+
+BattalionEntity.prototype.isAxisMeeting = function(target) {
+    const { tileX, tileY } = target;
+    const deltaX = Math.abs(this.tileX - tileX);
+    const deltaY = Math.abs(this.tileY - tileY);
+
+    return deltaX === 0 || deltaY === 0;
 }
 
 BattalionEntity.prototype.getDistanceToTile = function(tileX, tileY) {
@@ -1317,7 +1331,7 @@ BattalionEntity.prototype.getRangeType = function() {
     }
 
     if(this.config.maxRange > 1) {
-        if(this.config.minRange === 1) {
+        if(this.config.minRange === 1 && EntityType.HYBRID_ENABLED) {
             return BattalionEntity.RANGE_TYPE.HYBRID;
         }
 
