@@ -56,6 +56,8 @@ export const EntityType = function(id, config) {
 
         if(TypeRegistry.TRAIT_TYPE[traitID] !== undefined) {
             this.traits.push(TypeRegistry.TRAIT_TYPE[traitID]);
+        } else {
+            console.error("UNKNOWN TRAIT!", traitID);
         }
     }
 }

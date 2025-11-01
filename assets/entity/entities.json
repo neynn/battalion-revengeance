@@ -191,9 +191,33 @@
         "damage": 35,
         "weaponType": "HEAVY",
         "armorType": "MEDIUM",
-        "movementRange": 5,
+        "movementRange": 6,
         "movementType": "TRACKED",
         "traits": ["ANTI_TANK", "STREAMLINED"],
+        "sounds": {
+            "move": "tracked_move",
+            "fire": "tank_fire"
+        },
+        "sprites": {
+            "idle_right": "ampac_idle_right",
+            "idle_left": "ampac_idle_left",
+            "idle_down": "ampac_idle_down",
+            "idle_up": "ampac_idle_up",
+            "fire_right": "ampac_fire_right",
+            "fire_left": "ampac_fire_left",
+            "fire_down": "ampac_fire_down",
+            "fire_up": "ampac_fire_up"
+        }
+    },
+    "ayin": {
+        "health": 40,
+        "damage": 25,
+        "weaponType": "MEDIUM",
+        "armorType": "MEDIUM",
+        "movementRange": 5,
+        "movementType": "TRACKED",
+        "streamRange": 7,
+        "traits": ["STREAMBLAST", "ARMOR_PIERCE"],
         "sounds": {
             "move": "tracked_move",
             "fire": "tank_fire"
@@ -258,7 +282,7 @@
         "armorType": "HEAVY",
         "movementRange": 7,
         "movementType": "TRACKED",
-        "traits": ["OVERHEAT", "BEWEGUNGSKRIEG", "MOBILE_BATTERY", "TERRIFYING"],
+        "traits": ["SCHWERPUNKT", "OVERHEAT", "BEWEGUNGSKRIEG", "TERRIFYING"],
         "sounds": {
             "move": "entwicklung_move",
             "fire": "entwicklung_fire"

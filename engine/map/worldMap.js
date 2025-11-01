@@ -343,6 +343,7 @@ WorldMap.prototype.getUniqueEntitiesInArea = function(startX, startY, endX, endY
     return entities;
 }
 
+
 WorldMap.prototype.createLayer = function(layerID, type) {
     const bufferSize = this.width * this.height;
     const layer = MapHelper.createLayer(bufferSize, type); 
@@ -384,6 +385,19 @@ WorldMap.prototype.loadLayers = function(gameContext, layerData) {
     }
 }
 
-WorldMap.prototype.fill2D = function(tileX, tileY, range, onFill) {
+WorldMap.prototype.fill2DGraph = function(tileX, tileY, range, onFill) {
     FloodFill.fill2D(tileX, tileY, this.width, this.height, range, onFill);
+}
+
+WorldMap.prototype.fill2DArea = function(tileX, tileY, width, height, onFill) {
+    const startX = tileX - width;
+    const startY = tileY - height;
+    const endX = tileX + width;
+    const endY = tileY + height;
+
+    for(let i = startY; i <= endY; i++) {
+        for(let j = startX; j <= endX; j++) {
+            onFill(j, i);
+        }
+    }
 }

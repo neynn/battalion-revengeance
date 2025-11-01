@@ -125,7 +125,7 @@ Player.prototype.showJammerAt = function(gameContext, entity, jammerX, jammerY) 
 
     this.camera.jammerOverlay.clear();
 
-    worldMap.fill2D(jammerX, jammerY, jammerRange, (nextX, nextY) => {
+    worldMap.fill2DGraph(jammerX, jammerY, jammerRange, (nextX, nextY) => {
         this.camera.jammerOverlay.add(TypeRegistry.TILE_ID.JAMMER, nextX, nextY);
     });
 }

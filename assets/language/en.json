@@ -1,5 +1,5 @@
 {
-    "TRAIT_DESC_ARMOR_BREAKER": "This unit ignores enemy armor.",
+    "TRAIT_DESC_ARMOR_PIERCE": "This unit ignores enemy armor.",
     "TRAIT_DESC_OVERHEAT": "This unit attacks reduce its HP by 10%.",
     "TRAIT_DESC_TRACKING": "This unit attacks any stealth units it finds.",
     "TRAIT_DESC_BLIND_SPOT": "This unit cannot counter.",

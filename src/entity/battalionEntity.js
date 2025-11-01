@@ -219,7 +219,7 @@ BattalionEntity.prototype.loadConfig = function(config) {
 }
 
 BattalionEntity.prototype.getAttackType = function() {
-    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.DISPERSION)) {
+    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.DISPERSION) || this.hasTrait(TypeRegistry.TRAIT_TYPE.JUDGEMENT)) {
         return BattalionEntity.ATTACK_TYPE.DISPERSION;
     }
 
@@ -845,7 +845,7 @@ BattalionEntity.prototype.isProtectedFromRange = function(gameContext) {
 
 BattalionEntity.prototype.isAllowedToCounter = function(target) {
     //Special attack types cannot counter.
-    if(this.getAttackType() !== BattalionEntity.ATTACK_TYPE.REGULAR) {
+    if(this.getAttackType() !== BattalionEntity.ATTACK_TYPE.REGULAR || target.getAttackType() !== BattalionEntity.ATTACK_TYPE.REGULAR) {
         return false;
     }
 
@@ -906,7 +906,7 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
     damageAmplifier *= this.moraleAmplifier;
 
     //Armor factor.
-    if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.ARMOR_BREAKER)) {
+    if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.ARMOR_PIERCE)) {
         const weaponType = typeRegistry.getWeaponType(this.config.weaponType);
 
         damageAmplifier *= weaponType.armorResistance[targetArmor] ?? 1;
@@ -1185,7 +1185,7 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, 
     const searchRange = this.config.jammerRange > 1 && jammerFlags !== JammerField.FLAG.NONE ? this.config.jammerRange : 1;
     const uncloakedEntities = [];
 
-    worldMap.fill2D(targetX, targetY, searchRange, (tileX, tileY) => {
+    worldMap.fill2DGraph(targetX, targetY, searchRange, (tileX, tileY) => {
         const entityID = worldMap.getTopEntity(tileX, tileY);
         const entity = entityManager.getEntity(entityID);
         
@@ -1349,7 +1349,7 @@ BattalionEntity.prototype.placeJammer = function(gameContext) {
     if(jammerType !== JammerField.FLAG.NONE) {
         const worldMap = gameContext.getActiveMap();
 
-        worldMap.fill2D(this.tileX, this.tileY, this.config.jammerRange, (tileX, tileY) => {
+        worldMap.fill2DGraph(this.tileX, this.tileY, this.config.jammerRange, (tileX, tileY) => {
             worldMap.addJammer(tileX, tileY, this.teamID, jammerType);
         });
     }
@@ -1361,7 +1361,7 @@ BattalionEntity.prototype.removeJammer = function(gameContext) {
     if(jammerType !== JammerField.FLAG.NONE) {
         const worldMap = gameContext.getActiveMap();
 
-        worldMap.fill2D(this.tileX, this.tileY, this.config.jammerRange, (tileX, tileY) => {
+        worldMap.fill2DGraph(this.tileX, this.tileY, this.config.jammerRange, (tileX, tileY) => {
             worldMap.removeJammer(tileX, tileY, this.teamID, jammerType);
         });
     }
@@ -1505,23 +1505,140 @@ BattalionEntity.prototype.getStreamblastTargets = function(gameContext, directio
     return targets;
 }
 
-BattalionEntity.prototype.getDispersionTargets = function(gameContext, tileX, tileY) {
+BattalionEntity.prototype.getAOERange = function() {
+    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.JUDGEMENT)) {
+        return 2;
+    }
+
+    return 1;
+}
+
+BattalionEntity.prototype.getAOETargets = function(gameContext, tileX, tileY) {
     const { world } = gameContext;
     const { mapManager, entityManager } = world;
     const worldMap = mapManager.getActiveMap();
+    const range = this.getAOERange();
     const targets = [];
-
-    for(const neighbor of FloodFill.ALL_NEIGHBORS) {
-        const [deltaX, deltaY] = neighbor;
-        const currentX = tileX + deltaX;
-        const currentY = tileY + deltaY;
-        const entityID = worldMap.getTopEntity(currentX, currentY);
+    
+    worldMap.fill2DArea(tileX, tileY, range, range, (nextX, nextY) => {
+        const entityID = worldMap.getTopEntity(nextX, nextY);
         const entity = entityManager.getEntity(entityID);
 
         if(entity) {
             targets.push(entity);
         }
-    }
+    });
 
     return targets;
+}
+
+BattalionEntity.prototype.mTriggerInitiateTraits = function(totalDamage, resolver) {
+    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SELF_DESTRUCT)) {
+        resolver.add(this.id, 0);
+
+    } else if(this.hasTrait(TypeRegistry.TRAIT_TYPE.OVERHEAT)) {
+        const overheatDamage = this.getOverheatDamage();
+        const overheatHealth = this.getHealthAfter(overheatDamage);
+
+        resolver.add(this.id, overheatHealth);
+
+    } else if(this.hasTrait(TypeRegistry.TRAIT_TYPE.ABSORBER)) {
+        const absorberHealth = this.getAbsorberHealth(totalDamage);
+
+        resolver.add(this.id, absorberHealth);
+    }
+}
+
+BattalionEntity.prototype.mTriggerCounterTraits = function(totalDamage, resolver) {
+    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.OVERHEAT)) {
+        const overheatDamage = this.getOverheatDamage();
+        const overheatHealth = this.getHealthAfter(overheatDamage);
+
+        resolver.add(this.id, overheatHealth);
+
+    } else if(this.hasTrait(TypeRegistry.TRAIT_TYPE.ABSORBER)) {
+        const absorberHealth = this.getAbsorberHealth(totalDamage);
+
+        resolver.add(this.id, absorberHealth);
+    }
+}
+
+BattalionEntity.prototype.mGetCounterResolutions = function(gameContext, target, resolver) {
+    if(this.isAllowedToCounter(target) && this.canTarget(gameContext, target)) {
+        const damage = this.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.COUNTER);
+        const remainingHealth = target.getHealthAfter(damage);
+        const targetID = target.getID();
+
+        resolver.add(targetID, remainingHealth);
+
+        this.mTriggerCounterTraits(damage, resolver);
+    }
+}
+
+BattalionEntity.prototype.mGetRegularResolutions = function(gameContext, target, resolver) {
+    const damage = this.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.INITIATE);
+    const remainingHealth = target.getHealthAfter(damage);
+    const targetID = target.getID();
+
+    resolver.add(targetID, remainingHealth);
+
+    this.mTriggerInitiateTraits(damage, resolver);
+}
+
+BattalionEntity.prototype.mGetStreamblastResolutions = function(gameContext, target, resolver) {
+    const direction = this.getDirectionTo(target);
+    const targets = this.getStreamblastTargets(gameContext, direction);
+    let totalDamage = 0;
+
+    for(let i = 0; i < targets.length; i++) {
+        const target = targets[i];
+        const damage = this.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.INITIATE);
+        const remainingHealth = target.getHealthAfter(damage);
+        const targetID = target.getID();
+
+        resolver.add(targetID, remainingHealth);
+
+        totalDamage += damage;
+    }
+
+    this.mTriggerInitiateTraits(totalDamage, resolver);
+}
+
+BattalionEntity.prototype.mGetAOEResolutions = function(gameContext, target, resolver) {
+    const { tileX, tileY } = target;
+    const targets = this.getAOETargets(gameContext, tileX, tileY);
+    let totalDamage = 0;
+
+    targets.push(target);
+
+    for(let i = 0; i < targets.length; i++) {
+        const target = targets[i];
+        const damage = this.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.INITIATE);
+        const remainingHealth = target.getHealthAfter(damage);
+        const targetID = target.getID();
+
+        resolver.add(targetID, remainingHealth);
+        totalDamage += damage;
+    }
+
+    this.mTriggerInitiateTraits(totalDamage, resolver);
+}
+
+BattalionEntity.prototype.mGetInitiateResolutions = function(gameContext, target, resolver) {
+    if(this.canTarget(gameContext, target)) {
+        switch(this.getAttackType()) {
+            case BattalionEntity.ATTACK_TYPE.REGULAR: {
+                this.mGetRegularResolutions(gameContext, target, resolver);
+                break;
+            }
+            case BattalionEntity.ATTACK_TYPE.DISPERSION: {
+                this.mGetAOEResolutions(gameContext, target, resolver);
+                break;
+            }
+            case BattalionEntity.ATTACK_TYPE.STREAMBLAST: {
+                this.mGetStreamblastResolutions(gameContext, target, resolver);
+                break;
+            }
+        }
+    }
 }

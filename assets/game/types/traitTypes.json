@@ -1,7 +1,7 @@
 {
-    "ARMOR_BREAKER": {
-        "name": "TRAIT_NAME_ARMOR_BREAKER",
-        "desc": "TRAIT_DESC_ARMOR_BREAKER",
+    "ARMOR_PIERCE": {
+        "name": "TRAIT_NAME_ARMOR_PIERCE",
+        "desc": "TRAIT_DESC_ARMOR_PIERCE",
         "icon": null,
         "moveDamage": {},
         "armorDamage": {}
