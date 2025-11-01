@@ -113,18 +113,19 @@ Player.prototype.showJammer = function(gameContext, entity) {
     if(entity.isJammer()) {
         const { tileX, tileY } = entity;
 
-        this.showJammerAt(gameContext, tileX, tileY);
+        this.showJammerAt(gameContext, entity, tileX, tileY);
     } else {
         this.camera.jammerOverlay.clear();
     }
 }
 
-Player.prototype.showJammerAt = function(gameContext, jammerX, jammerY) {
+Player.prototype.showJammerAt = function(gameContext, entity, jammerX, jammerY) {
     const worldMap = gameContext.getActiveMap();
+    const jammerRange = entity.config.jammerRange;
 
     this.camera.jammerOverlay.clear();
 
-    worldMap.fill2D(jammerX, jammerY, BattalionEntity.JAMMER_RANGE, (nextX, nextY) => {
+    worldMap.fill2D(jammerX, jammerY, jammerRange, (nextX, nextY) => {
         this.camera.jammerOverlay.add(TypeRegistry.TILE_ID.JAMMER, nextX, nextY);
     });
 }

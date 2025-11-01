@@ -18,6 +18,8 @@ export const Sprite = function(index, DEBUG_NAME) {
     this.boundsY = 0;
     this.boundsW = 0;
     this.boundsH = 0;
+    this.shiftX = 0;
+    this.shiftY = 0;
     this.flags = Sprite.FLAG.NONE;
 }
 
@@ -51,12 +53,12 @@ Sprite.prototype.onDraw = function(display, localX, localY) {
     let renderY = 0;
 
     if(isFlipped) {
-        renderX = this.boundsX - localX;
-        renderY = localY + this.boundsY;
+        renderX = this.shiftX - localX;
+        renderY = localY + this.shiftY;
         display.flip();
     } else {
-        renderX = localX + this.boundsX;
-        renderY = localY + this.boundsY;
+        renderX = localX + this.shiftX;
+        renderY = localY + this.shiftY;
         display.unflip();
     }
 
@@ -127,6 +129,8 @@ Sprite.prototype.reset = function() {
     this.boundsY = 0;
     this.boundsW = 0;
     this.boundsH = 0;
+    this.shiftX = 0;
+    this.shiftY = 0;
     this.flags = Sprite.FLAG.NONE;
     this.opacity = 1;
     this.setPosition(0, 0);
@@ -141,8 +145,7 @@ Sprite.prototype.setTexture = function(texture) {
 
 Sprite.prototype.init = function(container, lastCallTime, DEBUG_NAME) {
     if(this.container !== container) {
-        const { frameTime, frameCount, bounds } = container;
-        const { x, y, w, h } = bounds;
+        const { frameTime, frameCount, boundsX, boundsY, boundsW, boundsH, shiftX, shiftY } = container;
 
         this.container = container;
         this.lastCallTime = lastCallTime;
@@ -151,8 +154,10 @@ Sprite.prototype.init = function(container, lastCallTime, DEBUG_NAME) {
         this.floatFrame = 0;
         this.currentFrame = 0;
         this.loopCount = 0;
+        this.shiftX = shiftX;
+        this.shiftY = shiftY;
         this.DEBUG_NAME = DEBUG_NAME;
-        this.setBounds(x, y, w, h);
+        this.setBounds(boundsX, boundsY, boundsW, boundsH);
     }
 }
 

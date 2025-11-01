@@ -32,7 +32,7 @@ SpriteManager.prototype.load = function(textures, sprites) {
     
     for(const spriteID in sprites) {
         const spriteConfig = sprites[spriteID];
-        const { texture, bounds, frameTime, spriteTime, frames, autoFrames } = spriteConfig;
+        const { texture, shift, bounds, frameTime, spriteTime, frames, autoFrames } = spriteConfig;
         const textureID = textureMap[texture];
 
         if(textureID === undefined || (!frames && !autoFrames)) {
@@ -44,12 +44,22 @@ SpriteManager.prototype.load = function(textures, sprites) {
         const regionFrames = frames !== undefined ? textureObject.getFrames(frames) : textureObject.getFramesAuto(autoFrames);
 
         if(regionFrames.length !== 0) {
-            const spriteContainer = new SpriteContainer(spriteID, bounds, regionFrames);
+            const spriteContainer = new SpriteContainer(spriteID, regionFrames);
 
             if(spriteTime !== undefined) {
                 spriteContainer.setSpriteTime(spriteTime);
             } else {
                 spriteContainer.setFrameTime(frameTime);
+            }
+
+            if(shift) {
+                spriteContainer.loadShift(shift);
+            }
+
+            if(bounds) {
+                spriteContainer.loadBounds(bounds);
+            } else {
+                spriteContainer.loadDefaultBounds();
             }
 
             this.containers.push(spriteContainer);

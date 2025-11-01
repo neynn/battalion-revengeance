@@ -196,7 +196,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
         const pathX = this.getPathX();
         const pathY = this.getPathY();
 
-        player.showJammerAt(gameContext, pathX, pathY);
+        player.showJammerAt(gameContext, this.entity, pathX, pathY);
     }
 }
 

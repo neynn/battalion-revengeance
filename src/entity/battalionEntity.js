@@ -90,7 +90,6 @@ BattalionEntity.PATH_FLAG = {
     START: 1 << 1
 };
 
-BattalionEntity.JAMMER_RANGE = 2;
 BattalionEntity.MIN_MOVE_COST = 1;
 BattalionEntity.MAX_MOVE_COST = 99;
 
@@ -1081,7 +1080,7 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, 
     const { entityManager } = world;
     const worldMap = gameContext.getActiveMap();
     const jammerFlags = this.getJammerFlags();
-    const searchRange = BattalionEntity.JAMMER_RANGE > 1 && jammerFlags !== JammerField.FLAG.NONE ? BattalionEntity.JAMMER_RANGE : 1;
+    const searchRange = this.config.jammerRange > 1 && jammerFlags !== JammerField.FLAG.NONE ? this.config.jammerRange : 1;
     const uncloakedEntities = [];
 
     worldMap.fill2D(targetX, targetY, searchRange, (tileX, tileY) => {
@@ -1232,7 +1231,7 @@ BattalionEntity.prototype.placeJammer = function(gameContext) {
     if(jammerType !== JammerField.FLAG.NONE) {
         const worldMap = gameContext.getActiveMap();
 
-        worldMap.fill2D(this.tileX, this.tileY, BattalionEntity.JAMMER_RANGE, (tileX, tileY) => {
+        worldMap.fill2D(this.tileX, this.tileY, this.config.jammerRange, (tileX, tileY) => {
             worldMap.addJammer(tileX, tileY, this.teamID, jammerType);
         });
     }
@@ -1244,7 +1243,7 @@ BattalionEntity.prototype.removeJammer = function(gameContext) {
     if(jammerType !== JammerField.FLAG.NONE) {
         const worldMap = gameContext.getActiveMap();
 
-        worldMap.fill2D(this.tileX, this.tileY, BattalionEntity.JAMMER_RANGE, (tileX, tileY) => {
+        worldMap.fill2D(this.tileX, this.tileY, this.config.jammerRange, (tileX, tileY) => {
             worldMap.removeJammer(tileX, tileY, this.teamID, jammerType);
         });
     }

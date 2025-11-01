@@ -11,6 +11,7 @@ export const EntityType = function(id, config) {
         movementRange = EntityType.DEFAULT.MOVEMENT_RANGE,
         movementType = EntityType.DEFAULT.MOVEMENT_TYPE,
         movementSpeed = EntityType.DEFAULT.MOVEMENT_SPEED,
+        jammerRange = EntityType.DEFAULT.JAMMER_RANGE,
         minRange = EntityType.DEFAULT.MIN_RANGE,
         maxRange = EntityType.DEFAULT.MAX_RANGE,
         desc = "MISSING_ENTITY_DESC",
@@ -32,6 +33,7 @@ export const EntityType = function(id, config) {
     this.movementRange = movementRange;
     this.movementType = movementType;
     this.movementSpeed = movementSpeed;
+    this.jammerRange = jammerRange;
     this.minRange = minRange;
     this.maxRange = maxRange;
     this.sounds = sounds;
@@ -61,6 +63,7 @@ EntityType.DEFAULT = {
     MAX_RANGE: 1,
     DAMAGE: 0,
     MOVEMENT_RANGE: 0,
+    JAMMER_RANGE: 2,
     HEALTH: 1,
     MOVEMENT_TYPE: TypeRegistry.MOVEMENT_TYPE.STATIONARY,
     WEAPON_TYPE: TypeRegistry.WEAPON_TYPE.NONE,
