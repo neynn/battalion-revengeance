@@ -163,6 +163,8 @@ TypeRegistry.MORALE_TYPE = {
 };
 
 TypeRegistry.ACTION_TYPE = {
+    END_TURN: "END_TURN",
+    START_TURN: "START_TURN",
     MOVE: "MOVE",
     ATTACK: "ATTACK",
     CLOAK: "CLOAK",
@@ -424,6 +426,7 @@ TypeRegistry.MOVEMENT_TYPE = {
 };
 
 TypeRegistry.TRAIT_TYPE = {
+    ARMOR_BREAKER: "ARMOR_BREAKER",
     OVERHEAT: "OVERHEAT",
     TRACKING: "TRACKING",
     BLIND_SPOT: "BLIND_SPOT",

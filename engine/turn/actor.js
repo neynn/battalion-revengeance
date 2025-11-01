@@ -62,7 +62,7 @@ Actor.prototype.tryEnqueueAction = function(gameContext) {
     const { world } = gameContext;
     const { actionQueue, turnManager } = world;
 
-    if(!turnManager.isActor(this.id)) {
+    if(!turnManager.isActor(this.id) || actionQueue.isRunning()) {
         return false;
     }
 
@@ -81,6 +81,3 @@ Actor.prototype.tryEnqueueAction = function(gameContext) {
 
     return false;
 }
-
-Actor.prototype.onNextTurn = function(gameContext, turn) {}
-Actor.prototype.onNextRound = function(gameContext, round) {}

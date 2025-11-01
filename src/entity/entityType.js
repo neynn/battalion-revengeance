@@ -14,6 +14,7 @@ export const EntityType = function(id, config) {
         jammerRange = EntityType.DEFAULT.JAMMER_RANGE,
         minRange = EntityType.DEFAULT.MIN_RANGE,
         maxRange = EntityType.DEFAULT.MAX_RANGE,
+        streamRange = EntityType.DEFAULT.STREAM_RANGE,
         desc = "MISSING_ENTITY_DESC",
         name = "MISSING_ENTITY_NAME",
         traits = [],
@@ -36,12 +37,18 @@ export const EntityType = function(id, config) {
     this.jammerRange = jammerRange;
     this.minRange = minRange;
     this.maxRange = maxRange;
+    this.streamRange = streamRange;
     this.sounds = sounds;
     this.sprites = sprites;
     this.traits = [];
 
     if(this.maxRange < this.minRange) {
         this.maxRange = this.minRange;
+    }
+
+    //Disable hybrid units.
+    if(this.maxRange > 1 && this.minRange === 1) {
+        this.minRange = 2;
     }
 
     for(let i = 0; i < traits.length && i < EntityType.MAX_TRAITS; i++) {
@@ -63,6 +70,7 @@ EntityType.DEFAULT = {
     MAX_RANGE: 1,
     DAMAGE: 0,
     MOVEMENT_RANGE: 0,
+    STREAM_RANGE: 1,
     JAMMER_RANGE: 0,
     HEALTH: 1,
     MOVEMENT_TYPE: TypeRegistry.MOVEMENT_TYPE.STATIONARY,

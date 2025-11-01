@@ -31,6 +31,14 @@ TurnManager.EVENT = {
     ACTIONS_CLEAR: "ACTIONS_CLEAR"
 };
 
+TurnManager.prototype.getGlobalTurn = function() {
+    return this.currentTurn;
+}
+
+TurnManager.prototype.getGlobalRound = function() {
+    return this.currentRound;
+}
+
 TurnManager.prototype.load = function(actorTypes) {
     if(actorTypes) {
         this.actorTypes = actorTypes;
@@ -116,17 +124,15 @@ TurnManager.prototype.isActor = function(actorID) {
     return false;
 }
 
-TurnManager.prototype.startNextTurn = function(gameContext) {
+TurnManager.prototype.startNextTurn = function() {
     this.actorIndex++;
     this.currentTurn++;
     this.events.emit(TurnManager.EVENT.NEXT_TURN, this.currentTurn);
-    this.actors.forEach(actor => actor.onNextTurn(gameContext, this.currentTurn));
 
     if(this.actorIndex === this.actorOrder.length) {
         this.actorIndex = 0;
         this.currentRound++;
         this.events.emit(TurnManager.EVENT.NEXT_ROUND, this.currentRound);
-        this.actors.forEach(actor => actor.onNextRound(gameContext, this.currentRound));
     }
 }
 
@@ -136,7 +142,7 @@ TurnManager.prototype.getNextActor = function(gameContext) {
     }
 
     if(this.actorIndex === -1) {
-        this.startNextTurn(gameContext);
+        this.startNextTurn();
 
         const firstActorID = this.actorOrder[this.actorIndex];
         const firstActor = this.actors.get(firstActorID);
@@ -156,7 +162,7 @@ TurnManager.prototype.getNextActor = function(gameContext) {
     }
 
     currentActor.endTurn(gameContext);
-    this.startNextTurn(gameContext);
+    this.startNextTurn();
 
     const actorID = this.actorOrder[this.actorIndex];
     const actor = this.actors.get(actorID);
@@ -222,22 +228,17 @@ TurnManager.prototype.setActorOrder = function(order) {
 }
 
 TurnManager.prototype.update = function(gameContext) {
-    const { world } = gameContext;
-    const { actionQueue } = world;
-
     for(const [actorID, actor] of this.actors) {
         actor.update(gameContext);
     }
 
-    if(!actionQueue.isRunning()) {
-        const actor = this.getNextActor(gameContext);
+    const actor = this.getNextActor(gameContext);
 
-        if(actor) {
-            actor.activeUpdate(gameContext, this.actionsLeft);
+    if(actor) {
+        actor.activeUpdate(gameContext, this.actionsLeft);
 
-            if(actor.endRequested) {
-                this.actionsLeft = 0;
-            }
+        if(actor.endRequested) {
+            this.actionsLeft = 0;
         }
     }
 }

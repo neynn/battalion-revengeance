@@ -18,6 +18,8 @@ const OVERHEAT_DAMAGE = 0.1;
 const HEROIC_THRESHOLD = 1;
 
 const DAMAGE_AMPLIFIER = {
+    STEER: 0.1,
+    STEER_MAX_REDUCTION: 0.5,
     SCHWERPUNKT: 1.4,
     STEALTH: 2
 };
@@ -74,6 +76,19 @@ export const BattalionEntity = function(id, sprite) {
     this.lastAttacker = -1;
 }
 
+BattalionEntity.RANGE_TYPE = {
+    NONE: 0,
+    MELEE: 1,
+    RANGE: 2,
+    HYBRID: 3
+};
+
+BattalionEntity.ATTACK_TYPE = {
+    REGULAR: 0,
+    STREAMBLAST: 1,
+    DISPERSION: 2
+};
+
 BattalionEntity.FLAG = {
     NONE: 0,
     HAS_MOVED: 1 << 0,
@@ -129,10 +144,13 @@ BattalionEntity.SOUND_TYPE = {
     UNCLOAK: "uncloak"
 };
 
-BattalionEntity.DEFAULT_SPRITES = {
-    [BattalionEntity.SPRITE_TYPE.ATTACK]: "small_attack",
-    [BattalionEntity.SPRITE_TYPE.DEATH]: "explosion"
+BattalionEntity.DEFAULT_ATTACK_SPRITES = {
+    [BattalionEntity.ATTACK_TYPE.REGULAR]: "small_attack",
+    [BattalionEntity.ATTACK_TYPE.DISPERSION]: "small_attack", //TODO: Implement
+    [BattalionEntity.ATTACK_TYPE.STREAMBLAST]: "small_attack" //TODO: Implement
 };
+
+BattalionEntity.DEFAULT_DEATH_SPRITE = "explosion";
 
 BattalionEntity.DEFAULT_SOUNDS = {
     [BattalionEntity.SOUND_TYPE.CLOAK]: "cloak",
@@ -152,6 +170,15 @@ BattalionEntity.INTERCEPT = {
     VALID: 1,
     ILLEGAL: 2
 };
+
+BattalionEntity.getDirectionByDelta = function(deltaX, deltaY) {
+    if(deltaY < 0) return BattalionEntity.DIRECTION.NORTH;
+    if(deltaY > 0) return BattalionEntity.DIRECTION.SOUTH;
+    if(deltaX < 0) return BattalionEntity.DIRECTION.WEST;
+    if(deltaX > 0) return BattalionEntity.DIRECTION.EAST;
+
+    return BattalionEntity.DIRECTION.EAST;
+}
 
 BattalionEntity.createStep = function(deltaX, deltaY, tileX, tileY) {
     return {
@@ -189,6 +216,18 @@ BattalionEntity.prototype.loadConfig = function(config) {
     }
 
     this.setHealth(this.health);
+}
+
+BattalionEntity.prototype.getAttackType = function() {
+    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.DISPERSION)) {
+        return BattalionEntity.ATTACK_TYPE.DISPERSION;
+    }
+
+    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.STREAMBLAST)) {
+        return BattalionEntity.ATTACK_TYPE.STREAMBLAST;
+    }
+
+    return BattalionEntity.ATTACK_TYPE.REGULAR;
 }
 
 BattalionEntity.prototype.isRangeEnough = function(gameContext, entity) {
@@ -344,7 +383,19 @@ BattalionEntity.prototype.playDeath = function(gameContext) {
     }
 }
 
-BattalionEntity.prototype.playAttack = function(gameContext) {
+BattalionEntity.prototype.playAttack = function(gameContext, target) {
+    const { spriteManager, transform2D } = gameContext;
+    const { tileX, tileY } = target;
+    const spriteType = this.getAttackSprite();
+    const sprite = spriteManager.createSprite(spriteType, TypeRegistry.LAYER_TYPE.GFX);
+
+    if(sprite) {
+        const { x, y } = transform2D.transformTileToWorld(tileX, tileY);
+
+        sprite.setPosition(x, y);
+        sprite.expire();
+    }
+
     this.state = BattalionEntity.STATE.FIRE;
     this.playSound(gameContext, BattalionEntity.SOUND_TYPE.FIRE);
     this.updateSprite(gameContext);
@@ -358,11 +409,29 @@ BattalionEntity.prototype.playCounter = function(gameContext) {
     this.sprite.lockEnd();
 }
 
-BattalionEntity.prototype.updateDirectionByDelta = function(deltaX, deltaY) {
-    if(deltaY < 0) return this.setDirection(BattalionEntity.DIRECTION.NORTH);
-    if(deltaY > 0) return this.setDirection(BattalionEntity.DIRECTION.SOUTH);
-    if(deltaX < 0) return this.setDirection(BattalionEntity.DIRECTION.WEST);
-    if(deltaX > 0) return this.setDirection(BattalionEntity.DIRECTION.EAST);
+BattalionEntity.prototype.setDirectionByDelta = function(deltaX, deltaY) {
+    const direction = BattalionEntity.getDirectionByDelta(deltaX, deltaY);
+
+    return this.setDirection(direction);
+}
+
+BattalionEntity.prototype.getDirectionTo = function(entity) {
+    const deltaX = entity.tileX - this.tileX;
+    const deltaY = entity.tileY - this.tileY;
+    const distanceX = Math.abs(deltaX);
+    const distanceY = Math.abs(deltaY);
+
+    if(distanceX > distanceY) {
+        return BattalionEntity.getDirectionByDelta(deltaX, 0);
+    } else {
+        return BattalionEntity.getDirectionByDelta(0, deltaY);
+    }
+}
+
+BattalionEntity.prototype.lookAt = function(entity) {
+    const direction = this.getDirectionTo(entity);
+
+    return this.setDirection(direction);
 }
 
 BattalionEntity.prototype.getSpriteType = function() {
@@ -400,20 +469,22 @@ BattalionEntity.prototype.getSpriteType = function() {
 }
 
 BattalionEntity.prototype.getDeathSprite = function() {
-    let sprite = this.config.sprites.death;
+    let sprite = this.config.sprites[BattalionEntity.SPRITE_TYPE.DEATH];
 
     if(!sprite) {
-        sprite = BattalionEntity.DEFAULT_SPRITES[BattalionEntity.SPRITE_TYPE.DEATH];
+        sprite = BattalionEntity.DEFAULT_DEATH_SPRITE;
     }
 
     return sprite;
 }
 
 BattalionEntity.prototype.getAttackSprite = function() {
-    let sprite = this.config.sprites.attack;
+    let sprite = this.config.sprites[BattalionEntity.SPRITE_TYPE.ATTACK];
 
     if(!sprite) {
-        sprite = BattalionEntity.DEFAULT_SPRITES[BattalionEntity.SPRITE_TYPE.ATTACK];
+        const attackType = this.getAttackType();
+
+        sprite = BattalionEntity.DEFAULT_ATTACK_SPRITES[attackType];
     }
 
     return sprite;
@@ -454,7 +525,7 @@ BattalionEntity.prototype.isColliding = function(target, range = 0) {
 }
 
 BattalionEntity.prototype.isDead = function() {
-    return this.health <= 0 && !this.isMarkedForDestroy;
+    return this.health <= 0 || this.isMarkedForDestroy;
 }
 
 BattalionEntity.prototype.isAllyWith = function(gameContext, entity) {
@@ -744,8 +815,15 @@ BattalionEntity.prototype.canTarget = function(gameContext, target) {
         return false;
     }
 
-    if(this.isRanged() && target.isProtectedFromRange(gameContext)) {
-        return false;
+    //Special case for entities with MIN_RANGE of 1 and MAX_RANGE of n.
+    if(!this.isNextToEntity(target)) {
+        const rangeType = this.getRangeType();
+
+        if(rangeType === BattalionEntity.RANGE_TYPE.RANGE || rangeType === BattalionEntity.RANGE_TYPE.HYBRID) {
+            if(target.isProtectedFromRange(gameContext)) {
+                return false;
+            }
+        }
     }
     
     return true;
@@ -766,6 +844,11 @@ BattalionEntity.prototype.isProtectedFromRange = function(gameContext) {
 }
 
 BattalionEntity.prototype.isAllowedToCounter = function(target) {
+    //Special attack types cannot counter.
+    if(this.getAttackType() !== BattalionEntity.ATTACK_TYPE.REGULAR) {
+        return false;
+    }
+
     if(this.hasTrait(TypeRegistry.TRAIT_TYPE.BLIND_SPOT) || this.hasTrait(TypeRegistry.TRAIT_TYPE.SELF_DESTRUCT)) {
         return false;
     }
@@ -781,8 +864,16 @@ BattalionEntity.prototype.isAllowedToCounter = function(target) {
         return false;
     }
 
-    if(target.hasTrait(TypeRegistry.TRAIT_TYPE.MOBILE_BATTERY) && this.isRanged()) {
-        return false;
+    if(target.hasTrait(TypeRegistry.TRAIT_TYPE.MOBILE_BATTERY)) {
+        const rangeType = this.getRangeType();
+
+        if(rangeType === BattalionEntity.RANGE_TYPE.RANGE) {
+            return false;
+        } else if(rangeType === BattalionEntity.RANGE_TYPE.HYBRID) {
+            if(!this.isNextToEntity(target)) {
+                return false;
+            }
+        }
     }
 
     return true;
@@ -810,14 +901,16 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
             }
         }
     }
-
-    const weaponType = typeRegistry.getWeaponType(this.config.weaponType);
-
-    //Armor factor.
-    damageAmplifier *= weaponType.armorResistance[targetArmor] ?? 1;
-
+    
     //Morale factor.
     damageAmplifier *= this.moraleAmplifier;
+
+    //Armor factor.
+    if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.ARMOR_BREAKER)) {
+        const weaponType = typeRegistry.getWeaponType(this.config.weaponType);
+
+        damageAmplifier *= weaponType.armorResistance[targetArmor] ?? 1;
+    }
 
     //Logistic factor. Applies only to non-commandos.
     if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.COMMANDO)) {
@@ -847,8 +940,22 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
         damageAmplifier *= protection[targetMove] ?? 1;
     }
 
-    //Commando trait (terrain based).
-    //Steer (don't really like this one).
+    //Steer trait. Reduces damage received by STEER for each tile the target can travel further. Up to STEER_MAX_REDUCTION.
+    if(target.hasTrait(TypeRegistry.TRAIT_TYPE.STEER)) {
+        if(this.config.movementType === TypeRegistry.MOVEMENT_TYPE.RUDDER || this.config.movementType === TypeRegistry.MOVEMENT_TYPE.HEAVY_RUDDER) {
+            const deltaRange = target.config.movementRange - this.config.movementRange;
+
+            if(deltaRange > 0) {
+                const steerAmplifier = 1 - (deltaRange * DAMAGE_AMPLIFIER.STEER);
+
+                if(steerAmplifier < DAMAGE_AMPLIFIER.STEER_MAX_REDUCTION) {
+                    damageAmplifier *= DAMAGE_AMPLIFIER.STEER_MAX_REDUCTION;
+                } else {
+                    damageAmplifier *= steerAmplifier;
+                }
+            }
+        }
+    }
 
     switch(attackType) {
         case AttackAction.ATTACK_TYPE.INITIATE: {
@@ -914,19 +1021,6 @@ BattalionEntity.prototype.getDamage = function(gameContext, target, attackType) 
     return damage;
 }
 
-BattalionEntity.prototype.lookAt = function(entity) {
-    const deltaX = entity.tileX - this.tileX;
-    const deltaY = entity.tileY - this.tileY;
-    const distanceX = Math.abs(deltaX);
-    const distanceY = Math.abs(deltaY);
-
-    if(distanceX > distanceY) {
-        this.updateDirectionByDelta(deltaX, 0);
-    } else { 
-        this.updateDirectionByDelta(0, deltaY);
-    }
-}
-
 BattalionEntity.prototype.playSound = function(gameContext, soundType) {
     const { client } = gameContext;
     const { soundPlayer } = client;
@@ -983,6 +1077,14 @@ BattalionEntity.prototype.getDistanceToEntity = function(entity) {
     const distance = this.getDistanceToTile(entityX, entityY);
     
     return distance;
+}
+
+BattalionEntity.prototype.isNextToTile = function(tileX, tileY) {
+    return this.getDistanceToTile(tileX, tileY) === 1;
+}
+
+BattalionEntity.prototype.isNextToEntity = function(entity) {
+    return this.getDistanceToEntity(entity) <= 1;
 }
 
 BattalionEntity.prototype.cloakInstant = function() {
@@ -1202,9 +1304,25 @@ BattalionEntity.prototype.toTransport = function(gameContext, transportType) {
     }
 }
 
-BattalionEntity.prototype.isRanged = function() {
-    return this.config.maxRange > 1 && this.config.weaponType !== TypeRegistry.WEAPON_TYPE.NONE;
-} 
+BattalionEntity.prototype.getRangeType = function() {
+    if(this.config.weaponType === TypeRegistry.WEAPON_TYPE.NONE) {
+        return BattalionEntity.RANGE_TYPE.NONE;
+    }
+
+    if(this.config.maxRange > 1) {
+        if(this.config.minRange === 1) {
+            return BattalionEntity.RANGE_TYPE.HYBRID;
+        }
+
+        return BattalionEntity.RANGE_TYPE.RANGE;
+    }
+
+    if(this.config.minRange === 1) {
+        return BattalionEntity.RANGE_TYPE.MELEE;
+    }
+
+    return BattalionEntity.RANGE_TYPE.NONE;
+}
 
 BattalionEntity.prototype.isJammer = function() {
     return this.config.jammerRange > 0 && this.getJammerFlags() !== JammerField.FLAG.NONE;
@@ -1331,4 +1449,79 @@ BattalionEntity.prototype.getAbsorberHealth = function(damage) {
     }
 
     return health;
+}
+
+BattalionEntity.prototype.getStreamblastTargets = function(gameContext, direction) {
+    let streamX = 0;
+    let streamY = 0;
+
+    switch(direction) {
+        case BattalionEntity.DIRECTION.EAST: {
+            streamX = 1;
+            break;
+        }
+        case BattalionEntity.DIRECTION.NORTH: {
+            streamY = -1;
+            break;
+        }
+        case BattalionEntity.DIRECTION.SOUTH: {
+            streamY = 1;
+            break;
+        }
+        case BattalionEntity.DIRECTION.WEST: {
+            streamX = -1;
+            break;
+        }
+        default: {
+            console.error("Faulty direction! Using EAST.");
+            streamX = 1;
+            break;
+        }
+    }
+
+    const { world } = gameContext;
+    const { mapManager, entityManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const streamRange = this.config.streamRange;
+
+    const targets = [];
+    let currentX = this.tileX + streamX;
+    let currentY = this.tileY + streamY;
+    let range = 0;
+
+    while(range < streamRange && !worldMap.isTileOutOfBounds(currentX, currentY)) {
+        const entityID = worldMap.getTopEntity(currentX, currentY);
+        const entity = entityManager.getEntity(entityID);
+
+        if(entity) {
+            targets.push(entity);
+        }
+
+        currentX += streamX;
+        currentY += streamY;
+        range++;
+    }
+
+    return targets;
+}
+
+BattalionEntity.prototype.getDispersionTargets = function(gameContext, tileX, tileY) {
+    const { world } = gameContext;
+    const { mapManager, entityManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const targets = [];
+
+    for(const neighbor of FloodFill.ALL_NEIGHBORS) {
+        const [deltaX, deltaY] = neighbor;
+        const currentX = tileX + deltaX;
+        const currentY = tileY + deltaY;
+        const entityID = worldMap.getTopEntity(currentX, currentY);
+        const entity = entityManager.getEntity(entityID);
+
+        if(entity) {
+            targets.push(entity);
+        }
+    }
+
+    return targets;
 }

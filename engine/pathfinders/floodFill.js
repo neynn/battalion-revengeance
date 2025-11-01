@@ -36,6 +36,17 @@ FloodFill.CROSS_NEIGHBORS = [
     [1, 1, FloodFill.CROSS.DOWN_RIGHT]
 ];
 
+FloodFill.ALL_NEIGHBORS = [
+    [0, -1, FloodFill.STRAIGHT.UP],
+    [1, 0, FloodFill.STRAIGHT.RIGHT],
+    [0, 1, FloodFill.STRAIGHT.DOWN],
+    [-1, 0, FloodFill.STRAIGHT.LEFT],
+    [-1, -1, FloodFill.CROSS.UP_LEFT],
+    [1, -1, FloodFill.CROSS.UP_RIGHT],
+    [-1, 1, FloodFill.CROSS.DOWN_LEFT],
+    [1, 1, FloodFill.CROSS.DOWN_RIGHT]
+];
+
 FloodFill.createNode = function(positionX, positionY, cost, type, parent) {
     return {
         "positionX": positionX,

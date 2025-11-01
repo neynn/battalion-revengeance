@@ -158,7 +158,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
     const entity = player.getVisibleEntity(gameContext, tileX, tileY);
 
     if(entity && !this.entity.isAllyWith(gameContext, entity)) {
-        if(this.entity.isRanged()) {
+        if(this.entity.getRangeType() === BattalionEntity.RANGE_TYPE.RANGE) {
             this.path.length = 0;
         } else if(!this.isAttackPathValid(gameContext, entity)){
             this.setOptimalAttackPath(gameContext, entity);
@@ -208,18 +208,35 @@ SelectState.prototype.onBuildingClick = function(gameContext, stateMachine, buil
 
 SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {
     if(!isAlly) {
-        const player = stateMachine.getContext();
         let request = null;
+        const player = stateMachine.getContext();
+        const rangeType = this.entity.getRangeType();
 
-        if(this.entity.isRanged()) {
-            if(this.entity.canTarget(gameContext, entity)) {
-                request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.COMMAND.INITIATE);
+        switch(rangeType) {
+            case BattalionEntity.RANGE_TYPE.MELEE: {
+                if(this.path.length === 0) {
+                    request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.COMMAND.INITIATE);
+                } else {
+                    request = ActionHelper.createMoveRequest(this.entity.getID(), this.path, entity.getID());
+                }
+
+                break;
             }
-        } else {
-            if(this.path.length === 0) {
-                request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.COMMAND.INITIATE);
-            } else {
-                request = ActionHelper.createMoveRequest(this.entity.getID(), this.path, entity.getID());
+            case BattalionEntity.RANGE_TYPE.RANGE: {
+                if(this.entity.canTarget(gameContext, entity)) {
+                    request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.COMMAND.INITIATE);
+                }
+
+                break;
+            }
+            case BattalionEntity.RANGE_TYPE.HYBRID: {
+                if(this.path.length === 0) {
+                    request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.COMMAND.INITIATE);
+                } else {
+                    request = ActionHelper.createMoveRequest(this.entity.getID(), this.path, entity.getID());
+                }
+
+                break;
             }
         }
 

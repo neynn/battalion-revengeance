@@ -62,7 +62,12 @@ BattalionActor.prototype.hasEntity = function(entityID) {
 
 BattalionActor.prototype.onTurnStart = function(gameContext) {
     const { world } = gameContext;
-    const { entityManager } = world;
+    const { turnManager, entityManager } = world;
+    const globalTurn = turnManager.getGlobalTurn();
+
+    if(globalTurn <= 1) {
+        return;
+    }
 
     for(const entityID of this.entities) {
         const entity = entityManager.getEntity(entityID);

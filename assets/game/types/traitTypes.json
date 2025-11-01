@@ -1,4 +1,11 @@
 {
+    "ARMOR_BREAKER": {
+        "name": "TRAIT_NAME_ARMOR_BREAKER",
+        "desc": "TRAIT_DESC_ARMOR_BREAKER",
+        "icon": null,
+        "moveDamage": {},
+        "armorDamage": {}
+    },
     "OVERHEAT": {
         "name": "TRAIT_NAME_OVERHEAT",
         "desc": "TRAIT_DESC_OVERHEAT",

@@ -45,7 +45,7 @@ MoveAction.prototype.onUpdate = function(gameContext, data, id) {
     const deltaTime = timer.getFixedDeltaTime();
     const { deltaX, deltaY } = this.path[this.pathIndex]; 
     const distanceMoved = this.entity.getDistanceMoved(deltaTime);
-    const directionChanged = this.entity.updateDirectionByDelta(deltaX, deltaY);
+    const directionChanged = this.entity.setDirectionByDelta(deltaX, deltaY);
 
     if(directionChanged) {
         this.entity.updateSprite(gameContext);
@@ -58,7 +58,7 @@ MoveAction.prototype.onUpdate = function(gameContext, data, id) {
         const { tileX, tileY } = this.path[this.pathIndex];
         const positionVec = transform2D.transformTileToWorld(tileX, tileY);
     
-        this.entity.updateDirectionByDelta(deltaX, deltaY);
+        this.entity.setDirectionByDelta(deltaX, deltaY);
         this.entity.setPositionVec(positionVec);
         this.entity.setTile(tileX, tileY);
         this.distanceMoved -= MoveAction.TRAVEL_DISTANCE;
@@ -78,7 +78,7 @@ MoveAction.prototype.onEnd = function(gameContext, data, id) {
 
     this.entity.setTile(tileX, tileY);
     this.entity.setPositionVec(position);
-    this.entity.updateDirectionByDelta(deltaX, deltaY);
+    this.entity.setDirectionByDelta(deltaX, deltaY);
     this.entity.playIdle(gameContext);
     this.entity.onMoveEnd(gameContext);
 
@@ -118,8 +118,10 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
         const uncloakedIDs = uncloakedEntities.map(e => e.getID());
 
         if(uncloakedIDs.length === 0) {
-            if(attackTarget !== null) {
-                if(!entity.isRanged()) {
+            const targetEntity = entityManager.getEntity(attackTarget);
+
+            if(targetEntity) {
+                if(targetEntity.isNextToTile(targetX, targetY)) {
                     executionRequest.addNext(ActionHelper.createAttackRequest(entityID, attackTarget, AttackAction.COMMAND.CHAIN_AFTER_MOVE));
                 }
             } else {

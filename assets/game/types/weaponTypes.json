@@ -2,13 +2,7 @@
     "NONE": {
         "name": "TRAIT_NAME_NO_WEAPON",
         "desc": "TRAIT_DESC_NO_WEAPON",
-        "icon": "Assets/Traits/.png",
-        "armorResistance": {
-            "LIGHT": 0,
-            "MEDIUM": 0,
-            "HEAVY": 0,
-            "OMEGA": 0
-        }
+        "icon": "Assets/Traits/.png"
     },
     "LIGHT": {
         "name": "TRAIT_NAME_LIGHT_WEAPON",

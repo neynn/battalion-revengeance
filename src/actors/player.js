@@ -145,14 +145,6 @@ Player.prototype.update = function(gameContext) {
     this.states.update(gameContext);
 }
 
-Player.prototype.onNextTurn = function(gameContext, turn) {
-    console.log("IT IS TURN " + turn);
-}
-
-Player.prototype.onNextRound = function(gameContext, round) {
-    console.log("IT IS ROUND " + round);
-}
-
 Player.prototype.clearOverlays = function() {
     this.camera.selectOverlay.clear();
     this.camera.pathOverlay.clear();
