@@ -177,6 +177,10 @@ Player.prototype.showPath = function(gameContext, oPath, entityX, entityY) {
     const autotiler = tileManager.getAutotilerByID(TypeRegistry.AUTOTILER_ID.PATH);
     const path = oPath.toReversed();
 
+    let previousX = entityX;
+    let previousY = entityY;
+    let nextX = -2;
+    let nextY = -2;
     let tileID = 0;
 
     this.camera.pathOverlay.clear();
@@ -184,42 +188,28 @@ Player.prototype.showPath = function(gameContext, oPath, entityX, entityY) {
     for(let i = 0; i < path.length; i++) {
         const { tileX, tileY } = path[i];
 
-        //I am sorry.
-        if(i === 0) {
-            tileID = autotiler.run(tileX, tileY, (nextX, nextY) => {
-                if(entityX === nextX && entityY === nextY) {
-                    return Autotiler.RESPONSE.VALID;
-                }
-
-                if(i < path.length - 1) {
-                    const next = path[i + 1];
-
-                    if(next.tileX === nextX && next.tileY === nextY) {
-                        return Autotiler.RESPONSE.VALID;
-                    }
-                }
-
-                return Autotiler.RESPONSE.INVALID;
-            });
+        if(i < path.length - 1) {
+            nextX = path[i + 1].tileX;
+            nextY = path[i + 1].tileY;
         } else {
-            tileID = autotiler.run(tileX, tileY, (nextX, nextY) => {
-                const previous = path[i - 1];
-
-                if(previous.tileX === nextX && previous.tileY === nextY) {
-                    return Autotiler.RESPONSE.VALID;
-                }
-
-                if(i < path.length - 1) {
-                    const next = path[i + 1];
-                    
-                    if(next.tileX === nextX && next.tileY === nextY) {
-                        return Autotiler.RESPONSE.VALID;
-                    }
-                }
-
-                return Autotiler.RESPONSE.INVALID;
-            });
+            nextX = -2;
+            nextY = -2;
         }
+
+        tileID = autotiler.run(tileX, tileY, (currentX, currentY) => {
+            if(previousX === currentX && previousY === currentY) {
+                return Autotiler.RESPONSE.VALID;
+            }
+
+            if(nextX === currentX && nextY === currentY) {
+                return Autotiler.RESPONSE.VALID;
+            }
+
+            return Autotiler.RESPONSE.INVALID;
+        });
+
+        previousX = tileX;
+        previousY = tileY;
 
         this.camera.pathOverlay.add(tileID, tileX, tileY);
     }

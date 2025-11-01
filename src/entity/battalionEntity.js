@@ -1207,7 +1207,7 @@ BattalionEntity.prototype.isRanged = function() {
 } 
 
 BattalionEntity.prototype.isJammer = function() {
-    return this.getJammerFlags() !== JammerField.FLAG.NONE;
+    return this.config.jammerRange > 0 && this.getJammerFlags() !== JammerField.FLAG.NONE;
 }
 
 BattalionEntity.prototype.getJammerFlags = function() {

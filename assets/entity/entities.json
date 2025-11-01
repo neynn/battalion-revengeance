@@ -327,6 +327,7 @@
     "jammer_truck": {
         "health": 50,
         "damage": 0,
+        "jammerRange": 2,
         "weaponType": "NONE",
         "armorType": "LIGHT",
         "movementRange": 5,
