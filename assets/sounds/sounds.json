@@ -19,5 +19,7 @@
     "entwicklung_fire": { "directory": ["assets", "sounds", "units"], "source": "entwicklung_fire.mp3", "allowStacking": true, "volume": 0.6 },
     "battleship_fire": { "directory": ["assets", "sounds", "units"], "source": "battleship_fire.mp3", "allowStacking": true, "volume": 0.6 },
     "turret_move": { "directory": ["assets", "sounds", "units"], "source": "turret_move.mp3", "allowStacking": false, "volume": 0.6 },
-    "turret_fire": { "directory": ["assets", "sounds", "units"], "source": "turret_fire.mp3", "allowStacking": true, "volume": 0.6 }
+    "turret_fire": { "directory": ["assets", "sounds", "units"], "source": "turret_fire.mp3", "allowStacking": true, "volume": 0.6 },
+    "gorlitz_move": { "directory": ["assets", "sounds", "units"], "source": "gorlitz_move.mp3", "allowStacking": false, "volume": 0.6 },
+    "gorlitz_fire": { "directory": ["assets", "sounds", "units"], "source": "gorlitz_fire.mp3", "allowStacking": true, "volume": 0.6 }
 }

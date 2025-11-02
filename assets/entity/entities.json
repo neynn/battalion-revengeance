@@ -233,6 +233,29 @@
             "fire_up": "ampac_fire_up"
         }
     },
+    "gorlitz_tank": {
+        "health": 110,
+        "damage": 50,
+        "weaponType": "HEAVY",
+        "armorType": "HEAVY",
+        "movementRange": 40,
+        "movementType": "TRACKED",
+        "traits": [],
+        "sounds": {
+            "move": "entwicklung_move",
+            "fire": "gorlitz_fire"
+        },
+        "sprites": {
+            "idle_right": "gorlitz_idle_right",
+            "idle_left": "gorlitz_idle_left",
+            "idle_down": "gorlitz_idle_down",
+            "idle_up": "gorlitz_idle_up",
+            "fire_right": "gorlitz_fire_right",
+            "fire_left": "gorlitz_fire_left",
+            "fire_down": "gorlitz_fire_down",
+            "fire_up": "gorlitz_fire_up"
+        }
+    },
     "leviathan_barge": {
         "health": 100,
         "damage": 0,

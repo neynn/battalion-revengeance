@@ -27,6 +27,7 @@
         "STEALTH_TANK": { "x": 1, "y": 1, "stealth": false, "type": "stealth_tank", "owner": "PLAYER" },
         "HEAVY_COMMANDO": { "x": 2, "y": 1, "type": "heavy_commando", "owner": "PLAYER" },
         "AYIN": { "x": 3, "y": 1, "type": "ayin", "owner": "PLAYER" },
+        "GORLITZ": { "x": 4, "y": 1, "type": "gorlitz_tank", "owner": "PLAYER" },
 
         "BARGE": { "x": 5, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "leviathan_barge", "owner": "PLAYER" },
         "U_BOAT": { "x": 8, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "u_boat", "owner": "PLAYER" },

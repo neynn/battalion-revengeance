@@ -46,12 +46,6 @@ export const EntityType = function(id, config) {
         this.maxRange = this.minRange;
     }
 
-    if(EntityType.HYBRID_ENABLED) {
-        if(this.maxRange > 1 && this.minRange === 1) {
-            this.minRange = 2;
-        }
-    }
-
     for(let i = 0; i < traits.length && i < EntityType.MAX_TRAITS; i++) {
         const traitID = traits[i];
 
@@ -63,7 +57,6 @@ export const EntityType = function(id, config) {
     }
 }
 
-EntityType.HYBRID_ENABLED = false;
 EntityType.MAX_TRAITS = 4;
 
 EntityType.DEFAULT = {

@@ -1306,5 +1306,49 @@
         "shift": {"x":-18,"y":-23},
         "frameTime": 0.1,
         "autoFrames": {"start": 1,"jump": 1,"repeat": 8}
+    },
+    "gorlitz_idle_right": {
+        "texture": "gorlitz_right",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "gorlitz_idle_down": {
+        "texture": "gorlitz_down",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "gorlitz_idle_left": {
+        "texture": "gorlitz_left",
+        "shift": {"x":-7,"y":0},
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "gorlitz_idle_up": {
+        "texture": "gorlitz_up",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "gorlitz_fire_right": {
+        "texture": "gorlitz_fire_right",
+        "shift": {"x":-7,"y":0},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 8}
+    },
+    "gorlitz_fire_down": {
+        "texture": "gorlitz_fire_down",
+        "frameTime": 0.1,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 8}
+    },
+    "gorlitz_fire_left": {
+        "texture": "gorlitz_fire_left",
+        "shift": {"x":-7,"y":0},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 8}
+    },
+    "gorlitz_fire_up": {
+        "texture": "gorlitz_fire_up",
+        "shift": {"x":0,"y":-14},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 8}
     }
 }

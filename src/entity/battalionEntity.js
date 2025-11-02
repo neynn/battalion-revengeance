@@ -76,6 +76,8 @@ export const BattalionEntity = function(id, sprite) {
     this.lastAttacker = -1;
 }
 
+BattalionEntity.HYBRID_ENABLED = false;
+
 BattalionEntity.RANGE_TYPE = {
     NONE: 0,
     MELEE: 1,
@@ -1331,7 +1333,7 @@ BattalionEntity.prototype.getRangeType = function() {
     }
 
     if(this.config.maxRange > 1) {
-        if(this.config.minRange === 1 && EntityType.HYBRID_ENABLED) {
+        if(this.config.minRange === 1 && BattalionEntity.HYBRID_ENABLED) {
             return BattalionEntity.RANGE_TYPE.HYBRID;
         }
 
