@@ -819,19 +819,23 @@ BattalionEntity.prototype.canTarget = function(gameContext, target) {
         return false;
     }
 
-    //Special case for entities with MIN_RANGE of 1 and MAX_RANGE of n.
-    if(!this.isNextToEntity(target)) {
-        const rangeType = this.getRangeType();
+    const rangeType = this.getRangeType();
 
-        if(rangeType === BattalionEntity.RANGE_TYPE.RANGE || rangeType === BattalionEntity.RANGE_TYPE.HYBRID) {
-            if(target.isProtectedFromRange(gameContext)) {
-                return false;
-            }
+    //Protected targets cannot be shot.
+    if(rangeType === BattalionEntity.RANGE_TYPE.RANGE) {
+        if(target.isProtectedFromRange(gameContext)) {
+            return false;
+        }
+    } else if(rangeType === BattalionEntity.RANGE_TYPE.HYBRID) {
+        //Special case for entities with MIN_RANGE of 1 and MAX_RANGE of n.
+        if(!this.isNextToEntity(target) && target.isProtectedFromRange(gameContext)) {
+            return false;
         }
     }
-    
-    if(this.getAttackType() === BattalionEntity.ATTACK_TYPE.STREAMBLAST) {
-        if(!this.isAxisMeeting(target)) {
+
+    //Streamblast and clean shot entities can only attack in a direct lane.
+    if(!this.isAxisMeeting(target)) {
+        if(this.hasTrait(TypeRegistry.TRAIT_TYPE.STREAMBLAST) || this.hasTrait(TypeRegistry.TRAIT_TYPE.CLEAN_SHOT)) {
             return false;
         }
     }
@@ -840,13 +844,26 @@ BattalionEntity.prototype.canTarget = function(gameContext, target) {
 }
 
 BattalionEntity.prototype.isProtectedFromRange = function(gameContext) {
-    const terrainTypes = this.getTerrainTypes(gameContext);
+    const { world, typeRegistry } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
 
-    for(let i = 0; i < terrainTypes.length; i++) {
-        const { rangeGuard } = terrainTypes[i];
+    const startX = this.tileX;
+    const startY = this.tileY;
+    const endX = startX + this.config.dimX;
+    const endY = startY + this.config.dimY;
 
-        if(rangeGuard) {
-            return true;
+    for(let i = startY; i < endY; i++) {
+        for(let j = startX; j < endX; j++) {
+            const terrainTypes = worldMap.getTerrainTypes(gameContext, j, i);
+
+            for(let i = 0; i < terrainTypes.length; i++) {
+                const { rangeGuard } = typeRegistry.getTerrainType(terrainTypes[i])
+
+                if(rangeGuard) {
+                    return true;
+                }
+            }
         }
     }
 
@@ -1107,7 +1124,7 @@ BattalionEntity.prototype.isNextToTile = function(tileX, tileY) {
 }
 
 BattalionEntity.prototype.isNextToEntity = function(entity) {
-    return this.getDistanceToEntity(entity) <= 1;
+    return this.getDistanceToEntity(entity) === 1;
 }
 
 BattalionEntity.prototype.cloakInstant = function() {
@@ -1632,17 +1649,21 @@ BattalionEntity.prototype.mGetAOEResolutions = function(gameContext, target, res
     const targets = this.getAOETargets(gameContext, tileX, tileY);
     let totalDamage = 0;
 
-    targets.push(target);
-
     for(let i = 0; i < targets.length; i++) {
         const target = targets[i];
+        const targetID = target.getID();
+
+        if(targetID === this.id) {
+            continue;
+        }
+
         const damage = this.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.INITIATE);
         const remainingHealth = target.getHealthAfter(damage);
-        const targetID = target.getID();
 
         resolver.add(targetID, remainingHealth);
         totalDamage += damage;
     }
+
 
     this.mTriggerInitiateTraits(totalDamage, resolver);
 }
