@@ -6,7 +6,6 @@ import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { FloodFill } from "../../engine/pathfinders/floodFill.js";
-import { AttackAction } from "../action/types/attack.js";
 import { JammerField } from "../map/jammerField.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { EntityType } from "./entityType.js";
@@ -140,9 +139,10 @@ BattalionEntity.INTERCEPT = {
 
 BattalionEntity.DAMAGE_FLAG = {
     NONE: 0,
-    SHRAPNEL: 1 << 0,
-    GAS: 1 << 1,
-    JUDGEMENT: 1 << 2
+    COUNTER: 1 << 0,
+    SHRAPNEL: 1 << 1,
+    AREA: 1 << 2,
+    LINE: 1 << 3
 };
 
 BattalionEntity.SPRITE_TYPE = {
@@ -978,7 +978,7 @@ BattalionEntity.prototype.isAllowedToCounter = function(target) {
     return true;
 }
 
-BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, attackType) {
+BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, damageFlags) {
     const { world, typeRegistry } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
@@ -1054,30 +1054,20 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
         }
     }
 
-    switch(attackType) {
-        case AttackAction.ATTACK_TYPE.INITIATE: {
-            //Schwerpunkt factor.
-            if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SCHWERPUNKT) && targetMove === TypeRegistry.MOVEMENT_TYPE.FOOT) {
-                damageAmplifier *= DAMAGE_AMPLIFIER.SCHWERPUNKT;
-            }
-
-            //Stealth factor.
-            if(this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-                damageAmplifier *= DAMAGE_AMPLIFIER.STEALTH;
-            }
-
-            break;
+    //If it's not a counter it must be a normal attack.
+    if(FlagHelper.hasFlag(damageFlags, BattalionEntity.DAMAGE_FLAG.COUNTER)) {
+        if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SLUGGER)) {
+            healthFactor = 1;
         }
-        case AttackAction.ATTACK_TYPE.COUNTER: {
-            if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SLUGGER)) {
-                healthFactor = 1;
-            }
-
-            break;
+    } else {
+        //Schwerpunkt factor.
+        if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SCHWERPUNKT) && targetMove === TypeRegistry.MOVEMENT_TYPE.FOOT) {
+            damageAmplifier *= DAMAGE_AMPLIFIER.SCHWERPUNKT;
         }
-        default:  {
-            console.warn("Unsupported attack type!", attackType);
-            break;
+
+        //Stealth factor.
+        if(this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+            damageAmplifier *= DAMAGE_AMPLIFIER.STEALTH;
         }
     }
 
@@ -1089,9 +1079,9 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
     return damageAmplifier;
 }
 
-BattalionEntity.prototype.getDamage = function(gameContext, target, attackType, damageFlags) {
+BattalionEntity.prototype.getDamage = function(gameContext, target, damageFlags) {
     const targetMove = target.config.movementType;
-    const damageAmplifier = this.getDamageAmplifier(gameContext, target, attackType);
+    const damageAmplifier = this.getDamageAmplifier(gameContext, target, damageFlags);
     let damage = this.damage * damageAmplifier;
 
 	if(
@@ -1115,10 +1105,7 @@ BattalionEntity.prototype.getDamage = function(gameContext, target, attackType, 
 		damage = 25;
 	}
 
-    if(
-        attackType === AttackAction.ATTACK_TYPE.INITIATE &&
-        this.hasTrait(TypeRegistry.TRAIT_TYPE.SUPPLY_DISTRIBUTION)
-    ) {
+    if(!FlagHelper.hasFlag(damageFlags, BattalionEntity.DAMAGE_FLAG.COUNTER) && this.hasTrait(TypeRegistry.TRAIT_TYPE.SUPPLY_DISTRIBUTION)) {
         damage *= -1;
     }
 
@@ -1603,7 +1590,7 @@ BattalionEntity.prototype.mTriggerCounterTraits = function(totalDamage, resolver
 }
 
 BattalionEntity.prototype.mGetRegularDamage = function(gameContext, target, resolver) {
-    const damage = this.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.INITIATE, BattalionEntity.DAMAGE_FLAG.NONE);
+    const damage = this.getDamage(gameContext, target, BattalionEntity.DAMAGE_FLAG.NONE);
     let totalDamage = damage;
 
     resolver.add(target.getID(), target.getHealthAfter(damage));
@@ -1615,7 +1602,7 @@ BattalionEntity.prototype.mGetRegularDamage = function(gameContext, target, reso
 
         for(let i = 0; i < targets.length; i++) {
             const target = targets[i];
-            const damage = this.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.INITIATE, BattalionEntity.DAMAGE_FLAG.NONE);
+            const damage = this.getDamage(gameContext, target, BattalionEntity.DAMAGE_FLAG.SHRAPNEL);
 
             resolver.add(target.getID(), target.getHealthAfter(damage));
             totalDamage += damage;
@@ -1633,7 +1620,7 @@ BattalionEntity.prototype.mGetStreamblastDamage = function(gameContext, target, 
 
     for(let i = 0; i < targets.length; i++) {
         const target = targets[i];
-        const damage = this.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.INITIATE, BattalionEntity.DAMAGE_FLAG.NONE);
+        const damage = this.getDamage(gameContext, target, BattalionEntity.DAMAGE_FLAG.LINE);
         const remainingHealth = target.getHealthAfter(damage);
         const targetID = target.getID();
 
@@ -1658,7 +1645,7 @@ BattalionEntity.prototype.mGetAOEDamage = function(gameContext, target, resolver
             continue;
         }
 
-        const damage = this.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.INITIATE, BattalionEntity.DAMAGE_FLAG.NONE);
+        const damage = this.getDamage(gameContext, target, BattalionEntity.DAMAGE_FLAG.AREA);
         const remainingHealth = target.getHealthAfter(damage);
 
         resolver.add(targetID, remainingHealth);
@@ -1668,28 +1655,35 @@ BattalionEntity.prototype.mGetAOEDamage = function(gameContext, target, resolver
     return totalDamage;
 }
 
+BattalionEntity.prototype.mGetCounterDamage = function(gameContext, target, resolver) {
+    const damage = this.getDamage(gameContext, target, BattalionEntity.DAMAGE_FLAG.COUNTER);
+    let totalDamage = damage;
+
+    resolver.add(target.getID(), target.getHealthAfter(damage));
+
+    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SHRAPNEL)) {
+        const { tileX, tileY } = target;
+        const direction = this.getDirectionTo(target);
+        const targets = BattalionEntity.getLineTargets(gameContext, direction, tileX, tileY, SHRAPNEL_RANGE);
+        const flags = BattalionEntity.DAMAGE_FLAG.COUNTER | BattalionEntity.DAMAGE_FLAG.SHRAPNEL;
+
+        for(let i = 0; i < targets.length; i++) {
+            const target = targets[i];
+            const damage = this.getDamage(gameContext, target, flags);
+
+            resolver.add(target.getID(), target.getHealthAfter(damage));
+            totalDamage += damage;
+        }
+    }
+
+    return totalDamage;
+}
+
 BattalionEntity.prototype.mGetCounterResolutions = function(gameContext, target, resolver) {
     if(this.isAllowedToCounter(target) && this.canTarget(gameContext, target)) {
-        const damage = this.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.COUNTER, BattalionEntity.DAMAGE_FLAG.NONE);
-        let totalDamage = damage;
+        const damage = this.mGetCounterDamage(gameContext, target, resolver);
 
-        resolver.add(target.getID(), target.getHealthAfter(damage));
-
-        if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SHRAPNEL)) {
-            const { tileX, tileY } = target;
-            const direction = this.getDirectionTo(target);
-            const targets = BattalionEntity.getLineTargets(gameContext, direction, tileX, tileY, SHRAPNEL_RANGE);
-
-            for(let i = 0; i < targets.length; i++) {
-                const target = targets[i];
-                const damage = this.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.INITIATE, BattalionEntity.DAMAGE_FLAG.NONE);
-
-                resolver.add(target.getID(), target.getHealthAfter(damage));
-                totalDamage += damage;
-            }
-        }
-
-        this.mTriggerCounterTraits(totalDamage, resolver);
+        this.mTriggerCounterTraits(damage, resolver);
     }
 }
 
