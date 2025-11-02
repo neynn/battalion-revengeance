@@ -1,4 +1,11 @@
 {
+    "SHRAPNEL": {
+        "name": "TRAIT_NAME_SHRAPNEL",
+        "desc": "TRAIT_DESC_SHRAPNEL",
+        "icon": null,
+        "moveDamage": {},
+        "armorDamage": {}
+    },
     "CLEAN_SHOT": {
         "name": "TRAIT_NAME_CLEAN_SHOT",
         "desc": "TRAIT_DESC_CLEAN_SHOT",

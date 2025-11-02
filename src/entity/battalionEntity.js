@@ -11,6 +11,8 @@ import { JammerField } from "../map/jammerField.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { EntityType } from "./entityType.js";
 
+const SHRAPNEL_RANGE = 1;
+
 const ABSORBER_RATE = 0.2;
 
 const OVERHEAT_DAMAGE = 0.1;
@@ -136,6 +138,13 @@ BattalionEntity.INTERCEPT = {
     ILLEGAL: 2
 };
 
+BattalionEntity.DAMAGE_FLAG = {
+    NONE: 0,
+    SHRAPNEL: 1 << 0,
+    GAS: 1 << 1,
+    JUDGEMENT: 1 << 2
+};
+
 BattalionEntity.SPRITE_TYPE = {
     IDLE_RIGHT: "idle_right",
     IDLE_LEFT: "idle_left",
@@ -200,6 +209,77 @@ BattalionEntity.isNodeReachable = function(node) {
     }
 
     return true;
+}
+
+BattalionEntity.getLineTargets = function(gameContext, direction, startX, startY, maxRange) {
+    let streamX = 0;
+    let streamY = 0;
+
+    switch(direction) {
+        case BattalionEntity.DIRECTION.EAST: {
+            streamX = 1;
+            break;
+        }
+        case BattalionEntity.DIRECTION.NORTH: {
+            streamY = -1;
+            break;
+        }
+        case BattalionEntity.DIRECTION.SOUTH: {
+            streamY = 1;
+            break;
+        }
+        case BattalionEntity.DIRECTION.WEST: {
+            streamX = -1;
+            break;
+        }
+        default: {
+            console.error("Faulty direction! Using EAST.");
+            streamX = 1;
+            break;
+        }
+    }
+
+    const { world } = gameContext;
+    const { mapManager, entityManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const targets = [];
+
+    let currentX = startX + streamX;
+    let currentY = startY + streamY;
+    let range = 0;
+
+    while(range < maxRange && !worldMap.isTileOutOfBounds(currentX, currentY)) {
+        const entityID = worldMap.getTopEntity(currentX, currentY);
+        const entity = entityManager.getEntity(entityID);
+
+        if(entity) {
+            targets.push(entity);
+        }
+
+        currentX += streamX;
+        currentY += streamY;
+        range++;
+    }
+
+    return targets;
+}
+
+BattalionEntity.getAOETargets = function(gameContext, tileX, tileY, range) {
+    const { world } = gameContext;
+    const { mapManager, entityManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const targets = [];
+    
+    worldMap.fill2DArea(tileX, tileY, range, range, (nextX, nextY) => {
+        const entityID = worldMap.getTopEntity(nextX, nextY);
+        const entity = entityManager.getEntity(entityID);
+
+        if(entity) {
+            targets.push(entity);
+        }
+    });
+
+    return targets;
 }
 
 BattalionEntity.prototype = Object.create(Entity.prototype);
@@ -390,19 +470,7 @@ BattalionEntity.prototype.playDeath = function(gameContext) {
     }
 }
 
-BattalionEntity.prototype.playAttack = function(gameContext, target) {
-    const { spriteManager, transform2D } = gameContext;
-    const { tileX, tileY } = target;
-    const spriteType = this.getAttackSprite();
-    const sprite = spriteManager.createSprite(spriteType, TypeRegistry.LAYER_TYPE.GFX);
-
-    if(sprite) {
-        const { x, y } = transform2D.transformTileToWorld(tileX, tileY);
-
-        sprite.setPosition(x, y);
-        sprite.expire();
-    }
-
+BattalionEntity.prototype.playAttack = function(gameContext) {
     this.state = BattalionEntity.STATE.FIRE;
     this.playSound(gameContext, BattalionEntity.SOUND_TYPE.FIRE);
     this.updateSprite(gameContext);
@@ -684,6 +752,10 @@ BattalionEntity.prototype.getBestPath = function(gameContext, nodes, targetX, ta
     }
 
     return path;
+}
+
+BattalionEntity.prototype.canSee = function(gameContext, entity) {
+    return entity.isVisibleTo(gameContext, this.teamID);
 }
 
 BattalionEntity.prototype.isVisibleTo = function(gameContext, teamID) {
@@ -1017,7 +1089,7 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
     return damageAmplifier;
 }
 
-BattalionEntity.prototype.getDamage = function(gameContext, target, attackType) {
+BattalionEntity.prototype.getDamage = function(gameContext, target, attackType, damageFlags) {
     const targetMove = target.config.movementType;
     const damageAmplifier = this.getDamageAmplifier(gameContext, target, attackType);
     let damage = this.damage * damageAmplifier;
@@ -1491,85 +1563,12 @@ BattalionEntity.prototype.getAbsorberHealth = function(damage) {
     return health;
 }
 
-BattalionEntity.prototype.getStreamblastTargets = function(gameContext, direction) {
-    let streamX = 0;
-    let streamY = 0;
-
-    switch(direction) {
-        case BattalionEntity.DIRECTION.EAST: {
-            streamX = 1;
-            break;
-        }
-        case BattalionEntity.DIRECTION.NORTH: {
-            streamY = -1;
-            break;
-        }
-        case BattalionEntity.DIRECTION.SOUTH: {
-            streamY = 1;
-            break;
-        }
-        case BattalionEntity.DIRECTION.WEST: {
-            streamX = -1;
-            break;
-        }
-        default: {
-            console.error("Faulty direction! Using EAST.");
-            streamX = 1;
-            break;
-        }
-    }
-
-    const { world } = gameContext;
-    const { mapManager, entityManager } = world;
-    const worldMap = mapManager.getActiveMap();
-    const streamRange = this.config.streamRange;
-
-    const targets = [];
-    let currentX = this.tileX + streamX;
-    let currentY = this.tileY + streamY;
-    let range = 0;
-
-    while(range < streamRange && !worldMap.isTileOutOfBounds(currentX, currentY)) {
-        const entityID = worldMap.getTopEntity(currentX, currentY);
-        const entity = entityManager.getEntity(entityID);
-
-        if(entity) {
-            targets.push(entity);
-        }
-
-        currentX += streamX;
-        currentY += streamY;
-        range++;
-    }
-
-    return targets;
-}
-
 BattalionEntity.prototype.getAOERange = function() {
     if(this.hasTrait(TypeRegistry.TRAIT_TYPE.JUDGEMENT)) {
         return 2;
     }
 
     return 1;
-}
-
-BattalionEntity.prototype.getAOETargets = function(gameContext, tileX, tileY) {
-    const { world } = gameContext;
-    const { mapManager, entityManager } = world;
-    const worldMap = mapManager.getActiveMap();
-    const range = this.getAOERange();
-    const targets = [];
-    
-    worldMap.fill2DArea(tileX, tileY, range, range, (nextX, nextY) => {
-        const entityID = worldMap.getTopEntity(nextX, nextY);
-        const entity = entityManager.getEntity(entityID);
-
-        if(entity) {
-            targets.push(entity);
-        }
-    });
-
-    return targets;
 }
 
 BattalionEntity.prototype.mTriggerInitiateTraits = function(totalDamage, resolver) {
@@ -1603,50 +1602,52 @@ BattalionEntity.prototype.mTriggerCounterTraits = function(totalDamage, resolver
     }
 }
 
-BattalionEntity.prototype.mGetCounterResolutions = function(gameContext, target, resolver) {
-    if(this.isAllowedToCounter(target) && this.canTarget(gameContext, target)) {
-        const damage = this.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.COUNTER);
-        const remainingHealth = target.getHealthAfter(damage);
-        const targetID = target.getID();
+BattalionEntity.prototype.mGetRegularDamage = function(gameContext, target, resolver) {
+    const damage = this.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.INITIATE, BattalionEntity.DAMAGE_FLAG.NONE);
+    let totalDamage = damage;
 
-        resolver.add(targetID, remainingHealth);
+    resolver.add(target.getID(), target.getHealthAfter(damage));
 
-        this.mTriggerCounterTraits(damage, resolver);
+    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SHRAPNEL)) {
+        const { tileX, tileY } = target;
+        const direction = this.getDirectionTo(target);
+        const targets = BattalionEntity.getLineTargets(gameContext, direction, tileX, tileY, SHRAPNEL_RANGE);
+
+        for(let i = 0; i < targets.length; i++) {
+            const target = targets[i];
+            const damage = this.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.INITIATE, BattalionEntity.DAMAGE_FLAG.NONE);
+
+            resolver.add(target.getID(), target.getHealthAfter(damage));
+            totalDamage += damage;
+        }
     }
+
+    return totalDamage;
 }
 
-BattalionEntity.prototype.mGetRegularResolutions = function(gameContext, target, resolver) {
-    const damage = this.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.INITIATE);
-    const remainingHealth = target.getHealthAfter(damage);
-    const targetID = target.getID();
-
-    resolver.add(targetID, remainingHealth);
-
-    this.mTriggerInitiateTraits(damage, resolver);
-}
-
-BattalionEntity.prototype.mGetStreamblastResolutions = function(gameContext, target, resolver) {
+BattalionEntity.prototype.mGetStreamblastDamage = function(gameContext, target, resolver) {
     const direction = this.getDirectionTo(target);
-    const targets = this.getStreamblastTargets(gameContext, direction);
+    const range = this.config.streamRange;
+    const targets = BattalionEntity.getLineTargets(gameContext, direction, this.tileX, this.tileY, range);
     let totalDamage = 0;
 
     for(let i = 0; i < targets.length; i++) {
         const target = targets[i];
-        const damage = this.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.INITIATE);
+        const damage = this.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.INITIATE, BattalionEntity.DAMAGE_FLAG.NONE);
         const remainingHealth = target.getHealthAfter(damage);
         const targetID = target.getID();
 
         resolver.add(targetID, remainingHealth);
-
         totalDamage += damage;
     }
 
-    this.mTriggerInitiateTraits(totalDamage, resolver);
+    return totalDamage;
 }
 
-BattalionEntity.prototype.mGetAOEResolutions = function(gameContext, target, resolver) {
+BattalionEntity.prototype.mGetAOEDamage = function(gameContext, target, resolver) {
     const { tileX, tileY } = target;
-    const targets = this.getAOETargets(gameContext, tileX, tileY);
+    const range = this.getAOERange();
+    const targets = BattalionEntity.getAOETargets(gameContext, tileX, tileY, range);
     let totalDamage = 0;
 
     for(let i = 0; i < targets.length; i++) {
@@ -1657,32 +1658,60 @@ BattalionEntity.prototype.mGetAOEResolutions = function(gameContext, target, res
             continue;
         }
 
-        const damage = this.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.INITIATE);
+        const damage = this.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.INITIATE, BattalionEntity.DAMAGE_FLAG.NONE);
         const remainingHealth = target.getHealthAfter(damage);
 
         resolver.add(targetID, remainingHealth);
         totalDamage += damage;
     }
 
+    return totalDamage;
+}
 
-    this.mTriggerInitiateTraits(totalDamage, resolver);
+BattalionEntity.prototype.mGetCounterResolutions = function(gameContext, target, resolver) {
+    if(this.isAllowedToCounter(target) && this.canTarget(gameContext, target)) {
+        const damage = this.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.COUNTER, BattalionEntity.DAMAGE_FLAG.NONE);
+        let totalDamage = damage;
+
+        resolver.add(target.getID(), target.getHealthAfter(damage));
+
+        if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SHRAPNEL)) {
+            const { tileX, tileY } = target;
+            const direction = this.getDirectionTo(target);
+            const targets = BattalionEntity.getLineTargets(gameContext, direction, tileX, tileY, SHRAPNEL_RANGE);
+
+            for(let i = 0; i < targets.length; i++) {
+                const target = targets[i];
+                const damage = this.getDamage(gameContext, target, AttackAction.ATTACK_TYPE.INITIATE, BattalionEntity.DAMAGE_FLAG.NONE);
+
+                resolver.add(target.getID(), target.getHealthAfter(damage));
+                totalDamage += damage;
+            }
+        }
+
+        this.mTriggerCounterTraits(totalDamage, resolver);
+    }
 }
 
 BattalionEntity.prototype.mGetInitiateResolutions = function(gameContext, target, resolver) {
     if(this.canTarget(gameContext, target)) {
+        let totalDamage = 0;
+
         switch(this.getAttackType()) {
             case BattalionEntity.ATTACK_TYPE.REGULAR: {
-                this.mGetRegularResolutions(gameContext, target, resolver);
+                totalDamage = this.mGetRegularDamage(gameContext, target, resolver);
                 break;
             }
             case BattalionEntity.ATTACK_TYPE.DISPERSION: {
-                this.mGetAOEResolutions(gameContext, target, resolver);
+                totalDamage = this.mGetAOEDamage(gameContext, target, resolver);
                 break;
             }
             case BattalionEntity.ATTACK_TYPE.STREAMBLAST: {
-                this.mGetStreamblastResolutions(gameContext, target, resolver);
+                totalDamage = this.mGetStreamblastDamage(gameContext, target, resolver);
                 break;
             }
         }
+
+        this.mTriggerInitiateTraits(totalDamage, resolver);
     }
 }
