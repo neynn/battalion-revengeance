@@ -49,7 +49,7 @@ AttackAction.prototype.onStart = function(gameContext, data, id) {
             break;
         }
         case AttackAction.ATTACK_TYPE.COUNTER: {
-            entity.playCounter(gameContext);
+            entity.playCounter(gameContext, target);
             break;
         }
     }

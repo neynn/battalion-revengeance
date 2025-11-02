@@ -1081,6 +1081,12 @@
         "frameTime": 0.1,
         "autoFrames": {"start": 1,"jump": 1,"repeat": 8}
     },
+    "gas_attack": {
+        "texture": "gas_attack",
+        "shift": {"x":-80,"y":-50},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 8}
+    },
     "marker": {
         "texture": "marker",
         "frameTime": 0.1,

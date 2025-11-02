@@ -3,6 +3,7 @@
     "massive_tank_move_2": { "directory": ["assets", "sounds"], "source": "massive_tank_move_2.mp3", "allowStacking": true, "volume": 1 },
     "massive_tank_move_3": { "directory": ["assets", "sounds"], "source": "massive_tank_move_3.mp3", "allowStacking": true, "volume": 1 },
     "cloak": { "directory": ["assets", "sounds"], "source": "cloak.mp3", "allowStacking": false, "volume": 0.6 },
+    "uncloak": { "directory": ["assets", "sounds"], "source": "uncloak.mp3", "allowStacking": false, "volume": 0.6 },
     "explosion": { "directory": ["assets", "sounds"], "source": "explosion.mp3", "allowStacking": true, "volume": 0.6 },
     "aleph_move": { "directory": ["assets", "sounds", "units"], "source": "aleph_move.mp3", "allowStacking": true, "volume": 0.6 },
     "aleph_fire": { "directory": ["assets", "sounds", "units"], "source": "aleph_fire.mp3", "allowStacking": true, "volume": 0.6 },

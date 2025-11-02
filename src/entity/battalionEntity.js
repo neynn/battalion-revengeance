@@ -122,6 +122,18 @@ BattalionEntity.STATE = {
     DEAD: 3
 };
 
+BattalionEntity.TRANSPORT_TYPE = {
+    BARGE: 0,
+    PELICAN: 1,
+    STORK: 2
+};
+
+BattalionEntity.INTERCEPT = {
+    NONE: 0,
+    VALID: 1,
+    ILLEGAL: 2
+};
+
 BattalionEntity.SPRITE_TYPE = {
     IDLE_RIGHT: "idle_right",
     IDLE_LEFT: "idle_left",
@@ -146,29 +158,18 @@ BattalionEntity.SOUND_TYPE = {
 
 BattalionEntity.DEFAULT_ATTACK_SPRITES = {
     [BattalionEntity.ATTACK_TYPE.REGULAR]: "small_attack",
-    [BattalionEntity.ATTACK_TYPE.DISPERSION]: "small_attack", //TODO: Implement
+    [BattalionEntity.ATTACK_TYPE.DISPERSION]: "gas_attack",
     [BattalionEntity.ATTACK_TYPE.STREAMBLAST]: "small_attack" //TODO: Implement
 };
 
-BattalionEntity.DEFAULT_DEATH_SPRITE = "explosion";
+BattalionEntity.DEFAULT_SPRITES = {
+    [BattalionEntity.SPRITE_TYPE.DEATH]: "explosion"
+};
 
 BattalionEntity.DEFAULT_SOUNDS = {
     [BattalionEntity.SOUND_TYPE.CLOAK]: "cloak",
     [BattalionEntity.SOUND_TYPE.DEATH]: "explosion",
-    [BattalionEntity.SOUND_TYPE.UNCLOAK]: "cloak", //TODO: Implement
-    [BattalionEntity.SOUND_TYPE.RECRUIT]: null //TODO: Implement
-};
-
-BattalionEntity.TRANSPORT_TYPE = {
-    BARGE: 0,
-    PELICAN: 1,
-    STORK: 2
-};
-
-BattalionEntity.INTERCEPT = {
-    NONE: 0,
-    VALID: 1,
-    ILLEGAL: 2
+    [BattalionEntity.SOUND_TYPE.UNCLOAK]: "uncloak",
 };
 
 BattalionEntity.getDirectionByDelta = function(deltaX, deltaY) {
@@ -360,6 +361,10 @@ BattalionEntity.prototype.playCloak = function(gameContext) {
     this.playSound(gameContext, BattalionEntity.SOUND_TYPE.CLOAK);
 }
 
+BattalionEntity.prototype.playUncloak = function(gameContext) {
+    this.playSound(gameContext, BattalionEntity.SOUND_TYPE.UNCLOAK);
+}
+
 BattalionEntity.prototype.playMove = function(gameContext) {
     this.state = BattalionEntity.STATE.MOVE;
     this.updateSprite(gameContext);
@@ -402,11 +407,8 @@ BattalionEntity.prototype.playAttack = function(gameContext, target) {
     this.sprite.lockEnd();
 }
 
-BattalionEntity.prototype.playCounter = function(gameContext) {
-    this.state = BattalionEntity.STATE.FIRE;
-    this.playSound(gameContext, BattalionEntity.SOUND_TYPE.FIRE);
-    this.updateSprite(gameContext);
-    this.sprite.lockEnd();
+BattalionEntity.prototype.playCounter = function(gameContext, target) {
+    this.playAttack(gameContext, target);
 }
 
 BattalionEntity.prototype.setDirectionByDelta = function(deltaX, deltaY) {
@@ -472,7 +474,7 @@ BattalionEntity.prototype.getDeathSprite = function() {
     let sprite = this.config.sprites[BattalionEntity.SPRITE_TYPE.DEATH];
 
     if(!sprite) {
-        sprite = BattalionEntity.DEFAULT_DEATH_SPRITE;
+        sprite = BattalionEntity.DEFAULT_SPRITES[BattalionEntity.SPRITE_TYPE.DEATH];
     }
 
     return sprite;
@@ -947,7 +949,7 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, att
     //Steer trait. Reduces damage received by STEER for each tile the target can travel further. Up to STEER_MAX_REDUCTION.
     if(target.hasTrait(TypeRegistry.TRAIT_TYPE.STEER)) {
         if(this.config.movementType === TypeRegistry.MOVEMENT_TYPE.RUDDER || this.config.movementType === TypeRegistry.MOVEMENT_TYPE.HEAVY_RUDDER) {
-            const deltaRange = target.config.movementRange - this.config.movementRange;
+            const deltaRange = target.movementRange - this.movementRange;
 
             if(deltaRange > 0) {
                 const steerAmplifier = 1 - (deltaRange * DAMAGE_AMPLIFIER.STEER);
@@ -1028,8 +1030,6 @@ BattalionEntity.prototype.getDamage = function(gameContext, target, attackType) 
     ) {
         damage *= -1;
     }
-
-    //TODO: Special logic like "Absorber", "Suicide", "SupplyDistribution".
 
     return damage;
 }

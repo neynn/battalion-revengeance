@@ -1,5 +1,4 @@
 import { Action } from "../../../engine/action/action.js";
-import { BattalionEntity } from "../../entity/battalionEntity.js";
 
 export const UncloakAction = function() {
     Action.call(this);
@@ -21,7 +20,7 @@ UncloakAction.prototype.onStart = function(gameContext, data, id) {
     for(let i = 0; i < entities.length; i++) {
         const entity = entityManager.getEntity(entities[i]);
 
-        entity.playSound(gameContext, BattalionEntity.SOUND_TYPE.CLOAK);
+        entity.playUncloak(gameContext);
 
         this.entities.push(entity);
     }
