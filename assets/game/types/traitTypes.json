@@ -2,93 +2,67 @@
     "BLITZ": {
         "name": "TRAIT_NAME_BLITZ",
         "desc": "TRAIT_DESC_BLITZ",
-        "icon": null,
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": null
     },
     "SHRAPNEL": {
         "name": "TRAIT_NAME_SHRAPNEL",
         "desc": "TRAIT_DESC_SHRAPNEL",
-        "icon": null,
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": null
     },
     "CLEAR_SHOT": {
         "name": "TRAIT_NAME_CLEAR_SHOT",
         "desc": "TRAIT_DESC_CLEAR_SHOT",
-        "icon": null,
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": null
     },
     "ARMOR_PIERCE": {
         "name": "TRAIT_NAME_ARMOR_PIERCE",
         "desc": "TRAIT_DESC_ARMOR_PIERCE",
-        "icon": null,
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": null
     },
     "OVERHEAT": {
         "name": "TRAIT_NAME_OVERHEAT",
         "desc": "TRAIT_DESC_OVERHEAT",
-        "icon": null,
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": null
     },
     "TRACKING": {
         "name": "TRAIT_NAME_TRACKING",
         "desc": "TRAIT_DESC_TRACKING",
-        "icon": null,
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": null
     },
     "BLIND_SPOT": {
         "name": "TRAIT_NAME_BLIND_SPOT",
         "desc": "TRAIT_DESC_BLIND_SPOT",
-        "icon": null,
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": null
     },
     "SLUGGER": {
         "name": "TRAIT_NAME_SLUGGER",
         "desc": "TRAIT_DESC_SLUGGER",
-        "icon": null,
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": null
     },
     "JAMMER": {
         "name": "TRAIT_NAME_JAMMER",
         "desc": "TRAIT_DESC_JAMMER",
-        "icon": null,
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": null
     },
     "ELUSIVE": {
         "name": "TRAIT_NAME_ELUSIVE",
         "desc": "TRAIT_DESC_ELUSIVE",
-        "icon": null,
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": null
     },
     "SKYSWEEPER": {
         "name": "TRAIT_NAME_SKYSWEEPER",
         "desc": "TRAIT_DESC_SKYSWEEPER",
-        "icon": "Assets/Traits/Skysweeper.png",
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": "Assets/Traits/Skysweeper.png"
     },
     "DEPTH_CHARGE": {
         "name": "TRAIT_NAME_DEPTH_CHARGE",
         "desc": "TRAIT_DESC_DEPTH_CHARGE",
-        "icon": "Assets/Traits/Depth Charge.png",
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": "Assets/Traits/Depth Charge.png"
     },
     "SONAR": {
         "name": "TRAIT_NAME_SONAR",
         "desc": "TRAIT_DESC_SONAR",
-        "icon": "Assets/Traits/Sonar.png",
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": "Assets/Traits/Sonar.png"
     },
     "ANTI_INFANTRY": {
         "name": "TRAIT_NAME_ANTI_INFANTRY",
@@ -96,8 +70,7 @@
         "icon": "Assets/Traits/Anti-Infantry.png",
         "moveDamage": {
             "FOOT": 2
-        },
-        "armorDamage": {}
+        }
     },
     "ANTI_TANK": {
         "name": "TRAIT_NAME_ANTI_TANK",
@@ -105,8 +78,7 @@
         "icon": "Assets/Traits/Anti-Tank.png",
         "moveDamage": {
             "TRACKED": 1.5
-        },
-        "armorDamage": {}
+        }
     },
     "ANTI_AIR": {
         "name": "TRAIT_NAME_ANTI_AIR",
@@ -114,8 +86,7 @@
         "icon": "Assets/Traits/Anti-Air.png",
         "moveDamage": {
             "FLIGHT": 2
-        },
-        "armorDamage": {}
+        }
     },
     "ANTI_SHIP": {
         "name": "TRAIT_NAME_ANTI_SHIP",
@@ -124,8 +95,7 @@
         "moveDamage": {
             "RUDDER": 2,
             "HEAVY_RUDDER": 1.5
-        },
-        "armorDamage": {}
+        }
     },
     "ANTI_STRUCTURE": {
         "name": "TRAIT_NAME_ANTI_STRUCTURE",
@@ -133,94 +103,62 @@
         "icon": "Assets/Traits/Anti-Structure.png",
         "moveDamage": {
             "STATIONARY": 2
-        },
-        "armorDamage": {}
+        }
     },
     "STEALTH": {
         "name": "TRAIT_NAME_STEALTH",
         "desc": "TRAIT_DESC_STEALTH",
-        "icon": "Assets/Traits/Stealth.png",
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": "Assets/Traits/Stealth.png"
     },
     "SUBMERGED": {
         "name": "TRAIT_NAME_SUBMERGED",
         "desc": "TRAIT_DESC_SUBMERGED",
-        "icon": "Assets/Traits/Submerged.png",
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": "Assets/Traits/Submerged.png"
     },
     "COMMANDO": {
         "name": "TRAIT_NAME_COMMANDO",
         "desc": "TRAIT_DESC_COMMANDO",
-        "icon": "Assets/Traits/Commando.png",
-        "moveDamage": {},
-        "armorDamage": {}
-    },
-    "CRAB": {
-        "name": "TRAIT_NAME_CRAB",
-        "desc": "TRAIT_DESC_CRAB",
-        "icon": "Assets/Traits/Crab.png",
-        "note": "This trait is purely cosmetic.",
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": "Assets/Traits/Commando.png"
     },
     "INDOMITABLE": {
         "name": "TRAIT_NAME_INDOMITABLE",
         "desc": "TRAIT_DESC_INDOMITABLE",
-        "icon": "Assets/Traits/Indomitable.png",
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": "Assets/Traits/Indomitable.png"
     },
     "SCHWERPUNKT": {
         "name": "TRAIT_NAME_SCHWERPUNKT",
         "desc": "TRAIT_DESC_SCHWERPUNKT",
-        "icon": "Assets/Traits/Schwerpunkt.png",
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": "Assets/Traits/Schwerpunkt.png"
     },
     "BEWEGUNGSKRIEG": {
         "name": "TRAIT_NAME_BEWEGUNGSKRIEG",
         "desc": "TRAIT_DESC_BEWEGUNGSKRIEG",
-        "icon": "Assets/Traits/Bewegungskrieg.png",
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": "Assets/Traits/Bewegungskrieg.png"
     },
     "MOBILE_BATTERY": {
         "name": "TRAIT_NAME_MOBILE_BATTERY",
         "desc": "TRAIT_DESC_MOBILE_BATTERY",
-        "icon": "Assets/Traits/Mobile Battery.png",
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": "Assets/Traits/Mobile Battery.png"
     },
     "CEMENTED_STEEL_ARMOR": {
         "name": "TRAIT_NAME_CEMENTED_STEEL_ARMOR",
         "desc": "TRAIT_DESC_CEMENTED_STEEL_ARMOR",
-        "icon": "Assets/Traits/Cemented Steel Armor.png",
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": "Assets/Traits/Cemented Steel Armor.png"
     },
     "CAVITATION_EXPLOSION": {
         "name": "TRAIT_NAME_CAVITATION_EXPLOSION",
         "desc": "TRAIT_DESC_CAVITATION_EXPLOSION",
-        "icon": "Assets/Traits/Cavitation Explosion.png",
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": "Assets/Traits/Cavitation Explosion.png"
     },
     "SEABOUND": {
         "name": "TRAIT_NAME_SEABOUND",
         "desc": "TRAIT_DESC_SEABOUND",
-        "icon": "Assets/Traits/Seabound.png",
-        "note": "This trait is not implemented.",
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": "Assets/Traits/Seabound.png"
     },
     "SELF_DESTRUCT": {
         "name": "TRAIT_NAME_SELF_DESTRUCT",
         "desc": "TRAIT_DESC_SELF_DESTRUCT",
-        "icon": "Assets/Traits/Self-Destruct.png",
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": "Assets/Traits/Self-Destruct.png"
     },
     "JUDGEMENT": {
         "name": "TRAIT_NAME_JUDGEMENT",
@@ -235,174 +173,130 @@
             "RUDDER": 1000,
             "HEAVY_RUDDER": 1000,
             "AMPHIBIOUS": 1000
-        },
-        "armorDamage": {}
-    },
-    "RADAR": {
-        "name": "TRAIT_NAME_RADAR",
-        "desc": "TRAIT_DESC_RADAR",
-        "icon": "Assets/Traits/Radar.png",
-        "moveDamage": {},
-        "armorDamage": {}
-    },
-    "CONQUEROR": {
-        "name": "TRAIT_NAME_CONQUEROR",
-        "desc": "TRAIT_DESC_CONQUEROR",
-        "icon": "Assets/Traits/Conqueror.png",
-        "moveDamage": {},
-        "armorDamage": {}
+        }
     },
     "STEER": {
         "name": "TRAIT_NAME_STEER",
         "desc": "TRAIT_DESC_STEER",
-        "icon": "Assets/Traits/Steer.png",
-        "moveDamage": {},
-        "armorDamage": {}
-    },
-    "STREAMLINED": {
-        "name": "TRAIT_NAME_STREAMLINED",
-        "desc": "TRAIT_DESC_STREAMLINED",
-        "icon": "Assets/Traits/Streamlined.png",
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": "Assets/Traits/Steer.png"
     },
     "DISPERSION": {
         "name": "TRAIT_NAME_DISPERSION",
         "desc": "TRAIT_DESC_DISPERSION",
-        "icon": "Assets/Traits/Dispersion.png",
-        "note": "This trait is not implemented.",
-        "moveDamage": {},
-        "armorDamage": {}
-    },
-    "SUPPLY_DISTRIBUTION": {
-        "name": "TRAIT_NAME_SUPPLY_DISTRIBUTION",
-        "desc": "TRAIT_DESC_SUPPLY_DISTRIBUTION",
-        "icon": "Assets/Traits/Supply Distribution.png",
-        "note": "This trait is not implemented.",
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": "Assets/Traits/Dispersion.png"
     },
     "LYNCHPIN": {
         "name": "TRAIT_NAME_LYNCHPIN",
         "desc": "TRAIT_DESC_LYNCHPIN",
-        "icon": "Assets/Traits/Lynchpin.png",
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": "Assets/Traits/Lynchpin.png"
     },
     "FIXED": {
         "name": "TRAIT_NAME_FIXED",
         "desc": "TRAIT_DESC_FIXED",
-        "icon": "Assets/Traits/FIXED.png",
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": "Assets/Traits/FIXED.png"
     },
     "STREAMBLAST": {
         "name": "TRAIT_NAME_STREAMBLAST",
         "desc": "TRAIT_DESC_STREAMBLAST",
-        "icon": "Assets/Traits/Streamblast.png",
-        "note": "This trait is not implemented.",
-        "moveDamage": {},
-        "armorDamage": {}
-    },
-    "AIRBORNE": {
-        "name": "TRAIT_NAME_AIRBORNE",
-        "desc": "TRAIT_DESC_AIRBORNE",
-        "icon": "Assets/Traits/Airborne.png",
-        "note": "This trait will be removed.",
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": "Assets/Traits/Streamblast.png"
     },
     "HEROIC": {
         "name": "TRAIT_NAME_HEROIC",
         "desc": "TRAIT_DESC_HEROIC",
-        "icon": "Assets/Traits/Heroic.png",
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": "Assets/Traits/Heroic.png"
     },
     "TANK_HUNTER": {
         "name": "TRAIT_NAME_TANK_HUNTER",
         "desc": "TRAIT_DESC_TANK_HUNTER",
-        "icon": "Assets/Traits/Tank-Hunter.png",
-        "moveDamage": {},
-        "armorDamage": {}
+        "icon": "Assets/Traits/Tank-Hunter.png"
+    },
+    "ABSORBER": {
+        "name": "TRAIT_NAME_ABSORBER",
+        "desc": "TRAIT_DESC_ABSORBER",
+        "icon": "Assets/Traits/Absorber.png"
+    },
+    "CRAB": {
+        "name": "TRAIT_NAME_CRAB",
+        "desc": "TRAIT_DESC_CRAB",
+        "icon": "Assets/Traits/Crab.png",
+        "note": "This trait is purely cosmetic."
     },
     "NAVAL_TRANSPORT": {
         "name": "TRAIT_NAME_NAVAL_TRANSPORT",
         "desc": "TRAIT_DESC_NAVAL_TRANSPORT",
         "icon": "Assets/Traits/Naval Transport.png",
-        "note": "This trait is purely cosmetic.",
-        "moveDamage": {},
-        "armorDamage": {}
+        "note": "This trait is purely cosmetic."
     },
     "AIR_TRANSPORT": {
         "name": "TRAIT_NAME_AIR_TRANSPORT",
         "desc": "TRAIT_DESC_AIR_TRANSPORT",
         "icon": "Assets/Traits/Air Transport.png",
-        "note": "This trait is purely cosmetic.",
-        "moveDamage": {},
-        "armorDamage": {}
+        "note": "This trait is purely cosmetic."
     },
     "UNBUILT": {
         "name": "TRAIT_NAME_UNBUILT",
         "desc": "TRAIT_DESC_UNBUILT",
         "icon": "Assets/Traits/Unbuilt.png",
-        "note": "This trait is purely cosmetic.",
-        "moveDamage": {},
-        "armorDamage": {}
+        "note": "This trait is purely cosmetic."
     },
     "TANK_POOPER": {
         "name": "TRAIT_NAME_TANK_POOPER",
         "desc": "TRAIT_DESC_TANK_POOPER",
         "icon": "Assets/Traits/Tank Pooper.png",
-        "note": "This trait is purely cosmetic. (WarMachine)",
-        "moveDamage": {},
-        "armorDamage": {}
+        "note": "This trait is purely cosmetic. (WarMachine)"
     },
-    "ABSORBER": {
-        "name": "TRAIT_NAME_ABSORBER",
-        "desc": "TRAIT_DESC_ABSORBER",
-        "icon": "Assets/Traits/Absorber.png",
-        "moveDamage": {},
-        "armorDamage": {}
+    "RADAR": {
+        "name": "TRAIT_NAME_RADAR",
+        "desc": "TRAIT_DESC_RADAR",
+        "icon": "Assets/Traits/Radar.png",
+        "note": "This trait is not implemented."
+    },
+    "CONQUEROR": {
+        "name": "TRAIT_NAME_CONQUEROR",
+        "desc": "TRAIT_DESC_CONQUEROR",
+        "icon": "Assets/Traits/Conqueror.png",
+        "note": "This trait is not implemented."
+    },
+    "STREAMLINED": {
+        "name": "TRAIT_NAME_STREAMLINED",
+        "desc": "TRAIT_DESC_STREAMLINED",
+        "icon": "Assets/Traits/Streamlined.png",
+        "note": "This trait is not implemented."
+    },
+    "SUPPLY_DISTRIBUTION": {
+        "name": "TRAIT_NAME_SUPPLY_DISTRIBUTION",
+        "desc": "TRAIT_DESC_SUPPLY_DISTRIBUTION",
+        "icon": "Assets/Traits/Supply Distribution.png",
+        "note": "This trait is not implemented."
     },
     "TERRIFYING": {
         "name": "TRAIT_NAME_TERRIFYING",
         "desc": "TRAIT_DESC_TERRIFYING",
         "icon": "Assets/Traits/Terrifying.png",
-        "note": "This trait is not implemented.",
-        "moveDamage": {},
-        "armorDamage": {}
+        "note": "This trait is not implemented."
     },
     "INFLAMING": {
         "name": "TRAIT_NAME_INFLAMING",
         "desc": "TRAIT_DESC_INFLAMING",
         "icon": "Assets/Traits/Inflaming.png",
-        "note": "This trait is not implemented.",
-        "moveDamage": {},
-        "armorDamage": {}
+        "note": "This trait is not implemented."
     },
     "FINANCIAL_CENTER": {
         "name": "TRAIT_NAME_FINANCIAL_CENTER",
         "desc": "TRAIT_DESC_FINANCIAL_CENTER",
         "icon": "Assets/Traits/Financial Center.png",
-        "note": "This trait is not implemented.",
-        "moveDamage": {},
-        "armorDamage": {}
+        "note": "This trait is not implemented."
     },
     "FISCAL_CENTER": {
         "name": "TRAIT_NAME_FISCAL_CENTER",
         "desc": "TRAIT_DESC_FISCAL_CENTER",
         "icon": "Assets/Traits/Fiscal Center.png",
-        "note": "This trait is not implemented.",
-        "moveDamage": {},
-        "armorDamage": {}
+        "note": "This trait is not implemented."
     },
     "FIDUCIARY_CENTER": {
         "name": "TRAIT_NAME_FIDUCIARY_CENTER",
         "desc": "TRAIT_DESC_FIDUCIARY_CENTER",
         "icon": "Assets/Traits/Fiduciary Center.png",
-        "note": "This trait is not implemented.",
-        "moveDamage": {},
-        "armorDamage": {}
+        "note": "This trait is not implemented."
     }
 }
