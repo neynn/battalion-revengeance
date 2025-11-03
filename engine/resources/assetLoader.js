@@ -48,3 +48,25 @@ AssetLoader.prototype.loadResources = async function(modeID) {
 
     return this.resources;
 }
+
+AssetLoader.prototype.download = function(filename, data) {
+    const blob = new Blob([data], { type: "text/json" });
+    const link = document.createElement("a");
+  
+    link.download = `${filename}.json`;
+    link.href = window.URL.createObjectURL(blob);
+    link.dataset.downloadurl = ["text/json", link.download, link.href].join(":");
+  
+    const evt = new MouseEvent("click", {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+    });
+  
+    link.dispatchEvent(evt);
+    link.remove();
+}
+
+AssetLoader.prototype.mergeResources = function() {
+    this.download("assets", JSON.stringify(this.resources));
+}
