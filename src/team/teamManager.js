@@ -196,14 +196,11 @@ TeamManager.prototype.onEntityMove = function(gameContext, entity) {
 }
 
 TeamManager.prototype.onEntityDeath = function(gameContext, entity) {
-    const entityID = entity.getID();
-
     for(let i = 0; i < this.activeTeams.length; i++) {
         const teamID = this.activeTeams[i];
         const team = this.getTeam(teamID);
 
-        team.removeEntity(entityID);
-        team.runObjectives((objective) => objective.onDeath(gameContext, entity, teamID));
+        team.onEntityDeath(gameContext, entity);
     }
 
     this.updateStatus(gameContext);

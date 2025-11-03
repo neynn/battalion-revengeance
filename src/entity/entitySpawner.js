@@ -110,14 +110,17 @@ export const EntitySpawner = {
 
                 if(entity) {
                     const entityID = entity.getID();
-                    const isExpendable = entity.hasTrait(TypeRegistry.TRAIT_TYPE.INERTIAL);
 
                     EntitySpawner.placeEntity(gameContext, entity);
                     entity.setTeam(teamID);
                     actor.addEntity(entityID);
 
-                    if(!isExpendable) {
-                        team.addEntity(entityID);
+                    if(!entity.hasTrait(TypeRegistry.TRAIT_TYPE.FIXED)) {
+                        team.addUnit(entityID);
+                    }
+
+                    if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.LYNCHPIN)) {
+                        team.addLynchpin(entityID);
                     }
 
                     return entity;

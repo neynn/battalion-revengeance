@@ -54,7 +54,7 @@
         "armorType": "LIGHT",
         "movementRange": 6,
         "movementType": "FLIGHT",
-        "traits": ["JUDGEMENT", "INDOMITABLE", "SELF_DESTRUCT", "INERTIAL"],
+        "traits": ["JUDGEMENT", "INDOMITABLE", "SELF_DESTRUCT", "FIXED"],
         "sounds": {
             "move": "aleph_move",
             "fire": "aleph_fire"
@@ -282,7 +282,7 @@
         "minRange": 2,
         "maxRange": 5,
         "movementType": "STATIONARY",
-        "traits": [],
+        "traits": ["FIXED"],
         "sounds": {
             "move": "turret_move",
             "fire": "turret_fire"
@@ -466,7 +466,7 @@
         "armorType": "HEAVY",
         "movementRange": 3,
         "movementType": "TRACKED",
-        "traits": ["INERTIAL"],
+        "traits": [],
         "sounds": {
             "move": ["massive_tank_move_1", "massive_tank_move_2", "massive_tank_move_3"]
         },
@@ -674,7 +674,7 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
-        "traits": [],
+        "traits": ["FIXED"],
         "sprites": {
             "idle_right": "blockade_idle_right",
             "idle_left": "blockade_idle_left",

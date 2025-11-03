@@ -10,7 +10,9 @@ import { TypeRegistry } from "../type/typeRegistry.js";
 export const Team = function(id) {
     this.id = id;
     this.allies = [];
-    this.entities = [];
+    this.units = new Set();
+    this.lynchpins = new Set();
+    this.hasLynchpin = false;
     this.faction = null;
     this.nation = null;
     this.actor = null;
@@ -112,32 +114,27 @@ Team.prototype.getID = function() {
     return this.id;
 }
 
-Team.prototype.hasEntity = function(entityID) {
-    for(let i = 0; i < this.entities.length; i++) {
-        if(this.entities[i] === entityID) {
-            return true;
-        }
-    }
-
-    return false;
+Team.prototype.addUnit = function(entityID) {
+    this.units.add(entityID);
 }
 
-Team.prototype.addEntity = function(entityID) {
-    const hasEntity = this.hasEntity(entityID);
-
-    if(!hasEntity) {
-        this.entities.push(entityID);
-    }
+Team.prototype.addLynchpin = function(entityID) {
+    this.lynchpins.add(entityID);
+    this.hasLynchpin = true;
 }
 
-Team.prototype.removeEntity = function(entityID) {
-    for(let i = 0; i < this.entities.length; i++) {
-        if(this.entities[i] === entityID) {
-            this.entities[i] = this.entities[this.entities.length - 1];
-            this.entities.pop();
-            return;
-        }
+Team.prototype.onEntityDeath = function(gameContext, entity) {
+    const entityID = entity.getID();
+
+    if(this.units.has(entityID)) {
+        this.units.delete(entityID);
     }
+
+    if(this.lynchpins.has(entityID)) {
+        this.lynchpins.delete(entityID);
+    }
+
+    this.runObjectives((objective) => objective.onDeath(gameContext, entity, this.id));
 }
 
 Team.prototype.setCustomColor = function(color) {
@@ -192,7 +189,7 @@ Team.prototype.updateStatus = function() {
         return this.status;
     }
 
-    if(this.entities.length === 0) {
+    if(this.units.size === 0 || this.hasLynchpin && this.lynchpins.size === 0) {
         this.status = Team.STATUS.LOSER;
 
         return this.status;

@@ -282,10 +282,17 @@
         "moveDamage": {},
         "armorDamage": {}
     },
-    "INERTIAL": {
-        "name": "TRAIT_NAME_INERTIAL",
-        "desc": "TRAIT_DESC_INERTIAL",
-        "icon": "Assets/Traits/Inertial.png",
+    "LYNCHPIN": {
+        "name": "TRAIT_NAME_LYNCHPIN",
+        "desc": "TRAIT_DESC_LYNCHPIN",
+        "icon": "Assets/Traits/Lynchpin.png",
+        "moveDamage": {},
+        "armorDamage": {}
+    },
+    "FIXED": {
+        "name": "TRAIT_NAME_FIXED",
+        "desc": "TRAIT_DESC_FIXED",
+        "icon": "Assets/Traits/FIXED.png",
         "moveDamage": {},
         "armorDamage": {}
     },
@@ -362,14 +369,6 @@
         "name": "TRAIT_NAME_TERRIFYING",
         "desc": "TRAIT_DESC_TERRIFYING",
         "icon": "Assets/Traits/Terrifying.png",
-        "note": "This trait is not implemented.",
-        "moveDamage": {},
-        "armorDamage": {}
-    },
-    "LYNCHPIN": {
-        "name": "TRAIT_NAME_LYNCHPIN",
-        "desc": "TRAIT_DESC_LYNCHPIN",
-        "icon": "Assets/Traits/Lynchpin.png",
         "note": "This trait is not implemented.",
         "moveDamage": {},
         "armorDamage": {}
