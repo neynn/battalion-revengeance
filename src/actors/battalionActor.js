@@ -69,12 +69,22 @@ BattalionActor.prototype.onTurnStart = function(gameContext) {
         return;
     }
 
+    const deadEntities = [];
+
     for(const entityID of this.entities) {
         const entity = entityManager.getEntity(entityID);
 
         if(entity) {
             entity.onTurnStart(gameContext);
+
+            if(entity.isDead()) {
+                deadEntities.push(entityID);
+            }
         }
+    }
+
+    if(deadEntities.length !== 0) {
+        ActionHelper.forceEnqueue(gameContext, ActionHelper.createDeathRequest(gameContext, deadEntities));
     }
 }
 

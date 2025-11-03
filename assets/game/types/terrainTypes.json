@@ -3,6 +3,9 @@
         "name": "TRAIT_NAME_UNEVEN",
         "desc": "TRAIT_DESC_UNEVEN",
         "icon": "Assets/Traits/Uneven.png",
+        "damage": {
+            "TRACKED": 40
+        },
         "protection": {
 
         },

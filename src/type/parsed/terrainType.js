@@ -5,6 +5,7 @@ export const TerrainType = function(id, config) {
         icon = null,
         rangeGuard = false,
         rangeBoost = 0,
+        damage = {},
         protection = {},
         cost = {}
     } = config;
@@ -15,6 +16,7 @@ export const TerrainType = function(id, config) {
     this.icon = icon;
     this.rangeGuard = rangeGuard;
     this.rangeBoost = rangeBoost;
+    this.damage = damage;
     this.protection = protection;
     this.cost = cost;
 }

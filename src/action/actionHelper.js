@@ -1,8 +1,18 @@
+import { Action } from "../../engine/action/action.js";
 import { ActionRequest } from "../../engine/action/actionRequest.js";
 import { DialogueHandler } from "../dialogue/dialogueHandler.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const ActionHelper = {
+    forceEnqueue: function(gameContext, request) {
+        const { world } = gameContext;
+        const { actionQueue } = world;
+        const executionRequest = actionQueue.createExecutionRequest(gameContext, request);
+
+        if(executionRequest) {
+            actionQueue.enqueue(executionRequest, Action.PRIORITY.HIGH);
+        }
+    },
     createAttackRequest: function(entityID, targetID, command) {
         return new ActionRequest(TypeRegistry.ACTION_TYPE.ATTACK, {
             "entityID": entityID,
