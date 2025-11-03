@@ -10,6 +10,7 @@ import { ClimateType } from "./parsed/climateType.js";
 import { MovementType } from "./parsed/movementType.js";
 import { ArmorType } from "./parsed/armorType.js";
 import { BuildingType } from "./parsed/buildingType.js";
+import { MoraleType } from "./parsed/moraleType.js";
 
 const SCHEMA_TYPES = {
     "RED": {
@@ -132,11 +133,12 @@ export const TypeRegistry = function() {
         [TypeRegistry.CATEGORY.COMMANDER]: new TypeCategory(TypeRegistry.CATEGORY.COMMANDER, TypeRegistry.COMMANDER_TYPE, TypeRegistry.STUB.COMMANDER),
         [TypeRegistry.CATEGORY.POWER]: new TypeCategory(TypeRegistry.CATEGORY.POWER, TypeRegistry.POWER_TYPE, null),
         [TypeRegistry.CATEGORY.CURRENCY]: new TypeCategory(TypeRegistry.CATEGORY.CURRENCY, TypeRegistry.CURRENCY_TYPE, null),
-        [TypeRegistry.CATEGORY.MORALE]: new TypeCategory(TypeRegistry.CATEGORY.MORALE, TypeRegistry.MORALE_TYPE, null)
+        [TypeRegistry.CATEGORY.MORALE]: new TypeCategory(TypeRegistry.CATEGORY.MORALE, TypeRegistry.MORALE_TYPE, TypeRegistry.STUB.MORALE)
     };
 }
 
 TypeRegistry.STUB = {
+    MORALE: new MoraleType("ERROR_MORALE", {}),
     BUILDING: new BuildingType("ERROR_BUILDING", {}),
     ARMOR: new ArmorType("ERROR_ARMOR", {}),
     MOVEMENT: new MovementType("ERROR_MOVEMENT", {}),
@@ -495,9 +497,9 @@ TypeRegistry.prototype.getType = function(typeID, categoryID) {
 
 TypeRegistry.prototype.load = function(resources) {
     this.loadCategory(SCHEMA_TYPES, TypeRegistry.CATEGORY.SCHEMA);
-    this.loadCategory(resources.moraleTypes, TypeRegistry.CATEGORY.MORALE);
     this.loadCategory(resources.powerTypes, TypeRegistry.CATEGORY.POWER);
     this.loadCategory(resources.currencyTypes, TypeRegistry.CATEGORY.CURRENCY);
+    this.categories[TypeRegistry.CATEGORY.MORALE].loadTypes(resources.moraleTypes, MoraleType);
     this.categories[TypeRegistry.CATEGORY.ARMOR].loadTypes(resources.armorTypes, ArmorType);
     this.categories[TypeRegistry.CATEGORY.CLIMATE].loadTypes(resources.climateTypes, ClimateType);
     this.categories[TypeRegistry.CATEGORY.MOVEMENT].loadTypes(resources.movementTypes, MovementType);
@@ -555,3 +557,6 @@ TypeRegistry.prototype.getBuildingType = function(typeID) {
     return this.categories[TypeRegistry.CATEGORY.BUILDING].getType(typeID);
 }
 
+TypeRegistry.prototype.getMoraleType = function(typeID) {
+    return this.categories[TypeRegistry.CATEGORY.MORALE].getType(typeID);
+}

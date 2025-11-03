@@ -106,13 +106,16 @@ TeamManager.prototype.getFirstWinner = function() {
 }
 
 TeamManager.prototype.checkWinner = function() {
+    const NO_WINNER = 0;
+    const ONE_WINNER = 1;
+
     switch(this.activeTeams.length) {
-        case 0: {
+        case NO_WINNER: {
             this.isConcluded = true;
             this.events.emit(TeamManager.EVENT.DRAW);
             break;
         }
-        case 1: {
+        case ONE_WINNER: {
             this.isConcluded = true;
             this.events.emit(TeamManager.EVENT.TEAM_WON, this.activeTeams[0]);
             break;
