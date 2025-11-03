@@ -1,4 +1,11 @@
 {
+    "BLITZ": {
+        "name": "TRAIT_NAME_BLITZ",
+        "desc": "TRAIT_DESC_BLITZ",
+        "icon": null,
+        "moveDamage": {},
+        "armorDamage": {}
+    },
     "SHRAPNEL": {
         "name": "TRAIT_NAME_SHRAPNEL",
         "desc": "TRAIT_DESC_SHRAPNEL",
@@ -6,9 +13,9 @@
         "moveDamage": {},
         "armorDamage": {}
     },
-    "CLEAN_SHOT": {
-        "name": "TRAIT_NAME_CLEAN_SHOT",
-        "desc": "TRAIT_DESC_CLEAN_SHOT",
+    "CLEAR_SHOT": {
+        "name": "TRAIT_NAME_CLEAR_SHOT",
+        "desc": "TRAIT_DESC_CLEAR_SHOT",
         "icon": null,
         "moveDamage": {},
         "armorDamage": {}

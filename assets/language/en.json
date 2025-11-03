@@ -1,5 +1,6 @@
 {
-    "TRAIT_DESC_CLEAN_SHOT": "This unit can only fire in a straight line.",
+    "TRAIT_DESC_BLITZ": "This unit does +20% damage if it attacks first.",
+    "TRAIT_DESC_CLEAR_SHOT": "This unit can only fire in a straight line.",
     "TRAIT_DESC_ARMOR_PIERCE": "This unit ignores enemy armor.",
     "TRAIT_DESC_OVERHEAT": "This unit attacks reduce its HP by 10%.",
     "TRAIT_DESC_TRACKING": "This unit attacks any stealth units it finds.",

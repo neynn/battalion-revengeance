@@ -936,7 +936,7 @@ BattalionEntity.prototype.canTarget = function(gameContext, target) {
 
     //Streamblast and clean shot entities can only attack in a direct lane.
     if(!this.isAxisMeeting(target)) {
-        if(this.hasTrait(TypeRegistry.TRAIT_TYPE.STREAMBLAST) || this.hasTrait(TypeRegistry.TRAIT_TYPE.CLEAN_SHOT)) {
+        if(this.hasTrait(TypeRegistry.TRAIT_TYPE.STREAMBLAST) || this.hasTrait(TypeRegistry.TRAIT_TYPE.CLEAR_SHOT)) {
             return false;
         }
     }
@@ -1092,6 +1092,11 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, dam
             healthFactor = 1;
         }
     } else {
+        //Blitz factor.
+        if(this.hasTrait(TypeRegistry.TRAIT_TYPE.BLITZ)) {
+            damageAmplifier *= TRAIT_CONFIG.BLITZ_MULTIPLIER;
+        }
+
         //Schwerpunkt factor.
         if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SCHWERPUNKT) && targetMove === TypeRegistry.MOVEMENT_TYPE.FOOT) {
             damageAmplifier *= TRAIT_CONFIG.SCHWERPUNKT_MULTIPLIER;
