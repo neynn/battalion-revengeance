@@ -241,30 +241,30 @@ BattalionMap.prototype.getBuilding = function(targetX, targetY) {
     return null;
 }
 
-BattalionMap.prototype.addJammer = function(tileX, tileY, teamID, type) {
+BattalionMap.prototype.addJammer = function(tileX, tileY, teamID, flags) {
     const index = this.getIndex(tileX, tileY);
 
     if(index !== WorldMap.OUT_OF_BOUNDS) {
         const jammerField = this.jammerFields.get(index);
 
         if(jammerField) {
-            jammerField.addBlocker(teamID, type);
+            jammerField.addBlocker(teamID, flags);
         } else {
             const newField = new JammerField(tileX, tileY);
 
-            newField.addBlocker(teamID, type);
+            newField.addBlocker(teamID, flags);
 
             this.jammerFields.set(index, newField);
         }
     }
 }
 
-BattalionMap.prototype.removeJammer = function(tileX, tileY, teamID, type) {
+BattalionMap.prototype.removeJammer = function(tileX, tileY, teamID, flags) {
     const index = this.getIndex(tileX, tileY);
     const jammerField = this.jammerFields.get(index);
 
     if(jammerField) {
-        jammerField.removeBlocker(teamID, type);
+        jammerField.removeBlocker(teamID, flags);
 
         if(jammerField.isEmpty()) {
             this.jammerFields.delete(index);

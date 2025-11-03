@@ -1487,25 +1487,25 @@ BattalionEntity.prototype.getJammerFlags = function() {
 }
 
 BattalionEntity.prototype.placeJammer = function(gameContext) {
-    const jammerType = this.getJammerFlags();
+    const jammerFlags = this.getJammerFlags();
 
-    if(jammerType !== JammerField.FLAG.NONE) {
+    if(jammerFlags !== JammerField.FLAG.NONE) {
         const worldMap = gameContext.getActiveMap();
 
         worldMap.fill2DGraph(this.tileX, this.tileY, this.config.jammerRange, (tileX, tileY) => {
-            worldMap.addJammer(tileX, tileY, this.teamID, jammerType);
+            worldMap.addJammer(tileX, tileY, this.teamID, jammerFlags);
         });
     }
 }
 
 BattalionEntity.prototype.removeJammer = function(gameContext) {
-    const jammerType = this.getJammerFlags();
+    const jammerFlags = this.getJammerFlags();
 
-    if(jammerType !== JammerField.FLAG.NONE) {
+    if(jammerFlags !== JammerField.FLAG.NONE) {
         const worldMap = gameContext.getActiveMap();
 
         worldMap.fill2DGraph(this.tileX, this.tileY, this.config.jammerRange, (tileX, tileY) => {
-            worldMap.removeJammer(tileX, tileY, this.teamID, jammerType);
+            worldMap.removeJammer(tileX, tileY, this.teamID, jammerFlags);
         });
     }
 }
