@@ -1315,6 +1315,7 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, 
     const jammerFlags = this.getJammerFlags();
     const searchRange = this.config.jammerRange > 1 && jammerFlags !== JammerField.FLAG.NONE ? this.config.jammerRange : 1;
     const uncloakedEntities = [];
+    let isNeighborUncloaked = false;
 
     worldMap.fill2DGraph(targetX, targetY, searchRange, (tileX, tileY) => {
         const entityID = worldMap.getTopEntity(tileX, tileY);
@@ -1326,6 +1327,7 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, 
             if(distance === 1) {
                 if(!entity.isVisibleTo(gameContext, this.teamID)) {
                     uncloakedEntities.push(entity);
+                    isNeighborUncloaked = true;
                 }
             } else if(jammerFlags !== JammerField.FLAG.NONE) {
                 const uncloakFlags = entity.getUncloakFlags();
@@ -1338,6 +1340,11 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, 
             }
         }
     });
+
+    //Stealth units meet.
+    if(isNeighborUncloaked && this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+        uncloakedEntities.push(this);
+    }
 
     return uncloakedEntities;
 }

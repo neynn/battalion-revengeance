@@ -24,7 +24,7 @@
         "AMPAC": { "x": 8, "y": 0, "direction":"SOUTH", "type": "ampac", "owner": "PLAYER" },
         "TURRET": { "x": 9, "y": 0, "direction":"SOUTH", "type": "turret", "owner": "PLAYER" },
         "ENTWICKLUNG": { "x": 0, "y": 1, "direction":"SOUTH", "type": "entwicklung", "owner": "PLAYER" },
-        "STEALTH_TANK": { "x": 1, "y": 1, "stealth": false, "type": "stealth_tank", "owner": "PLAYER" },
+        "STEALTH_TANK": { "x": 1, "y": 1, "stealth": true, "type": "stealth_tank", "owner": "PLAYER" },
         "HEAVY_COMMANDO": { "x": 2, "y": 1, "type": "heavy_commando", "owner": "PLAYER" },
         "AYIN": { "x": 3, "y": 1, "type": "ayin", "owner": "PLAYER" },
         "GORLITZ": { "x": 4, "y": 1, "type": "gorlitz_tank", "owner": "PLAYER" },
