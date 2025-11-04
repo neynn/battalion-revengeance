@@ -37,7 +37,7 @@ Language.prototype.loadFiles = function(onResponse) {
     }
 
     if(this.state === Language.STATE.LOADING) {
-        onResponse(Language.LOAD_RESPONSE.ERROR);
+        onResponse(Language.LOAD_RESPONSE.LOADING);
     }
 
     const requests = [];

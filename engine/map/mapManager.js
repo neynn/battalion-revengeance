@@ -24,28 +24,6 @@ MapManager.EVENT = {
     MAP_DISABLE: "MAP_DISABLE"
 };
 
-MapManager.prototype.onLanguageUpdate = async function(gameContext) {
-    if(!this.activeMap) {
-        return;
-    }
-
-    const { language } = gameContext;
-    const currentLanguage = language.getCurrent();
-    const mapConfig = this.activeMap.getConfig();
-
-    if(mapConfig) {
-        const mapTranslations = await this.loadMapTranslations(mapConfig, currentLanguage);
-
-        if(mapTranslations !== null) {
-            const mapID = this.activeMap.getID();
-
-            currentLanguage.registerMap(mapID, mapTranslations);
-
-            this.activeMap.onLanguageUpdate(currentLanguage, mapTranslations);
-        }
-    }
-}
-
 MapManager.prototype.loadMapTranslations = function(mapType, languageObject) {
     const { directory, language } = mapType;
     const languageID = languageObject.getID();

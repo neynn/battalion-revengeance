@@ -67,7 +67,7 @@ BattalionContext.prototype.init = function(resources) {
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.UNCLOAK, new UncloakAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.END_TURN, new EndTurnAction());
 
-    this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);
+    this.language.selectLanguage(this, LanguageHandler.LANGUAGE.ENGLISH);
     this.portraitHandler.load(resources.portraits);
 
     this.states.addState(BattalionContext.STATE.MAIN_MENU, new MainMenuState());

@@ -49,10 +49,6 @@ export const GameContext = function() {
         this.renderer.onMapSizeUpdate(width, height);
     }, { permanent: true });
 
-    this.language.events.on(LanguageHandler.EVENT.LANGUAGE_CHANGE, (language) => {
-        this.world.mapManager.onLanguageUpdate(this);
-    }, { permanent: true });
-
     window.addEventListener("resize", () => this.queueResize());
 
     this.addDebug();

@@ -1,12 +1,8 @@
-import { EventEmitter } from "../events/eventEmitter.js";
 import { Language } from "./language.js";
 
 export const LanguageHandler = function() {
     this.languages = new Map();
     this.currentLanguage = LanguageHandler.STUB_LANGUAGE;
-
-    this.events = new EventEmitter();
-    this.events.register(LanguageHandler.EVENT.LANGUAGE_CHANGE);
 }
 
 LanguageHandler.STUB_LANGUAGE = new Language("MISSING", []);
@@ -20,10 +16,6 @@ LanguageHandler.LANGUAGE = {
     ENGLISH: "en-US",
     GERMAN: "de-DE",
     SPANISH: "es-ES"
-};
-
-LanguageHandler.EVENT = {
-    LANGUAGE_CHANGE: "LANGUAGE_CHANGE"
 };
 
 LanguageHandler.IS_STRICT = 1;
@@ -50,19 +42,43 @@ LanguageHandler.prototype.clear = function() {
 }
 
 LanguageHandler.prototype.exit = function() {
-    this.events.muteAll();
     this.languages.forEach(language => language.clearMap());
 }
 
-LanguageHandler.prototype.selectLanguage = function(languageID) {
+LanguageHandler.prototype.onLanguageSelect = async function(gameContext) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+
+    if(worldMap) {
+        const config = worldMap.getConfig();
+
+        if(config) {
+            const translations = await mapManager.loadMapTranslations(config, this.currentLanguage);
+
+            if(translations !== null) {
+                const mapID = worldMap.getID();
+
+                this.currentLanguage.registerMap(mapID, translations);
+
+                worldMap.onLanguageUpdate(this.currentLanguage, translations);
+            }
+        }
+    }
+}
+
+LanguageHandler.prototype.selectLanguage = function(gameContext, languageID) {
     if(this.currentLanguage.getID() !== languageID) {
         const language = this.languages.get(languageID);
 
         if(language) {
             language.loadFiles(response => {
-                if(response === Language.LOAD_RESPONSE.SUCCESS) {
-                    this.currentLanguage = language;
-                    this.events.emit(LanguageHandler.EVENT.LANGUAGE_CHANGE, language);
+                switch(response) {
+                    case Language.LOAD_RESPONSE.SUCCESS: {
+                        this.currentLanguage = language;
+                        this.onLanguageSelect(gameContext);
+                        break;
+                    }
                 }
             });
         }
