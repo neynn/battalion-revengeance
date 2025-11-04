@@ -49,8 +49,8 @@ export const GameContext = function() {
         this.renderer.onMapSizeUpdate(width, height);
     }, { permanent: true });
 
-    this.language.events.on(LanguageHandler.EVENT.LANGUAGE_CHANGE, (languageID) => {
-        this.world.mapManager.onLanguageUpdate(this, languageID);
+    this.language.events.on(LanguageHandler.EVENT.LANGUAGE_CHANGE, (language) => {
+        this.world.mapManager.onLanguageUpdate(this);
     }, { permanent: true });
 
     window.addEventListener("resize", () => this.queueResize());
@@ -119,6 +119,7 @@ GameContext.prototype.loadResources = function(resources) {
     this.world.mapManager.load(resources.maps);
     this.world.entityManager.load(resources.traits, resources.archetypes);
     this.world.turnManager.load(resources.actors);
+    this.language.load(resources.languages);
 }
 
 GameContext.prototype.addDebug = function() {

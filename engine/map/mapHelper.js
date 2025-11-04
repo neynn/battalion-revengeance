@@ -39,20 +39,18 @@ export const MapHelper = {
 
         return layer;
     },
-    enableMap: function(gameContext, worldMap, mapLanguage) {
+    enableMap: function(gameContext, worldMap, mapTranslations) {
         if(worldMap) {
             const { world, language } = gameContext;
             const { mapManager } = world;
-            const mapID = worldMap.getID();
             const currentLanguage = language.getCurrent();
+            const mapID = worldMap.getID();
 
-            language.registerMap(mapID, mapLanguage);
-            language.selectMap(mapID);
+            currentLanguage.registerMap(mapID, mapTranslations);
+            currentLanguage.selectMap(mapID);
 
-            if(currentLanguage) {
-                worldMap.onLanguageUpdate(currentLanguage, mapLanguage);
-            }
-
+            worldMap.onLanguageUpdate(currentLanguage, mapTranslations);
+            
             mapManager.enableMap(mapID);
         }
     },
@@ -64,17 +62,13 @@ export const MapHelper = {
         let mapData = null;
         let mapLanguage = null;
 
-        if(currentLanguage) {
-            const response = await Promise.all([
-                mapManager.fetchMapData(typeID),
-                mapManager.fetchMapTranslations(typeID, currentLanguage)
-            ]);
+        const response = await Promise.all([
+            mapManager.fetchMapData(typeID),
+            mapManager.fetchMapTranslations(typeID, currentLanguage)
+        ]);
 
-            mapData = response[0];
-            mapLanguage = response[1];
-        } else {
-            mapData = await mapManager.fetchMapData(typeID);
-        }
+        mapData = response[0];
+        mapLanguage = response[1];
 
         const worldMap = mapManager.createMap((mapID, mapType) => {
             const { width, height, data } = mapData;

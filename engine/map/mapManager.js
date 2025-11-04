@@ -24,23 +24,49 @@ MapManager.EVENT = {
     MAP_DISABLE: "MAP_DISABLE"
 };
 
-MapManager.prototype.onLanguageUpdate = async function(gameContext, languageID) {
-    if(this.activeMap) {
-        const { language } = gameContext;
-        const mapConfig = this.activeMap.getConfig();
+MapManager.prototype.onLanguageUpdate = async function(gameContext) {
+    if(!this.activeMap) {
+        return;
+    }
 
-        if(mapConfig) {
-            const mapLanguage = await this.loadMapTranslations(mapConfig, languageID);
+    const { language } = gameContext;
+    const currentLanguage = language.getCurrent();
+    const mapConfig = this.activeMap.getConfig();
 
-            if(mapLanguage) {
-                const mapID = this.activeMap.getID();
+    if(mapConfig) {
+        const mapTranslations = await this.loadMapTranslations(mapConfig, currentLanguage);
 
-                language.registerMap(mapID, mapLanguage);
+        if(mapTranslations !== null) {
+            const mapID = this.activeMap.getID();
 
-                this.activeMap.onLanguageUpdate(languageID, mapLanguage);
-            }
+            currentLanguage.registerMap(mapID, mapTranslations);
+
+            this.activeMap.onLanguageUpdate(currentLanguage, mapTranslations);
         }
     }
+}
+
+MapManager.prototype.loadMapTranslations = function(mapType, languageObject) {
+    const { directory, language } = mapType;
+    const languageID = languageObject.getID();
+
+    if(language && language[languageID]) {
+        const filePath = PathHandler.getPath(directory, language[languageID]);
+
+        return PathHandler.promiseJSON(filePath);
+    }
+
+    return Promise.resolve(null);
+}
+
+MapManager.prototype.fetchMapTranslations = function(typeID, language) {
+    const mapType = this.getMapType(typeID);
+
+    if(mapType) {
+        return this.loadMapTranslations(mapType, language);
+    }
+
+    return Promise.resolve(null);
 }
 
 MapManager.prototype.createCustomMap = function(onCreate, externalID) {
@@ -107,28 +133,6 @@ MapManager.prototype.forAllMaps = function(onCall) {
     if(typeof onCall === "function") {
         this.maps.forEach((map) => onCall(map))
     }
-}
-
-MapManager.prototype.loadMapTranslations = function(mapType, languageID) {
-    const { directory, language } = mapType;
-
-    if(language !== undefined && language[languageID] !== undefined) {
-        const filePath = PathHandler.getPath(directory, language[languageID]);
-
-        return PathHandler.promiseJSON(filePath);
-    }
-
-    return Promise.resolve(null);
-}
-
-MapManager.prototype.fetchMapTranslations = function(typeID, languageID) {
-    const mapType = this.getMapType(typeID);
-
-    if(mapType) {
-        return this.loadMapTranslations(mapType, languageID);
-    }
-
-    return Promise.resolve(null);
 }
 
 MapManager.prototype.fetchMapData = function(mapID) {
