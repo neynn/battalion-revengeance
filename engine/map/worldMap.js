@@ -26,9 +26,7 @@ WorldMap.prototype.setConfig = function(config) {
     }
 }
 
-WorldMap.prototype.onLanguageUpdate = function(language, translations) {
-    console.log(language, translations)
-}
+WorldMap.prototype.onLanguageUpdate = function(language, translations) {}
 
 WorldMap.prototype.hasFlag = function(flag) {
     return (this.flags & flag) !== 0;
