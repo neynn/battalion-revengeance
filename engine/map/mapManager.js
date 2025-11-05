@@ -1,14 +1,12 @@
 import { EventEmitter } from "../events/eventEmitter.js";
-import { PathHandler } from "../resources/pathHandler.js";
 import { Logger } from "../logger.js";
+import { MapSource } from "./mapSource.js";
 
 export const MapManager = function() {
-    this.mapTypes = {};
+    this.mapSources = new Map();
     this.maps = new Map();
     this.nextID = 0;
     this.activeMap = null;
-    this.mapFiles = new Map();
-    this.cacheEnabled = true;
 
     this.events = new EventEmitter();
     this.events.register(MapManager.EVENT.MAP_CREATE);
@@ -17,6 +15,8 @@ export const MapManager = function() {
     this.events.register(MapManager.EVENT.MAP_DISABLE);
 }
 
+MapManager.EMPTY_SOURCE = new MapSource("::NO_SOURCE", {});
+
 MapManager.EVENT = {
     MAP_CREATE: "MAP_CREATE",
     MAP_DELETE: "MAP_DELETE",
@@ -24,27 +24,31 @@ MapManager.EVENT = {
     MAP_DISABLE: "MAP_DISABLE"
 };
 
-MapManager.prototype.loadMapTranslations = function(mapType, languageObject) {
-    const { directory, language } = mapType;
-    const languageID = languageObject.getID();
+MapManager.prototype.onLanguageChange = async function(nextLanguage) {
+    if(this.activeMap) {
+        const mapID = this.activeMap.getID();
+        const source = this.activeMap.getSource();
+        const translations = await source.promiseTranslations(nextLanguage.getID());
 
-    if(language && language[languageID]) {
-        const filePath = PathHandler.getPath(directory, language[languageID]);
+        if(translations !== null) {
+            nextLanguage.registerMap(mapID, translations);
+            nextLanguage.selectMap(mapID);
 
-        return PathHandler.promiseJSON(filePath);
+            this.activeMap.onLanguageUpdate(nextLanguage, translations);
+        }
     }
-
-    return Promise.resolve(null);
 }
 
-MapManager.prototype.fetchMapTranslations = function(typeID, language) {
-    const mapType = this.getMapType(typeID);
+MapManager.prototype.fetchMapTranslations = function(sourceID, languageID) {
+    return this.getMapSource(sourceID).promiseTranslations(languageID);
+}
 
-    if(mapType) {
-        return this.loadMapTranslations(mapType, language);
-    }
+MapManager.prototype.fetchMapData = function(sourceID) {
+    return this.getMapSource(sourceID).promiseFile();
+}
 
-    return Promise.resolve(null);
+MapManager.prototype.getNextID = function() {
+    return this.nextID++;
 }
 
 MapManager.prototype.createCustomMap = function(onCreate, externalID) {
@@ -64,32 +68,24 @@ MapManager.prototype.createCustomMap = function(onCreate, externalID) {
     return null;
 }
 
-MapManager.prototype.createMap = function(onCreate, typeID, externalID) {
+MapManager.prototype.createMap = function(onCreate, sourceID, externalID) {
     const mapID = externalID !== undefined ? externalID : this.nextID++;
 
     if(!this.maps.has(mapID)) {
-        const mapType = this.getMapType(typeID);
+        const mapSource = this.getMapSource(sourceID);
+        const worldMap = onCreate(mapID);
 
-        if(mapType) {
-            const worldMap = onCreate(mapID, mapType);
+        if(worldMap) {
+            worldMap.setSource(mapSource);
 
-            if(worldMap) {
-                this.maps.set(mapID, worldMap);
-                this.events.emit(MapManager.EVENT.MAP_CREATE, mapID, worldMap);
+            this.maps.set(mapID, worldMap);
+            this.events.emit(MapManager.EVENT.MAP_CREATE, mapID, worldMap);
 
-                return worldMap;
-            }
+            return worldMap;
         }
     }
 
     return null;
-}
-
-MapManager.prototype.addMap = function(mapID, worldMap) {
-    if(!this.maps.has(mapID)) {
-        this.maps.set(mapID, worldMap);
-        this.events.emit(MapManager.EVENT.MAP_CREATE, mapID, worldMap);   
-    }
 }
 
 MapManager.prototype.update = function(gameContext) {
@@ -98,46 +94,23 @@ MapManager.prototype.update = function(gameContext) {
     }
 }
 
-MapManager.prototype.load = function(mapTypes) {
-    if(typeof mapTypes !== "object") {
-        Logger.log(Logger.CODE.ENGINE_WARN, "MapTypes cannot be undefined!", "MapManager.prototype.load", null);
+MapManager.prototype.load = function(mapSources) {
+    if(typeof mapSources !== "object") {
         return;
     }
 
-    this.mapTypes = mapTypes;
+    for(const sourceID in mapSources) {
+        const source = mapSources[sourceID];
+        const mapSource = new MapSource(sourceID, source);
+
+        this.mapSources.set(sourceID, mapSource);
+    }
 }
 
 MapManager.prototype.forAllMaps = function(onCall) {
     if(typeof onCall === "function") {
         this.maps.forEach((map) => onCall(map))
     }
-}
-
-MapManager.prototype.fetchMapData = function(mapID) {
-    const mapType = this.getMapType(mapID);
-
-    if(mapType) {
-        if(this.cacheEnabled) {
-            const cachedMap = this.mapFiles.get(mapID);
-
-            if(cachedMap) {
-                return Promise.resolve(cachedMap);
-            }
-        }
-
-        const { directory, source } = mapType;
-        const filePath = PathHandler.getPath(directory, source);
-
-        return PathHandler.promiseJSON(filePath).then(mapData => {
-            if(this.cacheEnabled && mapData) {
-                this.mapFiles.set(mapID, mapData);
-            } 
-
-            return mapData;
-        });
-    }
-
-    return Promise.resolve(null);
 }
 
 MapManager.prototype.enableMap = function(mapID) {
@@ -159,15 +132,14 @@ MapManager.prototype.getActiveMap = function() {
     return this.activeMap;
 }
 
-MapManager.prototype.getMapType = function(mapID) {
-    const mapType = this.mapTypes[mapID];
+MapManager.prototype.getMapSource = function(sourceID) {
+    const mapSource = this.mapSources.get(sourceID)
 
-    if(!mapType) {
-        Logger.log(Logger.CODE.ENGINE_WARN, "MapType does not exist!", "MapManager.prototype.getMapType", { mapID });
-        return null;
+    if(!mapSource) {
+        return MapManager.EMPTY_SOURCE;
     }
 
-    return mapType;
+    return mapSource;
 }
 
 MapManager.prototype.deleteMap = function(mapID) {

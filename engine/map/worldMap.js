@@ -2,10 +2,11 @@ import { FloodFill } from "../pathfinders/floodFill.js";
 import { Autotiler } from "../tile/autotiler.js";
 import { TileManager } from "../tile/tileManager.js";
 import { MapHelper } from "./mapHelper.js";
+import { MapManager } from "./mapManager.js";
 
 export const WorldMap = function(id) {
     this.id = id;
-    this.config = null;
+    this.source = MapManager.EMPTY_SOURCE;
     this.width = 0;
     this.height = 0;
     this.flags = 0;
@@ -16,14 +17,12 @@ export const WorldMap = function(id) {
 
 WorldMap.OUT_OF_BOUNDS = -1;
 
-WorldMap.prototype.getConfig = function() {
-    return this.config;
+WorldMap.prototype.setSource = function(source) {
+    this.source = source;
 }
 
-WorldMap.prototype.setConfig = function(config) {
-    if(config !== undefined) {
-        this.config = config;
-    }
+WorldMap.prototype.getSource = function() {
+    return this.source;
 }
 
 WorldMap.prototype.onLanguageUpdate = function(language, translations) {}

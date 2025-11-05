@@ -15,7 +15,7 @@ PlayState.prototype.onEnter = async function(gameContext, stateMachine, transiti
     const { router } = client;
     //const context = CameraHelper.createPlayCamera(gameContext);
 
-    MapSpawner.createMapByID(gameContext, "presus").then(map => {});
+    MapSpawner.createStoryMap(gameContext, "presus");
 
     router.on("ESCAPE", () => stateMachine.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));
 

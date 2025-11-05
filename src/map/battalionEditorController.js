@@ -91,7 +91,7 @@ BattaltionEditorController.prototype.createMap = function(gameContext) {
     const createNew = confirm("This will create and load a brand new map! Proceed?");
 
     if(createNew) {
-        const worldMap = MapSpawner.createEmptyEditMap(gameContext, this.defaultMap);
+        const worldMap = MapSpawner.createEmptyMap(gameContext, this.defaultMap);
 
         this.mapID = worldMap.getID();
     }
@@ -99,7 +99,7 @@ BattaltionEditorController.prototype.createMap = function(gameContext) {
 
 BattaltionEditorController.prototype.loadMap = async function(gameContext) {
     const mapID = prompt("MAP-ID?");
-    const worldMap = await MapSpawner.createEditMapByID(gameContext, mapID);
+    const worldMap = await MapSpawner.createEditorMap(gameContext, mapID);
 
     if(worldMap) {
         this.mapID = worldMap.getID();

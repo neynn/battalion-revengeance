@@ -39,85 +39,66 @@ export const MapHelper = {
 
         return layer;
     },
-    enableMap: function(gameContext, worldMap, mapTranslations) {
-        if(worldMap) {
-            const { world, language } = gameContext;
-            const { mapManager } = world;
-            const currentLanguage = language.getCurrent();
-            const mapID = worldMap.getID();
-
-            currentLanguage.registerMap(mapID, mapTranslations);
-            currentLanguage.selectMap(mapID);
-
-            worldMap.onLanguageUpdate(currentLanguage, mapTranslations);
-            
-            mapManager.enableMap(mapID);
-        }
-    },
-    createMapByID: async function(gameContext, typeID, onCreate) {
+    loadRegisteredMap: async function(gameContext, typeID, onCreate) {
         const { world, language } = gameContext;
         const { mapManager } = world;
         const currentLanguage = language.getCurrent();
+        const languageID = currentLanguage.getID();
 
-        let mapData = null;
-        let mapLanguage = null;
-
-        const response = await Promise.all([
+        const [mapData, mapTranslations] = await Promise.all([
             mapManager.fetchMapData(typeID),
-            mapManager.fetchMapTranslations(typeID, currentLanguage)
+            mapManager.fetchMapTranslations(typeID, languageID)
         ]);
 
-        mapData = response[0];
-        mapLanguage = response[1];
+        if(mapData === null) {
+            return Promise.resolve(null);
+        }
 
-        const worldMap = mapManager.createMap((mapID, mapType) => {
-            const { width, height, data } = mapData;
-            const mapObject = onCreate(mapID, mapData);
+        const { width, height, data } = mapData;
+        const worldMap = mapManager.createMap((id) => {
+            const mapObject = onCreate(id, mapData);
 
-            mapObject.setConfig(mapType);
             mapObject.resize(width, height);
             mapObject.loadLayers(gameContext, data);
 
             return mapObject;
         }, typeID);
 
-        MapHelper.enableMap(gameContext, worldMap, mapLanguage);
+        if(worldMap) {
+            const mapID = worldMap.getID();
+
+            if(mapTranslations !== null) {
+                currentLanguage.registerMap(mapID, mapTranslations);
+                currentLanguage.selectMap(mapID);
+                worldMap.onLanguageUpdate(currentLanguage, mapTranslations);
+            }
+
+            mapManager.enableMap(mapID);
+        }
 
         return worldMap;
     },
-    createMapByData: function(gameContext, mapData, mapLanguage, onCreate) {
+    loadCustomMap: function(gameContext, mapData, onCreate) {
         const { world } = gameContext;
         const { mapManager } = world;
 
-        const worldMap = mapManager.createCustomMap((mapID) => {
+        let mapID = -1;
+
+        const worldMap = mapManager.createCustomMap((id) => {
             const { width, height, data } = mapData;
-            const mapObject = onCreate(mapID);
-
-            mapObject.resize(width, height);
-            mapObject.loadLayers(gameContext, data);
-
-            return mapObject;
-        });
-
-        MapHelper.enableMap(gameContext, worldMap, mapLanguage);
-
-        return worldMap;
-    },
-    createEmptyMap: function(gameContext, mapData, onCreate) {
-        const { world } = gameContext;
-        const { mapManager } = world;
-
-        const worldMap = mapManager.createCustomMap((mapID) => {
-            const { width, height, data } = mapData;
-            const mapObject = onCreate(mapID);
+            const mapObject = onCreate(id);
 
             mapObject.resize(width, height);
             mapObject.loadLayersEmpty(gameContext, data);
 
+            mapID = id;
+    
             return mapObject;
         });
 
-        MapHelper.enableMap(gameContext, worldMap, {});
+        if(worldMap) {
+            mapManager.enableMap(mapID);
+        }
 
         return worldMap;
     }

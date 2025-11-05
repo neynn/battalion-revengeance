@@ -1,7 +1,5 @@
 import { MapHelper } from "../../engine/map/mapHelper.js";
-import { ActionHelper } from "../action/actionHelper.js";
 import { ActorSpawner } from "../actors/actorSpawner.js";
-import { DialogueHandler } from "../dialogue/dialogueHandler.js";
 import { EntitySpawner } from "../entity/entitySpawner.js";
 import { TeamSpawner } from "../team/teamSpawner.js";
 import { BattalionMap } from "./battalionMap.js";
@@ -93,30 +91,25 @@ export const MapSpawner = {
         teamManager.updateOrder(gameContext);
         //ActionHelper.createRegularDialogue(gameContext, DialogueHandler.TYPE.PRELOGUE);
     },
-    createMapByID: function(gameContext, typeID) {
+    createStoryMap: async function(gameContext, typeID) {
         let loadedData = null;
 
-        return MapHelper.createMapByID(gameContext, typeID, (mapID, mapData) => {
-            loadedData = mapData;
-            return new BattalionMap(mapID);
+        return MapHelper.loadRegisteredMap(gameContext, typeID, (id, data) => {
+            loadedData = data;
+
+            return new BattalionMap(id);
         }).then(map => {
-            MapSpawner.initMap(gameContext, map, loadedData);
+            if(loadedData) {
+                MapSpawner.initMap(gameContext, map, loadedData);
+            }
+
             return map;
         });
     },
+    createEditorMap: function(gameContext, typeID) {
+        return MapHelper.loadRegisteredMap(gameContext, typeID, (id, mapData) => new BattalionMap(id));
+    },
     createEmptyMap: function(gameContext, mapData) {
-        const worldMap = MapHelper.createEmptyMap(gameContext, mapData, (mapID) => new BattalionMap(mapID));
-
-        if(worldMap) {
-            MapSpawner.initMap(gameContext, worldMap, mapData);
-        }
-
-        return worldMap;
-    },
-    createEditMapByID: function(gameContext, typeID) {
-        return MapHelper.createMapByID(gameContext, typeID, (mapID, mapData) => new BattalionMap(mapID));
-    },
-    createEmptyEditMap: function(gameContext, mapData) {
-        return MapHelper.createEmptyMap(gameContext, mapData, (mapID) => new BattalionMap(mapID));
+        return MapHelper.loadCustomMap(gameContext, mapData, (id) => new BattalionMap(id));
     }
 }

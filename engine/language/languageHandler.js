@@ -45,29 +45,10 @@ LanguageHandler.prototype.exit = function() {
     this.languages.forEach(language => language.clearMap());
 }
 
-LanguageHandler.prototype.onLanguageSelect = async function(gameContext) {
+LanguageHandler.prototype.selectLanguage = function(gameContext, languageID) {
     const { world } = gameContext;
     const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
 
-    if(worldMap) {
-        const config = worldMap.getConfig();
-
-        if(config) {
-            const translations = await mapManager.loadMapTranslations(config, this.currentLanguage);
-
-            if(translations !== null) {
-                const mapID = worldMap.getID();
-
-                this.currentLanguage.registerMap(mapID, translations);
-
-                worldMap.onLanguageUpdate(this.currentLanguage, translations);
-            }
-        }
-    }
-}
-
-LanguageHandler.prototype.selectLanguage = function(gameContext, languageID) {
     if(this.currentLanguage.getID() !== languageID) {
         const language = this.languages.get(languageID);
 
@@ -76,7 +57,8 @@ LanguageHandler.prototype.selectLanguage = function(gameContext, languageID) {
                 switch(response) {
                     case Language.LOAD_RESPONSE.SUCCESS: {
                         this.currentLanguage = language;
-                        this.onLanguageSelect(gameContext);
+
+                        mapManager.onLanguageChange(this.currentLanguage);
                         break;
                     }
                 }
