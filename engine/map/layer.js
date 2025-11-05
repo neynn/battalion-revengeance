@@ -3,19 +3,43 @@ export const Layer = function(buffer, threshold) {
     this.threshold = threshold;
     this.alpha = 1;
     this.fillValue = 0;
+    this.isDrawable = false;
+    this.evaluate();
 }
 
 Layer.TYPE = {
-    BIT_8: 0,
-    BIT_16: 1,
-    BIT_32: 2
+    BIT_0: 0,
+    BIT_8: 1,
+    BIT_16: 2,
+    BIT_32: 3
 };
 
 Layer.THRESHOLD = {
+    BIT_0: -1,
     BIT_8: 255,
     BIT_16: 65535,
     BIT_32: 4294967295
 };
+
+Layer.getTypeFor = function(maxValue) {
+    if(maxValue <= Layer.THRESHOLD.BIT_8) {
+        return Layer.TYPE.BIT_8;
+    } else if(maxValue <= Layer.THRESHOLD.BIT_16) {
+        return Layer.TYPE.BIT_16;
+    } else {
+        return Layer.TYPE.BIT_32;
+    }
+}
+
+Layer.create = function(size, type) {
+    switch(type) {
+        case Layer.TYPE.BIT_0: return new Layer(new Uint8Array(size), Layer.THRESHOLD.BIT_0);
+        case Layer.TYPE.BIT_8: return new Layer(new Uint8Array(size), Layer.THRESHOLD.BIT_8);
+        case Layer.TYPE.BIT_16: return new Layer(new Uint16Array(size), Layer.THRESHOLD.BIT_16);
+        case Layer.TYPE.BIT_32: return new Layer(new Uint32Array(size), Layer.THRESHOLD.BIT_32);
+        default: return new Layer(new Uint32Array(size), Layer.THRESHOLD.BIT_32);
+    }
+}
 
 Layer.prototype.clear = function() {
     const length = this.buffer.length;
@@ -37,17 +61,31 @@ Layer.prototype.fill = function(id) {
     }
 }
 
+Layer.prototype.evaluate = function() {
+    if(this.alpha > 0 && this.threshold !== Layer.THRESHOLD.BIT_0 && this.buffer.length !== 0) {
+        this.isDrawable = true;
+    } else {
+        this.isDrawable = false;
+    }
+}
+
 Layer.prototype.setAlpha = function(alpha = 0) {
-    if(alpha < 0) {
+    if(alpha <= 0) {
         this.alpha = 0;
     } else if(alpha > 1) {
         this.alpha = 1;
     } else {
         this.alpha = alpha;
     }
+
+    this.evaluate();
 }
 
 Layer.prototype.resize = function(oldWidth, oldHeight, newWidth, newHeight) {
+    if(this.threshold === Layer.THRESHOLD.BIT_0) {
+        return;
+    }
+
     const fill = this.fillValue;
     const layerSize = newWidth * newHeight;
     const ArrayType = this.buffer.constructor;
@@ -75,6 +113,7 @@ Layer.prototype.resize = function(oldWidth, oldHeight, newWidth, newHeight) {
     }
 
     this.buffer = newBuffer;
+    this.evaluate();
 }
 
 Layer.prototype.decode = function(encodedLayer) {

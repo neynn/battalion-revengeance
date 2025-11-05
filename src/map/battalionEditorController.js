@@ -18,11 +18,11 @@ export const BattaltionEditorController = function(mapEditor) {
         "width": 20,
         "height": 20,
         "data": {
-            [BattalionMap.LAYER.GROUND]: { "fill": 1 },
-            [BattalionMap.LAYER.DECORATION]: { "fill": 0 },
-            [BattalionMap.LAYER.CLOUD]: { "fill": 0 },
-            [BattalionMap.LAYER.FLAG]: { "fill": 0 },
-            [BattalionMap.LAYER.TEAM]: { "fill": 0 }
+            [BattalionMap.LAYER_NAME.GROUND]: { "fill": 1 },
+            [BattalionMap.LAYER_NAME.DECORATION]: { "fill": 0 },
+            [BattalionMap.LAYER_NAME.CLOUD]: { "fill": 0 },
+            [BattalionMap.LAYER_NAME.FLAG]: { "fill": 0 },
+            [BattalionMap.LAYER_NAME.TEAM]: { "fill": 0 }
         }
     };
 

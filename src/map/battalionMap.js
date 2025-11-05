@@ -5,25 +5,38 @@ import { TileType } from "../type/parsed/tileType.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { JammerField } from "./jammerField.js";
 
-export const BattalionMap = function(id) {
-    WorldMap.call(this, id);
+export const BattalionMap = function(id, width, height) {
+    WorldMap.call(this, id, width, height);
 
-    this.createLayer(BattalionMap.LAYER.FLAG, Layer.TYPE.BIT_8);
-    this.createLayer(BattalionMap.LAYER.TEAM, Layer.TYPE.BIT_8);
     this.globalClimate = TypeRegistry.CLIMATE_TYPE.NONE;
     this.climate = TypeRegistry.CLIMATE_TYPE.NONE;
     this.localization = [];
     this.buildings = [];
     this.jammerFields = new Map();
     this.music = null;
+    this.layers = [
+        this.createLayer(Layer.TYPE.BIT_16),
+        this.createLayer(Layer.TYPE.BIT_16),
+        this.createLayer(Layer.TYPE.BIT_16),
+        this.createLayer(Layer.TYPE.BIT_8),
+        this.createLayer(Layer.TYPE.BIT_8)
+    ];
 }
 
+BattalionMap.LAYER_NAME = {
+    GROUND: "GROUND",
+    DECORATION: "DECORATION",
+    CLOUD: "CLOUD",
+    FLAG: "FLAG",
+    TEAM: "TEAM"
+};
+
 BattalionMap.LAYER = {
-    GROUND: "ground",
-    DECORATION: "decoration",
-    CLOUD: "cloud",
-    FLAG: "flag",
-    TEAM: "team"
+    GROUND: 0,
+    DECORATION: 1,
+    CLOUD: 2,
+    FLAG: 3,
+    TEAM: 4
 };
 
 BattalionMap.STUB_JAMMER = new JammerField(-1, -1);
@@ -281,4 +294,43 @@ BattalionMap.prototype.getJammer = function(tileX, tileY) {
     }
 
     return jammerField;
+}
+
+BattalionMap.prototype.loadLayersEmpty = function(layerData) {
+    for(const layerID in layerData) {
+        const { fill } = layerData[layerID];
+        const index = BattalionMap.LAYER[layerID];
+
+        if(index !== undefined) {
+            this.getLayer(index).fill(fill);
+        } else {
+            console.error(`Unknown layer! ${layerID}`);
+        }
+    }
+}
+
+BattalionMap.prototype.loadLayers = function(layerData) {
+    for(const layerID in layerData) {
+        const data = layerData[layerID];
+        const index = BattalionMap.LAYER[layerID];
+
+        if(index !== undefined) {
+            this.getLayer(index).decode(data);
+        } else {
+            console.error(`Unknown layer! ${layerID}`);
+        }
+    }
+}
+
+BattalionMap.prototype.saveLayers = function() {
+    const layers = [];
+
+    for(const name in BattalionMap.LAYER) {
+        const index = BattalionMap.LAYER[name];
+        const layer = this.getLayer(index);
+
+        layers.push(`"${name}": [${layer.encode()}]`);
+    }
+
+    return layers;
 }

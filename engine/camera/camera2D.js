@@ -142,9 +142,9 @@ Camera2D.prototype.drawOverlay = function(tileManager, context, overlay) {
 }
 
 Camera2D.prototype.drawLayer = function(tileManager, display, layer) {
-    const { alpha, buffer } = layer;
+    const { isDrawable, alpha, buffer } = layer;
     
-    if(alpha > 0) {
+    if(isDrawable) {
         const { context } = display;
         const previousAlpha = context.globalAlpha;
 

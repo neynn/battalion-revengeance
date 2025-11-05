@@ -95,9 +95,10 @@ export const MapSpawner = {
         let loadedData = null;
 
         return MapHelper.loadRegisteredMap(gameContext, typeID, (id, data) => {
+            const { width, height } = data;
             loadedData = data;
 
-            return new BattalionMap(id);
+            return new BattalionMap(id, width, height);
         }).then(map => {
             if(loadedData) {
                 MapSpawner.initMap(gameContext, map, loadedData);
@@ -106,10 +107,24 @@ export const MapSpawner = {
             return map;
         });
     },
+    createCustomMap: function(gameContext, mapData) {
+        const { width, height } = mapData;
+        const worldMap = MapHelper.loadCustomMap(gameContext, mapData, (id) => new BattalionMap(id, width, height));
+
+        if(worldMap) {
+            MapSpawner.initMap(gameContext, worldMap, mapData);
+        }
+    },
     createEditorMap: function(gameContext, typeID) {
-        return MapHelper.loadRegisteredMap(gameContext, typeID, (id, mapData) => new BattalionMap(id));
+        return MapHelper.loadRegisteredMap(gameContext, typeID, (id, mapData) => {
+            const { width, height } = mapData;
+
+            return new BattalionMap(id, width, height);
+        });
     },
     createEmptyMap: function(gameContext, mapData) {
-        return MapHelper.loadCustomMap(gameContext, mapData, (id) => new BattalionMap(id));
+        const { width, height } = mapData;
+        
+        return MapHelper.loadEmptyMap(gameContext, mapData, (id) => new BattalionMap(id, width, height));
     }
 }
