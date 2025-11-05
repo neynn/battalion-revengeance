@@ -37,7 +37,6 @@ SelectState.prototype.selectEntity = function(gameContext, stateMachine, entity)
     this.entity.mGetNodeMap(gameContext, this.nodeMap);
 
     player.addNodeMapRender(this.nodeMap);
-    player.showJammer(gameContext, entity);
 
     this.onTileChange(gameContext, stateMachine, this.entity.tileX, this.entity.tileY);
 }
@@ -150,12 +149,14 @@ SelectState.prototype.setOptimalAttackPath = function(gameContext, entity) {
 }
 
 SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, tileY) {
-    const { world } = gameContext;
+    const { world, tileManager } = gameContext;
     const { mapManager } = world;
     const player = stateMachine.getContext();
     const worldMap = mapManager.getActiveMap();
     const targetNode = this.nodeMap.get(worldMap.getIndex(tileX, tileY));
     const entity = player.getVisibleEntity(gameContext, tileX, tileY);
+    const walkAutotiler = tileManager.getAutotilerByID(TypeRegistry.AUTOTILER_ID.PATH);
+    const attackAutotiler = tileManager.getAutotilerByID(TypeRegistry.AUTOTILER_ID.PATH);
 
     if(entity && !this.entity.isAllyWith(gameContext, entity)) {
         if(this.entity.getRangeType() === BattalionEntity.RANGE_TYPE.RANGE) {
@@ -164,7 +165,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
             this.setOptimalAttackPath(gameContext, entity);
         }
 
-        player.showPath(gameContext, this.path, this.entity.tileX, this.entity.tileY);
+        player.showPath(attackAutotiler, this.path, this.entity.tileX, this.entity.tileY);
         return;
     }
 
@@ -190,7 +191,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
         this.path = this.entity.getBestPath(gameContext, this.nodeMap, tileX, tileY);
     }
 
-    player.showPath(gameContext, this.path, this.entity.tileX, this.entity.tileY);
+    player.showPath(walkAutotiler, this.path, this.entity.tileX, this.entity.tileY);
 
     if(this.entity.isJammer()) {
         const pathX = this.getPathX();

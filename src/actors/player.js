@@ -41,6 +41,7 @@ Player.prototype = Object.create(BattalionActor.prototype);
 Player.prototype.constructor = Player;
 
 Player.prototype.inspectEntity = function(gameContext, entity) {
+    this.showJammer(gameContext, entity);
     this.inspectedEntity = entity;
 
     const displayName = entity.getDisplayName(gameContext);
@@ -53,6 +54,7 @@ Player.prototype.inspectEntity = function(gameContext, entity) {
 Player.prototype.inspectTile = function(gameContext, tileX, tileY) {
     console.log("Inspected Tile");
     this.inspectedEntity = null;
+    this.camera.jammerOverlay.clear();
 }
 
 Player.prototype.onClick = function(gameContext, worldMap, tileX, tileY) {
@@ -157,16 +159,12 @@ Player.prototype.addNodeMapRender = function(nodeMap) {
     for(const [index, node] of nodeMap) {
         const { x, y } = node;
         const id = BattalionEntity.isNodeReachable(node) ? TypeRegistry.TILE_ID.OVERLAY_MOVE : TypeRegistry.TILE_ID.OVERLAY_ATTACK;
-        
-        //TODO: ADD JAMMED!!!
 
         this.camera.selectOverlay.add(id, x, y);
     }
 }
 
-Player.prototype.showPath = function(gameContext, oPath, entityX, entityY) { 
-    const { tileManager } = gameContext;
-    const autotiler = tileManager.getAutotilerByID(TypeRegistry.AUTOTILER_ID.PATH);
+Player.prototype.showPath = function(autotiler, oPath, entityX, entityY) { 
     const path = oPath.toReversed();
 
     let previousX = entityX;

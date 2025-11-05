@@ -115,7 +115,7 @@ Camera2D.prototype.drawTile = function(container, context, renderX, renderY) {
     }
 }
 
-Camera2D.prototype.drawOverlay = function(tileManager, context, overlay) {
+Camera2D.prototype.drawOverlay = function(tileManager, display, overlay) {
     const startX = this.startX;
     const startY = this.startY;
     const endX = this.endX;
@@ -124,7 +124,12 @@ Camera2D.prototype.drawOverlay = function(tileManager, context, overlay) {
     const tileHeight = this.tileHeight;
     const viewportX = this.screenX;
     const viewportY = this.screenY;
-    const { elements, count } = overlay;
+
+    const { context } = display;
+    const { elements, count, alpha } = overlay;
+    const previousAlpha = context.globalAlpha;
+
+    display.setAlpha(alpha);
 
     for(let i = 0; i < count; i++) {
         const index = i * 3;
@@ -139,6 +144,8 @@ Camera2D.prototype.drawOverlay = function(tileManager, context, overlay) {
             this.drawTileSafe(tileManager, id, context, renderX, renderY);
         }
     }
+
+    display.setAlpha(previousAlpha);
 }
 
 Camera2D.prototype.drawLayer = function(tileManager, display, layer) {

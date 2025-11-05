@@ -1,4 +1,5 @@
 export const Overlay = function() {
+    this.alpha = 1;
     this.elements = [];
     this.count = 0;
 }

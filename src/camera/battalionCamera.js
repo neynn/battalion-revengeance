@@ -15,7 +15,6 @@ export const BattalionCamera = function() {
     this.perspectives = new Set();
     this.mainPerspective = null;
     this.priorityEntities = [];
-    this.regularEntities = [];
     this.markerSprite = SpriteManager.EMPTY_SPRITE;
     this.weakMarkerSprite = SpriteManager.EMPTY_SPRITE;
     this.showAllJammers = false;
@@ -48,22 +47,22 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
     const viewportBottomEdge = viewportTopEdge + this.viewportHeight
 
     for(let i = 0; i < entities.length; i++) {
-        const { sprite, state } = entities[i];
+        const entity = entities[i];
+        const { teamID, sprite, state } = entity;
         const isVisible = sprite.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
 
-        if(isVisible) {
-            if(state === BattalionEntity.STATE.IDLE) {
-                this.regularEntities.push(entities[i]);
-            } else {
-                this.priorityEntities.push(entities[i]);
-            }
+        if(!isVisible) {
+            continue;
         }
-    }
 
-    for(let i = 0; i < this.regularEntities.length; i++) {
-        const entity = this.regularEntities[i];
-        const { teamID, sprite } = entity;
+        if(state !== BattalionEntity.STATE.IDLE) {
+            this.priorityEntities.push(entities[i]);
+            continue;
+        }
+
         const { positionX, positionY } = sprite;
+        const markerX = positionX - viewportLeftEdge;
+        const markerY = positionY - viewportTopEdge;
 
         if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.perspectives.has(teamID)) {
             sprite.drawCloaked(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
@@ -72,19 +71,14 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
             //sprite.drawNormal(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
         }
 
-        const markerX = positionX - viewportLeftEdge;
-        const markerY = positionY - viewportTopEdge;
-
         if(teamID === this.mainPerspective) {
-            if(entity.canAct() && this.markerSprite) {
+            if(entity.canAct()) {
                 display.setAlpha(1);
                 this.markerSprite.onDraw(display, markerX, markerY);
             }
         } else {
-            if(this.weakMarkerSprite) {
-                display.setAlpha(1);
-                this.weakMarkerSprite.onDraw(display, markerX, markerY);
-            }
+            display.setAlpha(1);
+            this.weakMarkerSprite.onDraw(display, markerX, markerY);
         }
     }
 
@@ -99,12 +93,12 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
         }
     }
 
-    this.regularEntities.length = 0;
     this.priorityEntities.length = 0;
 }
 
-BattalionCamera.prototype.drawJammers = function(tileManager, context, worldMap) {
+BattalionCamera.prototype.drawJammers = function(tileManager, display, worldMap) {
     const { jammerFields } = worldMap;
+    const { context } = display;
 
     for(const [index, field] of jammerFields) {
         const { tileX, tileY } = field;
@@ -126,8 +120,7 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     if(!worldMap) {
         return;
     }
-    
-    const { context } = display;
+
     const realTime = timer.getRealTime();
     const deltaTime = timer.getDeltaTime();
 
@@ -136,23 +129,23 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.GROUND));
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.CLOUD));
-    this.drawOverlay(tileManager, context, this.selectOverlay);
+    this.drawOverlay(tileManager, display, this.selectOverlay);
     this.drawSpriteBatchYSorted(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.BUILDING), realTime, deltaTime);
 
     if(this.showAllJammers) {
-        this.drawJammers(tileManager, context, worldMap);
+        this.drawJammers(tileManager, display, worldMap);
     } else {
-        this.drawOverlay(tileManager, context, this.jammerOverlay);
+        this.drawOverlay(tileManager, display, this.jammerOverlay);
     }
 
-    this.drawOverlay(tileManager, context, this.pathOverlay);
+    this.drawOverlay(tileManager, display, this.pathOverlay);
     this.drawEntities(gameContext, display, realTime, deltaTime);
     this.drawSpriteBatchYSorted(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.GFX), realTime, deltaTime);
     //this.drawSpriteBatchYSorted(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.SEA), realTime, deltaTime);
     //this.drawSpriteBatchYSorted(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.LAND), realTime, deltaTime);
 
     if(Renderer.DEBUG.MAP) {
-        this.debugMap(context, worldMap);
+        this.debugMap(display, worldMap);
     }
 }
 
@@ -174,7 +167,8 @@ BattalionCamera.prototype.drawBuildings = function(display, worldMap, realTime, 
     }
 }
 
-BattalionCamera.prototype.debugMap = function(context, worldMap) {
+BattalionCamera.prototype.debugMap = function(display, worldMap) {
+    const { context } = display;
     const scaleX = Math.floor(this.tileWidth / 6);
     const scaleY = Math.floor(this.tileHeight / 6);
     const flagBuffer = worldMap.getLayer(BattalionMap.LAYER.FLAG).buffer;
