@@ -296,20 +296,20 @@ BattalionMap.prototype.getJammer = function(tileX, tileY) {
     return jammerField;
 }
 
-BattalionMap.prototype.loadLayersEmpty = function(layerData) {
+BattalionMap.prototype.fillLayers = function(layerData) {
     for(const layerID in layerData) {
-        const { fill } = layerData[layerID];
+        const value = layerData[layerID];
         const index = BattalionMap.LAYER[layerID];
 
         if(index !== undefined) {
-            this.getLayer(index).fill(fill);
+            this.getLayer(index).fill(value);
         } else {
             console.error(`Unknown layer! ${layerID}`);
         }
     }
 }
 
-BattalionMap.prototype.loadLayers = function(layerData) {
+BattalionMap.prototype.decodeLayers = function(layerData) {
     for(const layerID in layerData) {
         const data = layerData[layerID];
         const index = BattalionMap.LAYER[layerID];

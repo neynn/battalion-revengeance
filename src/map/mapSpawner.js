@@ -91,40 +91,72 @@ export const MapSpawner = {
         teamManager.updateOrder(gameContext);
         //ActionHelper.createRegularDialogue(gameContext, DialogueHandler.TYPE.PRELOGUE);
     },
-    createStoryMap: async function(gameContext, typeID) {
-        let loadedData = null;
+    createStoryMap: async function(gameContext, sourceID) {
+        const { world } = gameContext;
+        const { mapManager } = world;
+        const { file, translations } = await MapHelper.fetchRegisteredMap(gameContext, sourceID);
 
-        return MapHelper.loadRegisteredMap(gameContext, typeID, (id, data) => {
-            const { width, height } = data;
-            loadedData = data;
+        if(file !== null) {
+            const { width, height, data } = file;
+            const worldMap = mapManager.createSourcedMap(id => new BattalionMap(id, width, height), sourceID);
 
-            return new BattalionMap(id, width, height);
-        }).then(map => {
-            if(loadedData) {
-                MapSpawner.initMap(gameContext, map, loadedData);
+            if(worldMap) {
+                worldMap.decodeLayers(data);
+                MapHelper.registerMap(gameContext, worldMap, translations);
+                MapSpawner.initMap(gameContext, worldMap, file);
+
+                return worldMap;
             }
+        }
 
-            return map;
-        });
+        return null;
+    },
+    createEditorMap: async function(gameContext, sourceID) {
+        const { world } = gameContext;
+        const { mapManager } = world;
+        const { file, translations } = await MapHelper.fetchRegisteredMap(gameContext, sourceID);
+
+        if(file !== null) {
+            const { width, height, data } = file;
+            const worldMap = mapManager.createSourcedMap(id => new BattalionMap(id, width, height), sourceID);
+
+            if(worldMap) {
+                const mapID = worldMap.getID();
+
+                worldMap.decodeLayers(data);
+                mapManager.enableMap(mapID);
+                
+                return worldMap;
+            }
+        }
+
+        return null;
     },
     createCustomMap: function(gameContext, mapData) {
-        const { width, height } = mapData;
-        const worldMap = MapHelper.loadCustomMap(gameContext, mapData, (id) => new BattalionMap(id, width, height));
+        const { world } = gameContext;
+        const { mapManager } = world;
+        const { width, height, data } = mapData;
+        const worldMap = mapManager.createCustomMap(id => new BattalionMap(id, width, height));
 
         if(worldMap) {
+            const mapID = worldMap.getID();
+
+            worldMap.decodeLayers(data);
+            mapManager.enableMap(mapID);
             MapSpawner.initMap(gameContext, worldMap, mapData);
         }
     },
-    createEditorMap: function(gameContext, typeID) {
-        return MapHelper.loadRegisteredMap(gameContext, typeID, (id, mapData) => {
-            const { width, height } = mapData;
-
-            return new BattalionMap(id, width, height);
-        });
-    },
-    createEmptyMap: function(gameContext, mapData) {
-        const { width, height } = mapData;
+    createEmptyMap: function(gameContext, width, height) {     
+        const { world } = gameContext;
+        const { mapManager } = world;
+        const worldMap = mapManager.createCustomMap(id => new BattalionMap(id, width, height));
         
-        return MapHelper.loadEmptyMap(gameContext, mapData, (id) => new BattalionMap(id, width, height));
+        if(worldMap) {
+            const mapID = worldMap.getID();
+    
+            mapManager.enableMap(mapID);
+        }
+
+        return worldMap;
     }
 }

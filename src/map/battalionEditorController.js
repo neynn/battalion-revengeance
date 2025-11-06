@@ -1,6 +1,7 @@
 import { MapEditorController } from "../../engine/map/editor/mapEditorController.js";
 import { PrettyJSON } from "../../engine/resources/prettyJSON.js";
 import { BattalionContext } from "../battalionContext.js";
+import { TypeRegistry } from "../type/typeRegistry.js";
 import { BattalionMap } from "./battalionMap.js";
 import { MapSpawner } from "./mapSpawner.js";
 
@@ -13,19 +14,9 @@ export const BattaltionEditorController = function(mapEditor) {
     this.textColorView = [238, 238, 238, 255];
     this.textColorEdit = [252, 252, 63, 255];
     this.textColorHide = [207, 55, 35, 255];
-    this.defaultMap = {
-        "music": "music_remastered",
-        "width": 20,
-        "height": 20,
-        "data": {
-            [BattalionMap.LAYER_NAME.GROUND]: { "fill": 1 },
-            [BattalionMap.LAYER_NAME.DECORATION]: { "fill": 0 },
-            [BattalionMap.LAYER_NAME.CLOUD]: { "fill": 0 },
-            [BattalionMap.LAYER_NAME.FLAG]: { "fill": 0 },
-            [BattalionMap.LAYER_NAME.TEAM]: { "fill": 0 }
-        }
-    };
-
+    this.defaultWidth = 20;
+    this.defaultHeight = 20;
+    this.fill = { [BattalionMap.LAYER_NAME.GROUND]: TypeRegistry.TILE_ID.GRASS };
     this.editor.setBrushSizes([0, 1, 2, 3, 4]);
     this.buttonHandler.createButton(BattaltionEditorController.LAYER_BUTTON.L1, BattalionMap.LAYER.GROUND, "TEXT_L1");
     this.buttonHandler.createButton(BattaltionEditorController.LAYER_BUTTON.L2, BattalionMap.LAYER.DECORATION, "TEXT_L2");
@@ -91,9 +82,13 @@ BattaltionEditorController.prototype.createMap = function(gameContext) {
     const createNew = confirm("This will create and load a brand new map! Proceed?");
 
     if(createNew) {
-        const worldMap = MapSpawner.createEmptyMap(gameContext, this.defaultMap);
+        const worldMap = MapSpawner.createEmptyMap(gameContext, this.defaultWidth, this.defaultHeight);
 
-        this.mapID = worldMap.getID();
+        if(worldMap) {
+            worldMap.fillLayers(this.fill);
+
+            this.mapID = worldMap.getID();
+        }
     }
 }
 

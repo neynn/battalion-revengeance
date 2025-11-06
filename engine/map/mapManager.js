@@ -39,14 +39,6 @@ MapManager.prototype.onLanguageChange = async function(nextLanguage) {
     }
 }
 
-MapManager.prototype.fetchMapTranslations = function(sourceID, languageID) {
-    return this.getMapSource(sourceID).promiseTranslations(languageID);
-}
-
-MapManager.prototype.fetchMapData = function(sourceID) {
-    return this.getMapSource(sourceID).promiseFile();
-}
-
 MapManager.prototype.getNextID = function() {
     return this.nextID++;
 }
@@ -68,7 +60,7 @@ MapManager.prototype.createCustomMap = function(onCreate, externalID) {
     return null;
 }
 
-MapManager.prototype.createMap = function(onCreate, sourceID, externalID) {
+MapManager.prototype.createSourcedMap = function(onCreate, sourceID, externalID) {
     const mapID = externalID !== undefined ? externalID : this.nextID++;
 
     if(!this.maps.has(mapID)) {
