@@ -495,3 +495,33 @@ SpriteManager.prototype.clearShared = function() {
 
     this.sharedSprites.length = 0;
 }
+
+SpriteManager.prototype.updateSpriteWithAlias = function(spriteIndex, spriteID, schemaID) {
+    const aliasID = this.getAlias(spriteID, schemaID);
+
+    this.createSpriteAlias(spriteID, schemaID);
+    this.updateSprite(spriteIndex, aliasID);
+}
+
+SpriteManager.prototype.createSpriteWithAlias = function(spriteID, schemaID, layerID) {
+    const aliasID = this.getAlias(spriteID, schemaID);
+
+    this.createSpriteAlias(spriteID, schemaID);
+
+    return this.createSprite(aliasID, layerID);
+}
+
+SpriteManager.prototype.updateColoredSprite = function(spriteIndex, spriteID, schemaID, schemaType) {
+    const aliasID = this.getAlias(spriteID, schemaID);
+
+    this.createCopyTexture(spriteID, schemaID, schemaType);
+    this.updateSprite(spriteIndex, aliasID);
+}
+
+SpriteManager.prototype.createColoredSprite = function(spriteID, schemaID, schemaType, layerID) {
+    const aliasID = this.getAlias(spriteID, schemaID);
+
+    this.createCopyTexture(spriteID, schemaID, schemaType);
+
+    return this.createSprite(aliasID, layerID);
+}

@@ -1,5 +1,4 @@
 import { Renderer } from "../../engine/renderer/renderer.js";
-import { SpriteHelper } from "../../engine/sprite/spriteHelper.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const SchemaSprite = function(visual, spriteID, schemaID, schema) {
@@ -12,10 +11,12 @@ export const SchemaSprite = function(visual, spriteID, schemaID, schema) {
 }
 
 SchemaSprite.createVisual = function(gameContext, spriteID, schemaID, schema, layerID) {
+    const { spriteManager } = gameContext;
+
     if(schemaID === TypeRegistry.SCHEMA_TYPE.RED) {
-        return SpriteHelper.createSpriteWithAlias(gameContext, spriteID, schemaID, layerID);
+        return spriteManager.createSpriteWithAlias(spriteID, schemaID, layerID);
     } else {
-        return SpriteHelper.createColoredSprite(gameContext, spriteID, schemaID, schema, layerID);
+        return spriteManager.createColoredSprite(spriteID, schemaID, schema, layerID);
     }
 }
 
@@ -70,9 +71,9 @@ SchemaSprite.prototype.updateVisual = function(gameContext) {
     if(this.schemaID === null) {
         spriteManager.updateSprite(spriteIndex, this.spriteID);
     } else if(this.schemaID === TypeRegistry.SCHEMA_TYPE.RED) {
-        SpriteHelper.updateSpriteWithAlias(gameContext, spriteIndex, this.spriteID, this.schemaID);
+        spriteManager.updateSpriteWithAlias(spriteIndex, this.spriteID, this.schemaID);
     } else {
-        SpriteHelper.updateColoredSprite(gameContext, spriteIndex, this.spriteID, this.schemaID, this.schema);
+        spriteManager.updateColoredSprite(spriteIndex, this.spriteID, this.schemaID, this.schema);
     }
 }
 
