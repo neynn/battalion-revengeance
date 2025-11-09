@@ -360,7 +360,7 @@ BattalionEntity.prototype.setCustomInfo = function(id, name, desc) {
     }
 }
 
-BattalionEntity.prototype.getDisplayDesc = function(gameContext) {
+BattalionEntity.prototype.getDescription = function(gameContext) {
     const { language } = gameContext;
     
     if(this.customDesc) {
@@ -370,7 +370,7 @@ BattalionEntity.prototype.getDisplayDesc = function(gameContext) {
     return language.get(this.config.desc);
 }
 
-BattalionEntity.prototype.getDisplayName = function(gameContext) {
+BattalionEntity.prototype.getName = function(gameContext) {
     const { language } = gameContext;
     
     if(this.customName) {

@@ -44,8 +44,8 @@ Player.prototype.inspectEntity = function(gameContext, entity) {
     this.showJammer(gameContext, entity);
     this.inspectedEntity = entity;
 
-    const displayName = entity.getDisplayName(gameContext);
-    const displayDesc = entity.getDisplayDesc(gameContext);
+    const displayName = entity.getName(gameContext);
+    const displayDesc = entity.getDescription(gameContext);
 
     console.log(displayName, displayDesc);
     console.log("Inspected Entity", entity);

@@ -1,3 +1,5 @@
+import { LanguageHandler } from "../../engine/language/languageHandler.js";
+
 export const Building = function(config, sprite) {
     this.config = config;
     this.sprite = sprite;
@@ -32,4 +34,24 @@ Building.prototype.setCustomInfo = function(id, name, desc) {
     if(desc) {
         this.customDesc = desc;
     }
+}
+
+Building.prototype.getDescription = function(gameContext) {
+    const { language } = gameContext;
+    
+    if(this.customDesc) {
+        return language.get(this.customDesc, LanguageHandler.TAG_TYPE.MAP);
+    }
+
+    return language.get(this.config.desc);
+}
+
+Building.prototype.getName = function(gameContext) {
+    const { language } = gameContext;
+    
+    if(this.customName) {
+        return language.get(this.customName, LanguageHandler.TAG_TYPE.MAP);
+    }
+
+    return language.get(this.config.name);
 }

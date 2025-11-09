@@ -7,6 +7,8 @@
         "movementSpeed": 392,
         "movementRange": 8,
         "movementType": "TRACKED",
+        "name": "ENTITY_NAME_MEME_BUREAUCRAT",
+        "desc": "ENTITY_DESC_MEME_BUREAUCRAT",
         "traits": ["ELUSIVE"],
         "sounds": {
             "move": "cockroach_move",
@@ -31,6 +33,8 @@
         "movementSpeed": 392,
         "movementRange": 8,
         "movementType": "TRACKED",
+        "name": "ENTITY_NAME_COCKROACH",
+        "desc": "ENTITY_DESC_COCKROACH",
         "traits": ["ELUSIVE", "STREAMLINED"],
         "sounds": {
             "move": "cockroach_move",
@@ -54,6 +58,8 @@
         "armorType": "LIGHT",
         "movementRange": 6,
         "movementType": "FLIGHT",
+        "name": "ENTITY_NAME_ALEPH",
+        "desc": "ENTITY_DESC_ALEPH",
         "traits": ["JUDGEMENT", "INDOMITABLE", "SELF_DESTRUCT", "FIXED"],
         "sounds": {
             "move": "aleph_move",
@@ -77,6 +83,8 @@
         "armorType": "LIGHT",
         "movementRange": 6,
         "movementType": "FLIGHT",
+        "name": "ENTITY_NAME_CONDOR_BOMBER",
+        "desc": "ENTITY_DESC_CONDOR_BOMBER",
         "traits": ["CAVITATION_EXPLOSION", "DEPTH_CHARGE"],
         "sounds": {
             "move": "aleph_move",
@@ -100,6 +108,8 @@
         "armorType": "MEDIUM",
         "movementRange": 5,
         "movementType": "TRACKED",
+        "name": "ENTITY_NAME_ASEKARA_TANK",
+        "desc": "ENTITY_DESC_ASEKARA_TANK",
         "traits": ["STREAMLINED", "SCHWERPUNKT", "BEWEGUNGSKRIEG"],
         "sounds": {
             "move": "tracked_move",
@@ -123,6 +133,8 @@
         "armorType": "LIGHT",
         "movementRange": 8,
         "movementType": "FLIGHT",
+        "name": "ENTITY_NAME_RAPTOR_FIGHTER",
+        "desc": "ENTITY_DESC_RAPTOR_FIGHTER",
         "traits": ["SKYSWEEPER"],
         "sounds": {
             "move": "raptor_move",
@@ -147,6 +159,8 @@
         "armorType": "MEDIUM",
         "movementRange": 5,
         "movementType": "TRACKED",
+        "name": "ENTITY_NAME_FLAK_TANK",
+        "desc": "ENTITY_DESC_FLAK_TANK",
         "traits": ["SKYSWEEPER", "ANTI_AIR"],
         "sounds": {
             "move": "tracked_move",
@@ -170,6 +184,8 @@
         "armorType": "MEDIUM",
         "movementRange": 5,
         "movementType": "TRACKED",
+        "name": "ENTITY_NAME_TANK_HUNTER",
+        "desc": "ENTITY_DESC_TANK_HUNTER",
         "traits": ["ANTI_TANK", "TANK_HUNTER"],
         "sounds": {
             "move": "tracked_move",
@@ -193,6 +209,8 @@
         "armorType": "MEDIUM",
         "movementRange": 6,
         "movementType": "TRACKED",
+        "name": "ENTITY_NAME_AMPAC",
+        "desc": "ENTITY_DESC_AMPAC",
         "traits": ["ANTI_TANK", "STREAMLINED"],
         "sounds": {
             "move": "tracked_move",
@@ -217,6 +235,8 @@
         "movementRange": 5,
         "movementType": "TRACKED",
         "streamRange": 7,
+        "name": "ENTITY_NAME_AYIN",
+        "desc": "ENTITY_DESC_AYIN",
         "traits": ["STREAMBLAST", "ARMOR_PIERCE"],
         "sounds": {
             "move": "tracked_move",
@@ -240,6 +260,8 @@
         "armorType": "HEAVY",
         "movementRange": 40,
         "movementType": "TRACKED",
+        "name": "ENTITY_NAME_GORLITZ_TANK",
+        "desc": "ENTITY_DESC_GORLITZ_TANK",
         "traits": [],
         "sounds": {
             "move": "entwicklung_move",
@@ -263,6 +285,8 @@
         "armorType": "MEDIUM",
         "movementRange": 5,
         "movementType": "RUDDER",
+        "name": "ENTITY_NAME_LEVIATHAN_BARGE",
+        "desc": "ENTITY_DESC_LEVIATHAN_BARGE",
         "traits": ["NAVAL_TRANSPORT"],
         "sounds": {
             "move": "rudder_move"
@@ -282,6 +306,8 @@
         "minRange": 2,
         "maxRange": 5,
         "movementType": "STATIONARY",
+        "name": "ENTITY_NAME_TURRET",
+        "desc": "ENTITY_DESC_TURRET",
         "traits": ["FIXED"],
         "sounds": {
             "move": "turret_move",
@@ -305,6 +331,8 @@
         "armorType": "HEAVY",
         "movementRange": 7,
         "movementType": "TRACKED",
+        "name": "ENTITY_NAME_ENTWICKLUNG",
+        "desc": "ENTITY_DESC_ENTWICKLUNG",
         "traits": ["SCHWERPUNKT", "OVERHEAT", "BEWEGUNGSKRIEG", "TERRIFYING"],
         "sounds": {
             "move": "entwicklung_move",
@@ -330,6 +358,8 @@
         "armorType": "HEAVY",
         "movementRange": 4,
         "movementType": "HEAVY_RUDDER",
+        "name": "ENTITY_NAME_BATTLESHIP",
+        "desc": "ENTITY_DESC_BATTLESHIP",
         "traits": ["SKYSWEEPER", "CEMENTED_STEEL_ARMOR"],
         "sounds": {
             "move": "rudder_move",
@@ -355,6 +385,8 @@
         "armorType": "HEAVY",
         "movementRange": 4,
         "movementType": "HEAVY_RUDDER",
+        "name": "ENTITY_NAME_SUPER_BATTLESHIP",
+        "desc": "ENTITY_DESC_SUPER_BATTLESHIP",
         "traits": ["SKYSWEEPER", "CEMENTED_STEEL_ARMOR"],
         "sounds": {
             "move": "rudder_move",
@@ -379,6 +411,8 @@
         "armorType": "LIGHT",
         "movementRange": 5,
         "movementType": "WHEELED",
+        "name": "ENTITY_NAME_JAMMER_TRUCK",
+        "desc": "ENTITY_DESC_JAMMER_TRUCK",
         "traits": ["JAMMER"],
         "sounds": {
             "move": "turret_move"
@@ -397,6 +431,8 @@
         "armorType": "MEDIUM",
         "movementRange": 5,
         "movementType": "TRACKED",
+        "name": "ENTITY_NAME_STEALTH_TANK",
+        "desc": "ENTITY_DESC_STEALTH_TANK",
         "traits": ["STEALTH"],
         "sounds": {
             "move": "tracked_move",
@@ -424,6 +460,8 @@
             "move": null,
             "fire": null
         },
+        "name": "ENTITY_NAME_HEAVY_COMMANDO",
+        "desc": "ENTITY_DESC_HEAVY_COMMANDO",
         "traits": ["TRACKING"],
         "sprites": {
             "idle_right": "heavy_commando_idle_right",
@@ -447,6 +485,8 @@
             "move": "rudder_move",
             "fire": "entwicklung_fire"
         },
+        "name": "ENTITY_NAME_U_BOAT",
+        "desc": "ENTITY_DESC_U_BOAT",
         "traits": ["STEALTH", "SEABOUND", "SUBMERGED", "DEPTH_CHARGE"],
         "sprites": {
             "idle_right": "u_boat_idle_right",
@@ -466,6 +506,8 @@
         "armorType": "HEAVY",
         "movementRange": 3,
         "movementType": "TRACKED",
+        "name": "ENTITY_NAME_ANNIHILATOR_TANK",
+        "desc": "ENTITY_DESC_ANNIHILATOR_TANK",
         "traits": [],
         "sounds": {
             "move": ["massive_tank_move_1", "massive_tank_move_2", "massive_tank_move_3"]
@@ -488,6 +530,8 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "name": "ENTITY_NAME_CORVETTE_FIGHTER",
+        "desc": "ENTITY_DESC_CORVETTE_FIGHTER",
         "traits": [],
         "sprites": {
             "idle_right": "corvette_fighter_idle_right",
@@ -507,6 +551,8 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "name": "ENTITY_NAME_HUNTER_SUPPORT",
+        "desc": "ENTITY_DESC_HUNTER_SUPPORT",
         "traits": [],
         "sprites": {
             "idle_right": "hunter_support_idle_right",
@@ -526,6 +572,8 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "name": "ENTITY_NAME_INTREPID",
+        "desc": "ENTITY_DESC_INTREPID",
         "traits": [],
         "sprites": {
             "idle_right": "intrepid_idle_right",
@@ -545,6 +593,8 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "name": "ENTITY_NAME_MORTAR_TRUCK",
+        "desc": "ENTITY_DESC_MORTAR_TRUCK",
         "traits": [],
         "sprites": {
             "idle_right": "mortar_truck_idle_right",
@@ -564,6 +614,8 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "name": "ENTITY_NAME_ROCKET_TRUCK",
+        "desc": "ENTITY_DESC_ROCKET_TRUCK",
         "traits": [],
         "sprites": {
             "idle_right": "rocket_truck_idle_right",
@@ -583,6 +635,8 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "name": "ENTITY_NAME_SPIDER_TANK",
+        "desc": "ENTITY_DESC_SPIDER_TANK",
         "traits": [],
         "sprites": {
             "idle_right": "spider_tank_idle_right",
@@ -602,6 +656,8 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "name": "ENTITY_NAME_STRIKE_COMMANDO",
+        "desc": "ENTITY_DESC_STRIKE_COMMANDO",
         "traits": [],
         "sprites": {
             "idle_right": "strike_commando_idle_right",
@@ -621,6 +677,8 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "name": "ENTITY_NAME_VULTURE_DRONE",
+        "desc": "ENTITY_DESC_VULTURE_DRONE",
         "traits": [],
         "sprites": {
             "idle_right": "vulture_drone_idle_right",
@@ -640,6 +698,8 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "name": "ENTITY_NAME_WARMACHINE",
+        "desc": "ENTITY_DESC_WARMACHINE",
         "traits": [],
         "sprites": {
             "idle_right": "warmachine_idle_right",
@@ -659,6 +719,8 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "name": "ENTITY_NAME_ALBATROSS_TRANSPORT",
+        "desc": "ENTITY_DESC_ALBATROSS_TRANSPORT",
         "traits": [],
         "sprites": {
             "idle_right": "albatross_transport_idle_right",
@@ -674,6 +736,8 @@
         "armorType": "NONE",
         "movementRange": 1,
         "movementType": "STATIONARY",
+        "name": "ENTITY_NAME_BLOCKADE",
+        "desc": "ENTITY_DESC_BLOCKADE",
         "traits": ["FIXED"],
         "sprites": {
             "idle_right": "blockade_idle_right",
