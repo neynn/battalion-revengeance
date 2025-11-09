@@ -130,10 +130,11 @@ export const EntitySpawner = {
 
         return null;
     },
-    loadEntity: function(gameContext, config, customID, externalID) {
+    loadEntity: function(gameContext, config, externalID) {
         const { 
             x = -1,
             y = -1,
+            id = null,
             type = null,
             owner = null,
             direction = null,
@@ -149,7 +150,7 @@ export const EntitySpawner = {
         if(entity) {
             entity.bufferSounds(gameContext);
             entity.bufferSprites(gameContext);
-            entity.setCustomInfo(customID, name, desc);
+            entity.setCustomInfo(id, name, desc);
 
             if(direction !== null) {
                 entity.setDirection(BattalionEntity.DIRECTION[direction]);

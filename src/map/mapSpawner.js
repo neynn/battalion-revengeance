@@ -15,7 +15,7 @@ export const MapSpawner = {
             playlist,
             teams = {},
             actors = {},
-            entities = {},
+            entities = [],
             objectives = {},
             events = {},
             buildings = {},
@@ -64,8 +64,8 @@ export const MapSpawner = {
             }
         }
 
-        for(const entityName in entities) {
-            EntitySpawner.loadEntity(gameContext, entities[entityName], entityName);
+        for(let i = 0; i < entities.length; i++) {
+            EntitySpawner.loadEntity(gameContext, entities[i]);
         }
 
         for(const objectiveName in objectives) {

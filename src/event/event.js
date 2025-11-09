@@ -46,7 +46,7 @@ Event.prototype.trigger = function(gameContext) {
             case TypeRegistry.EVENT_TYPE.SPAWN_ENTITY: {
                 const { setup } = this.triggers[i];
 
-                EntitySpawner.loadEntity(gameContext, setup, null);
+                EntitySpawner.loadEntity(gameContext, setup);
                 break; 
             }
         }
