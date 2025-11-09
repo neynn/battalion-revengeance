@@ -79,5 +79,7 @@ Actor.prototype.tryEnqueueAction = function(gameContext) {
         }
     }
 
+    this.actionRequests.length = 0;
+
     return false;
 }

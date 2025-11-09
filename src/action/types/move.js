@@ -100,7 +100,7 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
     const { entityManager } = world;
     const { entityID, path, attackTarget } = requestData;
     const entity = entityManager.getEntity(entityID);
-    const isValid = entity && entity.canAct() && entity.canMove() && entity.isPathValid(gameContext, path);
+    const isValid = entity && entity.canAct() && entity.canMove() && !entity.isDead() && entity.isPathValid(gameContext, path);
 
     if(isValid) {
         const intercept = entity.mInterceptPath(gameContext, path);

@@ -226,7 +226,7 @@ ActionQueue.prototype.isEmpty = function() {
 }
 
 ActionQueue.prototype.isRunning = function() {
-    return this.executionQueue.getSize() !== 0 || this.current !== null;
+    return this.executionQueue.getSize() !== 0 || this.current !== null || this.nextQueue.length !== 0;
 }
 
 ActionQueue.prototype.toFlush = function() {

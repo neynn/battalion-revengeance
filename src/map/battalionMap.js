@@ -39,6 +39,12 @@ BattalionMap.LAYER = {
     TEAM: 4
 };
 
+BattalionMap.SEARCH_ORDER = [
+    BattalionMap.LAYER.CLOUD,
+    BattalionMap.LAYER.DECORATION,
+    BattalionMap.LAYER.GROUND
+];
+
 BattalionMap.STUB_JAMMER = new JammerField(-1, -1);
 
 BattalionMap.prototype = Object.create(WorldMap.prototype);
@@ -54,93 +60,83 @@ BattalionMap.prototype.setClimate = function(local, global) {
 }
 
 BattalionMap.prototype.getLogisticFactor = function(gameContext, tileX, tileY) {
-    const { typeRegistry } = gameContext;
-    const typeID = this.getClimateType(gameContext, tileX, tileY);
-    const climateType = typeRegistry.getClimateType(typeID);
-    const { logisticFactor } = climateType;
-    
+    const { logisticFactor } = this.getCligetClimateType(gameContext, tileX, tileY);
+
     return logisticFactor;
 }
 
 BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
+    const { tileManager, typeRegistry } = gameContext;
+
     if(this.globalClimate !== TypeRegistry.CLIMATE_TYPE.NONE) {
-        return this.globalClimate;
+        return typeRegistry.getClimateType(this.globalClimate);
     }
 
     if(!this.isTileOutOfBounds(tileX, tileY)) {
-        const { tileManager, typeRegistry } = gameContext;
-        const layers = [BattalionMap.LAYER.CLOUD, BattalionMap.LAYER.DECORATION, BattalionMap.LAYER.GROUND];
-
-        for(const layerID of layers) {
+        for(const layerID of BattalionMap.SEARCH_ORDER) {
             const typeID = this.getTile(layerID, tileX, tileY);
             const { type } = tileManager.getTile(typeID);
 
             if(type !== null) {
-                const typeObject = typeRegistry.getTileType(type);
-                const { climate } = typeObject;
+                const { climate } = typeRegistry.getTileType(type);
 
                 if(climate !== TypeRegistry.CLIMATE_TYPE.NONE) {
-                    return climate;
+                    return typeRegistry.getClimateType(climate);
                 }
             }
         }
     }
 
     if(this.climate !== TypeRegistry.CLIMATE_TYPE.NONE) {
-        return this.climate;
+        return typeRegistry.getClimateType(this.climate);
     }
 
-    return TypeRegistry.CLIMATE_TYPE.TEMPERATE;
+    return typeRegistry.getClimateType(TypeRegistry.CLIMATE_TYPE.TEMPERATE);
 }
 
 BattalionMap.prototype.getTerrainTypes = function(gameContext, tileX, tileY) {
+    const { tileManager, typeRegistry } = gameContext;
+    const types = [];
+
     if(this.isTileOutOfBounds(tileX, tileY)) {
-        return [];
+        return types;
     }
 
-    const { tileManager, typeRegistry } = gameContext;
-    const layers = [BattalionMap.LAYER.CLOUD, BattalionMap.LAYER.DECORATION, BattalionMap.LAYER.GROUND];
-
-    for(const layerID of layers) {
+    for(const layerID of BattalionMap.SEARCH_ORDER) {
         const typeID = this.getTile(layerID, tileX, tileY);
         const { type } = tileManager.getTile(typeID);
 
         if(type !== null && type !== TypeRegistry.TILE_TYPE.NONE) {
-            const tileType = typeRegistry.getTileType(type);
-            const { terrain } = tileType;
+            const { terrain } = typeRegistry.getTileType(type);
 
-            return terrain;
+            for(let i = 0; i < terrain.length; i++) {
+                types.push(typeRegistry.getTerrainType(terrain[i]));
+            }
+
+            return types;
         }
     }
 
-    return [];
-}
-
-BattalionMap.prototype.getTileTypeObject = function(gameContext, tileX, tileY) {
-    const { typeRegistry } = gameContext;
-    const typeID = this.getTileType(gameContext, tileX, tileY);
-
-    return typeRegistry.getTileType(typeID);
+    return types;
 }
 
 BattalionMap.prototype.getTileType = function(gameContext, tileX, tileY) {
+    const { tileManager, typeRegistry } = gameContext;
+
     if(this.isTileOutOfBounds(tileX, tileY)) {
-        return TypeRegistry.TILE_TYPE.NONE;
+        return typeRegistry.getTileType(TypeRegistry.TILE_TYPE.NONE);
     }
 
-    const { tileManager } = gameContext;
-    const layers = [BattalionMap.LAYER.CLOUD, BattalionMap.LAYER.DECORATION, BattalionMap.LAYER.GROUND];
-
-    for(const layerID of layers) {
+    for(const layerID of BattalionMap.SEARCH_ORDER) {
         const typeID = this.getTile(layerID, tileX, tileY);
         const { type } = tileManager.getTile(typeID);
 
         if(type !== null && type !== TypeRegistry.TILE_TYPE.NONE) {
-            return type;
+            return typeRegistry.getTileType(type);
         }
     }
 
-    return TypeRegistry.TILE_TYPE.NONE;
+    return typeRegistry.getTileType(TypeRegistry.TILE_TYPE.NONE);
 }
 
 BattalionMap.prototype.getTileName = function(gameContext, tileX, tileY) {
@@ -158,8 +154,7 @@ BattalionMap.prototype.getTileName = function(gameContext, tileX, tileY) {
         }
     }
 
-    const tileType = this.getTileTypeObject(gameContext, tileX, tileY);
-    const { name } = tileType;
+    const { name } = this.getTileType(gameContext, tileX, tileY);
 
     return language.get(name);
 }
@@ -179,8 +174,7 @@ BattalionMap.prototype.getTileDesc = function(gameContext, tileX, tileY) {
         }
     }
 
-    const tileType = this.getTileTypeObject(gameContext, tileX, tileY);
-    const { desc } = tileType;
+    const { desc } = this.getTileType(gameContext, tileX, tileY);
 
     return language.get(desc);
 }

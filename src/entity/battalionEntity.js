@@ -611,7 +611,7 @@ BattalionEntity.prototype.takeTerrainDamage = function(gameContext) {
 }
 
 BattalionEntity.prototype.getTerrainDamage = function(gameContext, tileX, tileY) {
-    const { world, typeRegistry } = gameContext;
+    const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
 
@@ -626,7 +626,7 @@ BattalionEntity.prototype.getTerrainDamage = function(gameContext, tileX, tileY)
             const terrainTypes = worldMap.getTerrainTypes(gameContext, j, i);
 
             for(let i = 0; i < terrainTypes.length; i++) {
-                const { damage } = typeRegistry.getTerrainType(terrainTypes[i]);
+                const { damage } = terrainTypes[i];
 
                 totalDamage += damage[this.config.movementType] ?? 0;
             }
@@ -718,7 +718,7 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
             let tileType = typeCache.get(neighborID);
 
             if(!tileType) {
-                tileType = worldMap.getTileTypeObject(gameContext, neighborX, neighborY);
+                tileType = worldMap.getTileType(gameContext, neighborX, neighborY);
                 typeCache.set(neighborID, tileType);
             }
 
@@ -842,7 +842,7 @@ BattalionEntity.prototype.isPathValid = function(gameContext, path) {
             return false;
         }
 
-        const tileType = worldMap.getTileTypeObject(gameContext, tileX, tileY);
+        const tileType = worldMap.getTileType(gameContext, tileX, tileY);
 
         totalCost += this.getTileCost(gameContext, worldMap, tileType, tileX, tileY);
 
@@ -855,7 +855,7 @@ BattalionEntity.prototype.isPathValid = function(gameContext, path) {
 }
 
 BattalionEntity.prototype.getTerrainTypes = function(gameContext) {
-    const { world, typeRegistry } = gameContext;
+    const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
     const types = [];
@@ -875,13 +875,15 @@ BattalionEntity.prototype.getTerrainTypes = function(gameContext) {
             const terrainTypes = worldMap.getTerrainTypes(gameContext, j, i);
 
             for(let i = 0; i < terrainTypes.length; i++) {
-                tags.add(terrainTypes[i]);
+                const type = terrainTypes[i];
+                const { id } = type;
+
+                if(!tags.has(id)) {
+                    types.push(type);
+                    tags.add(id);
+                }
             }
         }
-    }
-
-    for(const typeID of tags) {
-        types.push(typeRegistry.getTerrainType(typeID));
     }
 
     return types;
@@ -945,7 +947,7 @@ BattalionEntity.prototype.canTarget = function(gameContext, target) {
 }
 
 BattalionEntity.prototype.isProtectedFromRange = function(gameContext) {
-    const { world, typeRegistry } = gameContext;
+    const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
 
@@ -959,7 +961,7 @@ BattalionEntity.prototype.isProtectedFromRange = function(gameContext) {
             const terrainTypes = worldMap.getTerrainTypes(gameContext, j, i);
 
             for(let i = 0; i < terrainTypes.length; i++) {
-                const { rangeGuard } = typeRegistry.getTerrainType(terrainTypes[i])
+                const { rangeGuard } = terrainTypes[i];
 
                 if(rangeGuard) {
                     return true;
@@ -1044,12 +1046,12 @@ BattalionEntity.prototype.getDamageAmplifier = function(gameContext, target, dam
     }
 
     //Logistic factor. Applies only to non-commandos.
-    if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.COMMANDO)) {        
+    if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.COMMANDO)) {
         logisticFactor = worldMap.getLogisticFactor(gameContext, this.tileX, this.tileY);
     }
 
     //Target tile.
-    const { terrain } = worldMap.getTileTypeObject(gameContext, targetX, targetY);
+    const { terrain } = worldMap.getTileType(gameContext, targetX, targetY);
 
     for(let i = 0; i < terrain.length; i++) {
         const { protection } = typeRegistry.getTerrainType(terrain[i]);

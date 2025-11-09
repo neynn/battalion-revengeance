@@ -52,9 +52,27 @@ Player.prototype.inspectEntity = function(gameContext, entity) {
 }
 
 Player.prototype.inspectTile = function(gameContext, tileX, tileY) {
-    console.log("Inspected Tile");
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const name = worldMap.getTileName(gameContext, tileX, tileY);
+    const desc = worldMap.getTileDesc(gameContext, tileX, tileY);
+    const terrainTypes = worldMap.getTerrainTypes(gameContext, tileX, tileY);
+    const climateType = worldMap.getClimateType(gameContext, tileX, tileY);
+    const tileType = worldMap.getTileType(gameContext, tileX, tileY);
+
     this.inspectedEntity = null;
     this.camera.jammerOverlay.clear();
+
+    console.log({
+        "x": tileX,
+        "y": tileY,
+        "name": name,
+        "desc": desc,
+        "terrain": terrainTypes,
+        "climate": climateType,
+        "type": tileType
+    });
 }
 
 Player.prototype.onClick = function(gameContext, worldMap, tileX, tileY) {
