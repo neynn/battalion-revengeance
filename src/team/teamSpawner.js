@@ -29,19 +29,5 @@ export const TeamSpawner = {
         }
 
         return team;
-    },
-    getActorID: function(gameContext, customActorID) {
-        const { world } = gameContext;
-        const { turnManager } = world;
-
-        for(const [actorID, actor] of turnManager.actors) {
-            const { customID } = actor;
-
-            if(customID === customActorID) {
-                return actorID;
-            }
-        }
-
-        return null;
-    } 
+    }
 };

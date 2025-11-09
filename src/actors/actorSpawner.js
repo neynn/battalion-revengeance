@@ -9,59 +9,39 @@ const ACTOR_TYPE = {
 };
 
 export const ActorSpawner = {
-    createAI: function(gameContext, config, customID) {
-        const { world, teamManager } = gameContext;
+    createAI: function(gameContext, commanderType, teamName) {
+        const { world } = gameContext;
         const { turnManager } = world;
-        const { type, id, team } = config;
-        const teamObject = teamManager.getTeam(team);
-
-        if(!teamObject || teamObject.hasActor()) {
-            console.log(`Team ${team} does not exist!`);
-            return null;
-        }
-
         const actor = turnManager.createActor((actorID, actorType) => {
             const actorObject = new BattalionActor(actorID);
 
-            teamObject.setActor(actorID);
             actorObject.setConfig(actorType);
-            actorObject.setTeam(team);
-            actorObject.setCustomID(customID);
+            actorObject.setTeam(teamName);
 
             return actorObject;
-        }, ACTOR_TYPE.AI, id);
+        }, ACTOR_TYPE.AI);
 
-        actor.loadCommander(gameContext, type);
+        actor.loadCommander(gameContext, commanderType);
 
         return actor;
     },
-    createPlayer: function(gameContext, config, customID) {
-        const { world, teamManager } = gameContext;
+    createPlayer: function(gameContext, commanderType, teamName) {
+        const { world } = gameContext;
         const { turnManager } = world;
-        const { type, id, team } = config;
-        const teamObject = teamManager.getTeam(team);
-
-        if(!teamObject || teamObject.hasActor()) {
-            console.log(`Team ${team} does not exist!`);
-            return null;
-        }
-
         const actor = turnManager.createActor((actorID, actorType) => {
             const context = CameraHelper.createPlayCamera(gameContext);
             const camera = context.getCamera();
             const actorObject = new Player(actorID, camera);
 
-            teamObject.setActor(actorID);
             actorObject.setConfig(actorType);
-            actorObject.setTeam(team);
-            actorObject.setCustomID(customID);
-            camera.addPerspective(team);
-            camera.setMainPerspective(team);
+            actorObject.setTeam(teamName);
+            camera.addPerspective(teamName);
+            camera.setMainPerspective(teamName);
 
             return actorObject;
-        }, ACTOR_TYPE.PLAYER, id);
+        }, ACTOR_TYPE.PLAYER);
 
-        actor.loadCommander(gameContext, type);
+        actor.loadCommander(gameContext, commanderType);
         actor.loadKeybinds(gameContext);
         actor.states.setNextState(gameContext, Player.STATE.IDLE);
 

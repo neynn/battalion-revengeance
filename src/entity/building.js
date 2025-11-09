@@ -1,10 +1,12 @@
-export const Building = function(id, config, sprite) {
-    this.id = id;
+export const Building = function(config, sprite) {
     this.config = config;
     this.sprite = sprite;
-    this.teamID = null;
     this.tileX = -1;
     this.tileY = -1;
+    this.teamID = null;
+    this.customID = null;
+    this.customName = null;
+    this.customDesc = null;
 }
 
 Building.prototype.setTile = function(gameContext, tileX, tileY) {
@@ -18,4 +20,16 @@ Building.prototype.setTile = function(gameContext, tileX, tileY) {
 
 Building.prototype.setTeam = function(teamID) {
     this.teamID = teamID;
+}
+
+Building.prototype.setCustomInfo = function(id, name, desc) {
+    this.customID = id;
+
+    if(name) {
+        this.customName = name;
+    }
+
+    if(desc) {
+        this.customDesc = desc;
+    }
 }

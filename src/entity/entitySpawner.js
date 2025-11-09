@@ -1,7 +1,6 @@
 import { getRandomElement } from "../../engine/math/math.js";
 import { EntitySprite } from "../sprite/entitySprite.js";
 import { SchemaSprite } from "../sprite/schemaSprite.js";
-import { TeamSpawner } from "../team/teamSpawner.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { BattalionEntity } from "./battalionEntity.js";
 import { Building } from "./building.js";
@@ -95,37 +94,36 @@ export const EntitySpawner = {
             worldMap.removeEntity(entity.tileX, entity.tileY, sizeX, sizeY, entityID);
         }
     },
-    spawnEntity: function(gameContext, entityConfig, ownerID) {
+    spawnEntity: function(gameContext, entityConfig, teamID) {
         const { world, teamManager } = gameContext;
         const { turnManager } = world;
-        const actor = turnManager.getActor(ownerID);
+        const team = teamManager.getTeam(teamID);
 
-        if(actor) {
-            const { teamID } = actor;
-            const team = teamManager.getTeam(teamID);
+        if(team) {
+            const { colorID, color, actor } = team;
+            const entity = EntitySpawner.createEntity(gameContext, entityConfig, colorID, color);
 
-            if(team) {
-                const { colorID, color } = team;
-                const entity = EntitySpawner.createEntity(gameContext, entityConfig, colorID, color);
+            if(entity) {
+                const entityID = entity.getID();
+                const actorObject = turnManager.getActor(actor);
 
-                if(entity) {
-                    const entityID = entity.getID();
-
-                    EntitySpawner.placeEntity(gameContext, entity);
-                    entity.setTeam(teamID);
-                    actor.addEntity(entityID);
-
-                    if(!entity.hasTrait(TypeRegistry.TRAIT_TYPE.FIXED)) {
-                        team.addUnit(entityID);
-                    }
-
-                    if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.LYNCHPIN)) {
-                        team.addLynchpin(entityID);
-                    }
-
-                    return entity;
+                if(actorObject) {
+                    actorObject.addEntity(entityID);
                 }
-            }
+
+                EntitySpawner.placeEntity(gameContext, entity);
+                entity.setTeam(teamID);
+
+                if(!entity.hasTrait(TypeRegistry.TRAIT_TYPE.FIXED)) {
+                    team.addUnit(entityID);
+                }
+
+                if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.LYNCHPIN)) {
+                    team.addLynchpin(entityID);
+                }
+                
+                return entity;
+            } 
         }
 
         return null;
@@ -136,16 +134,15 @@ export const EntitySpawner = {
             y = -1,
             id = null,
             type = null,
-            owner = null,
+            team = null,
             direction = null,
             name = null,
             desc = null,
             health = -1,
             stealth = false
         } = config;
-        const ownerID = TeamSpawner.getActorID(gameContext, owner);
         const spawnConfig = EntitySpawner.createSpawnConfig(externalID, type, x, y);
-        const entity = EntitySpawner.spawnEntity(gameContext, spawnConfig, ownerID);
+        const entity = EntitySpawner.spawnEntity(gameContext, spawnConfig, team);
 
         if(entity) {
             entity.bufferSounds(gameContext);
@@ -170,21 +167,31 @@ export const EntitySpawner = {
 
         return entity;
     },
-    loadBuilding: function(gameContext, worldMap, config, name) {
+    loadBuilding: function(gameContext, worldMap, config) {
         const { typeRegistry, teamManager } = gameContext;
-        const { x = -1, y = -1, type = TypeRegistry.BUILDING_TYPE.AIR_CONTROL, team = null } = config;
-        const teamType = teamManager.getTeam(team);
+        const {
+            id = null,
+            name = null,
+            desc = null,
+            x = -1,
+            y = -1,
+            type = TypeRegistry.BUILDING_TYPE.AIR_CONTROL,
+            team = null
+        } = config;
 
-        if(teamType) {
-            const { colorID, color } = teamType;
+        const teamObject = teamManager.getTeam(team);
+
+        if(teamObject) {
+            const { colorID, color } = teamObject;
 
             worldMap.createBuilding(x, y, () => {
                 const buildingType = typeRegistry.getBuildingType(type);
                 const { sprite } = buildingType;
                 const visualSprite = SchemaSprite.createVisual(gameContext, sprite, colorID, color, TypeRegistry.LAYER_TYPE.BUILDING);
                 const buildingSprite = new SchemaSprite(visualSprite, sprite, colorID, color);
-                const building = new Building(name, buildingType, buildingSprite);
+                const building = new Building(buildingType, buildingSprite);
 
+                building.setCustomInfo(id, name, desc);
                 building.setTile(gameContext, x, y);
                 building.setTeam(team);
 

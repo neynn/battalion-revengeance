@@ -14,11 +14,10 @@ export const MapSpawner = {
             music,
             playlist,
             teams = {},
-            actors = {},
             entities = [],
             objectives = {},
             events = {},
-            buildings = {},
+            buildings = [],
             localization = [],
             prelogue = [],
             postlogue = [],
@@ -39,28 +38,32 @@ export const MapSpawner = {
         for(const teamName in teams) {
             const team = teamManager.getTeam(teamName);
 
-            if(team) {
-                const teamAllies = teams[teamName].allies ?? [];
+            if(!team) {
+                continue;
+            }
 
-                for(const teamID of teamAllies) {
-                    const allyTeam = teamManager.getTeam(teamID);
+            let actor = null;
+            const commanderType = teams[teamName].commander;
+            const teamAllies = teams[teamName].allies ?? [];
 
-                    if(allyTeam) {
-                        team.addAlly(teamID);
-                        allyTeam.addAlly(teamName);
-                    }
+            for(const teamID of teamAllies) {
+                const allyTeam = teamManager.getTeam(teamID);
+
+                if(allyTeam) {
+                    team.addAlly(teamID);
+                    allyTeam.addAlly(teamName);
                 }
             }
-        }
 
-        for(const actorName in actors) {
-            const config = actors[actorName];   
-
-            if(!playerCreated && actorName === PLAYER_NAME) {
-                ActorSpawner.createPlayer(gameContext, config, actorName);
+            if(!playerCreated && commanderType === PLAYER_NAME) {
+                actor = ActorSpawner.createPlayer(gameContext, commanderType, teamName);
                 playerCreated = true;
             } else {
-                ActorSpawner.createAI(gameContext, config, actorName);
+                actor = ActorSpawner.createAI(gameContext, commanderType, teamName);
+            }
+
+            if(actor) {
+                team.setActor(actor.getID());
             }
         }
 
@@ -68,12 +71,12 @@ export const MapSpawner = {
             EntitySpawner.loadEntity(gameContext, entities[i]);
         }
 
-        for(const objectiveName in objectives) {
-            console.log(objectives[objectiveName]);
+        for(let i = 0; i < buildings.length; i++) {
+            EntitySpawner.loadBuilding(gameContext, worldMap, buildings[i]);
         }
 
-        for(const buildingName in buildings) {
-            EntitySpawner.loadBuilding(gameContext, worldMap, buildings[buildingName], buildingName);
+        for(const objectiveName in objectives) {
+            console.log(objectives[objectiveName]);
         }
 
         if(playlist) {

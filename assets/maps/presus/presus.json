@@ -3,50 +3,54 @@
     "width": 10,
     "height": 10,
     "teams": {
-        "SOMERTIN": { "nation": "SOMERTIN", "color": "DARK_GREEN", "allies": ["DRAGOON"], "objectives": ["DEFEAT_BOAT_2", "CAPTURE_0_0", "PROTECT_BOAT_1", "SURVIVE_TURN_2"] },
-        "TRANSKAL": { "nation": "TRANSKAL", "color": "DARK_BLUE", "objectives": ["DEFEAT_BOAT_1"] },
-        "DRAGOON": { "nation": "ELAM", "color": "BRONZE" }
-    },
-    "actors": {
-        "PLAYER": { "team": "SOMERTIN", "type": "PLAYER" },
-        "NPC": { "team": "TRANSKAL", "type": "KANYE" },
-        "DRAGOON": { "team": "DRAGOON", "type": "KANYE" }
+        "SOMERTIN": { "commander": "PLAYER", "nation": "SOMERTIN", "color": "DARK_GREEN", "allies": ["DRAGOON"], "objectives": ["DEFEAT_BOAT_1", "CAPTURE_0_0", "SURVIVE_TURN_2"] },
+        "TRANSKAL": { "commander": "KANYEs", "nation": "TRANSKAL", "color": "DARK_BLUE", "objectives": ["PROTECT_BOAT_1"] },
+        "DRAGOON": { "commander": "KANYE", "nation": "ELAM", "color": "BRONZE" }
     },
     "entities": [
-        { "x": 0, "y": 0, "direction":"SOUTH", "type": "aleph", "owner": "PLAYER" },
-        { "x": 1, "y": 0, "direction":"SOUTH", "type": "condor_bomber", "owner": "PLAYER" },
-        { "x": 2, "y": 0, "direction":"SOUTH", "type": "meme_bureaucrat", "owner": "PLAYER" },
-        { "x": 3, "y": 0, "direction":"SOUTH", "type": "cockroach", "owner": "PLAYER" },
-        { "x": 4, "y": 0, "direction":"SOUTH", "type": "asekara_tank", "owner": "PLAYER" },
-        { "x": 5, "y": 0, "direction":"SOUTH", "type": "raptor_fighter", "owner": "PLAYER" },
-        { "x": 6, "y": 0, "direction":"SOUTH", "type": "flak_tank", "owner": "PLAYER" },
-        { "x": 7, "y": 0, "direction":"SOUTH", "type": "tank_hunter", "owner": "PLAYER" },
-        { "x": 8, "y": 0, "direction":"SOUTH", "type": "ampac", "owner": "PLAYER" },
-        { "x": 9, "y": 0, "direction":"SOUTH", "type": "turret", "owner": "PLAYER" },
-        { "x": 0, "y": 1, "direction":"SOUTH", "type": "entwicklung", "owner": "PLAYER" },
-        { "x": 1, "y": 1, "stealth": true, "type": "stealth_tank", "owner": "PLAYER" },
-        { "x": 2, "y": 1, "type": "heavy_commando", "owner": "PLAYER" },
-        { "x": 3, "y": 1, "type": "ayin", "owner": "PLAYER" },
-        { "x": 4, "y": 1, "type": "gorlitz_tank", "owner": "PLAYER" },
+        { "x": 0, "y": 0, "direction":"SOUTH", "type": "aleph", "team": "SOMERTIN" },
+        { "x": 1, "y": 0, "direction":"SOUTH", "type": "condor_bomber", "team": "SOMERTIN" },
+        { "x": 2, "y": 0, "direction":"SOUTH", "type": "meme_bureaucrat", "team": "SOMERTIN" },
+        { "x": 3, "y": 0, "direction":"SOUTH", "type": "cockroach", "team": "SOMERTIN" },
+        { "x": 4, "y": 0, "direction":"SOUTH", "type": "asekara_tank", "team": "SOMERTIN" },
+        { "x": 5, "y": 0, "direction":"SOUTH", "type": "raptor_fighter", "team": "SOMERTIN" },
+        { "x": 6, "y": 0, "direction":"SOUTH", "type": "flak_tank", "team": "SOMERTIN" },
+        { "x": 7, "y": 0, "direction":"SOUTH", "type": "tank_hunter", "team": "SOMERTIN" },
+        { "x": 8, "y": 0, "direction":"SOUTH", "type": "ampac", "team": "SOMERTIN" },
+        { "x": 9, "y": 0, "direction":"SOUTH", "type": "turret", "team": "SOMERTIN" },
+        { "x": 0, "y": 1, "direction":"SOUTH", "type": "entwicklung", "team": "SOMERTIN" },
+        { "x": 1, "y": 1, "stealth": true, "type": "stealth_tank", "team": "SOMERTIN" },
+        { "x": 2, "y": 1, "type": "heavy_commando", "team": "SOMERTIN" },
+        { "x": 3, "y": 1, "type": "ayin", "team": "SOMERTIN" },
+        { "x": 4, "y": 1, "type": "gorlitz_tank", "team": "SOMERTIN" },
 
-        { "x": 5, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "leviathan_barge", "owner": "PLAYER" },
-        { "x": 8, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "u_boat", "owner": "PLAYER" },
-        { "x": 8, "y": 3, "id": "BOAT_1", "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "u_boat", "owner": "NPC" },
-        { "x": 4, "y": 4, "stealth": true, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "u_boat", "owner": "NPC" },
-        { "x": 3, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "super_battleship", "owner": "PLAYER" },
-        { "x": 2, "y": 2, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "heavy_commando", "owner": "PLAYER" },
-        { "x": 1, "y": 2, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "heavy_commando", "owner": "PLAYER" },
-        { "x": 4, "y": 2, "stealth": true, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "stealth_tank", "owner": "NPC" },
-        { "x": 5, "y": 2, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "tank_hunter", "owner": "NPC", "direction": "WEST" },
-        { "x": 6, "y": 5, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "jammer_truck", "owner": "PLAYER", "direction": "WEST" },
-        { "x": 7, "y": 1, "health": 100, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "jammer_truck", "owner": "NPC", "direction": "WEST" },
-        { "x": 7, "y": 5, "type": "jammer_truck", "owner": "DRAGOON", "direction": "WEST" }
+        { "x": 5, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "leviathan_barge", "team": "SOMERTIN" },
+        { "x": 8, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "u_boat", "team": "SOMERTIN" },
+        { "x": 8, "y": 3, "id": "BOAT_1", "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "u_boat", "team": "TRANSKAL" },
+        { "x": 4, "y": 4, "stealth": true, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "u_boat", "team": "TRANSKAL" },
+        { "x": 3, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "super_battleship", "team": "SOMERTIN" },
+        { "x": 2, "y": 2, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "heavy_commando", "team": "SOMERTIN" },
+        { "x": 1, "y": 2, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "heavy_commando", "team": "SOMERTIN" },
+        { "x": 4, "y": 2, "stealth": true, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "stealth_tank", "team": "TRANSKAL" },
+        { "x": 5, "y": 2, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "tank_hunter", "team": "TRANSKAL", "direction": "WEST" },
+        { "x": 6, "y": 5, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "jammer_truck", "team": "SOMERTIN", "direction": "WEST" },
+        { "x": 7, "y": 1, "health": 100, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "jammer_truck", "team": "TRANSKAL", "direction": "WEST" },
+        { "x": 7, "y": 5, "type": "jammer_truck", "team": "DRAGOON", "direction": "WEST" }
+    ],
+    "buildings": [
+        { "x": 0, "y": 6, "type": "AIR_CONTROL", "team": "SOMERTIN" },
+        { "x": 1, "y": 6, "type": "COMMAND_CENTER", "team": "SOMERTIN" },
+        { "x": 2, "y": 6, "type": "FACTORY", "team": "SOMERTIN" },
+        { "x": 3, "y": 6, "type": "GROUND_CONTROL", "team": "SOMERTIN" },
+        { "x": 4, "y": 6, "type": "OIL_ADVANCED_REFINERY", "team": "DRAGOON" },
+        { "x": 5, "y": 6, "type": "OIL_REFINERY", "team": "DRAGOON" },
+        { "x": 6, "y": 6, "type": "OIL_RIG", "team": "TRANSKAL" },
+        { "x": 7, "y": 6, "type": "SEA_CONTROL", "team": "TRANSKAL" }
     ],
     "objectives": {
         "SURVIVE_TURN_2": { "type": "SURVIVE", "turn": 2 },
         "PROTECT_BOAT_1": { "type": "PROTECT", "target": "BOAT_1" },
         "DEFEAT_BOAT_1": { "type": "DEFEAT", "target": "BOAT_1" },
-        "DEFEAT_BOAT_2": { "type": "DEFEAT", "target": "BOAT_2" },
         "CAPTURE_0_0": { "type": "CAPTURE", "x": 0, "y": 0 }
     },
     "prelogue": [
@@ -65,16 +69,6 @@
         { "x": 0, "y": 0, "name": "TILE_NAME_TEST" },
         { "x": 1, "y": 0, "desc": "TILE_DESC_TEST" }
     ],
-    "buildings": {
-        "AIR_CONTROL": { "x": 0, "y": 6, "type": "AIR_CONTROL", "team": "SOMERTIN" },
-        "COMMAND_CENTER": { "x": 1, "y": 6, "type": "COMMAND_CENTER", "team": "SOMERTIN" },
-        "FACTORY": { "x": 2, "y": 6, "type": "FACTORY", "team": "SOMERTIN" },
-        "GROUND_CONTROL": { "x": 3, "y": 6, "type": "GROUND_CONTROL", "team": "SOMERTIN" },
-        "OIL_ADVANCED_REFINERY": { "x": 4, "y": 6, "type": "OIL_ADVANCED_REFINERY", "team": "DRAGOON" },
-        "OIL_REFINERY": { "x": 5, "y": 6, "type": "OIL_REFINERY", "team": "DRAGOON" },
-        "OIL_RIG": { "x": 6, "y": 6, "type": "OIL_RIG", "team": "DRAGOON" },
-        "SEA_CONTROL": { "x": 7, "y": 6, "type": "SEA_CONTROL", "team": "DRAGOON" }
-    },
     "events": {
         "DESTROY_BRIDGE": {
             "turn": 3,
@@ -99,7 +93,7 @@
             "triggers": [
                 {
                     "type": "SPAWN_ENTITY",
-                    "setup": { "x": 2, "y": 1, "type": "stealth_tank", "owner": "PLAYER" }
+                    "setup": { "x": 2, "y": 1, "type": "stealth_tank", "team": "SOMERTIN" }
                 }
             ]
         }

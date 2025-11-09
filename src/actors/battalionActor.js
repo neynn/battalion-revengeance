@@ -7,7 +7,6 @@ export const BattalionActor = function(id) {
     this.entities = [];
     this.teamID = null;
     this.portrait = null;
-    this.customID = null;
     this.commander = null;
 }
 
@@ -18,10 +17,6 @@ BattalionActor.prototype.surrender = function(gameContext) {
     const deathRequest = ActionHelper.createDeathRequest(gameContext, this.entities);
 
     this.queueRequest(deathRequest);
-}
-
-BattalionActor.prototype.setCustomID = function(id) {
-    this.customID = id;
 }
 
 BattalionActor.prototype.drawPortrait = function(context, drawX, drawY) {
