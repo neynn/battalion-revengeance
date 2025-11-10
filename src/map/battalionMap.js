@@ -60,7 +60,7 @@ BattalionMap.prototype.setClimate = function(local, global) {
 }
 
 BattalionMap.prototype.getLogisticFactor = function(gameContext, tileX, tileY) {
-    const { logisticFactor } = this.getCligetClimateType(gameContext, tileX, tileY);
+    const { logisticFactor } = this.getClimateType(gameContext, tileX, tileY);
 
     return logisticFactor;
 }

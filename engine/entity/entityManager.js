@@ -1,15 +1,10 @@
 import { EventEmitter } from "../events/eventEmitter.js";
-import { Logger } from "../logger.js";
 
 export const EntityManager = function() {
-    this.traits = {};
-    this.archetypes = {};
-    this.entityTypes = new Map();
-    this.components = new Map();
-
     this.nextID = 0;
     this.entities = [];
     this.entityMap = new Map();
+    this.entityTypes = new Map();
 
     this.events = new EventEmitter();
     this.events.register(EntityManager.EVENT.ENTITY_CREATE);
@@ -25,15 +20,7 @@ EntityManager.ID = {
     INVALID: -1
 };
 
-EntityManager.prototype.load = function(traits, archetypes) {
-    if(traits) {
-        this.traits = traits;
-    }
-
-    if(archetypes) {
-        this.archetypes = archetypes;
-    }    
-}
+EntityManager.prototype.load = function() {}
 
 EntityManager.prototype.addEntityType = function(typeID, type) {
     this.entityTypes.set(typeID, type);
@@ -54,15 +41,6 @@ EntityManager.prototype.exit = function() {
     this.entityMap.clear();
     this.entities.length = 0;
     this.nextID = 0;
-}
-
-EntityManager.prototype.registerComponent = function(componentID, componentClass) {
-    if(this.components.has(componentID)) {
-        Logger.log(Logger.CODE.ENGINE_ERROR, "Component already exists!", "EntityManager.prototype.registerComponent", { "id": componentID });
-        return;
-    }
-
-    this.components.set(componentID, componentClass);
 }
 
 EntityManager.prototype.forEachEntity = function(onCall) {
@@ -151,52 +129,4 @@ EntityManager.prototype.destroyEntity = function(index) {
     this.entities[index] = this.entities[swapEntityIndex];
     this.entities.pop();
     this.events.emit(EntityManager.EVENT.ENTITY_DESTROY, entityID);
-}
-
-EntityManager.prototype.createComponentInstance = function(componentID) {
-    const Component = this.components.get(componentID);
-
-    if(!Component) {
-        Logger.log(Logger.CODE.ENGINE_ERROR, "Component is not registered!", "EntityManager.prototype.addComponent", { "id": componentID }); 
-        return null;
-    }
-
-    return new Component();
-}
-
-EntityManager.prototype.initComponentMap = function(entity, components) {
-    for(const componentID in components) {
-        if(!entity.hasComponent(componentID)) {
-            const instance = this.createComponentInstance(componentID);
-
-            if(instance) {
-                entity.addComponent(componentID, instance);
-            }
-        }
-
-        entity.initComponent(componentID, components[componentID]);
-    }
-}
-
-EntityManager.prototype.addArchetypeComponents = function(entity, archetypeID) {
-    const archetype = this.archetypes[archetypeID];
-
-    if(!archetype || !archetype.components) {
-        return;
-    }
-
-    this.initComponentMap(entity, archetype.components);
-}
-
-EntityManager.prototype.addTraitComponents = function(entity, traits) {
-    for(let i = 0; i < traits.length; i++) {
-        const traitID = traits[i];
-        const trait = this.traits[traitID];
-
-        if(!trait || !trait.components) {
-            continue;
-        }
-
-        this.initComponentMap(entity, trait.components);
-    }
 }
