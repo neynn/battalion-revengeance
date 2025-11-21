@@ -120,10 +120,10 @@ MapEditorController.prototype.initPalletButtons = function(gameContext, camera) 
 
 MapEditorController.prototype.initPalletButtonEvents = function(gameContext, button, camera, gui) {
     const { tileManager } = gameContext;
+    const { palletID } = button;
 
-    button.addClick((event) => {
-        const { palletID } = button;
-        const palletIndex = this.mapPageIndex(palletID);
+    button.setClick((event) => {
+        const palletIndex = this.getPalletIndex(palletID);
         const tileID = this.editor.pallet.getID(palletIndex);
 
         if(tileID !== Pallet.ID.ERROR) {
@@ -134,9 +134,8 @@ MapEditorController.prototype.initPalletButtonEvents = function(gameContext, but
         }
     });
 
-    button.enableCustom((display, localX, localY) => {
-        const { palletID } = button;
-        const palletIndex = this.mapPageIndex(palletID);
+    button.setCustom((display, localX, localY) => {
+        const palletIndex = this.getPalletIndex(palletID);
         const tileID = this.editor.pallet.getID(palletIndex);
 
         if(tileID !== Pallet.ID.ERROR) {
@@ -311,7 +310,7 @@ MapEditorController.prototype.toggleInversion = function(gameContext) {
     this.updateInversionText(gameContext, inversionState);
 }
 
-MapEditorController.prototype.mapPageIndex = function(index) {
+MapEditorController.prototype.getPalletIndex = function(index) {
     return this.pageIndex * this.palletButtons.length + index;
 } 
 
@@ -338,21 +337,21 @@ MapEditorController.prototype.updateMenuText = function(gameContext) {
     const { uiManager } = gameContext;
     const editorInterface = uiManager.getGUI(this.guiID);
 
-    editorInterface.setText("TEXT_TILESET_MODE", `MODE: ${MapEditor.MODE_NAME[this.editor.modes.getValue()]}`);
+    editorInterface.getElement("TEXT_TILESET_MODE").setText(`MODE: ${MapEditor.MODE_NAME[this.editor.modes.getValue()]}`);
 
     switch(this.editor.modes.getValue()) {
         case MapEditor.MODE.DRAW: {
-            editorInterface.setText("TEXT_TILESET", `${this.editor.brushSets.getValue()?.id}`);
+            editorInterface.getElement("TEXT_TILESET").setText(`${this.editor.brushSets.getValue()?.id}`);
             break;
         }
         case MapEditor.MODE.AUTOTILE: {
-            editorInterface.setText("TEXT_TILESET", `NOT IMPLEMENTED!`);
+            editorInterface.getElement("TEXT_TILESET").setText(`NOT IMPLEMENTED!`);
             break;
         }
     }
 
-    editorInterface.setText("TEXT_PAGE", this.getPageText());
-    editorInterface.setText("TEXT_SIZE",  this.getSizeText());
+    editorInterface.getElement("TEXT_PAGE").setText(this.getPageText());
+    editorInterface.getElement("TEXT_SIZE").setText( this.getSizeText());
 }
 
 MapEditorController.prototype.getPageText = function() {

@@ -1,6 +1,6 @@
 import { SwapSet } from "../util/swapSet.js";
-import { TextElement } from "./elements/textElement.js";
 import { UICollider } from "./uiCollider.js";
+import { UIElement } from "./uiElement.js";
 
 export const UserInterface = function(id) {
     this.id = id;
@@ -10,6 +10,8 @@ export const UserInterface = function(id) {
     this.state = UserInterface.STATE.VISIBLE;
     this.collisions = new SwapSet();
 }
+
+UserInterface.STUB_ELEMENT = new UIElement("STUB");
 
 UserInterface.STATE = {
     HIDDEN: 0,
@@ -28,28 +30,33 @@ UserInterface.prototype.clear = function() {
     this.roots.length = 0;
 }
 
-UserInterface.prototype.isAnyColliding = function() {
-    return this.collisions.current.size > 0;
-}
-
-UserInterface.prototype.handleClick = function(gameContext, mouseX, mouseY, mouseRange) {
+UserInterface.prototype.handleClick = function(event) {
     for(const elementID of this.collisions.current) {
         const element = this.elements.get(elementID);
 
-        element.collider.click(gameContext, mouseX, mouseY, mouseRange);
+        element.onClick(event);
+    }
+
+    return this.collisions.current.size;
+}
+
+UserInterface.prototype.destroyNamedElement = function(name) {
+    const elementID = this.nameMap.get(name);
+
+    if(elementID !== undefined) {
+        this.destroyElement(elementID);
+
+        this.nameMap.delete(name);
     }
 }
 
-UserInterface.prototype.destroyElement = function(name) {
-    const element = this.getElement(name);
+UserInterface.prototype.destroyElement = function(elementID) {
+    const element = this.elements.get(elementID);
 
-    if(element) {
-        const elementID = element.getID();
-        
+    if(element) {        
         element.closeGraph();
 
         this.elements.delete(elementID);
-        this.nameMap.delete(name);
 
         for(let i = 0; i < this.roots.length; i++) {
             if(this.roots[i] === element) {
@@ -84,7 +91,7 @@ UserInterface.prototype.getElement = function(name) {
     const element = this.elements.get(elementID);
 
     if(!element) {
-        return null;
+        return UserInterface.STUB_ELEMENT;
     }
 
     return element;
@@ -128,6 +135,8 @@ UserInterface.prototype.updateCollisions = function(mouseX, mouseY, mouseRange) 
             element.collider.onCollisionUpdate(UICollider.STATE.NOT_COLLIDED, mouseX, mouseY, mouseRange);
         }
     }
+
+    return this.collisions.current.size;
 }
 
 UserInterface.prototype.addElement = function(element) {
@@ -174,29 +183,5 @@ UserInterface.prototype.clearRoots = function() {
 UserInterface.prototype.updateRootAnchors = function(width, height) {
     for(let i = 0; i < this.roots.length; i++) {
         this.roots[i].updateAnchor(width, height);
-    }
-}
-
-UserInterface.prototype.addClick = function(elementID, onClick) {
-    const element = this.getElement(elementID);
-
-    if(element && element.collider) {
-        element.collider.events.on(UICollider.EVENT.CLICKED, onClick, { id: this.id });
-    }
-}
-
-UserInterface.prototype.removeClick = function(elementID) {
-    const element = this.getElement(elementID);
-
-    if(element && element.collider) {
-        element.collider.events.unsubscribeAll(UICollider.EVENT.CLICKED, this.id);
-    }
-}
-
-UserInterface.prototype.setText = function(textID, message) {
-    const text = this.getElement(textID);
-
-    if(text && (text instanceof TextElement)) {
-        text.setText(message);
     }
 }

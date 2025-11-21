@@ -104,39 +104,39 @@ BattaltionEditorController.prototype.initUIEvents = function(gameContext) {
     const { uiManager, states } = gameContext;
     const editorInterface = uiManager.getGUI(this.guiID);
 
-    editorInterface.addClick("BUTTON_INVERT", () => this.toggleInversion(gameContext));
-    editorInterface.addClick("BUTTON_BACK", () => states.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));
-    editorInterface.addClick("BUTTON_AUTO", () => this.toggleAutotiler(gameContext));
+    editorInterface.getElement("BUTTON_INVERT").setClick(() => this.toggleInversion(gameContext));
+    editorInterface.getElement("BUTTON_BACK").setClick(() => states.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));
+    editorInterface.getElement("BUTTON_AUTO").setClick(() => this.toggleAutotiler(gameContext));
 
-    editorInterface.addClick("BUTTON_TILESET_MODE", () => {
+    editorInterface.getElement("BUTTON_TILESET_MODE").setClick(() => {
         this.editor.scrollMode(1);
         this.resetPage();
         this.updateMenuText(gameContext);
     });
 
-    editorInterface.addClick("BUTTON_TILESET_LEFT", () => {
+    editorInterface.getElement("BUTTON_TILESET_LEFT").setClick(() => {
         this.editor.scrollBrushSet(-1);
         this.resetPage();
         this.updateMenuText(gameContext);
     });
 
-    editorInterface.addClick("BUTTON_TILESET_RIGHT", () => {
+    editorInterface.getElement("BUTTON_TILESET_RIGHT").setClick(() => {
         this.editor.scrollBrushSet(1);
         this.resetPage();
         this.updateMenuText(gameContext);
     });
 
-    editorInterface.addClick("BUTTON_PAGE_LAST", () => this.updatePage(gameContext, -1)); 
-    editorInterface.addClick("BUTTON_PAGE_NEXT", () => this.updatePage(gameContext, 1));  
-    editorInterface.addClick("BUTTON_SCROLL_SIZE", () => this.updateBrushSize(gameContext, 1));
-    editorInterface.addClick("BUTTON_L1", () => this.clickLayerButton(gameContext, BattaltionEditorController.LAYER_BUTTON.L1));
-    editorInterface.addClick("BUTTON_L2", () => this.clickLayerButton(gameContext, BattaltionEditorController.LAYER_BUTTON.L2));
-    editorInterface.addClick("BUTTON_L3", () => this.clickLayerButton(gameContext, BattaltionEditorController.LAYER_BUTTON.L3));
-    editorInterface.addClick("BUTTON_SAVE", () => this.saveMap(gameContext));
-    editorInterface.addClick("BUTTON_CREATE", () => this.createMap(gameContext));
-    editorInterface.addClick("BUTTON_LOAD", () => this.loadMap(gameContext));
-    editorInterface.addClick("BUTTON_RESIZE", () => this.resizeCurrentMap(gameContext)); 
-    editorInterface.addClick("BUTTON_UNDO", () => this.editor.undo(gameContext)); 
-    editorInterface.addClick("BUTTON_ERASER", () => this.toggleEraser(gameContext));
-    editorInterface.addClick("BUTTON_VIEW_ALL", () => this.viewAllLayers(gameContext));
+    editorInterface.getElement("BUTTON_PAGE_LAST").setClick(() => this.updatePage(gameContext, -1)); 
+    editorInterface.getElement("BUTTON_PAGE_NEXT").setClick(() => this.updatePage(gameContext, 1));  
+    editorInterface.getElement("BUTTON_SCROLL_SIZE").setClick(() => this.updateBrushSize(gameContext, 1));
+    editorInterface.getElement("BUTTON_L1").setClick(() => this.clickLayerButton(gameContext, BattaltionEditorController.LAYER_BUTTON.L1));
+    editorInterface.getElement("BUTTON_L2").setClick(() => this.clickLayerButton(gameContext, BattaltionEditorController.LAYER_BUTTON.L2));
+    editorInterface.getElement("BUTTON_L3").setClick(() => this.clickLayerButton(gameContext, BattaltionEditorController.LAYER_BUTTON.L3));
+    editorInterface.getElement("BUTTON_SAVE").setClick(() => this.saveMap(gameContext));
+    editorInterface.getElement("BUTTON_CREATE").setClick(() => this.createMap(gameContext));
+    editorInterface.getElement("BUTTON_LOAD").setClick(() => this.loadMap(gameContext));
+    editorInterface.getElement("BUTTON_RESIZE").setClick(() => this.resizeCurrentMap(gameContext)); 
+    editorInterface.getElement("BUTTON_UNDO").setClick(() => this.editor.undo(gameContext)); 
+    editorInterface.getElement("BUTTON_ERASER").setClick(() => this.toggleEraser(gameContext));
+    editorInterface.getElement("BUTTON_VIEW_ALL").setClick(() => this.viewAllLayers(gameContext));
 }

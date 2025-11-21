@@ -33,9 +33,11 @@ export const GameContext = function() {
     this.isResizeQueued = false;
     this.timeUntilResize = 0;
 
-    this.client.cursor.events.on(Cursor.EVENT.BUTTON_CLICK, ({ button, x, y, radius }) => {
+    this.client.cursor.events.on(Cursor.EVENT.BUTTON_CLICK, (event) => {
+        const { button } = event;
+
         if(button === Cursor.BUTTON.LEFT) {
-            this.uiManager.handleClick(this, x, y, radius);
+            this.uiManager.handleClick(event);
         }
     }, { permanent: true });
 

@@ -29,15 +29,13 @@ TextElement.prototype.setRevealing = function(isRevealing) {
 }
 
 TextElement.prototype.setText = function(text) {
-    if(text !== undefined) {
-        this.fullText = text;
+    this.fullText = text;
 
-        if(this.isRevealing) {
-            this.timeElapsed = 0;
-            this.revealedText = "";
-        } else {
-            this.revealText();
-        }
+    if(this.isRevealing) {
+        this.timeElapsed = 0;
+        this.revealedText = "";
+    } else {
+        this.revealText();
     }
 }
 

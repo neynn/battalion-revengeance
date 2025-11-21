@@ -5,15 +5,14 @@ import { SHAPE } from "../math/constants.js";
 export const UICollider = function() {
     this.positionX = -1;
     this.positionY = -1;
-    this.width = -1;
-    this.height = -1;
+    this.width = 0;
+    this.height = 0;
     this.collisions = 0;
     this.duration = 0;
     this.shape = SHAPE.RECTANGLE;
     this.state = UICollider.STATE.NOT_COLLIDED;
 
     this.events = new EventEmitter();
-    this.events.register(UICollider.EVENT.CLICKED);
     this.events.register(UICollider.EVENT.FIRST_COLLISION);
     this.events.register(UICollider.EVENT.LAST_COLLISION);
     this.events.register(UICollider.EVENT.REPEATED_COLLISION);
@@ -27,8 +26,7 @@ UICollider.STATE = {
 UICollider.EVENT = {
     LAST_COLLISION: "LAST_COLLISION",
     FIRST_COLLISION: "FIRST_COLLISION",
-    REPEATED_COLLISION: "REPEATED_COLLISION",
-    CLICKED: "CLICKED"
+    REPEATED_COLLISION: "REPEATED_COLLISION"
 };
 
 UICollider.prototype.setShape = function(shape) {
@@ -106,8 +104,4 @@ UICollider.prototype.onCollisionUpdate = function(state, mouseX, mouseY, mouseRa
             break;
         }
     }
-}
-
-UICollider.prototype.click = function(gameContext, mouseX, mouseY, mouseRange) {
-    this.events.emit(UICollider.EVENT.CLICKED, {});
 }

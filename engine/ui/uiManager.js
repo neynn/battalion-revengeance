@@ -47,9 +47,9 @@ UIManager.prototype.update = function(gameContext) {
     const { positionX, positionY, radius } = cursor;
 
     for(let i = this.interfaceStack.length - 1; i >= 0; i--) {
-        this.interfaceStack[i].updateCollisions(positionX, positionY, radius);
+        const collisions = this.interfaceStack[i].updateCollisions(positionX, positionY, radius);
 
-        if(this.interfaceStack[i].isAnyColliding()) {
+        if(collisions > 0) {
             break;
         }
     }
@@ -82,13 +82,12 @@ UIManager.prototype.getGUI = function(interfaceID) {
     return this.interfaceStack[interfaceIndex];
 }
 
-UIManager.prototype.handleClick = function(gameContext, mouseX, mouseY, mouseRange) {
+UIManager.prototype.handleClick = function(event) {
     for(let i = this.interfaceStack.length - 1; i >= 0; i--) {
         const userInterface = this.interfaceStack[i];
-        const isAnyColliding = userInterface.isAnyColliding();
+        const collisions = userInterface.handleClick(event);
 
-        if(isAnyColliding) {
-            userInterface.handleClick(gameContext, mouseX, mouseY, mouseRange);
+        if(collisions > 0) {
             break;
         }
     }

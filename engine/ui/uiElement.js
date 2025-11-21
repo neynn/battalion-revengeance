@@ -28,6 +28,15 @@ UIElement.ANCHOR_TYPE = {
 UIElement.prototype = Object.create(Graph.prototype);
 UIElement.prototype.constructor = UIElement;
 
+UIElement.prototype.setText = function(text) {}
+UIElement.prototype.onClick = function(event) {}
+
+UIElement.prototype.setClick = function(onClick) {
+    if(this.collider !== null) {
+        this.onClick = onClick;
+    }
+}
+
 UIElement.prototype.setPosition = function(positionX, positionY) {
     this.positionX = positionX;
     this.positionY = positionY;
