@@ -38,11 +38,11 @@ export const EntitySpawner = {
         return owners;
     },
     createEntity: function(gameContext, config, colorID, color) {
-        const { world, transform2D, spriteManager } = gameContext;
+        const { world, transform2D, spriteManager, typeRegistry } = gameContext;
         const { entityManager } = world;
         const { id, type, x, y } = config;
-
-        const entity = entityManager.createEntity((entityID, entityType) => {
+        const entityType = typeRegistry.getEntityType(type);
+        const entity = entityManager.createEntity((entityID) => {
             const visualSprite = spriteManager.createEmptySprite(TypeRegistry.LAYER_TYPE.LAND);
             const entitySprite = new EntitySprite(visualSprite, null, colorID, color);
             const entityObject = new BattalionEntity(entityID, entitySprite);
@@ -53,7 +53,7 @@ export const EntitySpawner = {
             entityObject.setPositionVec(spawnPosition);
 
             return entityObject;
-        }, type, id);
+        }, id);
 
         return entity;
     },

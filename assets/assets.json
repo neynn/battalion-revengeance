@@ -7,7 +7,6 @@
     "keybinds": { "directory": ["assets", "config"], "source": "keybinds.json" },
 
     "archetypes": { "directory": ["assets", "entity"], "source": "archetypes.json" },
-    "entities": { "directory": ["assets", "entity"], "source": "entities.json" },
     "traits": { "directory": ["assets", "entity"], "source": "traits.json" },
     "fonts": { "directory": ["assets", "fonts"], "source": "fonts.json" },
     "icons": { "directory": ["assets", "icons"], "source": "icons.json" },
@@ -27,6 +26,7 @@
     "climateTypes": { "directory": ["assets", "game", "types"], "source": "climateTypes.json" },
     "commanderTypes": { "directory": ["assets", "game", "types"], "source": "commanderTypes.json" },
     "currencyTypes": { "directory": ["assets", "game", "types"], "source": "currencyTypes.json" },
+    "entityTypes": { "directory": ["assets", "game", "types"], "source": "entityTypes.json" },
     "factionTypes": { "directory": ["assets", "game", "types"], "source": "factionTypes.json" },
     "moraleTypes": { "directory": ["assets", "game", "types"], "source": "moraleTypes.json" },
     "movementTypes": { "directory": ["assets", "game", "types"], "source": "movementTypes.json" },

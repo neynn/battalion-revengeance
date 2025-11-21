@@ -4,7 +4,6 @@ export const EntityManager = function() {
     this.nextID = 0;
     this.entities = [];
     this.entityMap = new Map();
-    this.entityTypes = new Map();
 
     this.events = new EventEmitter();
     this.events.register(EntityManager.EVENT.ENTITY_CREATE);
@@ -21,20 +20,6 @@ EntityManager.ID = {
 };
 
 EntityManager.prototype.load = function() {}
-
-EntityManager.prototype.addEntityType = function(typeID, type) {
-    this.entityTypes.set(typeID, type);
-}
-
-EntityManager.prototype.getEntityType = function(typeID) {
-    const entityType = this.entityTypes.get(typeID);
-
-    if(!entityType) {
-        return null;
-    }
-
-    return entityType;
-}
 
 EntityManager.prototype.exit = function() {
     this.events.muteAll();
@@ -95,25 +80,21 @@ EntityManager.prototype.getEntity = function(entityID) {
     return null;
 }
 
-EntityManager.prototype.createEntity = function(onCreate, typeID, externalID) {
+EntityManager.prototype.createEntity = function(onCreate, externalID) {
     const entityID = externalID !== undefined ? externalID : this.nextID++;
 
     if(!this.entityMap.has(entityID)) {
-        const entityType = this.getEntityType(typeID);
+        const entity = onCreate(entityID);
 
-        if(entityType) {
-            const entity = onCreate(entityID, entityType);
+        if(entity) {
+            this.entityMap.set(entityID, this.entities.length);
+            this.entities.push(entity);
+            this.events.emit(EntityManager.EVENT.ENTITY_CREATE, {
+                "id": entityID,
+                "entity": entity
+            });
 
-            if(entity) {
-                this.entityMap.set(entityID, this.entities.length);
-                this.entities.push(entity);
-                this.events.emit(EntityManager.EVENT.ENTITY_CREATE, {
-                    "id": entityID,
-                    "entity": entity
-                });
-
-                return entity;
-            }
+            return entity;
         }
     }
 

@@ -1,53 +1,46 @@
-export const TypeCategory = function(id, values, stub) {
-    this.id = id;
-    this.values = values;
+export const TypeCategory = function(DEBUG_NAME, stub) {
+    this.DEBUG_NAME = DEBUG_NAME;
     this.stub = stub;
     this.types = {};
-
-    for(const valueName in values) {
-        if(valueName !== values[valueName]) {
-            console.log(`Wrong enum! ${valueName} does not match ${values[valueName]} in ${id}!`);
-        }
-    }
 }
 
 TypeCategory.prototype.hasType = function(typeID) {
     return this.types[typeID] !== undefined;
 }
 
-TypeCategory.prototype.logMissingEnum = function(typeID) {
-    console.log(`Enum for ${typeID} is not registered in category ${this.id}!`);
+TypeCategory.prototype.checkEnums = function(enums) {
+    const names = Object.values(enums);
+
+    for(let i = 0; i < names.length; i++) {
+        const name = names[i];
+
+        if(this.types[name] === undefined) {
+            console.warn(`${this.DEBUG_NAME}: Enum value ${name} is wrong!`);
+        }
+    }
 }
 
-TypeCategory.prototype.setTypes = function(types) {
+TypeCategory.prototype.setTypes = function(types, enums) {
     for(const typeName in types) {
-        const typeID = this.values[typeName];
-
-        if(typeID === undefined) {
-            this.logMissingEnum(typeName);
-        }
-
         this.types[typeName] = types[typeName];
     }
+
+    this.checkEnums(enums);
 } 
 
-TypeCategory.prototype.loadTypes = function(types, TypeClass) {
+TypeCategory.prototype.loadTypes = function(types, TypeClass, enums) {
     for(const typeName in types) {
-        const typeID = this.values[typeName];
-
-        if(typeID === undefined) {
-            this.logMissingEnum(typeName);
-        }
-
         this.types[typeName] = new TypeClass(typeName, types[typeName]);
     }
+
+    this.checkEnums(enums);
 }
 
 TypeCategory.prototype.getType = function(typeID) {
     const type = this.types[typeID];
 
     if(!type) {
-        console.error(`Type ${typeID} is not registered in category ${this.id}! Using stub!`);
+        console.error(`Type ${typeID} is not registered in category ${this.DEBUG_NAME}! Using stub!`);
         return this.stub;
     }
 

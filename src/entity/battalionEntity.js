@@ -9,7 +9,7 @@ import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { TRAIT_CONFIG } from "../traitConfig.js";
 import { JammerField } from "../map/jammerField.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
-import { EntityType } from "./entityType.js";
+import { EntityType } from "../type/parsed/entityType.js";
 
 const mGetLowestCostNode = function(queue) {
     let lowestNode = queue[0];
@@ -1404,9 +1404,8 @@ BattalionEntity.prototype.getDistanceMoved = function(deltaTime) {
 
 BattalionEntity.prototype.fromTransport = function(gameContext) {
     if(this.transportID !== null) {
-        const { world } = gameContext;
-        const { entityManager } = world;
-        const transportType = entityManager.getEntityType(this.transportID);
+        const { typeRegistry } = gameContext;
+        const transportType = typeRegistry.getEntityType(this.transportID);
         const previousHealthFactor = this.health / this.maxHealth;
 
         this.loadConfig(transportType);
@@ -1418,26 +1417,25 @@ BattalionEntity.prototype.fromTransport = function(gameContext) {
 
 BattalionEntity.prototype.toTransport = function(gameContext, transportType) {
     if(this.transportID === null) {
-        const { world } = gameContext;
-        const { entityManager } = world;
+        const { typeRegistry } = gameContext;
         const previousHealthFactor = this.health / this.maxHealth;
         let transportConfig = null;
 
         switch(transportType) {
             case BattalionEntity.TRANSPORT_TYPE.BARGE: {
-                transportConfig = entityManager.getEntityType(TypeRegistry.ENTITY_TYPE.LEVIATHAN_BARGE);
+                transportConfig = typeRegistry.getEntityType(TypeRegistry.ENTITY_TYPE.LEVIATHAN_BARGE);
                 break;
             }
             case BattalionEntity.TRANSPORT_TYPE.PELICAN: {
-                transportConfig = entityManager.getEntityType(TypeRegistry.ENTITY_TYPE.PELICAN_TRANSPORT);
+                transportConfig = typeRegistry.getEntityType(TypeRegistry.ENTITY_TYPE.PELICAN_TRANSPORT);
                 break;
             }
             case BattalionEntity.TRANSPORT_TYPE.STORK: {
-                transportConfig = entityManager.getEntityType(TypeRegistry.ENTITY_TYPE.STORK_TRANSPORT);
+                transportConfig = typeRegistry.getEntityType(TypeRegistry.ENTITY_TYPE.STORK_TRANSPORT);
                 break;
             }
             default: {
-                transportConfig = entityManager.getEntityType(TypeRegistry.ENTITY_TYPE.LEVIATHAN_BARGE);
+                transportConfig = typeRegistry.getEntityType(TypeRegistry.ENTITY_TYPE.LEVIATHAN_BARGE);
                 break;
             }
         }

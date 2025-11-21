@@ -11,6 +11,7 @@ import { MovementType } from "./parsed/movementType.js";
 import { ArmorType } from "./parsed/armorType.js";
 import { BuildingType } from "./parsed/buildingType.js";
 import { MoraleType } from "./parsed/moraleType.js";
+import { EntityType } from "./parsed/entityType.js";
 
 const SCHEMA_TYPES = {
     "RED": {
@@ -118,38 +119,71 @@ const SCHEMA_TYPES = {
 };
 
 export const TypeRegistry = function() {
-    this.categories = {
-        [TypeRegistry.CATEGORY.SCHEMA]: new TypeCategory(TypeRegistry.CATEGORY.SCHEMA, TypeRegistry.SCHEMA_TYPE, SCHEMA_TYPES.BLACK),
-        [TypeRegistry.CATEGORY.TRAIT]: new TypeCategory(TypeRegistry.CATEGORY.TRAIT, TypeRegistry.TRAIT_TYPE, TypeRegistry.STUB.TRAIT),
-        [TypeRegistry.CATEGORY.MOVEMENT]: new TypeCategory(TypeRegistry.CATEGORY.MOVEMENT, TypeRegistry.MOVEMENT_TYPE, TypeRegistry.STUB.MOVEMENT),
-        [TypeRegistry.CATEGORY.WEAPON]: new TypeCategory(TypeRegistry.CATEGORY.WEAPON, TypeRegistry.WEAPON_TYPE, TypeRegistry.STUB.WEAPON),
-        [TypeRegistry.CATEGORY.ARMOR]: new TypeCategory(TypeRegistry.CATEGORY.ARMOR, TypeRegistry.ARMOR_TYPE, TypeRegistry.STUB.ARMOR),
-        [TypeRegistry.CATEGORY.TERRAIN]: new TypeCategory(TypeRegistry.CATEGORY.TERRAIN, TypeRegistry.TERRAIN_TYPE, TypeRegistry.STUB.TERRAIN),
-        [TypeRegistry.CATEGORY.TILE]: new TypeCategory(TypeRegistry.CATEGORY.TILE, TypeRegistry.TILE_TYPE, TypeRegistry.STUB.TILE),
-        [TypeRegistry.CATEGORY.CLIMATE]: new TypeCategory(TypeRegistry.CATEGORY.CLIMATE, TypeRegistry.CLIMATE_TYPE, TypeRegistry.STUB.CLIMATE),
-        [TypeRegistry.CATEGORY.NATION]: new TypeCategory(TypeRegistry.CATEGORY.NATION, TypeRegistry.NATION_TYPE, TypeRegistry.STUB.NATION),
-        [TypeRegistry.CATEGORY.FACTION]: new TypeCategory(TypeRegistry.CATEGORY.FACTION, TypeRegistry.FACTION_TYPE, TypeRegistry.STUB.FACTION),
-        [TypeRegistry.CATEGORY.BUILDING]: new TypeCategory(TypeRegistry.CATEGORY.BUILDING, TypeRegistry.BUILDING_TYPE, TypeRegistry.STUB.BUILDING),
-        [TypeRegistry.CATEGORY.COMMANDER]: new TypeCategory(TypeRegistry.CATEGORY.COMMANDER, TypeRegistry.COMMANDER_TYPE, TypeRegistry.STUB.COMMANDER),
-        [TypeRegistry.CATEGORY.POWER]: new TypeCategory(TypeRegistry.CATEGORY.POWER, TypeRegistry.POWER_TYPE, null),
-        [TypeRegistry.CATEGORY.CURRENCY]: new TypeCategory(TypeRegistry.CATEGORY.CURRENCY, TypeRegistry.CURRENCY_TYPE, null),
-        [TypeRegistry.CATEGORY.MORALE]: new TypeCategory(TypeRegistry.CATEGORY.MORALE, TypeRegistry.MORALE_TYPE, TypeRegistry.STUB.MORALE)
+    this.categories = [];
+
+    const CATEGORY_NAME = {
+        [TypeRegistry.CATEGORY.ENTITY]: "ENTITY",
+        [TypeRegistry.CATEGORY.TRAIT]: "TRAIT",
+        [TypeRegistry.CATEGORY.MOVEMENT]: "MOVEMENT",
+        [TypeRegistry.CATEGORY.WEAPON]: "WEAPON",
+        [TypeRegistry.CATEGORY.ARMOR]: "ARMOR",
+        [TypeRegistry.CATEGORY.TERRAIN]: "TERRAIN",
+        [TypeRegistry.CATEGORY.TILE]: "TILE",
+        [TypeRegistry.CATEGORY.CLIMATE]: "CLIMATE",
+        [TypeRegistry.CATEGORY.SCHEMA]: "SCHEMA",
+        [TypeRegistry.CATEGORY.NATION]: "NATION",
+        [TypeRegistry.CATEGORY.POWER]: "POWER",
+        [TypeRegistry.CATEGORY.CURRENCY]: "CURRENCY",
+        [TypeRegistry.CATEGORY.FACTION]: "FACTION",
+        [TypeRegistry.CATEGORY.BUILDING]: "BUILDING",
+        [TypeRegistry.CATEGORY.MORALE]: "MORALE",
+        [TypeRegistry.CATEGORY.COMMANDER]: "COMMANDER"
     };
+
+    const STUB = {
+        [TypeRegistry.CATEGORY.SCHEMA]: SCHEMA_TYPES.BLACK,
+        [TypeRegistry.CATEGORY.ENTITY]: new EntityType("ERROR_ENTITY", {}),
+        [TypeRegistry.CATEGORY.MORALE]: new MoraleType("ERROR_MORALE", {}),
+        [TypeRegistry.CATEGORY.BUILDING]: new BuildingType("ERROR_BUILDING", {}),
+        [TypeRegistry.CATEGORY.ARMOR]: new ArmorType("ERROR_ARMOR", {}),
+        [TypeRegistry.CATEGORY.MOVEMENT]: new MovementType("ERROR_MOVEMENT", {}),
+        [TypeRegistry.CATEGORY.CLIMATE]: new ClimateType("ERROR_CLIMATE", {}),
+        [TypeRegistry.CATEGORY.FACTION]: new FactionType("ERROR_FACTION", {}),
+        [TypeRegistry.CATEGORY.NATION]: new NationType("ERROR_NATION", {}),
+        [TypeRegistry.CATEGORY.COMMANDER]: new CommanderType("ERROR_COMMANDER", {}),
+        [TypeRegistry.CATEGORY.WEAPON]: new WeaponType("ERROR_WEAPON", {}),
+        [TypeRegistry.CATEGORY.TRAIT]: new TraitType("ERROR_TRAIT", {}),
+        [TypeRegistry.CATEGORY.TILE]: new TileType("ERROR_TILE", {}),
+        [TypeRegistry.CATEGORY.TERRAIN]: new TerrainType("ERROR_TERRAIN", {})
+    };
+
+    const count = Object.keys(TypeRegistry.CATEGORY).length;
+
+    for(let i = 0; i < count; i++) {
+        const name = CATEGORY_NAME[i] ?? "UNNAMED";
+        const stub = STUB[i] ?? null;
+
+        this.categories[i] = new TypeCategory(name, stub);
+    }
 }
 
-TypeRegistry.STUB = {
-    MORALE: new MoraleType("ERROR_MORALE", {}),
-    BUILDING: new BuildingType("ERROR_BUILDING", {}),
-    ARMOR: new ArmorType("ERROR_ARMOR", {}),
-    MOVEMENT: new MovementType("ERROR_MOVEMENT", {}),
-    CLIMATE: new ClimateType("ERROR_CLIMATE", {}),
-    FACTION: new FactionType("ERROR_FACTION", {}),
-    NATION: new NationType("ERROR_NATION", {}),
-    COMMANDER: new CommanderType("ERROR_COMMANDER", {}),
-    WEAPON: new WeaponType("ERROR_WEAPON", {}),
-    TRAIT: new TraitType("ERROR_TRAIT", {}),
-    TILE: new TileType("ERROR_TILE", {}),
-    TERRAIN: new TerrainType("ERROR_TERRAIN", {})
+TypeRegistry.CATEGORY = {
+    ENTITY: 0,
+    TRAIT: 1,
+    MOVEMENT: 2,
+    WEAPON: 3,
+    ARMOR: 4,
+    TERRAIN: 5,
+    TILE: 6,
+    CLIMATE: 7,
+    SCHEMA: 8,
+    NATION: 9,
+    POWER: 10,
+    CURRENCY: 11,
+    FACTION: 12,
+    BUILDING: 13,
+    MORALE: 14,
+    COMMANDER: 15
 };
 
 TypeRegistry.LAYER_TYPE = {
@@ -254,24 +288,6 @@ TypeRegistry.EVENT_TYPE = {
     DIALOGUE: "DIALOGUE",
     EXPLODE_TILE: "EXPLODE_TILE",
     SPAWN_ENTITY: "SPAWN_ENTITY"
-};
-
-TypeRegistry.CATEGORY = {
-    TRAIT: "TRAIT",
-    MOVEMENT: "MOVEMENT",
-    WEAPON: "WEAPON",
-    ARMOR: "ARMOR",
-    TERRAIN: "TERRAIN",
-    TILE: "TILE",
-    CLIMATE: "CLIMATE",
-    SCHEMA: "SCHEMA",
-    NATION: "NATION",
-    POWER: "POWER",
-    CURRENCY: "CURRENCY",
-    FACTION: "FACTION",
-    BUILDING: "BUILDING",
-    MORALE: "MORALE",
-    COMMANDER: "COMMANDER"
 };
 
 TypeRegistry.BUILDING_TYPE = {
@@ -473,44 +489,24 @@ TypeRegistry.TRAIT_TYPE = {
     NAVAL_TRANSPORT: "NAVAL_TRANSPORT"
 };
 
-TypeRegistry.prototype.loadCategory = function(types, categoryID) {
-    if(!types) {
-        console.log("No types were given!");
-        return;
-    }
-
-    if(!this.categories[categoryID]) {
-        console.log(`Category ${categoryID} does not exist!`);
-        return;
-    }
-
-    this.categories[categoryID].setTypes(types);
-}
-
-TypeRegistry.prototype.getType = function(typeID, categoryID) {
-    if(!this.categories[categoryID]) {
-        return null;
-    }
-
-    return this.categories[categoryID].getType(typeID);
-}
-
 TypeRegistry.prototype.load = function(resources) {
-    this.loadCategory(SCHEMA_TYPES, TypeRegistry.CATEGORY.SCHEMA);
-    this.loadCategory(resources.powerTypes, TypeRegistry.CATEGORY.POWER);
-    this.loadCategory(resources.currencyTypes, TypeRegistry.CATEGORY.CURRENCY);
-    this.categories[TypeRegistry.CATEGORY.MORALE].loadTypes(resources.moraleTypes, MoraleType);
-    this.categories[TypeRegistry.CATEGORY.ARMOR].loadTypes(resources.armorTypes, ArmorType);
-    this.categories[TypeRegistry.CATEGORY.CLIMATE].loadTypes(resources.climateTypes, ClimateType);
-    this.categories[TypeRegistry.CATEGORY.MOVEMENT].loadTypes(resources.movementTypes, MovementType);
-    this.categories[TypeRegistry.CATEGORY.TERRAIN].loadTypes(resources.terrainTypes, TerrainType);
-    this.categories[TypeRegistry.CATEGORY.TILE].loadTypes(resources.tileTypes, TileType);
-    this.categories[TypeRegistry.CATEGORY.TRAIT].loadTypes(resources.traitTypes, TraitType);
-    this.categories[TypeRegistry.CATEGORY.WEAPON].loadTypes(resources.weaponTypes, WeaponType);
-    this.categories[TypeRegistry.CATEGORY.NATION].loadTypes(resources.nationTypes, NationType);
-    this.categories[TypeRegistry.CATEGORY.FACTION].loadTypes(resources.factionTypes, FactionType);
-    this.categories[TypeRegistry.CATEGORY.COMMANDER].loadTypes(resources.commanderTypes, CommanderType);
-    this.categories[TypeRegistry.CATEGORY.BUILDING].loadTypes(resources.buildingTypes, BuildingType);
+    this.categories[TypeRegistry.CATEGORY.CURRENCY].setTypes(resources.currencyTypes, TypeRegistry.CURRENCY_TYPE);
+    this.categories[TypeRegistry.CATEGORY.POWER].setTypes(resources.powerTypes, TypeRegistry.POWER_TYPE);
+    this.categories[TypeRegistry.CATEGORY.SCHEMA].setTypes(SCHEMA_TYPES, TypeRegistry.SCHEMA_TYPE);
+
+    this.categories[TypeRegistry.CATEGORY.ENTITY].loadTypes(resources.entityTypes, EntityType, TypeRegistry.ENTITY_TYPE);
+    this.categories[TypeRegistry.CATEGORY.MORALE].loadTypes(resources.moraleTypes, MoraleType, TypeRegistry.MORALE_TYPE);
+    this.categories[TypeRegistry.CATEGORY.ARMOR].loadTypes(resources.armorTypes, ArmorType, TypeRegistry.ARMOR_TYPE);
+    this.categories[TypeRegistry.CATEGORY.CLIMATE].loadTypes(resources.climateTypes, ClimateType, TypeRegistry.CLIMATE_TYPE);
+    this.categories[TypeRegistry.CATEGORY.MOVEMENT].loadTypes(resources.movementTypes, MovementType, TypeRegistry.MOVEMENT_TYPE);
+    this.categories[TypeRegistry.CATEGORY.TERRAIN].loadTypes(resources.terrainTypes, TerrainType, TypeRegistry.TERRAIN_TYPE);
+    this.categories[TypeRegistry.CATEGORY.TILE].loadTypes(resources.tileTypes, TileType, TypeRegistry.TILE_TYPE);
+    this.categories[TypeRegistry.CATEGORY.TRAIT].loadTypes(resources.traitTypes, TraitType, TypeRegistry.TRAIT_TYPE);
+    this.categories[TypeRegistry.CATEGORY.WEAPON].loadTypes(resources.weaponTypes, WeaponType, TypeRegistry.WEAPON_TYPE);
+    this.categories[TypeRegistry.CATEGORY.NATION].loadTypes(resources.nationTypes, NationType, TypeRegistry.NATION_TYPE);
+    this.categories[TypeRegistry.CATEGORY.FACTION].loadTypes(resources.factionTypes, FactionType, TypeRegistry.FACTION_TYPE);
+    this.categories[TypeRegistry.CATEGORY.COMMANDER].loadTypes(resources.commanderTypes, CommanderType, TypeRegistry.COMMANDER_TYPE);
+    this.categories[TypeRegistry.CATEGORY.BUILDING].loadTypes(resources.buildingTypes, BuildingType, TypeRegistry.BUILDING_TYPE);
 }
 
 TypeRegistry.prototype.getTerrainType = function(typeID) {
@@ -559,4 +555,16 @@ TypeRegistry.prototype.getBuildingType = function(typeID) {
 
 TypeRegistry.prototype.getMoraleType = function(typeID) {
     return this.categories[TypeRegistry.CATEGORY.MORALE].getType(typeID);
+}
+
+TypeRegistry.prototype.getEntityType = function(typeID) {
+    return this.categories[TypeRegistry.CATEGORY.ENTITY].getType(typeID);
+}
+
+TypeRegistry.prototype.getSchemaType = function(typeID) {
+    return this.categories[TypeRegistry.CATEGORY.SCHEMA].getType(typeID);
+}
+
+TypeRegistry.prototype.getCurrencyType = function(typeID) {
+    return this.categories[TypeRegistry.CATEGORY.CURRENCY].getType(typeID);
 }

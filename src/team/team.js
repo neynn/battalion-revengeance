@@ -62,7 +62,7 @@ Team.prototype.loadAsNation = function(gameContext, nationID) {
     const { color, faction, currency } = nationType;
 
     const factionType = typeRegistry.getFactionType(faction);
-    const currencyType = typeRegistry.getType(currency, TypeRegistry.CATEGORY.CURRENCY);
+    const currencyType = typeRegistry.getCurrencyType(currency);
     const isColorSet = this.setColor(gameContext, color);
 
     this.nation = nationType;
@@ -144,7 +144,7 @@ Team.prototype.setCustomColor = function(color) {
 
 Team.prototype.setColor = function(gameContext, colorID) {
     const { typeRegistry } = gameContext;
-    const color = typeRegistry.getType(colorID, TypeRegistry.CATEGORY.SCHEMA);
+    const color = typeRegistry.getSchemaType(colorID);
 
     if(color) {
         this.colorID = colorID;

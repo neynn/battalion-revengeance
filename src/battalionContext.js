@@ -11,7 +11,6 @@ import { MoveAction } from "./action/types/move.js";
 import { UncloakAction } from "./action/types/uncloak.js";
 import { PortraitHandler } from "./actors/portraitHandler.js";
 import { DialogueHandler } from "./dialogue/dialogueHandler.js";
-import { EntityType } from "./entity/entityType.js";
 import { EventHandler } from "./event/eventHandler.js";
 import { MainMenuState } from "./states/mainMenu.js";
 import { MapEditorState } from "./states/mapEditor.js";
@@ -57,7 +56,6 @@ BattalionContext.prototype.init = function(resources) {
     }
 
     this.typeRegistry.load(resources);
-    this.loadEntityTypes(resources.entities);
 
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.MOVE, new MoveAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.ATTACK, new AttackAction());
@@ -82,12 +80,4 @@ BattalionContext.prototype.onExit = function() {
     this.portraitHandler.exit();
     this.eventHandler.exit();
     this.dialogueHandler.exit();
-}
-
-BattalionContext.prototype.loadEntityTypes = function(entityTypes) {
-    for(const typeID in entityTypes) {
-        const entityType = new EntityType(typeID, entityTypes[typeID]);
-
-        this.world.entityManager.addEntityType(typeID, entityType);
-    }
 }
