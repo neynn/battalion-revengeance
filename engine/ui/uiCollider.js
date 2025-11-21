@@ -65,12 +65,21 @@ UICollider.prototype.onCollisionUpdate = function(state, mouseX, mouseY, mouseRa
                 case UICollider.STATE.NOT_COLLIDED: {
                     this.collisions++;
                     this.state = UICollider.STATE.COLLIDED;
-                    this.events.emit(UICollider.EVENT.FIRST_COLLISION, mouseX, mouseY, mouseRange);
+                    this.events.emit(UICollider.EVENT.FIRST_COLLISION, {
+                        "x": mouseX,
+                        "y": mouseY,
+                        "range": mouseRange
+                    });
                     break;
                 }
                 case UICollider.STATE.COLLIDED: {
                     this.collisions++;
-                    this.events.emit(UICollider.EVENT.REPEATED_COLLISION, mouseX, mouseY, mouseRange);
+                    this.events.emit(UICollider.EVENT.REPEATED_COLLISION, {
+                        "x": mouseX,
+                        "y": mouseY,
+                        "range": mouseRange,
+                        "count": this.collisions
+                    });
                     break;
                 }
             }
@@ -79,9 +88,15 @@ UICollider.prototype.onCollisionUpdate = function(state, mouseX, mouseY, mouseRa
         case UICollider.STATE.NOT_COLLIDED: {
             switch(this.state) {
                 case UICollider.STATE.COLLIDED: {
-                    this.collisions = 0;
                     this.state = UICollider.STATE.NOT_COLLIDED;
-                    this.events.emit(UICollider.EVENT.LAST_COLLISION, mouseX, mouseY, mouseRange);
+                    this.events.emit(UICollider.EVENT.LAST_COLLISION, {
+                        "x": mouseX,
+                        "y": mouseY,
+                        "range": mouseRange,
+                        "count": this.collisions
+                    });
+
+                    this.collisions = 0;
                     break;
                 }
                 case UICollider.STATE.NOT_COLLIDED: {
@@ -93,6 +108,6 @@ UICollider.prototype.onCollisionUpdate = function(state, mouseX, mouseY, mouseRa
     }
 }
 
-UICollider.prototype.click = function(mouseX, mouseY, mouseRange) {
-    this.events.emit(UICollider.EVENT.CLICKED, mouseX, mouseY, mouseRange);
+UICollider.prototype.click = function(gameContext, mouseX, mouseY, mouseRange) {
+    this.events.emit(UICollider.EVENT.CLICKED, {});
 }

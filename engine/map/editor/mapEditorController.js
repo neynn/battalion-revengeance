@@ -121,7 +121,7 @@ MapEditorController.prototype.initPalletButtons = function(gameContext, camera) 
 MapEditorController.prototype.initPalletButtonEvents = function(gameContext, button, camera, gui) {
     const { tileManager } = gameContext;
 
-    button.addClick(() => {
+    button.addClick((event) => {
         const { palletID } = button;
         const palletIndex = this.mapPageIndex(palletID);
         const tileID = this.editor.pallet.getID(palletIndex);
@@ -172,7 +172,7 @@ MapEditorController.prototype.initCursorEvents = function(gameContext) {
     const { client } = gameContext;
     const { cursor } = client;
 
-    cursor.events.on(Cursor.EVENT.SCROLL, (direction) => {
+    cursor.events.on(Cursor.EVENT.SCROLL, ({ direction }) => {
         switch(direction) {
             case Cursor.SCROLL.UP: {
                 this.updateBrushSize(gameContext, 1);
@@ -185,14 +185,14 @@ MapEditorController.prototype.initCursorEvents = function(gameContext) {
         }
     });
 
-    cursor.events.on(Cursor.EVENT.BUTTON_DRAG, (buttonID) => {
-        if(buttonID === Cursor.BUTTON.RIGHT) {
+    cursor.events.on(Cursor.EVENT.BUTTON_DRAG, ({ button }) => {
+        if(button === Cursor.BUTTON.RIGHT) {
             this.paint(gameContext);
         }
     });
 
-    cursor.events.on(Cursor.EVENT.BUTTON_CLICK, (buttonID) => {
-        if(buttonID === Cursor.BUTTON.RIGHT) {
+    cursor.events.on(Cursor.EVENT.BUTTON_CLICK, ({ button }) => {
+        if(button === Cursor.BUTTON.RIGHT) {
             this.paint(gameContext);
         }
     });

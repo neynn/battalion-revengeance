@@ -33,18 +33,14 @@ export const GameContext = function() {
     this.isResizeQueued = false;
     this.timeUntilResize = 0;
 
-    this.client.cursor.events.on(Cursor.EVENT.BUTTON_CLICK, (buttonID, cursorX, cursorY) => {
-        if(buttonID === Cursor.BUTTON.LEFT) {
-            this.uiManager.onClick(cursorX, cursorY, this.client.cursor.radius);
+    this.client.cursor.events.on(Cursor.EVENT.BUTTON_CLICK, ({ button, x, y, radius }) => {
+        if(button === Cursor.BUTTON.LEFT) {
+            this.uiManager.handleClick(this, x, y, radius);
         }
     }, { permanent: true });
 
-    this.states.events.on(StateMachine.EVENT.STATE_EXIT, () => {
-        this.exit();
-    }, { permanent: true });
-
-    this.world.mapManager.events.on(MapManager.EVENT.MAP_ENABLE, (mapID, worldMap) => {
-        const { width, height } = worldMap;
+    this.world.mapManager.events.on(MapManager.EVENT.MAP_ENABLE, ({ map }) => {
+        const { width, height } = map;
 
         this.renderer.onMapSizeUpdate(width, height);
     }, { permanent: true });

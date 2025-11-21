@@ -82,13 +82,13 @@ UIManager.prototype.getGUI = function(interfaceID) {
     return this.interfaceStack[interfaceIndex];
 }
 
-UIManager.prototype.onClick = function(mouseX, mouseY, mouseRange) {
+UIManager.prototype.handleClick = function(gameContext, mouseX, mouseY, mouseRange) {
     for(let i = this.interfaceStack.length - 1; i >= 0; i--) {
         const userInterface = this.interfaceStack[i];
         const isAnyColliding = userInterface.isAnyColliding();
 
         if(isAnyColliding) {
-            userInterface.handleClick(mouseX, mouseY, mouseRange);
+            userInterface.handleClick(gameContext, mouseX, mouseY, mouseRange);
             break;
         }
     }

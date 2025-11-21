@@ -83,7 +83,10 @@ TurnManager.prototype.createActor = function(onCreate, typeID, externalID) {
 
             if(actor) {
                 this.actors.set(actorID, actor);
-                this.events.emit(TurnManager.EVENT.ACTOR_CREATE, actorID, actor);
+                this.events.emit(TurnManager.EVENT.ACTOR_CREATE, {
+                    "id": actorID,
+                    "actor": actor
+                });
 
                 return actor;
             }
@@ -100,7 +103,9 @@ TurnManager.prototype.destroyActor = function(actorID) {
     }
 
     this.actors.delete(actorID);
-    this.events.emit(TurnManager.EVENT.ACTOR_DESTROY, actorID);
+    this.events.emit(TurnManager.EVENT.ACTOR_DESTROY, {
+        "id": actorID
+    });
 }
 
 TurnManager.prototype.getActor = function(actorID) {
@@ -127,12 +132,16 @@ TurnManager.prototype.isActor = function(actorID) {
 TurnManager.prototype.startNextTurn = function() {
     this.actorIndex++;
     this.currentTurn++;
-    this.events.emit(TurnManager.EVENT.NEXT_TURN, this.currentTurn);
+    this.events.emit(TurnManager.EVENT.NEXT_TURN, {
+        "turn": this.currentTurn
+    });
 
     if(this.actorIndex === this.actorOrder.length) {
         this.actorIndex = 0;
         this.currentRound++;
-        this.events.emit(TurnManager.EVENT.NEXT_ROUND, this.currentRound);
+        this.events.emit(TurnManager.EVENT.NEXT_ROUND, {
+            "round": this.currentRound
+        });
     }
 }
 
@@ -170,7 +179,10 @@ TurnManager.prototype.getNextActor = function(gameContext) {
     actor.startTurn(gameContext);   
 
     this.actionsLeft = actor.maxActions;
-    this.events.emit(TurnManager.EVENT.ACTOR_CHANGE, currentActorID, actorID);
+    this.events.emit(TurnManager.EVENT.ACTOR_CHANGE, {
+        "currentID": currentActorID,
+        "nextID": actorID
+    });
 
     return actor;
 }
@@ -191,7 +203,9 @@ TurnManager.prototype.cancelActorActions = function() {
 
     if(currentActor) {
         this.actionsLeft = 0;
-        this.events.emit(TurnManager.EVENT.ACTIONS_CLEAR, currentActor, this.actionsLeft);
+        this.events.emit(TurnManager.EVENT.ACTIONS_CLEAR, {
+            "actor": currentActor
+        });
     }
 }
 
@@ -205,7 +219,11 @@ TurnManager.prototype.reduceActorActions = function(value) {
             this.actionsLeft = 0;
         }
 
-        this.events.emit(TurnManager.EVENT.ACTIONS_REDUCE, currentActor, this.actionsLeft);
+        this.events.emit(TurnManager.EVENT.ACTIONS_REDUCE, {
+            "actor": currentActor,
+            "actionsLeft": this.actionsLeft,
+            "delta": value
+        });
     }
 }
 

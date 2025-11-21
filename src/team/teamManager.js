@@ -12,9 +12,9 @@ export const TeamManager = function() {
     this.events.register(TeamManager.EVENT.ALLIANCE_WON);
     this.events.register(TeamManager.EVENT.DRAW);
 
-    this.events.on(TeamManager.EVENT.TEAM_LOST, (id) => console.log("TEAM LOST!", id));
-    this.events.on(TeamManager.EVENT.TEAM_WON, (id) => console.log("TEAM WON!", id));
-    this.events.on(TeamManager.EVENT.ALLIANCE_WON, (alliance) => console.log("ALLIANCE_WON!", alliance));
+    this.events.on(TeamManager.EVENT.TEAM_LOST, ({ id }) => console.log("TEAM LOST!", id));
+    this.events.on(TeamManager.EVENT.TEAM_WON, ({ id }) => console.log("TEAM WON!", id));
+    this.events.on(TeamManager.EVENT.ALLIANCE_WON, ({ teams }) => console.log("ALLIANCE_WON!", teams));
     this.events.on(TeamManager.EVENT.DRAW, () => console.log("DRAW!"));
 }
 
@@ -70,7 +70,9 @@ TeamManager.prototype.removeActiveTeam = function(teamID) {
         if(this.activeTeams[i] === teamID) {
             this.activeTeams[i] = this.activeTeams[this.activeTeams.length - 1];
             this.activeTeams.pop();
-            this.events.emit(TeamManager.EVENT.TEAM_LOST, teamID);
+            this.events.emit(TeamManager.EVENT.TEAM_LOST, {
+                "id": teamID
+            });
             break;
         }
     }
@@ -112,24 +114,30 @@ TeamManager.prototype.checkWinner = function() {
     switch(this.activeTeams.length) {
         case NO_WINNER: {
             this.isConcluded = true;
-            this.events.emit(TeamManager.EVENT.DRAW);
+            this.events.emit(TeamManager.EVENT.DRAW, {});
             break;
         }
         case ONE_WINNER: {
             this.isConcluded = true;
-            this.events.emit(TeamManager.EVENT.TEAM_WON, this.activeTeams[0]);
+            this.events.emit(TeamManager.EVENT.TEAM_WON, {
+                "id": this.activeTeams[0]
+            });
             break;
         }
         default: {
             if(this.allActiveAllied()) {
                 this.isConcluded = true;
-                this.events.emit(TeamManager.EVENT.ALLIANCE_WON, this.activeTeams);
+                this.events.emit(TeamManager.EVENT.ALLIANCE_WON, {
+                    "teams": this.activeTeams
+                });
             } else {
                 const firstWinner = this.getFirstWinner();
 
                 if(firstWinner !== null) {
                     this.isConcluded = true;
-                    this.events.emit(TeamManager.EVENT.TEAM_WON, firstWinner);
+                    this.events.emit(TeamManager.EVENT.TEAM_WON, {
+                        "id": firstWinner
+                    });
                 }
             }
 

@@ -5,8 +5,8 @@ export const Socket = function() {
     this.config = {};
     this.socket = null;
     this.isConnected = false;
-    this.events = new EventEmitter();
 
+    this.events = new EventEmitter();
     this.events.register(Socket.EVENT.CONNECTED_TO_SERVER);
     this.events.register(Socket.EVENT.DISCONNECTED_FROM_SERVER);
     this.events.register(Socket.EVENT.MESSAGE_FROM_SERVER);
@@ -33,11 +33,11 @@ Socket.prototype.registerName = function(userID) {
 
 Socket.prototype.addDebug = function() {
     if(Socket.DEBUG.CONNECT) {
-        this.events.on(Socket.EVENT.CONNECTED_TO_SERVER, (socketID) => console.log(`${socketID} is connected to the server!`), { permanent: true });
+        this.events.on(Socket.EVENT.CONNECTED_TO_SERVER, ({ id }) => console.log(`${id} is connected to the server!`), { permanent: true });
     }
 
     if(Socket.DEBUG.DISCONNECT) {
-        this.events.on(Socket.EVENT.DISCONNECTED_FROM_SERVER, (reason) => console.log(`${reason} is disconnected from the server!`), { permanent: true });
+        this.events.on(Socket.EVENT.DISCONNECTED_FROM_SERVER, ({ reason }) => console.log(`${reason} is disconnected from the server!`), { permanent: true });
     }
 }
 
@@ -59,12 +59,16 @@ Socket.prototype.connect = async function() {
     socket.on(NETWORK_EVENTS.CONNECT, () => {
         this.isConnected = true;
         this.socket = socket;
-        this.events.emit(Socket.EVENT.CONNECTED_TO_SERVER, socket.id);
+        this.events.emit(Socket.EVENT.CONNECTED_TO_SERVER, {
+            "id": socket.id
+        });
     });
 
     socket.on(NETWORK_EVENTS.DISCONNECT, (reason) => {
         this.isConnected = false;
-        this.events.emit(Socket.EVENT.DISCONNECTED_FROM_SERVER, reason);
+        this.events.emit(Socket.EVENT.DISCONNECTED_FROM_SERVER, {
+            "reason": reason
+        });
     });
     
     socket.on(NETWORK_EVENTS.MESSAGE, (message) => {
@@ -74,11 +78,11 @@ Socket.prototype.connect = async function() {
 
         const { type, payload } = message;
 
-        if(!type || !payload) {
-            return;
+        if(type && payload) {
+            this.events.emit(Socket.EVENT.MESSAGE_FROM_SERVER, {
+                "message": message
+            });
         }
-        
-        this.events.emit(Socket.EVENT.MESSAGE_FROM_SERVER, type, payload);
     });
 }
 

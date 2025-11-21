@@ -1,4 +1,3 @@
-import { EventEmitter } from "../events/eventEmitter.js";
 import { State } from "./state.js";
 
 export const StateMachine = function(context) {
@@ -9,23 +8,10 @@ export const StateMachine = function(context) {
     this.context = context;
     this.states = new Map();
 
-    this.events = new EventEmitter();
-    this.events.register(StateMachine.EVENT.STATE_ADD);
-    this.events.register(StateMachine.EVENT.STATE_REMOVE);
-    this.events.register(StateMachine.EVENT.STATE_EXIT);
-    this.events.register(StateMachine.EVENT.STATE_ENTER);
-
     if(!context) {
         console.warn(`No context given to state machine!`);
     }
 }
-
-StateMachine.EVENT = {
-    "STATE_ADD": "STATE_ADD",
-    "STATE_REMOVE": "STATE_REMOVE",
-    "STATE_EXIT": "STATE_EXIT",
-    "STATE_ENTER": "STATE_ENTER"
-};
 
 StateMachine.prototype = Object.create(State.prototype);
 StateMachine.prototype.constructor = StateMachine;
@@ -79,7 +65,6 @@ StateMachine.prototype.exit = function(gameContext) {
 
 StateMachine.prototype.changeState = function(gameContext, state, enterData = {}) {
     this.exit(gameContext);
-    this.events.emit(StateMachine.EVENT.STATE_EXIT);
     this.currentState = state;
 
     if(state instanceof StateMachine) {
@@ -87,7 +72,6 @@ StateMachine.prototype.changeState = function(gameContext, state, enterData = {}
     }
 
     this.currentState.onEnter(gameContext, this, enterData);
-    this.events.emit(StateMachine.EVENT.STATE_ENTER);
 }
 
 StateMachine.prototype.setNextState = function(gameContext, stateID, enterData) {
@@ -129,7 +113,6 @@ StateMachine.prototype.addState = function(stateID, state) {
     }
 
     this.states.set(stateID, state);
-    this.events.emit(StateMachine.EVENT.STATE_ADD, stateID);
 }
 
 StateMachine.prototype.removeState = function(stateID) {
@@ -139,7 +122,6 @@ StateMachine.prototype.removeState = function(stateID) {
     }
 
     this.states.delete(stateID);
-    this.events.emit(StateMachine.EVENT.STATE_REMOVE, stateID);
 }
 
 StateMachine.prototype.reset = function() {

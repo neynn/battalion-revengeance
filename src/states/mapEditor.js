@@ -21,8 +21,8 @@ MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
     const hiddenSets = [];
 
     mapEditor.initBrushSets(tileManager.getInversion(), hiddenSets);
-    mapEditor.events.on(MapEditor.EVENT.BRUSH_UPDATE, (brush) => camera.onBrushUpdate(brush));
-    mapEditor.events.on(MapEditor.EVENT.PALLET_UPDATE, (pallet) => console.log(pallet));
+    mapEditor.events.on(MapEditor.EVENT.BRUSH_UPDATE, ({ brush }) => camera.onBrushUpdate(brush));
+    mapEditor.events.on(MapEditor.EVENT.PALLET_UPDATE, ({ pallet }) => console.log(pallet));
  
     controller.initUI(gameContext);
     controller.initUIEvents(gameContext);
@@ -43,4 +43,6 @@ MapEditorState.prototype.onExit = function(gameContext, stateMachine) {
 
     this.controller = null;
     this.contextID = -1;
+
+    gameContext.exit();
 }

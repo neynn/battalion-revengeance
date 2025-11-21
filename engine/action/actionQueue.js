@@ -14,7 +14,6 @@ export const ActionQueue = function() {
     this.state = ActionQueue.STATE.ACTIVE;
 
     this.events = new EventEmitter();
-    this.events.register(ActionQueue.EVENT.EXECUTION_DEFER);
     this.events.register(ActionQueue.EVENT.EXECUTION_ERROR);
     this.events.register(ActionQueue.EVENT.EXECUTION_RUNNING);
     this.events.register(ActionQueue.EVENT.EXECUTION_COMPLETE);
@@ -30,7 +29,6 @@ ActionQueue.STATE = {
 };
 
 ActionQueue.EVENT = {
-    EXECUTION_DEFER: "EXECUTION_DEFER",
     EXECUTION_ERROR: "EXECUTION_ERROR",
     EXECUTION_RUNNING: "EXECUTION_RUNNING",
     EXECUTION_COMPLETE: "EXECUTION_COMPLETE"
@@ -79,7 +77,9 @@ ActionQueue.prototype.flushExecution = function(gameContext) {
     const { type, data, id } = this.current;
     const actionType = this.actionTypes.get(type);
 
-    this.events.emit(ActionQueue.EVENT.EXECUTION_RUNNING, this.current);
+    this.events.emit(ActionQueue.EVENT.EXECUTION_RUNNING, {
+        "item": this.current
+    });
     this.current.setState(ExecutionRequest.STATE.RUNNING);
 
     actionType.onStart(gameContext, data, id);
@@ -98,7 +98,9 @@ ActionQueue.prototype.startExecution = function(gameContext) {
 
     this.state = ActionQueue.STATE.PROCESSING;
     this.current.setState(ExecutionRequest.STATE.RUNNING);
-    this.events.emit(ActionQueue.EVENT.EXECUTION_RUNNING, this.current);
+    this.events.emit(ActionQueue.EVENT.EXECUTION_RUNNING, {
+        "item": this.current
+    });
         
     actionType.onStart(gameContext, data, id);
 }
@@ -136,7 +138,9 @@ ActionQueue.prototype.handleActionEnd = function() {
     }
 
     this.current.setState(ExecutionRequest.STATE.FINISHED);
-    this.events.emit(ActionQueue.EVENT.EXECUTION_COMPLETE, this.current);
+    this.events.emit(ActionQueue.EVENT.EXECUTION_COMPLETE, {
+        "item": this.current
+    });
     this.isSkipping = false;
     this.current = null;
 }
@@ -158,7 +162,9 @@ ActionQueue.prototype.createExecutionRequest = function(gameContext, request) {
 
         actionType.onInvalid(gameContext);
 
-        this.events.emit(ActionQueue.EVENT.EXECUTION_ERROR, request);
+        this.events.emit(ActionQueue.EVENT.EXECUTION_ERROR, {
+            "item": request
+        });
     }
 
     return null;

@@ -34,19 +34,23 @@ MainMenuState.prototype.loadUI = function(gameContext, stateMachine) {
     buttonEdit.addChild(spriteEdit)
     buttonExtra.addChild(spriteExtra);
 
-    buttonPlay.collider.events.on(UICollider.EVENT.FIRST_COLLISION, () => spriteManager.updateSprite(spritePlay.getIndex(), "blue_battletank_aim"));
-    buttonPlay.collider.events.on(UICollider.EVENT.LAST_COLLISION, () => spriteManager.updateSprite(spritePlay.getIndex(), "blue_battletank_idle"));
+    buttonPlay.collider.events.on(UICollider.EVENT.FIRST_COLLISION, (event) => spriteManager.updateSprite(spritePlay.getIndex(), "blue_battletank_aim"));
+    buttonPlay.collider.events.on(UICollider.EVENT.LAST_COLLISION, (event) => spriteManager.updateSprite(spritePlay.getIndex(), "blue_battletank_idle"));
 
-    buttonVersus.collider.events.on(UICollider.EVENT.FIRST_COLLISION, () => spriteManager.updateSprite(spriteVersus.getIndex(), "red_battletank_aim"));
-    buttonVersus.collider.events.on(UICollider.EVENT.LAST_COLLISION, () => spriteManager.updateSprite(spriteVersus.getIndex(), "red_battletank_idle"));
+    buttonVersus.collider.events.on(UICollider.EVENT.FIRST_COLLISION, (event) => spriteManager.updateSprite(spriteVersus.getIndex(), "red_battletank_aim"));
+    buttonVersus.collider.events.on(UICollider.EVENT.LAST_COLLISION, (event) => spriteManager.updateSprite(spriteVersus.getIndex(), "red_battletank_idle"));
 
-    buttonEdit.collider.events.on(UICollider.EVENT.FIRST_COLLISION, () => spriteManager.updateSprite(spriteEdit.getIndex(), "blue_elite_battery_aim"));
-    buttonEdit.collider.events.on(UICollider.EVENT.LAST_COLLISION, () => spriteManager.updateSprite(spriteEdit.getIndex(), "blue_elite_battery_idle"));
+    buttonEdit.collider.events.on(UICollider.EVENT.FIRST_COLLISION, (event) => spriteManager.updateSprite(spriteEdit.getIndex(), "blue_elite_battery_aim"));
+    buttonEdit.collider.events.on(UICollider.EVENT.LAST_COLLISION, (event) => spriteManager.updateSprite(spriteEdit.getIndex(), "blue_elite_battery_idle"));
 
-    buttonExtra.collider.events.on(UICollider.EVENT.FIRST_COLLISION, () => spriteManager.updateSprite(spriteExtra.getIndex(), "red_stormtrooper_aim"));
-    buttonExtra.collider.events.on(UICollider.EVENT.LAST_COLLISION, () => spriteManager.updateSprite(spriteExtra.getIndex(), "red_stormtrooper_idle"));
+    buttonExtra.collider.events.on(UICollider.EVENT.FIRST_COLLISION, (event) => spriteManager.updateSprite(spriteExtra.getIndex(), "red_stormtrooper_aim"));
+    buttonExtra.collider.events.on(UICollider.EVENT.LAST_COLLISION, (event) => spriteManager.updateSprite(spriteExtra.getIndex(), "red_stormtrooper_idle"));
 }
 
 MainMenuState.prototype.onEnter = async function(gameContext, stateMachine) {
     this.loadUI(gameContext, stateMachine);
+}
+
+MainMenuState.prototype.onExit = function(gameContext, stateMachine) {
+    gameContext.exit();
 }

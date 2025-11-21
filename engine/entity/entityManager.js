@@ -107,7 +107,10 @@ EntityManager.prototype.createEntity = function(onCreate, typeID, externalID) {
             if(entity) {
                 this.entityMap.set(entityID, this.entities.length);
                 this.entities.push(entity);
-                this.events.emit(EntityManager.EVENT.ENTITY_CREATE, entityID, entity);
+                this.events.emit(EntityManager.EVENT.ENTITY_CREATE, {
+                    "id": entityID,
+                    "entity": entity
+                });
 
                 return entity;
             }
@@ -128,5 +131,7 @@ EntityManager.prototype.destroyEntity = function(index) {
     this.entityMap.delete(entityID);
     this.entities[index] = this.entities[swapEntityIndex];
     this.entities.pop();
-    this.events.emit(EntityManager.EVENT.ENTITY_DESTROY, entityID);
+    this.events.emit(EntityManager.EVENT.ENTITY_DESTROY, {
+        "id": entityID
+    });
 }

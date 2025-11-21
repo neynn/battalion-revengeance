@@ -28,4 +28,5 @@ PlayState.prototype.onExit = function(gameContext, stateMachine) {
     //renderer.destroyContext(this.contextID);
 
     //this.contextID = -1;
+    gameContext.exit();
 }

@@ -60,23 +60,25 @@ RoomManager.prototype.registerRoomType = function(typeID, object) {
 }
 
 RoomManager.prototype.processMessage = function(roomID, messengerID, message) {
-    if(!message || !message.type || !message.payload) {
-        this.events.emit(RoomManager.EVENT.MESSAGE_LOST, roomID, messengerID, message);
-
-        return false;
-    }
-
     const room = this.rooms.get(roomID);
 
-    if(!room) {
-        this.events.emit(RoomManager.EVENT.MESSAGE_LOST, roomID, messengerID, message);
+    if(!room || !message || !message.type || !message.payload) {
+        this.events.emit(RoomManager.EVENT.MESSAGE_LOST, {
+            "roomID": roomID,
+            "messengerID": messengerID,
+            "message": message
+        });
 
         return false;
     }
 
     room.processMessage(messengerID, message);
 
-    this.events.emit(RoomManager.EVENT.MESSAGE_RECEIVED, roomID, messengerID, message);
+    this.events.emit(RoomManager.EVENT.MESSAGE_RECEIVED, {
+        "roomID": roomID,
+        "messengerID": messengerID,
+        "message": message
+    });
 
     return true;
 }
@@ -93,11 +95,20 @@ RoomManager.prototype.createRoom = async function(typeID) {
 
     await room.init();
     
-    room.onMessageSend = (message, clientID) => this.events.emit(RoomManager.EVENT.MESSAGE_SEND, clientID, message);
-    room.onMessageBroadcast = (message) => this.events.emit(RoomManager.EVENT.MESSAGE_BROADCAST, roomID, message);
+    room.onMessageSend = (message, clientID) => this.events.emit(RoomManager.EVENT.MESSAGE_SEND, {
+        "clientID": clientID,
+        "message": message
+    });
+
+    room.onMessageBroadcast = (message) => this.events.emit(RoomManager.EVENT.MESSAGE_BROADCAST, {
+        "roomID": roomID,
+        "message": message
+    });
 
     this.rooms.set(roomID, room);
-    this.events.emit(RoomManager.EVENT.ROOM_OPENED, roomID);
+    this.events.emit(RoomManager.EVENT.ROOM_OPENED, {
+        "id": roomID
+    });
     
     return room;
 }
@@ -119,7 +130,10 @@ RoomManager.prototype.appointLeader = function(roomID, clientID) {
 
     room.setLeader(clientID);
 
-    this.events.emit(RoomManager.EVENT.CLIENT_LEADER, clientID, roomID);
+    this.events.emit(RoomManager.EVENT.CLIENT_LEADER, {
+        "roomID": roomID,
+        "clientID": clientID
+    });
 
     return true;
 }
@@ -174,7 +188,10 @@ RoomManager.prototype.addClientToRoom = function(clientID, clientName, roomID) {
 
     room.addMember(clientID, member);
 
-    this.events.emit(RoomManager.EVENT.CLIENT_JOINED, clientID, roomID);
+    this.events.emit(RoomManager.EVENT.CLIENT_JOINED, {
+        "roomID": roomID,
+        "clientID": clientID
+    });
 
     return true;
 }
@@ -196,7 +213,10 @@ RoomManager.prototype.removeClientFromRoom = function(clientID, roomID) {
 
     room.removeMember(clientID);
 
-    this.events.emit(RoomManager.EVENT.CLIENT_LEFT, clientID, roomID);
+    this.events.emit(RoomManager.EVENT.CLIENT_LEFT, {
+        "roomID": roomID,
+        "clientID": clientID
+    });
 
     if(room.isEmpty()) {
         this.destroyRoom(roomID);
@@ -221,7 +241,9 @@ RoomManager.prototype.destroyRoom = function(roomID) {
 
     this.rooms.delete(roomID);
     
-    this.events.emit(RoomManager.EVENT.ROOM_CLOSED, roomID);
+    this.events.emit(RoomManager.EVENT.ROOM_CLOSED, {
+        "id": roomID
+    });
 
     if(this.rooms.size === 0) {
         RoomManager.ID.NEXT = 0;

@@ -29,15 +29,15 @@ export const BattalionContext = function() {
     this.eventHandler = new EventHandler();
     this.dialogueHandler = new DialogueHandler();
 
-    this.world.entityManager.events.on(EntityManager.EVENT.ENTITY_DESTROY, (id) => {
+    this.world.entityManager.events.on(EntityManager.EVENT.ENTITY_DESTROY, ({ id }) => {
         this.world.turnManager.forAllActors(actor => actor.removeEntity(id));
     }, { permanent: true });
 
-    this.world.turnManager.events.on(TurnManager.EVENT.NEXT_TURN, (turn) => {
+    this.world.turnManager.events.on(TurnManager.EVENT.NEXT_TURN, ({ turn }) => {
         this.eventHandler.onTurn(this, turn);
     }, { permanent: true} );
 
-    this.world.turnManager.events.on(TurnManager.EVENT.NEXT_ROUND, (round) => {
+    this.world.turnManager.events.on(TurnManager.EVENT.NEXT_ROUND, ({ round }) => {
         this.eventHandler.onRound(this, round);
     }, { permanent: true });
 }

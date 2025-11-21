@@ -18,9 +18,9 @@ export const ContextHelper = {
             return;
         }
 
-        cursor.events.on(Cursor.EVENT.BUTTON_DOWN, (buttonID) => {
-            if(buttonID === mouseButton) {
-                const isColliding = context.isColliding(cursor.positionX, cursor.positionY, cursor.radius);
+        cursor.events.on(Cursor.EVENT.BUTTON_DOWN, ({ button, x, y, radius }) => {
+            if(button === mouseButton) {
+                const isColliding = context.isColliding(x, y, radius);
 
                 if(isColliding) {
                     context.enableDrag();
@@ -28,14 +28,14 @@ export const ContextHelper = {
             }
         });
 
-        cursor.events.on(Cursor.EVENT.BUTTON_DRAG, (buttonID, deltaX, deltaY) => {
-            if(buttonID === mouseButton) {
+        cursor.events.on(Cursor.EVENT.BUTTON_DRAG, ({ button, deltaX, deltaY }) => {
+            if(button === mouseButton) {
                 context.dragCamera(deltaX, deltaY);
             }
         });
 
-        cursor.events.on(Cursor.EVENT.BUTTON_UP, (buttonID) => {
-            if(buttonID === mouseButton) {
+        cursor.events.on(Cursor.EVENT.BUTTON_UP, ({ button }) => {
+            if(button === mouseButton) {
                 context.disableDrag();
             }
         });

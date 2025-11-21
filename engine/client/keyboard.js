@@ -7,7 +7,6 @@ export const Keyboard = function() {
     this.events = new EventEmitter();
     this.events.register(Keyboard.EVENT.KEY_PRESSED);
     this.events.register(Keyboard.EVENT.KEY_RELEASED);
-    this.events.register(Keyboard.EVENT.KEY_DOWN);
     this.events.register(Keyboard.EVENT.KEY_BOUND);
     this.events.register(Keyboard.EVENT.KEY_UNBOUND);
 
@@ -33,7 +32,6 @@ export const Keyboard = function() {
 Keyboard.EVENT = {
     KEY_PRESSED: "KEY_PRESSED",
     KEY_RELEASED: "KEY_RELEASED",
-    KEY_DOWN: "KEY_DOWN",
     KEY_BOUND: "KEY_BOUND",
     KEY_UNBOUND: "KEY_UNBOUND"
 };
@@ -47,14 +45,18 @@ Keyboard.prototype.exit = function() {
 Keyboard.prototype.onKeyDown = function(keyID) {
     if(!this.activeKeys.has(keyID)) {
         this.activeKeys.add(keyID);
-        this.events.emit(Keyboard.EVENT.KEY_PRESSED, keyID);
+        this.events.emit(Keyboard.EVENT.KEY_PRESSED, {
+            "key": keyID
+        });
     }
 }
 
 Keyboard.prototype.onKeyUp = function(keyID) {
     if(this.activeKeys.has(keyID)) {
         this.activeKeys.delete(keyID);
-        this.events.emit(Keyboard.EVENT.KEY_RELEASED, keyID);
+        this.events.emit(Keyboard.EVENT.KEY_RELEASED, {
+            "key": keyID
+        });
     }
 }
 
@@ -64,7 +66,9 @@ Keyboard.prototype.reserve = function(keyID) {
     }
 
     this.reservedKeys.add(keyID);
-    this.events.emit(Keyboard.EVENT.KEY_BOUND, keyID);
+    this.events.emit(Keyboard.EVENT.KEY_BOUND, {
+        "key": keyID
+    });
 }
 
 Keyboard.prototype.free = function(keyID) {
@@ -73,10 +77,7 @@ Keyboard.prototype.free = function(keyID) {
     }
 
     this.reservedKeys.delete(keyID);
-}
-
-Keyboard.prototype.update = function() {
-    for(const keyID of this.activeKeys) {
-        this.events.emit(Keyboard.EVENT.KEY_DOWN, keyID);
-    }
+    this.events.emit(Keyboard.EVENT.KEY_UNBOUND, {
+        "key": keyID
+    });
 }

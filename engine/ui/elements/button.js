@@ -16,8 +16,8 @@ export const Button = function(DEBUG_NAME) {
     this.outlineColor = ColorHelper.getRGBAString(255, 255, 255, 255);
     this.outlineSize = 1;
 
-    this.collider.events.on(UICollider.EVENT.FIRST_COLLISION, (mouseX, mouseY, mouseRange) => this.drawHighlight = true, { permanent: true });
-    this.collider.events.on(UICollider.EVENT.LAST_COLLISION, (mouseX, mouseY, mouseRange) => this.drawHighlight = false, { permanent: true });
+    this.collider.events.on(UICollider.EVENT.FIRST_COLLISION, (event) => this.drawHighlight = true, { permanent: true });
+    this.collider.events.on(UICollider.EVENT.LAST_COLLISION, (event) => this.drawHighlight = false, { permanent: true });
 }
 
 Button.prototype = Object.create(UIElement.prototype);

@@ -1,5 +1,4 @@
 import { EventEmitter } from "../events/eventEmitter.js";
-import { Logger } from "../logger.js";
 import { MapSource } from "./mapSource.js";
 
 export const MapManager = function() {
@@ -10,7 +9,7 @@ export const MapManager = function() {
 
     this.events = new EventEmitter();
     this.events.register(MapManager.EVENT.MAP_CREATE);
-    this.events.register(MapManager.EVENT.MAP_DELETE);
+    this.events.register(MapManager.EVENT.MAP_DESTROY);
     this.events.register(MapManager.EVENT.MAP_ENABLE);
     this.events.register(MapManager.EVENT.MAP_DISABLE);
 }
@@ -19,7 +18,7 @@ MapManager.EMPTY_SOURCE = new MapSource("::NO_SOURCE", {});
 
 MapManager.EVENT = {
     MAP_CREATE: "MAP_CREATE",
-    MAP_DELETE: "MAP_DELETE",
+    MAP_DESTROY: "MAP_DESTROY",
     MAP_ENABLE: "MAP_ENABLE",
     MAP_DISABLE: "MAP_DISABLE"
 };
@@ -51,7 +50,10 @@ MapManager.prototype.createCustomMap = function(onCreate, externalID) {
 
         if(worldMap) {
             this.maps.set(mapID, worldMap);
-            this.events.emit(MapManager.EVENT.MAP_CREATE, mapID, worldMap);
+            this.events.emit(MapManager.EVENT.MAP_CREATE, {
+                "id": mapID,
+                "map": worldMap
+            });
 
             return worldMap;
         }
@@ -71,7 +73,10 @@ MapManager.prototype.createSourcedMap = function(onCreate, sourceID, externalID)
             worldMap.setSource(mapSource);
 
             this.maps.set(mapID, worldMap);
-            this.events.emit(MapManager.EVENT.MAP_CREATE, mapID, worldMap);
+            this.events.emit(MapManager.EVENT.MAP_CREATE, {
+                "id": mapID,
+                "map": worldMap
+            });
 
             return worldMap;
         }
@@ -117,7 +122,10 @@ MapManager.prototype.enableMap = function(mapID) {
     }
 
     this.activeMap = worldMap;
-    this.events.emit(MapManager.EVENT.MAP_ENABLE, mapID, worldMap);
+    this.events.emit(MapManager.EVENT.MAP_ENABLE, {
+        "id": mapID,
+        "map": worldMap
+    });
 }
 
 MapManager.prototype.getActiveMap = function() {
@@ -134,11 +142,10 @@ MapManager.prototype.getMapSource = function(sourceID) {
     return mapSource;
 }
 
-MapManager.prototype.deleteMap = function(mapID) {
+MapManager.prototype.destroyMap = function(mapID) {
     const loadedMap = this.maps.get(mapID);
 
     if(!loadedMap) {
-        Logger.log(Logger.CODE.ENGINE_WARN, "Map is not loaded!", "MapManager.prototype.deleteMap", { "mapID": mapID });
         return;
     }
 
@@ -147,7 +154,9 @@ MapManager.prototype.deleteMap = function(mapID) {
     }
 
     this.maps.delete(mapID);
-    this.events.emit(MapManager.EVENT.MAP_DELETE, mapID, loadedMap);
+    this.events.emit(MapManager.EVENT.MAP_DESTROY, {
+        "mapID": mapID
+    });
 }
 
 MapManager.prototype.getMap = function(mapID) {
@@ -164,7 +173,10 @@ MapManager.prototype.disableMap = function() {
     if(this.activeMap) {
         const mapID = this.activeMap.getID();
 
-        this.events.emit(MapManager.EVENT.MAP_DISABLE, mapID, this.activeMap);
+        this.events.emit(MapManager.EVENT.MAP_DISABLE, {
+            "id": mapID,
+            "map": this.activeMap
+        });
     }
 
     this.activeMap = null;

@@ -10,8 +10,8 @@ export const ResourceLoader = function() {
     this.events.register(ResourceLoader.EVENT.TEXTURE_LOADED);
     this.events.register(ResourceLoader.EVENT.TEXTURE_ERROR);
 
-    this.events.on(ResourceLoader.EVENT.TEXTURE_ERROR, (t, e) => console.error("ERROR", t, e));
-    this.events.on(ResourceLoader.EVENT.TEXTURE_LOADED, (t, r) => console.log("LOADED", t, r));
+    this.events.on(ResourceLoader.EVENT.TEXTURE_ERROR, ({ texture, error }) => console.error("ERROR", texture, error));
+    this.events.on(ResourceLoader.EVENT.TEXTURE_LOADED, ({ texture, bitmap }) => console.log("LOADED", texture, bitmap));
 }
 
 ResourceLoader.EVENT = {
@@ -86,11 +86,19 @@ ResourceLoader.prototype.loadTexture = function(id) {
         texture.requestBitmap()
         .then((bitmap) => {
             this.resolveLoad(id, bitmap);
-            this.events.emit(ResourceLoader.EVENT.TEXTURE_LOADED, texture, bitmap);
+            this.events.emit(ResourceLoader.EVENT.TEXTURE_LOADED, {
+                "id": id,
+                "texture": texture,
+                "bitmap": bitmap
+            });
         })
         .catch((error) => {
             this.resolveError(id);
-            this.events.emit(ResourceLoader.EVENT.TEXTURE_ERROR, texture, error);
+            this.events.emit(ResourceLoader.EVENT.TEXTURE_ERROR, {
+                "id": id,
+                "texture": texture,
+                "error": error
+            });
         });
     } 
 }

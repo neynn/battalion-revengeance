@@ -69,10 +69,10 @@ EventEmitter.prototype.muteAll = function() {
     }
 }
 
-EventEmitter.prototype.emit = function(eventType, ...args) {
+EventEmitter.prototype.emit = function(eventType, event) {
     const listener = this.listeners.get(eventType);
 
     if(listener) {
-        listener.emit(args);
+        listener.emit(event);
     }
 }

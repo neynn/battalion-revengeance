@@ -1,5 +1,4 @@
 import { EventEmitter } from "../../events/eventEmitter.js";
-import { Logger } from "../../logger.js";
 import { Client } from "./client.js";
 
 export const ClientManager = function() {
@@ -7,14 +6,14 @@ export const ClientManager = function() {
 
     this.events = new EventEmitter();
     this.events.register(ClientManager.EVENT.CLIENT_CREATE);
-    this.events.register(ClientManager.EVENT.CLIENT_DELETE);
+    this.events.register(ClientManager.EVENT.CLIENT_DESTROY);
     this.events.register(ClientManager.EVENT.USER_ID_ADDED);
 }
 
 ClientManager.EVENT = {
-    "CLIENT_CREATE": "CLIENT_CREATE",
-    "CLIENT_DELETE": "CLIENT_DELETE",
-    "USER_ID_ADDED": "USER_ID_ADDED"
+    CLIENT_CREATE: "CLIENT_CREATE",
+    CLIENT_DESTROY: "CLIENT_DESTROY",
+    USER_ID_ADDED: "USER_ID_ADDED"
 }
 
 ClientManager.prototype.exit = function() {
@@ -28,7 +27,9 @@ ClientManager.prototype.destroyClient = function(clientID) {
     }
 
     this.clients.delete(clientID);
-    this.events.emit(ClientManager.EVENT.CLIENT_DELETE, clientID);
+    this.events.emit(ClientManager.EVENT.CLIENT_DESTROY, {
+        "id": clientID
+    });
 
     return true;
 }
@@ -48,7 +49,10 @@ ClientManager.prototype.createClient = function(socket) {
     const client = new Client(clientID, socket);
 
     this.clients.set(clientID, client);
-    this.events.emit(ClientManager.EVENT.CLIENT_CREATE, clientID, client);
+    this.events.emit(ClientManager.EVENT.CLIENT_CREATE, {
+        "id": clientID,
+        "client": client
+    });
 
     return client;
 }
@@ -57,13 +61,15 @@ ClientManager.prototype.addUserID = function(clientID, userID) {
     const client = this.clients.get(clientID);
 
     if(!client) {
-        Logger.log(false, "Client does not exist!", "ClientManager.prototype.addUserID", { clientID, userID });
         return false;
     }
 
     client.setUserID(userID);
 
-    this.events.emit(ClientManager.EVENT.USER_ID_ADDED, clientID, userID);
+    this.events.emit(ClientManager.EVENT.USER_ID_ADDED, {
+        "clientID": clientID,
+        "userID": userID
+    });
 
     return true;
 }

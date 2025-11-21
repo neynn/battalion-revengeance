@@ -43,13 +43,13 @@ Listener.prototype.getID = function(options) {
     return this.nextID++;
 }
 
-Listener.prototype.emit = function(argsList) {
+Listener.prototype.emit = function(event) {
     for(let i = 0; i < this.observers.length; i++) {
-        this.observers[i].onEvent(...argsList);
+        this.observers[i].onEvent(event);
     }
 
     for(let i = 0; i < this.singleObservers.length; i++) {
-        this.singleObservers[i].onEvent(...argsList);
+        this.singleObservers[i].onEvent(event);
     }
 
     this.singleObservers.length = 0;

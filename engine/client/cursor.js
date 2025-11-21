@@ -24,7 +24,6 @@ export const Cursor = function() {
     this.events.register(Cursor.EVENT.BUTTON_DOWN);
     this.events.register(Cursor.EVENT.BUTTON_CLICK);
     this.events.register(Cursor.EVENT.BUTTON_DRAG);
-    this.events.register(Cursor.EVENT.BUTTON_HOLD);
     this.events.register(Cursor.EVENT.SCROLL);
 }
 
@@ -33,7 +32,6 @@ Cursor.EVENT = {
     BUTTON_DOWN: "BUTTON_DOWN",
     BUTTON_CLICK: "BUTTON_CLICK",
     BUTTON_DRAG: "BUTTON_DRAG",
-    BUTTON_HOLD: "BUTTON_HOLD",
     SCROLL: "SCROLL"
 };
 
@@ -68,7 +66,11 @@ Cursor.prototype.eventMouseMove = function(event) {
         button.onMouseMove(deltaX, deltaY);
 
         if(button.state === MouseButton.STATE.DRAG) {
-            this.events.emit(Cursor.EVENT.BUTTON_DRAG, i, deltaX, deltaY);
+            this.events.emit(Cursor.EVENT.BUTTON_DRAG, {
+                "button": i,
+                "deltaX": deltaX,
+                "deltaY": deltaY
+            });
         }
     }
 
@@ -85,7 +87,12 @@ Cursor.prototype.eventMouseDown = function(event) {
 
     const button = this.buttons[buttonID];
 
-    this.events.emit(Cursor.EVENT.BUTTON_DOWN, buttonID, this.positionX, this.positionY);
+    this.events.emit(Cursor.EVENT.BUTTON_DOWN, {
+        "button": buttonID,
+        "x": this.positionX,
+        "y": this.positionY,
+        "radius": this.radius
+    });
 
     button.onMouseDown();
 }   
@@ -100,10 +107,20 @@ Cursor.prototype.eventMouseUp = function(event) {
     const button = this.buttons[buttonID];
 
     if(button.state !== MouseButton.STATE.DRAG) {
-        this.events.emit(Cursor.EVENT.BUTTON_CLICK, buttonID, this.positionX, this.positionY);
+        this.events.emit(Cursor.EVENT.BUTTON_CLICK, {
+            "button": buttonID,
+            "x": this.positionX,
+            "y": this.positionY,
+            "radius": this.radius
+        });
     }
 
-    this.events.emit(Cursor.EVENT.BUTTON_UP, buttonID, this.positionX, this.positionY);
+    this.events.emit(Cursor.EVENT.BUTTON_UP, {
+        "button": buttonID,
+        "x": this.positionX,
+        "y": this.positionY,
+        "radius": this.radius
+    });
     
     button.onMouseUp();
 }
@@ -112,7 +129,10 @@ Cursor.prototype.eventMouseScroll = function(event) {
     const { deltaY } = event;
     const direction = deltaY < 0 ? Cursor.SCROLL.UP : Cursor.SCROLL.DOWN;
 
-    this.events.emit(Cursor.EVENT.SCROLL, direction, deltaY);
+    this.events.emit(Cursor.EVENT.SCROLL, {
+        "direction": direction,
+        "deltaY": deltaY
+    });
 }
 
 Cursor.prototype.eventPointerLockChange = function(event) {}
@@ -128,15 +148,5 @@ Cursor.prototype.unlock = function() {
     if(this.isLocked) {
         document.exitPointerLock();
         this.isLocked = false;
-    }
-}
-
-Cursor.prototype.update = function() {
-    for(let i = 0; i < this.buttons.length; i++) {
-        const button = this.buttons[i];
-
-        if(button.state !== MouseButton.STATE.UP) {
-            this.events.emit(Cursor.EVENT.BUTTON_HOLD, i);
-        }
     }
 }

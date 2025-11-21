@@ -21,10 +21,10 @@ export const MapEditor = function() {
 }
 
 MapEditor.EVENT = {
-    BRUSH_UPDATE: 0,
-    PALLET_UPDATE: 1,
-    MODE_UPDATE: 2,
-    SET_UPDATE: 3
+    BRUSH_UPDATE: "BRUSH_UPDATE",
+    PALLET_UPDATE: "PALLET_UPDATE",
+    MODE_UPDATE: "MODE_UPDATE",
+    SET_UPDATE: "SET_UPDATE"
 };
 
 MapEditor.AUTOTILER_STATE = {
@@ -62,7 +62,7 @@ MapEditor.prototype.scrollBrushSize = function(delta = 0) {
 
     if(brushSize !== null) {
         this.brush.size = brushSize;
-        this.events.emit(MapEditor.EVENT.BRUSH_UPDATE, this.brush);
+        this.tellBrushUpdate();
     }
 }
 
@@ -71,7 +71,9 @@ MapEditor.prototype.scrollMode = function(delta = 0) {
 
     if(mode !== null) {
         this.reloadPallet();
-        this.events.emit(MapEditor.EVENT.MODE_UPDATE);
+        this.events.emit(MapEditor.EVENT.MODE_UPDATE, {
+            "mode": mode
+        });
     }
 }
 
@@ -80,7 +82,9 @@ MapEditor.prototype.scrollBrushSet = function(delta) {
 
     if(brushSet !== null) {
         this.reloadPallet();
-        this.events.emit(MapEditor.EVENT.SET_UPDATE);
+        this.events.emit(MapEditor.EVENT.SET_UPDATE, {
+            "set": brushSet
+        });
     }
 }
 
@@ -106,7 +110,10 @@ MapEditor.prototype.reloadPallet = function() {
         }
     }
 
-    this.events.emit(MapEditor.EVENT.PALLET_UPDATE, this.pallet);
+    this.events.emit(MapEditor.EVENT.PALLET_UPDATE, {
+        "pallet": this.pallet
+    });
+
     this.resetBrush();
 }
 
@@ -198,22 +205,30 @@ MapEditor.prototype.toggleAutotiling = function() {
 
 MapEditor.prototype.toggleEraser = function() {
     const state = this.brush.toggleEraser();
-    this.events.emit(MapEditor.EVENT.BRUSH_UPDATE, this.brush);
+
+    this.tellBrushUpdate();
+
     return state;
 }
 
 MapEditor.prototype.resetBrush = function() {
     this.brush.reset();
-    this.events.emit(MapEditor.EVENT.BRUSH_UPDATE, this.brush);
+    this.tellBrushUpdate();
 }
 
 MapEditor.prototype.selectBrush = function(index) {
     const { id, name } = this.pallet.getElement(index);
 
     this.brush.setBrush(id, name);
-    this.events.emit(MapEditor.EVENT.BRUSH_UPDATE, this.brush);
+    this.tellBrushUpdate();
 }
 
 MapEditor.prototype.setBrushSizes = function(sizes) {
     this.brushSizes.setValues(sizes);
+}
+
+MapEditor.prototype.tellBrushUpdate = function() {
+    this.events.emit(MapEditor.EVENT.BRUSH_UPDATE, {
+        "brush": this.brush
+    });
 }
