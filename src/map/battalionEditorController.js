@@ -8,6 +8,14 @@ import { MapSpawner } from "./mapSpawner.js";
 export const BattalionEditorController = function(mapEditor) {
     EditorController.call(this, mapEditor);
 
+    const BRUSH_SIZES = [
+        { "width": 0, "height": 0 },
+        { "width": 1, "height": 1 },
+        { "width": 2, "height": 2 },
+        { "width": 3, "height": 3 },
+        { "width": 4, "height": 4 }
+    ];
+
     this.maxWidth = 100;
     this.maxHeight = 100;
     this.interfaceID = "MAP_EDITOR";
@@ -17,7 +25,7 @@ export const BattalionEditorController = function(mapEditor) {
     this.defaultWidth = 20;
     this.defaultHeight = 20;
     this.fill = { [BattalionMap.LAYER_NAME.GROUND]: TypeRegistry.TILE_ID.GRASS };
-    this.editor.setBrushSizes([0, 1, 2, 3, 4]);
+    this.editor.setBrushSizes(BRUSH_SIZES);
     this.buttonHandler.createButton(BattalionEditorController.LAYER_BUTTON.L1, BattalionMap.LAYER.GROUND, "TEXT_L1");
     this.buttonHandler.createButton(BattalionEditorController.LAYER_BUTTON.L2, BattalionMap.LAYER.DECORATION, "TEXT_L2");
     this.buttonHandler.createButton(BattalionEditorController.LAYER_BUTTON.L3, BattalionMap.LAYER.CLOUD, "TEXT_L3");   

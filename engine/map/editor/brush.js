@@ -1,13 +1,14 @@
 import { Pallet } from "./pallet.js";
 
 export const Brush = function() {
-    this.size = 0;
     this.id = Pallet.ID.ERROR;
     this.name = "";
     this.mode = Brush.MODE.NONE;
     this.previousID = Pallet.ID.ERROR;
     this.previousName = "";
     this.previousMode = Brush.MODE.NONE;
+    this.width = 0;
+    this.height = 0;
 }
 
 Brush.MODE = {
@@ -15,6 +16,11 @@ Brush.MODE = {
     ERASE: 1,
     DRAW: 2
 };
+
+Brush.prototype.setSize = function(width, height) {
+    this.width = width;
+    this.height = height;
+}
 
 Brush.prototype.setBrush = function(id, name) {
     switch(id) {
@@ -34,8 +40,8 @@ Brush.prototype.setBrush = function(id, name) {
     }
 }
 
-Brush.prototype.getDrawArea = function() {
-    return (this.size + 1) * 2 - 1;
+Brush.prototype.getAreaString = function() {
+    return `${(this.width + 1) * 2 - 1}x${(this.height + 1) * 2 - 1}`;
 }
 
 Brush.prototype.recordPrevious = function() {
@@ -75,10 +81,10 @@ Brush.prototype.reset = function() {
 
 Brush.prototype.paint = function(tileX, tileY, onPaint) {
     if(this.mode !== Brush.MODE.NONE && typeof onPaint === "function") {
-        const startX = tileX - this.size;
-        const startY = tileY - this.size;
-        const endX = tileX + this.size;
-        const endY = tileY + this.size;
+        const startX = tileX - this.width;
+        const startY = tileY - this.height;
+        const endX = tileX + this.width;
+        const endY = tileY + this.height;
 
         for(let i = startY; i <= endY; i++) {
             for(let j = startX; j <= endX; j++) {

@@ -1,18 +1,16 @@
 import { ContextHelper } from "../../engine/camera/contextHelper.js";
-import { Pallet } from "../../engine/map/editor/pallet.js";
 import { Renderer } from "../../engine/renderer/renderer.js";
+import { TileManager } from "../../engine/tile/tileManager.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { BattalionCamera } from "./battalionCamera.js";
 
-export const EditCamera = function() {
+export const EditCamera = function(brush) {
     BattalionCamera.call(this);
 
-    this.tileID = Pallet.ID.ERROR;
-    this.tileName = "";
-    this.drawRange = 0;
     this.overlayAlpha = 0.75;
     this.overlayColor = "#eeeeee";
+    this.brush = brush;
 }
 
 EditCamera.prototype = Object.create(BattalionCamera.prototype);
@@ -47,7 +45,9 @@ EditCamera.prototype.update = function(gameContext, display) {
 }
 
 EditCamera.prototype.drawHoverTile = function(gameContext, context) {
-    if(this.tileID === Pallet.ID.ERROR) {
+    const { id, name, width, height } = this.brush;
+
+    if(id === TileManager.TILE_ID.INVALID) {
         return;
     }
 
@@ -59,27 +59,19 @@ EditCamera.prototype.drawHoverTile = function(gameContext, context) {
     context.fillStyle = this.overlayColor;
     context.textAlign = "center";
 
-    const startX = x - this.drawRange;
-    const startY = y - this.drawRange;
-    const endX = x + this.drawRange;
-    const endY = y + this.drawRange;
+    const startX = x - width;
+    const startY = y - height;
+    const endX = x + width;
+    const endY = y + height;
 
     for(let i = startY; i <= endY; i++) {
         for(let j = startX; j <= endX; j++) {
             const renderY = i * tileHeight - this.screenY;
             const renderX = j * tileWidth - this.screenX;
 
-            this.drawTileSafe(tileManager, this.tileID, context, renderX, renderY);
+            this.drawTileSafe(tileManager, id, context, renderX, renderY);
 
-            context.fillText(this.tileName, renderX + halfTileWidth, renderY);
+            context.fillText(name, renderX + halfTileWidth, renderY);
         }
     }
-}
-
-EditCamera.prototype.onBrushUpdate = function(brush) {
-    const { id, name, size } = brush;
-
-    this.tileID = id;
-    this.tileName = name;
-    this.drawRange = size;
 }

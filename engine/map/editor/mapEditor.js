@@ -48,7 +48,9 @@ MapEditor.prototype.scrollBrushSize = function(delta = 0) {
     const brushSize = this.brushSizes.scroll(delta);
 
     if(brushSize !== null) {
-        this.brush.size = brushSize;
+        const { width, height } = brushSize;
+        
+        this.brush.setSize(width, height);
         this.tellBrushUpdate();
     }
 }

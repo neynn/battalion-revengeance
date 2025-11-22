@@ -17,11 +17,11 @@ export const CameraHelper = {
             camera2D.setMapSize(width, height);
         }
     },
-    createEditCamera: function(gameContext) {
+    createEditCamera: function(gameContext, brush) {
         const { renderer, transform2D } = gameContext;
         const { tileWidth, tileHeight } = transform2D;
 
-        const camera = new EditCamera();
+        const camera = new EditCamera(brush);
         const context = renderer.createContext(camera);
         const contextID = context.getID();
 

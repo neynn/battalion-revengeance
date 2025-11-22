@@ -1,4 +1,3 @@
-import { MapEditor } from "../../engine/map/editor/mapEditor.js";
 import { State } from "../../engine/state/state.js";
 import { CameraHelper } from "../camera/cameraHelper.js";
 import { BattalionMapEditor } from "../map/battalionMapEditor.js";
@@ -14,16 +13,13 @@ MapEditorState.prototype.constructor = MapEditorState;
 
 MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
     const { tileManager } = gameContext;
-    const context = CameraHelper.createEditCamera(gameContext);
-    const camera = context.getCamera();
     const mapEditor = new BattalionMapEditor();
     const controller = new BattalionEditorController(mapEditor);
+    const context = CameraHelper.createEditCamera(gameContext, mapEditor.brush);
+    const camera = context.getCamera();
     const hiddenSets = [];
 
-    mapEditor.initBrushSets(tileManager.getInversion(), hiddenSets);
-    mapEditor.events.on(MapEditor.EVENT.BRUSH_UPDATE, ({ brush }) => camera.onBrushUpdate(brush));
-    mapEditor.events.on(MapEditor.EVENT.PALLET_UPDATE, ({ pallet }) => console.log(pallet));
- 
+    mapEditor.initBrushSets(tileManager.getInversion(), hiddenSets); 
     controller.initUI(gameContext);
     controller.initUIEvents(gameContext);
     controller.initPalletButtons(gameContext, camera);

@@ -373,7 +373,7 @@ EditorController.prototype.getPageText = function() {
 
 EditorController.prototype.getSizeText = function() {
     const info = this.editor.brushSizes.getInfo();
-    const drawArea = this.editor.brush.getDrawArea();
+    const areaString = this.editor.brush.getAreaString();
 
-    return `SIZE: ${drawArea}x${drawArea} (${info})`;
+    return `SIZE: ${areaString} (${info})`;
 }
