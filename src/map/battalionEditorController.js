@@ -1,12 +1,12 @@
-import { MapEditorController } from "../../engine/map/editor/mapEditorController.js";
+import { EditorController } from "../../engine/map/editor/editorController.js";
 import { PrettyJSON } from "../../engine/resources/prettyJSON.js";
 import { BattalionContext } from "../battalionContext.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { BattalionMap } from "./battalionMap.js";
 import { MapSpawner } from "./mapSpawner.js";
 
-export const BattaltionEditorController = function(mapEditor) {
-    MapEditorController.call(this, mapEditor);
+export const BattalionEditorController = function(mapEditor) {
+    EditorController.call(this, mapEditor);
 
     this.maxWidth = 100;
     this.maxHeight = 100;
@@ -18,21 +18,21 @@ export const BattaltionEditorController = function(mapEditor) {
     this.defaultHeight = 20;
     this.fill = { [BattalionMap.LAYER_NAME.GROUND]: TypeRegistry.TILE_ID.GRASS };
     this.editor.setBrushSizes([0, 1, 2, 3, 4]);
-    this.buttonHandler.createButton(BattaltionEditorController.LAYER_BUTTON.L1, BattalionMap.LAYER.GROUND, "TEXT_L1");
-    this.buttonHandler.createButton(BattaltionEditorController.LAYER_BUTTON.L2, BattalionMap.LAYER.DECORATION, "TEXT_L2");
-    this.buttonHandler.createButton(BattaltionEditorController.LAYER_BUTTON.L3, BattalionMap.LAYER.CLOUD, "TEXT_L3");   
+    this.buttonHandler.createButton(BattalionEditorController.LAYER_BUTTON.L1, BattalionMap.LAYER.GROUND, "TEXT_L1");
+    this.buttonHandler.createButton(BattalionEditorController.LAYER_BUTTON.L2, BattalionMap.LAYER.DECORATION, "TEXT_L2");
+    this.buttonHandler.createButton(BattalionEditorController.LAYER_BUTTON.L3, BattalionMap.LAYER.CLOUD, "TEXT_L3");   
 }
 
-BattaltionEditorController.LAYER_BUTTON = {
+BattalionEditorController.LAYER_BUTTON = {
     L1: "L1",
     L2: "L2",
     L3: "L3"
 };
 
-BattaltionEditorController.prototype = Object.create(MapEditorController.prototype);
-BattaltionEditorController.prototype.constructor = BattaltionEditorController;
+BattalionEditorController.prototype = Object.create(EditorController.prototype);
+BattalionEditorController.prototype.constructor = BattalionEditorController;
 
-BattaltionEditorController.prototype.loadCommands = function(gameContext) {
+BattalionEditorController.prototype.loadCommands = function(gameContext) {
     const { client } = gameContext;
     const { router } = client;
 
@@ -42,7 +42,7 @@ BattaltionEditorController.prototype.loadCommands = function(gameContext) {
     router.on("TOGGLE_INVERSION", () => this.toggleInversion(gameContext));
 }
 
-BattaltionEditorController.prototype.saveMap = function(gameContext) {
+BattalionEditorController.prototype.saveMap = function(gameContext) {
     const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getMap(this.mapID);
@@ -77,7 +77,7 @@ BattaltionEditorController.prototype.saveMap = function(gameContext) {
     .download("map_" + this.mapID);
 }
 
-BattaltionEditorController.prototype.createMap = function(gameContext) {
+BattalionEditorController.prototype.createMap = function(gameContext) {
     const createNew = confirm("This will create and load a brand new map! Proceed?");
 
     if(createNew) {
@@ -91,8 +91,9 @@ BattaltionEditorController.prototype.createMap = function(gameContext) {
     }
 }
 
-BattaltionEditorController.prototype.loadMap = async function(gameContext) {
-    const mapID = prompt("MAP-ID?");
+BattalionEditorController.prototype.loadMap = async function(gameContext) {
+    const { language } = gameContext;
+    const mapID = prompt(language.get("EDITOR_LOAD_MAP"));
     const worldMap = await MapSpawner.createEditorMap(gameContext, mapID);
 
     if(worldMap) {
@@ -100,7 +101,7 @@ BattaltionEditorController.prototype.loadMap = async function(gameContext) {
     }
 }
 
-BattaltionEditorController.prototype.initUIEvents = function(gameContext) {
+BattalionEditorController.prototype.initUIEvents = function(gameContext) {
     const { uiManager, states } = gameContext;
     const editorInterface = uiManager.getGUI(this.guiID);
 
@@ -129,9 +130,9 @@ BattaltionEditorController.prototype.initUIEvents = function(gameContext) {
     editorInterface.getElement("BUTTON_PAGE_LAST").setClick(() => this.updatePage(gameContext, -1)); 
     editorInterface.getElement("BUTTON_PAGE_NEXT").setClick(() => this.updatePage(gameContext, 1));  
     editorInterface.getElement("BUTTON_SCROLL_SIZE").setClick(() => this.updateBrushSize(gameContext, 1));
-    editorInterface.getElement("BUTTON_L1").setClick(() => this.clickLayerButton(gameContext, BattaltionEditorController.LAYER_BUTTON.L1));
-    editorInterface.getElement("BUTTON_L2").setClick(() => this.clickLayerButton(gameContext, BattaltionEditorController.LAYER_BUTTON.L2));
-    editorInterface.getElement("BUTTON_L3").setClick(() => this.clickLayerButton(gameContext, BattaltionEditorController.LAYER_BUTTON.L3));
+    editorInterface.getElement("BUTTON_L1").setClick(() => this.clickLayerButton(gameContext, BattalionEditorController.LAYER_BUTTON.L1));
+    editorInterface.getElement("BUTTON_L2").setClick(() => this.clickLayerButton(gameContext, BattalionEditorController.LAYER_BUTTON.L2));
+    editorInterface.getElement("BUTTON_L3").setClick(() => this.clickLayerButton(gameContext, BattalionEditorController.LAYER_BUTTON.L3));
     editorInterface.getElement("BUTTON_SAVE").setClick(() => this.saveMap(gameContext));
     editorInterface.getElement("BUTTON_CREATE").setClick(() => this.createMap(gameContext));
     editorInterface.getElement("BUTTON_LOAD").setClick(() => this.loadMap(gameContext));

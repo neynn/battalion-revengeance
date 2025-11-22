@@ -8,8 +8,9 @@ import { PalletButton } from "./palletButton.js";
 import { Pallet } from "./pallet.js";
 import { ColorHelper } from "../../graphics/colorHelper.js";
 import { Container } from "../../ui/elements/container.js";
+import { ContextHelper } from "../../camera/contextHelper.js";
 
-export const MapEditorController = function(mapEditor) {
+export const EditorController = function(mapEditor) {
     this.editor = mapEditor;
     this.mapID = null;
     this.guiID = -1;
@@ -26,24 +27,31 @@ export const MapEditorController = function(mapEditor) {
     this.pageIndex = 0;
 }
 
-MapEditorController.prototype.paint = function(gameContext) {
+EditorController.prototype.paint = function(gameContext) {
     const button = this.buttonHandler.getActiveButton();
 
     if(button) {
-        const { layerID } = button;
-        
-        this.editor.paint(gameContext, this.mapID, layerID);
+        const { world } = gameContext;
+        const { mapManager } = world;
+        const worldMap = mapManager.getMap(this.mapID);
+
+        if(worldMap) {
+            const { layerID } = button;
+            const position = ContextHelper.getMouseTile(gameContext);
+
+            this.editor.onPaint(gameContext, worldMap, position, layerID);
+        }
     }
 }
 
-MapEditorController.prototype.destroy = function(gameContext) {
+EditorController.prototype.destroy = function(gameContext) {
     const { renderer, uiManager } = gameContext;
 
     uiManager.destroyGUI(this.guiID);
     renderer.destroyContext("CAMERA_CONTEXT");
 }
 
-MapEditorController.prototype.init = function(config, brushSets) {
+EditorController.prototype.init = function(config, brushSets) {
     const {
         maxWidth = this.maxWidth,
         maxHeight = this.maxHeight,
@@ -70,7 +78,7 @@ MapEditorController.prototype.init = function(config, brushSets) {
     this.editor.initBrushSets(brushSets, hiddenSets);
 }
 
-MapEditorController.prototype.initUI = function(gameContext) {
+EditorController.prototype.initUI = function(gameContext) {
     const { uiManager } = gameContext;
     const editorInterface = uiManager.parseGUI(gameContext, this.interfaceID);
 
@@ -84,7 +92,7 @@ MapEditorController.prototype.initUI = function(gameContext) {
     });
 }
 
-MapEditorController.prototype.initPalletButtons = function(gameContext, camera) {
+EditorController.prototype.initPalletButtons = function(gameContext, camera) {
     const { uiManager } = gameContext;
     const editorInterface = uiManager.getGUI(this.guiID);
     const container = editorInterface.getElement("CONTAINER_TILES");
@@ -119,7 +127,7 @@ MapEditorController.prototype.initPalletButtons = function(gameContext, camera) 
     }
 }
 
-MapEditorController.prototype.initPalletButtonEvents = function(gameContext, button, camera, gui) {
+EditorController.prototype.initPalletButtonEvents = function(gameContext, button, camera, gui) {
     const { tileManager } = gameContext;
     const { palletID } = button;
 
@@ -147,11 +155,11 @@ MapEditorController.prototype.initPalletButtonEvents = function(gameContext, but
     });
 }
 
-MapEditorController.prototype.resetPage = function() {
+EditorController.prototype.resetPage = function() {
     this.pageIndex = 0;
 }
 
-MapEditorController.prototype.updatePage = function(gameContext, delta) {
+EditorController.prototype.updatePage = function(gameContext, delta) {
     const maxPagesNeeded = Math.ceil(this.editor.pallet.getSize() / this.palletButtons.length);
 
     if(maxPagesNeeded <= 0) {
@@ -163,12 +171,12 @@ MapEditorController.prototype.updatePage = function(gameContext, delta) {
     this.updateMenuText(gameContext);
 }
 
-MapEditorController.prototype.updateBrushSize = function(gameContext, delta) {
+EditorController.prototype.updateBrushSize = function(gameContext, delta) {
     this.editor.scrollBrushSize(delta);
     this.updateMenuText(gameContext);
 }
 
-MapEditorController.prototype.initCursorEvents = function(gameContext) {
+EditorController.prototype.initCursorEvents = function(gameContext) {
     const { client } = gameContext;
     const { cursor } = client;
 
@@ -198,7 +206,7 @@ MapEditorController.prototype.initCursorEvents = function(gameContext) {
     });
 }
 
-MapEditorController.prototype.clickLayerButton = function(gameContext, buttonID) {
+EditorController.prototype.clickLayerButton = function(gameContext, buttonID) {
     const { world, uiManager } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getMap(this.mapID);
@@ -213,7 +221,7 @@ MapEditorController.prototype.clickLayerButton = function(gameContext, buttonID)
     this.buttonHandler.updateLayers(worldMap);
 }
 
-MapEditorController.prototype.viewAllLayers = function(gameContext) {
+EditorController.prototype.viewAllLayers = function(gameContext) {
     const { uiManager, world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getMap(this.mapID);
@@ -229,7 +237,7 @@ MapEditorController.prototype.viewAllLayers = function(gameContext) {
     this.buttonHandler.updateLayers(worldMap);
 }
 
-MapEditorController.prototype.resetBrush = function(editorInterface) {
+EditorController.prototype.resetBrush = function(editorInterface) {
     const text = editorInterface.getElement("TEXT_ERASER");
     const { style } = text;
 
@@ -238,7 +246,7 @@ MapEditorController.prototype.resetBrush = function(editorInterface) {
     this.editor.resetBrush();
 }
 
-MapEditorController.prototype.updateInversionText = function(gameContext, stateID) {
+EditorController.prototype.updateInversionText = function(gameContext, stateID) {
     const { uiManager } = gameContext;
     const editorInterface = uiManager.getGUI(this.guiID);
     const text = editorInterface.getElement("TEXT_INVERT");
@@ -256,7 +264,7 @@ MapEditorController.prototype.updateInversionText = function(gameContext, stateI
     }
 }
 
-MapEditorController.prototype.updateEraserText = function(gameContext, stateID) {
+EditorController.prototype.updateEraserText = function(gameContext, stateID) {
     const { uiManager } = gameContext;
     const editorInterface = uiManager.getGUI(this.guiID);
     const text = editorInterface.getElement("TEXT_ERASER");
@@ -274,7 +282,7 @@ MapEditorController.prototype.updateEraserText = function(gameContext, stateID) 
     }
 }
 
-MapEditorController.prototype.updateAutoText = function(gameContext, stateID) {
+EditorController.prototype.updateAutoText = function(gameContext, stateID) {
     const { uiManager } = gameContext;
     const editorInterface = uiManager.getGUI(this.guiID);
     const text = editorInterface.getElement("TEXT_AUTO");
@@ -293,29 +301,29 @@ MapEditorController.prototype.updateAutoText = function(gameContext, stateID) {
     }
 }
 
-MapEditorController.prototype.toggleEraser = function(gameContext) {
+EditorController.prototype.toggleEraser = function(gameContext) {
     const nextState = this.editor.toggleEraser();
 
     this.updateEraserText(gameContext, nextState);
 }
 
-MapEditorController.prototype.toggleAutotiler = function(gameContext) {
+EditorController.prototype.toggleAutotiler = function(gameContext) {
     const nextState = this.editor.toggleAutotiling();
 
     this.updateAutoText(gameContext, nextState);
 }
 
-MapEditorController.prototype.toggleInversion = function(gameContext) {
+EditorController.prototype.toggleInversion = function(gameContext) {
     const inversionState = this.editor.toggleInversion();
 
     this.updateInversionText(gameContext, inversionState);
 }
 
-MapEditorController.prototype.getPalletIndex = function(index) {
+EditorController.prototype.getPalletIndex = function(index) {
     return this.pageIndex * this.palletButtons.length + index;
 } 
 
-MapEditorController.prototype.resizeCurrentMap = function(gameContext) {
+EditorController.prototype.resizeCurrentMap = function(gameContext) {
     const { world, renderer } = gameContext;
     const { mapManager } = world;
     const gameMap = mapManager.getMap(this.mapID);
@@ -334,7 +342,7 @@ MapEditorController.prototype.resizeCurrentMap = function(gameContext) {
     renderer.onMapSizeUpdate(newWidth, newHeight);
 }
 
-MapEditorController.prototype.updateMenuText = function(gameContext) {
+EditorController.prototype.updateMenuText = function(gameContext) {
     const { uiManager } = gameContext;
     const editorInterface = uiManager.getGUI(this.guiID);
 
@@ -355,7 +363,7 @@ MapEditorController.prototype.updateMenuText = function(gameContext) {
     editorInterface.getElement("TEXT_SIZE").setText( this.getSizeText());
 }
 
-MapEditorController.prototype.getPageText = function() {
+EditorController.prototype.getPageText = function() {
     const maxPagesNeeded = Math.ceil(this.editor.pallet.getSize() / this.palletButtons.length);
     const showMaxPagesNeeded = maxPagesNeeded === 0 ? 1 : maxPagesNeeded;
     const showCurrentPage = this.pageIndex + 1;
@@ -363,7 +371,7 @@ MapEditorController.prototype.getPageText = function() {
     return `${showCurrentPage} / ${showMaxPagesNeeded}`;
 }
 
-MapEditorController.prototype.getSizeText = function() {
+EditorController.prototype.getSizeText = function() {
     const info = this.editor.brushSizes.getInfo();
     const drawArea = this.editor.brush.getDrawArea();
 

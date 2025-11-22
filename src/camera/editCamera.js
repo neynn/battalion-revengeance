@@ -42,7 +42,7 @@ EditCamera.prototype.update = function(gameContext, display) {
     this.drawHoverTile(gameContext, context);
 
     if(Renderer.DEBUG.MAP) {
-        this.debugMap(context, worldMap);
+        this.debugMap(display, worldMap);
     }
 }
 

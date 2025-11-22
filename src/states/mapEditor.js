@@ -2,7 +2,7 @@ import { MapEditor } from "../../engine/map/editor/mapEditor.js";
 import { State } from "../../engine/state/state.js";
 import { CameraHelper } from "../camera/cameraHelper.js";
 import { BattalionMapEditor } from "../map/battalionMapEditor.js";
-import { BattaltionEditorController } from "../map/battalionEditorController.js";
+import { BattalionEditorController } from "../map/battalionEditorController.js";
 
 export const MapEditorState = function() {
     this.controller = null;
@@ -17,7 +17,7 @@ MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
     const context = CameraHelper.createEditCamera(gameContext);
     const camera = context.getCamera();
     const mapEditor = new BattalionMapEditor();
-    const controller = new BattaltionEditorController(mapEditor);
+    const controller = new BattalionEditorController(mapEditor);
     const hiddenSets = [];
 
     mapEditor.initBrushSets(tileManager.getInversion(), hiddenSets);

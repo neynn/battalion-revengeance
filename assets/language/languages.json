@@ -1,5 +1,6 @@
 {
     "en-US": [
+        { "directory": ["assets", "language","en-US"], "source": "system.json" },
         { "directory": ["assets", "language","en-US"], "source": "traits.json" },
         { "directory": ["assets", "language","en-US"], "source": "entities.json" }
     ]

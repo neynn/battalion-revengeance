@@ -93,7 +93,7 @@ export const MapSpawner = {
         teamManager.updateOrder(gameContext);
         //ActionHelper.createRegularDialogue(gameContext, DialogueHandler.TYPE.PRELOGUE);
     },
-    createStoryMap: async function(gameContext, sourceID) {
+    loadStoryMap: async function(gameContext, sourceID) {
         const { world, language } = gameContext;
         const { mapManager } = world;
         const currentLanguage = language.getCurrent();
@@ -118,12 +118,8 @@ export const MapSpawner = {
 
                 mapManager.enableMap(mapID);
                 MapSpawner.initMap(gameContext, worldMap, file);
-
-                return worldMap;
             }
         }
-
-        return null;
     },
     createEditorMap: async function(gameContext, sourceID) {
         const { world } = gameContext;
@@ -148,7 +144,7 @@ export const MapSpawner = {
 
         return null;
     },
-    createCustomMap: function(gameContext, mapData) {
+    loadCustomMap: function(gameContext, mapData) {
         const { world } = gameContext;
         const { mapManager } = world;
         const { width, height, data } = mapData;
