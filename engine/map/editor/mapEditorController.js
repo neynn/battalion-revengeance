@@ -7,6 +7,7 @@ import { ButtonHandler } from "./buttonHandler.js";
 import { PalletButton } from "./palletButton.js";
 import { Pallet } from "./pallet.js";
 import { ColorHelper } from "../../graphics/colorHelper.js";
+import { Container } from "../../ui/elements/container.js";
 
 export const MapEditorController = function(mapEditor) {
     this.editor = mapEditor;
@@ -78,7 +79,7 @@ MapEditorController.prototype.initUI = function(gameContext) {
     ["CONTAINER_FILE", "CONTAINER_LAYERS", "CONTAINER_TILES", "CONTAINER_TOOLS"].forEach(id => {
         const container = editorInterface.getElement(id);
 
-        container.drawBackground = true;
+        container.drawFlags |= Container.DRAW_FLAG.BACKGROUND;
         container.backgroundColor = ColorHelper.getRGBAString(20, 20, 20, 128);
     });
 }

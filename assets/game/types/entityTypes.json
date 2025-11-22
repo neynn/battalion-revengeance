@@ -1,5 +1,5 @@
 {
-    "meme_bureaucrat": {
+    "MEME_BUREAUCRAT": {
         "health": 30,
         "damage": 15,
         "weaponType": "LIGHT",
@@ -25,7 +25,7 @@
             "fire_up": "cockroach_fire_up"
         }
     },
-    "cockroach": {
+    "COCKROACH": {
         "health": 50,
         "damage": 15,
         "weaponType": "LIGHT",
@@ -51,7 +51,7 @@
             "fire_up": "cockroach_fire_up"
         }
     },
-    "aleph": {
+    "ALEPH": {
         "health": 50,
         "damage": 50,
         "weaponType": "HEAVY",
@@ -76,7 +76,7 @@
             "fire_up": "aleph_fire_up"
         }
     },
-    "condor_bomber": {
+    "CONDOR_BOMBER": {
         "health": 50,
         "damage": 35,
         "weaponType": "MEDIUM",
@@ -101,7 +101,7 @@
             "fire_up": "condor_fire_up"
         }
     },
-    "asekara_tank": {
+    "ASEKARA_TANK": {
         "health": 100,
         "damage": 35,
         "weaponType": "MEDIUM",
@@ -126,7 +126,7 @@
             "fire_up": "scorpion_tank_fire_up"
         }
     },
-    "raptor_fighter": {
+    "RAPTOR_FIGHTER": {
         "health": 50,
         "damage": 15,
         "weaponType": "LIGHT",
@@ -151,7 +151,7 @@
             "fire_up": "raptor_fighter_fire_up"
         }
     },
-    "flak_tank": {
+    "FLAK_TANK": {
         "health": 60,
         "damage": 20,
         "maxRange": 3,
@@ -177,7 +177,7 @@
             "fire_up": "flak_tank_fire_up"
         }
     },
-    "tank_hunter": {
+    "TANK_HUNTER": {
         "health": 100,
         "damage": 35,
         "weaponType": "MEDIUM",
@@ -202,7 +202,7 @@
             "fire_up": "lancer_tank_fire_up"
         }
     },
-    "ampac": {
+    "AMPAC": {
         "health": 100,
         "damage": 35,
         "weaponType": "HEAVY",
@@ -227,7 +227,7 @@
             "fire_up": "ampac_fire_up"
         }
     },
-    "ayin": {
+    "AYIN": {
         "health": 40,
         "damage": 25,
         "weaponType": "MEDIUM",
@@ -253,7 +253,7 @@
             "fire_up": "ampac_fire_up"
         }
     },
-    "gorlitz_tank": {
+    "GORLITZ_TANK": {
         "health": 110,
         "damage": 50,
         "weaponType": "HEAVY",
@@ -278,7 +278,7 @@
             "fire_up": "gorlitz_fire_up"
         }
     },
-    "leviathan_barge": {
+    "LEVIATHAN_BARGE": {
         "health": 100,
         "damage": 0,
         "weaponType": "NONE",
@@ -298,7 +298,7 @@
             "idle_up": "leviathan_barge_idle_up"
         }
     },
-    "turret": {
+    "TURRET": {
         "health": 150,
         "damage": 30,
         "weaponType": "MEDIUM",
@@ -324,7 +324,7 @@
             "fire_up": "turret_fire_up"
         }
     },
-    "entwicklung": {
+    "ENTWICKLUNG": {
         "health": 170,
         "damage": 65,
         "weaponType": "MEDIUM",
@@ -349,7 +349,7 @@
             "fire_up": "entwicklung_fire_up"
         }
     },
-    "battleship": {
+    "BATTLESHIP": {
         "health": 1500,
         "damage": 100,
         "minRange": 3,
@@ -376,7 +376,7 @@
             "fire_up": "battle_cruiser_fire_up"
         }
     },
-    "super_battleship": {
+    "SUPER_BATTLESHIP": {
         "health": 2500,
         "damage": 250,
         "minRange": 4,
@@ -403,7 +403,7 @@
             "fire_up": "battle_cruiser_fire_up"
         }
     },
-    "jammer_truck": {
+    "JAMMER_TRUCK": {
         "health": 50,
         "damage": 0,
         "jammerRange": 2,
@@ -424,7 +424,7 @@
             "idle_up": "jammer_truck_idle_up"
         }
     },
-    "stealth_tank": {
+    "STEALTH_TANK": {
         "health": 80,
         "damage": 40,
         "weaponType": "MEDIUM",
@@ -449,7 +449,7 @@
             "fire_up": "stealth_tank_fire_up"
         }
     },
-    "heavy_commando": {
+    "HEAVY_COMMANDO": {
         "health": 40,
         "damage": 30,
         "weaponType": "HEAVY",
@@ -474,7 +474,7 @@
             "fire_up": "heavy_commando_fire_up"
         }
     },
-    "u_boat": {
+    "U_BOAT": {
         "health": 50,
         "damage": 50,
         "weaponType": "MEDIUM",
@@ -499,7 +499,7 @@
             "fire_up": "u_boat_fire_up"
         }
     },
-    "annihilator_tank": {
+    "ANNIHILATOR_TANK": {
         "health": 120,
         "damage": 50,
         "weaponType": "HEAVY",
@@ -523,7 +523,7 @@
             "fire_up": "annihilator_tank_fire_up"
         }
     },
-    "corvette_fighter": {
+    "CORVETTE_FIGHTER": {
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -544,7 +544,7 @@
             "fire_up": "corvette_fighter_fire_up"
         }
     },
-    "hunter_support": {
+    "HUNTER_SUPPORT": {
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -565,7 +565,7 @@
             "fire_up": "hunter_support_fire_up"
         }
     },
-    "intrepid": {
+    "INTREPID": {
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -586,7 +586,7 @@
             "fire_up": "intrepid_fire_up"
         }
     },
-    "mortar_truck": {
+    "MORTAR_TRUCK": {
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -607,7 +607,7 @@
             "fire_up": "mortar_truck_fire_up"
         }
     },
-    "rocket_truck": {
+    "ROCKET_TRUCK": {
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -628,7 +628,7 @@
             "fire_up": "rocket_truck_fire_up"
         }
     },
-    "spider_tank": {
+    "SPIDER_TANK": {
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -649,7 +649,7 @@
             "fire_up": "spider_tank_fire_up"
         }
     },
-    "strike_commando": {
+    "STRIKE_COMMANDO": {
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -670,7 +670,7 @@
             "fire_up": "strike_commando_fire_up"
         }
     },
-    "vulture_drone": {
+    "VULTURE_DRONE": {
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -691,7 +691,7 @@
             "fire_up": "vulture_drone_fire_up"
         }
     },
-    "warmachine": {
+    "WARMACHINE": {
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -712,7 +712,7 @@
             "fire_up": "warmachine_fire_up"
         }
     },
-    "albatross_transport": {
+    "ALBATROSS_TRANSPORT": {
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",
@@ -729,7 +729,7 @@
             "idle_up": "albatross_transport_idle_up"
         }
     },
-    "blockade": {
+    "BLOCKADE": {
         "health": 10,
         "damage": 0,
         "weaponType": "NONE",

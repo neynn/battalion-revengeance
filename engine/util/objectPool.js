@@ -1,5 +1,3 @@
-import { Logger } from "../logger.js";
-
 export const ObjectPool = function(size, allocator) {
     this.allocator = allocator;
     this.originalSize = size;
@@ -45,7 +43,6 @@ ObjectPool.prototype.freeElement = function(index) {
 
 ObjectPool.prototype.reserveElement = function() {
     if(this.openSlots.length === 0) {
-        Logger.log(Logger.CODE.ENGINE_ERROR, "ObjectPool is full!", "ObjectPool.prototype.reserveElement", null);  
         return null;
     }
 

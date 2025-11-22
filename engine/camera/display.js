@@ -1,5 +1,3 @@
-import { SHAPE, TWO_PI } from "../math/constants.js";
-
 export const Display = function() {
     this.canvas = null;
     this.context = null;
@@ -130,36 +128,6 @@ Display.prototype.stackAlpha = function(alpha) {
 Display.prototype.setAlpha = function(alpha) {
     if(alpha >= 0 && alpha <= 1) {
         this.context.globalAlpha = alpha;
-    }
-}
-
-Display.prototype.drawShape = function(shape, drawX, drawY, width, height) {
-    switch(shape) {
-        case SHAPE.RECTANGLE: {
-            this.context.fillRect(drawX, drawY, width, height);
-            break;
-        }
-        case SHAPE.CIRCLE: {
-            this.context.beginPath();
-            this.context.arc(drawX, drawY, width, 0, TWO_PI);
-            this.context.fill();
-            break;
-        }
-    }
-}
-
-Display.prototype.strokeShape = function(shape, drawX, drawY, width, height) {
-    switch(shape) {
-        case SHAPE.RECTANGLE: {
-            this.context.strokeRect(drawX, drawY, width, height);
-            break;
-        }
-        case SHAPE.CIRCLE: {
-            this.context.beginPath();
-            this.context.arc(drawX, drawY, width, 0, TWO_PI);
-            this.context.stroke();
-            break;
-        }
     }
 }
 

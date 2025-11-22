@@ -1,4 +1,3 @@
-import { Logger } from "../logger.js";
 import { UIParser } from "./parser.js";
 import { UserInterface } from "./userInterface.js";
 
@@ -22,7 +21,7 @@ UIManager.prototype.getIconTexture = function(iconID) {
 
 UIManager.prototype.load = function(interfaceTypes, iconTypes) {
     if(!interfaceTypes || !iconTypes) {
-        Logger.log(Logger.CODE.ENGINE_ERROR, "InterfaceTypes/IconTypes cannot be undefined!", "UIManager.prototype.load", null);
+        return;
     }
 
     this.parser.load(interfaceTypes);
@@ -102,16 +101,13 @@ UIManager.prototype.onWindowResize = function(windowWidth, windowHeight) {
 UIManager.prototype.destroyGUI = function(interfaceID) {
     const index = this.getIndex(interfaceID);
 
-    if(index === -1) {
-        Logger.log(Logger.CODE.ENGINE_ERROR, "GUI does not exist!", "UIManager.prototype.destroyGUI", { "interfaceID": interfaceID });
-        return;
+    if(index !== -1) {
+        const userInterface = this.interfaceStack[index];
+
+        userInterface.clear();
+
+        this.interfaceStack.splice(index, 1);
     }
-
-    const userInterface = this.interfaceStack[index];
-
-    userInterface.clear();
-
-    this.interfaceStack.splice(index, 1);
 }
 
 UIManager.prototype.createGUI = function() {

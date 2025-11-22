@@ -11,13 +11,20 @@ export const UserInterface = function(id) {
     this.collisions = new SwapSet();
 }
 
-UserInterface.STUB_ELEMENT = new UIElement("STUB");
+UserInterface.EMPTY_ELEMENT = new UIElement("EMPTY");
 
 UserInterface.STATE = {
     HIDDEN: 0,
-    VISIBLE: 1,
-    VISIBLE_NO_INTERACT: 2
+    VISIBLE: 1
 };
+
+UserInterface.prototype.hide = function() {
+    this.state = UserInterface.STATE.HIDDEN;
+}
+
+UserInterface.prototype.show = function() {
+    this.state = UserInterface.STATE.VISIBLE;
+}
 
 UserInterface.prototype.getID = function() {
     return this.id;
@@ -91,7 +98,7 @@ UserInterface.prototype.getElement = function(name) {
     const element = this.elements.get(elementID);
 
     if(!element) {
-        return UserInterface.STUB_ELEMENT;
+        return UserInterface.EMPTY_ELEMENT;
     }
 
     return element;

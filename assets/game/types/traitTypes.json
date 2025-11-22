@@ -249,7 +249,7 @@
         "name": "TRAIT_NAME_RADAR",
         "desc": "TRAIT_DESC_RADAR",
         "icon": "Assets/Traits/Radar.png",
-        "note": "This trait is not implemented."
+        "note": "This trait is not implemented. Should uncloak stealth units on every turn start."
     },
     "CONQUEROR": {
         "name": "TRAIT_NAME_CONQUEROR",

@@ -1,5 +1,3 @@
-import { TypeRegistry } from "../typeRegistry.js";
-
 export const EntityType = function(id, config) {
     const {
         dimX = EntityType.DEFAULT.SIZE_X,
@@ -15,8 +13,8 @@ export const EntityType = function(id, config) {
         minRange = EntityType.DEFAULT.MIN_RANGE,
         maxRange = EntityType.DEFAULT.MAX_RANGE,
         streamRange = EntityType.DEFAULT.STREAM_RANGE,
-        desc = "MISSING_DESC_ENTITY",
-        name = "MISSING_NAME_ENTITY",
+        desc = EntityType.MISSING.DESC,
+        name = EntityType.MISSING.NAME,
         traits = [],
         sounds = {},
         sprites = {}
@@ -40,24 +38,25 @@ export const EntityType = function(id, config) {
     this.streamRange = streamRange;
     this.sounds = sounds;
     this.sprites = sprites;
-    this.traits = [];
+    this.traits = traits;
 
     if(this.maxRange < this.minRange) {
         this.maxRange = this.minRange;
     }
 
-    for(let i = 0; i < traits.length && i < EntityType.MAX_TRAITS; i++) {
-        const traitID = traits[i];
+    const MAX_TRAITS = 4;
 
-        if(TypeRegistry.TRAIT_TYPE[traitID] !== undefined) {
-            this.traits.push(TypeRegistry.TRAIT_TYPE[traitID]);
-        } else {
-            console.error("UNKNOWN TRAIT!", traitID);
-        }
+    if(this.traits.length > MAX_TRAITS) {
+        this.traits.length = MAX_TRAITS;
+
+        console.warn(`${this.id}: More than ${MAX_TRAITS} traits detected!`);
     }
 }
 
-EntityType.MAX_TRAITS = 4;
+EntityType.MISSING = {
+    NAME: "MISSING_NAME_ENTITY",
+    DESC: "MISSING_DESC_ENTITY"
+};
 
 EntityType.DEFAULT = {
     MOVEMENT_SPEED: 224,
@@ -73,4 +72,4 @@ EntityType.DEFAULT = {
     MOVEMENT_TYPE: "STATIONARY",
     WEAPON_TYPE: "NONE",
     ARMOR_TYPE: "NONE"
-}
+};

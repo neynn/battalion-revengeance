@@ -1,5 +1,6 @@
 import { ColorHelper } from "../../graphics/colorHelper.js";
 import { SHAPE } from "../../math/constants.js";
+import { DrawHelper } from "../../util/drawHelper.js";
 import { UICollider } from "../uiCollider.js";
 import { UIElement } from "../uiElement.js";
 
@@ -7,28 +8,28 @@ export const Container = function(DEBUG_NAME) {
     UIElement.call(this, DEBUG_NAME);
 
     this.collider = new UICollider();
-    this.drawBackground = false;
-    this.drawOutline = true;
-    this.backgroundColor = ColorHelper.getRGBAString(255, 255, 255, 255);
-    this.outlineColor = ColorHelper.getRGBAString(255, 255, 255, 255);
+    this.drawFlags = Container.DRAW_FLAG.OUTLINE;
     this.outlineSize = 1;
+    this.outlineColor = ColorHelper.getRGBAString(255, 255, 255, 255);
+    this.backgroundColor = ColorHelper.getRGBAString(255, 255, 255, 255);
 } 
+
+Container.DRAW_FLAG = {
+    NONE: 0,
+    BACKGROUND: 1 << 0,
+    OUTLINE: 1 << 1
+};
 
 Container.prototype = Object.create(UIElement.prototype);
 Container.prototype.constructor = Container;
 
 Container.prototype.onDraw = function(display, localX, localY) {
-    const { context } = display;
-
-    if(this.drawBackground) {
-        context.fillStyle = this.backgroundColor;
-        display.drawShape(SHAPE.RECTANGLE, localX, localY, this.width, this.height);
+    if((this.drawFlags & Container.DRAW_FLAG.BACKGROUND) !== 0) {
+        DrawHelper.drawShape(display, SHAPE.RECTANGLE, this.backgroundColor, localX, localY, this.width, this.height);
     }
 
-    if(this.drawOutline) {
-        context.strokeStyle = this.outlineColor;
-        context.lineWidth = this.outlineSize;
-        display.strokeShape(SHAPE.RECTANGLE, localX, localY, this.width, this.height);
+    if((this.drawFlags & Container.DRAW_FLAG.OUTLINE) !== 0) {
+        DrawHelper.strokeShape(display, SHAPE.RECTANGLE, this.outlineColor, this.outlineSize, localX, localY, this.width, this.height);
     }
 }
 

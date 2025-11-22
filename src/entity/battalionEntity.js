@@ -1292,18 +1292,7 @@ BattalionEntity.prototype.canAct = function() {
 }
 
 BattalionEntity.prototype.getCloakFlags = function() {
-    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.STEALTH)) {
-        if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SUBMERGED)) {
-            return JammerField.FLAG.SONAR;
-        }
-
-        return JammerField.FLAG.RADAR;
-    }
-
-    return JammerField.FLAG.NONE;
-}
-
-BattalionEntity.prototype.getUncloakFlags = function() {
+    //The returned flags need to be unset in a jammer field, otherwise cloaking will not work.
     if(this.hasTrait(TypeRegistry.TRAIT_TYPE.STEALTH)) {
         if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SUBMERGED)) {
             return JammerField.FLAG.SONAR;
@@ -1337,7 +1326,7 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, 
                     isNeighborUncloaked = true;
                 }
             } else if(jammerFlags !== JammerField.FLAG.NONE) {
-                const uncloakFlags = entity.getUncloakFlags();
+                const uncloakFlags = entity.getCloakFlags();
 
                 if((uncloakFlags & jammerFlags) === uncloakFlags) {
                     if(!entity.isVisibleTo(gameContext, this.teamID)) {

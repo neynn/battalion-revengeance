@@ -1,0 +1,42 @@
+import { SHAPE, TWO_PI } from "../math/constants.js";
+
+export const DrawHelper = {
+    drawShape: function(display, shape, color, drawX, drawY, width, height) {
+        const { context } = display;
+
+        switch(shape) {
+            case SHAPE.RECTANGLE: {
+                context.fillStyle = color;
+                context.fillRect(drawX, drawY, width, height);
+                break;
+            }
+            case SHAPE.CIRCLE: {
+                context.fillStyle = color;
+                context.beginPath();
+                context.arc(drawX, drawY, width, 0, TWO_PI);
+                context.fill();
+                break;
+            }
+        }
+    },
+    strokeShape: function(display, shape, color, size, drawX, drawY, width, height) {
+        const { context } = display;
+
+        switch(shape) {
+            case SHAPE.RECTANGLE: {
+                context.strokeStyle = color;
+                context.lineWidth = size;
+                context.strokeRect(drawX, drawY, width, height);
+                break;
+            }
+            case SHAPE.CIRCLE: {
+                context.strokeStyle = color;
+                context.lineWidth = size;
+                context.beginPath();
+                context.arc(drawX, drawY, width, 0, TWO_PI);
+                context.stroke();
+                break;
+            }
+        }
+    }
+};

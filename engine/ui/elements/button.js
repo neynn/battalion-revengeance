@@ -1,5 +1,6 @@
 import { ColorHelper } from "../../graphics/colorHelper.js";
 import { SHAPE } from "../../math/constants.js";
+import { DrawHelper } from "../../util/drawHelper.js";
 import { UICollider } from "../uiCollider.js";
 import { UIElement } from "../uiElement.js";
 
@@ -8,17 +9,22 @@ export const Button = function(DEBUG_NAME) {
 
     this.shape = SHAPE.RECTANGLE;
     this.collider = new UICollider();
-    this.drawBackground = false;
-    this.drawHighlight = false;
-    this.drawOutline = true;
+    this.drawFlags = Button.DRAW_FLAG.OUTLINE;
+    this.outlineSize = 1;
+    this.outlineColor = ColorHelper.getRGBAString(255, 255, 255, 255);
     this.backgroundColor = ColorHelper.getRGBAString(0, 0, 0, 0);
     this.highlightColor = ColorHelper.getRGBAString(200, 200, 200, 64);
-    this.outlineColor = ColorHelper.getRGBAString(255, 255, 255, 255);
-    this.outlineSize = 1;
 
-    this.collider.events.on(UICollider.EVENT.FIRST_COLLISION, (event) => this.drawHighlight = true, { permanent: true });
-    this.collider.events.on(UICollider.EVENT.LAST_COLLISION, (event) => this.drawHighlight = false, { permanent: true });
+    this.collider.events.on(UICollider.EVENT.FIRST_COLLISION, (event) => this.drawFlags |= Button.DRAW_FLAG.HIGHLIGHT, { permanent: true });
+    this.collider.events.on(UICollider.EVENT.LAST_COLLISION, (event) => this.drawFlags &= ~Button.DRAW_FLAG.HIGHLIGHT, { permanent: true });
 }
+
+Button.DRAW_FLAG = {
+    NONE: 0,
+    BACKGROUND: 1 << 0,
+    HIGHLIGHT: 1 << 1,
+    OUTLINE: 1 << 2
+};
 
 Button.prototype = Object.create(UIElement.prototype);
 Button.prototype.constructor = Button;
@@ -42,40 +48,29 @@ Button.prototype.onDebug = function(display, localX, localY) {
     const { context } = display;
     
     context.globalAlpha = 0.2;
-    context.fillStyle = "#ff00ff";
-    display.drawShape(this.shape, localX, localY, this.width, this.height);
+    DrawHelper.drawShape(display, this.shape, "#ff00ff", localX, localY, this.width, this.height);
 }
 
-Button.prototype.onDrawBackground = function(display, localX, localY) {
-    if(this.drawBackground) {
-        const { context } = display;
-
-        context.fillStyle = this.backgroundColor;
-        display.drawShape(this.shape, localX, localY, this.width, this.height);
+Button.prototype.drawBackground = function(display, localX, localY) {
+    if((this.drawFlags & Button.DRAW_FLAG.BACKGROUND) !== 0) {
+        DrawHelper.drawShape(display, this.shape, this.backgroundColor, localX, localY, this.width, this.height);
     }
 }
 
-Button.prototype.onDrawHighlight = function(display, localX, localY) {
-    if(this.drawHighlight) {
-        const { context } = display;
-
-        context.fillStyle = this.highlightColor;
-        display.drawShape(this.shape, localX, localY, this.width, this.height);
+Button.prototype.drawHighlight = function(display, localX, localY) {
+    if((this.drawFlags & Button.DRAW_FLAG.HIGHLIGHT) !== 0) {
+        DrawHelper.drawShape(display, this.shape, this.highlightColor, localX, localY, this.width, this.height);
     }
 }
 
-Button.prototype.onDrawOutline = function(display, localX, localY) {
-    if(this.drawOutline) {
-        const { context } = display;
-
-        context.strokeStyle = this.outlineColor;
-        context.lineWidth = this.outlineSize;
-        display.strokeShape(this.shape, localX, localY, this.width, this.height);
+Button.prototype.drawOutline = function(display, localX, localY) {
+    if((this.drawFlags & Button.DRAW_FLAG.OUTLINE) !== 0) {
+        DrawHelper.strokeShape(display, this.shape, this.outlineColor, this.outlineSize, localX, localY, this.width, this.height);
     }
 }
 
 Button.prototype.onDraw = function(display, localX, localY) {
-    this.onDrawBackground(display, localX, localY);
-    this.onDrawHighlight(display, localX, localY);
-    this.onDrawOutline(display, localX, localY);
+    this.drawBackground(display, localX, localY);
+    this.drawHighlight(display, localX, localY);
+    this.drawOutline(display, localX, localY);
 }

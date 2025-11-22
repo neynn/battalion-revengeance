@@ -22,7 +22,7 @@ Graph.STATE = {
 
 Graph.prototype.onDraw = function(display, localX, localY) {}
 Graph.prototype.onDebug = function(display, localX, localY) {}
-Graph.prototype.onUpdate = function(display, localX, localY) {}
+Graph.prototype.onUpdate = function(timestamp, deltaTime) {}
 
 Graph.prototype.findByID = function(childID) {
     const stack = [this];

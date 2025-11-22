@@ -62,7 +62,7 @@ JammerField.prototype.addBlocker = function(teamID, flags) {
         this.blockers.push({
             "teamID": teamID,
             "flags": flags
-        })
+        });
     }
 }
 

@@ -1,5 +1,4 @@
 import { EventEmitter } from "../events/eventEmitter.js";
-import { Logger } from "../logger.js";
 
 export const TurnManager = function() {
     this.nextID = 0;
@@ -97,15 +96,12 @@ TurnManager.prototype.createActor = function(onCreate, typeID, externalID) {
 }
 
 TurnManager.prototype.destroyActor = function(actorID) {
-    if(!this.actors.has(actorID)) {
-        Logger.log(Logger.CODE.ENGINE_WARN, "Actor does not exist!", "TurnManager.prototype.removeActor", { "actorID": actorID });
-        return;
+    if(this.actors.has(actorID)) {
+        this.actors.delete(actorID);
+        this.events.emit(TurnManager.EVENT.ACTOR_DESTROY, {
+            "id": actorID
+        });
     }
-
-    this.actors.delete(actorID);
-    this.events.emit(TurnManager.EVENT.ACTOR_DESTROY, {
-        "id": actorID
-    });
 }
 
 TurnManager.prototype.getActor = function(actorID) {
