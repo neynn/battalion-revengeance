@@ -1,13 +1,13 @@
+import { Collider } from "../../graphics/collider.js";
 import { ColorHelper } from "../../graphics/colorHelper.js";
 import { SHAPE } from "../../math/constants.js";
 import { DrawHelper } from "../../util/drawHelper.js";
-import { UICollider } from "../uiCollider.js";
 import { UIElement } from "../uiElement.js";
 
 export const Container = function(DEBUG_NAME) {
     UIElement.call(this, DEBUG_NAME);
 
-    this.collider = new UICollider();
+    this.collider = new Collider();
     this.drawFlags = Container.DRAW_FLAG.OUTLINE;
     this.outlineSize = 1;
     this.outlineColor = ColorHelper.getRGBAString(255, 255, 255, 255);

@@ -105,23 +105,20 @@ EditorController.prototype.initPalletButtons = function(gameContext, camera) {
         this.palletButtons.length = 0;
 
         for(let i = 0; i < BUTTON_ROWS; i++) {
+            const positionY = this.slotButtonSize * i + SLOT_START_Y;
+
             for(let j = 0; j < BUTTON_COLUMNS; j++) {
-                const buttonID = `BUTTON_${i * BUTTON_COLUMNS + j}`;
-                const button = new PalletButton(this.palletButtons.length, buttonID);
-                const posX = this.slotButtonSize * j;
-                const posY = this.slotButtonSize * i + SLOT_START_Y;
+                const button = new PalletButton(this.palletButtons.length, `BUTTON_${i * BUTTON_COLUMNS + j}`);
+                const positionX = this.slotButtonSize * j;
 
                 button.setShape(SHAPE.RECTANGLE);
                 button.setSize(this.slotButtonSize, this.slotButtonSize);
-                button.setPosition(posX, posY);
-                button.setOrigin(posX, posY);
+                button.setPosition(positionX, positionY);
+                button.setOrigin(positionX, positionY);
+                container.addChild(button);
 
-                if(editorInterface.addElement(button)) {
-                    container.addChild(button);
-
-                    this.palletButtons.push(button);
-                    this.initPalletButtonEvents(gameContext, button, camera, editorInterface);
-                }
+                this.palletButtons.push(button);
+                this.initPalletButtonEvents(gameContext, button, camera, editorInterface);
             }
         }
     }

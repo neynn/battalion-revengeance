@@ -4,10 +4,13 @@ export const Graph = function(DEBUG_NAME = "") {
     this.state = Graph.STATE.VISIBLE;
     this.positionX = 0;
     this.positionY = 0;
+    this.width = 0;
+    this.height = 0;
     this.opacity = 1;
     this.customID = Graph.ID.INVALID;
-    this.parent = null;
     this.children = [];
+    this.parent = null;
+    this.collider = null;
 }
 
 Graph.ID = {
@@ -23,6 +26,13 @@ Graph.STATE = {
 Graph.prototype.onDraw = function(display, localX, localY) {}
 Graph.prototype.onDebug = function(display, localX, localY) {}
 Graph.prototype.onUpdate = function(timestamp, deltaTime) {}
+Graph.prototype.onClick = function(event) {}
+
+Graph.prototype.setClick = function(onClick) {
+    if(this.collider !== null) {
+        this.onClick = onClick;
+    }
+}
 
 Graph.prototype.findByID = function(childID) {
     const stack = [this];
@@ -157,9 +167,22 @@ Graph.prototype.updatePosition = function(deltaX, deltaY) {
     this.positionY += deltaY;
 }
 
+Graph.prototype.setSize = function(width, height) {
+    this.width = width;
+    this.height = height;
+
+    if(this.collider) {
+        this.collider.setSize(width, height);
+    }
+} 
+
 Graph.prototype.setPosition = function(positionX, positionY) {
     this.positionX = positionX;
     this.positionY = positionY;
+
+    if(this.collider) {
+        this.collider.setPosition(positionX, positionY);
+    }
 }
 
 Graph.prototype.hide = function() {
@@ -280,4 +303,40 @@ Graph.prototype.setParent = function(parent) {
     }
 
     this.parent = parent;
+}
+
+Graph.prototype.mGetCollisions = function(collisions, mouseX, mouseY, mouseRange) {
+    if(!this.collider) {
+        return;
+    }
+
+    const stack = [this];
+    const positions = [mouseX, mouseY];
+
+    while(stack.length !== 0) {
+        const positionY = positions.pop();
+        const positionX = positions.pop();
+        const graph = stack.pop();
+        const isColliding = graph.collider.isColliding(positionX, positionY, mouseRange);
+
+        if(!isColliding) {
+            continue;
+        }
+
+        const nextX = positionX - graph.positionX;
+        const nextY = positionY - graph.positionY;
+        const children = graph.children;
+
+        for(let i = 0; i < children.length; i++) {
+            const child = children[i];
+            
+            if(child.collider) {
+                stack.push(child);
+                positions.push(nextX);
+                positions.push(nextY);
+            }
+        }
+
+        collisions.push(graph);
+    }
 }

@@ -7,9 +7,6 @@ export const UIElement = function(DEBUG_NAME) {
     this.anchor = UIElement.ANCHOR_TYPE.TOP_LEFT;
     this.originX = 0;
     this.originY = 0;
-    this.width = 0;
-    this.height = 0;
-    this.collider = null;
 }
 
 UIElement.ANCHOR_TYPE = {
@@ -29,31 +26,6 @@ UIElement.prototype = Object.create(Graph.prototype);
 UIElement.prototype.constructor = UIElement;
 
 UIElement.prototype.setText = function(text) {}
-UIElement.prototype.onClick = function(event) {}
-
-UIElement.prototype.setClick = function(onClick) {
-    if(this.collider !== null) {
-        this.onClick = onClick;
-    }
-}
-
-UIElement.prototype.setPosition = function(positionX, positionY) {
-    this.positionX = positionX;
-    this.positionY = positionY;
-
-    if(this.collider) {
-        this.collider.setPosition(positionX, positionY);
-    }
-}
-
-UIElement.prototype.setSize = function(width, height) {
-    this.width = width;
-    this.height = height;
-
-    if(this.collider) {
-        this.collider.setSize(width, height);
-    }
-} 
 
 UIElement.prototype.setOrigin = function(originX, originY) {
     this.originX = originX;
@@ -64,45 +36,6 @@ UIElement.prototype.setAnchor = function(anchor) {
     if(UIElement.ANCHOR_TYPE[anchor] !== undefined) {
         this.anchor = UIElement.ANCHOR_TYPE[anchor];
     }
-}
-
-UIElement.prototype.getCollisions = function(mouseX, mouseY, mouseRange) {
-    if(!this.collider) {
-        return [];
-    }
-
-    const stack = [this];
-    const positions = [mouseX, mouseY];
-    const collisions = [];
-
-    while(stack.length !== 0) {
-        const positionY = positions.pop();
-        const positionX = positions.pop();
-        const graph = stack.pop();
-        const isColliding = graph.collider.isColliding(positionX, positionY, mouseRange);
-
-        if(!isColliding) {
-            continue;
-        }
-
-        const nextX = positionX - graph.positionX;
-        const nextY = positionY - graph.positionY;
-        const children = graph.children;
-
-        for(let i = 0; i < children.length; i++) {
-            const child = children[i];
-            
-            if(child.collider) {
-                stack.push(child);
-                positions.push(nextX);
-                positions.push(nextY);
-            }
-        }
-
-        collisions.push(graph);
-    }
-
-    return collisions;
 }
 
 UIElement.prototype.updateAnchor = function(windowWidth, windowHeight) {    
