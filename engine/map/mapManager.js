@@ -42,36 +42,13 @@ MapManager.prototype.getNextID = function() {
     return this.nextID++;
 }
 
-MapManager.prototype.createCustomMap = function(onCreate, externalID) {
+MapManager.prototype.createMap = function(onCreate, externalID) {
     const mapID = externalID !== undefined ? externalID : this.nextID++;
 
     if(!this.maps.has(mapID)) {
         const worldMap = onCreate(mapID);
 
         if(worldMap) {
-            this.maps.set(mapID, worldMap);
-            this.events.emit(MapManager.EVENT.MAP_CREATE, {
-                "id": mapID,
-                "map": worldMap
-            });
-
-            return worldMap;
-        }
-    }
-
-    return null;
-}
-
-MapManager.prototype.createSourcedMap = function(onCreate, sourceID, externalID) {
-    const mapID = externalID !== undefined ? externalID : this.nextID++;
-
-    if(!this.maps.has(mapID)) {
-        const mapSource = this.getMapSource(sourceID);
-        const worldMap = onCreate(mapID);
-
-        if(worldMap) {
-            worldMap.setSource(mapSource);
-
             this.maps.set(mapID, worldMap);
             this.events.emit(MapManager.EVENT.MAP_CREATE, {
                 "id": mapID,

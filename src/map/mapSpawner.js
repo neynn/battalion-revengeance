@@ -1,4 +1,3 @@
-import { MapHelper } from "../../engine/map/mapHelper.js";
 import { ActorSpawner } from "../actors/actorSpawner.js";
 import { EntitySpawner } from "../entity/entitySpawner.js";
 import { TeamSpawner } from "../team/teamSpawner.js";
@@ -95,17 +94,29 @@ export const MapSpawner = {
         //ActionHelper.createRegularDialogue(gameContext, DialogueHandler.TYPE.PRELOGUE);
     },
     createStoryMap: async function(gameContext, sourceID) {
-        const { world } = gameContext;
+        const { world, language } = gameContext;
         const { mapManager } = world;
-        const { file, translations } = await MapHelper.fetchRegisteredMap(gameContext, sourceID);
+        const currentLanguage = language.getCurrent();
+        const mapSource = mapManager.getMapSource(sourceID);
+        const [file, translations] = await Promise.all([mapSource.promiseFile(), mapSource.promiseTranslations(currentLanguage.getID())]);
 
         if(file !== null) {
             const { width, height, data } = file;
-            const worldMap = mapManager.createSourcedMap(id => new BattalionMap(id, width, height), sourceID);
+            const worldMap = mapManager.createMap(id => new BattalionMap(id, width, height));
 
             if(worldMap) {
+                const mapID = worldMap.getID();
+                
+                worldMap.setSource(mapSource);
                 worldMap.decodeLayers(data);
-                MapHelper.registerMap(gameContext, worldMap, translations);
+
+                if(translations !== null) {
+                    currentLanguage.registerMap(mapID, translations);
+                    currentLanguage.selectMap(mapID);
+                    worldMap.onLanguageUpdate(currentLanguage, translations);
+                }
+
+                mapManager.enableMap(mapID);
                 MapSpawner.initMap(gameContext, worldMap, file);
 
                 return worldMap;
@@ -117,15 +128,17 @@ export const MapSpawner = {
     createEditorMap: async function(gameContext, sourceID) {
         const { world } = gameContext;
         const { mapManager } = world;
-        const { file, translations } = await MapHelper.fetchRegisteredMap(gameContext, sourceID);
+        const mapSource = mapManager.getMapSource(sourceID);
+        const file = await mapSource.promiseFile();
 
         if(file !== null) {
             const { width, height, data } = file;
-            const worldMap = mapManager.createSourcedMap(id => new BattalionMap(id, width, height), sourceID);
+            const worldMap = mapManager.createMap(id => new BattalionMap(id, width, height));
 
             if(worldMap) {
                 const mapID = worldMap.getID();
 
+                worldMap.setSource(mapSource);
                 worldMap.decodeLayers(data);
                 mapManager.enableMap(mapID);
                 
@@ -139,7 +152,7 @@ export const MapSpawner = {
         const { world } = gameContext;
         const { mapManager } = world;
         const { width, height, data } = mapData;
-        const worldMap = mapManager.createCustomMap(id => new BattalionMap(id, width, height));
+        const worldMap = mapManager.createMap(id => new BattalionMap(id, width, height));
 
         if(worldMap) {
             const mapID = worldMap.getID();
@@ -152,7 +165,7 @@ export const MapSpawner = {
     createEmptyMap: function(gameContext, width, height) {     
         const { world } = gameContext;
         const { mapManager } = world;
-        const worldMap = mapManager.createCustomMap(id => new BattalionMap(id, width, height));
+        const worldMap = mapManager.createMap(id => new BattalionMap(id, width, height));
         
         if(worldMap) {
             const mapID = worldMap.getID();

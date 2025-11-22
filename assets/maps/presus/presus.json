@@ -4,7 +4,7 @@
     "height": 10,
     "teams": {
         "SOMERTIN": { "commander": "PLAYER", "nation": "SOMERTIN", "color": "DARK_GREEN", "allies": ["DRAGOON"], "objectives": ["DEFEAT_BOAT_1", "CAPTURE_0_0", "SURVIVE_TURN_2"] },
-        "TRANSKAL": { "commander": "KANYEs", "nation": "TRANSKAL", "color": "DARK_BLUE", "objectives": ["PROTECT_BOAT_1"] },
+        "TRANSKAL": { "commander": "KANYE", "nation": "TRANSKAL", "color": "DARK_BLUE", "objectives": ["PROTECT_BOAT_1"] },
         "DRAGOON": { "commander": "KANYE", "nation": "ELAM", "color": "BRONZE" }
     },
     "entities": [
@@ -12,7 +12,7 @@
         { "x": 1, "y": 0, "direction": "SOUTH", "type": "CONDOR_BOMBER", "team": "SOMERTIN" },
         { "x": 2, "y": 0, "direction": "SOUTH", "type": "MEME_BUREAUCRAT", "team": "SOMERTIN" },
         { "x": 3, "y": 0, "direction": "SOUTH", "type": "COCKROACH", "team": "SOMERTIN" },
-        { "x": 4, "y": 0, "direction": "SOUTH", "type": "ASEKARE_TANK", "team": "SOMERTIN" },
+        { "x": 4, "y": 0, "direction": "SOUTH", "type": "ASEKARA_TANK", "team": "SOMERTIN" },
         { "x": 5, "y": 0, "direction": "SOUTH", "type": "RAPTOR_FIGHTER", "team": "SOMERTIN" },
         { "x": 6, "y": 0, "direction": "SOUTH", "type": "FLAK_TANK", "team": "SOMERTIN" },
         { "x": 7, "y": 0, "direction": "SOUTH", "type": "TANK_HUNTER", "team": "SOMERTIN" },
