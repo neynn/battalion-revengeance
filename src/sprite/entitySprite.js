@@ -2,44 +2,28 @@ import { Renderer } from "../../engine/renderer/renderer.js";
 import { PLAYER_PREFERENCE } from "../playerPreference.js";
 import { SchemaSprite } from "./schemaSprite.js";
 
-export const EntitySprite = function(visual, spriteID, schemaID, schema) {
-    SchemaSprite.call(this, visual, spriteID, schemaID, schema);
-
-    this.healthFactor = 1;
-    this.isFrozen = false;
-    //this.freeze();
-}
-
-EntitySprite.BLOCK = {
-    COUNT: 4,
-    WIDTH: 4,
-    HEIGHT: 8,
-    GAP: 1
-};
-
-EntitySprite.HEALTH_THRESHOLDS = [
+const BLOCK = { COUNT: 4, WIDTH: 4, HEIGHT: 8, GAP: 1 };
+const WIDTH = (BLOCK.GAP * (BLOCK.COUNT + 1)) + BLOCK.WIDTH * BLOCK.COUNT;
+const HEIGHT = BLOCK.GAP * 2 + BLOCK.HEIGHT;
+const OFFSET_X = 56 - 5 - WIDTH;
+const OFFSET_Y = 56 - 5 - HEIGHT;
+const BACKGROUND_COLOR = "#000000";
+const DEFAULT_HEALTH_COLOR = "#ffffff";
+const HEALTH_THRESHOLDS = [
     { "above": 0.75, "color": "#00ff00" },
     { "above": 0.5, "color": "#ffff00"},
     { "above": 0.25, "color": "#ff8800"},
     { "above": 0, "color": "#ff0000" }
 ];
 
-EntitySprite.DEFAULT_HEALTH_COLOR = "#ffffff";
+export const EntitySprite = function(visual, spriteID, schemaID, schema) {
+    SchemaSprite.call(this, visual, spriteID, schemaID, schema);
 
-EntitySprite.BACKGROUND_COLOR = "#000000";
-
-EntitySprite.HEALTH = {
-    PERCENT_GOOD: 0.66,
-    PERCENT_WARN: 0.33,
-    WIDTH: (EntitySprite.BLOCK.GAP * (EntitySprite.BLOCK.COUNT + 1)) + EntitySprite.BLOCK.WIDTH * EntitySprite.BLOCK.COUNT,
-    HEIGHT: EntitySprite.BLOCK.GAP * 2 + EntitySprite.BLOCK.HEIGHT,
-};
-
-EntitySprite.HEALTH_OFFSET = {
-    //-5 is the offset of the marker texture.
-    X: 56 - 5 - EntitySprite.HEALTH.WIDTH,
-    Y: 56 - 5 - EntitySprite.HEALTH.HEIGHT,
-};
+    this.healthFactor = 1;
+    this.isFrozen = false;
+    this.healthColor = DEFAULT_HEALTH_COLOR;
+    //this.freeze();
+}
 
 EntitySprite.prototype = Object.create(SchemaSprite.prototype);
 EntitySprite.prototype.constructor = EntitySprite;
@@ -50,44 +34,45 @@ EntitySprite.prototype.onHealthUpdate = function(currentHealth, maxHealth) {
     if(this.healthFactor > 1) {
         this.healthFactor = 1;
     }
-}
-
-EntitySprite.prototype.drawHealth = function(display, viewportLeftEdge, viewportTopEdge) {
-    const { context } = display;
-    const healthX = this.positionX - viewportLeftEdge + EntitySprite.HEALTH_OFFSET.X;
-    const healthY = this.positionY - viewportTopEdge + EntitySprite.HEALTH_OFFSET.Y;
-
-    context.fillStyle = EntitySprite.BACKGROUND_COLOR;
-    context.fillRect(healthX, healthY, EntitySprite.HEALTH.WIDTH, EntitySprite.HEALTH.HEIGHT);
 
     let colorFound = false;
 
-    for(let i = 0; i < EntitySprite.HEALTH_THRESHOLDS.length; i++) {
-        const { above, color } = EntitySprite.HEALTH_THRESHOLDS[i];
+    for(let i = 0; i < HEALTH_THRESHOLDS.length; i++) {
+        const { above, color } = HEALTH_THRESHOLDS[i];
 
         if(this.healthFactor >= above) {
-            context.fillStyle = color;
+            this.healthColor = color;
             colorFound = true;
             break;
         }
     }
 
     if(!colorFound) {
-        context.fillStyle = EntitySprite.DEFAULT_HEALTH_COLOR;
+        this.healthColor = DEFAULT_HEALTH_COLOR;
     }
+}
 
-    let blockX = healthX + EntitySprite.HEALTH.WIDTH;
-    let blockY = healthY + EntitySprite.BLOCK.GAP;
-    let pixelFill = (EntitySprite.BLOCK.HEIGHT * EntitySprite.BLOCK.COUNT) * this.healthFactor;
+EntitySprite.prototype.drawHealth = function(display, viewportLeftEdge, viewportTopEdge) {
+    const { context } = display;
+    const healthX = this.positionX - viewportLeftEdge + OFFSET_X;
+    const healthY = this.positionY - viewportTopEdge + OFFSET_Y;
+
+    context.fillStyle = BACKGROUND_COLOR;
+    context.fillRect(healthX, healthY, WIDTH, HEIGHT);
+    context.fillStyle = this.healthColor;
+
+    let blockX = healthX + WIDTH;
+    let blockY = healthY + BLOCK.GAP;
+    let pixelFill = (BLOCK.HEIGHT * BLOCK.COUNT) * this.healthFactor;
 
     while(pixelFill > 0) {
-        blockX -= (EntitySprite.BLOCK.WIDTH + EntitySprite.BLOCK.GAP);
-        pixelFill -= EntitySprite.BLOCK.HEIGHT;
+        blockX -= (BLOCK.WIDTH + BLOCK.GAP);
+        pixelFill -= BLOCK.HEIGHT;
 
         if(pixelFill >= 0) {
-            context.fillRect(blockX, blockY, EntitySprite.BLOCK.WIDTH, EntitySprite.BLOCK.HEIGHT);
+            context.fillRect(blockX, blockY, BLOCK.WIDTH, BLOCK.HEIGHT);
         } else {
-            context.fillRect(blockX, blockY - pixelFill, EntitySprite.BLOCK.WIDTH, pixelFill + EntitySprite.BLOCK.HEIGHT);
+            context.fillRect(blockX, blockY - pixelFill, BLOCK.WIDTH, pixelFill + BLOCK.HEIGHT);
         }
     }
 }

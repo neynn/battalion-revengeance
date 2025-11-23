@@ -1,8 +1,12 @@
+import { EventEmitter } from "../events/eventEmitter.js";
 import { Language } from "./language.js";
 
 export const LanguageHandler = function() {
     this.languages = new Map();
     this.currentLanguage = LanguageHandler.STUB_LANGUAGE;
+
+    this.events = new EventEmitter();
+    this.events.register(LanguageHandler.EVENT.LANGUAGE_CHANGE);
 }
 
 LanguageHandler.STUB_LANGUAGE = new Language("MISSING", []);
@@ -16,6 +20,10 @@ LanguageHandler.LANGUAGE = {
     ENGLISH: "en-US",
     GERMAN: "de-DE",
     SPANISH: "es-ES"
+};
+
+LanguageHandler.EVENT = {
+    LANGUAGE_CHANGE: "LANGUAGE_CHANGE"
 };
 
 LanguageHandler.IS_STRICT = 1;
@@ -32,6 +40,10 @@ LanguageHandler.prototype.load = function(languages) {
     }
 }
 
+LanguageHandler.prototype.enableMap = function(mapID) {
+    this.currentLanguage.selectMap(mapID);
+}
+
 LanguageHandler.prototype.getCurrent = function() {
     return this.currentLanguage;
 }
@@ -45,10 +57,7 @@ LanguageHandler.prototype.exit = function() {
     this.languages.forEach(language => language.clearMap());
 }
 
-LanguageHandler.prototype.selectLanguage = function(gameContext, languageID) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-
+LanguageHandler.prototype.selectLanguage = function(languageID) {
     if(this.currentLanguage.getID() !== languageID) {
         const language = this.languages.get(languageID);
 
@@ -57,8 +66,9 @@ LanguageHandler.prototype.selectLanguage = function(gameContext, languageID) {
                 switch(response) {
                     case Language.LOAD_RESPONSE.SUCCESS: {
                         this.currentLanguage = language;
-
-                        mapManager.onLanguageChange(this.currentLanguage);
+                        this.events.emit(LanguageHandler.EVENT.LANGUAGE_CHANGE, {
+                            "language": language,
+                        });
                         break;
                     }
                 }
@@ -67,13 +77,13 @@ LanguageHandler.prototype.selectLanguage = function(gameContext, languageID) {
     }
 }
 
-LanguageHandler.prototype.get = function(key, tag = LanguageHandler.TAG_TYPE.SYSTEM) {
-    switch(tag) {
-        case LanguageHandler.TAG_TYPE.SYSTEM: return this.currentLanguage.getTranslation(key);
-        case LanguageHandler.TAG_TYPE.MAP: return this.currentLanguage.getMapTranslation(key);
-        default: key;
-    }
-} 
+LanguageHandler.prototype.getSystemTranslation = function(tag) {
+    return this.currentLanguage.getTranslation(tag);
+}
+
+LanguageHandler.prototype.getMapTranslation = function(tag) {
+    return this.currentLanguage.getMapTranslation(tag);
+}
 
 LanguageHandler.prototype.getAllMissingTags = function(template, keywords = []) {
     const templateSize = Object.keys(template).length;

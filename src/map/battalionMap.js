@@ -1,4 +1,3 @@
-import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { TileType } from "../type/parsed/tileType.js";
@@ -144,40 +143,40 @@ BattalionMap.prototype.getTileName = function(gameContext, tileX, tileY) {
     const { language } = gameContext;
 
     if(this.isTileOutOfBounds(tileX, tileY)) {
-        return language.get(TileType.MISSING_NAME);
+        return language.getSystemTranslation(TileType.MISSING_NAME);
     }
 
     for(let i = 0; i < this.localization.length; i++) {
         const { x = -1, y = -1, name } = this.localization[i];
 
         if(x === tileX && y === tileY && name) {
-            return language.get(name, LanguageHandler.TAG_TYPE.MAP);
+            return language.getMapTranslation(name);
         }
     }
 
     const { name } = this.getTileType(gameContext, tileX, tileY);
 
-    return language.get(name);
+    return language.getSystemTranslation(name);
 }
 
 BattalionMap.prototype.getTileDesc = function(gameContext, tileX, tileY) {
     const { language } = gameContext;
 
     if(this.isTileOutOfBounds(tileX, tileY)) {
-        return language.get(TileType.MISSING_DESC);
+        return language.getSystemTranslation(TileType.MISSING_DESC);
     }
 
     for(let i = 0; i < this.localization.length; i++) {
         const { x = -1, y = -1, desc } = this.localization[i];
 
         if(x === tileX && y === tileY && desc) {
-            return language.get(desc, LanguageHandler.TAG_TYPE.MAP);
+            return language.getMapTranslation(desc);
         }
     }
 
     const { desc } = this.getTileType(gameContext, tileX, tileY);
 
-    return language.get(desc);
+    return language.getSystemTranslation(desc);
 }
 
 BattalionMap.prototype.removeLocalization = function(tileX, tileY) {

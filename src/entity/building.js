@@ -1,5 +1,3 @@
-import { LanguageHandler } from "../../engine/language/languageHandler.js";
-
 export const Building = function(id, config, sprite) {
     this.id = id;
     this.config = config;
@@ -67,18 +65,18 @@ Building.prototype.getDescription = function(gameContext) {
     const { language } = gameContext;
     
     if(this.customDesc) {
-        return language.get(this.customDesc, LanguageHandler.TAG_TYPE.MAP);
+        return language.getMapTranslation(this.customDesc);
     }
 
-    return language.get(this.config.desc);
+    return language.getSystemTranslation(this.config.desc);
 }
 
 Building.prototype.getName = function(gameContext) {
     const { language } = gameContext;
     
     if(this.customName) {
-        return language.get(this.customName, LanguageHandler.TAG_TYPE.MAP);
+        return language.getMapTranslation(this.customName);
     }
 
-    return language.get(this.config.name);
+    return language.getSystemTranslation(this.config.name);
 }

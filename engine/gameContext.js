@@ -43,9 +43,15 @@ export const GameContext = function() {
 
     this.world.mapManager.events.on(MapManager.EVENT.MAP_ENABLE, ({ map }) => {
         const { width, height } = map;
+        const mapID = map.getID();
 
         this.renderer.onMapSizeUpdate(width, height);
+        this.language.enableMap(mapID);
     }, { permanent: true });
+
+    this.language.events.on(LanguageHandler.EVENT.LANGUAGE_CHANGE, ({ language }) => {
+        this.world.mapManager.onLanguageChange(language);
+    });
 
     window.addEventListener("resize", () => this.queueResize());
 

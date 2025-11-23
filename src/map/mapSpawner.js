@@ -112,7 +112,6 @@ export const MapSpawner = {
 
                 if(translations !== null) {
                     currentLanguage.registerMap(mapID, translations);
-                    currentLanguage.selectMap(mapID);
                     worldMap.onLanguageUpdate(currentLanguage, translations);
                 }
 

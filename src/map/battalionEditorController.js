@@ -101,7 +101,7 @@ BattalionEditorController.prototype.createMap = function(gameContext) {
 
 BattalionEditorController.prototype.loadMap = async function(gameContext) {
     const { language } = gameContext;
-    const mapID = prompt(language.get("EDITOR_LOAD_MAP"));
+    const mapID = prompt(language.getSystemTranslation("EDITOR_LOAD_MAP"));
     const worldMap = await MapSpawner.createEditorMap(gameContext, mapID);
 
     if(worldMap) {

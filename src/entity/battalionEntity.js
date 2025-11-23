@@ -2,7 +2,6 @@ import { Entity } from "../../engine/entity/entity.js";
 import { EntityHelper } from "../../engine/entity/entityHelper.js";
 import { EntityManager } from "../../engine/entity/entityManager.js";
 import { FlagHelper } from "../../engine/flagHelper.js";
-import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { FloodFill } from "../../engine/pathfinders/floodFill.js";
@@ -364,20 +363,20 @@ BattalionEntity.prototype.getDescription = function(gameContext) {
     const { language } = gameContext;
     
     if(this.customDesc) {
-        return language.get(this.customDesc, LanguageHandler.TAG_TYPE.MAP);
+        return language.getMapTranslation(this.customDesc);
     }
 
-    return language.get(this.config.desc);
+    return language.getSystemTranslation(this.config.desc);
 }
 
 BattalionEntity.prototype.getName = function(gameContext) {
     const { language } = gameContext;
     
     if(this.customName) {
-        return language.get(this.customName, LanguageHandler.TAG_TYPE.MAP);
+        return language.getMapTranslation(this.customName);
     }
 
-    return language.get(this.config.name);
+    return language.getSystemTranslation(this.config.name);
 }
 
 BattalionEntity.prototype.hasTrait = function(traitID) {

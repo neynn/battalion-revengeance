@@ -117,14 +117,14 @@ Team.prototype.getDisplayName = function(gameContext) {
     const { language } = gameContext;
 
     if(this.nation) {
-        return language.get(this.nation.name);
+        return language.getSystemTranslation(this.nation.name);
     }
 
     if(this.faction) {
-        return language.get(this.faction.name);
+        return language.getSystemTranslation(this.faction.name);
     }
 
-    return language.get("MISSING_NAME");
+    return language.getSystemTranslation("MISSING_NAME");
 }
 
 Team.prototype.hasActor = function() {
