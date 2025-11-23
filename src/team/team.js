@@ -10,6 +10,7 @@ import { TypeRegistry } from "../type/typeRegistry.js";
 export const Team = function(id) {
     this.id = id;
     this.allies = [];
+    this.buildings = [];
     this.units = new Set();
     this.lynchpins = new Set();
     this.hasLynchpin = false;
@@ -45,6 +46,30 @@ Team.STATUS = {
     WINNER: 1,
     LOSER: 2
 };
+
+Team.prototype.addBuilding = function(building) {
+    const buildingID = building.getID();
+
+    for(let i = 0; i < this.buildings.length; i++) {
+        if(this.buildings[i].getID() === buildingID) {
+            return;
+        }
+    }
+
+    this.buildings.push(building);
+}
+
+Team.prototype.removeBuilding = function(building) {
+    const buildingID = building.getID();
+
+    for(let i = 0; i < this.buildings.length; i++) {
+        if(this.buildings[i].getID() === buildingID) {
+            this.buildings[i] = this.buildings[this.buildings.length - 1];
+            this.buildings.pop();
+            break;
+        }
+    }
+}
 
 Team.prototype.hasAnyObjective = function() {
     for(let i = 0; i < this.objectives.length; i++) {
@@ -198,8 +223,7 @@ Team.prototype.updateStatus = function() {
     let objectivesWon = 0;
     let necessaryObjectives = 0;
 
-    for(let i = 0; i < this.objectives.length; i++) {
-        const objective = this.objectives[i];
+    for(const objective of this.objectives) {
         const { status, targets } = objective;
 
         if(targets.length > 0) {

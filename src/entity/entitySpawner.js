@@ -183,19 +183,19 @@ export const EntitySpawner = {
 
         if(teamObject) {
             const { colorID, color } = teamObject;
+            const buildingType = typeRegistry.getBuildingType(type);
+            const { sprite } = buildingType;
 
-            worldMap.createBuilding(x, y, () => {
-                const buildingType = typeRegistry.getBuildingType(type);
-                const { sprite } = buildingType;
+            worldMap.createBuilding(x, y, (buildingID) => {
                 const visualSprite = SchemaSprite.createVisual(gameContext, sprite, colorID, color, TypeRegistry.LAYER_TYPE.BUILDING);
                 const buildingSprite = new SchemaSprite(visualSprite, sprite, colorID, color);
-                const building = new Building(buildingType, buildingSprite);
+                const buildingObject = new Building(buildingID, buildingType, buildingSprite);
 
-                building.setCustomInfo(id, name, desc);
-                building.setTile(gameContext, x, y);
-                building.setTeam(team);
+                buildingObject.setCustomInfo(id, name, desc);
+                buildingObject.setTile(gameContext, x, y);
+                buildingObject.updateTeam(gameContext, team);
 
-                return building;
+                return buildingObject;
             });
         }
     }

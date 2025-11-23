@@ -1,6 +1,7 @@
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 
-export const Building = function(config, sprite) {
+export const Building = function(id, config, sprite) {
+    this.id = id;
     this.config = config;
     this.sprite = sprite;
     this.tileX = -1;
@@ -11,6 +12,36 @@ export const Building = function(config, sprite) {
     this.customDesc = null;
 }
 
+Building.prototype.updateTeam = function(gameContext, teamID) {
+    const { teamManager } = gameContext;
+
+    if(this.teamID !== teamID) {
+        const nextTeam = teamManager.getTeam(teamID);
+
+        if(nextTeam) {
+            const { colorID, color } = nextTeam;
+            const previousTeam = teamManager.getTeam(this.teamID);
+
+            if(previousTeam) {
+                previousTeam.removeBuilding(this);
+            }
+
+            nextTeam.addBuilding(this);
+    
+            this.teamID = teamID;
+            this.sprite.updateSchema(gameContext, colorID, color);
+        }
+    }
+}
+
+Building.prototype.getID = function() {
+    return this.id;
+}
+
+Building.prototype.isPlacedOn = function(tileX, tileY) {
+    return this.tileX === tileX && this.tileY === tileY;
+}
+
 Building.prototype.setTile = function(gameContext, tileX, tileY) {
     const { transform2D } = gameContext;
     const { x, y } = transform2D.transformTileToWorld(tileX, tileY);
@@ -18,10 +49,6 @@ Building.prototype.setTile = function(gameContext, tileX, tileY) {
     this.tileX = tileX;
     this.tileY = tileY;
     this.sprite.setPosition(x, y);
-}
-
-Building.prototype.setTeam = function(teamID) {
-    this.teamID = teamID;
 }
 
 Building.prototype.setCustomInfo = function(id, name, desc) {

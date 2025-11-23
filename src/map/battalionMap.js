@@ -8,6 +8,7 @@ import { JammerField } from "./jammerField.js";
 export const BattalionMap = function(id, width, height) {
     WorldMap.call(this, id, width, height);
 
+    this.buildingID = 0;
     this.globalClimate = TypeRegistry.CLIMATE_TYPE.NONE;
     this.climate = TypeRegistry.CLIMATE_TYPE.NONE;
     this.localization = [];
@@ -220,7 +221,8 @@ BattalionMap.prototype.createBuilding = function(tileX, tileY, onCreate) {
 
     if(index !== WorldMap.OUT_OF_BOUNDS) {
         if(!this.getBuilding(tileX, tileY)) {
-            const building = onCreate();
+            const nextID = this.buildingID++;
+            const building = onCreate(nextID);
 
             this.buildings.push(building);
 
@@ -231,15 +233,14 @@ BattalionMap.prototype.createBuilding = function(tileX, tileY, onCreate) {
     return null;
 }
 
-BattalionMap.prototype.getBuilding = function(targetX, targetY) {
-    const index = this.getIndex(targetX, targetY);
+BattalionMap.prototype.getBuilding = function(tileX, tileY) {
+    const index = this.getIndex(tileX, tileY);
 
     if(index !== WorldMap.OUT_OF_BOUNDS) {
         for(let i = 0; i < this.buildings.length; i++) {
             const building = this.buildings[i];
-            const { tileX, tileY } = building;
 
-            if(targetX === tileX && targetY === tileY) {
+            if(building.isPlacedOn(tileX, tileY)) {
                 return building;
             }
         }
