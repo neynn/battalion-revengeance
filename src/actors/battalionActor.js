@@ -4,7 +4,6 @@ import { ActionHelper } from "../action/actionHelper.js";
 export const BattalionActor = function(id) {
     Actor.call(this, id);
 
-    this.entities = [];
     this.teamID = null;
     this.portrait = null;
     this.commander = null;
@@ -13,10 +12,20 @@ export const BattalionActor = function(id) {
 BattalionActor.prototype = Object.create(Actor.prototype);
 BattalionActor.prototype.constructor = BattalionActor;
 
-BattalionActor.prototype.surrender = function(gameContext) {
-    const deathRequest = ActionHelper.createDeathRequest(gameContext, this.entities);
+BattalionActor.prototype.isControlling = function(entity) {
+    return entity.teamID !== null && this.teamID === entity.teamID;
+}
 
-    this.queueRequest(deathRequest);
+BattalionActor.prototype.surrender = function(gameContext) {
+    const { teamManager } = gameContext;
+    const team = teamManager.getTeam(this.teamID);
+    
+    if(team) {
+        const { entities } = team;
+        const deathRequest = ActionHelper.createDeathRequest(gameContext, entities);
+
+        this.queueRequest(deathRequest);
+    }
 }
 
 BattalionActor.prototype.drawPortrait = function(context, drawX, drawY) {
@@ -29,73 +38,29 @@ BattalionActor.prototype.setTeam = function(teamID) {
     this.teamID = teamID;
 }
 
-BattalionActor.prototype.addEntity = function(entityID) {
-    if(!this.hasEntity(entityID)) {
-        this.entities.push(entityID);
-    }
-}
-
-BattalionActor.prototype.removeEntity = function(entityID) {
-    for(let i = 0; i < this.entities.length; i++) {
-        if(this.entities[i] === entityID) {
-            this.entities[i] = this.entities[this.entities.length - 1];
-            this.entities.pop();
-            return;
-        }
-    }
-}
-
-BattalionActor.prototype.hasEntity = function(entityID) {
-    for(let i = 0; i < this.entities.length; i++) {
-        if(this.entities[i] === entityID) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
 BattalionActor.prototype.onTurnStart = function(gameContext) {
-    const { world } = gameContext;
-    const { turnManager, entityManager } = world;
+    const { teamManager, world } = gameContext;
+    const { turnManager } = world;
     const globalTurn = turnManager.getGlobalTurn();
 
     if(globalTurn <= 1) {
         return;
     }
 
-    const deadEntities = [];
+    const team = teamManager.getTeam(this.teamID);
 
-    for(const entityID of this.entities) {
-        const entity = entityManager.getEntity(entityID);
-
-        if(entity) {
-            entity.onTurnStart(gameContext);
-
-            if(entity.isDead()) {
-                deadEntities.push(entityID);
-            }
-        }
-    }
-
-    if(deadEntities.length !== 0) {
-        ActionHelper.forceEnqueue(gameContext, ActionHelper.createDeathRequest(gameContext, deadEntities));
+    if(team) {
+        team.onTurnStart(gameContext, this.turn);
     }
 }
 
 BattalionActor.prototype.onTurnEnd = function(gameContext) {
-    const { world, teamManager } = gameContext;
-    const { entityManager } = world;
+    const { teamManager } = gameContext;
+    const team = teamManager.getTeam(this.teamID);
 
-    for(const entityID of this.entities) {
-        const entity = entityManager.getEntity(entityID);
-
-        if(entity) {
-            entity.onTurnEnd(gameContext);
-        }
+    if(team) {
+        team.onTurnEnd(gameContext, this.turn);
     }
-
-    teamManager.onTurnEnd(gameContext, this.teamID, this.turn);
 }
 
 BattalionActor.prototype.activeUpdate = function(gameContext, remainingActions) {

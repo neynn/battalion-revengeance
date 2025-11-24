@@ -10,6 +10,10 @@ export const Building = function(id, config, sprite) {
     this.customDesc = null;
 }
 
+Building.prototype.getGeneratedCash = function() {
+    return this.config.cashPerTurn;
+}
+
 Building.prototype.updateTeam = function(gameContext, teamID) {
     const { teamManager } = gameContext;
 

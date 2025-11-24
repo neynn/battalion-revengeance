@@ -87,9 +87,8 @@ Player.prototype.onClick = function(gameContext, worldMap, tileX, tileY) {
 
         const { teamManager } = gameContext;
         const { teamID } = entity;
-        const entityID = entity.getID();
         const isAlly = teamManager.isAlly(this.teamID, teamID);
-        const isControlled = this.hasEntity(entityID);
+        const isControlled = this.isControlling(entity);
 
         this.states.eventEnter(gameContext, Player.EVENT.ENTITY_CLICK, { "entity": entity, "isAlly": isAlly, "isControlled": isControlled });
         return;

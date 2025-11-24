@@ -22,21 +22,6 @@ export const EntitySpawner = {
             "y": tileY
         };
     },
-    getOwnersOf: function(gameContext, entityID) {
-        const { world } = gameContext;
-        const { turnManager } = world;
-        const owners = [];
-
-        turnManager.forAllActors((actor) => {
-            const hasEntity = actor.hasEntity(entityID);
-
-            if(hasEntity) {
-                owners.push(actor);
-            }
-        });
-
-        return owners;
-    },
     createEntity: function(gameContext, config, colorID, color) {
         const { world, transform2D, spriteManager, typeRegistry } = gameContext;
         const { entityManager } = world;
@@ -95,32 +80,17 @@ export const EntitySpawner = {
         }
     },
     spawnEntity: function(gameContext, entityConfig, teamID) {
-        const { world, teamManager } = gameContext;
-        const { turnManager } = world;
+        const { teamManager } = gameContext;
         const team = teamManager.getTeam(teamID);
 
         if(team) {
-            const { colorID, color, actor } = team;
+            const { colorID, color } = team;
             const entity = EntitySpawner.createEntity(gameContext, entityConfig, colorID, color);
 
             if(entity) {
-                const entityID = entity.getID();
-                const actorObject = turnManager.getActor(actor);
-
-                if(actorObject) {
-                    actorObject.addEntity(entityID);
-                }
-
                 EntitySpawner.placeEntity(gameContext, entity);
+                team.addEntity(entity);
                 entity.setTeam(teamID);
-
-                if(!entity.hasTrait(TypeRegistry.TRAIT_TYPE.FIXED)) {
-                    team.addUnit(entityID);
-                }
-
-                if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.LYNCHPIN)) {
-                    team.addLynchpin(entityID);
-                }
                 
                 return entity;
             } 

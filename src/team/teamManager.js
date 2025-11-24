@@ -216,13 +216,3 @@ TeamManager.prototype.onEntityDeath = function(gameContext, entity) {
 
     this.updateStatus(gameContext);
 }
-
-TeamManager.prototype.onTurnEnd = function(gameContext, teamID, currentTurn) {
-    const team = this.getTeam(teamID);
-
-    if(team) {
-        team.runObjectives((objective) => objective.onTurnEnd(gameContext, currentTurn, teamID));
-    }
-
-    this.updateStatus(gameContext);
-}

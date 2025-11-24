@@ -1,3 +1,4 @@
+import { ActionHelper } from "../action/actionHelper.js";
 import { Objective } from "../objective/objective.js";
 import { CaptureObjective } from "../objective/types/capture.js";
 import { DefeatObjective } from "../objective/types/defeat.js";
@@ -11,6 +12,7 @@ export const Team = function(id) {
     this.id = id;
     this.allies = [];
     this.buildings = [];
+    this.entities = [];
     this.units = new Set();
     this.lynchpins = new Set();
     this.hasLynchpin = false;
@@ -139,15 +141,6 @@ Team.prototype.getID = function() {
     return this.id;
 }
 
-Team.prototype.addUnit = function(entityID) {
-    this.units.add(entityID);
-}
-
-Team.prototype.addLynchpin = function(entityID) {
-    this.lynchpins.add(entityID);
-    this.hasLynchpin = true;
-}
-
 Team.prototype.onEntityDeath = function(gameContext, entity) {
     const entityID = entity.getID();
 
@@ -159,6 +152,7 @@ Team.prototype.onEntityDeath = function(gameContext, entity) {
         this.lynchpins.delete(entityID);
     }
 
+    this.removeEntity(entityID);
     this.runObjectives((objective) => objective.onDeath(gameContext, entity, this.id));
 }
 
@@ -277,4 +271,80 @@ Team.prototype.runObjectives = function(onObjective) {
             onObjective(objective);
         }
     }
+}
+
+Team.prototype.onTurnEnd = function(gameContext, turn) {
+    const { world, teamManager } = gameContext;
+    const { entityManager } = world;
+
+    for(const entityID of this.entities) {
+        const entity = entityManager.getEntity(entityID);
+
+        if(entity) {
+            entity.onTurnEnd(gameContext);
+        }
+    }
+
+    this.runObjectives((objective) => objective.onTurnEnd(gameContext, turn, this.id));
+
+    teamManager.updateStatus(gameContext);
+}
+
+Team.prototype.onTurnStart = function(gameContext, turn) {
+    const { world } = gameContext;
+    const { entityManager } = world;
+    const deadEntities = [];
+
+    for(const entityID of this.entities) {
+        const entity = entityManager.getEntity(entityID);
+
+        if(entity) {
+            entity.onTurnStart(gameContext);
+
+            if(entity.isDead()) {
+                deadEntities.push(entityID);
+            }
+        }
+    }
+
+    if(deadEntities.length !== 0) {
+        ActionHelper.forceEnqueue(gameContext, ActionHelper.createDeathRequest(gameContext, deadEntities));
+    }
+}
+
+Team.prototype.addEntity = function(entity) {
+    const entityID = entity.getID();
+
+    if(!this.hasEntity(entityID)) {
+        if(!entity.hasTrait(TypeRegistry.TRAIT_TYPE.FIXED)) {
+            this.units.add(entityID);
+        }
+
+        if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.LYNCHPIN)) {
+            this.lynchpins.add(entityID);
+            this.hasLynchpin = true;
+        }
+        
+        this.entities.push(entityID);
+    }
+}
+
+Team.prototype.removeEntity = function(entityID) {
+    for(let i = 0; i < this.entities.length; i++) {
+        if(this.entities[i] === entityID) {
+            this.entities[i] = this.entities[this.entities.length - 1];
+            this.entities.pop();
+            return;
+        }
+    }
+}
+
+Team.prototype.hasEntity = function(entityID) {
+    for(let i = 0; i < this.entities.length; i++) {
+        if(this.entities[i] === entityID) {
+            return true;
+        }
+    }
+
+    return false;
 }
