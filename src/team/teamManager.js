@@ -195,18 +195,18 @@ TeamManager.prototype.updateOrder = function(gameContext) {
     }
 }
 
-TeamManager.prototype.onEntityMove = function(gameContext, entity) {
+TeamManager.prototype.broadcastEntityMove = function(gameContext, entity) {
     for(let i = 0; i < this.activeTeams.length; i++) {
         const teamID = this.activeTeams[i];
         const team = this.getTeam(teamID);
 
-        team.runObjectives((objective) => objective.onMove(gameContext, entity, teamID));
+        team.onEntityMove(gameContext, entity);
     }
 
     this.updateStatus(gameContext);
 }
 
-TeamManager.prototype.onEntityDeath = function(gameContext, entity) {
+TeamManager.prototype.broadcastEntityDeath = function(gameContext, entity) {
     for(let i = 0; i < this.activeTeams.length; i++) {
         const teamID = this.activeTeams[i];
         const team = this.getTeam(teamID);

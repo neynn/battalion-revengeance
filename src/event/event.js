@@ -1,50 +1,71 @@
+import { EntityHelper } from "../../engine/util/entityHelper.js";
 import { ActionHelper } from "../action/actionHelper.js";
+import { EffectHelper } from "../effectHelper.js";
 import { EntitySpawner } from "../entity/entitySpawner.js";
+import { BattalionMap } from "../map/battalionMap.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
-export const Event = function(id, next, triggers) {
+export const Event = function(id, actions) {
     this.id = id;
-    this.turn = -1;
-    this.round = -1;
-    this.next = next;
-    this.triggers = triggers;
+    this.turn = Event.INVALID_TIME;
+    this.round = Event.INVALID_TIME;
+    this.next = null;
+    this.actions = actions;
+    this.isTriggered = false; 
 }
 
-Event.prototype.setTriggerTime = function(turn = -1, round = -1) {
+Event.INVALID_TIME = -1;
+
+Event.prototype.setNext = function(next) {
+    if(next !== undefined && next !== this.id) {
+        this.next = next;
+    }
+}
+
+Event.prototype.setTriggerTime = function(turn = Event.INVALID_TIME, round = Event.INVALID_TIME) {
     this.turn = turn;
     this.round = round;
 }
 
-Event.prototype.triggerByTurn = function(gameContext, turn) {
-    if(this.turn !== -1 && turn >= this.turn) {
-        this.trigger(gameContext);
-    }
-}
+Event.prototype.explodeTile = function(gameContext, layerName, tileX, tileY) {
+    const { world, teamManager } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const index = BattalionMap.getLayerIndex(layerName);
+    const entity = EntityHelper.getTileEntity(gameContext, tileX, tileY);
 
-Event.prototype.triggerByRound = function(gameContext, round) {
-    if(this.round !== -1 && round >= this.round) {
-        this.trigger(gameContext);
+    worldMap.clearTile(index, tileX, tileY);
+
+    if(entity !== null) {
+        EntitySpawner.removeEntity(gameContext, entity);
+        teamManager.broadcastEntityDeath(gameContext, entity);
+        entity.destroy();
     }
+
+    EffectHelper.playExplosion(gameContext, tileX, tileY);
 }
 
 Event.prototype.trigger = function(gameContext) {
-    for(let i = 0; i < this.triggers.length; i++) {
-        const { type } = this.triggers[i];
+    this.isTriggered = true;
+
+    for(let i = 0; i < this.actions.length; i++) {
+        const { type } = this.actions[i];
 
         switch(type) {
             case TypeRegistry.EVENT_TYPE.DIALOGUE: {
-                const { dialogue, target } = this.triggers[i];
+                const { dialogue, target } = this.actions[i];
 
                 ActionHelper.createCustomDialogue(gameContext, dialogue);
                 break;
             }
             case TypeRegistry.EVENT_TYPE.EXPLODE_TILE: {
-                const { layer, x, y } = this.triggers[i];
-                //Play explode sfx and set tile x y at layer l to 0.
+                const { layer, x, y } = this.actions[i];
+
+                this.explodeTile(gameContext, layer, x, y);
                 break;
             }
             case TypeRegistry.EVENT_TYPE.SPAWN_ENTITY: {
-                const { setup } = this.triggers[i];
+                const { setup } = this.actions[i];
 
                 EntitySpawner.loadEntity(gameContext, setup);
                 break; 

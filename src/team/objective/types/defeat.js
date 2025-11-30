@@ -1,7 +1,7 @@
 import { Objective } from "../objective.js";
 
 export const DefeatObjective = function() {
-    Objective.call(this);
+    Objective.call(this, "DEFEAT");
 }
 
 DefeatObjective.prototype = Object.create(Objective.prototype);
@@ -12,7 +12,7 @@ DefeatObjective.prototype.addTarget = function(config) {
     this.createTarget(config.target);
 }
 
-DefeatObjective.prototype.onDeath = function(gameContext, entity, teamID) {
+DefeatObjective.prototype.onDeath = function(entity) {
     const { customID } = entity;
 
     for(const target of this.targets) {

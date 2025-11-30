@@ -71,15 +71,15 @@
     ],
     "events": {
         "DESTROY_BRIDGE": {
-            "turn": 3,
+            "turn": 2,
             "next": "DESTROY_BRIDGE_DIALOGUE",
-            "triggers": [
-                { "type": "EXPLODE_TILE", "layer": "cloud", "x": 2, "y": 2 },
-                { "type": "EXPLODE_TILE", "layer": "cloud", "x": 3, "y": 7 }
+            "actions": [
+                { "type": "EXPLODE_TILE", "layer": "CLOUD", "x": 2, "y": 2 },
+                { "type": "EXPLODE_TILE", "layer": "CLOUD", "x": 3, "y": 7 }
             ]
         },
         "DESTROY_BRIDGE_DIALOGUE": { 
-            "triggers": [
+            "actions": [
                 {
                     "type": "DIALOGUE",
                     "dialogue": [
@@ -89,11 +89,12 @@
                 }
             ]
         },
-        "SPAWN_RECRUITS": {
-            "triggers": [
+        "SPAWN_TANK": {
+            "turn": 2,
+            "actions": [
                 {
                     "type": "SPAWN_ENTITY",
-                    "setup": { "x": 2, "y": 1, "type": "stealth_tank", "team": "SOMERTIN" }
+                    "setup": { "x": 0, "y": 9, "type": "STEALTH_TANK", "team": "SOMERTIN" }
                 }
             ]
         }

@@ -4,6 +4,7 @@ import { ActionHelper } from "../action/actionHelper.js";
 export const BattalionActor = function(id) {
     Actor.call(this, id);
 
+    this.name = "";
     this.teamID = null;
     this.portrait = null;
     this.commander = null;
@@ -11,6 +12,10 @@ export const BattalionActor = function(id) {
 
 BattalionActor.prototype = Object.create(Actor.prototype);
 BattalionActor.prototype.constructor = BattalionActor;
+
+BattalionActor.prototype.setName = function(name) {
+    this.name = name;
+}
 
 BattalionActor.prototype.isControlling = function(entity) {
     return entity.teamID !== null && this.teamID === entity.teamID;

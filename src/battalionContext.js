@@ -1,4 +1,3 @@
-import { EntityManager } from "../engine/entity/entityManager.js";
 import { GameContext } from "../engine/gameContext.js";
 import { LanguageHandler } from "../engine/language/languageHandler.js";
 import { TurnManager } from "../engine/turn/turnManager.js";
@@ -29,11 +28,11 @@ export const BattalionContext = function() {
     this.dialogueHandler = new DialogueHandler();
 
     this.world.turnManager.events.on(TurnManager.EVENT.NEXT_TURN, ({ turn }) => {
-        this.eventHandler.onTurn(this, turn);
-    }, { permanent: true} );
+        this.eventHandler.onTurnChange(this, turn);
+    }, { permanent: true });
 
     this.world.turnManager.events.on(TurnManager.EVENT.NEXT_ROUND, ({ round }) => {
-        this.eventHandler.onRound(this, round);
+        this.eventHandler.onRoundChange(this, round);
     }, { permanent: true });
 }
 

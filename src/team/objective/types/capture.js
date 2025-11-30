@@ -1,7 +1,7 @@
 import { Objective } from "../objective.js";
 
 export const CaptureObjective = function() {
-    Objective.call(this);
+    Objective.call(this, "CAPTURE");
 }
 
 CaptureObjective.prototype = Object.create(Objective.prototype);

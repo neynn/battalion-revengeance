@@ -1,6 +1,3 @@
-import { LanguageHandler } from "../../engine/language/languageHandler.js";
-import { TypeRegistry } from "../type/typeRegistry.js";
-
 export const DialogueHandler = function() {
     this.prelogue = [];
     this.postlogue = [];
@@ -87,6 +84,10 @@ DialogueHandler.prototype.playDialogue = function(gameContext, dialogue) {
 }
 
 DialogueHandler.prototype.isFinished = function() {
+    console.error("CURRENTLY NOT USING DIALOGUE!!!");
+
+    return true;
+
     return this.currentDialogue.length !== 0 && this.currentIndex >= this.currentDialogue.length;
 }
 

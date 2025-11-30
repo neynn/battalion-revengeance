@@ -324,15 +324,6 @@ TypeRegistry.FACTION_TYPE = {
     WHITE: "WHITE"
 };
 
-TypeRegistry.OBJECTIVE_TYPE = {
-    CAPTURE: "CAPTURE",
-    DEFEND: "DEFEND",
-    DEFEAT: "DEFEAT",
-    PROTECT: "PROTECT",
-    TIME_LIMIT: "TIME_LIMIT",
-    SURVIVE: "SURVIVE"
-};
-
 TypeRegistry.CURRENCY_TYPE = {
     ZLOT: "ZLOT",
     KARGIL: "KARGIL",

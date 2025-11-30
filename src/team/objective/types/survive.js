@@ -1,7 +1,7 @@
 import { Objective } from "../objective.js";
 
 export const SurviveObjective = function() {
-    Objective.call(this);
+    Objective.call(this, "SURVIVE");
 }
 
 SurviveObjective.prototype = Object.create(Objective.prototype);
@@ -14,7 +14,7 @@ SurviveObjective.prototype.addTarget = function(config) {
     }
 }
 
-SurviveObjective.prototype.onTurnEnd = function(gameContext, currentTurn, teamID) {
+SurviveObjective.prototype.onTurnEnd = function(currentTurn) {
     for(const target of this.targets) {
         const { goal } = target;
 

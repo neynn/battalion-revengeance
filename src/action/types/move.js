@@ -87,7 +87,7 @@ MoveAction.prototype.onEnd = function(gameContext, data, id) {
     }
 
     EntitySpawner.placeEntity(gameContext, this.entity);
-    teamManager.onEntityMove(gameContext, this.entity);
+    teamManager.broadcastEntityMove(gameContext, this.entity);
 
     this.path = [];
     this.pathIndex = 0;

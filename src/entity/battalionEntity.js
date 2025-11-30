@@ -1,5 +1,5 @@
 import { Entity } from "../../engine/entity/entity.js";
-import { EntityHelper } from "../../engine/entity/entityHelper.js";
+import { EntityHelper } from "../../engine/util/entityHelper.js";
 import { EntityManager } from "../../engine/entity/entityManager.js";
 import { FlagHelper } from "../../engine/flagHelper.js";
 import { WorldMap } from "../../engine/map/worldMap.js";

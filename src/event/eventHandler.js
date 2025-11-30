@@ -10,36 +10,62 @@ EventHandler.prototype.exit = function() {
 
 EventHandler.prototype.loadEvents = function(events) {
     for(const eventName in events) {
-        const { 
-            turn,
-            round,
-            next = null,
-            triggers = []
-        } = events[eventName];
-        const nextEvent = events[next] !== undefined ? eventName : null;
-        const event = new Event(eventName, nextEvent, triggers);
+        const {  turn, round, next = null, actions = [] } = events[eventName];
+        const event = new Event(eventName, actions);
 
         event.setTriggerTime(turn, round);
+        event.setNext(next);
 
         this.events.push(event);
     }
 }
 
-EventHandler.prototype.onTurn = function(gameContext, globalTurn) {
-    for(let i = 0; i < this.events.length; i++) {
-        this.events[i].triggerByTurn(gameContext, globalTurn);
+EventHandler.prototype.onTurnChange = function(gameContext, globalTurn) {
+    for(const event of this.events) {
+        const { turn } = event;
+
+        if(turn !== Event.INVALID_TIME && globalTurn >= turn) {
+            this.triggerEvent(gameContext, event);
+        }
     }
 }
 
-EventHandler.prototype.onRound = function(gameContext, globalRound) {
-    for(let i = 0; i < this.events.length; i++) {
-        this.events[i].triggerByRound(gameContext, globalRound);
+EventHandler.prototype.onRoundChange = function(gameContext, globalRound) {
+    for(const event of this.events) {
+        const { round } = event;
+
+        if(round !== Event.INVALID_TIME && globalRound >= round) {
+            this.triggerEvent(gameContext, event);
+        }
+    }
+}
+
+EventHandler.prototype.triggerEvent = function(gameContext, event) {
+    const MAX_DEPTH = 10;
+    let depth = 0;
+    let currentEvent = event;
+
+    while(depth < MAX_DEPTH && currentEvent !== null) {
+        const { isTriggered, next } = currentEvent;
+
+        if(isTriggered) {
+            break;
+        }
+
+        currentEvent.trigger(gameContext);
+
+        if(next !== null) {
+            currentEvent = this.getEvent(next);
+        } else {
+            currentEvent = null;
+        }
+
+        depth++;
     }
 }
 
 EventHandler.prototype.getEvent = function(eventID) {
-    for(let i = 0; i < this.events.length; i++) {
-        const event = this.events[i];
+    for(const event of this.events) {
         const { id } = event;
 
         if(id === eventID) {
@@ -48,4 +74,15 @@ EventHandler.prototype.getEvent = function(eventID) {
     }
 
     return null;
+}
+
+EventHandler.prototype.triggerEventByID = function(gameContext, eventID) {
+    for(const event of this.events) {
+        const { id } = event;
+
+        if(id === eventID) {
+            this.triggerEvent(gameContext, event);
+            break;
+        }
+    }
 }

@@ -68,7 +68,7 @@ export const ColorHelper = {
             }
         }
     },
-    mapFullBitmap: function(imageData, colorMap) {
+    mapBitmap: function(imageData, colorMap) {
         const { data, width, height } = imageData;
         const copy = new Uint8ClampedArray(data.length);
 
@@ -77,7 +77,7 @@ export const ColorHelper = {
 
         return new ImageData(copy, width, height);
     },
-    mapBitmapRegions: function(imageData, regions, colorMap) {
+    mapBitmapPartial: function(imageData, colorMap, regions) {
         const { data, width, height } = imageData;
         const copy = new Uint8ClampedArray(data.length);
 

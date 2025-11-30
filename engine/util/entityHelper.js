@@ -82,25 +82,5 @@ export const EntityHelper = {
         }
 
         return entities;
-    },
-    getEntitiesOwnedBy: function(gameContext, actorID) {
-        const { world } = gameContext;
-        const { entityManager, turnManager } = world;
-        const actor = turnManager.getActor(actorID);
-        const entities = [];
-
-        if(!actor) {
-            return entities;
-        }
-
-        for(const entityID of actor.entities) {
-            const entity = entityManager.getEntity(entityID);
-
-            if(entity) {
-                entities.push(entity);
-            }
-        }
-
-        return entities;
     }
 };

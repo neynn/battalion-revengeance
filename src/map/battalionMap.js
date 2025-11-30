@@ -47,6 +47,16 @@ BattalionMap.SEARCH_ORDER = [
 
 BattalionMap.STUB_JAMMER = new JammerField(-1, -1);
 
+BattalionMap.getLayerIndex = function(name) {
+    const index = BattalionMap.LAYER[name];
+
+    if(index === undefined) {
+        return -1;
+    }
+
+    return index;
+}
+
 BattalionMap.prototype = Object.create(WorldMap.prototype);
 BattalionMap.prototype.constructor = BattalionMap;
 

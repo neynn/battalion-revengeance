@@ -42,17 +42,6 @@ export const EntitySpawner = {
 
         return entity;
     },
-    destroyEntity: function(gameContext, entityID) {
-        const { world, teamManager } = gameContext;
-        const { entityManager } = world;
-        const entity = entityManager.getEntity(entityID);
-
-        if(entity) {
-            EntitySpawner.removeEntity(gameContext, entity);
-            teamManager.onEntityDeath(gameContext, entity);
-            entity.destroy();
-        }
-    },
     placeEntity: function(gameContext, entity) {
         const { world } = gameContext;
         const { mapManager } = world;

@@ -1,7 +1,7 @@
 import { Objective } from "../objective.js";
 
 export const TimeLimitObjective = function() {
-    Objective.call(this);
+    Objective.call(this, "TIME_LIMIT");
 }
 
 TimeLimitObjective.prototype = Object.create(Objective.prototype);
@@ -13,7 +13,7 @@ TimeLimitObjective.prototype.addTarget = function(config) {
     }
 }
 
-TimeLimitObjective.prototype.onTurnEnd = function(gameContext, currentTurn, teamID) {
+TimeLimitObjective.prototype.onTurnEnd = function(currentTurn) {
     for(const target of this.targets) {
         const { goal } = target;
 

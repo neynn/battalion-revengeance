@@ -56,7 +56,7 @@ DeathAction.prototype.onEnd = function(gameContext, data, id) {
         const entity = this.entities[i];
 
         EntitySpawner.removeEntity(gameContext, entity);
-        teamManager.onEntityDeath(gameContext, entity);
+        teamManager.broadcastEntityDeath(gameContext, entity);
         entity.destroy();
     }
 

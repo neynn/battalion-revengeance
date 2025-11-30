@@ -1,7 +1,7 @@
 import { Objective } from "../objective.js";
 
 export const DefendObjective = function() {
-    Objective.call(this);
+    Objective.call(this, "DEFEND");
 }
 
 DefendObjective.prototype = Object.create(Objective.prototype);

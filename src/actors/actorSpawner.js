@@ -22,6 +22,7 @@ export const ActorSpawner = {
         }, ACTOR_TYPE.AI);
 
         actor.loadCommander(gameContext, commanderType);
+        actor.setName("NPC");
 
         return actor;
     },
@@ -44,6 +45,7 @@ export const ActorSpawner = {
         actor.loadCommander(gameContext, commanderType);
         actor.loadKeybinds(gameContext);
         actor.states.setNextState(gameContext, Player.STATE.IDLE);
+        actor.setName("PLAYER");
 
         return actor;
     }

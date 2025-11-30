@@ -1,11 +1,11 @@
 import { ActionHelper } from "../action/actionHelper.js";
-import { Objective } from "../objective/objective.js";
-import { CaptureObjective } from "../objective/types/capture.js";
-import { DefeatObjective } from "../objective/types/defeat.js";
-import { DefendObjective } from "../objective/types/defend.js";
-import { ProtectObjective } from "../objective/types/protect.js";
-import { SurviveObjective } from "../objective/types/survive.js";
-import { TimeLimitObjective } from "../objective/types/timeLimit.js";
+import { Objective } from "./objective/objective.js";
+import { CaptureObjective } from "./objective/types/capture.js";
+import { DefeatObjective } from "./objective/types/defeat.js";
+import { DefendObjective } from "./objective/types/defend.js";
+import { ProtectObjective } from "./objective/types/protect.js";
+import { SurviveObjective } from "./objective/types/survive.js";
+import { TimeLimitObjective } from "./objective/types/timeLimit.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const Team = function(id) {
@@ -34,13 +34,13 @@ export const Team = function(id) {
     ];
 }
 
-Team.OBJECTIVE_SLOT = {
-    [TypeRegistry.OBJECTIVE_TYPE.PROTECT]: 0,
-    [TypeRegistry.OBJECTIVE_TYPE.DEFEAT]: 1,
-    [TypeRegistry.OBJECTIVE_TYPE.CAPTURE]: 2,
-    [TypeRegistry.OBJECTIVE_TYPE.DEFEND]: 3,
-    [TypeRegistry.OBJECTIVE_TYPE.TIME_LIMIT]: 4,
-    [TypeRegistry.OBJECTIVE_TYPE.SURVIVE]: 5
+Team.OBJECTIVE_TYPE = {
+    PROTECT: 0,
+    DEFEAT: 1,
+    CAPTURE: 2,
+    DEFEND: 3,
+    TIME_LIMIT: 4,
+    SURVIVE: 5
 };
 
 Team.STATUS = {
@@ -141,19 +141,28 @@ Team.prototype.getID = function() {
     return this.id;
 }
 
+Team.prototype.onEntityMove = function(gameContext, entity) {
+    this.objectives[Team.OBJECTIVE_TYPE.CAPTURE].onMove(gameContext, entity, this.id);
+    this.objectives[Team.OBJECTIVE_TYPE.DEFEND].onMove(gameContext, entity, this.id);
+}
+
 Team.prototype.onEntityDeath = function(gameContext, entity) {
     const entityID = entity.getID();
 
-    if(this.units.has(entityID)) {
-        this.units.delete(entityID);
+    if(this.hasEntity(entityID)) {
+        if(this.units.has(entityID)) {
+            this.units.delete(entityID);
+        }
+
+        if(this.lynchpins.has(entityID)) {
+            this.lynchpins.delete(entityID);
+        }
+
+        this.removeEntity(entityID);
     }
 
-    if(this.lynchpins.has(entityID)) {
-        this.lynchpins.delete(entityID);
-    }
-
-    this.removeEntity(entityID);
-    this.runObjectives((objective) => objective.onDeath(gameContext, entity, this.id));
+    this.objectives[Team.OBJECTIVE_TYPE.DEFEAT].onDeath(entity);
+    this.objectives[Team.OBJECTIVE_TYPE.PROTECT].onDeath(entity);
 }
 
 Team.prototype.setCustomColor = function(color) {
@@ -253,22 +262,11 @@ Team.prototype.loadObjectives = function(teamObjectives, allObjectives) {
 
         if(config) {
             const { type } = config;
-            const index = Team.OBJECTIVE_SLOT[type];
+            const index = Team.OBJECTIVE_TYPE[type];
 
-            if(index !== undefined) {
+            if(index !== undefined && index >= 0 && index < this.objectives.length) {
                 this.objectives[index].addTarget(config);
             }
-        }
-    }
-}
-
-Team.prototype.runObjectives = function(onObjective) {
-    for(let i = 0; i < this.objectives.length; i++) {
-        const objective = this.objectives[i];
-        const { status } = objective;
-
-        if(status === Objective.STATUS.IDLE) {
-            onObjective(objective);
         }
     }
 }
@@ -285,7 +283,8 @@ Team.prototype.onTurnEnd = function(gameContext, turn) {
         }
     }
 
-    this.runObjectives((objective) => objective.onTurnEnd(gameContext, turn, this.id));
+    this.objectives[Team.OBJECTIVE_TYPE.SURVIVE].onTurnEnd(turn);
+    this.objectives[Team.OBJECTIVE_TYPE.TIME_LIMIT].onTurnEnd(turn);
 
     teamManager.updateStatus(gameContext);
 }

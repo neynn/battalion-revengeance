@@ -69,5 +69,10 @@ export const ActionHelper = {
         if(execution) {
             actionQueue.enqueue(execution);
         } 
+    },
+    createEndTurnRequest: function(actorID) {
+        return new ActionRequest(TypeRegistry.ACTION_TYPE.END_TURN, {
+            "actorID": actorID
+        });
     }
 };

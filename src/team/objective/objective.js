@@ -1,8 +1,9 @@
 import { Target } from "./target.js";
 
-export const Objective = function() {
-    this.targets = [];
+export const Objective = function(DEBUG_NAME) {
+    this.DEBUG_NAME = DEBUG_NAME;
     this.status = Objective.STATUS.IDLE;
+    this.targets = [];
 }
 
 Objective.STATUS = {
@@ -13,16 +14,6 @@ Objective.STATUS = {
 
 Objective.prototype.hasAnyTarget = function() {
     return this.targets.length !== 0;
-}
-
-Objective.prototype.allTargetsIncomplete = function() {
-    for(let i = 0; i < this.targets.length; i++) {
-        if(this.targets[i].status === Target.STATUS.COMPLETE) {
-            return false;
-        }
-    }
-
-    return true;
 }
 
 Objective.prototype.allTargetsComplete = function() {
@@ -54,6 +45,3 @@ Objective.prototype.succeed = function() {
 }
 
 Objective.prototype.addTarget = function(config) {}
-Objective.prototype.onTurnEnd = function(gameContext, currentTurn, teamID) {}
-Objective.prototype.onMove = function(gameContext, entity, teamID) {}
-Objective.prototype.onDeath = function(gameContext, entity, teamID) {}

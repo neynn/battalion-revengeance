@@ -15,7 +15,7 @@ AtlasTexture.prototype.loadColoredRegions = function(copyBitmap, schema) {
         this.state = Texture.STATE.LOADING;
 
         const bitmapData = ColorHelper.createBitmapData(copyBitmap);
-        const mappedData = ColorHelper.mapBitmapRegions(bitmapData, this.regions, schema);
+        const mappedData = ColorHelper.mapBitmapPartial(bitmapData, schema, this.regions);
 
         createImageBitmap(mappedData)
         .then(bitmap => this.setBitmapData(bitmap))

@@ -1,7 +1,7 @@
 import { Objective } from "../objective.js";
 
 export const ProtectObjective = function() {
-    Objective.call(this);
+    Objective.call(this, "PROTECT");
 }
 
 ProtectObjective.prototype = Object.create(Objective.prototype);
@@ -14,7 +14,7 @@ ProtectObjective.prototype.addTarget = function(config) {
     }
 }
 
-ProtectObjective.prototype.onDeath = function(gameContext, entity, teamID) {
+ProtectObjective.prototype.onDeath = function(entity) {
     const { customID } = entity;
 
     for(const target of this.targets) {

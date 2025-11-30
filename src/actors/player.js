@@ -1,5 +1,5 @@
 import { ContextHelper } from "../../engine/camera/contextHelper.js";
-import { EntityHelper } from "../../engine/entity/entityHelper.js";
+import { EntityHelper } from "../../engine/util/entityHelper.js";
 import { StateMachine } from "../../engine/state/stateMachine.js";
 import { Autotiler } from "../../engine/tile/autotiler.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
