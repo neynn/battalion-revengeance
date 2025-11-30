@@ -1,5 +1,5 @@
 import { Renderer } from "../../engine/renderer/renderer.js";
-import { PLAYER_PREFERENCE } from "../playerPreference.js";
+import { PLAYER_PREFERENCE } from "../enums.js";
 import { SchemaSprite } from "./schemaSprite.js";
 
 const BLOCK = { COUNT: 4, WIDTH: 4, HEIGHT: 8, GAP: 1 };

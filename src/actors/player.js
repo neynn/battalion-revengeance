@@ -2,11 +2,11 @@ import { ContextHelper } from "../../engine/camera/contextHelper.js";
 import { EntityHelper } from "../../engine/util/entityHelper.js";
 import { StateMachine } from "../../engine/state/stateMachine.js";
 import { Autotiler } from "../../engine/tile/autotiler.js";
-import { BattalionEntity } from "../entity/battalionEntity.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { BattalionActor } from "./battalionActor.js";
 import { IdleState } from "./player/idle.js";
 import { SelectState } from "./player/select.js";
+import { isNodeReachable } from "../systems/pathfinding.js";
 
 export const Player = function(id, camera) {
     BattalionActor.call(this, id);
@@ -175,7 +175,7 @@ Player.prototype.addNodeMapRender = function(nodeMap) {
 
     for(const [index, node] of nodeMap) {
         const { x, y } = node;
-        const id = BattalionEntity.isNodeReachable(node) ? TypeRegistry.TILE_ID.OVERLAY_MOVE : TypeRegistry.TILE_ID.OVERLAY_ATTACK;
+        const id = isNodeReachable(node) ? TypeRegistry.TILE_ID.OVERLAY_MOVE : TypeRegistry.TILE_ID.OVERLAY_ATTACK;
 
         this.camera.selectOverlay.add(id, x, y);
     }

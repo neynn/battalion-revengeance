@@ -1,4 +1,7 @@
 export const EntityType = function(id, config) {
+    const MAX_TRAITS = 4;
+    const MIN_JAMMER_RANGE = 1;
+
     const {
         dimX = EntityType.DEFAULT.SIZE_X,
         dimY = EntityType.DEFAULT.SIZE_Y,
@@ -44,7 +47,9 @@ export const EntityType = function(id, config) {
         this.maxRange = this.minRange;
     }
 
-    const MAX_TRAITS = 4;
+    if(this.jammerRange < MIN_JAMMER_RANGE) {
+        this.jammerRange = MIN_JAMMER_RANGE;
+    }
 
     if(this.traits.length > MAX_TRAITS) {
         this.traits.length = MAX_TRAITS;
@@ -67,7 +72,7 @@ EntityType.DEFAULT = {
     DAMAGE: 0,
     MOVEMENT_RANGE: 0,
     STREAM_RANGE: 1,
-    JAMMER_RANGE: 0,
+    JAMMER_RANGE: 1,
     HEALTH: 1,
     MOVEMENT_TYPE: "STATIONARY",
     WEAPON_TYPE: "NONE",

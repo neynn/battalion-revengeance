@@ -1,6 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
 import { FlagHelper } from "../../../engine/flagHelper.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
+import { ATTACK_TYPE } from "../../enums.js";
 import { AnimationHelper } from "../../sprite/animationHelper.js";
 import { TypeRegistry } from "../../type/typeRegistry.js";
 import { ActionHelper } from "../actionHelper.js";
@@ -35,13 +36,13 @@ AttackAction.COMMAND = {
 AttackAction.prototype = Object.create(Action.prototype);
 AttackAction.prototype.constructor = AttackAction;
 
-const playAttackGTX = function(gameContext, entity, target, resolutions) {
+const playAttackEffect = function(gameContext, entity, target, resolutions) {
     const { world } = gameContext;
     const { entityManager } = world;
     const spriteType = entity.getAttackSprite();
     const attackType = entity.getAttackType();
 
-    if(attackType === BattalionEntity.ATTACK_TYPE.DISPERSION) {
+    if(attackType === ATTACK_TYPE.DISPERSION) {
         const { tileX, tileY } = target;
 
         AnimationHelper.playGFX(gameContext, spriteType, tileX, tileY);
@@ -83,7 +84,7 @@ AttackAction.prototype.onStart = function(gameContext, data, id) {
         entity.uncloakInstant();
     }
 
-    playAttackGTX(gameContext, entity, target, resolutions);
+    playAttackEffect(gameContext, entity, target, resolutions);
 
     this.entity = entity;
     this.resolutions = resolutions;

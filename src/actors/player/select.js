@@ -1,7 +1,8 @@
 import { FloodFill } from "../../../engine/pathfinders/floodFill.js";
 import { ActionHelper } from "../../action/actionHelper.js";
 import { AttackAction } from "../../action/types/attack.js";
-import { BattalionEntity } from "../../entity/battalionEntity.js";
+import { RANGE_TYPE } from "../../enums.js";
+import { createStep, isNodeReachable } from "../../systems/pathfinding.js";
 import { TypeRegistry } from "../../type/typeRegistry.js";
 import { Player } from "../player.js";
 import { PlayerState } from "./playerState.js";
@@ -131,7 +132,7 @@ SelectState.prototype.setOptimalAttackPath = function(gameContext, entity) {
             const index = worldMap.getIndex(neighborX, neighborY);
             const node = this.nodeMap.get(index);
 
-            if(node && BattalionEntity.isNodeReachable(node)) {
+            if(node && isNodeReachable(node)) {
                 if(!bestNode) {
                     bestNode = node;
                 } else if(node.cost < bestNode.cost) {
@@ -159,7 +160,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
     const attackAutotiler = tileManager.getAutotilerByID(TypeRegistry.AUTOTILER_ID.PATH);
 
     if(entity && !this.entity.isAllyWith(gameContext, entity)) {
-        if(this.entity.getRangeType() === BattalionEntity.RANGE_TYPE.RANGE) {
+        if(this.entity.getRangeType() === RANGE_TYPE.RANGE) {
             this.path.length = 0;
         } else if(!this.isAttackPathValid(gameContext, entity)){
             this.setOptimalAttackPath(gameContext, entity);
@@ -169,7 +170,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
         return;
     }
 
-    if(!targetNode || !BattalionEntity.isNodeReachable(targetNode)) {
+    if(!targetNode || !isNodeReachable(targetNode)) {
         return;
     }
 
@@ -181,7 +182,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
         const isSplit = this.splitPath(tileX, tileY);
 
         if(!isSplit) {
-            this.path.unshift(BattalionEntity.createStep(deltaX, deltaY, tileX, tileY));
+            this.path.unshift(createStep(deltaX, deltaY, tileX, tileY));
 
             if(!this.entity.isPathValid(gameContext, this.path)) {
                 this.path = this.entity.getBestPath(gameContext, this.nodeMap, tileX, tileY);
@@ -214,7 +215,7 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
         const rangeType = this.entity.getRangeType();
 
         switch(rangeType) {
-            case BattalionEntity.RANGE_TYPE.MELEE: {
+            case RANGE_TYPE.MELEE: {
                 if(this.path.length === 0) {
                     request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.COMMAND.INITIATE);
                 } else {
@@ -223,14 +224,14 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
 
                 break;
             }
-            case BattalionEntity.RANGE_TYPE.RANGE: {
+            case RANGE_TYPE.RANGE: {
                 if(this.entity.canTarget(gameContext, entity)) {
                     request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.COMMAND.INITIATE);
                 }
 
                 break;
             }
-            case BattalionEntity.RANGE_TYPE.HYBRID: {
+            case RANGE_TYPE.HYBRID: {
                 if(this.path.length === 0) {
                     request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.COMMAND.INITIATE);
                 } else {

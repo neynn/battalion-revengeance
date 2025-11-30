@@ -1,6 +1,7 @@
 import { getRandomElement } from "../../engine/math/math.js";
 import { EntitySprite } from "../sprite/entitySprite.js";
 import { SchemaSprite } from "../sprite/schemaSprite.js";
+import { getDirectionByName } from "../systems/direction.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { BattalionEntity } from "./battalionEntity.js";
 import { Building } from "./building.js";
@@ -109,7 +110,7 @@ export const EntitySpawner = {
             entity.setCustomInfo(id, name, desc);
 
             if(direction !== null) {
-                entity.setDirection(BattalionEntity.DIRECTION[direction]);
+                entity.setDirection(getDirectionByName(direction));
             }
 
             if(health !== -1) {

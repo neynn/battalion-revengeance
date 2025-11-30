@@ -2,6 +2,7 @@ import { Action } from "../../../engine/action/action.js";
 import { FlagHelper } from "../../../engine/flagHelper.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { EntitySpawner } from "../../entity/entitySpawner.js";
+import { PATH_INTERCEPT } from "../../enums.js";
 import { TypeRegistry } from "../../type/typeRegistry.js";
 import { ActionHelper } from "../actionHelper.js";
 import { AttackAction } from "./attack.js";
@@ -105,7 +106,7 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
     if(isValid) {
         const intercept = entity.mInterceptPath(gameContext, path);
 
-        if(path.length === 0 || intercept === BattalionEntity.INTERCEPT.ILLEGAL) {
+        if(path.length === 0 || intercept === PATH_INTERCEPT.ILLEGAL) {
             console.error("EDGE CASE: Stealth unit was too close!");
             return;
         }
