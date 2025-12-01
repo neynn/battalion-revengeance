@@ -1,11 +1,8 @@
 import { State } from "../../engine/state/state.js";
 import { BattalionContext } from "../battalionContext.js";
-import { CameraHelper } from "../camera/cameraHelper.js";
-import { MapSpawner } from "../map/mapSpawner.js";
+import { createStoryMap } from "../systems/map.js";
 
-export const PlayState = function() {
-    this.contextID = -1;
-}
+export const PlayState = function() {}
 
 PlayState.prototype = Object.create(State.prototype);
 PlayState.prototype.constructor = PlayState;
@@ -13,20 +10,12 @@ PlayState.prototype.constructor = PlayState;
 PlayState.prototype.onEnter = async function(gameContext, stateMachine, transition) {
     const { client } = gameContext;
     const { router } = client;
-    //const context = CameraHelper.createPlayCamera(gameContext);
 
-    MapSpawner.loadStoryMap(gameContext, "presus");
+    createStoryMap(gameContext, "presus");
 
     router.on("ESCAPE", () => stateMachine.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));
-
-    //this.contextID = context.getID();
 }
 
 PlayState.prototype.onExit = function(gameContext, stateMachine) {
-    //const { renderer } = gameContext;
-
-    //renderer.destroyContext(this.contextID);
-
-    //this.contextID = -1;
     gameContext.exit();
 }

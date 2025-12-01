@@ -1,8 +1,8 @@
 import { EntityHelper } from "../../engine/util/entityHelper.js";
 import { ActionHelper } from "../action/actionHelper.js";
-import { EffectHelper } from "../effectHelper.js";
-import { EntitySpawner } from "../entity/entitySpawner.js";
 import { BattalionMap } from "../map/battalionMap.js";
+import { playExplosion } from "../systems/animation.js";
+import { despawnEntity, spawnEntity } from "../systems/spawn.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const Event = function(id, actions) {
@@ -28,7 +28,7 @@ Event.prototype.setTriggerTime = function(turn = Event.INVALID_TIME, round = Eve
 }
 
 Event.prototype.explodeTile = function(gameContext, layerName, tileX, tileY) {
-    const { world, teamManager } = gameContext;
+    const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
     const index = BattalionMap.getLayerIndex(layerName);
@@ -37,12 +37,10 @@ Event.prototype.explodeTile = function(gameContext, layerName, tileX, tileY) {
     worldMap.clearTile(index, tileX, tileY);
 
     if(entity !== null) {
-        EntitySpawner.removeEntity(gameContext, entity);
-        teamManager.broadcastEntityDeath(gameContext, entity);
-        entity.destroy();
+        despawnEntity(gameContext, entity);
     }
 
-    EffectHelper.playExplosion(gameContext, tileX, tileY);
+    playExplosion(gameContext, tileX, tileY);
 }
 
 Event.prototype.trigger = function(gameContext) {
@@ -67,7 +65,7 @@ Event.prototype.trigger = function(gameContext) {
             case TypeRegistry.EVENT_TYPE.SPAWN_ENTITY: {
                 const { setup } = this.actions[i];
 
-                EntitySpawner.loadEntity(gameContext, setup);
+                spawnEntity(gameContext, setup);
                 break; 
             }
         }

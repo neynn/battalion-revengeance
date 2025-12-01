@@ -118,7 +118,7 @@ GameContext.prototype.loadResources = function(resources) {
     this.client.router.load(resources.keybinds);
     this.world.mapManager.load(resources.maps);
     this.world.entityManager.load();
-    this.world.turnManager.load(resources.actors);
+    this.world.turnManager.load();
     this.language.load(resources.languages);
 }
 

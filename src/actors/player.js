@@ -7,6 +7,7 @@ import { BattalionActor } from "./battalionActor.js";
 import { IdleState } from "./player/idle.js";
 import { SelectState } from "./player/select.js";
 import { isNodeReachable } from "../systems/pathfinding.js";
+import { TILE_ID } from "../enums.js";
 
 export const Player = function(id, camera) {
     BattalionActor.call(this, id);
@@ -145,7 +146,7 @@ Player.prototype.showJammerAt = function(gameContext, entity, jammerX, jammerY) 
     this.camera.jammerOverlay.clear();
 
     worldMap.fill2DGraph(jammerX, jammerY, jammerRange, (nextX, nextY) => {
-        this.camera.jammerOverlay.add(TypeRegistry.TILE_ID.JAMMER, nextX, nextY);
+        this.camera.jammerOverlay.add(TILE_ID.JAMMER, nextX, nextY);
     });
 }
 
@@ -175,7 +176,7 @@ Player.prototype.addNodeMapRender = function(nodeMap) {
 
     for(const [index, node] of nodeMap) {
         const { x, y } = node;
-        const id = isNodeReachable(node) ? TypeRegistry.TILE_ID.OVERLAY_MOVE : TypeRegistry.TILE_ID.OVERLAY_ATTACK;
+        const id = isNodeReachable(node) ? TILE_ID.OVERLAY_MOVE : TILE_ID.OVERLAY_ATTACK;
 
         this.camera.selectOverlay.add(id, x, y);
     }
@@ -226,16 +227,16 @@ Player.prototype.showPath = function(autotiler, oPath, entityX, entityY) {
         const { deltaX, deltaY } = path[0];
 
         if(deltaX === 1) {
-            tileID = TypeRegistry.TILE_ID.PATH_RIGHT;
+            tileID = TILE_ID.PATH_RIGHT;
         } else if(deltaX === -1) {
-            tileID = TypeRegistry.TILE_ID.PATH_LEFT;
+            tileID = TILE_ID.PATH_LEFT;
         } else if(deltaY === 1) {
-            tileID = TypeRegistry.TILE_ID.PATH_DOWN;
+            tileID = TILE_ID.PATH_DOWN;
         } else if(deltaY === -1) {
-            tileID = TypeRegistry.TILE_ID.PATH_UP;
+            tileID = TILE_ID.PATH_UP;
         }
     } else {
-        tileID = TypeRegistry.TILE_ID.PATH_CENTER;
+        tileID = TILE_ID.PATH_CENTER;
     }
 
     this.camera.pathOverlay.add(tileID, entityX, entityY);

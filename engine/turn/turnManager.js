@@ -2,7 +2,6 @@ import { EventEmitter } from "../events/eventEmitter.js";
 
 export const TurnManager = function() {
     this.nextID = 0;
-    this.actorTypes = {};
     this.actors = new Map();
     this.actorOrder = [];
     this.actorIndex = -1;
@@ -38,21 +37,7 @@ TurnManager.prototype.getGlobalRound = function() {
     return this.currentRound;
 }
 
-TurnManager.prototype.load = function(actorTypes) {
-    if(actorTypes) {
-        this.actorTypes = actorTypes;
-    }
-}
-
-TurnManager.prototype.getActorType = function(typeID) {
-    const actorType = this.actorTypes[typeID];
-
-    if(!actorType) {
-        return null;
-    }
-
-    return actorType;
-}
+TurnManager.prototype.load = function() {}
 
 TurnManager.prototype.exit = function() {
     this.events.muteAll();
@@ -71,24 +56,20 @@ TurnManager.prototype.forAllActors = function(onCall) {
     }
 }
 
-TurnManager.prototype.createActor = function(onCreate, typeID, externalID) {
+TurnManager.prototype.createActor = function(onCreate, externalID) {
     const actorID = externalID !== undefined ? externalID : this.nextID++;
 
     if(!this.actors.has(actorID)) {
-        const actorType = this.getActorType(typeID);
+        const actor = onCreate(actorID);
 
-        if(actorType) {
-            const actor = onCreate(actorID, actorType);
+        if(actor) {
+            this.actors.set(actorID, actor);
+            this.events.emit(TurnManager.EVENT.ACTOR_CREATE, {
+                "id": actorID,
+                "actor": actor
+            });
 
-            if(actor) {
-                this.actors.set(actorID, actor);
-                this.events.emit(TurnManager.EVENT.ACTOR_CREATE, {
-                    "id": actorID,
-                    "actor": actor
-                });
-
-                return actor;
-            }
+            return actor;
         }
     }
 

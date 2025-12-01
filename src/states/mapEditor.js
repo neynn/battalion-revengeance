@@ -1,7 +1,7 @@
 import { State } from "../../engine/state/state.js";
-import { CameraHelper } from "../camera/cameraHelper.js";
 import { BattalionMapEditor } from "../map/battalionMapEditor.js";
 import { BattalionEditorController } from "../map/battalionEditorController.js";
+import { createEditCamera } from "../systems/camera.js";
 
 export const MapEditorState = function() {
     this.controller = null;
@@ -15,7 +15,7 @@ MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
     const { tileManager } = gameContext;
     const mapEditor = new BattalionMapEditor();
     const controller = new BattalionEditorController(mapEditor);
-    const context = CameraHelper.createEditCamera(gameContext, mapEditor.brush);
+    const context = createEditCamera(gameContext, mapEditor.brush);
     const camera = context.getCamera();
     const hiddenSets = [];
 

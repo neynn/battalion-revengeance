@@ -10,6 +10,7 @@ import { MoveAction } from "./action/types/move.js";
 import { UncloakAction } from "./action/types/uncloak.js";
 import { PortraitHandler } from "./actors/portraitHandler.js";
 import { DialogueHandler } from "./dialogue/dialogueHandler.js";
+import { LAYER_TYPE } from "./enums.js";
 import { EventHandler } from "./event/eventHandler.js";
 import { MainMenuState } from "./states/mainMenu.js";
 import { MapEditorState } from "./states/mapEditor.js";
@@ -46,7 +47,7 @@ BattalionContext.prototype = Object.create(GameContext.prototype);
 BattalionContext.prototype.constructor = BattalionContext;
 
 BattalionContext.prototype.init = function(resources) {
-    for(let i = 0; i < TypeRegistry.LAYER_TYPE.COUNT; i++) {
+    for(let i = 0; i < LAYER_TYPE.COUNT; i++) {
         this.spriteManager.addLayer();
     }
 

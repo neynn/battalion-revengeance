@@ -1,7 +1,7 @@
 import { FloodFill } from "../../../engine/pathfinders/floodFill.js";
 import { ActionHelper } from "../../action/actionHelper.js";
 import { AttackAction } from "../../action/types/attack.js";
-import { RANGE_TYPE } from "../../enums.js";
+import { AUTOTILER_TYPE, RANGE_TYPE } from "../../enums.js";
 import { createStep, isNodeReachable } from "../../systems/pathfinding.js";
 import { TypeRegistry } from "../../type/typeRegistry.js";
 import { Player } from "../player.js";
@@ -156,8 +156,8 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
     const worldMap = mapManager.getActiveMap();
     const targetNode = this.nodeMap.get(worldMap.getIndex(tileX, tileY));
     const entity = player.getVisibleEntity(gameContext, tileX, tileY);
-    const walkAutotiler = tileManager.getAutotilerByID(TypeRegistry.AUTOTILER_ID.PATH);
-    const attackAutotiler = tileManager.getAutotilerByID(TypeRegistry.AUTOTILER_ID.PATH);
+    const walkAutotiler = tileManager.getAutotilerByID(AUTOTILER_TYPE.PATH);
+    const attackAutotiler = tileManager.getAutotilerByID(AUTOTILER_TYPE.PATH);
 
     if(entity && !this.entity.isAllyWith(gameContext, entity)) {
         if(this.entity.getRangeType() === RANGE_TYPE.RANGE) {

@@ -1,8 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
 import { FlagHelper } from "../../../engine/flagHelper.js";
-import { BattalionEntity } from "../../entity/battalionEntity.js";
-import { EntitySpawner } from "../../entity/entitySpawner.js";
 import { PATH_INTERCEPT } from "../../enums.js";
+import { placeEntityOnMap, removeEntityFromMap } from "../../systems/map.js";
 import { TypeRegistry } from "../../type/typeRegistry.js";
 import { ActionHelper } from "../actionHelper.js";
 import { AttackAction } from "./attack.js";
@@ -32,7 +31,7 @@ MoveAction.prototype.onStart = function(gameContext, data, id) {
     const { entityID, path } = data;
     const entity = entityManager.getEntity(entityID);
 
-    EntitySpawner.removeEntity(gameContext, entity);
+    removeEntityFromMap(gameContext, entity);
     entity.playMove(gameContext);
     entity.onMoveStart(gameContext);
 
@@ -87,7 +86,7 @@ MoveAction.prototype.onEnd = function(gameContext, data, id) {
         this.entity.triggerElusive();
     }
 
-    EntitySpawner.placeEntity(gameContext, this.entity);
+    placeEntityOnMap(gameContext, this.entity);
     teamManager.broadcastEntityMove(gameContext, this.entity);
 
     this.path = [];

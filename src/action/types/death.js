@@ -1,5 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
-import { EntitySpawner } from "../../entity/entitySpawner.js";
+import { despawnEntity } from "../../systems/spawn.js";
 
 export const DeathAction = function() {
     Action.call(this);
@@ -50,14 +50,10 @@ DeathAction.prototype.isFinished = function(gameContext, executionRequest) {
 }
 
 DeathAction.prototype.onEnd = function(gameContext, data, id) {
-    const { teamManager } = gameContext;
-
     for(let i = 0; i < this.entities.length; i++) {
         const entity = this.entities[i];
 
-        EntitySpawner.removeEntity(gameContext, entity);
-        teamManager.broadcastEntityDeath(gameContext, entity);
-        entity.destroy();
+        despawnEntity(gameContext, entity);
     }
 
     this.opacity = 1;

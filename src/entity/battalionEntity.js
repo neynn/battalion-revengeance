@@ -12,7 +12,8 @@ import { createNode, createStep, isNodeReachable, mGetLowestCostNode } from "../
 import { getDirectionByDelta } from "../systems/direction.js";
 import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, PATH_INTERCEPT, RANGE_TYPE, ATTACK_FLAG } from "../enums.js";
 import { getTransportType } from "../systems/transport.js";
-import { getAreaTargets, getLineTargets } from "../systems/targeting.js";
+import { getAreaEntities, getLineEntities } from "../systems/targeting.js";
+import { playGFX } from "../systems/animation.js";
 
 export const BattalionEntity = function(id, sprite) {
     Entity.call(this, id, "");
@@ -279,20 +280,12 @@ BattalionEntity.prototype.playMove = function(gameContext) {
 }
 
 BattalionEntity.prototype.playDeath = function(gameContext) {
-    const { spriteManager, transform2D } = gameContext;
     const spriteType = this.getDeathSprite();
 
     this.state = BattalionEntity.STATE.DEAD;
     this.playSound(gameContext, BattalionEntity.SOUND_TYPE.DEATH);
 
-    const sprite = spriteManager.createSprite(spriteType, TypeRegistry.LAYER_TYPE.GFX);
-
-    if(sprite) {
-        const { x, y } = transform2D.transformTileToWorld(this.tileX, this.tileY);
-
-        sprite.setPosition(x, y);
-        sprite.expire();
-    }
+    playGFX(gameContext, spriteType, this.tileX, this.tileY);
 }
 
 BattalionEntity.prototype.playAttack = function(gameContext) {
@@ -1415,7 +1408,7 @@ BattalionEntity.prototype.mGetRegularDamage = function(gameContext, target, reso
     if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SHRAPNEL)) {
         const { tileX, tileY } = target;
         const direction = this.getDirectionTo(target);
-        const targets = getLineTargets(gameContext, direction, tileX, tileY, TRAIT_CONFIG.SHRAPNEL_RANGE);
+        const targets = getLineEntities(gameContext, direction, tileX, tileY, TRAIT_CONFIG.SHRAPNEL_RANGE);
 
         for(let i = 0; i < targets.length; i++) {
             const target = targets[i];
@@ -1432,7 +1425,7 @@ BattalionEntity.prototype.mGetRegularDamage = function(gameContext, target, reso
 BattalionEntity.prototype.mGetStreamblastDamage = function(gameContext, target, resolver) {
     const direction = this.getDirectionTo(target);
     const range = this.config.streamRange;
-    const targets = getLineTargets(gameContext, direction, this.tileX, this.tileY, range);
+    const targets = getLineEntities(gameContext, direction, this.tileX, this.tileY, range);
     let totalDamage = 0;
 
     for(let i = 0; i < targets.length; i++) {
@@ -1451,7 +1444,7 @@ BattalionEntity.prototype.mGetStreamblastDamage = function(gameContext, target, 
 BattalionEntity.prototype.mGetAreaDamage = function(gameContext, target, resolver) {
     const { tileX, tileY } = target;
     const range = this.hasTrait(TypeRegistry.TRAIT_TYPE.JUDGEMENT) ? TRAIT_CONFIG.JUDGEMENT_RANGE : TRAIT_CONFIG.DISPERSION_RANGE;
-    const targets = getAreaTargets(gameContext, tileX, tileY, range);
+    const targets = getAreaEntities(gameContext, tileX, tileY, range);
     let totalDamage = 0;
 
     for(let i = 0; i < targets.length; i++) {
@@ -1481,7 +1474,7 @@ BattalionEntity.prototype.mGetCounterDamage = function(gameContext, target, reso
     if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SHRAPNEL)) {
         const { tileX, tileY } = target;
         const direction = this.getDirectionTo(target);
-        const targets = getLineTargets(gameContext, direction, tileX, tileY, TRAIT_CONFIG.SHRAPNEL_RANGE);
+        const targets = getLineEntities(gameContext, direction, tileX, tileY, TRAIT_CONFIG.SHRAPNEL_RANGE);
         const flags = ATTACK_FLAG.COUNTER | ATTACK_FLAG.SHRAPNEL;
 
         for(let i = 0; i < targets.length; i++) {

@@ -1,8 +1,8 @@
 import { ContextHelper } from "../../engine/camera/contextHelper.js";
 import { Renderer } from "../../engine/renderer/renderer.js";
 import { TileManager } from "../../engine/tile/tileManager.js";
+import { LAYER_TYPE } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
-import { TypeRegistry } from "../type/typeRegistry.js";
 import { BattalionCamera } from "./battalionCamera.js";
 
 export const EditCamera = function(brush) {
@@ -33,9 +33,9 @@ EditCamera.prototype.update = function(gameContext, display) {
     this.clampWorldBounds();
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.GROUND));
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
-    this.drawSpriteBatch(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.BUILDING), realTime, deltaTime);
-    this.drawSpriteBatch(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.SEA), realTime, deltaTime);
-    this.drawSpriteBatch(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.LAND), realTime, deltaTime);
+    this.drawSpriteBatch(display, spriteManager.getLayer(LAYER_TYPE.BUILDING), realTime, deltaTime);
+    this.drawSpriteBatch(display, spriteManager.getLayer(LAYER_TYPE.SEA), realTime, deltaTime);
+    this.drawSpriteBatch(display, spriteManager.getLayer(LAYER_TYPE.LAND), realTime, deltaTime);
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.CLOUD));
     this.drawHoverTile(gameContext, context);
 

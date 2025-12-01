@@ -1,9 +1,9 @@
 import { EditorController } from "../../engine/map/editor/editorController.js";
 import { PrettyJSON } from "../../engine/resources/prettyJSON.js";
 import { BattalionContext } from "../battalionContext.js";
-import { TypeRegistry } from "../type/typeRegistry.js";
+import { TILE_ID } from "../enums.js";
+import { createEditorMap, createEmptyMap } from "../systems/map.js";
 import { BattalionMap } from "./battalionMap.js";
-import { MapSpawner } from "./mapSpawner.js";
 
 export const BattalionEditorController = function(mapEditor) {
     EditorController.call(this, mapEditor);
@@ -24,7 +24,7 @@ export const BattalionEditorController = function(mapEditor) {
     this.textColorHide = [207, 55, 35, 255];
     this.defaultWidth = 20;
     this.defaultHeight = 20;
-    this.fill = { [BattalionMap.LAYER_NAME.GROUND]: TypeRegistry.TILE_ID.GRASS };
+    this.fill = { [BattalionMap.LAYER_NAME.GROUND]: TILE_ID.GRASS };
     this.editor.setBrushSizes(BRUSH_SIZES);
     this.buttonHandler.createButton(BattalionEditorController.LAYER_BUTTON.L1, BattalionMap.LAYER.GROUND, "TEXT_L1");
     this.buttonHandler.createButton(BattalionEditorController.LAYER_BUTTON.L2, BattalionMap.LAYER.DECORATION, "TEXT_L2");
@@ -89,7 +89,7 @@ BattalionEditorController.prototype.createMap = function(gameContext) {
     const createNew = confirm("This will create and load a brand new map! Proceed?");
 
     if(createNew) {
-        const worldMap = MapSpawner.createEmptyMap(gameContext, this.defaultWidth, this.defaultHeight);
+        const worldMap = createEmptyMap(gameContext, this.defaultWidth, this.defaultHeight);
 
         if(worldMap) {
             worldMap.fillLayers(this.fill);
@@ -102,7 +102,7 @@ BattalionEditorController.prototype.createMap = function(gameContext) {
 BattalionEditorController.prototype.loadMap = async function(gameContext) {
     const { language } = gameContext;
     const mapID = prompt(language.getSystemTranslation("EDITOR_LOAD_MAP"));
-    const worldMap = await MapSpawner.createEditorMap(gameContext, mapID);
+    const worldMap = await createEditorMap(gameContext, mapID);
 
     if(worldMap) {
         this.mapID = worldMap.getID();

@@ -5,8 +5,8 @@ import { Renderer } from "../../engine/renderer/renderer.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { DrawHelper } from "../../engine/util/drawHelper.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
+import { LAYER_TYPE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
-import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const BattalionCamera = function() {
     Camera2D.call(this);
@@ -109,7 +109,7 @@ BattalionCamera.prototype.drawJammers = function(tileManager, display, worldMap)
             const renderX = this.tileWidth * tileX;
             const renderY = this.tileHeight * tileY;
 
-            this.drawTileSafe(tileManager, TypeRegistry.TILE_ID.JAMMER, context, renderX, renderY);
+            this.drawTileSafe(tileManager, TILE_ID.JAMMER, context, renderX, renderY);
         }
     }
 }
@@ -132,7 +132,7 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.CLOUD));
     this.drawOverlay(tileManager, display, this.selectOverlay);
-    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.BUILDING), realTime, deltaTime);
+    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(LAYER_TYPE.BUILDING), realTime, deltaTime);
 
     if(this.showAllJammers) {
         this.drawJammers(tileManager, display, worldMap);
@@ -142,9 +142,9 @@ BattalionCamera.prototype.update = function(gameContext, display) {
 
     this.drawOverlay(tileManager, display, this.pathOverlay);
     this.drawEntities(gameContext, display, realTime, deltaTime);
-    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.GFX), realTime, deltaTime);
-    //this.drawSpriteBatchYSorted(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.SEA), realTime, deltaTime);
-    //this.drawSpriteBatchYSorted(display, spriteManager.getLayer(TypeRegistry.LAYER_TYPE.LAND), realTime, deltaTime);
+    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(LAYER_TYPE.GFX), realTime, deltaTime);
+    //this.drawSpriteBatchYSorted(display, spriteManager.getLayer(LAYER_TYPE.SEA), realTime, deltaTime);
+    //this.drawSpriteBatchYSorted(display, spriteManager.getLayer(LAYER_TYPE.LAND), realTime, deltaTime);
 
     if(Renderer.DEBUG.MAP) {
         this.debugMap(display, worldMap);

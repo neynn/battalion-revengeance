@@ -1,8 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
 import { FlagHelper } from "../../../engine/flagHelper.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
-import { ATTACK_TYPE } from "../../enums.js";
-import { AnimationHelper } from "../../sprite/animationHelper.js";
+import { playAttackEffect } from "../../systems/animation.js";
 import { TypeRegistry } from "../../type/typeRegistry.js";
 import { ActionHelper } from "../actionHelper.js";
 import { AttackResolver } from "./attackResolver.js";
@@ -35,30 +34,6 @@ AttackAction.COMMAND = {
 
 AttackAction.prototype = Object.create(Action.prototype);
 AttackAction.prototype.constructor = AttackAction;
-
-const playAttackEffect = function(gameContext, entity, target, resolutions) {
-    const { world } = gameContext;
-    const { entityManager } = world;
-    const spriteType = entity.getAttackSprite();
-    const attackType = entity.getAttackType();
-
-    if(attackType === ATTACK_TYPE.DISPERSION) {
-        const { tileX, tileY } = target;
-
-        AnimationHelper.playGFX(gameContext, spriteType, tileX, tileY);
-        return;
-    }
-
-    for(let i = 0; i < resolutions.length; i++) {
-        const { health, entityID } = resolutions[i];
-        const target = entityManager.getEntity(entityID);
-        const { tileX, tileY } = target;
-
-        if(target !== entity && entity.canSee(gameContext, target)) {
-            AnimationHelper.playGFX(gameContext, spriteType, tileX, tileY);
-        }
-    }
-}
 
 AttackAction.prototype.onStart = function(gameContext, data, id) {
     const { world } = gameContext;

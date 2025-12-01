@@ -1,6 +1,6 @@
 import { DIRECTION } from "../enums.js";
 
-export const getLineTargets = function(gameContext, direction, startX, startY, maxRange) {
+export const getLineEntities = function(gameContext, direction, startX, startY, maxRange) {
     let streamX = 0;
     let streamY = 0;
 
@@ -53,7 +53,7 @@ export const getLineTargets = function(gameContext, direction, startX, startY, m
     return targets;
 }
 
-export const getAreaTargets = function(gameContext, tileX, tileY, range) {
+export const getAreaEntities = function(gameContext, tileX, tileY, range) {
     const { world } = gameContext;
     const { mapManager, entityManager } = world;
     const worldMap = mapManager.getActiveMap();
