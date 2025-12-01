@@ -1,6 +1,6 @@
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { FloodFill } from "../../../engine/pathfinders/floodFill.js";
-import { ActionHelper, createHealRequest } from "../../action/actionHelper.js";
+import { ActionHelper, createAttackRequest, createHealRequest } from "../../action/actionHelper.js";
 import { AUTOTILER_TYPE, COMMAND_TYPE, RANGE_TYPE } from "../../enums.js";
 import { createStep, isNodeReachable } from "../../systems/pathfinding.js";
 import { Player } from "../player.js";
@@ -223,7 +223,7 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
         switch(rangeType) {
             case RANGE_TYPE.MELEE: {
                 if(this.path.length === 0) {
-                    request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
+                    request = createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
                 } else {
                     request = ActionHelper.createMoveRequest(this.entity.getID(), this.path, entity.getID());
                 }
@@ -231,12 +231,12 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
                 break;
             }
             case RANGE_TYPE.RANGE: {
-                request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
+                request = createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
                 break;
             }
             case RANGE_TYPE.HYBRID: {
                 if(this.path.length === 0) {
-                    request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
+                    request = createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
                 } else {
                     request = ActionHelper.createMoveRequest(this.entity.getID(), this.path, entity.getID());
                 }

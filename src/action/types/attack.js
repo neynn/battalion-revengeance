@@ -4,7 +4,7 @@ import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ATTACK_TYPE, COMMAND_TYPE } from "../../enums.js";
 import { playAttackEffect } from "../../systems/animation.js";
 import { TypeRegistry } from "../../type/typeRegistry.js";
-import { ActionHelper } from "../actionHelper.js";
+import { ActionHelper, createAttackRequest } from "../actionHelper.js";
 import { InteractionResolver } from "./interactionResolver.js";
 
 const resolveCounterAttack = function(gameContext, entity, target, resolver) {
@@ -167,7 +167,7 @@ AttackAction.prototype.validate = function(gameContext, executionRequest, reques
             executionRequest.addNext(ActionHelper.createDeathRequest(gameContext, deadEntities));
         }
 
-        executionRequest.addNext(ActionHelper.createAttackRequest(targetID, entityID, COMMAND_TYPE.COUNTER));
+        executionRequest.addNext(createAttackRequest(targetID, entityID, COMMAND_TYPE.COUNTER));
 
         executionRequest.setData({
             "entityID": entityID,
