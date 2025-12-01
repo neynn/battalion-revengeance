@@ -86,7 +86,7 @@ AttackAction.prototype.onEnd = function(gameContext, data, id) {
 
     switch(attackType) {
         case AttackAction.ATTACK_TYPE.INITIATE: {
-            target.onAttackReceived(gameContext, entityID);
+            target.setLastAttacker(entityID);
 
             this.entity.onAttackEnd(gameContext);
 

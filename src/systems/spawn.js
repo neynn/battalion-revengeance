@@ -101,7 +101,6 @@ export const spawnEntity = function(gameContext, config, externalID) {
         }
 
         entity.playIdle(gameContext);
-        entity.onInitialPlace(gameContext);
     }
 
     return entity;

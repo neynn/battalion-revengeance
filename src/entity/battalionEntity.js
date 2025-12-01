@@ -35,7 +35,7 @@ export const BattalionEntity = function(id, sprite) {
     this.state = BattalionEntity.STATE.IDLE;
     this.teamID = null;
     this.transportID = null;
-    this.lastAttacker = -1;
+    this.lastAttacker = EntityManager.ID.INVALID;
 }
 
 BattalionEntity.HYBRID_ENABLED = false;
@@ -1277,48 +1277,13 @@ BattalionEntity.prototype.getJammerFlags = function() {
     return flags;
 }
 
-BattalionEntity.prototype.placeJammer = function(gameContext) {
-    const jammerFlags = this.getJammerFlags();
-
-    if(jammerFlags !== JammerField.FLAG.NONE) {
-        const worldMap = gameContext.getActiveMap();
-
-        worldMap.fill2DGraph(this.tileX, this.tileY, this.config.jammerRange, (tileX, tileY) => {
-            worldMap.addJammer(tileX, tileY, this.teamID, jammerFlags);
-        });
-    }
-}
-
-BattalionEntity.prototype.removeJammer = function(gameContext) {
-    const jammerFlags = this.getJammerFlags();
-
-    if(jammerFlags !== JammerField.FLAG.NONE) {
-        const worldMap = gameContext.getActiveMap();
-
-        worldMap.fill2DGraph(this.tileX, this.tileY, this.config.jammerRange, (tileX, tileY) => {
-            worldMap.removeJammer(tileX, tileY, this.teamID, jammerFlags);
-        });
-    }
-}
-
 BattalionEntity.prototype.wasAttackedBy = function(entityID) {
     return this.lastAttacker === entityID;
 }
 
-BattalionEntity.prototype.onInitialPlace = function(gameContext) {
-    this.placeJammer(gameContext);
-}
+BattalionEntity.prototype.onMoveStart = function() {}
 
-BattalionEntity.prototype.onDeath = function(gameContext) {
-    this.removeJammer(gameContext);
-}
-
-BattalionEntity.prototype.onMoveStart = function(gameContext) {
-    this.removeJammer(gameContext);
-}
-
-BattalionEntity.prototype.onMoveEnd = function(gameContext) {
-    this.placeJammer(gameContext);
+BattalionEntity.prototype.onMoveEnd = function() {
     this.setFlag(BattalionEntity.FLAG.HAS_MOVED);
 }
 
@@ -1330,7 +1295,7 @@ BattalionEntity.prototype.onCounterEnd = function(gameContext) {
     this.lastAttacker = EntityManager.ID.INVALID;
 }
 
-BattalionEntity.prototype.onAttackReceived = function(gameContext, entityID) {
+BattalionEntity.prototype.setLastAttacker = function(entityID) {
     if(entityID !== this.id) {
         this.lastAttacker = entityID;
     }

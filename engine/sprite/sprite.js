@@ -28,19 +28,18 @@ Sprite.DEBUG = {
     PLACEHOLDER: "#222222",
     LINE_SIZE: 2,
     DOT_SIZE: 8,
-    DOT_SIZE_HALF: 4
+    DOT_SIZE_HALF: 4,
+    RENDER_PLACEHOLDER: 0
 };
 
 Sprite.FLAG = {
-    NONE: 0b00000000,
+    NONE: 0,
     FLIP: 1 << 0,
     STATIC: 1 << 1,
     EXPIRE: 1 << 2,
     DESTROY: 1 << 3,
     LOOP_LOCK: 1 << 4
 };
-
-Sprite.RENDER_PLACEHOLDER = 0;
 
 Sprite.prototype = Object.create(Graph.prototype);
 Sprite.prototype.constructor = Sprite;
@@ -66,7 +65,7 @@ Sprite.prototype.onDraw = function(display, localX, localY) {
         const { x, y, w, h } = this.container.frames[this.currentFrame];
 
         context.drawImage(this.texture.bitmap, x, y, w, h, renderX, renderY, w, h);
-    } else if(Sprite.RENDER_PLACEHOLDER) {
+    } else if(Sprite.DEBUG.RENDER_PLACEHOLDER) {
         context.fillStyle = Sprite.DEBUG.PLACEHOLDER;
         context.fillRect(renderX, renderY, this.boundsW, this.boundsH);
     }

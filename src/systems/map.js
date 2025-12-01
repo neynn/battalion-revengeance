@@ -1,6 +1,7 @@
 import { BattalionActor } from "../actors/battalionActor.js";
 import { Player } from "../actors/player.js";
 import { BattalionMap } from "../map/battalionMap.js";
+import { JammerField } from "../map/jammerField.js";
 import { createPlayCamera } from "./camera.js";
 import { spawnBuilding, spawnEntity } from "./spawn.js";
 
@@ -168,6 +169,32 @@ const loadMap = function(gameContext, worldMap, mapData) {
     //ActionHelper.createRegularDialogue(gameContext, DialogueHandler.TYPE.PRELOGUE);
 }
 
+const placeJammer = function(worldMap, entity) {
+    const jammerFlags = entity.getJammerFlags();
+
+    if(jammerFlags !== JammerField.FLAG.NONE) {
+        const { tileX, tileY, teamID, config } = entity;
+        const { jammerRange } = config;
+
+        worldMap.fill2DGraph(tileX, tileY, jammerRange, (nextX, nextY) => {
+            worldMap.addJammer(nextX, nextY, teamID, jammerFlags);
+        });
+    }
+}
+
+const removeJammer = function(worldMap, entity) {
+    const jammerFlags = entity.getJammerFlags();
+
+    if(jammerFlags !== JammerField.FLAG.NONE) {
+        const { tileX, tileY, teamID, config } = entity;
+        const { jammerRange } = config;
+
+        worldMap.fill2DGraph(tileX, tileY, jammerRange, (nextX, nextY) => {
+            worldMap.removeJammer(nextX, nextY, teamID, jammerFlags);
+        });
+    }
+}
+
 export const placeEntityOnMap = function(gameContext, entity) {
     const { world } = gameContext;
     const { mapManager } = world;
@@ -179,6 +206,8 @@ export const placeEntityOnMap = function(gameContext, entity) {
         const entityID = entity.getID();
 
         worldMap.addEntity(entity.tileX, entity.tileY, sizeX, sizeY, entityID);
+    
+        placeJammer(worldMap, entity);
     }
 }
 
@@ -193,6 +222,8 @@ export const removeEntityFromMap = function(gameContext, entity) {
         const entityID = entity.getID();
 
         worldMap.removeEntity(entity.tileX, entity.tileY, sizeX, sizeY, entityID);
+
+        removeJammer(worldMap, entity);
     }
 }
 

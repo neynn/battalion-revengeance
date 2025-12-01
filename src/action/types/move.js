@@ -33,7 +33,7 @@ MoveAction.prototype.onStart = function(gameContext, data, id) {
 
     removeEntityFromMap(gameContext, entity);
     entity.playMove(gameContext);
-    entity.onMoveStart(gameContext);
+    entity.onMoveStart();
 
     this.path = path;
     this.pathIndex = this.path.length - 1;
@@ -80,7 +80,7 @@ MoveAction.prototype.onEnd = function(gameContext, data, id) {
     this.entity.setPositionVec(position);
     this.entity.setDirectionByDelta(deltaX, deltaY);
     this.entity.playIdle(gameContext);
-    this.entity.onMoveEnd(gameContext);
+    this.entity.onMoveEnd();
 
     if(FlagHelper.hasFlag(flags, MoveAction.FLAG.ELUSIVE)) {
         this.entity.triggerElusive();

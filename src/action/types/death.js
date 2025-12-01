@@ -23,7 +23,6 @@ DeathAction.prototype.onStart = function(gameContext, data, id) {
         const entity = entityManager.getEntity(entities[i]);
 
         entity.playDeath(gameContext);
-        entity.onDeath(gameContext);
         entity.setHealth(0);
 
         this.entities.push(entity);
@@ -50,9 +49,7 @@ DeathAction.prototype.isFinished = function(gameContext, executionRequest) {
 }
 
 DeathAction.prototype.onEnd = function(gameContext, data, id) {
-    for(let i = 0; i < this.entities.length; i++) {
-        const entity = this.entities[i];
-
+    for(const entity of this.entities) {
         despawnEntity(gameContext, entity);
     }
 

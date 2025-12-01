@@ -105,7 +105,7 @@ export const RANGE_TYPE = {
 };
 
 export const ATTACK_FLAG = {
-    NONE: 0b00000000,
+    NONE: 0,
     COUNTER: 1 << 0,
     SHRAPNEL: 1 << 1,
     AREA: 1 << 2,
@@ -113,7 +113,7 @@ export const ATTACK_FLAG = {
 };
 
 export const PATH_FLAG = {
-    NONE: 0b00000000,
+    NONE: 0,
     UNREACHABLE: 1 << 0,
     START: 1 << 1
 };
