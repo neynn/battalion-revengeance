@@ -1,9 +1,9 @@
+import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { FloodFill } from "../../../engine/pathfinders/floodFill.js";
 import { ActionHelper } from "../../action/actionHelper.js";
 import { AttackAction } from "../../action/types/attack.js";
 import { AUTOTILER_TYPE, RANGE_TYPE } from "../../enums.js";
 import { createStep, isNodeReachable } from "../../systems/pathfinding.js";
-import { TypeRegistry } from "../../type/typeRegistry.js";
 import { Player } from "../player.js";
 import { PlayerState } from "./playerState.js";
 
@@ -52,7 +52,7 @@ SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, t
 
         if(isValid) {
             const player = stateMachine.getContext();
-            const request = ActionHelper.createMoveRequest(this.entity.getID(), this.path, null);
+            const request = ActionHelper.createMoveRequest(this.entity.getID(), this.path, EntityManager.ID.INVALID);
 
             player.queueRequest(request);
             stateMachine.setNextState(gameContext, Player.STATE.IDLE);
@@ -209,10 +209,17 @@ SelectState.prototype.onBuildingClick = function(gameContext, stateMachine, buil
 }
 
 SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {
+    if(entity === this.entity) {
+        stateMachine.setNextState(gameContext, Player.STATE.IDLE);
+        //TODO: Open ContextMenu.
+        return;
+    }
+
+    const player = stateMachine.getContext();
+    const rangeType = this.entity.getRangeType();
+
     if(!isAlly) {
         let request = null;
-        const player = stateMachine.getContext();
-        const rangeType = this.entity.getRangeType();
 
         switch(rangeType) {
             case RANGE_TYPE.MELEE: {
@@ -225,10 +232,7 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
                 break;
             }
             case RANGE_TYPE.RANGE: {
-                if(this.entity.canTarget(gameContext, entity)) {
-                    request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.COMMAND.INITIATE);
-                }
-
+                request = ActionHelper.createAttackRequest(this.entity.getID(), entity.getID(), AttackAction.COMMAND.INITIATE);
                 break;
             }
             case RANGE_TYPE.HYBRID: {
@@ -250,14 +254,9 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
         return;
     }
 
-    if(entity === this.entity) {
-        stateMachine.setNextState(gameContext, Player.STATE.IDLE);
-        //TODO: Open ContextMenu.
+    if(isControlled && entity.isSelectable()) {
+        this.selectEntity(gameContext, stateMachine, entity);
     } else {
-        if(isControlled && entity.isSelectable()) {
-            this.selectEntity(gameContext, stateMachine, entity);
-        } else {
-            stateMachine.setNextState(gameContext, Player.STATE.IDLE);
-        }
+        stateMachine.setNextState(gameContext, Player.STATE.IDLE);
     }
 }

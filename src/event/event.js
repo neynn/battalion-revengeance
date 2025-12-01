@@ -1,9 +1,9 @@
 import { EntityHelper } from "../../engine/util/entityHelper.js";
 import { ActionHelper } from "../action/actionHelper.js";
+import { EVENT_TYPE } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { playExplosion } from "../systems/animation.js";
 import { despawnEntity, spawnEntity } from "../systems/spawn.js";
-import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const Event = function(id, actions) {
     this.id = id;
@@ -50,19 +50,19 @@ Event.prototype.trigger = function(gameContext) {
         const { type } = this.actions[i];
 
         switch(type) {
-            case TypeRegistry.EVENT_TYPE.DIALOGUE: {
+            case EVENT_TYPE.DIALOGUE: {
                 const { dialogue, target } = this.actions[i];
 
                 ActionHelper.createCustomDialogue(gameContext, dialogue);
                 break;
             }
-            case TypeRegistry.EVENT_TYPE.EXPLODE_TILE: {
+            case EVENT_TYPE.EXPLODE_TILE: {
                 const { layer, x, y } = this.actions[i];
 
                 this.explodeTile(gameContext, layer, x, y);
                 break;
             }
-            case TypeRegistry.EVENT_TYPE.SPAWN_ENTITY: {
+            case EVENT_TYPE.SPAWN_ENTITY: {
                 const { setup } = this.actions[i];
 
                 spawnEntity(gameContext, setup);

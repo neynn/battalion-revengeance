@@ -7,6 +7,7 @@ export const BattalionActor = function(id) {
     this.name = "";
     this.teamID = null;
     this.portrait = null;
+    this.commander = null;
 }
 
 BattalionActor.prototype = Object.create(Actor.prototype);
@@ -76,6 +77,6 @@ BattalionActor.prototype.loadCommander = function(gameContext, typeID) {
     const commanderType = typeRegistry.getCommanderType(typeID);
     const { portrait } = commanderType;
 
-    this.config = commanderType;
+    this.commander = commanderType;
     this.portrait = portraitHandler.getPortraitTexture(portrait); 
 }

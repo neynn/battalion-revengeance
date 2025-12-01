@@ -1,7 +1,6 @@
 export const Entity = function(id, DEBUG_NAME = "") {
     this.DEBUG_NAME = DEBUG_NAME;
     this.id = id;
-    this.config = null;
     this.isMarkedForDestroy = false;
     this.flags = 0;
 }
@@ -20,12 +19,6 @@ Entity.prototype.setFlag = function(flag) {
 
 Entity.prototype.removeFlag = function(flag) {
     this.flags &= ~flag;
-}
-
-Entity.prototype.setConfig = function(config) {
-    if(config !== undefined) {
-        this.config = config;
-    }
 }
 
 Entity.prototype.getID = function() {

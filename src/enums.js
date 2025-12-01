@@ -4,6 +4,7 @@ export const PLAYER_PREFERENCE = {
 };
 
 export const TRAIT_CONFIG = {
+    CEMENTED_STEEL_ARMOR_REDUCTION: 20,
     SHRAPNEL_RANGE: 1,
     ABSORBER_RATE: 0.2,
     OVERHEAT_DAMAGE: 0.1,
@@ -15,6 +16,12 @@ export const TRAIT_CONFIG = {
     BLITZ_MULTIPLIER: 1.2,
     SCHWERPUNKT_MULTIPLIER: 1.4,
     STEALTH_MULTIPLIER: 2
+};
+
+export const EVENT_TYPE = {
+    DIALOGUE: "DIALOGUE",
+    EXPLODE_TILE: "EXPLODE_TILE",
+    SPAWN_ENTITY: "SPAWN_ENTITY"
 };
 
 export const AUTOTILER_TYPE = {
@@ -127,7 +134,8 @@ export const PATH_INTERCEPT = {
 export const ATTACK_TYPE = {
     REGULAR: 0,
     STREAMBLAST: 1,
-    DISPERSION: 2
+    DISPERSION: 2,
+    SUPPLY: 3
 };
 
 export const TRANSPORT_TYPE = {

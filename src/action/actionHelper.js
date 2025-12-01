@@ -20,11 +20,11 @@ export const ActionHelper = {
             "command": command
         });
     },
-    createMoveRequest: function(entityID, path, attackTarget) {
+    createMoveRequest: function(entityID, path, targetID) {
         return new ActionRequest(TypeRegistry.ACTION_TYPE.MOVE, {
             "entityID": entityID,
             "path": path,
-            "attackTarget": attackTarget
+            "targetID": targetID
         });
     },
     createCloakRequest: function(entityID) {

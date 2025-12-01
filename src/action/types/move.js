@@ -98,7 +98,7 @@ MoveAction.prototype.onEnd = function(gameContext, data, id) {
 MoveAction.prototype.validate = function(gameContext, executionRequest, requestData) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID, path, attackTarget } = requestData;
+    const { entityID, path, targetID } = requestData;
     const entity = entityManager.getEntity(entityID);
     const isValid = entity && entity.canAct() && entity.canMove() && !entity.isDead() && entity.isPathValid(gameContext, path);
 
@@ -118,11 +118,11 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
         const uncloakedIDs = uncloakedEntities.map(e => e.getID());
 
         if(uncloakedIDs.length === 0) {
-            const targetEntity = entityManager.getEntity(attackTarget);
+            const targetEntity = entityManager.getEntity(targetID);
 
             if(targetEntity) {
                 if(targetEntity.isNextToTile(targetX, targetY)) {
-                    executionRequest.addNext(ActionHelper.createAttackRequest(entityID, attackTarget, AttackAction.COMMAND.CHAIN_AFTER_MOVE));
+                    executionRequest.addNext(ActionHelper.createAttackRequest(entityID, targetID, AttackAction.COMMAND.CHAIN_AFTER_MOVE));
                 }
             } else {
                 if(entity.canCloakAt(gameContext, targetX, targetY)) {

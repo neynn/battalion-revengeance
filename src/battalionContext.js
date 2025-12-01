@@ -8,7 +8,7 @@ import { DialogueAction } from "./action/types/dialogue.js";
 import { EndTurnAction } from "./action/types/endTurn.js";
 import { MoveAction } from "./action/types/move.js";
 import { UncloakAction } from "./action/types/uncloak.js";
-import { PortraitHandler } from "./actors/portraitHandler.js";
+import { PortraitHandler } from "./portrait/portraitHandler.js";
 import { DialogueHandler } from "./dialogue/dialogueHandler.js";
 import { LAYER_TYPE } from "./enums.js";
 import { EventHandler } from "./event/eventHandler.js";

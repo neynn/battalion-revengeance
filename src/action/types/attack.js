@@ -2,6 +2,7 @@ import { Action } from "../../../engine/action/action.js";
 import { FlagHelper } from "../../../engine/flagHelper.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { playAttackEffect } from "../../systems/animation.js";
+import { resolveCounterAttack, resolveInitiateAttack } from "../../systems/attack.js";
 import { TypeRegistry } from "../../type/typeRegistry.js";
 import { ActionHelper } from "../actionHelper.js";
 import { AttackResolver } from "./attackResolver.js";
@@ -124,20 +125,20 @@ AttackAction.prototype.validate = function(gameContext, executionRequest, reques
     switch(command) {
         case AttackAction.COMMAND.CHAIN_AFTER_MOVE: {
             if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && !entity.hasFlag(BattalionEntity.FLAG.HAS_ATTACKED) && entity.isNextToEntity(target)) {
-                entity.mGetInitiateResolutions(gameContext, target, resolver);
+                resolveInitiateAttack(gameContext, entity, target, resolver);
             }
 
             break;
         }
         case AttackAction.COMMAND.INITIATE: {
             if(entity.canAct()) {
-               entity.mGetInitiateResolutions(gameContext, target, resolver);
+               resolveInitiateAttack(gameContext, entity, target, resolver);
             }
     
             break;
         }
         case AttackAction.COMMAND.COUNTER: {
-            entity.mGetCounterResolutions(gameContext, target, resolver);
+            resolveCounterAttack(gameContext, entity, target, resolver);
             attackType = AttackAction.ATTACK_TYPE.COUNTER;
             break;
         }

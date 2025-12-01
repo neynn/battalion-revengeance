@@ -1,6 +1,5 @@
 export const Actor = function(id) {
     this.id = id;
-    this.config = null;
     this.endRequested = false;
     this.maxActions = 1;
     this.turn = 0;
@@ -45,12 +44,6 @@ Actor.prototype.setMaxActions = function(maxActions) {
 Actor.prototype.getID = function() {
     return this.id;
 }
-
-Actor.prototype.setConfig = function(config) {
-    if(config !== undefined) {
-        this.config = config;
-    }
-} 
 
 Actor.prototype.queueRequest = function(request) {
     if(this.actionRequests.length < this.maxRequests) {

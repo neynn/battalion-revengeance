@@ -10,10 +10,9 @@ const PLAYER_NAME = "PLAYER";
 const createAI = function(gameContext, commanderType, teamName) {
     const { world } = gameContext;
     const { turnManager } = world;
-    const actor = turnManager.createActor((actorID, actorType) => {
+    const actor = turnManager.createActor((actorID) => {
         const actorObject = new BattalionActor(actorID);
 
-        actorObject.setConfig(actorType);
         actorObject.setTeam(teamName);
 
         return actorObject;
@@ -28,12 +27,11 @@ const createAI = function(gameContext, commanderType, teamName) {
 const createPlayer = function(gameContext, commanderType, teamName) {
     const { world } = gameContext;
     const { turnManager } = world;
-    const actor = turnManager.createActor((actorID, actorType) => {
+    const actor = turnManager.createActor((actorID) => {
         const context = createPlayCamera(gameContext);
         const camera = context.getCamera();
         const actorObject = new Player(actorID, camera);
 
-        actorObject.setConfig(actorType);
         actorObject.setTeam(teamName);
         camera.addPerspective(teamName);
         camera.setMainPerspective(teamName);
