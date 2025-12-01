@@ -1,11 +1,40 @@
 import { Action } from "../../../engine/action/action.js";
 import { FlagHelper } from "../../../engine/flagHelper.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
+import { ATTACK_TYPE, COMMAND_TYPE } from "../../enums.js";
 import { playAttackEffect } from "../../systems/animation.js";
-import { resolveCounterAttack, resolveInitiateAttack } from "../../systems/attack.js";
 import { TypeRegistry } from "../../type/typeRegistry.js";
 import { ActionHelper } from "../actionHelper.js";
-import { AttackResolver } from "./attackResolver.js";
+import { InteractionResolver } from "./interactionResolver.js";
+
+const resolveCounterAttack = function(gameContext, entity, target, resolver) {
+    if(entity.isAllowedToCounter(target) && entity.canAttackTarget(gameContext, target)) {
+        entity.mResolveCounterAttack(gameContext, target, resolver);
+    }
+}
+
+const resolveFirstAttack = function(gameContext, entity, target, resolver) {
+    if(entity.canAttackTarget(gameContext, target)) {
+        switch(entity.getAttackType()) {
+            case ATTACK_TYPE.REGULAR: {
+                entity.mResolveRegularAttack(gameContext, target, resolver);
+                break;
+            }
+            case ATTACK_TYPE.DISPERSION: {
+                entity.mResolveDispersionAttack(gameContext, target, resolver);
+                break;
+            }
+            case ATTACK_TYPE.STREAMBLAST: {
+                entity.mResolveStreamblastAttack(gameContext, target, resolver);
+                break;
+            }
+            default: {
+                console.error("Unsupported attack type!");
+                break;
+            }
+        }
+    }
+}
 
 export const AttackAction = function() {
     Action.call(this);
@@ -22,38 +51,22 @@ AttackAction.FLAG = {
     BEWEGUNGSKRIEG: 1 << 3
 };
 
-AttackAction.ATTACK_TYPE = {
-    INITIATE: 0,
-    COUNTER: 1
-};
-
-AttackAction.COMMAND = {
-    INITIATE: 0,
-    COUNTER: 1,
-    CHAIN_AFTER_MOVE: 2
-};
-
 AttackAction.prototype = Object.create(Action.prototype);
 AttackAction.prototype.constructor = AttackAction;
 
 AttackAction.prototype.onStart = function(gameContext, data, id) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID, targetID, resolutions, attackType, flags } = data;
+    const { entityID, targetID, resolutions, flags } = data;
     const entity = entityManager.getEntity(entityID);
     const target = entityManager.getEntity(targetID);
 
     entity.lookAt(target);
 
-    switch(attackType) {
-        case AttackAction.ATTACK_TYPE.INITIATE: {
-            entity.playAttack(gameContext, target);
-            break;
-        }
-        case AttackAction.ATTACK_TYPE.COUNTER: {
-            entity.playCounter(gameContext, target);
-            break;
-        }
+    if(FlagHelper.hasFlag(flags, AttackAction.FLAG.COUNTER)) {
+        entity.playCounter(gameContext, target);
+    } else {
+        entity.playAttack(gameContext, target);
     }
 
     if(FlagHelper.hasFlag(flags, AttackAction.FLAG.UNCLOAK)) {
@@ -73,7 +86,7 @@ AttackAction.prototype.isFinished = function(gameContext, executionRequest) {
 AttackAction.prototype.onEnd = function(gameContext, data, id) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID, targetID, attackType, flags } = data;
+    const { entityID, targetID, flags } = data;
     const target = entityManager.getEntity(targetID);
 
     for(let i = 0; i < this.resolutions.length; i++) {
@@ -85,21 +98,16 @@ AttackAction.prototype.onEnd = function(gameContext, data, id) {
 
     this.entity.playIdle(gameContext);
 
-    switch(attackType) {
-        case AttackAction.ATTACK_TYPE.INITIATE: {
-            target.setLastAttacker(entityID);
 
-            this.entity.onAttackEnd(gameContext);
+    if(FlagHelper.hasFlag(flags, AttackAction.FLAG.COUNTER)) {
+        this.entity.onCounterEnd();
+    } else {
+        target.setLastAttacker(entityID);
 
-            if(FlagHelper.hasFlag(flags, AttackAction.FLAG.BEWEGUNGSKRIEG)) {
-                this.entity.triggerBewegungskrieg();
-            }
+        this.entity.onAttackEnd();
 
-            break;
-        }
-        case AttackAction.ATTACK_TYPE.COUNTER: {
-            this.entity.onCounterEnd(gameContext);
-            break;
+        if(FlagHelper.hasFlag(flags, AttackAction.FLAG.BEWEGUNGSKRIEG)) {
+            this.entity.triggerBewegungskrieg();
         }
     }
 
@@ -118,28 +126,27 @@ AttackAction.prototype.validate = function(gameContext, executionRequest, reques
         return;
     }
 
-    const resolver = new AttackResolver();
+    const resolver = new InteractionResolver();
     let flags = AttackAction.FLAG.NONE;
-    let attackType = AttackAction.ATTACK_TYPE.INITIATE;
 
     switch(command) {
-        case AttackAction.COMMAND.CHAIN_AFTER_MOVE: {
-            if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && !entity.hasFlag(BattalionEntity.FLAG.HAS_ATTACKED) && entity.isNextToEntity(target)) {
-                resolveInitiateAttack(gameContext, entity, target, resolver);
+        case COMMAND_TYPE.CHAIN_AFTER_MOVE: {
+            if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && !entity.hasFlag(BattalionEntity.FLAG.HAS_ACTED) && entity.isNextToEntity(target)) {
+                resolveFirstAttack(gameContext, entity, target, resolver);
             }
 
             break;
         }
-        case AttackAction.COMMAND.INITIATE: {
+        case COMMAND_TYPE.INITIATE: {
             if(entity.canAct()) {
-               resolveInitiateAttack(gameContext, entity, target, resolver);
+               resolveFirstAttack(gameContext, entity, target, resolver);
             }
     
             break;
         }
-        case AttackAction.COMMAND.COUNTER: {
+        case COMMAND_TYPE.COUNTER: {
             resolveCounterAttack(gameContext, entity, target, resolver);
-            attackType = AttackAction.ATTACK_TYPE.COUNTER;
+            flags |= AttackAction.FLAG.COUNTER;
             break;
         }
     }
@@ -148,25 +155,24 @@ AttackAction.prototype.validate = function(gameContext, executionRequest, reques
     const deadEntities = resolver.getDeadEntities();
 
     if(hitEntities.length !== 0) {
-        if(command !== AttackAction.COMMAND.COUNTER && entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+        if(command !== COMMAND_TYPE.COUNTER && entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
             flags = FlagHelper.setFlag(flags, AttackAction.FLAG.UNCLOAK);
         }
 
         if(deadEntities.length !== 0) {
-            if(command !== AttackAction.COMMAND.COUNTER && entity.hasTrait(TypeRegistry.TRAIT_TYPE.BEWEGUNGSKRIEG)) {
+            if(command !== COMMAND_TYPE.COUNTER && entity.hasTrait(TypeRegistry.TRAIT_TYPE.BEWEGUNGSKRIEG)) {
                 flags = FlagHelper.setFlag(flags, AttackAction.FLAG.BEWEGUNGSKRIEG);
             }
 
             executionRequest.addNext(ActionHelper.createDeathRequest(gameContext, deadEntities));
         }
 
-        executionRequest.addNext(ActionHelper.createAttackRequest(targetID, entityID, AttackAction.COMMAND.COUNTER));
+        executionRequest.addNext(ActionHelper.createAttackRequest(targetID, entityID, COMMAND_TYPE.COUNTER));
 
         executionRequest.setData({
             "entityID": entityID,
             "targetID": targetID,
             "resolutions": hitEntities,
-            "attackType": attackType,
             "flags": flags
         });
     }

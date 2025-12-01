@@ -1,10 +1,9 @@
 import { Action } from "../../../engine/action/action.js";
 import { FlagHelper } from "../../../engine/flagHelper.js";
-import { PATH_INTERCEPT } from "../../enums.js";
+import { COMMAND_TYPE, PATH_INTERCEPT } from "../../enums.js";
 import { placeEntityOnMap, removeEntityFromMap } from "../../systems/map.js";
 import { TypeRegistry } from "../../type/typeRegistry.js";
 import { ActionHelper } from "../actionHelper.js";
-import { AttackAction } from "./attack.js";
 
 export const MoveAction = function() {
     Action.call(this);
@@ -122,7 +121,7 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
 
             if(targetEntity) {
                 if(targetEntity.isNextToTile(targetX, targetY)) {
-                    executionRequest.addNext(ActionHelper.createAttackRequest(entityID, targetID, AttackAction.COMMAND.CHAIN_AFTER_MOVE));
+                    executionRequest.addNext(ActionHelper.createAttackRequest(entityID, targetID, COMMAND_TYPE.CHAIN_AFTER_MOVE));
                 }
             } else {
                 if(entity.canCloakAt(gameContext, targetX, targetY)) {
@@ -137,7 +136,7 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
             executionRequest.addNext(ActionHelper.createUncloakRequest(uncloakedIDs));
 
             if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.TRACKING)) {
-                executionRequest.addNext(ActionHelper.createAttackRequest(entityID, uncloakedIDs[0], AttackAction.COMMAND.CHAIN_AFTER_MOVE));
+                executionRequest.addNext(ActionHelper.createAttackRequest(entityID, uncloakedIDs[0], COMMAND_TYPE.CHAIN_AFTER_MOVE));
             } else {
                 if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
                     flags = FlagHelper.setFlag(flags, MoveAction.FLAG.ELUSIVE);

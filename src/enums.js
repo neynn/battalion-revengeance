@@ -18,6 +18,12 @@ export const TRAIT_CONFIG = {
     STEALTH_MULTIPLIER: 2
 };
 
+export const COMMAND_TYPE = {
+    INITIATE: 0,
+    COUNTER: 1,
+    CHAIN_AFTER_MOVE: 2
+};
+
 export const EVENT_TYPE = {
     DIALOGUE: "DIALOGUE",
     EXPLODE_TILE: "EXPLODE_TILE",

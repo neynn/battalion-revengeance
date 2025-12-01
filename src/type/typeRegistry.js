@@ -191,6 +191,7 @@ TypeRegistry.MORALE_TYPE = {
 };
 
 TypeRegistry.ACTION_TYPE = {
+    HEAL: "HEAL",
     END_TURN: "END_TURN",
     START_TURN: "START_TURN",
     MOVE: "MOVE",

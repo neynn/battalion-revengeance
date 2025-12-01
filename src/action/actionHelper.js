@@ -3,6 +3,14 @@ import { ActionRequest } from "../../engine/action/actionRequest.js";
 import { DialogueHandler } from "../dialogue/dialogueHandler.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
+export const createHealRequest = function(entityID, targetID, command) {
+    return new ActionRequest(TypeRegistry.ACTION_TYPE.HEAL, {
+        "entityID": entityID,
+        "targetID": targetID,
+        "command": command
+    });
+}
+
 export const ActionHelper = {
     forceEnqueue: function(gameContext, request) {
         const { world } = gameContext;

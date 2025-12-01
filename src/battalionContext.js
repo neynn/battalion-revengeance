@@ -17,6 +17,7 @@ import { MapEditorState } from "./states/mapEditor.js";
 import { PlayState } from "./states/play.js";
 import { TeamManager } from "./team/teamManager.js";
 import { TypeRegistry } from "./type/typeRegistry.js";
+import { HealAction } from "./action/types/heal.js";
 
 export const BattalionContext = function() {
     GameContext.call(this);
@@ -54,6 +55,7 @@ BattalionContext.prototype.init = function(resources) {
     this.typeRegistry.load(resources);
 
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.MOVE, new MoveAction());
+    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.HEAL, new HealAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.ATTACK, new AttackAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.CLOAK, new CloakAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.DIALOGUE, new DialogueAction());
