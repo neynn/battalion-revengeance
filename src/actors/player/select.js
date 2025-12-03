@@ -93,6 +93,7 @@ SelectState.prototype.splitPath = function(targetX, targetY) {
 
     for(let i = 0; i < path.length; i++) {
         if(path[i].tileX === targetX && path[i].tileY === targetY) {
+            //Cuts the path off at the target.
             path.length = i + 1;
             this.path = path.toReversed();
             return true;
@@ -103,6 +104,7 @@ SelectState.prototype.splitPath = function(targetX, targetY) {
 }
 
 SelectState.prototype.isAttackPathValid = function(gameContext, entity) {
+    //Is the entity either next to the target already or will it end up next to it?
     if(this.path.length === 0) {
         return this.entity.getDistanceToEntity(entity) === 1;
     }
@@ -158,18 +160,36 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
     const walkAutotiler = tileManager.getAutotilerByID(AUTOTILER_TYPE.PATH);
     const attackAutotiler = tileManager.getAutotilerByID(AUTOTILER_TYPE.PATH);
 
-    if(entity && !this.entity.isAllyWith(gameContext, entity)) {
-        if(this.entity.getRangeType() === RANGE_TYPE.RANGE) {
-            this.path.length = 0;
-        } else if(!this.isAttackPathValid(gameContext, entity)){
-            this.setOptimalAttackPath(gameContext, entity);
-        }
+    if(entity) {
+        if(!this.entity.isAllyWith(gameContext, entity)) {
+            switch(this.entity.getRangeType()) {
+                case RANGE_TYPE.RANGE: {
+                    //Remove the path if the entity is a ranged attacker.
+                    this.path.length = 0;
+                    break;
+                }
+                case RANGE_TYPE.MELEE:
+                case RANGE_TYPE.HYBRID: {
+                    if(!this.isAttackPathValid(gameContext, entity)) {
+                        //Recalculates the optimal attack path if the current does not work.
+                        this.setOptimalAttackPath(gameContext, entity);
+                    }
 
-        player.showPath(attackAutotiler, this.path, this.entity.tileX, this.entity.tileY);
-        return;
+                    break;
+                }
+                default: {
+                    console.warn("Invalid range type!");
+                    break;
+                }
+            }
+
+            player.showPath(attackAutotiler, this.path, this.entity.tileX, this.entity.tileY);
+            return;
+        }
     }
 
     if(!targetNode || !isNodeReachable(targetNode)) {
+        //No path update if the node is not reachable.
         return;
     }
 
@@ -261,6 +281,10 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
     } else {
         if(this.entity.isHealValid(gameContext, entity)) {
             console.error("WEE WOO WEE WOO");
+            //TODO: Healing!
+            //If the path is valid (minus the last step as that is ON the friendly entity)
+            //Queue move + target
+            //If melee or hybrid, queue the melee heal.
         }
 
         if(isControlled && entity.isSelectable()) {
