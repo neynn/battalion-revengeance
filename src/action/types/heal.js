@@ -26,8 +26,9 @@ HealAction.prototype.onStart = function(gameContext, data, id) {
     const target = entityManager.getEntity(targetID);
 
     entity.lookAt(target);
-    entity.playAttack(gameContext, target);
+    entity.playHeal(gameContext, target);
 
+    //TODO: Makes no sense.
     playAttackEffect(gameContext, entity, target, resolutions);
 
     this.entity = entity;

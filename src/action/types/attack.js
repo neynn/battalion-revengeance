@@ -8,7 +8,7 @@ import { ActionHelper, createAttackRequest } from "../actionHelper.js";
 import { InteractionResolver } from "./interactionResolver.js";
 
 const resolveCounterAttack = function(gameContext, entity, target, resolver) {
-    if(entity.isAllowedToCounter(target) && entity.isAttackValid(gameContext, target) && entity.isAttackPositionValid(gameContext, target)) {
+    if(entity.isCounterValid(target) && entity.isAttackValid(gameContext, target) && entity.isAttackPositionValid(gameContext, target)) {
         entity.mResolveCounterAttack(gameContext, target, resolver);
     }
 }

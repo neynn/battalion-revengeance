@@ -118,11 +118,23 @@ BattalionEntity.prototype.loadConfig = function(config) {
     this.setHealth(this.health);
 }
 
-BattalionEntity.prototype.getAttackType = function() {
-    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SUPPLY_DISTRIBUTION)) {
-        return ATTACK_TYPE.SUPPLY;
+BattalionEntity.prototype.getRangeType = function() {
+    if(this.config.maxRange > 1) {
+        if(this.config.minRange === 1 && BattalionEntity.HYBRID_ENABLED) {
+            return RANGE_TYPE.HYBRID;
+        }
+
+        return RANGE_TYPE.RANGE;
     }
 
+    if(this.config.minRange === 1) {
+        return RANGE_TYPE.MELEE;
+    }
+
+    return RANGE_TYPE.NONE;
+}
+
+BattalionEntity.prototype.getAttackType = function() {
     if(this.hasTrait(TypeRegistry.TRAIT_TYPE.DISPERSION) || this.hasTrait(TypeRegistry.TRAIT_TYPE.JUDGEMENT)) {
         return ATTACK_TYPE.DISPERSION;
     }
@@ -291,6 +303,11 @@ BattalionEntity.prototype.playAttack = function(gameContext) {
     this.playSound(gameContext, BattalionEntity.SOUND_TYPE.FIRE);
     this.updateSprite(gameContext);
     this.sprite.lockEnd();
+}
+
+BattalionEntity.prototype.playHeal = function(gameContext) {
+    this.playAttack(gameContext);
+    //TODO: Have custom healing effects.
 }
 
 BattalionEntity.prototype.playCounter = function(gameContext, target) {
@@ -676,6 +693,7 @@ BattalionEntity.prototype.isAttackPositionValid = function(gameContext, target) 
         return false;
     }
 
+    //Special ranged interaction for RANGE & HYBRID.
     switch(this.getRangeType()) {
         case RANGE_TYPE.RANGE: {
             //Protected targets cannot be shot.
@@ -719,10 +737,6 @@ BattalionEntity.prototype.isAttackValid = function(gameContext, target) {
     }
 
     if(this.isDead() || target.isDead()) {
-        return false;
-    }
-
-    if(this.getAttackType() === ATTACK_TYPE.SUPPLY) {
         return false;
     }
 
@@ -779,10 +793,12 @@ BattalionEntity.prototype.isHealValid = function(gameContext, target) {
         return false;
     }
 
-    if(this.getAttackType() !== ATTACK_TYPE.SUPPLY) {
+    //Only suppliers can heal.
+    if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.SUPPLY_DISTRIBUTION)) {
         return false;
     }
 
+    //Cannot heal enemies.
     if(!this.isAllyWith(gameContext, target)) {
         return false;
     }
@@ -817,7 +833,7 @@ BattalionEntity.prototype.isProtectedFromRange = function(gameContext) {
     return false;
 }
 
-BattalionEntity.prototype.isAllowedToCounter = function(target) {
+BattalionEntity.prototype.isCounterValid = function(target) {
     //Only regular attackers can counter.
     if(this.getAttackType() !== ATTACK_TYPE.REGULAR || target.getAttackType() !== ATTACK_TYPE.REGULAR) {
         return false;
@@ -1254,26 +1270,6 @@ BattalionEntity.prototype.toTransport = function(gameContext, transportType) {
         this.setHealth(this.maxHealth * previousHealthFactor);
         this.playIdle(gameContext);
     }
-}
-
-BattalionEntity.prototype.getRangeType = function() {
-    if(this.config.weaponType === TypeRegistry.WEAPON_TYPE.NONE) {
-        return RANGE_TYPE.NONE;
-    }
-
-    if(this.config.maxRange > 1) {
-        if(this.config.minRange === 1 && BattalionEntity.HYBRID_ENABLED) {
-            return RANGE_TYPE.HYBRID;
-        }
-
-        return RANGE_TYPE.RANGE;
-    }
-
-    if(this.config.minRange === 1) {
-        return RANGE_TYPE.MELEE;
-    }
-
-    return RANGE_TYPE.NONE;
 }
 
 BattalionEntity.prototype.isJammer = function() {

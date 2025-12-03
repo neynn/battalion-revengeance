@@ -1,7 +1,6 @@
 import { Action } from "../../engine/action/action.js";
 import { ActionRequest } from "../../engine/action/actionRequest.js";
 import { DialogueHandler } from "../dialogue/dialogueHandler.js";
-import { ATTACK_TYPE } from "../enums.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const createHealRequest = function(entityID, targetID, command) {
@@ -18,17 +17,6 @@ export const createAttackRequest = function(entityID, targetID, command) {
         "targetID": targetID,
         "command": command
     });
-}
-
-export const createInteractionRequest = function(entity, target, command) {
-    const entityID = entity.getID();
-    const targetID = target.getID();
-    const attackType = entity.getAttackType();
-
-    switch(attackType) {
-        case ATTACK_TYPE.SUPPLY: return createHealRequest(entityID, targetID, command);
-        default: return createAttackRequest(entityID, targetID, command);
-    }    
 }
 
 export const ActionHelper = {

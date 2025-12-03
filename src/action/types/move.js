@@ -4,7 +4,7 @@ import { COMMAND_TYPE, PATH_INTERCEPT } from "../../enums.js";
 import { placeEntityOnMap, removeEntityFromMap } from "../../systems/map.js";
 import { mInterceptPath } from "../../systems/pathfinding.js";
 import { TypeRegistry } from "../../type/typeRegistry.js";
-import { ActionHelper, createAttackRequest, createInteractionRequest } from "../actionHelper.js";
+import { ActionHelper, createAttackRequest, createHealRequest } from "../actionHelper.js";
 
 export const MoveAction = function() {
     Action.call(this);
@@ -125,7 +125,13 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
 
             if(targetEntity) {
                 if(targetEntity.isNextToTile(targetX, targetY)) {
-                    executionRequest.addNext(createInteractionRequest(entity, targetEntity, COMMAND_TYPE.CHAIN_AFTER_MOVE));
+                    if(entity.isHealValid(gameContext, targetEntity)) {
+                        executionRequest.addNext(createHealRequest(entityID, targetID, COMMAND_TYPE.CHAIN_AFTER_MOVE));
+                    } else if (entity.isAttackValid(gameContext, targetEntity)) {
+                        executionRequest.addNext(createAttackRequest(entityID, targetID, COMMAND_TYPE.CHAIN_AFTER_MOVE));
+                    } else {
+                        console.error("Heal and attack are both invalid!");
+                    }
                 }
             } else {
                 if(entity.canCloakAt(gameContext, targetX, targetY)) {

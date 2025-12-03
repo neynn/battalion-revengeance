@@ -1,6 +1,6 @@
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { FloodFill } from "../../../engine/pathfinders/floodFill.js";
-import { ActionHelper, createAttackRequest } from "../../action/actionHelper.js";
+import { ActionHelper, createAttackRequest, createHealRequest } from "../../action/actionHelper.js";
 import { AUTOTILER_TYPE, COMMAND_TYPE, RANGE_TYPE } from "../../enums.js";
 import { createStep, isNodeReachable, getBestPath } from "../../systems/pathfinding.js";
 import { Player } from "../player.js";
@@ -232,19 +232,11 @@ SelectState.prototype.getAttackRequest = function(entity) {
     let request = null;
 
     switch(rangeType) {
-        case RANGE_TYPE.MELEE: {
-            if(this.path.length === 0) {
-                request = createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
-            } else {
-                request = ActionHelper.createMoveRequest(this.entity.getID(), this.path, entity.getID());
-            }
-
-            break;
-        }
         case RANGE_TYPE.RANGE: {
             request = createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
             break;
         }
+        case RANGE_TYPE.MELEE:
         case RANGE_TYPE.HYBRID: {
             if(this.path.length === 0) {
                 request = createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
@@ -258,6 +250,42 @@ SelectState.prototype.getAttackRequest = function(entity) {
 
     return request;
 }
+
+SelectState.prototype.getHealRequest = function(entity) {
+    const rangeType = this.entity.getRangeType();
+    let request = null;
+
+    switch(rangeType) {
+        case RANGE_TYPE.RANGE: {
+            request = createHealRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
+            break;
+        }
+        case RANGE_TYPE.MELEE:
+        case RANGE_TYPE.HYBRID: {
+            switch(this.path.length) {
+                case 0: {
+                    //Impossible since the path stretches out under allied units.
+                    break;
+                }
+                case 1: {
+                    //The ally is next to the healer, as the path is 1 longer than it should be. It's treated as melee.
+                    request = createHealRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
+                    break;
+                }
+                default: {
+                    //Cut the final step (index 0) as the PATH sees an ally as walkable.
+                    this.path.shift();
+                    request = ActionHelper.createMoveRequest(this.entity.getID(), this.path, entity.getID());
+                    break;
+                }
+            }
+
+            break;
+        }
+    }
+
+    return request;
+} 
 
 SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {
     if(entity === this.entity) {
@@ -275,16 +303,18 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
             if(request) {
                 player.queueRequest(request);
             }
-
-            stateMachine.setNextState(gameContext, Player.STATE.IDLE);
         }
+
+        stateMachine.setNextState(gameContext, Player.STATE.IDLE);
     } else {
         if(this.entity.isHealValid(gameContext, entity)) {
-            console.error("WEE WOO WEE WOO");
-            //TODO: Healing!
-            //If the path is valid (minus the last step as that is ON the friendly entity)
-            //Queue move + target
-            //If melee or hybrid, queue the melee heal.
+            const request = this.getHealRequest(entity);
+
+            if(request) {
+                player.queueRequest(request);
+                stateMachine.setNextState(gameContext, Player.STATE.IDLE);
+                return;
+            }
         }
 
         if(isControlled && entity.isSelectable()) {
