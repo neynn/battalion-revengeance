@@ -1,7 +1,8 @@
 import { Action } from "../../../engine/action/action.js";
-import { FlagHelper } from "../../../engine/flagHelper.js";
+import { hasFlag } from "../../../engine/util/flag.js";
 import { COMMAND_TYPE, PATH_INTERCEPT } from "../../enums.js";
 import { placeEntityOnMap, removeEntityFromMap } from "../../systems/map.js";
+import { mInterceptPath } from "../../systems/pathfinding.js";
 import { TypeRegistry } from "../../type/typeRegistry.js";
 import { ActionHelper, createAttackRequest, createInteractionRequest } from "../actionHelper.js";
 
@@ -82,11 +83,12 @@ MoveAction.prototype.onEnd = function(gameContext, data, id) {
     this.entity.playIdle(gameContext);
     this.entity.onMoveEnd();
 
-    if(FlagHelper.hasFlag(flags, MoveAction.FLAG.ELUSIVE)) {
+    if(hasFlag(flags, MoveAction.FLAG.ELUSIVE)) {
         this.entity.triggerElusive();
     }
 
     placeEntityOnMap(gameContext, this.entity);
+
     teamManager.broadcastEntityMove(gameContext, this.entity);
 
     this.path = [];
@@ -103,7 +105,8 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
     const isValid = entity && entity.canAct() && entity.canMove() && !entity.isDead() && entity.isPathValid(gameContext, path);
 
     if(isValid) {
-        const intercept = entity.mInterceptPath(gameContext, path);
+        const { teamID } = entity;
+        const intercept = mInterceptPath(gameContext, path, teamID);
 
         if(path.length === 0 || intercept === PATH_INTERCEPT.ILLEGAL) {
             console.error("EDGE CASE: Stealth unit was too close!");
@@ -130,7 +133,7 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
                 }
 
                 if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
-                    flags = FlagHelper.setFlag(flags, MoveAction.FLAG.ELUSIVE);
+                    flags |= MoveAction.FLAG.ELUSIVE;
                 }
             }
         } else {
@@ -140,7 +143,7 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
                 executionRequest.addNext(createAttackRequest(entityID, uncloakedIDs[0], COMMAND_TYPE.CHAIN_AFTER_MOVE));
             } else {
                 if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
-                    flags = FlagHelper.setFlag(flags, MoveAction.FLAG.ELUSIVE);
+                    flags |= MoveAction.FLAG.ELUSIVE;
                 }
             }
         }

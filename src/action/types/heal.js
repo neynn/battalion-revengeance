@@ -6,7 +6,7 @@ import { ActionHelper } from "../actionHelper.js";
 import { InteractionResolver } from "./interactionResolver.js";
 
 const resolveHeal = function(gameContext, entity, target, resolver) {
-    if(entity.canHealTarget(gameContext, target)) {
+    if(entity.isHealValid(gameContext, target) && entity.isHealPositionValid(gameContext, target)) {
         entity.mResolveHeal(gameContext, target, resolver);
     }
 }
@@ -62,7 +62,7 @@ HealAction.prototype.validate = function(gameContext, executionRequest, requestD
     const entity = entityManager.getEntity(entityID);
     const target = entityManager.getEntity(targetID);
 
-    if(!entity || !target || !entity.canHeal()) {
+    if(!entity || !target) {
         return;
     }
 

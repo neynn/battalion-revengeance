@@ -1,8 +1,8 @@
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { FloodFill } from "../../../engine/pathfinders/floodFill.js";
-import { ActionHelper, createAttackRequest, createHealRequest } from "../../action/actionHelper.js";
+import { ActionHelper, createAttackRequest } from "../../action/actionHelper.js";
 import { AUTOTILER_TYPE, COMMAND_TYPE, RANGE_TYPE } from "../../enums.js";
-import { createStep, isNodeReachable } from "../../systems/pathfinding.js";
+import { createStep, isNodeReachable, getBestPath } from "../../systems/pathfinding.js";
 import { Player } from "../player.js";
 import { PlayerState } from "./playerState.js";
 
@@ -142,7 +142,7 @@ SelectState.prototype.setOptimalAttackPath = function(gameContext, entity) {
     }
 
     if(bestNode) {
-        this.path = this.entity.getBestPath(gameContext, this.nodeMap, bestNode.x, bestNode.y);
+        this.path = getBestPath(gameContext, this.nodeMap, bestNode.x, bestNode.y);
     } else {
         this.path.length = 0;
     }
@@ -184,11 +184,11 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
             this.path.unshift(createStep(deltaX, deltaY, tileX, tileY));
 
             if(!this.entity.isPathValid(gameContext, this.path)) {
-                this.path = this.entity.getBestPath(gameContext, this.nodeMap, tileX, tileY);
+                this.path = getBestPath(gameContext, this.nodeMap, tileX, tileY);
             }
         }
     } else {
-        this.path = this.entity.getBestPath(gameContext, this.nodeMap, tileX, tileY);
+        this.path = getBestPath(gameContext, this.nodeMap, tileX, tileY);
     }
 
     player.showPath(walkAutotiler, this.path, this.entity.tileX, this.entity.tileY);
@@ -207,6 +207,38 @@ SelectState.prototype.onBuildingClick = function(gameContext, stateMachine, buil
     this.onTileClick(gameContext, stateMachine, tileX, tileY);
 }
 
+SelectState.prototype.getAttackRequest = function(entity) {
+    const rangeType = this.entity.getRangeType();
+    let request = null;
+
+    switch(rangeType) {
+        case RANGE_TYPE.MELEE: {
+            if(this.path.length === 0) {
+                request = createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
+            } else {
+                request = ActionHelper.createMoveRequest(this.entity.getID(), this.path, entity.getID());
+            }
+
+            break;
+        }
+        case RANGE_TYPE.RANGE: {
+            request = createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
+            break;
+        }
+        case RANGE_TYPE.HYBRID: {
+            if(this.path.length === 0) {
+                request = createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
+            } else {
+                request = ActionHelper.createMoveRequest(this.entity.getID(), this.path, entity.getID());
+            }
+
+            break;
+        }
+    }
+
+    return request;
+}
+
 SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {
     if(entity === this.entity) {
         stateMachine.setNextState(gameContext, Player.STATE.IDLE);
@@ -215,47 +247,26 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
     }
 
     const player = stateMachine.getContext();
-    const rangeType = this.entity.getRangeType();
 
     if(!isAlly) {
-        let request = null;
+        if(this.entity.isAttackValid(gameContext, entity)) {
+            const request = this.getAttackRequest(entity);
 
-        switch(rangeType) {
-            case RANGE_TYPE.MELEE: {
-                if(this.path.length === 0) {
-                    request = createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
-                } else {
-                    request = ActionHelper.createMoveRequest(this.entity.getID(), this.path, entity.getID());
-                }
+            if(request) {
+                player.queueRequest(request);
+            }
 
-                break;
-            }
-            case RANGE_TYPE.RANGE: {
-                request = createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
-                break;
-            }
-            case RANGE_TYPE.HYBRID: {
-                if(this.path.length === 0) {
-                    request = createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
-                } else {
-                    request = ActionHelper.createMoveRequest(this.entity.getID(), this.path, entity.getID());
-                }
-
-                break;
-            }
+            stateMachine.setNextState(gameContext, Player.STATE.IDLE);
         }
-
-        if(request) {
-            player.queueRequest(request);
-        }
-
-        stateMachine.setNextState(gameContext, Player.STATE.IDLE);
-        return;
-    }
-
-    if(isControlled && entity.isSelectable()) {
-        this.selectEntity(gameContext, stateMachine, entity);
     } else {
-        stateMachine.setNextState(gameContext, Player.STATE.IDLE);
+        if(this.entity.isHealValid(gameContext, entity)) {
+            console.error("WEE WOO WEE WOO");
+        }
+
+        if(isControlled && entity.isSelectable()) {
+            this.selectEntity(gameContext, stateMachine, entity);
+        } else {
+            stateMachine.setNextState(gameContext, Player.STATE.IDLE);
+        }
     }
 }

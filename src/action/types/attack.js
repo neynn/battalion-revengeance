@@ -1,5 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
-import { FlagHelper } from "../../../engine/flagHelper.js";
+import { hasFlag } from "../../../engine/util/flag.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ATTACK_TYPE, COMMAND_TYPE } from "../../enums.js";
 import { playAttackEffect } from "../../systems/animation.js";
@@ -8,13 +8,13 @@ import { ActionHelper, createAttackRequest } from "../actionHelper.js";
 import { InteractionResolver } from "./interactionResolver.js";
 
 const resolveCounterAttack = function(gameContext, entity, target, resolver) {
-    if(entity.isAllowedToCounter(target) && entity.canAttackTarget(gameContext, target)) {
+    if(entity.isAllowedToCounter(target) && entity.isAttackValid(gameContext, target) && entity.isAttackPositionValid(gameContext, target)) {
         entity.mResolveCounterAttack(gameContext, target, resolver);
     }
 }
 
 const resolveFirstAttack = function(gameContext, entity, target, resolver) {
-    if(entity.canAttackTarget(gameContext, target)) {
+    if(entity.isAttackValid(gameContext, target) && entity.isAttackPositionValid(gameContext, target)) {
         switch(entity.getAttackType()) {
             case ATTACK_TYPE.REGULAR: {
                 entity.mResolveRegularAttack(gameContext, target, resolver);
@@ -63,13 +63,13 @@ AttackAction.prototype.onStart = function(gameContext, data, id) {
 
     entity.lookAt(target);
 
-    if(FlagHelper.hasFlag(flags, AttackAction.FLAG.COUNTER)) {
+    if(hasFlag(flags, AttackAction.FLAG.COUNTER)) {
         entity.playCounter(gameContext, target);
     } else {
         entity.playAttack(gameContext, target);
     }
 
-    if(FlagHelper.hasFlag(flags, AttackAction.FLAG.UNCLOAK)) {
+    if(hasFlag(flags, AttackAction.FLAG.UNCLOAK)) {
         entity.uncloakInstant();
     }
 
@@ -98,15 +98,14 @@ AttackAction.prototype.onEnd = function(gameContext, data, id) {
 
     this.entity.playIdle(gameContext);
 
-
-    if(FlagHelper.hasFlag(flags, AttackAction.FLAG.COUNTER)) {
+    if(hasFlag(flags, AttackAction.FLAG.COUNTER)) {
         this.entity.onCounterEnd();
     } else {
         target.setLastAttacker(entityID);
 
         this.entity.onAttackEnd();
 
-        if(FlagHelper.hasFlag(flags, AttackAction.FLAG.BEWEGUNGSKRIEG)) {
+        if(hasFlag(flags, AttackAction.FLAG.BEWEGUNGSKRIEG)) {
             this.entity.triggerBewegungskrieg();
         }
     }
@@ -122,7 +121,7 @@ AttackAction.prototype.validate = function(gameContext, executionRequest, reques
     const entity = entityManager.getEntity(entityID);
     const target = entityManager.getEntity(targetID);
 
-    if(!entity || !target || !entity.canAttack()) {
+    if(!entity || !target) {
         return;
     }
 
@@ -156,12 +155,12 @@ AttackAction.prototype.validate = function(gameContext, executionRequest, reques
 
     if(hitEntities.length !== 0) {
         if(command !== COMMAND_TYPE.COUNTER && entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-            flags = FlagHelper.setFlag(flags, AttackAction.FLAG.UNCLOAK);
+            flags |= AttackAction.FLAG.UNCLOAK;
         }
 
         if(deadEntities.length !== 0) {
             if(command !== COMMAND_TYPE.COUNTER && entity.hasTrait(TypeRegistry.TRAIT_TYPE.BEWEGUNGSKRIEG)) {
-                flags = FlagHelper.setFlag(flags, AttackAction.FLAG.BEWEGUNGSKRIEG);
+                flags |= AttackAction.FLAG.BEWEGUNGSKRIEG;
             }
 
             executionRequest.addNext(ActionHelper.createDeathRequest(gameContext, deadEntities));

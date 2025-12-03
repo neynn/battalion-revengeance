@@ -1,19 +1,19 @@
 import { Entity } from "../../engine/entity/entity.js";
 import { EntityHelper } from "../../engine/util/entityHelper.js";
 import { EntityManager } from "../../engine/entity/entityManager.js";
-import { FlagHelper } from "../../engine/flagHelper.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { JammerField } from "../map/jammerField.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { EntityType } from "../type/parsed/entityType.js";
-import { createNode, createStep, isNodeReachable, mGetLowestCostNode } from "../systems/pathfinding.js";
+import { createNode, mGetLowestCostNode } from "../systems/pathfinding.js";
 import { getDirectionByDelta } from "../systems/direction.js";
-import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, PATH_INTERCEPT, RANGE_TYPE, ATTACK_FLAG } from "../enums.js";
+import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG } from "../enums.js";
 import { getTransportType } from "../systems/transport.js";
 import { getAreaEntities, getLineEntities } from "../systems/targeting.js";
 import { playGFX } from "../systems/animation.js";
+import { hasFlag } from "../../engine/util/flag.js";
 
 export const BattalionEntity = function(id, sprite) {
     Entity.call(this, id, "");
@@ -119,6 +119,10 @@ BattalionEntity.prototype.loadConfig = function(config) {
 }
 
 BattalionEntity.prototype.getAttackType = function() {
+    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SUPPLY_DISTRIBUTION)) {
+        return ATTACK_TYPE.SUPPLY;
+    }
+
     if(this.hasTrait(TypeRegistry.TRAIT_TYPE.DISPERSION) || this.hasTrait(TypeRegistry.TRAIT_TYPE.JUDGEMENT)) {
         return ATTACK_TYPE.DISPERSION;
     }
@@ -127,14 +131,10 @@ BattalionEntity.prototype.getAttackType = function() {
         return ATTACK_TYPE.STREAMBLAST;
     }
 
-    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SUPPLY_DISTRIBUTION)) {
-        return ATTACK_TYPE.SUPPLY;
-    }
-
     return ATTACK_TYPE.REGULAR;
 }
 
-BattalionEntity.prototype.isRangeEnough = function(gameContext, entity) {
+BattalionEntity.prototype.isRangeValid = function(gameContext, entity) {
     const distance = this.getDistanceToEntity(entity);
 
     if(distance < this.config.minRange) {
@@ -149,7 +149,7 @@ BattalionEntity.prototype.isAnimationFinished = function() {
 }
 
 BattalionEntity.prototype.getHealthAfterDamage = function(damage = 0) {
-    const health = this.health - damage;
+    const health = Math.floor(this.health - damage);
 
     if(health <= 0) {
         if(this.health > TRAIT_CONFIG.HEROIC_THRESHOLD && this.hasTrait(TypeRegistry.TRAIT_TYPE.HEROIC)) {
@@ -157,7 +157,9 @@ BattalionEntity.prototype.getHealthAfterDamage = function(damage = 0) {
         }
 
         return 0;
-    } else if(health >= this.maxHealth) {
+    }
+
+    if(health >= this.maxHealth) {
         return this.maxHealth;
     }
 
@@ -171,7 +173,6 @@ BattalionEntity.prototype.setHealth = function(health) {
         this.health = health;
     }
 
-    this.health = Math.floor(this.health);
     this.sprite.onHealthUpdate(this.health, this.maxHealth);
 }
 
@@ -564,44 +565,6 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
     }
 }
 
-BattalionEntity.prototype.getBestPath = function(gameContext, nodes, targetX, targetY) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-    const path = [];
-
-    if(!worldMap) {
-        return path;
-    }
-
-    const index = worldMap.getIndex(targetX, targetY);
-    const targetNode = nodes.get(index);
-
-    if(!targetNode || !isNodeReachable(targetNode)) {
-        return path;
-    }
-
-    let i = 0;
-    let lastX = targetX;
-    let lastY = targetY;
-    let currentNode = nodes.get(targetNode.parent);
-
-    while(currentNode !== undefined && i < BattalionEntity.MAX_MOVE_COST) {
-        const { x, y, parent } = currentNode;
-        const deltaX = lastX - x;
-        const deltaY = lastY - y;
-
-        path.push(createStep(deltaX, deltaY, lastX, lastY));
-
-        i++;
-        lastX = x;
-        lastY = y;
-        currentNode = nodes.get(parent);
-    }
-
-    return path;
-}
-
 BattalionEntity.prototype.canSee = function(gameContext, entity) {
     return entity.isVisibleTo(gameContext, this.teamID);
 }
@@ -708,48 +671,8 @@ BattalionEntity.prototype.getTerrainTypes = function(gameContext) {
     return types;
 }
 
-BattalionEntity.prototype.canAttackTarget = function(gameContext, target) {
-    if(this.id === target.getID()) {
-        return false;
-    }
-    
-    if(this.isDead() || target.isDead()) {
-        return false;
-    }
-
-    if(!this.isRangeEnough(gameContext, target)) {
-        return false;
-    }
-
-    if(this.getAttackType() === ATTACK_TYPE.SUPPLY) {
-        return false;
-    }
-
-    //Stealth check. Cloaked units cannot be attacked.
-    if(target.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-        return false;
-    }
-
-    if(this.isAllyWith(gameContext, target)) {
-        return false;
-    }
-
-    const targetMove = target.config.movementType;
-
-    //Flight units can only be attacked with skysweeper.
-    if(targetMove === TypeRegistry.MOVEMENT_TYPE.FLIGHT && !this.hasTrait(TypeRegistry.TRAIT_TYPE.SKYSWEEPER)) {
-        return false;
-    }
-
-    //Seabound entities can only attack RUDDER/HEAVY_RUDDER.
-    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SEABOUND)) {
-        if(targetMove !== TypeRegistry.MOVEMENT_TYPE.RUDDER && targetMove !== TypeRegistry.MOVEMENT_TYPE.HEAVY_RUDDER) {
-            return false;
-        }
-    }
-
-    //Special submarine case. Submarines can only be targeted by DEPTH_CHARGE.
-    if(target.hasTrait(TypeRegistry.TRAIT_TYPE.SUBMERGED) && !this.hasTrait(TypeRegistry.TRAIT_TYPE.DEPTH_CHARGE)) {
+BattalionEntity.prototype.isAttackPositionValid = function(gameContext, target) {
+    if(!this.isRangeValid(gameContext, target)) {
         return false;
     }
 
@@ -782,8 +705,16 @@ BattalionEntity.prototype.canAttackTarget = function(gameContext, target) {
     return true;
 }
 
-BattalionEntity.prototype.canHealTarget = function(gameContext, target) {
+BattalionEntity.prototype.isAttackValid = function(gameContext, target) {
     if(this.id === target.getID()) {
+        return false;
+    }
+    
+    if(this.damage <= 0) {
+        return false;
+    }
+
+    if(this.config.weaponType === TypeRegistry.WEAPON_TYPE.NONE) {
         return false;
     }
 
@@ -791,11 +722,64 @@ BattalionEntity.prototype.canHealTarget = function(gameContext, target) {
         return false;
     }
 
-    if(!this.isRangeEnough(gameContext, target)) {
+    if(this.getAttackType() === ATTACK_TYPE.SUPPLY) {
         return false;
     }
 
-    if(!this.getAttackType() === ATTACK_TYPE.SUPPLY) {
+    //Stealth check. Cloaked units cannot be attacked.
+    if(target.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+        return false;
+    }
+
+    //Allies cannot be attacked.
+    if(this.isAllyWith(gameContext, target)) {
+        return false;
+    }
+
+    const targetMove = target.config.movementType;
+
+    //Flight units can only be attacked with skysweeper.
+    if(targetMove === TypeRegistry.MOVEMENT_TYPE.FLIGHT && !this.hasTrait(TypeRegistry.TRAIT_TYPE.SKYSWEEPER)) {
+        return false;
+    }
+
+    //Seabound entities can only attack RUDDER/HEAVY_RUDDER.
+    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SEABOUND)) {
+        if(targetMove !== TypeRegistry.MOVEMENT_TYPE.RUDDER && targetMove !== TypeRegistry.MOVEMENT_TYPE.HEAVY_RUDDER) {
+            return false;
+        }
+    }
+
+    //Special submarine case. Submarines can only be targeted by DEPTH_CHARGE.
+    if(target.hasTrait(TypeRegistry.TRAIT_TYPE.SUBMERGED) && !this.hasTrait(TypeRegistry.TRAIT_TYPE.DEPTH_CHARGE)) {
+        return false;
+    }
+
+    return true;
+}
+
+BattalionEntity.prototype.isHealPositionValid = function(gameContext, target) {
+    if(!this.isRangeValid(gameContext, target)) {
+        return false;
+    }
+
+    return true;
+}
+
+BattalionEntity.prototype.isHealValid = function(gameContext, target) {
+    if(this.id === target.getID()) {
+        return false;
+    }
+
+    if(this.damage <= 0) {
+        return false;
+    }
+
+    if(this.isDead() || target.isDead()) {
+        return false;
+    }
+
+    if(this.getAttackType() !== ATTACK_TYPE.SUPPLY) {
         return false;
     }
 
@@ -858,13 +842,16 @@ BattalionEntity.prototype.isAllowedToCounter = function(target) {
 
     //MOBILE_BATTERY cannot be countered by ranged units.
     if(target.hasTrait(TypeRegistry.TRAIT_TYPE.MOBILE_BATTERY)) {
-        const rangeType = this.getRangeType();
-
-        if(rangeType === RANGE_TYPE.RANGE) {
-            return false;
-        } else if(rangeType === RANGE_TYPE.HYBRID) {
-            if(!this.isNextToEntity(target)) {
+        switch(this.getRangeType()) {
+            case RANGE_TYPE.RANGE: {
                 return false;
+            }
+            case RANGE_TYPE.HYBRID: {
+                if(!this.isNextToEntity(target)) {
+                    return false;
+                }
+
+                break;
             }
         }
     }
@@ -977,7 +964,7 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
     }
 
     //If it's not a counter it must be a normal attack.
-    if(FlagHelper.hasFlag(damageFlags, ATTACK_FLAG.COUNTER)) {
+    if(hasFlag(damageFlags, ATTACK_FLAG.COUNTER)) {
         if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SLUGGER)) {
             healthFactor = 1;
         }
@@ -1159,14 +1146,6 @@ BattalionEntity.prototype.canCloakAtSelf = function(gameContext) {
     return this.canCloakAt(gameContext, this.tileX, this.tileY);
 }
 
-BattalionEntity.prototype.canHeal = function() {
-    return this.damage !== 0 && this.getAttackType() === ATTACK_TYPE.SUPPLY;
-}
-
-BattalionEntity.prototype.canAttack = function() {
-    return this.damage !== 0 && this.config.weaponType !== TypeRegistry.WEAPON_TYPE.NONE;
-}
-
 BattalionEntity.prototype.canMove = function() {
     return this.movementRange !== 0 && this.config.movementType !== TypeRegistry.MOVEMENT_TYPE.STATIONARY;
 }
@@ -1227,29 +1206,6 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, 
     }
 
     return uncloakedEntities;
-}
-
-BattalionEntity.prototype.mInterceptPath = function(gameContext, path) {
-    let elementsToDelete = path.length;
-
-    for(let i = path.length - 1; i >= 0; i--) {
-        const { tileX, tileY } = path[i];
-        const entity = EntityHelper.getTileEntity(gameContext, tileX, tileY);
-
-        if(!entity) {
-            elementsToDelete = i;
-        } else if(!entity.isVisibleTo(gameContext, this.teamID)) {
-            path.splice(0, elementsToDelete);
-
-            if(elementsToDelete !== i + 1) {
-                return PATH_INTERCEPT.ILLEGAL;
-            }
-
-            return PATH_INTERCEPT.VALID;
-        }
-    }
-
-    return PATH_INTERCEPT.NONE;
 }
 
 BattalionEntity.prototype.isSelectable = function() {
