@@ -243,21 +243,16 @@ EditorController.prototype.resetBrush = function(editorInterface) {
     this.editor.resetBrush();
 }
 
-EditorController.prototype.updateInversionText = function(gameContext, stateID) {
+EditorController.prototype.updateInversionText = function(gameContext, isInverted) {
     const { uiManager } = gameContext;
     const editorInterface = uiManager.getGUI(this.guiID);
     const text = editorInterface.getElement("TEXT_INVERT");
     const { style } = text;
 
-    switch(stateID) {
-        case MapEditor.AUTOTILER_STATE.ACTIVE_INVERTED: {
-            style.setColorArray(this.textColorEdit);
-            break;
-        }
-        default: {
-            style.setColorArray(this.textColorView);
-            break;
-        }
+    if(isInverted) {
+        style.setColorArray(this.textColorEdit);
+    } else {
+        style.setColorArray(this.textColorView);
     }
 }
 
@@ -279,25 +274,6 @@ EditorController.prototype.updateEraserText = function(gameContext, stateID) {
     }
 }
 
-EditorController.prototype.updateAutoText = function(gameContext, stateID) {
-    const { uiManager } = gameContext;
-    const editorInterface = uiManager.getGUI(this.guiID);
-    const text = editorInterface.getElement("TEXT_AUTO");
-    const { style } = text;
-
-    switch(stateID) {
-        case MapEditor.AUTOTILER_STATE.INACTIVE: {
-            style.setColorArray(this.textColorView);
-            this.updateInversionText(gameContext, stateID);
-            break;
-        }
-        case MapEditor.AUTOTILER_STATE.ACTIVE: {
-            style.setColorArray(this.textColorEdit);
-            break;
-        }
-    }
-}
-
 EditorController.prototype.toggleEraser = function(gameContext) {
     const nextState = this.editor.toggleEraser();
 
@@ -305,15 +281,24 @@ EditorController.prototype.toggleEraser = function(gameContext) {
 }
 
 EditorController.prototype.toggleAutotiler = function(gameContext) {
-    const nextState = this.editor.toggleAutotiling();
+    const { uiManager } = gameContext;
+    const editorInterface = uiManager.getGUI(this.guiID);
+    const text = editorInterface.getElement("TEXT_AUTO");
+    const { style } = text;
+    const isEnabled = this.editor.toggleAutotiling();
 
-    this.updateAutoText(gameContext, nextState);
+    if(isEnabled) {
+        style.setColorArray(this.textColorEdit);
+    } else {
+        style.setColorArray(this.textColorView);
+        this.updateInversionText(gameContext, false);
+    }
 }
 
 EditorController.prototype.toggleInversion = function(gameContext) {
-    const inversionState = this.editor.toggleInversion();
+    const isInverted = this.editor.toggleInversion();
 
-    this.updateInversionText(gameContext, inversionState);
+    this.updateInversionText(gameContext, isInverted);
 }
 
 EditorController.prototype.getPalletIndex = function(index) {
@@ -348,10 +333,6 @@ EditorController.prototype.updateMenuText = function(gameContext) {
     switch(this.editor.modes.getValue()) {
         case MapEditor.MODE.DRAW: {
             editorInterface.getElement("TEXT_TILESET").setText(`${this.editor.brushSets.getValue()?.id}`);
-            break;
-        }
-        case MapEditor.MODE.AUTOTILE: {
-            editorInterface.getElement("TEXT_TILESET").setText(`NOT IMPLEMENTED!`);
             break;
         }
     }

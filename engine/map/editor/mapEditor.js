@@ -1,4 +1,5 @@
 import { EventEmitter } from "../../events/eventEmitter.js";
+import { getRandomElement } from "../../math/math.js";
 import { Scroller } from "../../util/scroller.js";
 import { Brush } from "./brush.js";
 import { Pallet } from "./pallet.js";
@@ -8,9 +9,10 @@ export const MapEditor = function() {
     this.pallet = new Pallet();
     this.brushSets = new Scroller();
     this.brushSizes = new Scroller();
-    this.modes = new Scroller([MapEditor.MODE.DRAW, MapEditor.MODE.AUTOTILE]);
-    this.autotilerState = MapEditor.AUTOTILER_STATE.INACTIVE;
+    this.modes = new Scroller([MapEditor.MODE.DRAW]);
     this.activityStack = [];
+    this.permutations = {};
+    this.flags = MapEditor.FLAG.NONE;
 
     this.events = new EventEmitter();
     this.events.register(MapEditor.EVENT.BRUSH_UPDATE);
@@ -19,17 +21,18 @@ export const MapEditor = function() {
     this.events.register(MapEditor.EVENT.SET_UPDATE);
 }
 
+MapEditor.FLAG = {
+    NONE: 0,
+    USE_PERMUTATION: 1 << 0,
+    USE_AUTOTILER: 1 << 1,
+    INVERT_AUTOTILER: 1 << 2
+};
+
 MapEditor.EVENT = {
     BRUSH_UPDATE: "BRUSH_UPDATE",
     PALLET_UPDATE: "PALLET_UPDATE",
     MODE_UPDATE: "MODE_UPDATE",
     SET_UPDATE: "SET_UPDATE"
-};
-
-MapEditor.AUTOTILER_STATE = {
-    INACTIVE: 0,
-    ACTIVE: 1,
-    ACTIVE_INVERTED: 2
 };
 
 MapEditor.MODE = {
@@ -38,11 +41,38 @@ MapEditor.MODE = {
 };
 
 MapEditor.MODE_NAME = {
-    [MapEditor.MODE.DRAW]: "DRAW",
-    [MapEditor.MODE.AUTOTILE]: "AUTOTILE"
+    [MapEditor.MODE.DRAW]: "DRAW"
 };
 
 MapEditor.prototype.onPaint = function(gameContext, worldMap, position, layerID) {}
+
+MapEditor.prototype.getBrushID = function() {
+    if((this.flags & MapEditor.FLAG.USE_PERMUTATION)) {
+        return this.getPermutation(this.brush.id);
+    }
+
+    return this.brush.id;
+}
+
+MapEditor.prototype.registerPermutation = function(originID, mutationID) {
+    const permutations = this.permutations[originID];
+
+    if(permutations === undefined) {
+        this.permutations[originID] = [originID, mutationID];
+    } else if(!permutations.includes(mutationID)) {
+        this.permutations.push(mutationID);
+    }
+}
+
+MapEditor.prototype.getPermutation = function(originID) {
+    const permutations = this.permutations[originID];
+
+    if(permutations === undefined || permutations.length === 0) {
+        return originID;
+    }
+
+    return getRandomElement(permutations);
+}
 
 MapEditor.prototype.scrollBrushSize = function(delta = 0) {
     const brushSize = this.brushSizes.scroll(delta);
@@ -91,10 +121,6 @@ MapEditor.prototype.reloadPallet = function() {
             } else {
                 this.pallet.clear();
             }
-            break;
-        }
-        case MapEditor.MODE.AUTOTILE: {
-            this.pallet.clear();
             break;
         }
     }
@@ -163,33 +189,23 @@ MapEditor.prototype.undo = function(gameContext) {
 }
 
 MapEditor.prototype.toggleInversion = function() {
-    switch(this.autotilerState) {
-        case MapEditor.AUTOTILER_STATE.ACTIVE: {
-            this.autotilerState = MapEditor.AUTOTILER_STATE.ACTIVE_INVERTED;
-            break;
-        }
-        case MapEditor.AUTOTILER_STATE.ACTIVE_INVERTED: {
-            this.autotilerState = MapEditor.AUTOTILER_STATE.ACTIVE;
-            break;
-        }
+    //Only toggle if using autotiler.
+    if((this.flags & MapEditor.FLAG.USE_AUTOTILER) !== 0) {
+        this.flags ^= MapEditor.FLAG.INVERT_AUTOTILER;
     }
 
-    return this.autotilerState;
+    return (this.flags & MapEditor.FLAG.INVERT_AUTOTILER) !== 0
 }
 
 MapEditor.prototype.toggleAutotiling = function() {
-    switch(this.autotilerState) {
-        case MapEditor.AUTOTILER_STATE.INACTIVE: {
-            this.autotilerState = MapEditor.AUTOTILER_STATE.ACTIVE;
-            break;
-        }
-        default: {
-            this.autotilerState = MapEditor.AUTOTILER_STATE.INACTIVE;
-            break;
-        }
+    this.flags ^= MapEditor.FLAG.USE_AUTOTILER;
+
+    //If disabling autotiler, then also disable inverting.
+    if((this.flags & MapEditor.FLAG.USE_AUTOTILER) === 0) {
+        this.flags &= (~MapEditor.FLAG.INVERT_AUTOTILER);
     }
 
-    return this.autotilerState;
+    return (this.flags & MapEditor.FLAG.USE_AUTOTILER) !== 0
 }
 
 MapEditor.prototype.toggleEraser = function() {

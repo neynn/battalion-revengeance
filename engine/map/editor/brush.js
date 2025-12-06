@@ -88,7 +88,7 @@ Brush.prototype.paint = function(tileX, tileY, onPaint) {
 
         for(let i = startY; i <= endY; i++) {
             for(let j = startX; j <= endX; j++) {
-                onPaint(j, i, this.id, this.name);
+                onPaint(j, i);
             }
         }
     }

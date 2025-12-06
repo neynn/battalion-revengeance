@@ -9,3 +9,7 @@ export const setFlag = function(flags, flag) {
 export const removeFlag = function(flags, flag) {
     return flags & (~flag);
 }
+
+export const toggleFlag = function(flags, flag) {
+    return flags ^ flag;
+}

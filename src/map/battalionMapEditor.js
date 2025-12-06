@@ -1,4 +1,5 @@
 import { MapEditor } from "../../engine/map/editor/mapEditor.js";
+import { TileManager } from "../../engine/tile/tileManager.js";
 
 export const BattalionMapEditor = function() {
     MapEditor.call(this);
@@ -13,11 +14,12 @@ BattalionMapEditor.prototype.onPaint = function(gameContext, worldMap, position,
     const autotiler = tileManager.getAutotilerByTile(this.brush.id);
     const actionsTaken = [];
     const mapID = worldMap.getID();
-    
-    this.brush.paint(x, y, (tileX, tileY, brushID, brushName) => {
+    const brushID = this.getBrushID();
+
+    this.brush.paint(x, y, (tileX, tileY) => {
         const tileID = worldMap.getTile(layerID, tileX, tileY);
 
-        if(tileID !== -1 && tileID !== brushID) {
+        if(tileID !== TileManager.TILE_ID.INVALID && tileID !== brushID) {
             worldMap.placeTile(brushID, layerID, tileX, tileY);
 
             actionsTaken.push({
@@ -28,12 +30,12 @@ BattalionMapEditor.prototype.onPaint = function(gameContext, worldMap, position,
             });
         }
 
-        if(this.autotilerState !== MapEditor.AUTOTILER_STATE.INACTIVE && autotiler) {
+        if(autotiler && (this.flags & MapEditor.FLAG.USE_AUTOTILER) !== 0) {
             const startX = tileX - 1;
             const startY = tileY - 1;
             const endX = tileX + 1;
             const endY = tileY + 1;
-            const isInverted = this.autotilerState === MapEditor.AUTOTILER_STATE.ACTIVE_INVERTED;
+            const isInverted = (this.flags & MapEditor.FLAG.INVERT_AUTOTILER) !== 0;
 
             for(let i = startY; i <= endY; i++) {
                 for(let j = startX; j <= endX; j++) {
