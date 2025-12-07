@@ -30,6 +30,17 @@ MapEditorInterface.prototype.load = function(gameContext) {
     }   
 }
 
+MapEditorInterface.prototype.updatePermutationText = function(isEnabled) {
+    const text = this.getElement("TEXT_PERMUTATION");
+    const { style } = text;
+
+    if(isEnabled) {
+        style.setColorArray(this.textColorEdit);
+    } else {
+        style.setColorArray(this.textColorView);
+    }
+}
+
 MapEditorInterface.prototype.updateInversionText = function(isInverted) {
     const text = this.getElement("TEXT_INVERT");
     const { style } = text;

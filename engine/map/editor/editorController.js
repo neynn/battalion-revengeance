@@ -158,6 +158,12 @@ EditorController.prototype.toggleEraser = function() {
     this.userInterface.updateEraserText(isErasing);
 }
 
+EditorController.prototype.togglePermutation = function() {
+    const isEnabled = this.editor.togglePermutation();
+
+    this.userInterface.updatePermutationText(isEnabled);
+}
+
 EditorController.prototype.toggleAutotiler = function() {
     const isEnabled = this.editor.toggleAutotiling();
 

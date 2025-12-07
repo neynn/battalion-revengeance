@@ -12,7 +12,7 @@ export const MapEditor = function() {
     this.activityStack = [];
     this.permutations = {};
     this.fill = [];
-    this.flags = MapEditor.FLAG.NONE | MapEditor.FLAG.USE_PERMUTATION;
+    this.flags = MapEditor.FLAG.NONE;
     this.modes.setValues([MapEditor.MODE.TILE, MapEditor.MODE.ENTITY]);
     this.targetLayer = WorldMap.INVALID_LAYER_ID;
     this.targetMap = null;
@@ -164,13 +164,19 @@ MapEditor.prototype.scrollBrushSet = function(delta = 0) {
     this.brushSets.loop(delta);
 }
 
+MapEditor.prototype.togglePermutation = function() {
+    this.flags ^= MapEditor.FLAG.USE_PERMUTATION;
+
+    return (this.flags & MapEditor.FLAG.USE_PERMUTATION) !== 0;
+}
+
 MapEditor.prototype.toggleInversion = function() {
     //Only toggle if using autotiler.
     if((this.flags & MapEditor.FLAG.USE_AUTOTILER) !== 0) {
         this.flags ^= MapEditor.FLAG.INVERT_AUTOTILER;
     }
 
-    return (this.flags & MapEditor.FLAG.INVERT_AUTOTILER) !== 0
+    return (this.flags & MapEditor.FLAG.INVERT_AUTOTILER) !== 0;
 }
 
 MapEditor.prototype.toggleAutotiling = function() {
@@ -181,7 +187,7 @@ MapEditor.prototype.toggleAutotiling = function() {
         this.flags &= (~MapEditor.FLAG.INVERT_AUTOTILER);
     }
 
-    return (this.flags & MapEditor.FLAG.USE_AUTOTILER) !== 0
+    return (this.flags & MapEditor.FLAG.USE_AUTOTILER) !== 0;
 }
 
 MapEditor.prototype.toggleEraser = function() {

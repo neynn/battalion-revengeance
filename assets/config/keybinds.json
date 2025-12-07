@@ -15,7 +15,8 @@
     "EDIT": {
         "TOGGLE_AUTOTILER": "+a",
         "TOGGLE_ERASER": "+e",
-        "TOGGLE_INVERSION": "+q"
+        "TOGGLE_INVERSION": "+q",
+        "TOGGLE_RANDOM": "+r"
     },
     "DEBUG": {
         "ESCAPE": "+Escape",

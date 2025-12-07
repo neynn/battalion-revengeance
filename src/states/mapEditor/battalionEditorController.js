@@ -88,6 +88,7 @@ BattalionEditorController.prototype.initCommands = function(gameContext) {
     router.on("TOGGLE_AUTOTILER", () => this.toggleAutotiler());
     router.on("TOGGLE_ERASER", () => this.toggleEraser());
     router.on("TOGGLE_INVERSION", () => this.toggleInversion());
+    router.on("TOGGLE_RANDOM", () => this.togglePermutation());
 }
 
 BattalionEditorController.prototype.initUIEvents = function(gameContext) {
@@ -115,6 +116,7 @@ BattalionEditorController.prototype.initUIEvents = function(gameContext) {
         this.updateMenuText();
     });
 
+    this.userInterface.getElement("BUTTON_PERMUTATION").setClick(() => this.togglePermutation());
     this.userInterface.getElement("BUTTON_PAGE_LAST").setClick(() => this.updatePage(-1)); 
     this.userInterface.getElement("BUTTON_PAGE_NEXT").setClick(() => this.updatePage(1));  
     this.userInterface.getElement("BUTTON_SCROLL_SIZE").setClick(() => this.updateBrushSize(1));

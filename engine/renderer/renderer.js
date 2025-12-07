@@ -3,20 +3,20 @@ import { EffectManager } from "../effects/effectManager.js";
 import { CameraContext } from "../camera/cameraContext.js";
 import { Camera2D } from "../camera/camera2D.js";
 import { ContextHelper } from "../camera/contextHelper.js";
-import { RenderRoot } from "./renderRoot.js";
+import { DOMRenderNode } from "./domRenderNode.js";
 
 export const Renderer = function(windowWidth, windowHeight) {
     this.nextID = 0;
     this.contexts = [];
     this.windowWidth = windowWidth;
     this.windowHeight = windowHeight;
+    this.effectManager = new EffectManager();
     this.display = new Display();
     this.display.init(this.windowWidth, this.windowHeight, Display.TYPE.DISPLAY);
-    this.root = new RenderRoot();
-    this.root.addToDocument();
-    this.root.addChild(this.display.canvas);
-    this.root.setSize(this.windowWidth, this.windowHeight);
-    this.effectManager = new EffectManager();
+    this.node = new DOMRenderNode();
+    this.node.addToDocument();
+    this.node.addChild(this.display.canvas);
+    this.node.setSize(this.windowWidth, this.windowHeight);
 }
 
 Renderer.DEBUG = {
@@ -73,20 +73,20 @@ Renderer.prototype.removeRoot = function(root) {
     const children = root.getChildren();
 
     for(let i = 0; i < children.length; i++) {
-        this.root.addChild(children[i]);
+        this.node.addChild(children[i]);
     }
 
-    this.root.removeChild(root.element);
+    this.node.removeChild(root.element);
 }
 
 Renderer.prototype.createContext = function(camera) {
     const contextID = this.nextID++;
-    const root = new RenderRoot();
-    const context = new CameraContext(contextID, camera, root);
+    const node = new DOMRenderNode();
+    const context = new CameraContext(contextID, camera, node);
 
     context.onWindowResize(this.windowWidth, this.windowHeight);
 
-    this.root.addChild(root.element);
+    this.node.addChild(node.element);
     this.contexts.push(context);
 
     return context;
@@ -174,7 +174,7 @@ Renderer.prototype.drawInfo = function(gameContext) {
 Renderer.prototype.onWindowResize = function(width, height) {
     this.windowWidth = width;
     this.windowHeight = height;
-    this.root.setSize(width, height);
+    this.node.setSize(width, height);
     this.display.resize(width, height);
 
     for(let i = 0; i < this.contexts.length; i++) {
