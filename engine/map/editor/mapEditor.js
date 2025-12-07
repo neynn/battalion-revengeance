@@ -1,4 +1,3 @@
-import { EventEmitter } from "../../events/eventEmitter.js";
 import { getRandomElement } from "../../math/math.js";
 import { Scroller } from "../../util/scroller.js";
 import { Brush } from "./brush.js";
@@ -12,12 +11,6 @@ export const MapEditor = function() {
     this.activityStack = [];
     this.permutations = {};
     this.flags = MapEditor.FLAG.NONE | MapEditor.FLAG.USE_PERMUTATION;
-
-    this.events = new EventEmitter();
-    this.events.register(MapEditor.EVENT.BRUSH_UPDATE);
-    this.events.register(MapEditor.EVENT.MODE_UPDATE);
-    this.events.register(MapEditor.EVENT.SET_UPDATE);
-
     this.modes.setValues([MapEditor.MODE.DRAW]);
 }
 
@@ -26,12 +19,6 @@ MapEditor.FLAG = {
     USE_PERMUTATION: 1 << 0,
     USE_AUTOTILER: 1 << 1,
     INVERT_AUTOTILER: 1 << 2
-};
-
-MapEditor.EVENT = {
-    BRUSH_UPDATE: "BRUSH_UPDATE",
-    MODE_UPDATE: "MODE_UPDATE",
-    SET_UPDATE: "SET_UPDATE"
 };
 
 MapEditor.MODE = {
@@ -100,25 +87,14 @@ MapEditor.prototype.scrollBrushSize = function(delta = 0) {
     const { width, height } = brushSize;
     
     this.brush.setSize(width, height);
-    this.tellBrushUpdate();
 }
 
 MapEditor.prototype.scrollMode = function(delta = 0) {
-    const mode = this.modes.loop(delta);
-
-    if(mode !== null) {
-        this.events.emit(MapEditor.EVENT.MODE_UPDATE, {
-            "mode": mode
-        });
-    }
+    this.modes.loop(delta);
 }
 
-MapEditor.prototype.scrollBrushSet = function(delta) {
-    const brushSet = this.brushSets.loop(delta);
-
-    this.events.emit(MapEditor.EVENT.SET_UPDATE, {
-        "set": brushSet
-    });
+MapEditor.prototype.scrollBrushSet = function(delta = 0) {
+    this.brushSets.loop(delta);
 }
 
 MapEditor.prototype.loadBrushSets = function(brushSets) {
@@ -143,15 +119,10 @@ MapEditor.prototype.undo = function(gameContext) {
     const { mapID, mode, actions } = this.activityStack.pop();
     const worldMap = mapManager.getMap(mapID);
 
-    if(!worldMap) {
-        return;
-    }
-
-    for(let i = 0; i < actions.length; i++) {
-        const action = actions[i];
-        const { layerID, tileX, tileY, oldID } = action;
-
-        worldMap.placeTile(oldID, layerID, tileX, tileY);
+    if(worldMap) {
+        for(const { layerID, tileX, tileY, oldID } of actions) {
+            worldMap.placeTile(oldID, layerID, tileX, tileY);
+        }
     }
 }
 
@@ -178,14 +149,11 @@ MapEditor.prototype.toggleAutotiling = function() {
 MapEditor.prototype.toggleEraser = function() {
     const isErasing = this.brush.toggleEraser();
 
-    this.tellBrushUpdate();
-
     return isErasing;
 }
 
 MapEditor.prototype.resetBrush = function() {
     this.brush.reset();
-    this.tellBrushUpdate();
 }
 
 MapEditor.prototype.selectBrush = function(index) {
@@ -193,7 +161,6 @@ MapEditor.prototype.selectBrush = function(index) {
     const tileID = brushSet.getTileID(index);
 
     this.brush.setBrush(tileID, `${tileID}`);
-    this.tellBrushUpdate();
 }
 
 MapEditor.prototype.loadBrushSizes = function(sizes) {
@@ -206,10 +173,4 @@ MapEditor.prototype.loadPermutations = function(permutations) {
             this.registerPermutation(origin, variant);
         }
     }
-}
-
-MapEditor.prototype.tellBrushUpdate = function() {
-    this.events.emit(MapEditor.EVENT.BRUSH_UPDATE, {
-        "brush": this.brush
-    });
 }
