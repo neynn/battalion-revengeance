@@ -151,10 +151,6 @@ TileManager.prototype.disableAllTiles = function() {
     this.activeTiles.length = 0;
 }
 
-TileManager.prototype.getInversion = function() {
-    return this.metaInversion;
-}
-
 TileManager.prototype.getTile = function(tileID) {
     const index = tileID - 1;
 
@@ -170,6 +166,7 @@ TileManager.prototype.getTileCount = function() {
     return this.tiles.length + 1;
 }
 
+//@Deprecated
 TileManager.prototype.getTileIDByArray = function(overlay) {
     if(!overlay) {
         return TileManager.TILE_ID.EMPTY;
@@ -181,6 +178,7 @@ TileManager.prototype.getTileIDByArray = function(overlay) {
     return tileID;
 }
 
+//@Deprecated
 TileManager.prototype.getTileID = function(atlasID, textureID) {
     const atlas = this.metaInversion[atlasID];
 

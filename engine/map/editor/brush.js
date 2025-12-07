@@ -1,10 +1,10 @@
-import { Pallet } from "./pallet.js";
+import { TileManager } from "../../tile/tileManager.js";
 
 export const Brush = function() {
-    this.id = Pallet.ID.ERROR;
+    this.id = TileManager.TILE_ID.INVALID;
     this.name = "";
     this.mode = Brush.MODE.NONE;
-    this.previousID = Pallet.ID.ERROR;
+    this.previousID = TileManager.TILE_ID.INVALID;
     this.previousName = "";
     this.previousMode = Brush.MODE.NONE;
     this.width = 0;
@@ -24,11 +24,11 @@ Brush.prototype.setSize = function(width, height) {
 
 Brush.prototype.setBrush = function(id, name) {
     switch(id) {
-        case Pallet.ID.ERROR: {
+        case TileManager.TILE_ID.INVALID: {
             this.reset();
             break;
         }
-        case Pallet.ID.ERASER: {
+        case TileManager.TILE_ID.EMPTY: {
             this.enableEraser();
             break;
         }
@@ -36,12 +36,9 @@ Brush.prototype.setBrush = function(id, name) {
             this.id = id;
             this.name = name;
             this.mode = Brush.MODE.DRAW;
+            break;
         }
     }
-}
-
-Brush.prototype.getAreaString = function() {
-    return `${(this.width + 1) * 2 - 1}x${(this.height + 1) * 2 - 1}`;
 }
 
 Brush.prototype.recordPrevious = function() {
@@ -64,18 +61,18 @@ Brush.prototype.toggleEraser = function() {
         this.enableEraser();
     }
 
-    return this.mode;
+    return this.mode === Brush.MODE.ERASE;
 }
 
 Brush.prototype.enableEraser = function() {
     this.name = "ERASER";
-    this.id = Pallet.ID.ERASER;
+    this.id = TileManager.TILE_ID.EMPTY;
     this.mode = Brush.MODE.ERASE;
 }
 
 Brush.prototype.reset = function() {
     this.name = "";
-    this.id = Pallet.ID.ERROR;
+    this.id = TileManager.TILE_ID.INVALID;
     this.mode = Brush.MODE.NONE;
 }
 

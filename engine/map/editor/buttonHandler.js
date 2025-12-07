@@ -25,7 +25,7 @@ ButtonHandler.prototype.updateLayers = function(worldMap) {
     }
 }
 
-ButtonHandler.prototype.updateButtonTextColor = function(button, controller, userInterface) {
+ButtonHandler.prototype.updateButtonTextColor = function(button, userInterface) {
     const text = userInterface.getElement(button.textID);
 
     if(text) {
@@ -33,32 +33,32 @@ ButtonHandler.prototype.updateButtonTextColor = function(button, controller, use
         
         switch(button.state) {
             case EditorButton.STATE.EDIT: {
-                style.setColorArray(controller.textColorEdit);
+                style.setColorArray(userInterface.textColorEdit);
                 break;
             }
             case EditorButton.STATE.HIDDEN: {   
-                style.setColorArray(controller.textColorHide);
+                style.setColorArray(userInterface.textColorHide);
                 break;
             }
             case EditorButton.STATE.VISIBLE: {
-                style.setColorArray(controller.textColorView);
+                style.setColorArray(userInterface.textColorView);
                 break;
             }
         }
     }
 }
 
-ButtonHandler.prototype.resetButtons = function(userInterface, controller) {
+ButtonHandler.prototype.resetButtons = function(userInterface) {
     this.buttons.forEach((button) => {
         button.setState(EditorButton.STATE.VISIBLE);
 
-        this.updateButtonTextColor(button, controller, userInterface);
+        this.updateButtonTextColor(button, userInterface);
     });
 
     this.activeButton = null;
 }
 
-ButtonHandler.prototype.onClick = function(userInterface, controller, buttonID) {
+ButtonHandler.prototype.onClick = function(userInterface, buttonID) {
     const button = this.buttons.get(buttonID);
 
     if(!button) {
@@ -67,7 +67,7 @@ ButtonHandler.prototype.onClick = function(userInterface, controller, buttonID) 
 
     const nextState = button.scrollState();
 
-    this.updateButtonTextColor(button, controller, userInterface);
+    this.updateButtonTextColor(button, userInterface);
 
     switch(nextState) {
         case EditorButton.STATE.EDIT: {
@@ -76,7 +76,7 @@ ButtonHandler.prototype.onClick = function(userInterface, controller, buttonID) 
             if(activeButton) {
                 activeButton.setState(EditorButton.STATE.VISIBLE);
 
-                this.updateButtonTextColor(activeButton, controller, userInterface);
+                this.updateButtonTextColor(activeButton, userInterface);
             }
     
             this.activeButton = buttonID;

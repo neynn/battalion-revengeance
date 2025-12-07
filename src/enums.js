@@ -64,6 +64,7 @@ export const TILE_ID = {
     ROAD_14: 18,
     ROAD_15: 19,
     VOLANO: 20,
+    RIVER_0: 21,
     //21-68: RIVER
     SHORE_0: 69,
     SHORE_1: 70,

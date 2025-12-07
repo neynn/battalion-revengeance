@@ -6,11 +6,7 @@ import { Icon } from "./elements/icon.js";
 import { Scrollbar } from "./elements/scrollbar.js";
 import { TextElement } from "./elements/textElement.js";
 
-export const UIParser = function() {
-    this.interfaceTypes = {};
-}
-
-UIParser.ELEMENT_TYPE = {
+const ELEMENT_TYPE = {
     NONE: 0,
     TEXT: 1,
     BUTTON: 2,
@@ -19,29 +15,18 @@ UIParser.ELEMENT_TYPE = {
     SCROLLBAR: 5
 };
 
-UIParser.ELEMENT_TYPE_MAP = {
-    "BUTTON": UIParser.ELEMENT_TYPE.BUTTON,
-    "TEXT": UIParser.ELEMENT_TYPE.TEXT,
-    "ICON": UIParser.ELEMENT_TYPE.ICON,
-    "CONTAINER": UIParser.ELEMENT_TYPE.CONTAINER,
-    "SCROLLBAR": UIParser.ELEMENT_TYPE.SCROLLBAR
-};
-
-UIParser.prototype.load = function(interfaceTypes) {
-    this.interfaceTypes = interfaceTypes;
-}
-
-UIParser.prototype.parseTypeID = function(typeName) {
-    const typeID = UIParser.ELEMENT_TYPE_MAP[typeName];
-
-    if(typeID === undefined) {
-        return typeName;
+const getTypeID = function(name) {
+    switch(name) {
+        case "BUTTON": return ELEMENT_TYPE.BUTTON;
+        case "TEXT": return ELEMENT_TYPE.TEXT;
+        case "ICON": return ELEMENT_TYPE.ICON;
+        case "CONTAINER": return ELEMENT_TYPE.CONTAINER;
+        case "SCROLLBAR": return ELEMENT_TYPE.SCROLLBAR;
+        default: return ELEMENT_TYPE.CONTAINER;
     }
-
-    return typeID;
 }
 
-UIParser.prototype.createElementFromConfig = function(uiManager, config, DEBUG_NAME) {
+const parseElement = function(uiManager, config, DEBUG_NAME) {
     const {
         type,
         position = { x: 0, y: 0 },
@@ -52,10 +37,10 @@ UIParser.prototype.createElementFromConfig = function(uiManager, config, DEBUG_N
     } = config;
 
     const { x, y } = position;
-    const typeID = this.parseTypeID(type);
+    const typeID = getTypeID(type);
 
     switch(typeID) {
-        case UIParser.ELEMENT_TYPE.BUTTON: {
+        case ELEMENT_TYPE.BUTTON: {
             const element = new Button(DEBUG_NAME);
             const { shape = SHAPE.RECTANGLE, radius = width } = config;
 
@@ -79,7 +64,7 @@ UIParser.prototype.createElementFromConfig = function(uiManager, config, DEBUG_N
 
             return element;
         }
-        case UIParser.ELEMENT_TYPE.CONTAINER: {
+        case ELEMENT_TYPE.CONTAINER: {
             const element = new Container(DEBUG_NAME);
 
             element.setPosition(x, y);
@@ -91,7 +76,7 @@ UIParser.prototype.createElementFromConfig = function(uiManager, config, DEBUG_N
 
             return element;
         }
-        case UIParser.ELEMENT_TYPE.ICON: {
+        case ELEMENT_TYPE.ICON: {
             const element = new Icon(DEBUG_NAME);
             const {
                 image = null,
@@ -111,7 +96,7 @@ UIParser.prototype.createElementFromConfig = function(uiManager, config, DEBUG_N
 
             return element;
         }
-        case UIParser.ELEMENT_TYPE.SCROLLBAR: {
+        case ELEMENT_TYPE.SCROLLBAR: {
             const element = new Scrollbar(DEBUG_NAME);
 
             element.setPosition(x, y);
@@ -121,7 +106,7 @@ UIParser.prototype.createElementFromConfig = function(uiManager, config, DEBUG_N
 
             return element;
         }
-        case UIParser.ELEMENT_TYPE.TEXT: {
+        case ELEMENT_TYPE.TEXT: {
             const element = new TextElement(DEBUG_NAME);
             const { 
                 text = "ERROR",
@@ -144,54 +129,38 @@ UIParser.prototype.createElementFromConfig = function(uiManager, config, DEBUG_N
 
             return element;
         }
-        default: {
-            const element = new Container(DEBUG_NAME);
-
-            element.setPosition(x, y);
-            element.setOpacity(opacity);
-            element.setOrigin(x, y);
-            element.setAnchor(anchor);
-
-            element.setSize(width, height);
-
-            return element;
-        }
     }
 }
 
-UIParser.prototype.initGUI = function(gameContext, typeID, gui) {
+export const parseInterface = function(gameContext, userInterface, rawInterface) {
     const { uiManager, renderer } = gameContext;
-    const { effectManager } = renderer;
-    const userInterfaceType = this.interfaceTypes[typeID];
+    const { effectManager, windowWidth, windowHeight } = renderer;
 
-    if(!userInterfaceType) {
-        return;
-    }
+    for(const elementID in rawInterface) {
+        const config = rawInterface[elementID];
+        const element = parseElement(uiManager, config, elementID);
 
-    for(const elementID in userInterfaceType) {
-        const config = userInterfaceType[elementID];
-        const element = this.createElementFromConfig(uiManager, config, elementID);
-
-        gui.addNamedElement(element, elementID);   
+        userInterface.addNamedElement(element, elementID);   
     }
     
-    for(const elementID in userInterfaceType) {
-        const element = gui.getElement(elementID);
-        const config = userInterfaceType[elementID];
-        const { children, effects } = config;
+    for(const elementID in rawInterface) {
+        const config = rawInterface[elementID];
+        const element = userInterface.getElement(elementID);
+        const { children = [], effects } = config;
 
         if(effects) {
             effectManager.addEffects(element, effects);
         }
 
-        if(children) {
-            for(let i = 0; i < children.length; i++) {
-                const child = gui.getElement(children[i]);
+        for(const childID of children) {
+            const child = userInterface.getElement(childID);
 
-                if(child) {
-                    element.addChild(child);
-                }
+            if(child) {
+                element.addChild(child);
             }
         }
     }
+
+    userInterface.refreshRoots();
+    userInterface.onWindowResize(windowWidth, windowHeight);
 }

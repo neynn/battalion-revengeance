@@ -1,40 +1,40 @@
 import { Collider } from "../graphics/collider.js";
+import { Graph } from "../graphics/graph.js";
 import { UIElement } from "./uiElement.js";
 
-export const UserInterface = function(id) {
-    this.id = id;
-    this.roots = [];
+export const UserInterface = function() {
+    Graph.call(this);
+
     this.nameMap = new Map();
     this.elements = new Map();
-    this.state = UserInterface.STATE.VISIBLE;
     this.previousCollisions = [];
     this.currentCollisions = [];
 }
 
 UserInterface.EMPTY_ELEMENT = new UIElement("EMPTY");
 
-UserInterface.STATE = {
-    HIDDEN: 0,
-    VISIBLE: 1
-};
+UserInterface.prototype = Object.create(Graph.prototype);
+UserInterface.prototype.constructor = UserInterface;
 
-UserInterface.prototype.hide = function() {
-    this.state = UserInterface.STATE.HIDDEN;
+UserInterface.prototype.onWindowResize = function(width, height) {
+    for(let i = 0; i < this.children.length; i++) {
+        this.children[i].onWindowResize(width, height);
+    }
 }
 
-UserInterface.prototype.show = function() {
-    this.state = UserInterface.STATE.VISIBLE;
-}
+UserInterface.prototype.onClick = function(event) {
+    for(let i = 0; i < this.currentCollisions.length; i++) {
+        this.currentCollisions[i].onClick(event);
+    }
 
-UserInterface.prototype.getID = function() {
-    return this.id;
+    return this.currentCollisions.length;
 }
 
 UserInterface.prototype.clear = function() {
-    this.elements.forEach(element => element.closeGraph());
+    this.elements.forEach(element => element.close());
     this.elements.clear();
     this.nameMap.clear();
-    this.roots.length = 0;
+    this.close();
 }
 
 UserInterface.prototype.destroyNamedElement = function(name) {
@@ -51,35 +51,9 @@ UserInterface.prototype.destroyElement = function(elementID) {
     const element = this.elements.get(elementID);
 
     if(element) {        
-        element.closeGraph();
+        element.close();
 
         this.elements.delete(elementID);
-
-        for(let i = 0; i < this.roots.length; i++) {
-            if(this.roots[i] === element) {
-                this.roots.splice(i, 1);
-                break;
-            }
-        }
-    }
-}
-
-UserInterface.prototype.debug = function(display) {
-    for(let i = 0; i < this.roots.length; i++) {
-        this.roots[i].debug(display, 0, 0);
-    }
-}
-
-UserInterface.prototype.draw = function(display, realTime, deltaTime) {
-    if(this.state === UserInterface.STATE.HIDDEN) {
-        return;
-    }
-
-    for(let i = 0; i < this.roots.length; i++) {
-        const element = this.roots[i];
-
-        element.update(realTime, deltaTime);
-        element.draw(display, 0, 0);
     }
 }
 
@@ -94,21 +68,13 @@ UserInterface.prototype.getElement = function(name) {
     return element;
 }
 
-UserInterface.prototype.handleClick = function(event) {
-    for(let i = 0; i < this.currentCollisions.length; i++) {
-        this.currentCollisions[i].onClick(event);
-    }
-
-    return this.currentCollisions.length;
-}
-
 UserInterface.prototype.updateCollisions = function(mouseX, mouseY, mouseRange) {
     [this.currentCollisions, this.previousCollisions] = [this.previousCollisions, this.currentCollisions];
     this.currentCollisions.length = 0;
 
-    if(this.state === UserInterface.STATE.VISIBLE) {
-        for(let i = 0; i < this.roots.length; i++) {
-            this.roots[i].mGetCollisions(this.currentCollisions, mouseX, mouseY, mouseRange);
+    if(this.isVisible()) {
+        for(let i = 0; i < this.children.length; i++) {
+            this.children[i].mGetCollisions(this.currentCollisions, mouseX, mouseY, mouseRange);
 
             if(this.currentCollisions.length > 0) {
                 break;
@@ -150,30 +116,16 @@ UserInterface.prototype.addNamedElement = function(element, name) {
         if(!this.elements.has(elementID)) {
             this.nameMap.set(name, elementID);
             this.elements.set(elementID, element);
-
-            return true;
         }
     }
-
-    return false;
 }
 
 UserInterface.prototype.refreshRoots = function() {
-    this.roots.length = 0;
+    this.close();
 
     for(const [elementID, element] of this.elements) {
         if(!element.hasParent()) {
-            this.roots.push(element);
+            this.addChild(element);
         }
-    }
-}
-
-UserInterface.prototype.clearRoots = function() {
-    this.roots.length = 0;
-}
-
-UserInterface.prototype.updateRootAnchors = function(width, height) {
-    for(let i = 0; i < this.roots.length; i++) {
-        this.roots[i].updateAnchor(width, height);
     }
 }

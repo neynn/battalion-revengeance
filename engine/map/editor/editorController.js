@@ -1,29 +1,18 @@
 import { Cursor } from "../../client/cursor.js";
 import { MapEditor } from "./mapEditor.js";
 import { clampValue, loopValue } from "../../math/math.js";
-import { SHAPE } from "../../math/constants.js";
-import { Brush } from "./brush.js";
 import { ButtonHandler } from "./buttonHandler.js";
-import { PalletButton } from "./palletButton.js";
-import { Pallet } from "./pallet.js";
-import { ColorHelper } from "../../graphics/colorHelper.js";
-import { Container } from "../../ui/elements/container.js";
 import { ContextHelper } from "../../camera/contextHelper.js";
+import { TileManager } from "../../tile/tileManager.js";
 
-export const EditorController = function(mapEditor) {
+export const EditorController = function(mapEditor, userInterface) {
     this.editor = mapEditor;
+    this.userInterface = userInterface;
     this.mapID = null;
-    this.guiID = -1;
-    this.interfaceID = null;
     this.maxWidth = 100;
     this.maxHeight = 100;
-    this.slotButtonSize = 50;
-    this.textColorView = [238, 238, 238, 255];
-    this.textColorEdit = [252, 252, 63, 255];
-    this.textColorHide = [207, 55, 35, 255];
-    this.defaultMap = {};
     this.buttonHandler = new ButtonHandler();
-    this.palletButtons = [];
+    this.buttonCount = -1;
     this.pageIndex = 0;
 }
 
@@ -44,135 +33,6 @@ EditorController.prototype.paint = function(gameContext) {
     }
 }
 
-EditorController.prototype.destroy = function(gameContext) {
-    const { renderer, uiManager } = gameContext;
-
-    uiManager.destroyGUI(this.guiID);
-    renderer.destroyContext("CAMERA_CONTEXT");
-}
-
-EditorController.prototype.init = function(config, brushSets) {
-    const {
-        maxWidth = this.maxWidth,
-        maxHeight = this.maxHeight,
-        slotSize = this.slotButtonSize,
-        defaultMap = this.defaultMap,
-        textColorView = this.textColorView,
-        textColorEdit = this.textColorEdit,
-        textColorHide = this.textColorHide,
-        brushSizes = [0],
-        hiddenSets = [],
-        interfaceID = null
-    } = config;
-
-    this.maxWidth = maxWidth;
-    this.maxHeight = maxHeight;
-    this.interfaceID = interfaceID;
-    this.slotButtonSize = slotSize;
-    this.defaultMap = defaultMap;
-    this.textColorView = textColorView;
-    this.textColorEdit = textColorEdit;
-    this.textColorHide = textColorHide;
-
-    this.editor.brushSizes.setValues(brushSizes);
-    this.editor.initBrushSets(brushSets, hiddenSets);
-}
-
-EditorController.prototype.initUI = function(gameContext) {
-    const { uiManager } = gameContext;
-    const editorInterface = uiManager.parseGUI(gameContext, this.interfaceID);
-
-    this.guiID = editorInterface.getID();
-
-    ["CONTAINER_FILE", "CONTAINER_LAYERS", "CONTAINER_TILES", "CONTAINER_TOOLS"].forEach(id => {
-        const container = editorInterface.getElement(id);
-
-        container.drawFlags |= Container.DRAW_FLAG.BACKGROUND;
-        container.backgroundColor = ColorHelper.getRGBAString(20, 20, 20, 128);
-    });
-}
-
-EditorController.prototype.initPalletButtons = function(gameContext, camera) {
-    const { uiManager } = gameContext;
-    const editorInterface = uiManager.getGUI(this.guiID);
-    const container = editorInterface.getElement("CONTAINER_TILES");
-
-    if(container) {
-        const SLOT_START_Y = 100;
-        const BUTTON_ROWS = 7;
-        const BUTTON_COLUMNS = 7;
-
-        this.palletButtons.length = 0;
-
-        for(let i = 0; i < BUTTON_ROWS; i++) {
-            const positionY = this.slotButtonSize * i + SLOT_START_Y;
-
-            for(let j = 0; j < BUTTON_COLUMNS; j++) {
-                const button = new PalletButton(this.palletButtons.length, `BUTTON_${i * BUTTON_COLUMNS + j}`);
-                const positionX = this.slotButtonSize * j;
-
-                button.setShape(SHAPE.RECTANGLE);
-                button.setSize(this.slotButtonSize, this.slotButtonSize);
-                button.setPosition(positionX, positionY);
-                button.setOrigin(positionX, positionY);
-                container.addChild(button);
-
-                this.palletButtons.push(button);
-                this.initPalletButtonEvents(gameContext, button, camera, editorInterface);
-            }
-        }
-    }
-}
-
-EditorController.prototype.initPalletButtonEvents = function(gameContext, button, camera, gui) {
-    const { tileManager } = gameContext;
-    const { palletID } = button;
-
-    button.setClick((event) => {
-        const palletIndex = this.getPalletIndex(palletID);
-        const tileID = this.editor.pallet.getID(palletIndex);
-
-        if(tileID !== Pallet.ID.ERROR) {
-            this.resetBrush(gui);
-            this.editor.selectBrush(palletIndex);
-        } else {
-            this.resetBrush(gui);
-        }
-    });
-
-    button.setCustom((display, localX, localY) => {
-        const palletIndex = this.getPalletIndex(palletID);
-        const tileID = this.editor.pallet.getID(palletIndex);
-
-        if(tileID !== Pallet.ID.ERROR) {
-            camera.setRelativeScale(this.slotButtonSize, this.slotButtonSize); 
-            camera.drawTileSafe(tileManager, tileID, display.context, localX, localY);
-            camera.resetScale();
-        }
-    });
-}
-
-EditorController.prototype.resetPage = function() {
-    this.pageIndex = 0;
-}
-
-EditorController.prototype.updatePage = function(gameContext, delta) {
-    const maxPagesNeeded = Math.ceil(this.editor.pallet.getSize() / this.palletButtons.length);
-
-    if(maxPagesNeeded <= 0) {
-        this.pageIndex = 0;
-    } else {
-        this.pageIndex = loopValue(this.pageIndex + delta, maxPagesNeeded - 1, 0);
-    }
-
-    this.updateMenuText(gameContext);
-}
-
-EditorController.prototype.updateBrushSize = function(gameContext, delta) {
-    this.editor.scrollBrushSize(delta);
-    this.updateMenuText(gameContext);
-}
-
 EditorController.prototype.initCursorEvents = function(gameContext) {
     const { client } = gameContext;
     const { cursor } = client;
@@ -180,11 +40,11 @@ EditorController.prototype.initCursorEvents = function(gameContext) {
     cursor.events.on(Cursor.EVENT.SCROLL, ({ direction }) => {
         switch(direction) {
             case Cursor.SCROLL.UP: {
-                this.updateBrushSize(gameContext, 1);
+                this.updateBrushSize(1);
                 break;
             }
             case Cursor.SCROLL.DOWN: {
-                this.updateBrushSize(gameContext, -1);
+                this.updateBrushSize(-1);
                 break;
             }
         }
@@ -203,8 +63,67 @@ EditorController.prototype.initCursorEvents = function(gameContext) {
     });
 }
 
+EditorController.prototype.initPalletButtons = function(gameContext, buttons, camera) {
+    const { tileManager } = gameContext;
+    const slotButtonSize = this.userInterface.slotButtonSize;
+
+    for(const button of buttons) {
+        const { palletID } = button;
+
+        button.setClick((event) => {
+            const palletIndex = this.getPalletIndex(palletID);
+            const tileID = this.editor.getPalletID(palletIndex);
+
+            if(tileID !== TileManager.TILE_ID.INVALID) {
+                this.resetBrush();
+                this.editor.selectBrush(palletIndex);
+            } else {
+                this.resetBrush();
+            }
+        });
+
+        button.setCustom((display, localX, localY) => {
+            const palletIndex = this.getPalletIndex(palletID);
+            const tileID = this.editor.getPalletID(palletIndex);
+
+            if(tileID !== TileManager.TILE_ID.INVALID) {
+                camera.setRelativeScale(slotButtonSize, slotButtonSize); 
+                camera.drawTileSafe(tileManager, tileID, display.context, localX, localY);
+                camera.resetScale();
+            }
+        });
+    }
+
+    if(buttons.length === 0) {
+        this.buttonCount = -1;
+    } else {
+        this.buttonCount = buttons.length;
+    }
+}
+
+EditorController.prototype.resetPage = function() {
+    this.pageIndex = 0;
+}
+
+EditorController.prototype.updatePage = function(delta) {
+    const maxPagesNeeded = Math.ceil(this.editor.getPalletSize() / this.buttonCount);
+
+    if(maxPagesNeeded <= 0) {
+        this.pageIndex = 0;
+    } else {
+        this.pageIndex = loopValue(this.pageIndex + delta, maxPagesNeeded - 1, 0);
+    }
+
+    this.updateMenuText();
+}
+
+EditorController.prototype.updateBrushSize = function(delta) {
+    this.editor.scrollBrushSize(delta);
+    this.updateMenuText();
+}
+
 EditorController.prototype.clickLayerButton = function(gameContext, buttonID) {
-    const { world, uiManager } = gameContext;
+    const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getMap(this.mapID);
 
@@ -212,97 +131,49 @@ EditorController.prototype.clickLayerButton = function(gameContext, buttonID) {
         return;
     }
 
-    const editorInterface = uiManager.getGUI(this.guiID);
-
-    this.buttonHandler.onClick(editorInterface, this, buttonID);
+    this.buttonHandler.onClick(this.userInterface, buttonID);
     this.buttonHandler.updateLayers(worldMap);
 }
 
 EditorController.prototype.viewAllLayers = function(gameContext) {
-    const { uiManager, world } = gameContext;
+    const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getMap(this.mapID);
 
     if(!worldMap) {
         return;
     }
-
-    const editorInterface = uiManager.getGUI(this.guiID);
     
-    this.resetBrush(editorInterface);
-    this.buttonHandler.resetButtons(editorInterface, this);
+    this.resetBrush();
+    this.buttonHandler.resetButtons(this.userInterface, this);
     this.buttonHandler.updateLayers(worldMap);
 }
 
-EditorController.prototype.resetBrush = function(editorInterface) {
-    const text = editorInterface.getElement("TEXT_ERASER");
-    const { style } = text;
-
-    style.setColorArray(this.textColorView);
-
+EditorController.prototype.resetBrush = function() {
     this.editor.resetBrush();
+    this.userInterface.updateEraserText(false);
 }
 
-EditorController.prototype.updateInversionText = function(gameContext, isInverted) {
-    const { uiManager } = gameContext;
-    const editorInterface = uiManager.getGUI(this.guiID);
-    const text = editorInterface.getElement("TEXT_INVERT");
-    const { style } = text;
-
-    if(isInverted) {
-        style.setColorArray(this.textColorEdit);
-    } else {
-        style.setColorArray(this.textColorView);
-    }
-}
-
-EditorController.prototype.updateEraserText = function(gameContext, stateID) {
-    const { uiManager } = gameContext;
-    const editorInterface = uiManager.getGUI(this.guiID);
-    const text = editorInterface.getElement("TEXT_ERASER");
-    const { style } = text;
-
-    switch(stateID) {
-        case Brush.MODE.ERASE: {
-            style.setColorArray(this.textColorEdit);
-            break;
-        }
-        default: {
-            style.setColorArray(this.textColorView);
-            break;
-        }
-    }
-}
-
-EditorController.prototype.toggleEraser = function(gameContext) {
-    const nextState = this.editor.toggleEraser();
-
-    this.updateEraserText(gameContext, nextState);
-}
-
-EditorController.prototype.toggleAutotiler = function(gameContext) {
-    const { uiManager } = gameContext;
-    const editorInterface = uiManager.getGUI(this.guiID);
-    const text = editorInterface.getElement("TEXT_AUTO");
-    const { style } = text;
-    const isEnabled = this.editor.toggleAutotiling();
-
-    if(isEnabled) {
-        style.setColorArray(this.textColorEdit);
-    } else {
-        style.setColorArray(this.textColorView);
-        this.updateInversionText(gameContext, false);
-    }
-}
-
-EditorController.prototype.toggleInversion = function(gameContext) {
+EditorController.prototype.toggleInversion = function() {
     const isInverted = this.editor.toggleInversion();
 
-    this.updateInversionText(gameContext, isInverted);
+    this.userInterface.updateInversionText(isInverted);
+}
+
+EditorController.prototype.toggleEraser = function() {
+    const isErasing = this.editor.toggleEraser();
+
+    this.userInterface.updateEraserText(isErasing);
+}
+
+EditorController.prototype.toggleAutotiler = function() {
+    const isEnabled = this.editor.toggleAutotiling();
+
+    this.userInterface.updateAutoText(isEnabled);
 }
 
 EditorController.prototype.getPalletIndex = function(index) {
-    return this.pageIndex * this.palletButtons.length + index;
+    return this.pageIndex * this.buttonCount + index;
 } 
 
 EditorController.prototype.resizeCurrentMap = function(gameContext) {
@@ -324,25 +195,8 @@ EditorController.prototype.resizeCurrentMap = function(gameContext) {
     renderer.onMapSizeUpdate(newWidth, newHeight);
 }
 
-EditorController.prototype.updateMenuText = function(gameContext) {
-    const { uiManager } = gameContext;
-    const editorInterface = uiManager.getGUI(this.guiID);
-
-    editorInterface.getElement("TEXT_TILESET_MODE").setText(`MODE: ${MapEditor.MODE_NAME[this.editor.modes.getValue()]}`);
-
-    switch(this.editor.modes.getValue()) {
-        case MapEditor.MODE.DRAW: {
-            editorInterface.getElement("TEXT_TILESET").setText(`${this.editor.brushSets.getValue()?.id}`);
-            break;
-        }
-    }
-
-    editorInterface.getElement("TEXT_PAGE").setText(this.getPageText());
-    editorInterface.getElement("TEXT_SIZE").setText( this.getSizeText());
-}
-
 EditorController.prototype.getPageText = function() {
-    const maxPagesNeeded = Math.ceil(this.editor.pallet.getSize() / this.palletButtons.length);
+    const maxPagesNeeded = Math.ceil(this.editor.getPalletSize() / this.buttonCount);
     const showMaxPagesNeeded = maxPagesNeeded === 0 ? 1 : maxPagesNeeded;
     const showCurrentPage = this.pageIndex + 1;
 
@@ -351,7 +205,20 @@ EditorController.prototype.getPageText = function() {
 
 EditorController.prototype.getSizeText = function() {
     const info = this.editor.brushSizes.getInfo();
-    const areaString = this.editor.brush.getAreaString();
+    const areaString = this.editor.getBrushArea();
 
     return `SIZE: ${areaString} (${info})`;
+}
+
+EditorController.prototype.updateMenuText = function() {
+    this.userInterface.getElement("TEXT_TILESET_MODE").setText("MODE: " + this.editor.getModeName());
+    this.userInterface.getElement("TEXT_PAGE").setText(this.getPageText());
+    this.userInterface.getElement("TEXT_SIZE").setText( this.getSizeText());
+
+    switch(this.editor.modes.getValue()) {
+        case MapEditor.MODE.DRAW: {
+            this.userInterface.getElement("TEXT_TILESET").setText(this.editor.getPalletName());
+            break;
+        }
+    }
 }

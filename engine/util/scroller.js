@@ -1,8 +1,17 @@
 import { clampValue, loopValue } from "../math/math.js";
 
-export const Scroller = function(values = []) {
-    this.values = values;
+export const Scroller = function(stub) {
+    this.stub = stub;
+    this.values = [];
     this.index = 0;
+}
+
+Scroller.prototype.clearValues = function() {
+    this.values.length = 0;
+}
+
+Scroller.prototype.addValue = function(value) {
+    this.values.push(value);
 }
 
 Scroller.prototype.setValues = function(values) {
@@ -23,7 +32,7 @@ Scroller.prototype.loop = function(delta) {
 
 Scroller.prototype.getValue = function() {
     if(this.index < 0 || this.index >= this.values.length) {
-        return null;
+        return this.stub;
     }
     
     return this.values[this.index];

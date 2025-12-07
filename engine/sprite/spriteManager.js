@@ -215,7 +215,7 @@ SpriteManager.prototype.exit = function() {
     this.spriteTracker.clear();
     this.pool.forAllReserved((sprite) => {
         sprite.reset();
-        sprite.closeGraph();
+        sprite.close();
     });
     this.pool.reset();
     this.destroyCopyTextures();
@@ -357,7 +357,7 @@ SpriteManager.prototype.destroySprite = function(spriteIndex) {
         const isReserved = this.pool.isReserved(index);
 
         if(isReserved) {
-            node.closeGraph();
+            node.close();
 
             this.removeSpriteFromLayers(index);
             this.pool.freeElement(index);

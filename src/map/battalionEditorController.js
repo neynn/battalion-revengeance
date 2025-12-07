@@ -5,27 +5,16 @@ import { TILE_ID } from "../enums.js";
 import { createEditorMap, createEmptyMap } from "../systems/map.js";
 import { BattalionMap } from "./battalionMap.js";
 
-export const BattalionEditorController = function(mapEditor) {
-    EditorController.call(this, mapEditor);
+export const BattalionEditorController = function(mapEditor, userInterface) {
+    EditorController.call(this, mapEditor, userInterface);
 
-    const BRUSH_SIZES = [
-        { "width": 0, "height": 0 },
-        { "width": 1, "height": 1 },
-        { "width": 2, "height": 2 },
-        { "width": 3, "height": 3 },
-        { "width": 4, "height": 4 }
-    ];
+    this.fill = {
+        [BattalionMap.LAYER_NAME.GROUND]: TILE_ID.GRASS
+    };
 
-    this.maxWidth = 100;
-    this.maxHeight = 100;
-    this.interfaceID = "MAP_EDITOR";
-    this.textColorView = [238, 238, 238, 255];
-    this.textColorEdit = [252, 252, 63, 255];
-    this.textColorHide = [207, 55, 35, 255];
     this.defaultWidth = 20;
     this.defaultHeight = 20;
-    this.fill = { [BattalionMap.LAYER_NAME.GROUND]: TILE_ID.GRASS };
-    this.editor.setBrushSizes(BRUSH_SIZES);
+
     this.buttonHandler.createButton(BattalionEditorController.LAYER_BUTTON.L1, BattalionMap.LAYER.GROUND, "TEXT_L1");
     this.buttonHandler.createButton(BattalionEditorController.LAYER_BUTTON.L2, BattalionMap.LAYER.DECORATION, "TEXT_L2");
     this.buttonHandler.createButton(BattalionEditorController.LAYER_BUTTON.L3, BattalionMap.LAYER.CLOUD, "TEXT_L3");   
@@ -39,16 +28,6 @@ BattalionEditorController.LAYER_BUTTON = {
 
 BattalionEditorController.prototype = Object.create(EditorController.prototype);
 BattalionEditorController.prototype.constructor = BattalionEditorController;
-
-BattalionEditorController.prototype.loadCommands = function(gameContext) {
-    const { client } = gameContext;
-    const { router } = client;
-
-    router.bind(gameContext, "EDIT");
-    router.on("TOGGLE_AUTOTILER", () => this.toggleAutotiler(gameContext));
-    router.on("TOGGLE_ERASER", () => this.toggleEraser(gameContext));
-    router.on("TOGGLE_INVERSION", () => this.toggleInversion(gameContext));
-}
 
 BattalionEditorController.prototype.saveMap = function(gameContext) {
     const { world } = gameContext;
@@ -109,43 +88,52 @@ BattalionEditorController.prototype.loadMap = async function(gameContext) {
     }
 }
 
+BattalionEditorController.prototype.initCommands = function(gameContext) {
+    const { client } = gameContext;
+    const { router } = client;
+
+    router.bind(gameContext, "EDIT");
+    router.on("TOGGLE_AUTOTILER", () => this.toggleAutotiler());
+    router.on("TOGGLE_ERASER", () => this.toggleEraser());
+    router.on("TOGGLE_INVERSION", () => this.toggleInversion());
+}
+
 BattalionEditorController.prototype.initUIEvents = function(gameContext) {
-    const { uiManager, states } = gameContext;
-    const editorInterface = uiManager.getGUI(this.guiID);
+    const { states } = gameContext;
 
-    editorInterface.getElement("BUTTON_INVERT").setClick(() => this.toggleInversion(gameContext));
-    editorInterface.getElement("BUTTON_BACK").setClick(() => states.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));
-    editorInterface.getElement("BUTTON_AUTO").setClick(() => this.toggleAutotiler(gameContext));
+    this.userInterface.getElement("BUTTON_INVERT").setClick(() => this.toggleInversion());
+    this.userInterface.getElement("BUTTON_BACK").setClick(() => states.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));
+    this.userInterface.getElement("BUTTON_AUTO").setClick(() => this.toggleAutotiler());
 
-    editorInterface.getElement("BUTTON_TILESET_MODE").setClick(() => {
+    this.userInterface.getElement("BUTTON_TILESET_MODE").setClick(() => {
         this.editor.scrollMode(1);
         this.resetPage();
-        this.updateMenuText(gameContext);
+        this.updateMenuText();
     });
 
-    editorInterface.getElement("BUTTON_TILESET_LEFT").setClick(() => {
+    this.userInterface.getElement("BUTTON_TILESET_LEFT").setClick(() => {
         this.editor.scrollBrushSet(-1);
         this.resetPage();
-        this.updateMenuText(gameContext);
+        this.updateMenuText();
     });
 
-    editorInterface.getElement("BUTTON_TILESET_RIGHT").setClick(() => {
+    this.userInterface.getElement("BUTTON_TILESET_RIGHT").setClick(() => {
         this.editor.scrollBrushSet(1);
         this.resetPage();
-        this.updateMenuText(gameContext);
+        this.updateMenuText();
     });
 
-    editorInterface.getElement("BUTTON_PAGE_LAST").setClick(() => this.updatePage(gameContext, -1)); 
-    editorInterface.getElement("BUTTON_PAGE_NEXT").setClick(() => this.updatePage(gameContext, 1));  
-    editorInterface.getElement("BUTTON_SCROLL_SIZE").setClick(() => this.updateBrushSize(gameContext, 1));
-    editorInterface.getElement("BUTTON_L1").setClick(() => this.clickLayerButton(gameContext, BattalionEditorController.LAYER_BUTTON.L1));
-    editorInterface.getElement("BUTTON_L2").setClick(() => this.clickLayerButton(gameContext, BattalionEditorController.LAYER_BUTTON.L2));
-    editorInterface.getElement("BUTTON_L3").setClick(() => this.clickLayerButton(gameContext, BattalionEditorController.LAYER_BUTTON.L3));
-    editorInterface.getElement("BUTTON_SAVE").setClick(() => this.saveMap(gameContext));
-    editorInterface.getElement("BUTTON_CREATE").setClick(() => this.createMap(gameContext));
-    editorInterface.getElement("BUTTON_LOAD").setClick(() => this.loadMap(gameContext));
-    editorInterface.getElement("BUTTON_RESIZE").setClick(() => this.resizeCurrentMap(gameContext)); 
-    editorInterface.getElement("BUTTON_UNDO").setClick(() => this.editor.undo(gameContext)); 
-    editorInterface.getElement("BUTTON_ERASER").setClick(() => this.toggleEraser(gameContext));
-    editorInterface.getElement("BUTTON_VIEW_ALL").setClick(() => this.viewAllLayers(gameContext));
+    this.userInterface.getElement("BUTTON_PAGE_LAST").setClick(() => this.updatePage(-1)); 
+    this.userInterface.getElement("BUTTON_PAGE_NEXT").setClick(() => this.updatePage(1));  
+    this.userInterface.getElement("BUTTON_SCROLL_SIZE").setClick(() => this.updateBrushSize(1));
+    this.userInterface.getElement("BUTTON_L1").setClick(() => this.clickLayerButton(gameContext, BattalionEditorController.LAYER_BUTTON.L1));
+    this.userInterface.getElement("BUTTON_L2").setClick(() => this.clickLayerButton(gameContext, BattalionEditorController.LAYER_BUTTON.L2));
+    this.userInterface.getElement("BUTTON_L3").setClick(() => this.clickLayerButton(gameContext, BattalionEditorController.LAYER_BUTTON.L3));
+    this.userInterface.getElement("BUTTON_SAVE").setClick(() => this.saveMap(gameContext));
+    this.userInterface.getElement("BUTTON_CREATE").setClick(() => this.createMap(gameContext));
+    this.userInterface.getElement("BUTTON_LOAD").setClick(() => this.loadMap(gameContext));
+    this.userInterface.getElement("BUTTON_RESIZE").setClick(() => this.resizeCurrentMap(gameContext)); 
+    this.userInterface.getElement("BUTTON_UNDO").setClick(() => this.editor.undo(gameContext)); 
+    this.userInterface.getElement("BUTTON_ERASER").setClick(() => this.toggleEraser());
+    this.userInterface.getElement("BUTTON_VIEW_ALL").setClick(() => this.viewAllLayers(gameContext));
 }

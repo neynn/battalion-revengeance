@@ -38,7 +38,7 @@ UIElement.prototype.setAnchor = function(anchor) {
     }
 }
 
-UIElement.prototype.updateAnchor = function(windowWidth, windowHeight) {    
+UIElement.prototype.onWindowResize = function(windowWidth, windowHeight) {
     switch(this.anchor) {
         case UIElement.ANCHOR_TYPE.TOP_CENTER: {
             const anchorX = windowWidth / 2 - this.width / 2 + this.originX;

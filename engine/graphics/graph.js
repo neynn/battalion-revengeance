@@ -1,7 +1,6 @@
 export const Graph = function(DEBUG_NAME = "") {
     this.DEBUG_NAME = DEBUG_NAME;
     this.id = Graph.ID.NEXT++;
-    this.state = Graph.STATE.VISIBLE;
     this.positionX = 0;
     this.positionY = 0;
     this.width = 0;
@@ -11,22 +10,28 @@ export const Graph = function(DEBUG_NAME = "") {
     this.children = [];
     this.parent = null;
     this.collider = null;
+    this._flags = Graph.FLAG.IS_VISIBLE;
 }
+
+Graph.FLAG = {
+    NONE: 0,
+    IS_VISIBLE: 1
+};
 
 Graph.ID = {
     NEXT: 100000,
     INVALID: -1
 };
 
-Graph.STATE = {
-    HIDDEN: 0,
-    VISIBLE: 1
-};
-
+Graph.prototype.onWindowResize = function(width, height) {}
 Graph.prototype.onDraw = function(display, localX, localY) {}
 Graph.prototype.onDebug = function(display, localX, localY) {}
 Graph.prototype.onUpdate = function(timestamp, deltaTime) {}
 Graph.prototype.onClick = function(event) {}
+
+Graph.prototype.isVisible = function() {
+    return (this._flags & Graph.FLAG.IS_VISIBLE) !== 0;
+}
 
 Graph.prototype.setClick = function(onClick) {
     if(this.collider !== null) {
@@ -111,7 +116,7 @@ Graph.prototype.debug = function(display, viewportX, viewportY) {
 }
 
 Graph.prototype.draw = function(display, viewportX, viewportY) {
-    if(this.state !== Graph.STATE.VISIBLE) {
+    if((this._flags & Graph.FLAG.IS_VISIBLE) === 0) {
         return;
     }
 
@@ -129,9 +134,9 @@ Graph.prototype.draw = function(display, viewportX, viewportY) {
 
         for(let i = children.length - 1; i >= 0; i--) {
             const child = children[i];
-            const { state, positionX, positionY } = child;
+            const { _flags, positionX, positionY } = child;
 
-            if(state === Graph.STATE.VISIBLE) {
+            if((_flags & Graph.FLAG.IS_VISIBLE) !== 0) {
                 stack.push(child);
                 positions.push(localX + positionX);
                 positions.push(localY + positionY);
@@ -186,11 +191,11 @@ Graph.prototype.setPosition = function(positionX, positionY) {
 }
 
 Graph.prototype.hide = function() {
-    this.state = Graph.STATE.HIDDEN;
+    this._flags &= ~Graph.FLAG.IS_VISIBLE;
 }
 
 Graph.prototype.show = function() {
-    this.state = Graph.STATE.VISIBLE;
+    this._flags |= Graph.FLAG.IS_VISIBLE;
 }
 
 Graph.prototype.setOpacity = function(opacity) {
@@ -260,7 +265,7 @@ Graph.prototype.removeChild = function(childID) {
     }
 }
 
-Graph.prototype.closeGraph = function() {
+Graph.prototype.close = function() {
     if(this.parent !== null) {
         this.parent.removeChild(this.id);
         this.parent = null;

@@ -1,12 +1,11 @@
-import { UIParser } from "./parser.js";
+import { parseInterface } from "./parser.js";
 import { UserInterface } from "./userInterface.js";
 
 export const UIManager = function(resourceLoader) {
-    this.nextID = 0;
     this.resources = resourceLoader;
     this.textureMap = {};
-    this.parser = new UIParser();
-    this.interfaceStack = [];
+    this.rawInterfaces = {};
+    this.interfaces = [];
 }
 
 UIManager.prototype.getIconTexture = function(iconID) {
@@ -24,19 +23,24 @@ UIManager.prototype.load = function(interfaceTypes, iconTypes) {
         return;
     }
 
-    this.parser.load(interfaceTypes);
+    this.rawInterfaces = interfaceTypes;
     this.textureMap = this.resources.createTextures(iconTypes);
 }
 
 UIManager.prototype.debug = function(display) {
-    for(let i = this.interfaceStack.length - 1; i >= 0; i--) {
-        this.interfaceStack[i].debug(display);
+    for(let i = this.interfaces.length - 1; i >= 0; i--) {
+        this.interfaces[i].debug(display, 0, 0);
     }
 }
 
 UIManager.prototype.draw = function(display, realTime, deltaTime) {
-    for(let i = this.interfaceStack.length - 1; i >= 0; i--) {
-        this.interfaceStack[i].draw(display, realTime, deltaTime);
+    for(let i = this.interfaces.length - 1; i >= 0; i--) {
+        const element = this.interfaces[i];
+
+        if(element.isVisible()) {
+            element.update(realTime, deltaTime);
+            element.draw(display, 0, 0);
+        }
     }
 }
 
@@ -45,8 +49,8 @@ UIManager.prototype.update = function(gameContext) {
     const { cursor } = client;
     const { positionX, positionY, radius } = cursor;
 
-    for(let i = this.interfaceStack.length - 1; i >= 0; i--) {
-        const collisions = this.interfaceStack[i].updateCollisions(positionX, positionY, radius);
+    for(let i = this.interfaces.length - 1; i >= 0; i--) {
+        const collisions = this.interfaces[i].updateCollisions(positionX, positionY, radius);
 
         if(collisions > 0) {
             break;
@@ -54,37 +58,37 @@ UIManager.prototype.update = function(gameContext) {
     }
 }
 
-UIManager.prototype.getIndex = function(interfaceID) {
-    for(let i = 0; i < this.interfaceStack.length; i++) {
-        const currentID = this.interfaceStack[i].getID();
+UIManager.prototype.exit = function() {
+    this.interfaces.length = 0;
+}
 
-        if(currentID === interfaceID) {
-            return i;
+UIManager.prototype.destroyInterface = function(id) {
+    for(let i = 0; i < this.interfaces.length; i++) {
+        const element = this.interfaces[i];
+
+        if(element.id === id) {
+            element.clear();
+            this.interfaces.splice(i, 1);
+            break;
+        }
+    }
+}
+
+UIManager.prototype.getInterfaceByID = function(id) {
+    for(let i = 0; i < this.interfaces.length; i++) {
+        const element = this.interfaces[i];
+
+        if(element.id === id) {
+            return element;
         }
     }
 
-    return -1;
-}
-
-UIManager.prototype.exit = function() {
-    this.nextID = 0;
-    this.interfaceStack.length = 0;
-}
-
-UIManager.prototype.getGUI = function(interfaceID) {
-    const interfaceIndex = this.getIndex(interfaceID);
-
-    if(interfaceIndex === -1) {
-        return null;
-    }
-
-    return this.interfaceStack[interfaceIndex];
+    return null;
 }
 
 UIManager.prototype.handleClick = function(event) {
-    for(let i = this.interfaceStack.length - 1; i >= 0; i--) {
-        const userInterface = this.interfaceStack[i];
-        const collisions = userInterface.handleClick(event);
+    for(let i = this.interfaces.length - 1; i >= 0; i--) {
+        const collisions = this.interfaces[i].onClick(event);
 
         if(collisions > 0) {
             break;
@@ -93,41 +97,42 @@ UIManager.prototype.handleClick = function(event) {
 }
 
 UIManager.prototype.onWindowResize = function(windowWidth, windowHeight) {
-    for(let i = 0; i < this.interfaceStack.length; i++) {
-        this.interfaceStack[i].updateRootAnchors(windowWidth, windowHeight);
+    for(let i = 0; i < this.interfaces.length; i++) {
+        this.interfaces[i].onWindowResize(windowWidth, windowHeight);
     }
 }
 
-UIManager.prototype.destroyGUI = function(interfaceID) {
-    const index = this.getIndex(interfaceID);
+UIManager.prototype.addInterface = function(element) {
+    const interfaceID = element.getID();
 
-    if(index !== -1) {
-        const userInterface = this.interfaceStack[index];
-
-        userInterface.clear();
-
-        this.interfaceStack.splice(index, 1);
+    for(let i = 0; i < this.interfaces.length; i++) {
+        if(this.interfaces[i].id === interfaceID) {
+            return;
+        }
     }
+
+    this.interfaces.push(element);
 }
 
-UIManager.prototype.createGUI = function() {
-    const interfaceID = this.nextID++;
-    const userInterface = new UserInterface(interfaceID);
+UIManager.prototype.parseInterface = function(gameContext, typeID) {
+    const element = new UserInterface();
+    const type = this.rawInterfaces[typeID];
 
-    this.interfaceStack.push(userInterface);
+    if(type !== undefined) {
+        parseInterface(gameContext, element, type);
+    }
 
-    return userInterface;
+    this.addInterface(element);
+
+    return element;
 }
 
-UIManager.prototype.parseGUI = function(gameContext, typeID) {
-    const { renderer } = gameContext;
-    const { windowWidth, windowHeight } = renderer;
-    const gui = this.createGUI();
+UIManager.prototype.parseInterfaceCustom = function(gameContext, element, typeID) {
+    const type = this.rawInterfaces[typeID];
 
-    this.parser.initGUI(gameContext, typeID, gui);
+    if(type !== undefined) {
+        parseInterface(gameContext, element, type);
+    }
 
-    gui.refreshRoots();
-    gui.updateRootAnchors(windowWidth, windowHeight);
-
-    return gui;
+    this.addInterface(element);
 }
