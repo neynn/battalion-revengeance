@@ -13,7 +13,7 @@ import { DialogueHandler } from "./dialogue/dialogueHandler.js";
 import { LAYER_TYPE } from "./enums.js";
 import { EventHandler } from "./event/eventHandler.js";
 import { MainMenuState } from "./states/mainMenu/mainMenu.js";
-import { MapEditorState } from "./states/mapEditor.js";
+import { MapEditorState } from "./states/mapEditor/mapEditorState.js";
 import { PlayState } from "./states/play.js";
 import { TeamManager } from "./team/teamManager.js";
 import { TypeRegistry } from "./type/typeRegistry.js";

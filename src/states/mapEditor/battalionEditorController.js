@@ -1,9 +1,9 @@
-import { EditorController } from "../../engine/map/editor/editorController.js";
-import { PrettyJSON } from "../../engine/resources/prettyJSON.js";
-import { BattalionContext } from "../battalionContext.js";
-import { TILE_ID } from "../enums.js";
-import { createEditorMap, createEmptyMap } from "../systems/map.js";
-import { BattalionMap } from "./battalionMap.js";
+import { EditorController } from "../../../engine/map/editor/editorController.js";
+import { PrettyJSON } from "../../../engine/resources/prettyJSON.js";
+import { BattalionContext } from "../../battalionContext.js";
+import { TILE_ID } from "../../enums.js";
+import { createEditorMap, createEmptyMap } from "../../systems/map.js";
+import { BattalionMap } from "../../map/battalionMap.js";
 
 export const BattalionEditorController = function(mapEditor, userInterface) {
     EditorController.call(this, mapEditor, userInterface);
@@ -126,9 +126,6 @@ BattalionEditorController.prototype.initUIEvents = function(gameContext) {
     this.userInterface.getElement("BUTTON_PAGE_LAST").setClick(() => this.updatePage(-1)); 
     this.userInterface.getElement("BUTTON_PAGE_NEXT").setClick(() => this.updatePage(1));  
     this.userInterface.getElement("BUTTON_SCROLL_SIZE").setClick(() => this.updateBrushSize(1));
-    this.userInterface.getElement("BUTTON_L1").setClick(() => this.clickLayerButton(gameContext, BattalionEditorController.LAYER_BUTTON.L1));
-    this.userInterface.getElement("BUTTON_L2").setClick(() => this.clickLayerButton(gameContext, BattalionEditorController.LAYER_BUTTON.L2));
-    this.userInterface.getElement("BUTTON_L3").setClick(() => this.clickLayerButton(gameContext, BattalionEditorController.LAYER_BUTTON.L3));
     this.userInterface.getElement("BUTTON_SAVE").setClick(() => this.saveMap(gameContext));
     this.userInterface.getElement("BUTTON_CREATE").setClick(() => this.createMap(gameContext));
     this.userInterface.getElement("BUTTON_LOAD").setClick(() => this.loadMap(gameContext));
@@ -136,4 +133,8 @@ BattalionEditorController.prototype.initUIEvents = function(gameContext) {
     this.userInterface.getElement("BUTTON_UNDO").setClick(() => this.editor.undo(gameContext)); 
     this.userInterface.getElement("BUTTON_ERASER").setClick(() => this.toggleEraser());
     this.userInterface.getElement("BUTTON_VIEW_ALL").setClick(() => this.viewAllLayers(gameContext));
+
+    this.userInterface.getElement("BUTTON_L1").setClick(() => this.clickLayerButton(gameContext, BattalionEditorController.LAYER_BUTTON.L1));
+    this.userInterface.getElement("BUTTON_L2").setClick(() => this.clickLayerButton(gameContext, BattalionEditorController.LAYER_BUTTON.L2));
+    this.userInterface.getElement("BUTTON_L3").setClick(() => this.clickLayerButton(gameContext, BattalionEditorController.LAYER_BUTTON.L3));
 }
