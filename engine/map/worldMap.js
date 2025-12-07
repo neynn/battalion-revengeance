@@ -11,11 +11,19 @@ export const WorldMap = function(id, width, height) {
     this.source = MapManager.EMPTY_SOURCE;
     this.layers = [];
     this.entities = new Map();
-    this.flags = 0;
 }
 
 WorldMap.EMPTY_LAYER = Layer.create(0, Layer.TYPE.BIT_0);
 WorldMap.OUT_OF_BOUNDS = -1;
+WorldMap.INVALID_LAYER_ID = -1;
+
+WorldMap.prototype.onLanguageUpdate = function(language, translations) {}
+
+WorldMap.prototype.update = function(gameContext) {}
+
+WorldMap.prototype.getID = function() {
+    return this.id;
+}
 
 WorldMap.prototype.setSource = function(source) {
     this.source = source;
@@ -23,26 +31,6 @@ WorldMap.prototype.setSource = function(source) {
 
 WorldMap.prototype.getSource = function() {
     return this.source;
-}
-
-WorldMap.prototype.onLanguageUpdate = function(language, translations) {}
-
-WorldMap.prototype.hasFlag = function(flag) {
-    return (this.flags & flag) !== 0;
-}
-
-WorldMap.prototype.load = function(blob) {}
-
-WorldMap.prototype.save = function() {
-    return {
-        "id": this.id
-    }
-}
-
-WorldMap.prototype.update = function(gameContext) {}
-
-WorldMap.prototype.getID = function() {
-    return this.id;
 }
 
 WorldMap.prototype.applyAutotiler = function(autotiler, tileX, tileY, layerID, isInverted) {

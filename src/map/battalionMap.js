@@ -300,19 +300,6 @@ BattalionMap.prototype.getJammer = function(tileX, tileY) {
     return jammerField;
 }
 
-BattalionMap.prototype.fillLayers = function(layerData) {
-    for(const layerID in layerData) {
-        const value = layerData[layerID];
-        const index = BattalionMap.LAYER[layerID];
-
-        if(index !== undefined) {
-            this.getLayer(index).fill(value);
-        } else {
-            console.error(`Unknown layer! ${layerID}`);
-        }
-    }
-}
-
 BattalionMap.prototype.decodeLayers = function(layerData) {
     for(const layerID in layerData) {
         const data = layerData[layerID];

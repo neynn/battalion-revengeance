@@ -1,5 +1,4 @@
 import { Cursor } from "../../client/cursor.js";
-import { MapEditor } from "./mapEditor.js";
 import { clampValue, loopValue } from "../../math/math.js";
 import { ButtonHandler } from "./buttonHandler.js";
 import { ContextHelper } from "../../camera/contextHelper.js";
@@ -8,29 +7,11 @@ import { TileManager } from "../../tile/tileManager.js";
 export const EditorController = function(mapEditor, userInterface) {
     this.editor = mapEditor;
     this.userInterface = userInterface;
-    this.mapID = null;
     this.maxWidth = 100;
     this.maxHeight = 100;
     this.buttonHandler = new ButtonHandler();
     this.buttonCount = -1;
     this.pageIndex = 0;
-}
-
-EditorController.prototype.paint = function(gameContext) {
-    const button = this.buttonHandler.getActiveButton();
-
-    if(button) {
-        const { world } = gameContext;
-        const { mapManager } = world;
-        const worldMap = mapManager.getMap(this.mapID);
-
-        if(worldMap) {
-            const { layerID } = button;
-            const position = ContextHelper.getMouseTile(gameContext);
-
-            this.editor.onPaint(gameContext, worldMap, position, layerID);
-        }
-    }
 }
 
 EditorController.prototype.initCursorEvents = function(gameContext) {
@@ -52,13 +33,17 @@ EditorController.prototype.initCursorEvents = function(gameContext) {
 
     cursor.events.on(Cursor.EVENT.BUTTON_DRAG, ({ button }) => {
         if(button === Cursor.BUTTON.RIGHT) {
-            this.paint(gameContext);
+            const { x, y } = ContextHelper.getMouseTile(gameContext);
+
+            this.editor.paint(gameContext, x, y);
         }
     });
 
     cursor.events.on(Cursor.EVENT.BUTTON_CLICK, ({ button }) => {
         if(button === Cursor.BUTTON.RIGHT) {
-            this.paint(gameContext);
+            const { x, y } = ContextHelper.getMouseTile(gameContext);
+
+            this.editor.paint(gameContext, x, y);
         }
     });
 }
@@ -122,10 +107,8 @@ EditorController.prototype.updateBrushSize = function(delta) {
     this.updateMenuText();
 }
 
-EditorController.prototype.clickLayerButton = function(gameContext, buttonID) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getMap(this.mapID);
+EditorController.prototype.clickLayerButton = function(buttonID) {
+    const worldMap = this.editor.targetMap;
 
     if(!worldMap) {
         return;
@@ -133,12 +116,20 @@ EditorController.prototype.clickLayerButton = function(gameContext, buttonID) {
 
     this.buttonHandler.onClick(this.userInterface, buttonID);
     this.buttonHandler.updateLayers(worldMap);
+
+    const activeButton = this.buttonHandler.getActiveButton();
+
+    if(activeButton) {
+        const { layerID } = activeButton;
+
+        this.editor.setTargetLayer(layerID);
+    } else {
+        this.editor.removeTargetLayer();
+    }
 }
 
-EditorController.prototype.viewAllLayers = function(gameContext) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getMap(this.mapID);
+EditorController.prototype.viewAllLayers = function() {
+    const worldMap = this.editor.targetMap;
 
     if(!worldMap) {
         return;
@@ -147,6 +138,7 @@ EditorController.prototype.viewAllLayers = function(gameContext) {
     this.resetBrush();
     this.buttonHandler.resetButtons(this.userInterface, this);
     this.buttonHandler.updateLayers(worldMap);
+    this.editor.removeTargetLayer();
 }
 
 EditorController.prototype.resetBrush = function() {
@@ -177,11 +169,10 @@ EditorController.prototype.getPalletIndex = function(index) {
 } 
 
 EditorController.prototype.resizeCurrentMap = function(gameContext) {
-    const { world, renderer } = gameContext;
-    const { mapManager } = world;
-    const gameMap = mapManager.getMap(this.mapID);
+    const { renderer } = gameContext;
+    const worldMap = this.editor.targetMap;
 
-    if(!gameMap) {
+    if(!worldMap) {
         console.warn(`GameMap cannot be undefined! Returning...`);
         return;
     }
@@ -191,7 +182,7 @@ EditorController.prototype.resizeCurrentMap = function(gameContext) {
     const newWidth = clampValue(parsedWidth, this.maxWidth, 1);
     const newHeight = clampValue(parsedHeight, this.maxHeight, 1);
 
-    gameMap.resize(newWidth, newHeight);
+    worldMap.resize(newWidth, newHeight);
     renderer.onMapSizeUpdate(newWidth, newHeight);
 }
 
@@ -214,11 +205,5 @@ EditorController.prototype.updateMenuText = function() {
     this.userInterface.getElement("TEXT_TILESET_MODE").setText("MODE: " + this.editor.getModeName());
     this.userInterface.getElement("TEXT_PAGE").setText(this.getPageText());
     this.userInterface.getElement("TEXT_SIZE").setText( this.getSizeText());
-
-    switch(this.editor.modes.getValue()) {
-        case MapEditor.MODE.DRAW: {
-            this.userInterface.getElement("TEXT_TILESET").setText(this.editor.getPalletName());
-            break;
-        }
-    }
+    this.userInterface.getElement("TEXT_TILESET").setText(this.editor.getPalletName());
 }

@@ -75,18 +75,3 @@ Brush.prototype.reset = function() {
     this.id = TileManager.TILE_ID.INVALID;
     this.mode = Brush.MODE.NONE;
 }
-
-Brush.prototype.paint = function(tileX, tileY, onPaint) {
-    if(this.mode !== Brush.MODE.NONE && typeof onPaint === "function") {
-        const startX = tileX - this.width;
-        const startY = tileY - this.height;
-        const endX = tileX + this.width;
-        const endY = tileY + this.height;
-
-        for(let i = startY; i <= endY; i++) {
-            for(let j = startX; j <= endX; j++) {
-                onPaint(j, i);
-            }
-        }
-    }
-}
