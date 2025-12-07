@@ -1,12 +1,11 @@
-import { parseInterface } from "./parser.js";
-import { UserInterface } from "./userInterface.js";
-
 export const UIManager = function(resourceLoader) {
     this.resources = resourceLoader;
     this.textureMap = {};
     this.rawInterfaces = {};
     this.interfaces = [];
 }
+
+UIManager.EMPTY_CONFIG = {};
 
 UIManager.prototype.getIconTexture = function(iconID) {
     const textureID = this.textureMap[iconID];
@@ -19,12 +18,13 @@ UIManager.prototype.getIconTexture = function(iconID) {
 }
 
 UIManager.prototype.load = function(interfaceTypes, iconTypes) {
-    if(!interfaceTypes || !iconTypes) {
-        return;
+    if(interfaceTypes) {
+        this.rawInterfaces = interfaceTypes;
     }
 
-    this.rawInterfaces = interfaceTypes;
-    this.textureMap = this.resources.createTextures(iconTypes);
+    if(iconTypes) {
+        this.textureMap = this.resources.createTextures(iconTypes);
+    }
 }
 
 UIManager.prototype.debug = function(display) {
@@ -114,25 +114,12 @@ UIManager.prototype.addInterface = function(element) {
     this.interfaces.push(element);
 }
 
-UIManager.prototype.parseInterface = function(gameContext, typeID) {
-    const element = new UserInterface();
+UIManager.prototype.getInterfaceType = function(typeID) {
     const type = this.rawInterfaces[typeID];
 
-    if(type !== undefined) {
-        parseInterface(gameContext, element, type);
+    if(type === undefined) {
+        return UIManager.EMPTY_CONFIG;
     }
 
-    this.addInterface(element);
-
-    return element;
-}
-
-UIManager.prototype.parseInterfaceCustom = function(gameContext, element, typeID) {
-    const type = this.rawInterfaces[typeID];
-
-    if(type !== undefined) {
-        parseInterface(gameContext, element, type);
-    }
-
-    this.addInterface(element);
+    return type;
 }

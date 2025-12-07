@@ -2,6 +2,7 @@ import { ColorHelper } from "../../../engine/graphics/colorHelper.js";
 import { PalletButton } from "../../../engine/map/editor/palletButton.js";
 import { SHAPE } from "../../../engine/math/constants.js";
 import { Container } from "../../../engine/ui/elements/container.js";
+import { parseInterfaceByID } from "../../../engine/ui/parser.js";
 import { UserInterface } from "../../../engine/ui/userInterface.js";
 
 export const MapEditorInterface = function() {
@@ -17,17 +18,16 @@ MapEditorInterface.prototype = Object.create(UserInterface.prototype);
 MapEditorInterface.prototype.constructor = MapEditorInterface;
 
 MapEditorInterface.prototype.load = function(gameContext) {
-    const { uiManager } = gameContext;
     const CONTAINERS = ["CONTAINER_FILE", "CONTAINER_LAYERS", "CONTAINER_TILES", "CONTAINER_TOOLS"];
 
-    uiManager.parseInterfaceCustom(gameContext, this, "MAP_EDITOR");
+    parseInterfaceByID(gameContext, this, "MAP_EDITOR");
 
     for(const elementID of CONTAINERS) {
         const element = this.getElement(elementID);
 
         element.drawFlags |= Container.DRAW_FLAG.BACKGROUND;
         element.backgroundColor = ColorHelper.getRGBAString(20, 20, 20, 128);
-    }   
+    }
 }
 
 MapEditorInterface.prototype.updatePermutationText = function(isEnabled) {

@@ -52,12 +52,12 @@ Sprite.prototype.onDraw = function(display, localX, localY) {
     let renderY = 0;
 
     if(isFlipped) {
-        renderX = this.shiftX - localX;
-        renderY = localY + this.shiftY;
+        renderX = Math.floor(this.shiftX - localX);
+        renderY = Math.floor(localY + this.shiftY);
         display.flip();
     } else {
-        renderX = localX + this.shiftX;
-        renderY = localY + this.shiftY;
+        renderX = Math.floor(localX + this.shiftX);
+        renderY = Math.floor(localY + this.shiftY);
         display.unflip();
     }
 

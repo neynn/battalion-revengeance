@@ -30,7 +30,8 @@ export const GameContext = function() {
     this.timer = new Timer();
 
     this.timer.input = () => {
-        this.client.update(this);
+        this.client.update();
+        this.uiManager.update(this);
     }
 
     this.timer.update = () => {
@@ -42,7 +43,6 @@ export const GameContext = function() {
         this.contextWindow.update(this);
         this.spriteManager.update(this);
         this.tileManager.update(this);
-        this.uiManager.update(this);
         this.renderer.update(this);
     }
 

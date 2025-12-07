@@ -132,7 +132,7 @@ const parseElement = function(uiManager, config, DEBUG_NAME) {
     }
 }
 
-export const parseInterface = function(gameContext, userInterface, rawInterface) {
+const parseInterface = function(gameContext, userInterface, rawInterface) {
     const { uiManager, renderer } = gameContext;
     const { effectManager, windowWidth, windowHeight } = renderer;
 
@@ -163,4 +163,13 @@ export const parseInterface = function(gameContext, userInterface, rawInterface)
 
     userInterface.refreshRoots();
     userInterface.onWindowResize(windowWidth, windowHeight);
+}
+
+export const parseInterfaceByID = function(gameContext, userInterface, interfaceID) {
+    const { uiManager } = gameContext;
+    const config = uiManager.getInterfaceType(interfaceID);
+
+    parseInterface(gameContext, userInterface, config);
+
+    uiManager.addInterface(userInterface);
 }
