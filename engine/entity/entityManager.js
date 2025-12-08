@@ -30,8 +30,12 @@ EntityManager.prototype.exit = function() {
 
 EntityManager.prototype.forEachEntity = function(onCall) {
     if(typeof onCall === "function") {
-        for(let i = 0; i < this.entities.length; ++i) {
-            onCall(this.entities[i]);
+        for(let i = 0; i < this.entities.length; i++) {
+            const entity = this.entities[i];
+
+            if(!entity.isMarkedForDestroy) {
+                onCall(entity);
+            }
         }
     }
 }
@@ -81,7 +85,7 @@ EntityManager.prototype.getEntity = function(entityID) {
 }
 
 EntityManager.prototype.createEntity = function(onCreate, externalID) {
-    const entityID = externalID !== undefined ? externalID : this.nextID++;
+    const entityID = externalID !== EntityManager.ID.INVALID ? externalID : this.nextID++;
 
     if(!this.entityMap.has(entityID)) {
         const entity = onCreate(entityID);

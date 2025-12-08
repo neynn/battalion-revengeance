@@ -26,5 +26,5 @@ Entity.prototype.getID = function() {
 }
 
 Entity.prototype.update = function(gameContext) {}
-Entity.prototype.load = function(data) {}
+Entity.prototype.load = function(gameContext, data) {}
 Entity.prototype.save = function() {}

@@ -8,6 +8,7 @@ import { IdleState } from "./player/idle.js";
 import { SelectState } from "./player/select.js";
 import { isNodeReachable } from "../systems/pathfinding.js";
 import { TILE_ID } from "../enums.js";
+import { saveStoryMap } from "../systems/save.js";
 
 export const Player = function(id, camera) {
     BattalionActor.call(this, id);
@@ -123,6 +124,8 @@ Player.prototype.loadKeybinds = function(gameContext) {
             this.onClick(gameContext, worldMap, x, y);
         }
     });
+
+    router.on("DEBUG_SAVE", () => saveStoryMap(gameContext));
 }
 
 Player.prototype.activeUpdate = function(gameContext, remainingActions) {

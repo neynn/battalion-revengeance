@@ -10,7 +10,8 @@
         "DEBUG_PLACE": "+5",
         "DEBUG_DEBUG": "+0",
         "DEBUG_LOAD": "+9",
-        "DEBUG_KILL": "+8"
+        "DEBUG_KILL": "+8",
+        "DEBUG_SAVE": "+q"
     },
     "EDIT": {
         "TOGGLE_AUTOTILER": "+a",

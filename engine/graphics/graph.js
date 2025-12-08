@@ -6,7 +6,7 @@ export const Graph = function(DEBUG_NAME = "") {
     this.width = 0;
     this.height = 0;
     this.opacity = 1;
-    this.customID = Graph.ID.INVALID;
+    this.name = "";
     this.children = [];
     this.parent = null;
     this.collider = null;
@@ -39,7 +39,7 @@ Graph.prototype.setClick = function(onClick) {
     }
 }
 
-Graph.prototype.findByID = function(childID) {
+Graph.prototype.find = function(childID) {
     const stack = [this];
 
     while(stack.length !== 0) {
@@ -58,12 +58,9 @@ Graph.prototype.findByID = function(childID) {
     return null;
 }
 
-Graph.prototype.drizzle = function(onCall) {
-    if(typeof onCall !== "function") {
-        return;
-    }
-    
+Graph.prototype.traverse = function(onCall) {    
     const stack = [this];
+    let order = 0;
 
     while(stack.length !== 0) {
         const graph = stack.pop();
@@ -73,7 +70,8 @@ Graph.prototype.drizzle = function(onCall) {
             stack.push(children[i]);
         }
 
-        onCall(graph);
+        onCall(graph, order);
+        order++;
     }
 }
 
@@ -170,6 +168,10 @@ Graph.prototype.getID = function() {
 Graph.prototype.updatePosition = function(deltaX, deltaY) {
     this.positionX += deltaX;
     this.positionY += deltaY;
+
+    if(this.collider) {
+        this.collider.updatePosition(deltaX, deltaY);
+    }
 }
 
 Graph.prototype.setSize = function(width, height) {
@@ -218,19 +220,7 @@ Graph.prototype.hasParent = function() {
     return this.parent !== null;
 }
 
-Graph.prototype.isReserved = function(customID) {
-    for(let i = 0; i < this.children.length; i++) {
-        const child = this.children[i];
-
-        if(child.customID === customID) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-Graph.prototype.getChildByID = function(id) {
+Graph.prototype.getChild = function(id) {
     for(let i = 0; i < this.children.length; i++) {
         const child = this.children[i];
 
@@ -242,16 +232,28 @@ Graph.prototype.getChildByID = function(id) {
     return null;
 }
 
-Graph.prototype.getChild = function(customID) {
+Graph.prototype.getChildByName = function(name) {
     for(let i = 0; i < this.children.length; i++) {
         const child = this.children[i];
 
-        if(child.customID === customID) {
+        if(child.name === name) {
             return child;
         }
     }
 
     return null;
+}
+
+Graph.prototype.isNameReserved = function(name) {
+    for(let i = 0; i < this.children.length; i++) {
+        const child = this.children[i];
+
+        if(child.name === name) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 Graph.prototype.removeChild = function(childID) {
@@ -278,28 +280,21 @@ Graph.prototype.close = function() {
     this.children.length = 0;
 }
 
-Graph.prototype.addChild = function(child, customID = Graph.ID.INVALID) {
+Graph.prototype.addChild = function(child, name = "") {
     const childID = child.getID();
-    const activeChild = this.findByID(childID);
+    const graph = this.find(childID);
 
-    if(activeChild) {
-        return null;
+    if(graph) {
+        return;
     }
 
-    const usedID = this.isReserved(customID) ? Graph.ID.INVALID : customID;
+    if(name !== "" && !this.isNameReserved(name)) {
+        child.name = name;
+    }
 
-    child.setCustomID(usedID);
     child.setParent(this);
 
     this.children.push(child);
-
-    return usedID;
-}
-
-Graph.prototype.setCustomID = function(customID) {
-    if(customID !== undefined) {
-        this.customID = customID;
-    }
 }
 
 Graph.prototype.setParent = function(parent) {
@@ -311,7 +306,7 @@ Graph.prototype.setParent = function(parent) {
 }
 
 Graph.prototype.mGetCollisions = function(collisions, mouseX, mouseY, mouseRange) {
-    if(!this.collider) {
+    if(!this.collider || (this._flags & Graph.FLAG.IS_VISIBLE) === 0) {
         return;
     }
 
@@ -334,8 +329,9 @@ Graph.prototype.mGetCollisions = function(collisions, mouseX, mouseY, mouseRange
 
         for(let i = 0; i < children.length; i++) {
             const child = children[i];
-            
-            if(child.collider) {
+            const { _flags, collider } = child;
+
+            if((_flags & Graph.FLAG.IS_VISIBLE) !== 0 && collider) {
                 stack.push(child);
                 positions.push(nextX);
                 positions.push(nextY);

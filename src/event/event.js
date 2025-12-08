@@ -1,9 +1,9 @@
 import { EntityHelper } from "../../engine/util/entityHelper.js";
 import { ActionHelper } from "../action/actionHelper.js";
-import { EVENT_TYPE } from "../enums.js";
+import { EVENT_TYPE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { playExplosion } from "../systems/animation.js";
-import { despawnEntity, spawnEntity } from "../systems/spawn.js";
+import { despawnEntity, spawnEntityFromJSON } from "../systems/spawn.js";
 
 export const Event = function(id, actions) {
     this.id = id;
@@ -34,7 +34,7 @@ Event.prototype.explodeTile = function(gameContext, layerName, tileX, tileY) {
     const index = BattalionMap.getLayerIndex(layerName);
     const entity = EntityHelper.getTileEntity(gameContext, tileX, tileY);
 
-    worldMap.clearTile(index, tileX, tileY);
+    worldMap.editTile(index, tileX, tileY, TILE_ID.NONE);
 
     if(entity !== null) {
         despawnEntity(gameContext, entity);
@@ -65,7 +65,7 @@ Event.prototype.trigger = function(gameContext) {
             case EVENT_TYPE.SPAWN_ENTITY: {
                 const { setup } = this.actions[i];
 
-                spawnEntity(gameContext, setup);
+                spawnEntityFromJSON(gameContext, setup);
                 break; 
             }
         }

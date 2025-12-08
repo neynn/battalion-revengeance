@@ -12,6 +12,7 @@ export const BattalionMap = function(id, width, height) {
     this.climate = TypeRegistry.CLIMATE_TYPE.NONE;
     this.localization = [];
     this.buildings = [];
+    this.edits = [];
     this.jammerFields = new Map();
     this.music = null;
     this.layers = [
@@ -59,6 +60,32 @@ BattalionMap.getLayerIndex = function(name) {
 
 BattalionMap.prototype = Object.create(WorldMap.prototype);
 BattalionMap.prototype.constructor = BattalionMap;
+
+BattalionMap.prototype.loadEdits = function(edits) {
+    for(const { layer, index, tile } of edits) {
+        this.getLayer(layer).setItem(tile, index);
+    }
+
+    this.edits = edits;
+}
+
+BattalionMap.prototype.editTile = function(layerID, tileX, tileY, tileID) {
+    const index = this.getIndex(tileX, tileY);
+
+    if(index !== -1) {
+        const layer = this.getLayer(layerID);
+
+        if(layer !== WorldMap.EMPTY_LAYER) {
+            layer.setItem(tileID, index);
+
+            this.edits.push({
+                "layer": layerID,
+                "index": index,
+                "tile": tileID
+            });
+        }
+    }
+}
 
 BattalionMap.prototype.saveFlags = function() {
     return [];

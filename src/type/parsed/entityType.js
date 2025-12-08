@@ -56,12 +56,19 @@ export const EntityType = function(id, config) {
 
         console.warn(`${this.id}: More than ${MAX_TRAITS} traits detected!`);
     }
+
+    if(this.movementRange >= EntityType.MAX_MOVE_COST) {
+        this.movementRange = EntityType.MAX_MOVE_COST;
+    }
 }
 
 EntityType.MISSING = {
     NAME: "MISSING_NAME_ENTITY",
     DESC: "MISSING_DESC_ENTITY"
 };
+
+EntityType.MIN_MOVE_COST = 1;
+EntityType.MAX_MOVE_COST = 99;
 
 EntityType.DEFAULT = {
     MOVEMENT_SPEED: 224,

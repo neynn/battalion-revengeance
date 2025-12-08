@@ -19,16 +19,15 @@ export const BattalionEntity = function(id, sprite) {
     Entity.call(this, id, "");
 
     this.config = null;
+    this.sprite = sprite;
     this.health = EntityType.DEFAULT.HEALTH;
     this.maxHealth = EntityType.DEFAULT.HEALTH;
     this.damage = EntityType.DEFAULT.DAMAGE;
-    this.movementRange = EntityType.DEFAULT.MOVEMENT_RANGE;
     this.moraleType = TypeRegistry.MORALE_TYPE.NONE;
     this.moraleAmplifier = 1;
     this.customName = null;
     this.customDesc = null;
     this.customID = null;
-    this.sprite = sprite;
     this.tileX = -1;
     this.tileY = -1;
     this.tileZ = -1;
@@ -50,9 +49,6 @@ BattalionEntity.FLAG = {
     BEWEGUNGSKRIEG_TRIGGERED: 1 << 4,
     ELUSIVE_TRIGGERED: 1 << 5
 };
-
-BattalionEntity.MIN_MOVE_COST = 1;
-BattalionEntity.MAX_MOVE_COST = 99;
 
 BattalionEntity.STATE = {
     IDLE: 0,
@@ -102,18 +98,52 @@ BattalionEntity.DEFAULT_SOUNDS = {
 BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
 
+BattalionEntity.prototype.save = function() {
+    return {
+        "type": this.config.id,
+        "flags": this.flags,
+        "health": this.health,
+        "maxHealth": this.maxHealth,
+        "morale": this.moraleType,
+        "name": this.customName,
+        "desc": this.customDesc,
+        "id": this.customID,
+        "tileX": this.tileX,
+        "tileY": this.tileY,
+        "tileZ": this.tileZ,
+        "teamID": this.teamID,
+        "transport": this.transportID,
+        "direction": this.direction,
+        "state": this.state
+    }
+}
+
+BattalionEntity.prototype.load = function(gameContext, data) {
+    this.flags = data.flags;
+    this.maxHealth = data.maxHealth;
+    this.moraleType = data.morale;
+    this.tileZ = data.tileZ;
+    this.transportID = data.transport;
+    this.state = data.state;
+
+    this.setCustomInfo(data.id, data.name, data.desc);
+    this.setDirection(data.direction);
+    this.setHealth(data.health);
+
+    if(this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+        this.cloakInstant();
+    }
+
+    this.updateSprite(gameContext);
+}
+
 BattalionEntity.prototype.loadConfig = function(config) {
-    const { health, movementRange, damage } = config;
+    const { health, damage } = config;
 
     this.config = config;
     this.health = health;
     this.maxHealth = health;
     this.damage = damage;
-    this.movementRange = movementRange;
-
-    if(this.movementRange >= BattalionEntity.MAX_MOVE_COST) {
-        this.movementRange = BattalionEntity.MAX_MOVE_COST;
-    }
 
     this.setHealth(this.health);
 }
@@ -190,14 +220,8 @@ BattalionEntity.prototype.setHealth = function(health) {
 
 BattalionEntity.prototype.setCustomInfo = function(id, name, desc) {
     this.customID = id;
-
-    if(name) {
-        this.customName = name;
-    }
-
-    if(desc) {
-        this.customDesc = desc;
-    }
+    this.customName = name;
+    this.customDesc = desc;
 }
 
 BattalionEntity.prototype.getDescription = function(gameContext) {
@@ -477,17 +501,17 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
     const { world, typeRegistry } = gameContext;
     const { entityManager } = world;
     const { terrain, passability } = tileType;
-    let tileCost = passability[this.config.movementType] ?? BattalionEntity.MAX_MOVE_COST;
+    let tileCost = passability[this.config.movementType] ?? EntityType.MAX_MOVE_COST;
 
-    if(tileCost === BattalionEntity.MAX_MOVE_COST) {
-        return BattalionEntity.MAX_MOVE_COST;
+    if(tileCost === EntityType.MAX_MOVE_COST) {
+        return EntityType.MAX_MOVE_COST;
     }
 
     if(this.config.movementType === TypeRegistry.MOVEMENT_TYPE.FLIGHT) {
         const jammer = worldMap.getJammer(tileX, tileY);
 
         if(jammer.isJammed(gameContext, this.teamID, JammerField.FLAG.AIRSPACE_BLOCKED)) {
-            return BattalionEntity.MAX_MOVE_COST;
+            return EntityType.MAX_MOVE_COST;
         }
     }
     
@@ -504,12 +528,12 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
     if(entity) {
         //Blocks on non-cloaked enemy units. Ignores cloaked enemy units and treats them as walkable.
         if(!this.isAllyWith(gameContext, entity) && !entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-            tileCost += BattalionEntity.MAX_MOVE_COST;
+            tileCost += EntityType.MAX_MOVE_COST;
         }
     }
 
-    if(tileCost < BattalionEntity.MIN_MOVE_COST) {
-        tileCost = BattalionEntity.MIN_MOVE_COST;
+    if(tileCost < EntityType.MIN_MOVE_COST) {
+        tileCost = EntityType.MIN_MOVE_COST;
     }
 
     return tileCost;
@@ -537,7 +561,7 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
         const node = mGetLowestCostNode(queue);
         const { cost, x, y, id } = node;
 
-        if(cost > this.movementRange) {
+        if(cost > this.config.movementRange) {
             continue;
         }
 
@@ -561,7 +585,7 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
 
             const tileCost = cost + this.getTileCost(gameContext, worldMap, tileType, neighborX, neighborY);
 
-            if(tileCost <= this.movementRange) {
+            if(tileCost <= this.config.movementRange) {
                 const bestCost = visitedCost.get(neighborID);
 
                 if(bestCost === undefined || tileCost < bestCost) {
@@ -645,7 +669,7 @@ BattalionEntity.prototype.isPathValid = function(gameContext, path) {
 
         totalCost += this.getTileCost(gameContext, worldMap, tileType, tileX, tileY);
 
-        if(totalCost > this.movementRange) {
+        if(totalCost > this.config.movementRange) {
             return false;
         }
     }
@@ -965,7 +989,7 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
     //Steer trait. Reduces damage received by STEER for each tile the target can travel further. Up to STEER_MAX_REDUCTION.
     if(target.hasTrait(TypeRegistry.TRAIT_TYPE.STEER)) {
         if(this.config.movementType === TypeRegistry.MOVEMENT_TYPE.RUDDER || this.config.movementType === TypeRegistry.MOVEMENT_TYPE.HEAVY_RUDDER) {
-            const deltaRange = target.movementRange - this.movementRange;
+            const deltaRange = target.config.movementRange - this.config.movementRange;
 
             if(deltaRange > 0) {
                 const steerAmplifier = 1 - (deltaRange * TRAIT_CONFIG.STEER_REDUCTION);
@@ -1163,7 +1187,7 @@ BattalionEntity.prototype.canCloakAtSelf = function(gameContext) {
 }
 
 BattalionEntity.prototype.canMove = function() {
-    return this.movementRange !== 0 && this.config.movementType !== TypeRegistry.MOVEMENT_TYPE.STATIONARY;
+    return this.config.movementRange !== 0 && this.config.movementType !== TypeRegistry.MOVEMENT_TYPE.STATIONARY;
 }
 
 BattalionEntity.prototype.canAct = function() {

@@ -3,7 +3,7 @@ import { Player } from "../actors/player.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { JammerField } from "../map/jammerField.js";
 import { createPlayCamera } from "./camera.js";
-import { spawnBuilding, spawnEntity } from "./spawn.js";
+import { spawnBuildingFromJSON, spawnEntityFromJSON } from "./spawn.js";
 
 const PLAYER_NAME = "PLAYER";
 
@@ -140,11 +140,11 @@ const loadMap = function(gameContext, worldMap, mapData) {
     }
 
     for(let i = 0; i < entities.length; i++) {
-        spawnEntity(gameContext, entities[i]);
+        spawnEntityFromJSON(gameContext, entities[i]);
     }
 
     for(let i = 0; i < buildings.length; i++) {
-        spawnBuilding(gameContext, worldMap, buildings[i]);
+        spawnBuildingFromJSON(gameContext, worldMap, buildings[i]);
     }
 
     for(const objectiveName in objectives) {
@@ -302,7 +302,7 @@ export const createStoryMap = async function(gameContext, sourceID) {
             }
 
             mapManager.enableMap(mapID);
-            
+
             loadMap(gameContext, worldMap, file);
         }
     }

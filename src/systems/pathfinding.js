@@ -1,7 +1,7 @@
 import { EntityHelper } from "../../engine/util/entityHelper.js";
 import { hasFlag } from "../../engine/util/flag.js";
-import { BattalionEntity } from "../entity/battalionEntity.js";
 import { PATH_FLAG, PATH_INTERCEPT } from "../enums.js";
+import { EntityType } from "../type/parsed/entityType.js";
 
 export const mInterceptPath = function(gameContext, path, teamID) {
     let elementsToDelete = path.length;
@@ -96,7 +96,7 @@ export const getBestPath = function(gameContext, nodes, targetX, targetY) {
     let lastY = targetY;
     let currentNode = nodes.get(targetNode.parent);
 
-    while(currentNode !== undefined && i < BattalionEntity.MAX_MOVE_COST) {
+    while(currentNode !== undefined && i < EntityType.MAX_MOVE_COST) {
         const { x, y, parent } = currentNode;
         const deltaX = lastX - x;
         const deltaY = lastY - y;

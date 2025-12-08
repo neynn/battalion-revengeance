@@ -1,3 +1,4 @@
+import { EntityManager } from "../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { Building } from "../entity/building.js";
 import { LAYER_TYPE } from "../enums.js";
@@ -6,15 +7,6 @@ import { SchemaSprite } from "../sprite/schemaSprite.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { getDirectionByName } from "./direction.js";
 import { placeEntityOnMap, removeEntityFromMap } from "./map.js";
-
-const createSpawnConfig = function(id, type, tileX, tileY) {
-    return {
-        "id": id,
-        "type": type,
-        "x": tileX,
-        "y": tileY
-    };
-}
 
 const createEntityObject = function(gameContext, config, colorID, color) {
     const { world, transform2D, spriteManager, typeRegistry } = gameContext;
@@ -29,8 +21,8 @@ const createEntityObject = function(gameContext, config, colorID, color) {
         const spawnPosition = transform2D.transformTileToWorld(x, y);
 
         entityObject.loadConfig(entityType);
-        entityObject.setTile(x, y);
         entityObject.setPositionVec(spawnPosition);
+        entityObject.setTile(x, y);
 
         return entityObject;
     }, id);
@@ -38,18 +30,29 @@ const createEntityObject = function(gameContext, config, colorID, color) {
     return entity;
 }
 
-const spawnTeamEntity = function(gameContext, entityConfig, teamID) {
+export const createSpawnConfig = function(id, type, tileX, tileY) {
+    return {
+        "id": id,
+        "type": type,
+        "x": tileX,
+        "y": tileY
+    };
+}
+
+export const createEntityFromConfig = function(gameContext, config, teamID) {
     const { teamManager } = gameContext;
     const team = teamManager.getTeam(teamID);
 
     if(team) {
         const { colorID, color } = team;
-        const entity = createEntityObject(gameContext, entityConfig, colorID, color);
+        const entity = createEntityObject(gameContext, config, colorID, color);
 
         if(entity) {
             team.addEntity(entity);
             entity.setTeam(teamID);
-            
+            entity.bufferSounds(gameContext);
+            entity.bufferSprites(gameContext);
+
             return entity;
         } 
     }
@@ -65,27 +68,25 @@ export const despawnEntity = function(gameContext, entity) {
     entity.destroy();
 }
 
-export const spawnEntity = function(gameContext, config, externalID) {
+export const spawnEntityFromJSON = function(gameContext, config, externalID = EntityManager.ID.INVALID) {
     const { 
         x = -1,
         y = -1,
         id = null,
+        name = null,
+        desc = null,
         type = null,
         team = null,
         direction = null,
-        name = null,
-        desc = null,
         health = -1,
         stealth = false
     } = config;
     const spawnConfig = createSpawnConfig(externalID, type, x, y);
-    const entity = spawnTeamEntity(gameContext, spawnConfig, team);
+    const entity = createEntityFromConfig(gameContext, spawnConfig, team);
 
     if(entity) {
         placeEntityOnMap(gameContext, entity);
 
-        entity.bufferSounds(gameContext);
-        entity.bufferSprites(gameContext);
         entity.setCustomInfo(id, name, desc);
 
         if(direction !== null) {
@@ -106,7 +107,7 @@ export const spawnEntity = function(gameContext, config, externalID) {
     return entity;
 }
 
-export const spawnBuilding = function(gameContext, worldMap, config) {
+export const spawnBuildingFromJSON = function(gameContext, worldMap, config) {
     const { typeRegistry, teamManager } = gameContext;
     const {
         id = null,

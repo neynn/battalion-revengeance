@@ -25,6 +25,11 @@ Collider.prototype.setShape = function(shape) {
     }
 }
 
+Collider.prototype.updatePosition = function(deltaX, deltaY) {
+    this.positionX += deltaX;
+    this.positionY += deltaY;
+}
+
 Collider.prototype.setPosition = function(positionX, positionY) {
     this.positionX = positionX;
     this.positionY = positionY;
