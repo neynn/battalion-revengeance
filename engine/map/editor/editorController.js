@@ -73,7 +73,7 @@ EditorController.prototype.initPalletButtons = function(gameContext, buttons, ca
 
             if(tileID !== TileManager.TILE_ID.INVALID) {
                 camera.setRelativeScale(slotButtonSize, slotButtonSize); 
-                camera.drawTileSafe(tileManager, tileID, display.context, localX, localY);
+                camera.drawTile(tileManager, tileID, display.context, localX, localY);
                 camera.resetScale();
             }
         });

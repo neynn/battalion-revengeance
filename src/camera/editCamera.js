@@ -69,7 +69,7 @@ EditCamera.prototype.drawHoverTile = function(gameContext, context) {
             const renderY = i * tileHeight - this.screenY;
             const renderX = j * tileWidth - this.screenX;
 
-            this.drawTileSafe(tileManager, id, context, renderX, renderY);
+            this.drawTile(tileManager, id, context, renderX, renderY);
 
             context.fillText(name, renderX + halfTileWidth, renderY);
         }

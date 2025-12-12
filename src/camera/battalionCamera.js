@@ -16,7 +16,6 @@ export const BattalionCamera = function() {
     this.jammerOverlay = new Overlay();
     this.perspectives = new Set();
     this.mainPerspective = null;
-    this.priorityEntities = [];
     this.markerSprite = SpriteManager.EMPTY_SPRITE;
     this.weakMarkerSprite = SpriteManager.EMPTY_SPRITE;
     this.showAllJammers = false;
@@ -47,6 +46,7 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
     const viewportTopEdge = this.screenY;
     const viewportRightEdge = viewportLeftEdge + this.viewportWidth;
     const viewportBottomEdge = viewportTopEdge + this.viewportHeight
+    const priorityEntities = [];
 
     for(let i = 0; i < entities.length; i++) {
         const entity = entities[i];
@@ -58,13 +58,9 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
         }
 
         if(state !== BattalionEntity.STATE.IDLE) {
-            this.priorityEntities.push(entities[i]);
+            priorityEntities.push(entities[i]);
             continue;
         }
-
-        const { positionX, positionY } = sprite;
-        const markerX = positionX - viewportLeftEdge;
-        const markerY = positionY - viewportTopEdge;
 
         if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.perspectives.has(teamID)) {
             sprite.drawCloaked(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
@@ -72,6 +68,10 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
             sprite.drawCloaked(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
             //sprite.drawNormal(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
         }
+
+        const { positionX, positionY } = sprite;
+        const markerX = positionX - viewportLeftEdge;
+        const markerY = positionY - viewportTopEdge;
 
         if(teamID === this.mainPerspective) {
             if(entity.canAct()) {
@@ -84,8 +84,8 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
         }
     }
 
-    for(let i = 0; i < this.priorityEntities.length; i++) {
-        const entity = this.priorityEntities[i];
+    for(let i = 0; i < priorityEntities.length; i++) {
+        const entity = priorityEntities[i];
         const { teamID, sprite } = entity;
 
         if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.perspectives.has(teamID)) {
@@ -94,8 +94,6 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
             sprite.drawNormal(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
         }
     }
-
-    this.priorityEntities.length = 0;
 }
 
 BattalionCamera.prototype.drawJammers = function(tileManager, display, worldMap) {
@@ -109,7 +107,7 @@ BattalionCamera.prototype.drawJammers = function(tileManager, display, worldMap)
             const renderX = this.tileWidth * tileX;
             const renderY = this.tileHeight * tileY;
 
-            this.drawTileSafe(tileManager, TILE_ID.JAMMER, context, renderX, renderY);
+            this.drawTile(tileManager, TILE_ID.JAMMER, context, renderX, renderY);
         }
     }
 }

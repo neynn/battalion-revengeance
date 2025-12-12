@@ -35,7 +35,6 @@ Camera2D.prototype.constructor = Camera2D;
 Camera2D.prototype.onMapSizeUpdate = function(oldwidth, oldHeight) {}
 
 Camera2D.prototype.setRelativeScale = function(tileWidth, tileHeight) {
-    //TODO: Add pixel clipping.
     this.scaleX = tileWidth / this.tileWidth;
     this.scaleY = tileHeight / this.tileHeight;
 }
@@ -46,8 +45,8 @@ Camera.prototype.resetScale = function() {
 }
 
 Camera2D.prototype.drawEmptyTile = function(context, renderX, renderY) {
-    const width = this.halfTileWidth * this.scaleX;
-    const height = this.halfTileHeight * this.scaleY;
+    const width = Math.floor(this.halfTileWidth * this.scaleX);
+    const height = Math.floor(this.halfTileHeight * this.scaleY);
 
     context.fillStyle = Camera2D.COLOR.EMPTY_TILE_FIRST;
     context.fillRect(renderX, renderY, width, height);
@@ -58,9 +57,8 @@ Camera2D.prototype.drawEmptyTile = function(context, renderX, renderY) {
     context.fillRect(renderX, renderY + height, width, height);
 }
 
-Camera2D.prototype.drawTileSafe = function(tileManager, tileID, context, renderX, renderY) {
-    const tile = tileManager.getTile(tileID);
-    const { texture, frames, frameIndex } = tile;
+Camera2D.prototype.drawTile = function(tileManager, tileID, context, renderX, renderY) {
+    const { texture, frames, frameIndex } = tileManager.getTile(tileID);
     const { bitmap } = texture;
 
     if(bitmap === null) {
@@ -71,36 +69,12 @@ Camera2D.prototype.drawTileSafe = function(tileManager, tileID, context, renderX
 }
 
 Camera2D.prototype.drawFrame = function(context, bitmap, frame, renderX, renderY) {
+    const scaleX = this.scaleX;
+    const scaleY = this.scaleY;
     const frameLength = frame.length;
-    const scaleX = this.scaleX;
-    const scaleY = this.scaleY;
 
-    for(let i = 0; i < frameLength; ++i) {
+    for(let i = 0; i < frameLength; i++) {
         const component = frame[i];
-        const { frameX, frameY, frameW, frameH, shiftX, shiftY } = component;
-        const drawX = renderX + shiftX * scaleX;
-        const drawY = renderY + shiftY * scaleY;
-        const drawWidth = frameW * scaleX;
-        const drawHeight = frameH * scaleY;
-
-        context.drawImage(
-            bitmap,
-            frameX, frameY, frameW, frameH,
-            drawX, drawY, drawWidth, drawHeight
-        );
-    }
-}
-
-Camera2D.prototype.drawTile = function(container, context, renderX, renderY) {
-    const { texture, frames, frameIndex } = container;
-    const { bitmap } = texture;
-    const currentFrame = frames[frameIndex];
-    const frameLength = currentFrame.length;
-    const scaleX = this.scaleX;
-    const scaleY = this.scaleY;
-
-    for(let i = 0; i < frameLength; ++i) {
-        const component = currentFrame[i];
         const { frameX, frameY, frameW, frameH, shiftX, shiftY } = component;
         const drawX = renderX + shiftX * scaleX;
         const drawY = renderY + shiftY * scaleY;
@@ -141,7 +115,7 @@ Camera2D.prototype.drawOverlay = function(tileManager, display, overlay) {
             const renderX = x * tileWidth - viewportX;
             const renderY = y * tileHeight - viewportY;
 
-            this.drawTileSafe(tileManager, id, context, renderX, renderY);
+            this.drawTile(tileManager, id, context, renderX, renderY);
         }
     }
 
@@ -175,18 +149,18 @@ Camera2D.prototype.drawTileBuffer = function(tileManager, context, buffer) {
     const viewportX = this.screenX;
     const viewportY = this.screenY;
 
-    for(let i = startY; i <= endY; ++i) {
+    for(let i = startY; i <= endY; i++) {
         const tileRow = i * mapWidth;
         const renderY = i * tileHeight - viewportY;
 
-        for(let j = startX; j <= endX; ++j) {
+        for(let j = startX; j <= endX; j++) {
             const index = tileRow + j;
             const tileID = buffer[index];
 
             if(tileID !== 0) {
                 const renderX = j * tileWidth - viewportX;
 
-                this.drawTileSafe(tileManager, tileID, context, renderX, renderY);
+                this.drawTile(tileManager, tileID, context, renderX, renderY);
             }
         }
     }
@@ -216,7 +190,7 @@ Camera2D.prototype.drawSpriteBatch = function(display, spriteBatch, realTime, de
     const viewportBottomEdge = viewportTopEdge + this.viewportHeight
     const length = spriteBatch.length;
 
-    for(let i = 0; i < length; ++i) {
+    for(let i = 0; i < length; i++) {
         const sprite = spriteBatch[i];
         const isVisible = sprite.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
 
@@ -239,7 +213,7 @@ Camera2D.prototype.drawSpriteBatchYSorted = function(display, spriteBatch, realT
     const length = spriteBatch.length;
     const visibleSprites = [];
 
-    for(let i = 0; i < length; ++i) {
+    for(let i = 0; i < length; i++) {
         const sprite = spriteBatch[i];
         const isVisible = sprite.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
 

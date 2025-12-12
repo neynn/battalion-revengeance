@@ -58,6 +58,9 @@ CameraContext.prototype.setPosition = function(x, y) {
 }
 
 CameraContext.prototype.setSize = function(width, height) {
+    //width and height is the total area occupied, NOT the display area.
+    //TODO: this must not know about total area occupied.
+    //this should basically be this.display.width.
     this.width = width;
     this.height = height;
 
