@@ -2,6 +2,10 @@ import { Display } from "./display.js";
 import { isRectangleRectangleIntersect } from "../math/math.js";
 import { Cursor } from "../client/cursor.js";
 
+//RESOLUTION_DEPENDENT_NO_BUFFER
+//RESOLUTION_DEPENDENT_BUFFER (IS FIXED + RESIZE_BUFFER)
+//RESOLUTION_FIXED
+
 export const CameraContext = function(id, renderer, camera, root) {
     this.id = id;
     this.renderer = renderer;
@@ -170,10 +174,6 @@ CameraContext.prototype.refresh = function() {
     this.updateScale();
 
     if(this.positionMode === CameraContext.POSITION_MODE.AUTO_CENTER) {
-        if(this.displayMode === CameraContext.DISPLAY_MODE.RESOLUTION_DEPENDENT) {
-            //this.camera.alignViewport(); REMOVED
-        }
-
         this.centerCameraOnScreen();
     }
 
