@@ -34,6 +34,7 @@ export const createEditCamera = function(gameContext, brush) {
     return context;
 }
 
+//TODO: enableBuffer() but no enableBufferResize() leads to bugs.
 export const createPlayCamera = function(gameContext) {
     const { renderer, transform2D } = gameContext;
     const { tileWidth, tileHeight } = transform2D;

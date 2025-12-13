@@ -48,6 +48,13 @@ CameraContext.prototype.show = function() {
     this.flags &= ~CameraContext.FLAG.HIDDEN;
 }
 
+CameraContext.prototype.setScale = function(scale) {
+    if((this.flags & CameraContext.FLAG.USE_BUFFER) !== 0) {
+        this.camera.setScale(scale);
+        this.refresh();
+    }
+}
+
 CameraContext.prototype.enableBuffer = function() {
     this.flags |= CameraContext.FLAG.USE_BUFFER;
     this.camera.setViewportSize(this.display.width, this.display.height);
@@ -56,6 +63,7 @@ CameraContext.prototype.enableBuffer = function() {
 
 CameraContext.prototype.disableBuffer = function() {
     this.flags &= ~CameraContext.FLAG.USE_BUFFER;
+    this.camera.setScale(1);
     this.camera.setViewportSize(this.renderer.windowWidth, this.renderer.windowHeight);
     this.refresh();
 }
@@ -149,13 +157,6 @@ CameraContext.prototype.updateDrag = function(buttonID, deltaX, deltaY) {
 CameraContext.prototype.endDrag = function(buttonID) {
     if(this.dragButton === buttonID) {
         this.flags &= ~CameraContext.FLAG.DRAG;
-    }
-}
-
-CameraContext.prototype.setScale = function(scale) {
-    if((this.flags & CameraContext.FLAG.USE_BUFFER) !== 0) {
-        this.camera.setScale(scale);
-        this.refresh();
     }
 }
 
