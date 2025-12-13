@@ -72,19 +72,6 @@ Camera.prototype.reloadViewport = function() {
     this.applyBounds();
 }
 
-Camera.prototype.alignViewport = function() {
-    if(this.worldWidth !== 0 && this.viewportWidth !== 0 && this.worldWidth < this.viewportWidth) {
-        this.viewportWidth = this.worldWidth;
-    }
-
-    if(this.worldHeight !== 0 && this.viewportHeight !== 0 && this.worldHeight < this.viewportHeight) {
-        this.viewportHeight = this.worldHeight;
-    }
-
-    this.scaleViewport();
-    this.reloadViewport();
-}
-
 Camera.prototype.setWorldSize = function(worldWidth, worldHeight) {
     this.worldWidth = worldWidth;
     this.worldHeight = worldHeight;

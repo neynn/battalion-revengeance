@@ -114,29 +114,7 @@ Renderer.prototype.update = function(gameContext) {
     this.effectManager.update(this.display, deltaTime);
 
     for(let i = 0; i < this.contexts.length; i++) {
-        const context = this.contexts[i];
-        const { displayMode, camera, positionX, positionY } = context;
-
-        switch(displayMode) {
-            case CameraContext.DISPLAY_MODE.NONE: {
-                //skips rendering if context is disabled.
-                break;
-            }
-            case CameraContext.DISPLAY_MODE.RESOLUTION_FIXED: {
-                this.display.save();
-                this.display.translate(positionX, positionY);
-                context.drawOn(gameContext, this.display);
-                this.display.reset();
-                break;
-            }
-            case CameraContext.DISPLAY_MODE.RESOLUTION_DEPENDENT: {
-                this.display.save();
-                this.display.translate(positionX, positionY);
-                camera.update(gameContext, this.display);
-                this.display.reset();
-                break;
-            }
-        }
+        this.contexts[i].draw(gameContext, this.display);
     }
 
     if(Renderer.DEBUG.CONTEXT) {
