@@ -48,11 +48,11 @@ export const createPlayCamera = function(gameContext) {
     tryLoadingWorldSize(gameContext, camera);
 
     context.setDragButton(Cursor.BUTTON.LEFT);
-    context.setPositionMode(CameraContext.POSITION_MODE.AUTO_CENTER);
-    context.setDisplayMode(CameraContext.DISPLAY_MODE.RESOLUTION_FIXED);
+    context.enableAutoCenter();
+    context.enableBuffer();
+    context.enableBufferResize();
     context.setScaleMode(CameraContext.SCALE_MODE.CUSTOM);
     context.setResolution(560, 560);
-    context.enableBufferResize();
     context.setScale(2);
     context.forceReload();
 
