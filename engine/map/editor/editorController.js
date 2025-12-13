@@ -4,11 +4,12 @@ import { ButtonHandler } from "./buttonHandler.js";
 import { getCursorTile } from "../../camera/contextHelper.js";
 import { TileManager } from "../../tile/tileManager.js";
 
-export const EditorController = function(mapEditor, userInterface) {
+export const EditorController = function(mapEditor, userInterface, camera2D) {
     this.editor = mapEditor;
     this.userInterface = userInterface;
-    this.maxWidth = 1_000_000;
-    this.maxHeight = 1_000_000;
+    this.camera2D = camera2D;
+    this.maxWidth = 100;
+    this.maxHeight = 100;
     this.buttonHandler = new ButtonHandler();
     this.buttonCount = -1;
     this.pageIndex = 0;
@@ -190,6 +191,9 @@ EditorController.prototype.resizeCurrentMap = function(gameContext) {
 
     worldMap.resize(newWidth, newHeight);
     renderer.onMapSizeUpdate(newWidth, newHeight);
+
+    this.editor.autofillMap();
+    this.camera2D.jumpToTile(0, 0);
 }
 
 EditorController.prototype.getPageText = function() {

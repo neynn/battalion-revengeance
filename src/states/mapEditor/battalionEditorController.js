@@ -4,8 +4,8 @@ import { BattalionContext } from "../../battalionContext.js";
 import { createEditorMap, createEmptyMap } from "../../systems/map.js";
 import { BattalionMap } from "../../map/battalionMap.js";
 
-export const BattalionEditorController = function(mapEditor, userInterface) {
-    EditorController.call(this, mapEditor, userInterface);
+export const BattalionEditorController = function(mapEditor, userInterface, camera) {
+    EditorController.call(this, mapEditor, userInterface, camera);
 
     this.defaultWidth = 20;
     this.defaultHeight = 20;

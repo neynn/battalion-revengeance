@@ -15,9 +15,9 @@ MapEditorState.prototype.constructor = MapEditorState;
 MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
     const mapEditor = new BattalionMapEditor();
     const userInterface = new MapEditorInterface();
-    const controller = new BattalionEditorController(mapEditor, userInterface);
     const context = createEditCamera(gameContext, mapEditor.brush);
     const camera = context.getCamera();
+    const controller = new BattalionEditorController(mapEditor, userInterface, camera);
 
     userInterface.load(gameContext);
 

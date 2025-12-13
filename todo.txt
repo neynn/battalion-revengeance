@@ -1,2 +1,0 @@
-- MapEditor: Jump to 0, 0 if creating new map.
- - Add a jump to option.
