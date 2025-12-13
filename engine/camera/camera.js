@@ -1,12 +1,17 @@
-export const Camera = function() {    
+export const Camera = function() {   
+    this.scale = 1;
+    this.fViewportX = 0;
+    this.fViewportY = 0;
     this.viewportX = 0;
     this.viewportY = 0;
     this.viewportX_limit = 0;
     this.viewportY_limit = 0;
     this.viewportWidth = 0;
     this.viewportHeight = 0;
-    this.screenX = 0;
-    this.screenY = 0;
+    this.wViewportWidth = 0; //WorldViewportWidth
+    this.wViewportHeight = 0; //WorldViewportHeight
+    this.sViewportWidth = 0; //ScreenViewportWidth
+    this.sViewportHeight = 0; //ScreenViewportHeight
     this.worldWidth = 0;
     this.worldHeight = 0;
     this.viewportMode = Camera.VIEWPORT_MODE.DRAG;
@@ -52,16 +57,16 @@ Camera.prototype.freeViewport = function() {
 }
 
 Camera.prototype.reloadViewport = function() {
-    if(this.worldWidth <= this.viewportWidth) {
+    if(this.worldWidth <= this.wViewportWidth) {
         this.viewportX_limit = 0;
     } else {
-        this.viewportX_limit = this.worldWidth - this.viewportWidth;
+        this.viewportX_limit = this.worldWidth - this.wViewportWidth;
     }
 
-    if(this.worldHeight <= this.viewportHeight) {
+    if(this.worldHeight <= this.wViewportHeight) {
         this.viewportY_limit = 0;
     } else {
-        this.viewportY_limit = this.worldHeight - this.viewportHeight;
+        this.viewportY_limit = this.worldHeight - this.wViewportHeight;
     }
 
     this.applyBounds();
@@ -76,6 +81,7 @@ Camera.prototype.alignViewport = function() {
         this.viewportHeight = this.worldHeight;
     }
 
+    this.scaleViewport();
     this.reloadViewport();
 }
 
@@ -86,10 +92,28 @@ Camera.prototype.setWorldSize = function(worldWidth, worldHeight) {
     this.reloadViewport();
 }
 
+Camera.prototype.scaleViewport = function() {
+    this.wViewportWidth = this.viewportWidth / this.scale;
+    this.wViewportHeight = this.viewportHeight / this.scale;
+    this.sViewportWidth = this.viewportWidth * this.scale;
+    this.sViewportHeight = this.viewportHeight * this.scale;
+}
+
+Camera.prototype.setScale = function(scale) {
+    if(scale < 0.1) {
+        this.scale = 0.1;
+    } else {
+        this.scale = scale;
+    }
+
+    this.scaleViewport();
+}
+
 Camera.prototype.setViewportSize = function(width, height) {
     this.viewportWidth = width;
     this.viewportHeight = height;
-
+    
+    this.scaleViewport();
     this.reloadViewport();
 }
 
@@ -98,15 +122,15 @@ Camera.prototype.moveViewport = function(viewportX, viewportY) {
         this.viewportX = viewportX;
         this.viewportY = viewportY;
         this.applyBounds();
-        this.screenX = Math.floor(this.viewportX);
-        this.screenY = Math.floor(this.viewportY);
+        this.fViewportX = Math.floor(this.viewportX);
+        this.fViewportY = Math.floor(this.viewportY);
     }
 }
 
-Camera.prototype.dragViewport = function(dragX, dragY) {
+Camera.prototype.dragViewport = function(deltaX, deltaY) {
     if(this.viewportMode === Camera.VIEWPORT_MODE.DRAG) {
-        const viewportX = this.viewportX + dragX;
-        const viewportY = this.viewportY + dragY;
+        const viewportX = this.viewportX + deltaX / this.scale;
+        const viewportY = this.viewportY + deltaY / this.scale;
         
         this.moveViewport(viewportX, viewportY);
     }

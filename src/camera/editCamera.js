@@ -30,7 +30,6 @@ EditCamera.prototype.update = function(gameContext, display) {
     const realTime = timer.getRealTime();
 
     this.updateWorldBounds();
-    this.clampWorldBounds();
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.GROUND));
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
     this.drawSpriteBatch(display, spriteManager.getLayer(LAYER_TYPE.BUILDING), realTime, deltaTime);
@@ -66,8 +65,8 @@ EditCamera.prototype.drawHoverTile = function(gameContext, context) {
 
     for(let i = startY; i <= endY; i++) {
         for(let j = startX; j <= endX; j++) {
-            const renderY = i * tileHeight - this.screenY;
-            const renderX = j * tileWidth - this.screenX;
+            const renderY = i * tileHeight - this.fViewportY;
+            const renderX = j * tileWidth - this.fViewportX;
 
             this.drawTile(tileManager, id, context, renderX, renderY);
 

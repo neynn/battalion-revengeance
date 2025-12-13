@@ -5,18 +5,16 @@ import { Camera } from "./camera.js";
 export const Camera2D = function() {
     Camera.call(this);
 
-    this.mapWidth = 0;
-    this.mapHeight = 0;
-    this.tileWidth = -1;
-    this.tileHeight = -1;
-    this.halfTileWidth = -1;
-    this.halfTileHeight = -1;
     this.startX = -1;
     this.startY = -1;
     this.endX = -1;
     this.endY = -1;
-    this.scaleX = 1;
-    this.scaleY = 1;
+    this.mapWidth = 0;
+    this.mapHeight = 0;
+    this.tileWidth = 1;
+    this.tileHeight = 1;
+    this.halfTileWidth = 1;
+    this.halfTileHeight = 1;
 }
 
 Camera2D.COLOR = {
@@ -41,52 +39,42 @@ Camera2D.prototype.jumpToTile = function(tileX, tileY) {
     this.moveViewport(positionX, positionY);
 }
 
-Camera2D.prototype.setRelativeScale = function(tileWidth, tileHeight) {
-    this.scaleX = tileWidth / this.tileWidth;
-    this.scaleY = tileHeight / this.tileHeight;
-}
-
-Camera.prototype.resetScale = function() {
-    this.scaleX = 1;
-    this.scaleY = 1;
-}
-
-Camera2D.prototype.drawEmptyTile = function(context, renderX, renderY) {
-    const width = Math.floor(this.halfTileWidth * this.scaleX);
-    const height = Math.floor(this.halfTileHeight * this.scaleY);
+Camera2D.prototype.drawEmptyTile = function(context, renderX, renderY, scale) {
+    const drawX = Math.floor(renderX);
+    const drawY = Math.floor(renderY);
+    const width = Math.floor(this.halfTileWidth * scale);
+    const height = Math.floor(this.halfTileHeight * scale);
 
     context.fillStyle = Camera2D.COLOR.EMPTY_TILE_FIRST;
-    context.fillRect(renderX, renderY, width, height);
-    context.fillRect(renderX + width, renderY + height, width, height);
+    context.fillRect(drawX, drawY, width, height);
+    context.fillRect(drawX + width, drawY + height, width, height);
 
     context.fillStyle = Camera2D.COLOR.EMPTY_TILE_SECOND;
-    context.fillRect(renderX + width, renderY, width, height);
-    context.fillRect(renderX, renderY + height, width, height);
+    context.fillRect(drawX + width, drawY, width, height);
+    context.fillRect(drawX, drawY + height, width, height);
 }
 
-Camera2D.prototype.drawTile = function(tileManager, tileID, context, renderX, renderY) {
+Camera2D.prototype.drawTile = function(tileManager, tileID, context, renderX, renderY, scale = 1) {
     const { texture, frames, frameIndex } = tileManager.getTile(tileID);
     const { bitmap } = texture;
 
     if(bitmap === null) {
-        this.drawEmptyTile(context, renderX, renderY);
+        this.drawEmptyTile(context, renderX, renderY, scale);
     } else {
-        this.drawFrame(context, bitmap, frames[frameIndex], renderX, renderY);
+        this.drawFrame(context, bitmap, frames[frameIndex], renderX, renderY, scale);
     }
 }
 
-Camera2D.prototype.drawFrame = function(context, bitmap, frame, renderX, renderY) {
-    const scaleX = this.scaleX;
-    const scaleY = this.scaleY;
+Camera2D.prototype.drawFrame = function(context, bitmap, frame, renderX, renderY, scale) {
     const frameLength = frame.length;
 
     for(let i = 0; i < frameLength; i++) {
         const component = frame[i];
         const { frameX, frameY, frameW, frameH, shiftX, shiftY } = component;
-        const drawX = renderX + shiftX * scaleX;
-        const drawY = renderY + shiftY * scaleY;
-        const drawWidth = frameW * scaleX;
-        const drawHeight = frameH * scaleY;
+        const drawX = Math.floor(renderX + shiftX * scale);
+        const drawY = Math.floor(renderY + shiftY * scale);
+        const drawWidth = Math.floor(frameW * scale);
+        const drawHeight = Math.floor(frameH * scale);
 
         context.drawImage(
             bitmap,
@@ -103,8 +91,8 @@ Camera2D.prototype.drawOverlay = function(tileManager, display, overlay) {
     const endY = this.endY;
     const tileWidth = this.tileWidth;
     const tileHeight = this.tileHeight;
-    const viewportX = this.screenX;
-    const viewportY = this.screenY;
+    const viewportX = this.fViewportX;
+    const viewportY = this.fViewportY;
 
     const { context } = display;
     const { elements, count, alpha } = overlay;
@@ -153,8 +141,8 @@ Camera2D.prototype.drawTileBuffer = function(tileManager, context, buffer) {
     const mapWidth = this.mapWidth;
     const tileWidth = this.tileWidth;
     const tileHeight = this.tileHeight;
-    const viewportX = this.screenX;
-    const viewportY = this.screenY;
+    const viewportX = this.fViewportX;
+    const viewportY = this.fViewportY;
 
     for(let i = startY; i <= endY; i++) {
         const tileRow = i * mapWidth;
@@ -173,26 +161,9 @@ Camera2D.prototype.drawTileBuffer = function(tileManager, context, buffer) {
     }
 }
 
-Camera2D.prototype.drawSprite = function(display, sprite, realTime, deltaTime) {
-    const viewportLeftEdge = this.screenX;
-    const viewportTopEdge = this.screenY;
-    const viewportRightEdge = viewportLeftEdge + this.viewportWidth;
-    const viewportBottomEdge = viewportTopEdge + this.viewportHeight;
-    const isVisible = sprite.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
-
-    if(isVisible) {
-        sprite.update(realTime, deltaTime);
-        sprite.draw(display, viewportLeftEdge, viewportTopEdge);
-
-        if(Renderer.DEBUG.SPRITES) {
-            sprite.debug(display, viewportLeftEdge, viewportTopEdge);
-        }
-    }
-}
-
 Camera2D.prototype.drawSpriteBatch = function(display, spriteBatch, realTime, deltaTime) {
-    const viewportLeftEdge = this.screenX;
-    const viewportTopEdge = this.screenY;
+    const viewportLeftEdge = this.fViewportX;
+    const viewportTopEdge = this.fViewportY;
     const viewportRightEdge = viewportLeftEdge + this.viewportWidth;
     const viewportBottomEdge = viewportTopEdge + this.viewportHeight
     const length = spriteBatch.length;
@@ -213,8 +184,8 @@ Camera2D.prototype.drawSpriteBatch = function(display, spriteBatch, realTime, de
 }
 
 Camera2D.prototype.drawSpriteBatchYSorted = function(display, spriteBatch, realTime, deltaTime) {
-    const viewportLeftEdge = this.screenX;
-    const viewportTopEdge = this.screenY;
+    const viewportLeftEdge = this.fViewportX;
+    const viewportTopEdge = this.fViewportY;
     const viewportRightEdge = viewportLeftEdge + this.viewportWidth;
     const viewportBottomEdge = viewportTopEdge + this.viewportHeight
     const length = spriteBatch.length;
@@ -249,11 +220,11 @@ Camera2D.prototype.drawSpriteBatchYSorted = function(display, spriteBatch, realT
 
 Camera2D.prototype.drawTilesWithCallback = function(onDraw) {
     for(let i = this.startY; i <= this.endY; i++) {
-        const renderY = i * this.tileHeight - this.screenY;
+        const renderY = i * this.tileHeight - this.fViewportY;
         const tileRow = i * this.mapWidth;
 
         for(let j = this.startX; j <= this.endX; j++) {
-            const renderX = j * this.tileWidth - this.screenX;
+            const renderX = j * this.tileWidth - this.fViewportX;
             const index = tileRow + j;
 
             onDraw(j, i, index, renderX, renderY);
@@ -262,8 +233,8 @@ Camera2D.prototype.drawTilesWithCallback = function(onDraw) {
 }
 
 Camera2D.prototype.drawBufferData = function(context, buffer, offsetX, offsetY) {
-    const drawX = Math.floor(offsetX - this.screenX);
-    const drawY = Math.floor(offsetY - this.screenY);
+    const drawX = Math.floor(offsetX - this.fViewportX);
+    const drawY = Math.floor(offsetY - this.fViewportY);
 
     for(let i = this.startY; i <= this.endY; i++) {
         const renderY = i * this.tileHeight + drawY;
@@ -286,13 +257,13 @@ Camera2D.prototype.drawMapOutlines = function(context) {
     context.fillStyle = Camera2D.MAP_OUTLINE.COLOR;
 
     for(let i = this.startY; i <= endY; i++) {
-        const renderY = i * this.tileHeight - this.screenY;
+        const renderY = i * this.tileHeight - this.fViewportY;
 
         context.fillRect(0, renderY, this.viewportWidth, Camera2D.MAP_OUTLINE.LINE_SIZE);
     }
 
     for (let j = this.startX; j <= endX; j++) {
-        const renderX = j * this.tileWidth - this.screenX;
+        const renderX = j * this.tileWidth - this.fViewportX;
 
         context.fillRect(renderX, 0, Camera2D.MAP_OUTLINE.LINE_SIZE, this.viewportHeight);
     }
@@ -326,16 +297,13 @@ Camera2D.prototype.setMapSize = function(mapWidth, mapHeight) {
 Camera2D.prototype.updateWorldBounds = function() {
     const offsetX = 0;
     const offsetY = 1;
+    const startX = Math.floor(this.viewportX / this.tileWidth);
+    const startY = Math.floor(this.viewportY / this.tileHeight);
+    const endX = Math.floor((this.viewportX + this.wViewportWidth) / this.tileWidth) + offsetX;
+    const endY = Math.floor((this.viewportY + this.wViewportHeight) / this.tileHeight) + offsetY;
 
-    this.startX = Math.floor(this.viewportX / this.tileWidth);
-    this.startY = Math.floor(this.viewportY / this.tileHeight);
-    this.endX = Math.floor((this.viewportX + this.viewportWidth) / this.tileWidth) + offsetX;
-    this.endY = Math.floor((this.viewportY + this.viewportHeight) / this.tileHeight) + offsetY;
-}
-
-Camera2D.prototype.clampWorldBounds = function() {
-    this.startX = clampValue(this.startX, this.mapWidth - 1, 0);
-    this.startY = clampValue(this.startY, this.mapHeight - 1, 0);
-    this.endX = clampValue(this.endX, this.mapWidth - 1, 0);
-    this.endY = clampValue(this.endY, this.mapHeight - 1, 0);
+    this.startX = clampValue(startX, this.mapWidth - 1, 0);
+    this.startY = clampValue(startY, this.mapHeight - 1, 0);
+    this.endX = clampValue(endX, this.mapWidth - 1, 0);
+    this.endY = clampValue(endY, this.mapHeight - 1, 0);
 }

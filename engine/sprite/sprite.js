@@ -64,7 +64,11 @@ Sprite.prototype.onDraw = function(display, localX, localY) {
     if(this.texture && this.texture.bitmap) {
         const { x, y, w, h } = this.container.frames[this.currentFrame];
 
-        context.drawImage(this.texture.bitmap, x, y, w, h, renderX, renderY, w, h);
+        context.drawImage(
+            this.texture.bitmap,
+            x, y, w, h,
+            renderX, renderY, w, h
+        );
     } else if(Sprite.DEBUG.RENDER_PLACEHOLDER) {
         context.fillStyle = Sprite.DEBUG.PLACEHOLDER;
         context.fillRect(renderX, renderY, this.boundsW, this.boundsH);

@@ -4,8 +4,7 @@ export const Icon = function(DEBUG_NAME) {
     UIElement.call(this, DEBUG_NAME);
 
     this.texture = null;
-    this.scaleX = 1;
-    this.scaleY = 1;
+    this.scale = 1;
 }
 
 Icon.prototype = Object.create(UIElement.prototype);
@@ -26,14 +25,17 @@ Icon.prototype.onDraw = function(display, localX, localY) {
         if(bitmap) {
             const { context } = display;
 
-            context.drawImage(bitmap, localX, localY, bitmap.width * this.scaleX, bitmap.height * this.scaleY);
+            context.drawImage(bitmap, localX, localY, bitmap.width * this.scale, bitmap.height * this.scale);
         }
     }
 }
 
-Icon.prototype.setScale = function(scaleX, scaleY) {
-    this.scaleX = scaleX;
-    this.scaleY = scaleY;
+Icon.prototype.setScale = function(scale) {
+    if(scale < 0.1) {
+        this.scale = 0.1;
+    } else {
+        this.scale = 1;
+    }
 }
 
 Icon.prototype.setTexture = function(texture) {

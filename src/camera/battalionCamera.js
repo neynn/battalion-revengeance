@@ -42,8 +42,8 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
     const { world } = gameContext;
     const { entityManager } = world;
     const { entities } = entityManager;
-    const viewportLeftEdge = this.screenX;
-    const viewportTopEdge = this.screenY;
+    const viewportLeftEdge = this.fViewportX;
+    const viewportTopEdge = this.fViewportY;
     const viewportRightEdge = viewportLeftEdge + this.viewportWidth;
     const viewportBottomEdge = viewportTopEdge + this.viewportHeight
     const priorityEntities = [];
@@ -125,7 +125,6 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     const deltaTime = timer.getDeltaTime();
 
     this.updateWorldBounds();
-    this.clampWorldBounds();
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.GROUND));
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.CLOUD));
@@ -169,8 +168,8 @@ BattalionCamera.prototype.drawInfo = function(gameContext, display) {
 BattalionCamera.prototype.drawBuildings = function(display, worldMap, realTime, deltaTime) {
     const { buildings } = worldMap;
     const length = buildings.length;
-    const viewportLeftEdge = this.screenX;
-    const viewportTopEdge = this.screenY;
+    const viewportLeftEdge = this.fViewportX;
+    const viewportTopEdge = this.fViewportY;
     const viewportRightEdge = viewportLeftEdge + this.viewportWidth;
     const viewportBottomEdge = viewportTopEdge + this.viewportHeight
 

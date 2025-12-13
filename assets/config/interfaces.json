@@ -711,8 +711,7 @@
             "type": "ICON",
             "image": "resource_icon_energy",
             "position": { "x": 0, "y": 0 },
-            "scaleX": 0.9,
-            "scaleY": 0.9
+            "scale": 0.9
         },
         "TEXT_ENERGY_COUNT": {
             "type": "TEXT",
@@ -761,8 +760,7 @@
             "type": "ICON",
             "image": "resource_icon_cash",
             "position": { "x": 0, "y": 10 },
-            "scaleX": 0.8,
-            "scaleY": 0.8
+            "scale": 0.8
         },
         "TEXT_MONEY_COUNT": {
             "type": "TEXT",

@@ -80,8 +80,7 @@ const parseElement = function(uiManager, config, DEBUG_NAME) {
             const element = new Icon(DEBUG_NAME);
             const {
                 image = null,
-                scaleX = 1,
-                scaleY = 1
+                scale = 1
             } = config;
 
             const texture = uiManager.getIconTexture(image);
@@ -92,7 +91,7 @@ const parseElement = function(uiManager, config, DEBUG_NAME) {
             element.setAnchor(anchor);
             element.setSize(width, height);
             element.setTexture(texture);
-            element.setScale(scaleX, scaleY);
+            element.setScale(scale);
 
             return element;
         }

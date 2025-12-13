@@ -73,9 +73,9 @@ EditorController.prototype.initPalletButtons = function(gameContext, buttons, ca
             const tileID = this.editor.getPalletID(palletIndex);
 
             if(tileID !== TileManager.TILE_ID.INVALID) {
-                camera.setRelativeScale(slotButtonSize, slotButtonSize); 
-                camera.drawTile(tileManager, tileID, display.context, localX, localY);
-                camera.resetScale();
+                const scale = slotButtonSize / 56; //TODO
+
+                camera.drawTile(tileManager, tileID, display.context, localX, localY, scale);
             }
         });
     }
