@@ -1,8 +1,7 @@
-import { ContextHelper } from "../../engine/camera/contextHelper.js";
+import { getCursorTile } from "../../engine/camera/contextHelper.js";
 import { EntityHelper } from "../../engine/util/entityHelper.js";
 import { StateMachine } from "../../engine/state/stateMachine.js";
 import { Autotiler } from "../../engine/tile/autotiler.js";
-import { TypeRegistry } from "../type/typeRegistry.js";
 import { BattalionActor } from "./battalionActor.js";
 import { IdleState } from "./player/idle.js";
 import { SelectState } from "./player/select.js";
@@ -118,8 +117,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
         const worldMap = mapManager.getActiveMap();
 
         if(worldMap) {
-            const tile = ContextHelper.getMouseTile(gameContext);
-            const { x, y } = tile;
+            const { x, y } = getCursorTile(gameContext);
 
             this.onClick(gameContext, worldMap, x, y);
         }
@@ -154,7 +152,7 @@ Player.prototype.showJammerAt = function(gameContext, entity, jammerX, jammerY) 
 }
 
 Player.prototype.update = function(gameContext) {
-    const { x, y } = ContextHelper.getMouseTile(gameContext);
+    const { x, y } = getCursorTile(gameContext);
 
     if(x !== this.tileX || y !== this.tileY) {
         this.states.eventEnter(gameContext, Player.EVENT.TILE_CHANGE, {

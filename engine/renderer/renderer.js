@@ -2,7 +2,7 @@ import { Display } from "../camera/display.js";
 import { EffectManager } from "../effects/effectManager.js";
 import { CameraContext } from "../camera/cameraContext.js";
 import { Camera2D } from "../camera/camera2D.js";
-import { ContextHelper } from "../camera/contextHelper.js";
+import { getCursorTile } from "../camera/contextHelper.js";
 import { DOMRenderNode } from "./domRenderNode.js";
 
 export const Renderer = function(windowWidth, windowHeight) {
@@ -82,7 +82,7 @@ Renderer.prototype.removeRoot = function(root) {
 Renderer.prototype.createContext = function(camera) {
     const contextID = this.nextID++;
     const node = new DOMRenderNode();
-    const context = new CameraContext(contextID, camera, node);
+    const context = new CameraContext(contextID, this, camera, node);
 
     context.onWindowResize(this.windowWidth, this.windowHeight);
 
@@ -114,9 +114,29 @@ Renderer.prototype.update = function(gameContext) {
     this.effectManager.update(this.display, deltaTime);
 
     for(let i = 0; i < this.contexts.length; i++) {
-        this.display.save();
-        this.contexts[i].update(gameContext, this.display);
-        this.display.reset();
+        const context = this.contexts[i];
+        const { displayMode, camera, positionX, positionY } = context;
+
+        switch(displayMode) {
+            case CameraContext.DISPLAY_MODE.NONE: {
+                //skips rendering if context is disabled.
+                break;
+            }
+            case CameraContext.DISPLAY_MODE.RESOLUTION_FIXED: {
+                this.display.save();
+                this.display.translate(positionX, positionY);
+                context.drawOn(gameContext, this.display);
+                this.display.reset();
+                break;
+            }
+            case CameraContext.DISPLAY_MODE.RESOLUTION_DEPENDENT: {
+                this.display.save();
+                this.display.translate(positionX, positionY);
+                camera.update(gameContext, this.display);
+                this.display.reset();
+                break;
+            }
+        }
     }
 
     if(Renderer.DEBUG.CONTEXT) {
@@ -143,7 +163,7 @@ Renderer.prototype.update = function(gameContext) {
 Renderer.prototype.drawInfo = function(gameContext) {
     const { context } = this.display;
     const { timer } = gameContext;
-    const { x, y } = ContextHelper.getMouseTile(gameContext);
+    const { x, y } = getCursorTile(gameContext);
     const fps = Math.round(timer.getFPS());
 
     if(fps >= 120) {
@@ -206,4 +226,22 @@ Renderer.prototype.getCollidedContext = function(mouseX, mouseY, mouseRange) {
     }
 
     return null;
+}
+
+Renderer.prototype.onDragUpdate = function(buttonID, deltaX, deltaY) {
+    for(let i = this.contexts.length - 1; i >= 0; i--) {
+        this.contexts[i].updateDrag(buttonID, deltaX, deltaY);
+    }
+}
+
+Renderer.prototype.onDragStart = function(buttonID, buttonX, buttonY, buttonR) {
+    for(let i = this.contexts.length - 1; i >= 0; i--) {
+        this.contexts[i].startDrag(buttonID, buttonX, buttonY, buttonR);
+    }
+}
+
+Renderer.prototype.onDragEnd = function(buttonID) {
+    for(let i = this.contexts.length - 1; i >= 0; i--) {
+        this.contexts[i].endDrag(buttonID);
+    }
 }

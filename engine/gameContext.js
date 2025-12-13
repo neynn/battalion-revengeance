@@ -64,7 +64,19 @@ export const GameContext = function() {
 
     this.language.events.on(LanguageHandler.EVENT.LANGUAGE_CHANGE, ({ language }) => {
         this.world.mapManager.onLanguageChange(language);
-    });
+    }, { permanent: true });
+
+    this.client.cursor.events.on(Cursor.EVENT.BUTTON_DOWN, ({ button, x, y, radius }) => {
+        this.renderer.onDragStart(button, x, y, radius);
+    }, { permanent: true });
+
+    this.client.cursor.events.on(Cursor.EVENT.BUTTON_DRAG, ({ button, deltaX, deltaY }) => {
+        this.renderer.onDragUpdate(button, deltaX, deltaY);
+    }, { permanent: true });
+
+    this.client.cursor.events.on(Cursor.EVENT.BUTTON_UP, ({ button }) => {
+        this.renderer.onDragEnd(button);
+    }, { permanent: true });
 
     this.addDebug();
 }

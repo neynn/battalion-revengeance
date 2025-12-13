@@ -131,25 +131,7 @@ Display.prototype.setAlpha = function(alpha) {
     }
 }
 
-Display.prototype.getScaleWhole = function(targetWidth, targetHeight) {
-    let scale = Display.BASE_SCALE;
-    let scaleX = Math.floor(targetWidth / this.width);
-    let scaleY = Math.floor(targetHeight / this.height);
-
-    if(scaleX < scaleY) {
-        scale = scaleX;
-    } else {
-        scale = scaleY;
-    }
-
-    if(scale < Display.BASE_SCALE) {
-        scale = Display.BASE_SCALE;
-    }
-
-    return scale;
-}
-
-Display.prototype.getScaleFractured = function(targetWidth, targetHeight) {
+Display.prototype.getScale = function(targetWidth, targetHeight) {
     let scale = Display.BASE_SCALE;
     let scaleX = targetWidth / this.width;
     let scaleY = targetHeight / this.height;
@@ -165,4 +147,12 @@ Display.prototype.getScaleFractured = function(targetWidth, targetHeight) {
     }
 
     return scale;
+}
+
+Display.prototype.copyTo = function(target, width, height) {
+    target.context.drawImage(
+        this.canvas,
+        0, 0, this.width, this.height,
+        0, 0, width, height
+    );
 }

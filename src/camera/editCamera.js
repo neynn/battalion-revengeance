@@ -1,4 +1,4 @@
-import { ContextHelper } from "../../engine/camera/contextHelper.js";
+import { getCursorTile } from "../../engine/camera/contextHelper.js";
 import { Renderer } from "../../engine/renderer/renderer.js";
 import { TileManager } from "../../engine/tile/tileManager.js";
 import { LAYER_TYPE } from "../enums.js";
@@ -53,7 +53,7 @@ EditCamera.prototype.drawHoverTile = function(gameContext, context) {
 
     const { tileManager, transform2D } = gameContext;
     const { tileWidth, tileHeight, halfTileWidth } = transform2D;
-    const { x, y } = ContextHelper.getMouseTile(gameContext);
+    const { x, y } = getCursorTile(gameContext);
 
     context.globalAlpha = this.overlayAlpha;
     context.fillStyle = this.overlayColor;

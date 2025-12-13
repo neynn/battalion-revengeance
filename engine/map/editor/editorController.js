@@ -1,7 +1,7 @@
 import { Cursor } from "../../client/cursor.js";
 import { clampValue, loopValue } from "../../math/math.js";
 import { ButtonHandler } from "./buttonHandler.js";
-import { ContextHelper } from "../../camera/contextHelper.js";
+import { getCursorTile } from "../../camera/contextHelper.js";
 import { TileManager } from "../../tile/tileManager.js";
 
 export const EditorController = function(mapEditor, userInterface) {
@@ -33,7 +33,7 @@ EditorController.prototype.initCursorEvents = function(gameContext) {
 
     cursor.events.on(Cursor.EVENT.BUTTON_DRAG, ({ button }) => {
         if(button === Cursor.BUTTON.RIGHT) {
-            const { x, y } = ContextHelper.getMouseTile(gameContext);
+            const { x, y } = getCursorTile(gameContext);
 
             this.editor.paint(gameContext, x, y);
         }
@@ -41,7 +41,7 @@ EditorController.prototype.initCursorEvents = function(gameContext) {
 
     cursor.events.on(Cursor.EVENT.BUTTON_CLICK, ({ button }) => {
         if(button === Cursor.BUTTON.RIGHT) {
-            const { x, y } = ContextHelper.getMouseTile(gameContext);
+            const { x, y } = getCursorTile(gameContext);
 
             this.editor.paint(gameContext, x, y);
         }
