@@ -7,8 +7,8 @@ import { TileManager } from "../../tile/tileManager.js";
 export const EditorController = function(mapEditor, userInterface) {
     this.editor = mapEditor;
     this.userInterface = userInterface;
-    this.maxWidth = 100;
-    this.maxHeight = 100;
+    this.maxWidth = 1_000_000;
+    this.maxHeight = 1_000_000;
     this.buttonHandler = new ButtonHandler();
     this.buttonCount = -1;
     this.pageIndex = 0;

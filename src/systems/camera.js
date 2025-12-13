@@ -49,8 +49,8 @@ export const createPlayCamera = function(gameContext) {
 
     context.setDragButton(Cursor.BUTTON.LEFT);
     context.setPositionMode(CameraContext.POSITION_MODE.AUTO_CENTER);
-    context.setDisplayMode(CameraContext.DISPLAY_MODE.RESOLUTION_DEPENDENT);
-    context.setScaleMode(CameraContext.SCALE_MODE.NONE);
+    context.setDisplayMode(CameraContext.DISPLAY_MODE.RESOLUTION_FIXED);
+    context.setScaleMode(CameraContext.SCALE_MODE.WHOLE);
     context.setResolution(560, 560);
 
     context.root.addChild(document.getElementById("DialogueBox"));
