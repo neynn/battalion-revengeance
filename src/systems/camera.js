@@ -1,4 +1,3 @@
-import { CameraContext } from "../../engine/camera/cameraContext.js";
 import { Cursor } from "../../engine/client/cursor.js";
 import { Scroller } from "../../engine/util/scroller.js";
 import { BattalionCamera } from "../camera/battalionCamera.js";
@@ -22,7 +21,7 @@ export const addZoom = function(gameContext, cContext) {
     const { cursor } = client;
     const scaleFactors = new Scroller(1);
 
-    scaleFactors.setValues([1, 1.5, 2, 2.5, 3, 3.5, 4]);
+    scaleFactors.setValues([1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]);
     cursor.events.on(Cursor.EVENT.SCROLL, ({ direction }) => {
         let scale = 1;
 
@@ -42,7 +41,6 @@ export const addZoom = function(gameContext, cContext) {
     });
 }
 
-//BUG: If zoom < 1, then area gets clipped BECAUSE I AM USING sViewportSize, not viewportSize, I am dumb.
 export const createEditCamera = function(gameContext, brush) {
     const { renderer, transform2D } = gameContext;
     const { tileWidth, tileHeight } = transform2D;
@@ -55,11 +53,8 @@ export const createEditCamera = function(gameContext, brush) {
 
     tryLoadingWorldSize(gameContext, camera);
 
-    context.setPosition(0, 0);
     context.setDragButton(Cursor.BUTTON.LEFT);
     context.enableBuffer();
-
-    context.setScale(1);
     context.forceReload();
     camera.reloadViewport();
 

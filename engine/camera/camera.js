@@ -87,8 +87,10 @@ Camera.prototype.setWorldSize = function(worldWidth, worldHeight) {
 }
 
 Camera.prototype.setScale = function(scale) {
-    if(scale < 0.1) {
-        this.scale = 0.1;
+    const MIN_SCALE = 1;
+
+    if(scale < MIN_SCALE) {
+        this.scale = MIN_SCALE;
     } else {
         this.scale = scale;
     }
