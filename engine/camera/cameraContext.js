@@ -181,6 +181,8 @@ CameraContext.prototype.autoScaleToScreen = function(isFractured) {
 }
 
 CameraContext.prototype.refresh = function() {
+    this.camera.reloadViewport();
+
     if(this.flags & CameraContext.FLAG.AUTO_CENTER) {
         this.centerCameraOnScreen();
     }

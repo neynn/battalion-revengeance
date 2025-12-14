@@ -45,6 +45,9 @@ Camera.prototype.applyBounds = function() {
             this.viewportY = this.viewportY_limit;
         }
     }
+
+    this.fViewportX = Math.floor(this.viewportX);
+    this.fViewportY = Math.floor(this.viewportY);
 }
 
 Camera.prototype.bindViewport = function() {
@@ -104,8 +107,6 @@ Camera.prototype.moveViewport = function(viewportX, viewportY) {
         this.viewportX = viewportX;
         this.viewportY = viewportY;
         this.applyBounds();
-        this.fViewportX = Math.floor(this.viewportX);
-        this.fViewportY = Math.floor(this.viewportY);
     }
 }
 

@@ -8,6 +8,7 @@ import { SelectState } from "./player/select.js";
 import { isNodeReachable } from "../systems/pathfinding.js";
 import { TILE_ID } from "../enums.js";
 import { saveStoryMap } from "../systems/save.js";
+import { Cursor } from "../../engine/client/cursor.js";
 
 export const Player = function(id, camera) {
     BattalionActor.call(this, id);

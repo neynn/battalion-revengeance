@@ -39,8 +39,8 @@ const createPlayer = function(gameContext, commanderType, teamName) {
         return actorObject;
     });
 
-    actor.loadCommander(gameContext, commanderType);
     actor.loadKeybinds(gameContext);
+    actor.loadCommander(gameContext, commanderType);
     actor.states.setNextState(gameContext, Player.STATE.IDLE);
     actor.setName("PLAYER");
 

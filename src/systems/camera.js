@@ -1,5 +1,6 @@
 import { CameraContext } from "../../engine/camera/cameraContext.js";
 import { Cursor } from "../../engine/client/cursor.js";
+import { Scroller } from "../../engine/util/scroller.js";
 import { BattalionCamera } from "../camera/battalionCamera.js";
 import { EditCamera } from "../camera/editCamera.js";
 
@@ -16,6 +17,32 @@ const tryLoadingWorldSize = function(gameContext, camera2D) {
     }
 }
 
+export const addZoom = function(gameContext, cContext) {
+    const { client } = gameContext;
+    const { cursor } = client;
+    const scaleFactors = new Scroller(1);
+
+    scaleFactors.setValues([1, 1.5, 2, 2.5, 3, 3.5, 4]);
+    cursor.events.on(Cursor.EVENT.SCROLL, ({ direction }) => {
+        let scale = 1;
+
+        switch(direction) {
+            case Cursor.SCROLL.UP: {
+                scale = scaleFactors.scroll(1);
+                break;
+            }
+            case Cursor.SCROLL.DOWN: {
+                scale = scaleFactors.scroll(-1);
+                break;
+            }
+        }
+
+        //TODO: Maybe memory leak, because context is kept on heap.
+        cContext.setScale(scale);
+    });
+}
+
+//BUG: If zoom < 1, then area gets clipped BECAUSE I AM USING sViewportSize, not viewportSize, I am dumb.
 export const createEditCamera = function(gameContext, brush) {
     const { renderer, transform2D } = gameContext;
     const { tileWidth, tileHeight } = transform2D;
@@ -30,6 +57,13 @@ export const createEditCamera = function(gameContext, brush) {
 
     context.setPosition(0, 0);
     context.setDragButton(Cursor.BUTTON.LEFT);
+    context.enableBuffer();
+
+    context.setScale(1);
+    context.forceReload();
+    camera.reloadViewport();
+
+    addZoom(gameContext, context);
 
     return context;
 }
@@ -54,9 +88,11 @@ export const createPlayCamera = function(gameContext) {
     //context.fixBuffer();
     //context.setResolution(560, 560);
 
-    context.setScale(2);
+    context.setScale(1);
     context.forceReload();
     camera.reloadViewport();
+
+    addZoom(gameContext, context);
 
     context.root.addChild(document.getElementById("DialogueBox"));
 

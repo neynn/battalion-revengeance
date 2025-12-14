@@ -4,6 +4,7 @@ import { SHAPE } from "../../engine/math/constants.js";
 import { Renderer } from "../../engine/renderer/renderer.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { DrawHelper } from "../../engine/util/drawHelper.js";
+import { Scroller } from "../../engine/util/scroller.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { LAYER_TYPE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
