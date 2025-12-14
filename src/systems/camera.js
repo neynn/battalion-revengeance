@@ -21,7 +21,7 @@ export const addZoom = function(gameContext, cContext) {
     const { cursor } = client;
     const scaleFactors = new Scroller(1);
 
-    scaleFactors.setValues([1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]);
+    scaleFactors.setValues([1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 10]);
     cursor.events.on(Cursor.EVENT.SCROLL, ({ direction }) => {
         let scale = 1;
 
