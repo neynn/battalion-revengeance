@@ -9,7 +9,6 @@ export const CameraContext = function(id, renderer, camera, root) {
     this.root = root;
     this.positionX = 0;
     this.positionY = 0;
-    this.scaleMode = CameraContext.SCALE_MODE.CUSTOM;
     this.flags = CameraContext.FLAG.NONE;
     this.dragButton = Cursor.BUTTON.NONE;
 
@@ -21,15 +20,9 @@ CameraContext.FLAG = {
     NONE: 0,
     DRAG: 1 << 0,
     USE_BUFFER: 1 << 1,
-    AUTO_RESIZE_BUFFER: 1 << 2,
+    FIX_BUFFER: 1 << 2,
     HIDDEN: 1 << 3,
     AUTO_CENTER: 1 << 4
-};
-
-CameraContext.SCALE_MODE = {
-    CUSTOM: 0,
-    WHOLE: 1,
-    FRACTURED: 2
 };
 
 CameraContext.prototype.getID = function() {
@@ -49,7 +42,7 @@ CameraContext.prototype.show = function() {
 }
 
 CameraContext.prototype.setScale = function(scale) {
-    if((this.flags & CameraContext.FLAG.USE_BUFFER) !== 0) {
+    if(this.flags & CameraContext.FLAG.USE_BUFFER) {
         this.camera.setScale(scale);
         this.refresh();
     }
@@ -68,12 +61,12 @@ CameraContext.prototype.disableBuffer = function() {
     this.refresh();
 }
 
-CameraContext.prototype.enableBufferResize = function() {
-    this.flags |= CameraContext.FLAG.AUTO_RESIZE_BUFFER;
+CameraContext.prototype.fixBuffer = function() {
+    this.flags |= CameraContext.FLAG.FIX_BUFFER;
 }
 
-CameraContext.prototype.disableBufferResize = function() {
-    this.flags &= ~CameraContext.FLAG.AUTO_RESIZE_BUFFER;
+CameraContext.prototype.freeBuffer = function() {
+    this.flags &= ~CameraContext.FLAG.FIX_BUFFER;
 }
 
 CameraContext.prototype.enableAutoCenter = function() {
@@ -160,7 +153,7 @@ CameraContext.prototype.startDrag = function(buttonID, buttonX, buttonY, buttonR
 }
 
 CameraContext.prototype.updateDrag = function(buttonID, deltaX, deltaY) {
-    if(this.dragButton === buttonID && (this.flags & CameraContext.FLAG.DRAG) !== 0) {
+    if(this.dragButton === buttonID && (this.flags & CameraContext.FLAG.DRAG)) {
         this.camera.dragViewport(deltaX, deltaY);
     }
 }
@@ -171,64 +164,35 @@ CameraContext.prototype.endDrag = function(buttonID) {
     }
 }
 
-CameraContext.prototype.updateScale = function() {
-    if(this.scaleMode === CameraContext.SCALE_MODE.CUSTOM) {
-        return;
-    }
-
+CameraContext.prototype.autoScaleToScreen = function(isFractured) {
     let width = this.renderer.windowWidth;
     let height = this.renderer.windowHeight;
 
-    if((this.flags & CameraContext.FLAG.AUTO_CENTER) !== 0) {
+    if(this.flags & CameraContext.FLAG.AUTO_CENTER) {
         width -= this.positionX;
         height -= this.positionY;
     }
 
-    switch(this.scaleMode) {
-        case CameraContext.SCALE_MODE.FRACTURED: {
-            this.camera.setScale(this.display.getScale(width, height));
-            break;
-        }
-        case CameraContext.SCALE_MODE.WHOLE: {
-            this.camera.setScale(Math.floor(this.display.getScale(width, height)));
-            break;
-        }
+    if(isFractured) {
+        this.setScale(this.display.getScale(width, height));
+    } else {
+        this.setScale(Math.floor(this.display.getScale(width, height)));
     }
 }
 
 CameraContext.prototype.refresh = function() {
-    this.updateScale();
-
-    if((this.flags & CameraContext.FLAG.AUTO_CENTER) !== 0) {
+    if(this.flags & CameraContext.FLAG.AUTO_CENTER) {
         this.centerCameraOnScreen();
     }
 
-    const { sViewportWidth, sViewportHeight } = this.camera;
+    if(this.flags & CameraContext.FLAG.USE_BUFFER) {
+        const { width, height } = this.display;
 
-    this.root.setSize(sViewportWidth, sViewportHeight);
-}
+        this.root.setSize(width, height);
+    } else {
+        const { sViewportWidth, sViewportHeight } = this.camera;
 
-CameraContext.prototype.setScaleMode = function(modeID) {
-    switch(modeID) {
-        case CameraContext.SCALE_MODE.CUSTOM: {
-            this.scaleMode = CameraContext.SCALE_MODE.CUSTOM;
-            this.refresh();
-            break;
-        }
-        case CameraContext.SCALE_MODE.WHOLE: {
-            this.scaleMode = CameraContext.SCALE_MODE.WHOLE;
-            this.refresh();
-            break;
-        }
-        case CameraContext.SCALE_MODE.FRACTURED: {
-            this.scaleMode = CameraContext.SCALE_MODE.FRACTURED;
-            this.refresh();
-            break;
-        }
-        default: {
-            console.warn(`Scale mode is not supported! ${modeID}`);
-            break;
-        }
+        this.root.setSize(sViewportWidth, sViewportHeight);
     }
 }
 
@@ -240,10 +204,10 @@ CameraContext.prototype.forceReload = function() {
 
 CameraContext.prototype.onWindowResize = function(windowWidth, windowHeight) {
     if(this.flags & CameraContext.FLAG.USE_BUFFER) {
-        if(this.flags & CameraContext.FLAG.AUTO_RESIZE_BUFFER) {
-            this.setResolution(windowWidth, windowHeight);
-        } else {
+        if(this.flags & CameraContext.FLAG.FIX_BUFFER) {
             this.refresh();
+        } else {
+            this.setResolution(windowWidth, windowHeight);
         }
     } else {
         this.camera.setViewportSize(windowWidth, windowHeight);
@@ -272,9 +236,10 @@ CameraContext.prototype.draw = function(gameContext, display) {
         const scaledWidth = Math.floor(sViewportWidth);
         const scaledHeight = Math.floor(sViewportHeight);
 
-        if((this.flags & CameraContext.FLAG.AUTO_RESIZE_BUFFER) === 0) {
+        if(this.flags & CameraContext.FLAG.FIX_BUFFER) {
             const { width, height } = this.display;
 
+            //Clipping to prevent overdraw when scaling.
             display.context.beginPath();
             display.context.rect(0, 0, width, height);
             display.context.clip();
@@ -315,8 +280,8 @@ CameraContext.prototype.isColliding = function(mouseX, mouseY, mouseRange) {
         width = this.display.width;
         height = this.display.height;
     } else {
-        width = this.camera.viewportWidth;
-        height = this.camera.viewportHeight;
+        width = this.camera.sViewportWidth;
+        height = this.camera.sViewportHeight;
     }
 
     const isColliding = isRectangleRectangleIntersect(
