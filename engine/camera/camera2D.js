@@ -164,8 +164,8 @@ Camera2D.prototype.drawTileBuffer = function(tileManager, context, buffer) {
 Camera2D.prototype.drawSpriteBatch = function(display, spriteBatch, realTime, deltaTime) {
     const viewportLeftEdge = this.fViewportX;
     const viewportTopEdge = this.fViewportY;
-    const viewportRightEdge = viewportLeftEdge + this.viewportWidth;
-    const viewportBottomEdge = viewportTopEdge + this.viewportHeight
+    const viewportRightEdge = viewportLeftEdge + this.wViewportWidth;
+    const viewportBottomEdge = viewportTopEdge + this.wViewportHeight;
     const length = spriteBatch.length;
 
     for(let i = 0; i < length; i++) {
@@ -186,8 +186,8 @@ Camera2D.prototype.drawSpriteBatch = function(display, spriteBatch, realTime, de
 Camera2D.prototype.drawSpriteBatchYSorted = function(display, spriteBatch, realTime, deltaTime) {
     const viewportLeftEdge = this.fViewportX;
     const viewportTopEdge = this.fViewportY;
-    const viewportRightEdge = viewportLeftEdge + this.viewportWidth;
-    const viewportBottomEdge = viewportTopEdge + this.viewportHeight
+    const viewportRightEdge = viewportLeftEdge + this.wViewportWidth;
+    const viewportBottomEdge = viewportTopEdge + this.wViewportHeight;
     const length = spriteBatch.length;
     const visibleSprites = [];
 
@@ -259,13 +259,13 @@ Camera2D.prototype.drawMapOutlines = function(context) {
     for(let i = this.startY; i <= endY; i++) {
         const renderY = i * this.tileHeight - this.fViewportY;
 
-        context.fillRect(0, renderY, this.viewportWidth, Camera2D.MAP_OUTLINE.LINE_SIZE);
+        context.fillRect(0, renderY, this.wViewportWidth, Camera2D.MAP_OUTLINE.LINE_SIZE);
     }
 
     for (let j = this.startX; j <= endX; j++) {
         const renderX = j * this.tileWidth - this.fViewportX;
 
-        context.fillRect(renderX, 0, Camera2D.MAP_OUTLINE.LINE_SIZE, this.viewportHeight);
+        context.fillRect(renderX, 0, Camera2D.MAP_OUTLINE.LINE_SIZE, this.wViewportHeight);
     }
 }
 

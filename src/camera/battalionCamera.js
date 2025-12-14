@@ -44,8 +44,8 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
     const { entities } = entityManager;
     const viewportLeftEdge = this.fViewportX;
     const viewportTopEdge = this.fViewportY;
-    const viewportRightEdge = viewportLeftEdge + this.viewportWidth;
-    const viewportBottomEdge = viewportTopEdge + this.viewportHeight
+    const viewportRightEdge = viewportLeftEdge + this.wViewportWidth;
+    const viewportBottomEdge = viewportTopEdge + this.wViewportHeight;
     const priorityEntities = [];
 
     for(let i = 0; i < entities.length; i++) {
@@ -170,8 +170,8 @@ BattalionCamera.prototype.drawBuildings = function(display, worldMap, realTime, 
     const length = buildings.length;
     const viewportLeftEdge = this.fViewportX;
     const viewportTopEdge = this.fViewportY;
-    const viewportRightEdge = viewportLeftEdge + this.viewportWidth;
-    const viewportBottomEdge = viewportTopEdge + this.viewportHeight
+    const viewportRightEdge = viewportLeftEdge + this.wViewportWidth;
+    const viewportBottomEdge = viewportTopEdge + this.wViewportHeight
 
     for(let i = 0; i < length; i++) {
         const { sprite } = buildings[i];

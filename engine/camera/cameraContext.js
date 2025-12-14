@@ -106,25 +106,36 @@ CameraContext.prototype.setPosition = function(x, y) {
 
 CameraContext.prototype.centerCameraOnScreen = function() {
     const { scale, worldWidth, worldHeight, sViewportWidth, sViewportHeight } = this.camera;
+    const { width, height } = this.display;
     const { windowWidth, windowHeight } = this.renderer;
     const sWorldWidth = worldWidth * scale;
     const sWorldHeight = worldHeight * scale;
 
+    let visibleWidth = 0;
+    let visibleHeight = 0;
     let usedWidth = 0;
     let usedHeight = 0;
     let positionX = 0;
     let positionY = 0;
 
-    if(sWorldWidth < sViewportWidth) {
-        usedWidth = sWorldWidth;
+    if(this.flags & CameraContext.FLAG.USE_BUFFER) {
+        visibleWidth = width;
+        visibleHeight = height;
     } else {
-        usedWidth = sViewportWidth;
+        visibleWidth = sViewportWidth;
+        visibleHeight = sViewportHeight;
     }
 
-    if(sWorldHeight < sViewportHeight) {
+    if(sWorldWidth < visibleWidth) {
+        usedWidth = sWorldWidth;
+    } else {
+        usedWidth = visibleWidth;
+    }
+
+    if(sWorldHeight < visibleHeight) {
         usedHeight = sWorldHeight;
     } else {
-        usedHeight = sViewportHeight;
+        usedHeight = visibleHeight;
     }
 
     if(windowWidth < usedWidth) {
@@ -228,9 +239,11 @@ CameraContext.prototype.forceReload = function() {
 }
 
 CameraContext.prototype.onWindowResize = function(windowWidth, windowHeight) {
-    if((this.flags & CameraContext.FLAG.USE_BUFFER) !== 0) {
-        if((this.flags & CameraContext.FLAG.AUTO_RESIZE_BUFFER) !== 0) {
+    if(this.flags & CameraContext.FLAG.USE_BUFFER) {
+        if(this.flags & CameraContext.FLAG.AUTO_RESIZE_BUFFER) {
             this.setResolution(windowWidth, windowHeight);
+        } else {
+            this.refresh();
         }
     } else {
         this.camera.setViewportSize(windowWidth, windowHeight);
@@ -247,17 +260,25 @@ CameraContext.prototype.setResolution = function(width, height) {
 }
 
 CameraContext.prototype.draw = function(gameContext, display) {
-    if((this.flags & CameraContext.FLAG.HIDDEN) !== 0) {
+    if(this.flags & CameraContext.FLAG.HIDDEN) {
         return;
     }
 
     display.save();
     display.translate(this.positionX, this.positionY);
 
-    if((this.flags & CameraContext.FLAG.USE_BUFFER) !== 0) {
+    if(this.flags & CameraContext.FLAG.USE_BUFFER) {
         const { sViewportWidth, sViewportHeight } = this.camera;
         const scaledWidth = Math.floor(sViewportWidth);
         const scaledHeight = Math.floor(sViewportHeight);
+
+        if((this.flags & CameraContext.FLAG.AUTO_RESIZE_BUFFER) === 0) {
+            const { width, height } = this.display;
+
+            display.context.beginPath();
+            display.context.rect(0, 0, width, height);
+            display.context.clip();
+        }
 
         this.display.clear();
         this.camera.update(gameContext, this.display);
@@ -271,19 +292,35 @@ CameraContext.prototype.draw = function(gameContext, display) {
 
 CameraContext.prototype.debug = function(context) {
     const { sViewportWidth, sViewportHeight } = this.camera;
+    const { width, height } = this.display;
 
     context.globalAlpha = 1;
     context.lineWidth = 3;
     context.strokeStyle = "#eeeeee";
-    context.strokeRect(this.positionX, this.positionY, sViewportWidth, sViewportHeight);
-    context.strokeStyle = "#aaaaaa";
-    context.strokeRect(this.positionX, this.positionY, this.renderer.windowWidth, this.renderer.windowHeight);
+
+    if(this.flags & CameraContext.FLAG.USE_BUFFER) {
+        context.strokeRect(this.positionX, this.positionY, sViewportWidth, sViewportHeight);
+        context.strokeStyle = "#c2d346ff";
+        context.strokeRect(this.positionX, this.positionY, width, height);
+    } else {
+        context.strokeRect(this.positionX, this.positionY, sViewportWidth, sViewportHeight);
+    }
 }
 
 CameraContext.prototype.isColliding = function(mouseX, mouseY, mouseRange) {
-    const { sViewportWidth, sViewportHeight } = this.camera;
+    let width = 0;
+    let height = 0;
+
+    if(this.flags & CameraContext.FLAG.USE_BUFFER) {
+        width = this.display.width;
+        height = this.display.height;
+    } else {
+        width = this.camera.viewportWidth;
+        height = this.camera.viewportHeight;
+    }
+
     const isColliding = isRectangleRectangleIntersect(
-        this.positionX, this.positionY, sViewportWidth, sViewportHeight,
+        this.positionX, this.positionY, width, height,
         mouseX, mouseY, mouseRange, mouseRange
     );
 

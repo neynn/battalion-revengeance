@@ -57,6 +57,11 @@ Camera.prototype.freeViewport = function() {
 }
 
 Camera.prototype.reloadViewport = function() {
+    this.wViewportWidth = this.viewportWidth / this.scale;
+    this.wViewportHeight = this.viewportHeight / this.scale;
+    this.sViewportWidth = this.viewportWidth * this.scale;
+    this.sViewportHeight = this.viewportHeight * this.scale;
+
     if(this.worldWidth <= this.wViewportWidth) {
         this.viewportX_limit = 0;
     } else {
@@ -75,15 +80,7 @@ Camera.prototype.reloadViewport = function() {
 Camera.prototype.setWorldSize = function(worldWidth, worldHeight) {
     this.worldWidth = worldWidth;
     this.worldHeight = worldHeight;
-
     this.reloadViewport();
-}
-
-Camera.prototype.scaleViewport = function() {
-    this.wViewportWidth = this.viewportWidth / this.scale;
-    this.wViewportHeight = this.viewportHeight / this.scale;
-    this.sViewportWidth = this.viewportWidth * this.scale;
-    this.sViewportHeight = this.viewportHeight * this.scale;
 }
 
 Camera.prototype.setScale = function(scale) {
@@ -93,14 +90,12 @@ Camera.prototype.setScale = function(scale) {
         this.scale = scale;
     }
 
-    this.scaleViewport();
+    this.reloadViewport();
 }
 
 Camera.prototype.setViewportSize = function(width, height) {
     this.viewportWidth = width;
     this.viewportHeight = height;
-    
-    this.scaleViewport();
     this.reloadViewport();
 }
 

@@ -34,7 +34,6 @@ export const createEditCamera = function(gameContext, brush) {
     return context;
 }
 
-//TODO: enableBuffer() but no enableBufferResize() leads to bugs.
 export const createPlayCamera = function(gameContext) {
     const { renderer, transform2D } = gameContext;
     const { tileWidth, tileHeight } = transform2D;
@@ -49,13 +48,16 @@ export const createPlayCamera = function(gameContext) {
     tryLoadingWorldSize(gameContext, camera);
 
     context.setDragButton(Cursor.BUTTON.LEFT);
-    context.enableAutoCenter();
-    context.enableBuffer();
-    context.enableBufferResize();
     context.setScaleMode(CameraContext.SCALE_MODE.CUSTOM);
+    context.enableBuffer();
+    context.enableAutoCenter();
+    
+    //context.enableBufferResize();
     context.setResolution(560, 560);
+
     context.setScale(2);
     context.forceReload();
+    camera.reloadViewport();
 
     context.root.addChild(document.getElementById("DialogueBox"));
 
