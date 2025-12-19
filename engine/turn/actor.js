@@ -54,7 +54,7 @@ Actor.prototype.addIntent = function(intent) {
 }
 
 Actor.prototype.tryEnqueueAction = function(gameContext) {
-    const { world } = gameContext;
+    const { world, actionRouter } = gameContext;
     const { actionQueue, turnManager } = world;
 
     if(!turnManager.isActor(this.id) || actionQueue.isRunning()) {
@@ -62,12 +62,10 @@ Actor.prototype.tryEnqueueAction = function(gameContext) {
     }
 
     for(let i = 0; i < this.actionIntents.length; i++) {
-        const actionIntent = this.actionIntents[i];
-        const executionPlan = actionQueue.createExecutionPlan(gameContext, actionIntent);
+        const executionPlan = actionQueue.createExecutionPlan(gameContext, this.actionIntents[i]);
 
         if(executionPlan) {
-            actionQueue.enqueue(executionPlan);
-
+            actionRouter.dispatch(gameContext, executionPlan);
             this.actionIntents.splice(0, i + 1);
             return;
         }

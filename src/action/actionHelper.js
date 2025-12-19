@@ -28,15 +28,6 @@ export const createMoveRequest = function(entityID, path, targetID) {
 }
 
 export const ActionHelper = {
-    forceEnqueue: function(gameContext, request) {
-        const { world } = gameContext;
-        const { actionQueue } = world;
-        const executionPlan = actionQueue.createExecutionPlan(gameContext, request);
-
-        if(executionPlan) {
-            actionQueue.enqueue(executionPlan, Action.PRIORITY.HIGH);
-        }
-    },
     createCloakRequest: function(entityID) {
         return new ActionIntent(TypeRegistry.ACTION_TYPE.CLOAK, {
             "entityID": entityID

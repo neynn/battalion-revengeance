@@ -290,7 +290,7 @@ Team.prototype.onTurnEnd = function(gameContext, turn) {
 }
 
 Team.prototype.onTurnStart = function(gameContext, turn) {
-    const { world } = gameContext;
+    const { world, actionRouter } = gameContext;
     const { entityManager } = world;
     const deadEntities = [];
 
@@ -307,7 +307,7 @@ Team.prototype.onTurnStart = function(gameContext, turn) {
     }
 
     if(deadEntities.length !== 0) {
-        ActionHelper.forceEnqueue(gameContext, ActionHelper.createDeathRequest(gameContext, deadEntities));
+        actionRouter.forceEnqueue(gameContext, ActionHelper.createDeathRequest(gameContext, deadEntities));
     }
 }
 

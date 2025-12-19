@@ -11,8 +11,8 @@ export const World = function() {
     this.mapManager = new MapManager();
     this.eventBus = new EventBus();
     
-    this.actionQueue.events.on(ActionQueue.EVENT.EXECUTION_COMPLETE, ({ item }) => {
-        this.eventBus.onExecutionComplete(item);
+    this.actionQueue.events.on(ActionQueue.EVENT.EXECUTION_COMPLETE, ({ plan }) => {
+        this.eventBus.onExecutionComplete(plan);
     }, { permanent: true });
 }
 

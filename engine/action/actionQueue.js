@@ -10,7 +10,6 @@ export const ActionQueue = function() {
     this.executionQueue = new Queue(ActionQueue.MAX_ACTIONS);
     this.current = null;
     this.isSkipping = false;
-    this.ignoreNext = false;
     this.state = ActionQueue.STATE.ACTIVE;
 
     this.events = new EventEmitter();
@@ -129,17 +128,15 @@ ActionQueue.prototype.processExecution = function(gameContext) {
 }
 
 ActionQueue.prototype.handleActionEnd = function() {
-    if(!this.ignoreNext) {
-        const { next } = this.current;
+    const { next } = this.current;
 
-        for(let i = next.length - 1; i >= 0; i--) {
-            this.intentQueue.push(next[i]);
-        }
+    for(let i = next.length - 1; i >= 0; i--) {
+        this.intentQueue.push(next[i]);
     }
 
     this.current.setState(ExecutionPlan.STATE.FINISHED);
     this.events.emit(ActionQueue.EVENT.EXECUTION_COMPLETE, {
-        "item": this.current
+        "plan": this.current
     });
     this.isSkipping = false;
     this.current = null;

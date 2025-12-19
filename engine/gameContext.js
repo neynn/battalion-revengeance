@@ -13,6 +13,7 @@ import { FontHandler } from "./fontHandler.js";
 import { MapManager } from "./map/mapManager.js";
 import { ResourceLoader } from "./resources/resourceLoader.js";
 import { ContextWindow } from "./contextWindow.js";
+import { ActionRouter } from "./client/actionRouter.js";
 
 export const GameContext = function() {
     this.client = new Client();
@@ -28,6 +29,7 @@ export const GameContext = function() {
     this.states = new StateMachine(this);
     this.transform2D = new Transform2D();
     this.timer = new Timer();
+    this.actionRouter = new ActionRouter();
 
     this.timer.input = () => {
         this.client.update();
