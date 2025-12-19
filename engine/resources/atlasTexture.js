@@ -1,4 +1,4 @@
-import { ColorHelper } from "../graphics/colorHelper.js";
+import { createBitmapData, mapBitmapPartial } from "../graphics/colorHelper.js";
 import { Texture } from "./texture.js";
 
 export const AtlasTexture = function(id, path, regions) {
@@ -14,8 +14,8 @@ AtlasTexture.prototype.loadColoredRegions = function(copyBitmap, schema) {
     if(this.state === Texture.STATE.EMPTY) {
         this.state = Texture.STATE.LOADING;
 
-        const bitmapData = ColorHelper.createBitmapData(copyBitmap);
-        const mappedData = ColorHelper.mapBitmapPartial(bitmapData, schema, this.regions);
+        const bitmapData = createBitmapData(copyBitmap);
+        const mappedData = mapBitmapPartial(bitmapData, schema, this.regions);
 
         createImageBitmap(mappedData)
         .then(bitmap => this.setBitmapData(bitmap))

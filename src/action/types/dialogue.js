@@ -11,14 +11,14 @@ export const DialogueAction = function() {
 DialogueAction.prototype = Object.create(Action.prototype);
 DialogueAction.prototype.constructor = DialogueAction;
 
-DialogueAction.prototype.onStart = function(gameContext, data, id) {
+DialogueAction.prototype.onStart = function(gameContext, data) {
     const { dialogueHandler } = gameContext;
     const { dialogue } = data;
 
     dialogueHandler.playDialogue(gameContext, dialogue);
 }
 
-DialogueAction.prototype.onUpdate = function(gameContext, data, id) {
+DialogueAction.prototype.onUpdate = function(gameContext, data) {
     const { timer, dialogueHandler } = gameContext;
     const fixedDeltaTime = timer.getFixedDeltaTime();
 
@@ -32,19 +32,19 @@ DialogueAction.prototype.onUpdate = function(gameContext, data, id) {
     }
 }
 
-DialogueAction.prototype.isFinished = function(gameContext, executionRequest) {
+DialogueAction.prototype.isFinished = function(gameContext, executionPlan) {
     const { dialogueHandler } = gameContext;
 
     return dialogueHandler.isFinished();
 }
 
-DialogueAction.prototype.onEnd = function(gameContext, data, id) {
+DialogueAction.prototype.onEnd = function(gameContext, data) {
     this.secondsPassed = this.secondsPerLetter;
 }
 
-DialogueAction.prototype.validate = function(gameContext, executionRequest, requestData) {
+DialogueAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { dialogueHandler } = gameContext;
-    const { type, dialogue } = requestData;
+    const { type, dialogue } = actionIntent;
 
     if(!dialogueHandler.isEnabled()) {
         return;
@@ -59,7 +59,7 @@ DialogueAction.prototype.validate = function(gameContext, executionRequest, requ
     }
 
     if(dialogueList && dialogueList.length > 0) {
-        executionRequest.setData({
+        executionPlan.setData({
             "dialogue": dialogueList
         });
     }

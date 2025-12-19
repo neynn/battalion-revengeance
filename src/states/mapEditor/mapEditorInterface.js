@@ -1,4 +1,4 @@
-import { ColorHelper } from "../../../engine/graphics/colorHelper.js";
+import { getRGBAString } from "../../../engine/graphics/colorHelper.js";
 import { PalletButton } from "../../../engine/map/editor/palletButton.js";
 import { SHAPE } from "../../../engine/math/constants.js";
 import { Container } from "../../../engine/ui/elements/container.js";
@@ -26,7 +26,7 @@ MapEditorInterface.prototype.load = function(gameContext) {
         const element = this.getElement(elementID);
 
         element.drawFlags |= Container.DRAW_FLAG.BACKGROUND;
-        element.backgroundColor = ColorHelper.getRGBAString(20, 20, 20, 128);
+        element.backgroundColor = getRGBAString(20, 20, 20, 128);
     }
 }
 

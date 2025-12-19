@@ -1,12 +1,12 @@
 import { EventEmitter } from "../events/eventEmitter.js";
-import { ExecutionRequest } from "./executionRequest.js";
+import { ExecutionPlan } from "./executionPlan.js";
 import { Queue } from "../util/queue.js";
 import { Action } from "./action.js";
 
 export const ActionQueue = function() {
     this.nextID = 0;
     this.actionTypes = new Map();
-    this.nextQueue = [];
+    this.intentQueue = [];
     this.executionQueue = new Queue(ActionQueue.MAX_ACTIONS);
     this.current = null;
     this.isSkipping = false;
@@ -56,12 +56,12 @@ ActionQueue.prototype.update = function(gameContext) {
 }
 
 ActionQueue.prototype.getNext = function(gameContext) {
-    while(this.nextQueue.length !== 0) {
-        const request = this.nextQueue.pop();
-        const executionRequest = this.createExecutionRequest(gameContext, request);
+    while(this.intentQueue.length !== 0) {
+        const actionIntent = this.intentQueue.pop();
+        const executionPlan = this.createExecutionPlan(gameContext, actionIntent);
 
-        if(executionRequest) {
-            this.enqueue(executionRequest, Action.PRIORITY.HIGH);
+        if(executionPlan) {
+            this.enqueue(executionPlan, Action.PRIORITY.HIGH);
             break;
         }
     }
@@ -74,16 +74,16 @@ ActionQueue.prototype.flushExecution = function(gameContext) {
         return;
     }
 
-    const { type, data, id } = this.current;
+    const { type, data } = this.current;
     const actionType = this.actionTypes.get(type);
 
     this.events.emit(ActionQueue.EVENT.EXECUTION_RUNNING, {
         "item": this.current
     });
-    this.current.setState(ExecutionRequest.STATE.RUNNING);
+    this.current.setState(ExecutionPlan.STATE.RUNNING);
 
-    actionType.onStart(gameContext, data, id);
-    actionType.onEnd(gameContext, data, id);
+    actionType.onStart(gameContext, data);
+    actionType.onEnd(gameContext, data);
 
     this.handleActionEnd();
 }
@@ -93,16 +93,16 @@ ActionQueue.prototype.startExecution = function(gameContext) {
         return;
     }
 
-    const { type, data, id } = this.current;
+    const { type, data } = this.current;
     const actionType = this.actionTypes.get(type);
 
     this.state = ActionQueue.STATE.PROCESSING;
-    this.current.setState(ExecutionRequest.STATE.RUNNING);
+    this.current.setState(ExecutionPlan.STATE.RUNNING);
     this.events.emit(ActionQueue.EVENT.EXECUTION_RUNNING, {
         "item": this.current
     });
         
-    actionType.onStart(gameContext, data, id);
+    actionType.onStart(gameContext, data);
 }
 
 ActionQueue.prototype.processExecution = function(gameContext) {
@@ -113,15 +113,15 @@ ActionQueue.prototype.processExecution = function(gameContext) {
     const { timer } = gameContext;
     const deltaTime = timer.getFixedDeltaTime();
 
-    const { type, data, id } = this.current;
+    const { type, data } = this.current;
     const actionType = this.actionTypes.get(type);
 
     this.current.advance(deltaTime);
 
-    actionType.onUpdate(gameContext, data, id);
+    actionType.onUpdate(gameContext, data);
 
     if(this.isSkipping || actionType.isFinished(gameContext, this.current)) {
-        actionType.onEnd(gameContext, data, id);
+        actionType.onEnd(gameContext, data);
 
         this.handleActionEnd();
         this.state = ActionQueue.STATE.ACTIVE;
@@ -133,11 +133,11 @@ ActionQueue.prototype.handleActionEnd = function() {
         const { next } = this.current;
 
         for(let i = next.length - 1; i >= 0; i--) {
-            this.nextQueue.push(next[i]);
+            this.intentQueue.push(next[i]);
         }
     }
 
-    this.current.setState(ExecutionRequest.STATE.FINISHED);
+    this.current.setState(ExecutionPlan.STATE.FINISHED);
     this.events.emit(ActionQueue.EVENT.EXECUTION_COMPLETE, {
         "item": this.current
     });
@@ -145,25 +145,25 @@ ActionQueue.prototype.handleActionEnd = function() {
     this.current = null;
 }
 
-ActionQueue.prototype.createExecutionRequest = function(gameContext, request) {
-    const { type, data } = request;
+ActionQueue.prototype.createExecutionPlan = function(gameContext, actionIntent) {
+    const { type, data } = actionIntent;
     const actionType = this.actionTypes.get(type);
 
     if(actionType) {
-        const executionRequest = new ExecutionRequest(this.nextID++, type);
+        const executionPlan = new ExecutionPlan(this.nextID++, type, actionIntent);
 
-        actionType.validate(gameContext, executionRequest, data);
+        actionType.fillExecutionPlan(gameContext, executionPlan, data);
 
-        if(executionRequest.isValid()) {
+        if(executionPlan.isValid()) {
             actionType.onValid(gameContext);
 
-            return executionRequest;
+            return executionPlan;
         }
 
         actionType.onInvalid(gameContext);
 
         this.events.emit(ActionQueue.EVENT.EXECUTION_ERROR, {
-            "item": request
+            "item": actionIntent
         });
     }
 
@@ -232,7 +232,7 @@ ActionQueue.prototype.isEmpty = function() {
 }
 
 ActionQueue.prototype.isRunning = function() {
-    return this.executionQueue.getSize() !== 0 || this.current !== null || this.nextQueue.length !== 0;
+    return this.executionQueue.getSize() !== 0 || this.current !== null || this.intentQueue.length !== 0;
 }
 
 ActionQueue.prototype.toFlush = function() {

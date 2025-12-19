@@ -29,7 +29,7 @@ BattalionActor.prototype.surrender = function(gameContext) {
         const { entities } = team;
         const deathRequest = ActionHelper.createDeathRequest(gameContext, entities);
 
-        this.queueRequest(deathRequest);
+        this.addIntent(deathRequest);
     }
 }
 

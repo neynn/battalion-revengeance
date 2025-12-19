@@ -7,26 +7,26 @@ export const EndTurnAction = function() {
 EndTurnAction.prototype = Object.create(Action.prototype);
 EndTurnAction.prototype.constructor = EndTurnAction;
 
-EndTurnAction.prototype.onStart = function(gameContext, data, id) {
+EndTurnAction.prototype.onStart = function(gameContext, data) {
 
 }
 
-EndTurnAction.prototype.onUpdate = function(gameContext, data, id) {
+EndTurnAction.prototype.onUpdate = function(gameContext, data) {
 
 }
 
-EndTurnAction.prototype.isFinished = function(gameContext, executionRequest) {
+EndTurnAction.prototype.isFinished = function(gameContext, executionPlan) {
     return true;
 }
 
-EndTurnAction.prototype.onEnd = function(gameContext, data, id) {
+EndTurnAction.prototype.onEnd = function(gameContext, data) {
 
 }
 
-EndTurnAction.prototype.validate = function(gameContext, executionRequest, requestData) {
+EndTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
     const { turnManager } = world;
-    const { actorID } = requestData;
+    const { actorID } = actionIntent;
 
     if(turnManager.isActor(actorID)) {
         //TODO: Skip the current actors turn.

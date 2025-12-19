@@ -1,5 +1,5 @@
 import { Collider } from "../../graphics/collider.js";
-import { ColorHelper } from "../../graphics/colorHelper.js";
+import { getRGBAString } from "../../graphics/colorHelper.js";
 import { SHAPE } from "../../math/constants.js";
 import { DrawHelper } from "../../util/drawHelper.js";
 import { UIElement } from "../uiElement.js";
@@ -10,8 +10,8 @@ export const Container = function(DEBUG_NAME) {
     this.collider = new Collider();
     this.drawFlags = Container.DRAW_FLAG.OUTLINE;
     this.outlineSize = 1;
-    this.outlineColor = ColorHelper.getRGBAString(255, 255, 255, 255);
-    this.backgroundColor = ColorHelper.getRGBAString(255, 255, 255, 255);
+    this.outlineColor = getRGBAString(255, 255, 255, 255);
+    this.backgroundColor = getRGBAString(255, 255, 255, 255);
 } 
 
 Container.DRAW_FLAG = {

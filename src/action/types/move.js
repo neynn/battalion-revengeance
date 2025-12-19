@@ -25,7 +25,7 @@ MoveAction.TRAVEL_DISTANCE = 56;
 MoveAction.prototype = Object.create(Action.prototype);
 MoveAction.prototype.constructor = MoveAction;
 
-MoveAction.prototype.onStart = function(gameContext, data, id) {
+MoveAction.prototype.onStart = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
     const { entityID, path } = data;
@@ -41,7 +41,7 @@ MoveAction.prototype.onStart = function(gameContext, data, id) {
     this.entity = entity;
 }
 
-MoveAction.prototype.onUpdate = function(gameContext, data, id) {
+MoveAction.prototype.onUpdate = function(gameContext, data) {
     const { timer, transform2D } = gameContext;
     const deltaTime = timer.getFixedDeltaTime();
     const { deltaX, deltaY } = this.path[this.pathIndex]; 
@@ -67,11 +67,11 @@ MoveAction.prototype.onUpdate = function(gameContext, data, id) {
     }
 }
 
-MoveAction.prototype.isFinished = function(gameContext, executionRequest) {
+MoveAction.prototype.isFinished = function(gameContext, executionPlan) {
     return this.pathIndex < 0;
 }
 
-MoveAction.prototype.onEnd = function(gameContext, data, id) {
+MoveAction.prototype.onEnd = function(gameContext, data) {
     const { transform2D, teamManager } = gameContext;
     const { flags } = data;
     const { deltaX, deltaY, tileX, tileY } = this.path[0];
@@ -97,10 +97,10 @@ MoveAction.prototype.onEnd = function(gameContext, data, id) {
     this.distanceMoved = 0;
 }
 
-MoveAction.prototype.validate = function(gameContext, executionRequest, requestData) {
+MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID, path, targetID } = requestData;
+    const { entityID, path, targetID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
     const isValid = entity && entity.canAct() && entity.canMove() && !entity.isDead() && entity.isPathValid(gameContext, path);
 
@@ -126,16 +126,16 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
             if(targetEntity) {
                 if(targetEntity.isNextToTile(targetX, targetY)) {
                     if(entity.isHealValid(gameContext, targetEntity)) {
-                        executionRequest.addNext(createHealRequest(entityID, targetID, COMMAND_TYPE.CHAIN_AFTER_MOVE));
+                        executionPlan.addNext(createHealRequest(entityID, targetID, COMMAND_TYPE.CHAIN_AFTER_MOVE));
                     } else if (entity.isAttackValid(gameContext, targetEntity)) {
-                        executionRequest.addNext(createAttackRequest(entityID, targetID, COMMAND_TYPE.CHAIN_AFTER_MOVE));
+                        executionPlan.addNext(createAttackRequest(entityID, targetID, COMMAND_TYPE.CHAIN_AFTER_MOVE));
                     } else {
                         console.error("Heal and attack are both invalid!");
                     }
                 }
             } else {
                 if(entity.canCloakAt(gameContext, targetX, targetY)) {
-                    executionRequest.addNext(ActionHelper.createCloakRequest(entityID));
+                    executionPlan.addNext(ActionHelper.createCloakRequest(entityID));
                 }
 
                 if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
@@ -143,10 +143,10 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
                 }
             }
         } else {
-            executionRequest.addNext(ActionHelper.createUncloakRequest(uncloakedIDs));
+            executionPlan.addNext(ActionHelper.createUncloakRequest(uncloakedIDs));
 
             if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.TRACKING)) {
-                executionRequest.addNext(createAttackRequest(entityID, uncloakedIDs[0], COMMAND_TYPE.CHAIN_AFTER_MOVE));
+                executionPlan.addNext(createAttackRequest(entityID, uncloakedIDs[0], COMMAND_TYPE.CHAIN_AFTER_MOVE));
             } else {
                 if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
                     flags |= MoveAction.FLAG.ELUSIVE;
@@ -157,7 +157,7 @@ MoveAction.prototype.validate = function(gameContext, executionRequest, requestD
         //TODO: Add uncloak after moving.
         //MOVE_CLOAKED -> UNCLOAK -> MOVE_UNCLOAKED
         
-        executionRequest.setData({
+        executionPlan.setData({
             "entityID": entityID,
             "path": path,
             "flags": flags

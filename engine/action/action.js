@@ -13,8 +13,8 @@ Action.PRIORITY = {
 
 Action.prototype.onValid = function(gameContext) {}
 Action.prototype.onInvalid = function(gameContext) {}
-Action.prototype.onStart = function(gameContext, actionData, requestID) {}
-Action.prototype.onEnd = function(gameContext, actionData, requestID) {}
-Action.prototype.onUpdate = function(gameContext, actionData, requestID) {}
-Action.prototype.isFinished = function(gameContext, executionRequest) {}
-Action.prototype.validate = function(gameContext, executionRequest, data) {}
+Action.prototype.onStart = function(gameContext, executionData) {}
+Action.prototype.onEnd = function(gameContext, executionData) {}
+Action.prototype.onUpdate = function(gameContext, executionData) {}
+Action.prototype.isFinished = function(gameContext, executionPlan) {}
+Action.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {}

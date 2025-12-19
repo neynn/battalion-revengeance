@@ -1,4 +1,4 @@
-import { ColorHelper } from "../graphics/colorHelper.js";
+import { createBitmapData, mapBitmap } from "../graphics/colorHelper.js";
 
 export const Texture = function(id, path) {
     this.id = id;
@@ -50,8 +50,8 @@ Texture.prototype.loadColoredImage = function(copyBitmap, schema) {
     if(this.state === Texture.STATE.EMPTY) {
         this.state = Texture.STATE.LOADING;
 
-        const bitmapData = ColorHelper.createBitmapData(copyBitmap);
-        const mappedData = ColorHelper.mapBitmap(bitmapData, schema);
+        const bitmapData = createBitmapData(copyBitmap);
+        const mappedData = mapBitmap(bitmapData, schema);
 
         createImageBitmap(mappedData)
         .then(bitmap => this.setBitmapData(bitmap))

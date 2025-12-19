@@ -54,7 +54,7 @@ AttackAction.FLAG = {
 AttackAction.prototype = Object.create(Action.prototype);
 AttackAction.prototype.constructor = AttackAction;
 
-AttackAction.prototype.onStart = function(gameContext, data, id) {
+AttackAction.prototype.onStart = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
     const { entityID, targetID, resolutions, flags } = data;
@@ -79,11 +79,11 @@ AttackAction.prototype.onStart = function(gameContext, data, id) {
     this.resolutions = resolutions;
 }
 
-AttackAction.prototype.isFinished = function(gameContext, executionRequest) {
+AttackAction.prototype.isFinished = function(gameContext, executionPlan) {
     return this.entity.isAnimationFinished();
 }
 
-AttackAction.prototype.onEnd = function(gameContext, data, id) {
+AttackAction.prototype.onEnd = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
     const { entityID, targetID, flags } = data;
@@ -114,10 +114,10 @@ AttackAction.prototype.onEnd = function(gameContext, data, id) {
     this.resolutions = [];
 }
 
-AttackAction.prototype.validate = function(gameContext, executionRequest, requestData) {
+AttackAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID, targetID, command } = requestData;
+    const { entityID, targetID, command } = actionIntent;
     const entity = entityManager.getEntity(entityID);
     const target = entityManager.getEntity(targetID);
 
@@ -163,12 +163,12 @@ AttackAction.prototype.validate = function(gameContext, executionRequest, reques
                 flags |= AttackAction.FLAG.BEWEGUNGSKRIEG;
             }
 
-            executionRequest.addNext(ActionHelper.createDeathRequest(gameContext, deadEntities));
+            executionPlan.addNext(ActionHelper.createDeathRequest(gameContext, deadEntities));
         }
 
-        executionRequest.addNext(createAttackRequest(targetID, entityID, COMMAND_TYPE.COUNTER));
+        executionPlan.addNext(createAttackRequest(targetID, entityID, COMMAND_TYPE.COUNTER));
 
-        executionRequest.setData({
+        executionPlan.setData({
             "entityID": entityID,
             "targetID": targetID,
             "resolutions": hitEntities,

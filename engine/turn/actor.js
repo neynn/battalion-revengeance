@@ -3,8 +3,8 @@ export const Actor = function(id) {
     this.endRequested = false;
     this.maxActions = 1;
     this.turn = 0;
-    this.actionRequests = [];
-    this.maxRequests = 10;
+    this.actionIntents = [];
+    this.maxIntents = 10;
 }
 
 Actor.prototype.load = function(blob) {}
@@ -45,9 +45,11 @@ Actor.prototype.getID = function() {
     return this.id;
 }
 
-Actor.prototype.queueRequest = function(request) {
-    if(this.actionRequests.length < this.maxRequests) {
-        this.actionRequests.push(request);
+Actor.prototype.addIntent = function(intent) {
+    if(this.actionIntents.length < this.maxIntents) {
+        intent.setActor(this.id);
+
+        this.actionIntents.push(intent);
     }
 }
 
@@ -56,23 +58,20 @@ Actor.prototype.tryEnqueueAction = function(gameContext) {
     const { actionQueue, turnManager } = world;
 
     if(!turnManager.isActor(this.id) || actionQueue.isRunning()) {
-        return false;
+        return;
     }
 
-    for(let i = 0; i < this.actionRequests.length; i++) {
-        const executionRequest = actionQueue.createExecutionRequest(gameContext, this.actionRequests[i]);
+    for(let i = 0; i < this.actionIntents.length; i++) {
+        const actionIntent = this.actionIntents[i];
+        const executionPlan = actionQueue.createExecutionPlan(gameContext, actionIntent);
 
-        if(executionRequest) {
-            executionRequest.setActor(this.id);
-            actionQueue.enqueue(executionRequest);
+        if(executionPlan) {
+            actionQueue.enqueue(executionPlan);
 
-            this.actionRequests.splice(0, i + 1);
-            
-            return true;
+            this.actionIntents.splice(0, i + 1);
+            return;
         }
     }
 
-    this.actionRequests.length = 0;
-
-    return false;
+    this.actionIntents.length = 0;
 }

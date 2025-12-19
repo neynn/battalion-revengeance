@@ -12,7 +12,7 @@ UncloakAction.FADE_RATE = 3;
 UncloakAction.prototype = Object.create(Action.prototype);
 UncloakAction.prototype.constructor = UncloakAction;
 
-UncloakAction.prototype.onStart = function(gameContext, data, id) {
+UncloakAction.prototype.onStart = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
     const { entities } = data;
@@ -26,7 +26,7 @@ UncloakAction.prototype.onStart = function(gameContext, data, id) {
     }
 }
 
-UncloakAction.prototype.onUpdate = function(gameContext, data, id) {
+UncloakAction.prototype.onUpdate = function(gameContext, data) {
     const { timer } = gameContext;
     const fixedDeltaTime = timer.getFixedDeltaTime();
 
@@ -41,11 +41,11 @@ UncloakAction.prototype.onUpdate = function(gameContext, data, id) {
     }
 }
 
-UncloakAction.prototype.isFinished = function(gameContext, executionRequest) {
+UncloakAction.prototype.isFinished = function(gameContext, executionPlan) {
     return this.opacity >= 1;
 }
 
-UncloakAction.prototype.onEnd = function(gameContext, data, id) {
+UncloakAction.prototype.onEnd = function(gameContext, data) {
     for(const entity of this.entities) {
         entity.uncloakInstant();
     }
@@ -54,10 +54,10 @@ UncloakAction.prototype.onEnd = function(gameContext, data, id) {
     this.opacity = 0;
 }
 
-UncloakAction.prototype.validate = function(gameContext, executionRequest, requestData) {
+UncloakAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entities } = requestData;
+    const { entities } = actionIntent;
     const uncloakedEntities = [];
 
     for(let i = 0; i < entities.length; i++) {
@@ -70,7 +70,7 @@ UncloakAction.prototype.validate = function(gameContext, executionRequest, reque
     }
 
     if(uncloakedEntities.length !== 0) {
-        executionRequest.setData({
+        executionPlan.setData({
             "entities": uncloakedEntities
         });
     }

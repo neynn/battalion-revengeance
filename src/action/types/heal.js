@@ -18,7 +18,7 @@ export const HealAction = function() {
 HealAction.prototype = Object.create(Action.prototype);
 HealAction.prototype.constructor = HealAction;
 
-HealAction.prototype.onStart = function(gameContext, data, id) {
+HealAction.prototype.onStart = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
     const { entityID, targetID, resolutions } = data;
@@ -35,11 +35,11 @@ HealAction.prototype.onStart = function(gameContext, data, id) {
     this.resolutions = resolutions;
 }
 
-HealAction.prototype.isFinished = function(gameContext, executionRequest) {
+HealAction.prototype.isFinished = function(gameContext, executionPlan) {
     return this.entity.isAnimationFinished();
 }
 
-HealAction.prototype.onEnd = function(gameContext, data, id) {
+HealAction.prototype.onEnd = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
 
@@ -56,10 +56,10 @@ HealAction.prototype.onEnd = function(gameContext, data, id) {
     this.resolutions = [];
 }
 
-HealAction.prototype.validate = function(gameContext, executionRequest, requestData) {
+HealAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID, targetID, command } = requestData;
+    const { entityID, targetID, command } = actionIntent;
     const entity = entityManager.getEntity(entityID);
     const target = entityManager.getEntity(targetID);
 
@@ -91,10 +91,10 @@ HealAction.prototype.validate = function(gameContext, executionRequest, requestD
 
      if(hitEntities.length !== 0) {
         if(deadEntities.length !== 0) {
-            executionRequest.addNext(ActionHelper.createDeathRequest(gameContext, deadEntities));
+            executionPlan.addNext(ActionHelper.createDeathRequest(gameContext, deadEntities));
         }
 
-        executionRequest.setData({
+        executionPlan.setData({
             "entityID": entityID,
             "targetID": targetID,
             "resolutions": hitEntities

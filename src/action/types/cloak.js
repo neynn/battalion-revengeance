@@ -12,7 +12,7 @@ CloakAction.FADE_RATE = 3;
 CloakAction.prototype = Object.create(Action.prototype);
 CloakAction.prototype.constructor = CloakAction;
 
-CloakAction.prototype.onStart = function(gameContext, data, id) {
+CloakAction.prototype.onStart = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
     const { entityID  } = data;
@@ -23,7 +23,7 @@ CloakAction.prototype.onStart = function(gameContext, data, id) {
     this.entity = entity;
 }
 
-CloakAction.prototype.onUpdate = function(gameContext, data, id) {
+CloakAction.prototype.onUpdate = function(gameContext, data) {
     const { timer } = gameContext;
     const fixedDeltaTime = timer.getFixedDeltaTime();
 
@@ -36,23 +36,23 @@ CloakAction.prototype.onUpdate = function(gameContext, data, id) {
     this.entity.setOpacity(this.opacity);
 }
 
-CloakAction.prototype.isFinished = function(gameContext, executionRequest) {
+CloakAction.prototype.isFinished = function(gameContext, executionPlan) {
     return this.opacity <= 0;
 }
 
-CloakAction.prototype.onEnd = function(gameContext, data, id) {
+CloakAction.prototype.onEnd = function(gameContext, data) {
     this.entity = null;
     this.opacity = 1;
 }
 
-CloakAction.prototype.validate = function(gameContext, executionRequest, requestData) {
+CloakAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID } = requestData;
+    const { entityID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
 
     if(entity && entity.canCloakAtSelf(gameContext)) {
-        executionRequest.setData({
+        executionPlan.setData({
             "entityID": entityID
         });
     }

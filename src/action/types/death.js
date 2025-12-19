@@ -14,7 +14,7 @@ DeathAction.FADE_RATE = 1.5;
 DeathAction.prototype = Object.create(Action.prototype);
 DeathAction.prototype.constructor = DeathAction;
 
-DeathAction.prototype.onStart = function(gameContext, data, id) {
+DeathAction.prototype.onStart = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
     const { entities } = data;
@@ -29,7 +29,7 @@ DeathAction.prototype.onStart = function(gameContext, data, id) {
     }
 }
 
-DeathAction.prototype.onUpdate = function(gameContext, data, id) {
+DeathAction.prototype.onUpdate = function(gameContext, data) {
     const { timer } = gameContext;
     const fixedDeltaTime = timer.getFixedDeltaTime();
 
@@ -44,11 +44,11 @@ DeathAction.prototype.onUpdate = function(gameContext, data, id) {
     }
 }
 
-DeathAction.prototype.isFinished = function(gameContext, executionRequest) {
+DeathAction.prototype.isFinished = function(gameContext, executionPlan) {
     return this.opacity <= 0;
 }
 
-DeathAction.prototype.onEnd = function(gameContext, data, id) {
+DeathAction.prototype.onEnd = function(gameContext, data) {
     for(const entity of this.entities) {
         despawnEntity(gameContext, entity);
     }
@@ -57,10 +57,10 @@ DeathAction.prototype.onEnd = function(gameContext, data, id) {
     this.entities.length = 0;
 }
 
-DeathAction.prototype.validate = function(gameContext, executionRequest, requestData) {
+DeathAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entities } = requestData;
+    const { entities } = actionIntent;
     const deadEntities = [];
 
     for(let i = 0; i < entities.length; i++) {
@@ -72,7 +72,7 @@ DeathAction.prototype.validate = function(gameContext, executionRequest, request
     }
 
     if(deadEntities.length !== 0) {
-        executionRequest.setData({
+        executionPlan.setData({
             "entities": deadEntities
         });
     }

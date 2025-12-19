@@ -1,6 +1,6 @@
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { FloodFill } from "../../../engine/pathfinders/floodFill.js";
-import { ActionHelper, createAttackRequest, createHealRequest } from "../../action/actionHelper.js";
+import { createAttackRequest, createHealRequest, createMoveRequest } from "../../action/actionHelper.js";
 import { AUTOTILER_TYPE, COMMAND_TYPE, RANGE_TYPE } from "../../enums.js";
 import { createStep, isNodeReachable, getBestPath } from "../../systems/pathfinding.js";
 import { Player } from "../player.js";
@@ -51,9 +51,9 @@ SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, t
 
         if(isValid) {
             const player = stateMachine.getContext();
-            const request = ActionHelper.createMoveRequest(this.entity.getID(), this.path, EntityManager.ID.INVALID);
+            const request = createMoveRequest(this.entity.getID(), this.path, EntityManager.ID.INVALID);
 
-            player.queueRequest(request);
+            player.addIntent(request);
             stateMachine.setNextState(gameContext, Player.STATE.IDLE);
         }
     }
@@ -241,7 +241,7 @@ SelectState.prototype.getAttackRequest = function(entity) {
             if(this.path.length === 0) {
                 request = createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
             } else {
-                request = ActionHelper.createMoveRequest(this.entity.getID(), this.path, entity.getID());
+                request = createMoveRequest(this.entity.getID(), this.path, entity.getID());
             }
 
             break;
@@ -275,7 +275,7 @@ SelectState.prototype.getHealRequest = function(entity) {
                 default: {
                     //Cut the final step (index 0) as the PATH sees an ally as walkable.
                     this.path.shift();
-                    request = ActionHelper.createMoveRequest(this.entity.getID(), this.path, entity.getID());
+                    request = createMoveRequest(this.entity.getID(), this.path, entity.getID());
                     break;
                 }
             }
@@ -301,7 +301,7 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
             const request = this.getAttackRequest(entity);
 
             if(request) {
-                player.queueRequest(request);
+                player.addIntent(request);
             }
         }
 
@@ -311,7 +311,7 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
             const request = this.getHealRequest(entity);
 
             if(request) {
-                player.queueRequest(request);
+                player.addIntent(request);
                 stateMachine.setNextState(gameContext, Player.STATE.IDLE);
                 return;
             }
