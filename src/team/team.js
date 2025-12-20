@@ -15,7 +15,6 @@ export const Team = function(id) {
     this.entities = [];
     this.units = new Set();
     this.lynchpins = new Set();
-    this.hasLynchpin = false;
     this.faction = null;
     this.nation = null;
     this.actor = null;
@@ -24,6 +23,7 @@ export const Team = function(id) {
     this.status = Team.STATUS.IDLE;
     this.exchangeRate = 1;
     this.funds = 0;
+    this.flags = Team.FLAG.NONE;
     this.objectives = [
         new ProtectObjective(),
         new DefeatObjective(),
@@ -33,6 +33,11 @@ export const Team = function(id) {
         new SurviveObjective()
     ];
 }
+
+Team.FLAG = {
+    NONE: 0,
+    HAS_LYNCHPIN: 1 << 0
+};
 
 Team.OBJECTIVE_TYPE = {
     PROTECT: 0,
@@ -217,7 +222,7 @@ Team.prototype.updateStatus = function() {
         return this.status;
     }
 
-    if(this.units.size === 0 || this.hasLynchpin && this.lynchpins.size === 0) {
+    if(this.units.size === 0 || this.lynchpins.size === 0 && (this.flags & Team.FLAG.HAS_LYNCHPIN)) {
         this.status = Team.STATUS.LOSER;
 
         return this.status;
@@ -321,7 +326,7 @@ Team.prototype.addEntity = function(entity) {
 
         if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.LYNCHPIN)) {
             this.lynchpins.add(entityID);
-            this.hasLynchpin = true;
+            this.flags |= Team.FLAG.HAS_LYNCHPIN;
         }
         
         this.entities.push(entityID);
