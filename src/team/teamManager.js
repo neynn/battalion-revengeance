@@ -99,7 +99,7 @@ TeamManager.prototype.getFirstWinner = function() {
         const team = this.getTeam(this.activeTeams[i]);
         const { status } = team;
 
-        if(status === Team.STATUS.WINNER && team.hasAnyObjective()) {
+        if(status === Team.STATUS.WINNER) {
             return this.activeTeams[i];
         }
     }
@@ -211,7 +211,7 @@ TeamManager.prototype.broadcastEntityDeath = function(gameContext, entity) {
         const teamID = this.activeTeams[i];
         const team = this.getTeam(teamID);
 
-        team.onEntityDeath(gameContext, entity);
+        team.onEntityDeath(entity);
     }
 
     this.updateStatus(gameContext);

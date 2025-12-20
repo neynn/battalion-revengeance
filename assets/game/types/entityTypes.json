@@ -349,6 +349,31 @@
             "fire_up": "entwicklung_fire_up"
         }
     },
+    "ENTWICKLUNG_MK2": {
+        "health": 180,
+        "damage": 70,
+        "weaponType": "MEDIUM",
+        "armorType": "HEAVY",
+        "movementRange": 7,
+        "movementType": "TRACKED",
+        "name": "ENTITY_NAME_ENTWICKLUNG_MK2",
+        "desc": "ENTITY_DESC_ENTWICKLUNG_MK2",
+        "traits": ["SCHWERPUNKT", "BEWEGUNGSKRIEG", "TERRIFYING"],
+        "sounds": {
+            "move": "entwicklung_move",
+            "fire": "entwicklung_fire"
+        },
+        "sprites": {
+            "idle_right": "entwicklung_idle_right",
+            "idle_left": "entwicklung_idle_left",
+            "idle_down": "entwicklung_idle_down",
+            "idle_up": "entwicklung_idle_up",
+            "fire_right": "entwicklung_fire_right",
+            "fire_left": "entwicklung_fire_left",
+            "fire_down": "entwicklung_fire_down",
+            "fire_up": "entwicklung_fire_up"
+        }
+    },
     "BATTLESHIP": {
         "health": 1500,
         "damage": 100,

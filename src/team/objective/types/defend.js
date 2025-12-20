@@ -1,23 +1,16 @@
 import { Objective } from "../objective.js";
 
-export const DefendObjective = function() {
+export const DefendObjective = function(tiles) {
     Objective.call(this, "DEFEND");
+
+    this.tiles = tiles;
+    this.status = Objective.STATUS.IDLE;
 }
 
 DefendObjective.prototype = Object.create(Objective.prototype);
 DefendObjective.prototype.constructor = DefendObjective;
 
-DefendObjective.prototype.addTarget = function(config) {
-    if(this.status !== Objective.STATUS.FAILURE) {
-        this.status = Objective.STATUS.IDLE;
-        this.createTarget({
-            "x": config.x,
-            "y": config.y
-        });
-    }
-}
-
-DefendObjective.prototype.onMove = function(gameContext, entity, teamID) {
+DefendObjective.prototype.onEntityMove = function(gameContext, entity, teamID) {
     if(entity.teamID === teamID) {
         return;
     }
@@ -27,10 +20,7 @@ DefendObjective.prototype.onMove = function(gameContext, entity, teamID) {
     const worldMap = mapManager.getActiveMap();
     const entityID = entity.getID();
 
-    for(const target of this.targets) {
-        const { goal } = target;
-        const { x, y } = goal;
-
+    for(const { x, y } of this.tiles) {
         if(worldMap.hasEntity(x, y, entityID)) {
             this.fail();
             break;

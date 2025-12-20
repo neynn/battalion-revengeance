@@ -7,14 +7,14 @@ import { ProtectObjective } from "./objective/types/protect.js";
 import { SurviveObjective } from "./objective/types/survive.js";
 import { TimeLimitObjective } from "./objective/types/timeLimit.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
+import { UnitSurviveObjective } from "./objective/types/unitSurvive.js";
+import { LynchpinObjective } from "./objective/types/lynchpin.js";
 
 export const Team = function(id) {
     this.id = id;
     this.allies = [];
     this.buildings = [];
     this.entities = [];
-    this.units = new Set();
-    this.lynchpins = new Set();
     this.faction = null;
     this.nation = null;
     this.actor = null;
@@ -23,29 +23,15 @@ export const Team = function(id) {
     this.status = Team.STATUS.IDLE;
     this.exchangeRate = 1;
     this.funds = 0;
-    this.flags = Team.FLAG.NONE;
     this.objectives = [
-        new ProtectObjective(),
-        new DefeatObjective(),
-        new CaptureObjective(),
-        new DefendObjective(),
-        new TimeLimitObjective(),
-        new SurviveObjective()
+        new UnitSurviveObjective(),
+        new LynchpinObjective()
     ];
 }
 
-Team.FLAG = {
-    NONE: 0,
-    HAS_LYNCHPIN: 1 << 0
-};
-
-Team.OBJECTIVE_TYPE = {
-    PROTECT: 0,
-    DEFEAT: 1,
-    CAPTURE: 2,
-    DEFEND: 3,
-    TIME_LIMIT: 4,
-    SURVIVE: 5
+Team.OBJECTIVE = {
+    UNIT_SURVIVE: 0,
+    LYNCHPIN: 1
 };
 
 Team.STATUS = {
@@ -76,16 +62,6 @@ Team.prototype.removeBuilding = function(building) {
             break;
         }
     }
-}
-
-Team.prototype.hasAnyObjective = function() {
-    for(let i = 0; i < this.objectives.length; i++) {
-        if(this.objectives[i].hasAnyTarget()) {
-            return true;
-        }
-    }
-
-    return false;
 }
 
 Team.prototype.loadAsNation = function(gameContext, nationID) {
@@ -147,27 +123,19 @@ Team.prototype.getID = function() {
 }
 
 Team.prototype.onEntityMove = function(gameContext, entity) {
-    this.objectives[Team.OBJECTIVE_TYPE.CAPTURE].onMove(gameContext, entity, this.id);
-    this.objectives[Team.OBJECTIVE_TYPE.DEFEND].onMove(gameContext, entity, this.id);
+    for(const objective of this.objectives) {
+        objective.onEntityMove(gameContext, entity, this.id);
+    }
 }
 
-Team.prototype.onEntityDeath = function(gameContext, entity) {
+Team.prototype.onEntityDeath = function(entity) {
     const entityID = entity.getID();
 
-    if(this.hasEntity(entityID)) {
-        if(this.units.has(entityID)) {
-            this.units.delete(entityID);
-        }
+    this.removeEntity(entityID);
 
-        if(this.lynchpins.has(entityID)) {
-            this.lynchpins.delete(entityID);
-        }
-
-        this.removeEntity(entityID);
+    for(const objective of this.objectives) {
+        objective.onEntityDeath(entity);
     }
-
-    this.objectives[Team.OBJECTIVE_TYPE.DEFEAT].onDeath(entity);
-    this.objectives[Team.OBJECTIVE_TYPE.PROTECT].onDeath(entity);
 }
 
 Team.prototype.setCustomColor = function(color) {
@@ -219,58 +187,75 @@ Team.prototype.isWinner = function() {
 
 Team.prototype.updateStatus = function() {
     if(this.status !== Team.STATUS.IDLE) {
-        return this.status;
-    }
-
-    if(this.units.size === 0 || this.lynchpins.size === 0 && (this.flags & Team.FLAG.HAS_LYNCHPIN)) {
-        this.status = Team.STATUS.LOSER;
-
-        return this.status;
+        return;
     }
 
     let objectivesWon = 0;
     let necessaryObjectives = 0;
 
     for(const objective of this.objectives) {
-        const { status, targets } = objective;
+        const { status } = objective;
 
-        if(targets.length > 0) {
-            switch(status) {
-                case Objective.STATUS.IDLE: {
-                    objectivesWon += objective.allTargetsComplete() ? 1 : 0;
-                    break;
-                }
-                case Objective.STATUS.FAILURE: {
-                    this.status = Team.STATUS.LOSER;  
-                    return this.status;
-                }
-                case Objective.STATUS.SUCCESS: {
-                    objectivesWon++;
-                    break;
-                }
+        switch(status) {
+            case Objective.STATUS.ACTIVE: {     
+                necessaryObjectives++;
+                break;
             }
-
-            necessaryObjectives++;
+            case Objective.STATUS.SUCCESS: {
+                necessaryObjectives++;
+                objectivesWon++;
+                break;
+            }
+            case Objective.STATUS.FAILURE: {
+                this.status = Team.STATUS.LOSER;
+                return;
+            }
         }
     }
 
-    if(necessaryObjectives === objectivesWon) {
+    if(necessaryObjectives !== 0 && objectivesWon === necessaryObjectives) {
         this.status = Team.STATUS.WINNER;
     }
-
-    return this.status;
 }
 
 Team.prototype.loadObjectives = function(teamObjectives, allObjectives) {
     for(const objectiveID of teamObjectives) {
         const config = allObjectives[objectiveID];
 
-        if(config) {
-            const { type } = config;
-            const index = Team.OBJECTIVE_TYPE[type];
+        if(!config) {
+            continue;
+        }
 
-            if(index !== undefined && index >= 0 && index < this.objectives.length) {
-                this.objectives[index].addTarget(config);
+        const { type } = config;
+
+        switch(type) {
+            case TypeRegistry.OBJECTIVE_TYPE.DEFEAT: {
+                this.objectives.push(new DefeatObjective(config.target));
+                break;
+            }
+            case TypeRegistry.OBJECTIVE_TYPE.PROTECT: {
+                this.objectives.push(new ProtectObjective(config.targets));
+                break;
+            }
+            case TypeRegistry.OBJECTIVE_TYPE.CAPTURE: {
+                this.objectives.push(new CaptureObjective(config.tiles));
+                break;
+            }
+            case TypeRegistry.OBJECTIVE_TYPE.DEFEND: {
+                this.objectives.push(new DefendObjective(config.tiles));
+                break;
+            }
+            case TypeRegistry.OBJECTIVE_TYPE.SURVIVE: {
+                this.objectives.push(new SurviveObjective(config.turn));
+                break;
+            }
+            case TypeRegistry.OBJECTIVE_TYPE.TIME_LIMIT: {
+                this.objectives.push(new TimeLimitObjective(config.turn));
+                break;
+            }
+            default: {
+                console.error("UNKNOWN OBJECTIVE TYPE!", type);
+                break;
             }
         }
     }
@@ -288,8 +273,9 @@ Team.prototype.onTurnEnd = function(gameContext, turn) {
         }
     }
 
-    this.objectives[Team.OBJECTIVE_TYPE.SURVIVE].onTurnEnd(turn);
-    this.objectives[Team.OBJECTIVE_TYPE.TIME_LIMIT].onTurnEnd(turn);
+    for(const objective of this.objectives) {
+        objective.onTurnEnd(turn);
+    }
 
     teamManager.updateStatus(gameContext);
 }
@@ -321,12 +307,11 @@ Team.prototype.addEntity = function(entity) {
 
     if(!this.hasEntity(entityID)) {
         if(!entity.hasTrait(TypeRegistry.TRAIT_TYPE.FIXED)) {
-            this.units.add(entityID);
+            this.objectives[Team.OBJECTIVE.UNIT_SURVIVE].addUnit(entityID);
         }
 
         if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.LYNCHPIN)) {
-            this.lynchpins.add(entityID);
-            this.flags |= Team.FLAG.HAS_LYNCHPIN;
+            this.objectives[Team.OBJECTIVE.LYNCHPIN].addLynchpin(entityID);
         }
         
         this.entities.push(entityID);

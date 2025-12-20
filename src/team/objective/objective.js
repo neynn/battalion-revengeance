@@ -1,47 +1,28 @@
-import { Target } from "./target.js";
-
 export const Objective = function(DEBUG_NAME) {
     this.DEBUG_NAME = DEBUG_NAME;
-    this.status = Objective.STATUS.IDLE;
-    this.targets = [];
+    this.status = Objective.STATUS.ACTIVE;
+    this.modifiers = [];
 }
 
 Objective.STATUS = {
     IDLE: 0,
-    SUCCESS: 1,
-    FAILURE: 2
+    ACTIVE: 1,
+    SUCCESS: 2,
+    FAILURE: 3
 };
 
-Objective.prototype.hasAnyTarget = function() {
-    return this.targets.length !== 0;
-}
-
-Objective.prototype.allTargetsComplete = function() {
-    for(let i = 0; i < this.targets.length; i++) {
-        if(this.targets[i].status === Target.STATUS.INCOMPLETE) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-Objective.prototype.createTarget = function(goal) {
-    this.targets.push(new Target(goal));
-
-    return this.targets[this.targets.length - 1];
+Objective.prototype.addModifier = function(modifier) {
+    this.modifiers.push(modifier);
 }
 
 Objective.prototype.fail = function() {
-    if(this.status === Objective.STATUS.IDLE) {
-        this.status = Objective.STATUS.FAILURE;
-    }
+    this.status = Objective.STATUS.FAILURE;
 }
 
 Objective.prototype.succeed = function() {
-    if(this.status === Objective.STATUS.IDLE) {
-        this.status = Objective.STATUS.SUCCESS;
-    }
+    this.status = Objective.STATUS.SUCCESS;
 }
 
-Objective.prototype.addTarget = function(config) {}
+Objective.prototype.onEntityDeath = function(entity) {}
+Objective.prototype.onEntityMove = function(gameContext, entity, teamID) {}
+Objective.prototype.onTurnEnd = function(turn) {} 

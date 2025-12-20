@@ -49,9 +49,9 @@
     ],
     "objectives": {
         "SURVIVE_TURN_2": { "type": "SURVIVE", "turn": 2 },
-        "PROTECT_BOAT_1": { "type": "PROTECT", "target": "BOAT_1" },
+        "PROTECT_BOAT_1": { "type": "PROTECT", "targets": ["BOAT_1"] },
         "DEFEAT_BOAT_1": { "type": "DEFEAT", "target": "BOAT_1" },
-        "CAPTURE_0_0": { "type": "CAPTURE", "x": 0, "y": 0 }
+        "CAPTURE_0_0": { "type": "CAPTURE", "tiles": [{"x": 0, "y": 0}] }
     },
     "prelogue": [
         { "narrator": "KANYE", "text": "PRESUS_PRELOGUE_1" },

@@ -186,6 +186,15 @@ TypeRegistry.CATEGORY = {
     COMMANDER: 15
 };
 
+TypeRegistry.OBJECTIVE_TYPE = {
+    DEFEAT: "DEFEAT",
+    PROTECT: "PROTECT",
+    CAPTURE: "CAPTURE",
+    DEFEND: "DEFEND",
+    SURVIVE: "SURVIVE",
+    TIME_LIMIT: "TIME_LIMIT"
+};
+
 TypeRegistry.MORALE_TYPE = {
     NONE: "NONE"
 };

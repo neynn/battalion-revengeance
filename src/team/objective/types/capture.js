@@ -1,35 +1,32 @@
 import { Objective } from "../objective.js";
 
-export const CaptureObjective = function() {
+export const CaptureObjective = function(tiles) {
     Objective.call(this, "CAPTURE");
+
+    this.tiles = tiles;
 }
 
 CaptureObjective.prototype = Object.create(Objective.prototype);
 CaptureObjective.prototype.constructor = CaptureObjective;
 
-CaptureObjective.prototype.addTarget = function(config) {
-    this.createTarget({
-        "x": config.x,
-        "y": config.y
-    });
-}
-
-CaptureObjective.prototype.onMove = function(gameContext, entity, teamID) {
+CaptureObjective.prototype.onEntityMove = function(gameContext, entity, teamID) {
     const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
     const entityID = entity.getID();
+    let totalCaptures = 0;
 
-    for(const target of this.targets) {
-        const { goal } = target;
-        const { x, y } = goal;
-
+    for(const { x, y } of this.tiles) {
         if(worldMap.hasEntity(x, y, entityID)) {
             if(entity.teamID === teamID) {
-                target.toComplete();
-            } else {
-                target.toIncomplete();
+                totalCaptures++;
             }
         }
+    }
+
+    if(totalCaptures === this.tiles.length) {
+        this.status = Objective.STATUS.SUCCESS;
+    } else {
+        this.status = Objective.STATUS.ACTIVE;
     }
 }
