@@ -9,7 +9,7 @@
         "movementType": "TRACKED",
         "name": "ENTITY_NAME_MEME_BUREAUCRAT",
         "desc": "ENTITY_DESC_MEME_BUREAUCRAT",
-        "traits": ["ELUSIVE"],
+        "traits": [],
         "sounds": {
             "move": "cockroach_move",
             "fire": "cockroach_fire"

@@ -1,11 +1,5 @@
 import { ActionHelper } from "../action/actionHelper.js";
 import { Objective } from "./objective/objective.js";
-import { CaptureObjective } from "./objective/types/capture.js";
-import { DefeatObjective } from "./objective/types/defeat.js";
-import { DefendObjective } from "./objective/types/defend.js";
-import { ProtectObjective } from "./objective/types/protect.js";
-import { SurviveObjective } from "./objective/types/survive.js";
-import { TimeLimitObjective } from "./objective/types/timeLimit.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { UnitSurviveObjective } from "./objective/types/unitSurvive.js";
 import { LynchpinObjective } from "./objective/types/lynchpin.js";
@@ -218,47 +212,8 @@ Team.prototype.updateStatus = function() {
     }
 }
 
-Team.prototype.loadObjectives = function(teamObjectives, allObjectives) {
-    for(const objectiveID of teamObjectives) {
-        const config = allObjectives[objectiveID];
-
-        if(!config) {
-            continue;
-        }
-
-        const { type } = config;
-
-        switch(type) {
-            case TypeRegistry.OBJECTIVE_TYPE.DEFEAT: {
-                this.objectives.push(new DefeatObjective(config.target));
-                break;
-            }
-            case TypeRegistry.OBJECTIVE_TYPE.PROTECT: {
-                this.objectives.push(new ProtectObjective(config.targets));
-                break;
-            }
-            case TypeRegistry.OBJECTIVE_TYPE.CAPTURE: {
-                this.objectives.push(new CaptureObjective(config.tiles));
-                break;
-            }
-            case TypeRegistry.OBJECTIVE_TYPE.DEFEND: {
-                this.objectives.push(new DefendObjective(config.tiles));
-                break;
-            }
-            case TypeRegistry.OBJECTIVE_TYPE.SURVIVE: {
-                this.objectives.push(new SurviveObjective(config.turn));
-                break;
-            }
-            case TypeRegistry.OBJECTIVE_TYPE.TIME_LIMIT: {
-                this.objectives.push(new TimeLimitObjective(config.turn));
-                break;
-            }
-            default: {
-                console.error("UNKNOWN OBJECTIVE TYPE!", type);
-                break;
-            }
-        }
-    }
+Team.prototype.addObjective = function(objective) {
+    this.objectives.push(objective);
 }
 
 Team.prototype.onTurnEnd = function(gameContext, turn) {

@@ -366,6 +366,7 @@ TypeRegistry.MOVEMENT_TYPE = {
 };
 
 TypeRegistry.TRAIT_TYPE = {
+    ANNIHILATE: "ANNIHILATE",
     LYNCHPIN: "LYNCHPIN",
     BLITZ: "BLITZ",
     SHRAPNEL: "SHRAPNEL",

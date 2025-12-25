@@ -1,6 +1,18 @@
 export const InteractionResolver = function() {
     this.hitEntities = [];
     this.deadEntities = [];
+    this.totalDamage = 0;
+    this.totalHeal = 0;
+}
+
+InteractionResolver.prototype.addHeal = function(entity, heal) {
+    this.add(entity.getID(), entity.getHealthAfterHeal(heal));
+    this.totalHeal += heal;
+}
+
+InteractionResolver.prototype.addAttack = function(entity, damage) {
+    this.add(entity.getID(), entity.getHealthAfterDamage(damage));
+    this.totalDamage += damage;
 }
 
 InteractionResolver.prototype.add = function(entityID, health) {

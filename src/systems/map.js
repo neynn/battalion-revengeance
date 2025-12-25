@@ -2,6 +2,13 @@ import { BattalionActor } from "../actors/battalionActor.js";
 import { Player } from "../actors/player.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { JammerField } from "../map/jammerField.js";
+import { CaptureObjective } from "../team/objective/types/capture.js";
+import { DefeatObjective } from "../team/objective/types/defeat.js";
+import { DefendObjective } from "../team/objective/types/defend.js";
+import { ProtectObjective } from "../team/objective/types/protect.js";
+import { SurviveObjective } from "../team/objective/types/survive.js";
+import { TimeLimitObjective } from "../team/objective/types/timeLimit.js";
+import { TypeRegistry } from "../type/typeRegistry.js";
 import { createPlayCamera } from "./camera.js";
 import { spawnBuildingFromJSON, spawnEntityFromJSON } from "./spawn.js";
 
@@ -79,6 +86,49 @@ const createTeam = function(gameContext, teamID, config) {
     return team;
 }
 
+const createObjectives = function(team, objectives, allObjectives) {
+    for(const objectiveID of objectives) {
+        const config = allObjectives[objectiveID];
+
+        if(!config) {
+            continue;
+        }
+
+        const { type } = config;
+
+        switch(type) {
+            case TypeRegistry.OBJECTIVE_TYPE.DEFEAT: {
+                team.addObjective(new DefeatObjective(config.target));
+                break;
+            }
+            case TypeRegistry.OBJECTIVE_TYPE.PROTECT: {
+                team.addObjective(new ProtectObjective(config.targets));
+                break;
+            }
+            case TypeRegistry.OBJECTIVE_TYPE.CAPTURE: {
+                team.addObjective(new CaptureObjective(config.tiles));
+                break;
+            }
+            case TypeRegistry.OBJECTIVE_TYPE.DEFEND: {
+                team.addObjective(new DefendObjective(config.tiles));
+                break;
+            }
+            case TypeRegistry.OBJECTIVE_TYPE.SURVIVE: {
+                team.addObjective(new SurviveObjective(config.turn));
+                break;
+            }
+            case TypeRegistry.OBJECTIVE_TYPE.TIME_LIMIT: {
+                team.addObjective(new TimeLimitObjective(config.turn));
+                break;
+            }
+            default: {
+                console.error("UNKNOWN OBJECTIVE TYPE!", type);
+                break;
+            }
+        }
+    }
+}
+
 const loadMap = function(gameContext, worldMap, mapData) {
     const { client, teamManager, eventHandler, dialogueHandler } = gameContext;
     const { musicPlayer } = client;
@@ -103,7 +153,7 @@ const loadMap = function(gameContext, worldMap, mapData) {
         const team = createTeam(gameContext, teamName, teams[teamName]);
 
         if(team) {
-            team.loadObjectives(teamObjectives, objectives);
+            createObjectives(team, teamObjectives, objectives);
         }
     }
 

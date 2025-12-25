@@ -1,4 +1,9 @@
 {
+    "ANNIHILATE": {
+        "name": "TRAIT_NAME_ANNIHILATE",
+        "desc": "TRAIT_DESC_ANNIHILATE",
+        "icon": null
+    },
     "BLITZ": {
         "name": "TRAIT_NAME_BLITZ",
         "desc": "TRAIT_DESC_BLITZ",
