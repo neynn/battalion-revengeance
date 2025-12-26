@@ -6,7 +6,7 @@ export const setFlag = function(flags, flag) {
     return flags | flag;
 }
 
-export const removeFlag = function(flags, flag) {
+export const clearFlag = function(flags, flag) {
     return flags & (~flag);
 }
 

@@ -487,7 +487,7 @@
         },
         "name": "ENTITY_NAME_HEAVY_COMMANDO",
         "desc": "ENTITY_DESC_HEAVY_COMMANDO",
-        "traits": ["TRACKING", "ELUSIVE"],
+        "traits": ["TRACKING"],
         "sprites": {
             "idle_right": "heavy_commando_idle_right",
             "idle_left": "heavy_commando_idle_left",

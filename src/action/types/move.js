@@ -104,7 +104,7 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
     const { entityID, path, targetID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
 
-    if(!entity || entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) || entity.hasFlag(BattalionEntity.FLAG.HAS_FIRED)) {
+    if(!entity || !entity.hasFlag(BattalionEntity.FLAG.CAN_MOVE) || entity.hasFlag(BattalionEntity.FLAG.HAS_FIRED)) {
         return;
     }
 
@@ -154,7 +154,9 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
 
         if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.TRACKING)) {
             executionPlan.addNext(createTrackingIntent(entityID, uncloakedEntities));
-        } else if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
+        }
+
+        if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
             flags |= MoveAction.FLAG.ELUSIVE;
         }
     }

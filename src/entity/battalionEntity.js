@@ -35,6 +35,7 @@ export const BattalionEntity = function(id, sprite) {
     this.teamID = null;
     this.transportID = null;
     this.lastAttacker = EntityManager.ID.INVALID;
+    this.flags = BattalionEntity.FLAG.CAN_MOVE;
 }
 
 BattalionEntity.HYBRID_ENABLED = false;
@@ -1163,7 +1164,7 @@ BattalionEntity.prototype.cloakInstant = function() {
 BattalionEntity.prototype.uncloakInstant = function() {
     if(this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
         this.sprite.setOpacity(1);
-        this.removeFlag(BattalionEntity.FLAG.IS_CLOAKED);
+        this.clearFlag(BattalionEntity.FLAG.IS_CLOAKED);
     }
 }
 
@@ -1212,7 +1213,7 @@ BattalionEntity.prototype.canMove = function() {
 }
 
 BattalionEntity.prototype.canAct = function() {
-    return !this.hasFlag(BattalionEntity.FLAG.HAS_FIRED | BattalionEntity.FLAG.HAS_MOVED);
+    return (this.flags & BattalionEntity.FLAG.CAN_MOVE) && !(this.flags & BattalionEntity.FLAG.HAS_FIRED);
 }
 
 BattalionEntity.prototype.getCloakFlags = function() {
@@ -1270,7 +1271,7 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, 
 }
 
 BattalionEntity.prototype.isSelectable = function() {
-    return this.canAct() && !this.isDead();
+    return !this.isDead() && !this.hasFlag(BattalionEntity.FLAG.HAS_FIRED) && this.hasFlag(BattalionEntity.FLAG.CAN_MOVE);
 }
 
 BattalionEntity.prototype.getMaxRange = function(gameContext) {
@@ -1343,14 +1344,15 @@ BattalionEntity.prototype.onMoveStart = function() {}
 
 BattalionEntity.prototype.onMoveEnd = function() {
     this.setFlag(BattalionEntity.FLAG.HAS_MOVED);
+    this.clearFlag(BattalionEntity.FLAG.CAN_MOVE);
 }
 
 BattalionEntity.prototype.onHealEnd = function() {
-    this.setFlag(BattalionEntity.FLAG.HAS_FIRED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
+    this.setFlag(BattalionEntity.FLAG.HAS_FIRED);
 }
 
 BattalionEntity.prototype.onAttackEnd = function() {
-    this.setFlag(BattalionEntity.FLAG.HAS_FIRED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
+    this.setFlag(BattalionEntity.FLAG.HAS_FIRED);
 }
 
 BattalionEntity.prototype.onCounterEnd = function() {
@@ -1365,10 +1367,10 @@ BattalionEntity.prototype.setLastAttacker = function(entityID) {
 
 BattalionEntity.prototype.onTurnStart = function(gameContext) {
     this.lastAttacker = EntityManager.ID.INVALID;
-    this.removeFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_FIRED);
-    this.removeFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
+    this.clearFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_FIRED);
+    this.clearFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
+    this.setFlag(BattalionEntity.FLAG.CAN_MOVE);
     this.takeTerrainDamage(gameContext);
-    //this.sprite.thaw();
 
     console.log("My turn started", this);
 } 
@@ -1376,22 +1378,22 @@ BattalionEntity.prototype.onTurnStart = function(gameContext) {
 BattalionEntity.prototype.onTurnEnd = function(gameContext) {
     this.lastAttacker = EntityManager.ID.INVALID;
     this.setFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_FIRED);
-    //this.sprite.freeze();
+    this.clearFlag(BattalionEntity.FLAG.CAN_MOVE);
 
     console.log("My turn ended", this);
 }
 
 BattalionEntity.prototype.triggerBewegungskrieg = function() {
     if(!this.hasFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED)) {
-        this.removeFlag(BattalionEntity.FLAG.HAS_FIRED | BattalionEntity.FLAG.HAS_MOVED);
-        this.setFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED);
+        //Clear HAS_FIRED and HAS_MOVED to allow MoveAction to potentially queue again.
+        this.clearFlag(BattalionEntity.FLAG.HAS_FIRED | BattalionEntity.FLAG.HAS_MOVED);
+        this.setFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.CAN_MOVE);
     }
 }
 
 BattalionEntity.prototype.triggerElusive = function() {
     if(!this.hasFlag(BattalionEntity.FLAG.ELUSIVE_TRIGGERED)) {
-        this.removeFlag(BattalionEntity.FLAG.HAS_MOVED);
-        this.setFlag(BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
+        this.setFlag(BattalionEntity.FLAG.ELUSIVE_TRIGGERED | BattalionEntity.FLAG.CAN_MOVE);
     }
 }
 

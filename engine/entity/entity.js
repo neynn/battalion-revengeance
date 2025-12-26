@@ -17,7 +17,7 @@ Entity.prototype.setFlag = function(flag) {
     this.flags |= flag;
 }
 
-Entity.prototype.removeFlag = function(flag) {
+Entity.prototype.clearFlag = function(flag) {
     this.flags &= ~flag;
 }
 
