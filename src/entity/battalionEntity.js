@@ -41,13 +41,13 @@ BattalionEntity.HYBRID_ENABLED = false;
 
 BattalionEntity.FLAG = {
     NONE: 0,
-    HAS_MOVED: 1 << 0,
-    HAS_FIRED: 1 << 1,
-    IS_CLOAKED: 1 << 2,
-    IS_SUBMERGED: 1 << 3,
-    BEWEGUNGSKRIEG_TRIGGERED: 1 << 4,
-    ELUSIVE_TRIGGERED: 1 << 5,
-    CAN_MOVE: 1 << 6
+    IS_CLOAKED: 1 << 0,
+    IS_SUBMERGED: 1 << 1,
+    HAS_MOVED: 1 << 2,
+    HAS_FIRED: 1 << 3,
+    CAN_MOVE: 1 << 4,
+    BEWEGUNGSKRIEG_TRIGGERED: 1 << 5,
+    ELUSIVE_TRIGGERED: 1 << 6
 };
 
 BattalionEntity.STATE = {

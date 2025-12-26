@@ -1,7 +1,15 @@
-import { Action } from "../../engine/action/action.js";
 import { ActionIntent } from "../../engine/action/actionIntent.js";
 import { DialogueHandler } from "../dialogue/dialogueHandler.js";
+import { COMMAND_TYPE } from "../enums.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
+
+export const createTrackingIntent = function(entityID, potentialTargets) {
+    return new ActionIntent(TypeRegistry.ACTION_TYPE.ATTACK, {
+        "entityID": entityID,
+        "targetID": potentialTargets[0].getID(), //TODO: Custom logic like "only targetable" and "weakest".
+        "command": COMMAND_TYPE.CHAIN_AFTER_MOVE
+    });
+}
 
 export const createHealRequest = function(entityID, targetID, command) {
     return new ActionIntent(TypeRegistry.ACTION_TYPE.HEAL, {

@@ -5,7 +5,7 @@ import { COMMAND_TYPE, PATH_INTERCEPT } from "../../enums.js";
 import { placeEntityOnMap, removeEntityFromMap } from "../../systems/map.js";
 import { mInterceptPath } from "../../systems/pathfinding.js";
 import { TypeRegistry } from "../../type/typeRegistry.js";
-import { ActionHelper, createAttackRequest, createHealRequest } from "../actionHelper.js";
+import { ActionHelper, createAttackRequest, createHealRequest, createTrackingIntent } from "../actionHelper.js";
 
 export const MoveAction = function() {
     Action.call(this);
@@ -122,12 +122,10 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
 
     const targetX = path[0].tileX;
     const targetY = path[0].tileY;
+    const uncloakedEntities = entity.getUncloakedEntities(gameContext, targetX, targetY);
     let flags = MoveAction.FLAG.NONE;
 
-    const uncloakedEntities = entity.getUncloakedEntities(gameContext, targetX, targetY);
-    const uncloakedIDs = uncloakedEntities.map(e => e.getID());
-
-    if(uncloakedIDs.length === 0) {
+    if(uncloakedEntities.length === 0) {
         const targetEntity = entityManager.getEntity(targetID);
 
         if(targetEntity) {
@@ -150,13 +148,13 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
             }
         }
     } else {
+        const uncloakedIDs = uncloakedEntities.map(e => e.getID());
+
         executionPlan.addNext(ActionHelper.createUncloakRequest(uncloakedIDs));
 
         if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.TRACKING)) {
-            executionPlan.addNext(createAttackRequest(entityID, uncloakedIDs[0], COMMAND_TYPE.CHAIN_AFTER_MOVE));
-        }
-
-        if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
+            executionPlan.addNext(createTrackingIntent(entityID, uncloakedEntities));
+        } else if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
             flags |= MoveAction.FLAG.ELUSIVE;
         }
     }

@@ -242,16 +242,6 @@ ActionQueue.prototype.skip = function() {
     }
 }
 
-ActionQueue.prototype.isSendable = function(typeID) {
-    const actionType = this.actionTypes.get(typeID);
-
-    if(!actionType) {
-        return false;
-    }
-
-    return actionType.isSendable;
-}
-
 ActionQueue.prototype.getPriority = function(typeID) {
     const actionType = this.actionTypes.get(typeID);
 

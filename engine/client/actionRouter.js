@@ -2,6 +2,8 @@ import { Action } from "../action/action.js";
 
 export const ActionRouter = function() {
     this.target = ActionRouter.TARGET.CLIENT;
+    this.sendable = new Set();
+    this.receivable = new Set();
 }
 
 ActionRouter.TARGET = {
@@ -20,8 +22,12 @@ ActionRouter.prototype.dispatch = function(gameContext, executionPlan) {
             break;
         }
         case ActionRouter.TARGET.SERVER: {
-            const { intent } = executionPlan;
-            const json = intent.toJSON();
+            const { type, intent } = executionPlan;
+
+            if(this.sendableActions.has(type)) {
+                const json = intent.toJSON();
+            }
+
             //TODO: Make JSO N out of INTENT and send it to the server.
             break;
         }

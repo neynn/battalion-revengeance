@@ -1,7 +1,5 @@
 export const Action = function() {
     this.priority = Action.PRIORITY.LOW;
-    this.isSendable = false;
-    this.isReceiveable = false;
 }
 
 Action.PRIORITY = {
