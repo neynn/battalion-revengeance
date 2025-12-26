@@ -35,6 +35,7 @@ Event.prototype.explodeTile = function(gameContext, layerName, tileX, tileY) {
     const entity = EntityHelper.getTileEntity(gameContext, tileX, tileY);
 
     worldMap.editTile(index, tileX, tileY, TILE_ID.NONE);
+    worldMap.removeLocalization(tileX, tileY);
 
     if(entity !== null) {
         despawnEntity(gameContext, entity);

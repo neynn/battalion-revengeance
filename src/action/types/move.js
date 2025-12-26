@@ -1,5 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
 import { hasFlag } from "../../../engine/util/flag.js";
+import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { COMMAND_TYPE, PATH_INTERCEPT } from "../../enums.js";
 import { placeEntityOnMap, removeEntityFromMap } from "../../systems/map.js";
 import { mInterceptPath } from "../../systems/pathfinding.js";
@@ -102,65 +103,70 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
     const { entityManager } = world;
     const { entityID, path, targetID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
-    const isValid = entity && entity.canAct() && entity.canMove() && !entity.isDead() && entity.isPathValid(gameContext, path);
 
-    if(isValid) {
-        const { teamID } = entity;
-        const intercept = mInterceptPath(gameContext, path, teamID);
+    if(!entity || entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) || entity.hasFlag(BattalionEntity.FLAG.HAS_FIRED)) {
+        return;
+    }
 
-        if(path.length === 0 || intercept === PATH_INTERCEPT.ILLEGAL) {
-            console.error("EDGE CASE: Stealth unit was too close!");
-            return;
-        }
+    if(!entity.canMove() || entity.isDead() || !entity.isPathValid(gameContext, path)) {
+        return;
+    }
 
-        const targetX = path[0].tileX;
-        const targetY = path[0].tileY;
-        let flags = MoveAction.FLAG.NONE;
+    const { teamID } = entity;
+    const intercept = mInterceptPath(gameContext, path, teamID);
 
-        const uncloakedEntities = entity.getUncloakedEntities(gameContext, targetX, targetY);
-        const uncloakedIDs = uncloakedEntities.map(e => e.getID());
+    if(path.length === 0 || intercept === PATH_INTERCEPT.ILLEGAL) {
+        console.error("EDGE CASE: Stealth unit was too close!");
+        return;
+    }
 
-        if(uncloakedIDs.length === 0) {
-            const targetEntity = entityManager.getEntity(targetID);
+    const targetX = path[0].tileX;
+    const targetY = path[0].tileY;
+    let flags = MoveAction.FLAG.NONE;
 
-            if(targetEntity) {
-                if(targetEntity.isNextToTile(targetX, targetY)) {
-                    if(entity.isHealValid(gameContext, targetEntity)) {
-                        executionPlan.addNext(createHealRequest(entityID, targetID, COMMAND_TYPE.CHAIN_AFTER_MOVE));
-                    } else if (entity.isAttackValid(gameContext, targetEntity)) {
-                        executionPlan.addNext(createAttackRequest(entityID, targetID, COMMAND_TYPE.CHAIN_AFTER_MOVE));
-                    } else {
-                        console.error("Heal and attack are both invalid!");
-                    }
-                }
-            } else {
-                if(entity.canCloakAt(gameContext, targetX, targetY)) {
-                    executionPlan.addNext(ActionHelper.createCloakRequest(entityID));
-                }
+    const uncloakedEntities = entity.getUncloakedEntities(gameContext, targetX, targetY);
+    const uncloakedIDs = uncloakedEntities.map(e => e.getID());
 
-                if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
-                    flags |= MoveAction.FLAG.ELUSIVE;
+    if(uncloakedIDs.length === 0) {
+        const targetEntity = entityManager.getEntity(targetID);
+
+        if(targetEntity) {
+            if(targetEntity.isNextToTile(targetX, targetY)) {
+                if(entity.isHealValid(gameContext, targetEntity)) {
+                    executionPlan.addNext(createHealRequest(entityID, targetID, COMMAND_TYPE.CHAIN_AFTER_MOVE));
+                } else if(entity.isAttackValid(gameContext, targetEntity)) {
+                    executionPlan.addNext(createAttackRequest(entityID, targetID, COMMAND_TYPE.CHAIN_AFTER_MOVE));
+                } else {
+                    console.error("Heal and attack are both invalid!");
                 }
             }
         } else {
-            executionPlan.addNext(ActionHelper.createUncloakRequest(uncloakedIDs));
+            if(entity.canCloakAt(gameContext, targetX, targetY)) {
+                executionPlan.addNext(ActionHelper.createCloakRequest(entityID));
+            }
 
-            if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.TRACKING)) {
-                executionPlan.addNext(createAttackRequest(entityID, uncloakedIDs[0], COMMAND_TYPE.CHAIN_AFTER_MOVE));
-            } else {
-                if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
-                    flags |= MoveAction.FLAG.ELUSIVE;
-                }
+            if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
+                flags |= MoveAction.FLAG.ELUSIVE;
             }
         }
+    } else {
+        executionPlan.addNext(ActionHelper.createUncloakRequest(uncloakedIDs));
 
-        //TODO: Add uncloak after moving.
-        //MOVE_CLOAKED -> UNCLOAK -> MOVE_UNCLOAKED
-        
-        executionPlan.setData({
-            "entityID": entityID,
-            "path": path,
-            "flags": flags
-        });
+        if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.TRACKING)) {
+            executionPlan.addNext(createAttackRequest(entityID, uncloakedIDs[0], COMMAND_TYPE.CHAIN_AFTER_MOVE));
+        }
+
+        if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
+            flags |= MoveAction.FLAG.ELUSIVE;
+        }
     }
+
+    //TODO: Add uncloak after moving.
+    //MOVE_CLOAKED -> UNCLOAK -> MOVE_UNCLOAKED
+    
+    executionPlan.setData({
+        "entityID": entityID,
+        "path": path,
+        "flags": flags
+    });
 }

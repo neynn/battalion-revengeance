@@ -217,45 +217,24 @@ const loadMap = function(gameContext, worldMap, mapData) {
     //ActionHelper.createRegularDialogue(gameContext, DialogueHandler.TYPE.PRELOGUE);
 }
 
-const placeJammer = function(worldMap, entity) {
-    const jammerFlags = entity.getJammerFlags();
-
-    if(jammerFlags !== JammerField.FLAG.NONE) {
-        const { tileX, tileY, teamID, config } = entity;
-        const { jammerRange } = config;
-
-        worldMap.fill2DGraph(tileX, tileY, jammerRange, (nextX, nextY) => {
-            worldMap.addJammer(nextX, nextY, teamID, jammerFlags);
-        });
-    }
-}
-
-const removeJammer = function(worldMap, entity) {
-    const jammerFlags = entity.getJammerFlags();
-
-    if(jammerFlags !== JammerField.FLAG.NONE) {
-        const { tileX, tileY, teamID, config } = entity;
-        const { jammerRange } = config;
-
-        worldMap.fill2DGraph(tileX, tileY, jammerRange, (nextX, nextY) => {
-            worldMap.removeJammer(nextX, nextY, teamID, jammerFlags);
-        });
-    }
-}
-
 export const placeEntityOnMap = function(gameContext, entity) {
     const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
 
     if(worldMap) {
-        const sizeX = entity.config.dimX;
-        const sizeY = entity.config.dimY;
+        const { tileX, tileY, teamID, config } = entity;
+        const { dimX, dimY, jammerRange } = config;
         const entityID = entity.getID();
+        const jammerFlags = entity.getJammerFlags();
 
-        worldMap.addEntity(entity.tileX, entity.tileY, sizeX, sizeY, entityID);
+        worldMap.addEntity(tileX, tileY, dimX, dimY, entityID);
     
-        placeJammer(worldMap, entity);
+        if(jammerFlags !== JammerField.FLAG.NONE) {
+            worldMap.fill2DGraph(tileX, tileY, jammerRange, (nextX, nextY) => {
+                worldMap.addJammer(nextX, nextY, teamID, jammerFlags);
+            });
+        }
     }
 }
 
@@ -265,13 +244,18 @@ export const removeEntityFromMap = function(gameContext, entity) {
     const worldMap = mapManager.getActiveMap();
 
     if(worldMap) {
-        const sizeX = entity.config.dimX;
-        const sizeY = entity.config.dimY;
+        const { tileX, tileY, teamID, config } = entity;
+        const { dimX, dimY, jammerRange } = config;
         const entityID = entity.getID();
+        const jammerFlags = entity.getJammerFlags();
 
-        worldMap.removeEntity(entity.tileX, entity.tileY, sizeX, sizeY, entityID);
+        worldMap.removeEntity(tileX, tileY, dimX, dimY, entityID);
 
-        removeJammer(worldMap, entity);
+        if(jammerFlags !== JammerField.FLAG.NONE) {
+            worldMap.fill2DGraph(tileX, tileY, jammerRange, (nextX, nextY) => {
+                worldMap.removeJammer(nextX, nextY, teamID, jammerFlags);
+            });
+        }
     }
 }
 
