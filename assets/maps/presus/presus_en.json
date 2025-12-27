@@ -1,13 +1,13 @@
 {
-    "PRESUS_PRELOGUE_1": "This is Kanye West.",
-    "PRESUS_PRELOGUE_2": "Ye.",
-    "PRESUS_POSTLOGUE_1": "This is Kanye West.",
-    "PRESUS_POSTLOGUE_2": "I won.",
-    "PRESUS_DEFEAT_1": "This is Kanye West.",
-    "PRESUS_DEFEAT_2": "I lost.",
-    "PRESUS_EVENT_TEST": "They bombed a tile!",
-    "ENTITY_NAME_1": "A name!",
-    "ENTITY_DESC_1": "A description!",
-    "TILE_NAME_TEST": "This is a test name.",
-    "TILE_DESC_TEST": "This is a test description."
+    "PRESUS_PRELOGUE_1": { "en-US": "This is Kanye West." },
+    "PRESUS_PRELOGUE_2": { "en-US": "Ye." },
+    "PRESUS_POSTLOGUE_1": { "en-US": "This is Kanye West." },
+    "PRESUS_POSTLOGUE_2": { "en-US": "I won." },
+    "PRESUS_DEFEAT_1": { "en-US": "This is Kanye West." },
+    "PRESUS_DEFEAT_2": { "en-US": "I lost." },
+    "PRESUS_EVENT_TEST": { "en-US": "They bombed a tile!" },
+    "ENTITY_NAME_1": { "en-US": "A name!" },
+    "ENTITY_DESC_1": { "en-US": "A description!" },
+    "TILE_NAME_TEST": { "en-US": "This is a test name." },
+    "TILE_DESC_TEST": { "en-US": "This is a test description." }
 }

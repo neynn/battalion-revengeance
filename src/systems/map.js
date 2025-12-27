@@ -331,7 +331,7 @@ export const createStoryMap = async function(gameContext, sourceID) {
             worldMap.decodeLayers(data);
 
             if(translations !== null) {
-                currentLanguage.registerMap(mapID, translations);
+                language.registerMapTranslations(translations);
                 worldMap.onLanguageUpdate(currentLanguage, translations);
             }
 

@@ -4,6 +4,7 @@ import { Language } from "./language.js";
 export const LanguageHandler = function() {
     this.languages = new Map();
     this.currentLanguage = LanguageHandler.STUB_LANGUAGE;
+    this.mapTranslations = {};
 
     this.events = new EventEmitter();
     this.events.register(LanguageHandler.EVENT.LANGUAGE_CHANGE);
@@ -40,8 +41,12 @@ LanguageHandler.prototype.load = function(languages) {
     }
 }
 
-LanguageHandler.prototype.enableMap = function(mapID) {
-    this.currentLanguage.selectMap(mapID);
+LanguageHandler.prototype.clearMapTranslations = function() {
+    this.mapTranslations = {};
+}
+
+LanguageHandler.prototype.registerMapTranslations = function(mapTranslations) {
+    this.mapTranslations = mapTranslations;
 }
 
 LanguageHandler.prototype.getCurrent = function() {
@@ -53,9 +58,7 @@ LanguageHandler.prototype.clear = function() {
     this.currentLanguage = LanguageHandler.STUB_LANGUAGE;
 }
 
-LanguageHandler.prototype.exit = function() {
-    this.languages.forEach(language => language.clearMap());
-}
+LanguageHandler.prototype.exit = function() {}
 
 LanguageHandler.prototype.selectLanguage = function(languageID) {
     if(this.currentLanguage.getID() !== languageID) {
@@ -82,7 +85,19 @@ LanguageHandler.prototype.getSystemTranslation = function(tag) {
 }
 
 LanguageHandler.prototype.getMapTranslation = function(tag) {
-    return this.currentLanguage.getMapTranslation(tag);
+    const translations = this.mapTranslations[tag];
+    
+    if(!translations) {
+        return tag;
+    }
+
+    const translation = translations[this.currentLanguage.getID()];
+
+    if(!translation) {
+        return tag;
+    }
+
+    return translation;
 }
 
 LanguageHandler.prototype.getAllMissingTags = function(template, keywords = []) {

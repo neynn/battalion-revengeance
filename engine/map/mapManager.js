@@ -23,21 +23,6 @@ MapManager.EVENT = {
     MAP_DISABLE: "MAP_DISABLE"
 };
 
-MapManager.prototype.onLanguageChange = async function(nextLanguage) {
-    if(this.activeMap) {
-        const mapID = this.activeMap.getID();
-        const source = this.activeMap.getSource();
-        const translations = await source.promiseTranslations(nextLanguage.getID());
-
-        if(translations !== null) {
-            nextLanguage.registerMap(mapID, translations);
-            nextLanguage.selectMap(mapID);
-
-            this.activeMap.onLanguageUpdate(nextLanguage, translations);
-        }
-    }
-}
-
 MapManager.prototype.getNextID = function() {
     return this.nextID++;
 }

@@ -5,8 +5,6 @@ export const Language = function(id, files) {
     this.files = files;
     this.translations = {};
     this.state = Language.STATE.NONE;
-    this.mapTranslations = new Map();
-    this.currentMapTranslations = {};
 }
 
 Language.STATE = {
@@ -61,16 +59,9 @@ Language.prototype.loadFiles = function(onResponse) {
     });
 }
 
-Language.prototype.clearMap = function() {
-    this.mapTranslations.clear();
-    this.currentMapTranslations = {};
-}
-
 Language.prototype.clear = function() {
     this.translations = {};
     this.state = Language.STATE.NONE;
-    this.mapTranslations.clear();
-    this.currentMapTranslations = {};
 }
 
 Language.prototype.loadTranslations = function(files) {
@@ -120,30 +111,6 @@ Language.prototype.getTranslation = function(key) {
     return translation;
 }
 
-Language.prototype.getMapTranslation = function(key) {
-    if(typeof key !== "string") {
-        return "";
-    }
-
-    const translation = this.currentMapTranslations[key];
-
-    if(translation === undefined) {
-        if(Language.IS_STRICT) {
-            console.info(`Missing map translation! <${key}> in ${this.id}`);
-        }
-
-        return key;
-    }
-
-    if(translation.length === 0 && Language.IS_STRICT) {
-        console.info(`Empty map translation! <${key}> in ${this.id}`);
-
-        return key;
-    }
-
-    return translation;
-}  
-
 Language.prototype.getMissingTags = function(template) {
     const missing = new Set();
 
@@ -156,18 +123,4 @@ Language.prototype.getMissingTags = function(template) {
     }
 
     return missing;
-}
-
-Language.prototype.selectMap = function(mapID) {
-    const translations = this.mapTranslations.get(mapID);
-
-    if(translations && translations !== this.currentMapTranslations) {
-        this.currentMapTranslations = translations;
-    }
-}
-
-Language.prototype.registerMap = function(mapID, translations) {
-    if(translations && !this.mapTranslations.has(mapID)) {
-        this.mapTranslations.set(mapID, translations);
-    }
 }
