@@ -230,6 +230,11 @@
         "desc": "TRAIT_DESC_ABSORBER",
         "icon": "Assets/Traits/Absorber.png"
     },
+    "SUPPLY_DISTRIBUTION": {
+        "name": "TRAIT_NAME_SUPPLY_DISTRIBUTION",
+        "desc": "TRAIT_DESC_SUPPLY_DISTRIBUTION",
+        "icon": "Assets/Traits/Supply Distribution.png"
+    },
     "CRAB": {
         "name": "TRAIT_NAME_CRAB",
         "desc": "TRAIT_DESC_CRAB",
@@ -276,12 +281,6 @@
         "name": "TRAIT_NAME_STREAMLINED",
         "desc": "TRAIT_DESC_STREAMLINED",
         "icon": "Assets/Traits/Streamlined.png",
-        "note": "This trait is not implemented."
-    },
-    "SUPPLY_DISTRIBUTION": {
-        "name": "TRAIT_NAME_SUPPLY_DISTRIBUTION",
-        "desc": "TRAIT_DESC_SUPPLY_DISTRIBUTION",
-        "icon": "Assets/Traits/Supply Distribution.png",
         "note": "This trait is not implemented."
     },
     "TERRIFYING": {

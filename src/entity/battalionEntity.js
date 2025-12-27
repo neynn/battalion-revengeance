@@ -72,6 +72,7 @@ BattalionEntity.SPRITE_TYPE = {
 };
 
 BattalionEntity.SOUND_TYPE = {
+    HEAL: "heal",
     MOVE: "move",
     FIRE: "fire",
     CLOAK: "cloak",
@@ -91,6 +92,7 @@ BattalionEntity.DEFAULT_ATTACK_EFFECTS = {
 };
 
 BattalionEntity.DEFAULT_SOUNDS = {
+    [BattalionEntity.SOUND_TYPE.HEAL]: null, //TODO: Implement
     [BattalionEntity.SOUND_TYPE.CLOAK]: "cloak",
     [BattalionEntity.SOUND_TYPE.DEATH]: "explosion",
     [BattalionEntity.SOUND_TYPE.UNCLOAK]: "uncloak",
@@ -343,8 +345,10 @@ BattalionEntity.prototype.playAttack = function(gameContext) {
 }
 
 BattalionEntity.prototype.playHeal = function(gameContext) {
-    this.playAttack(gameContext);
-    //TODO: Have custom healing effects.
+    this.state = BattalionEntity.STATE.FIRE;
+    this.playSound(gameContext, BattalionEntity.SOUND_TYPE.HEAL);
+    this.updateSprite(gameContext);
+    this.sprite.lockEnd();
 }
 
 BattalionEntity.prototype.playCounter = function(gameContext, target) {
