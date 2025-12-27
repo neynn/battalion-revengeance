@@ -26,20 +26,24 @@ export const playAttackEffect = function(gameContext, entity, target, resolution
     const spriteType = entity.getAttackSprite();
     const attackType = entity.getAttackType();
 
-    if(attackType === ATTACK_TYPE.DISPERSION) {
-        const { tileX, tileY } = target;
+    switch(attackType) {
+        case ATTACK_TYPE.DISPERSION: {
+            const { tileX, tileY } = target;
 
-        playGFX(gameContext, spriteType, tileX, tileY);
-        return;
-    }
-
-    for(let i = 0; i < resolutions.length; i++) {
-        const { health, entityID } = resolutions[i];
-        const target = entityManager.getEntity(entityID);
-        const { tileX, tileY } = target;
-
-        if(target !== entity && entity.canSee(gameContext, target)) {
             playGFX(gameContext, spriteType, tileX, tileY);
+            break;
+        }
+        default: {
+            for(const { health, entityID } of resolutions) {
+                const target = entityManager.getEntity(entityID);
+                const { tileX, tileY } = target;
+
+                if(target !== entity && entity.canSee(gameContext, target)) {
+                    playGFX(gameContext, spriteType, tileX, tileY);
+                }
+            }
+
+            break;
         }
     }
 }

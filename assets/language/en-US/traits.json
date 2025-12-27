@@ -1,5 +1,7 @@
 {
-    "TRAIT_DESC_ANNIHILATE": "This unit deals double damage if at full health.",
+    "TRAIT_DESC_UNFAIR": "This unit can cloak anywhere. Truly unfair. (May also come with bugs)",
+    "TRAIT_DESC_BULLDOZE": "This unit deals double damage if the enemy is at full health.",
+    "TRAIT_DESC_ANNIHILATE": "This unit deals double damage if it is at full health.",
     "TRAIT_DESC_BLITZ": "This unit deals +20% damage if it attacks first.",
     "TRAIT_DESC_CLEAR_SHOT": "This unit can only fire in a straight line.",
     "TRAIT_DESC_ARMOR_PIERCE": "This unit ignores enemy armor.",

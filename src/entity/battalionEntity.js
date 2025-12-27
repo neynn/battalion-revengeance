@@ -191,6 +191,10 @@ BattalionEntity.prototype.isAnimationFinished = function() {
     return this.sprite.visual.isFinished();
 }
 
+BattalionEntity.prototype.isAtFullHealth = function() {
+    return this.health >= this.maxHealth;
+}
+
 BattalionEntity.prototype.getHealthAfterHeal = function(heal = 0) {
     const health = Math.floor(this.health + heal);
 
@@ -260,13 +264,7 @@ BattalionEntity.prototype.getName = function(gameContext) {
 }
 
 BattalionEntity.prototype.hasTrait = function(traitID) {
-    for(let i = 0; i < this.config.traits.length; i++) {
-        if(this.config.traits[i] === traitID) {
-            return true;
-        }
-    }
-
-    return false;
+    return this.config.hasTrait(traitID);
 }
 
 BattalionEntity.prototype.destroy = function() {
@@ -969,6 +967,10 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
         damageAmplifier *= TRAIT_CONFIG.ANNIHILATE_DAMAGE;
     }
 
+    if(target.isAtFullHealth() && this.hasTrait(TypeRegistry.TRAIT_TYPE.BULLDOZE)) {
+        damageAmplifier *= TRAIT_CONFIG.BULLDOZE_DAMAGE;
+    }
+
     //Morale factor.
     damageAmplifier *= this.moraleAmplifier;
 
@@ -1183,6 +1185,10 @@ BattalionEntity.prototype.canCloak = function() {
 BattalionEntity.prototype.canCloakAt = function(gameContext, tileX, tileY) {
     if(!this.canCloak()) {
         return false;
+    }
+
+    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.UNFAIR)) {
+        return true;
     }
 
     const worldMap = gameContext.getActiveMap();

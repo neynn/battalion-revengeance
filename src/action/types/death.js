@@ -22,6 +22,7 @@ DeathAction.prototype.onStart = function(gameContext, data) {
     for(let i = 0; i < entities.length; i++) {
         const entity = entityManager.getEntity(entities[i]);
 
+        entity.uncloakInstant();
         entity.playDeath(gameContext);
         entity.setHealth(0);
 

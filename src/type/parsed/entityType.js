@@ -85,3 +85,13 @@ EntityType.DEFAULT = {
     WEAPON_TYPE: "NONE",
     ARMOR_TYPE: "NONE"
 };
+
+EntityType.prototype.hasTrait = function(traitID) {
+    for(let i = 0; i < this.traits.length; i++) {
+        if(this.traits[i] === traitID) {
+            return true;
+        }
+    }
+
+    return false;
+}

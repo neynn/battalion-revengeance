@@ -122,32 +122,11 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
 
     const targetX = path[0].tileX;
     const targetY = path[0].tileY;
+    const targetEntity = entityManager.getEntity(targetID);
     const uncloakedEntities = entity.getUncloakedEntities(gameContext, targetX, targetY);
     let flags = MoveAction.FLAG.NONE;
 
-    if(uncloakedEntities.length === 0) {
-        const targetEntity = entityManager.getEntity(targetID);
-
-        if(targetEntity) {
-            if(targetEntity.isNextToTile(targetX, targetY)) {
-                if(entity.isHealValid(gameContext, targetEntity)) {
-                    executionPlan.addNext(createHealRequest(entityID, targetID, COMMAND_TYPE.CHAIN_AFTER_MOVE));
-                } else if(entity.isAttackValid(gameContext, targetEntity)) {
-                    executionPlan.addNext(createAttackRequest(entityID, targetID, COMMAND_TYPE.CHAIN_AFTER_MOVE));
-                } else {
-                    console.error("Heal and attack are both invalid!");
-                }
-            }
-        } else {
-            if(entity.canCloakAt(gameContext, targetX, targetY)) {
-                executionPlan.addNext(ActionHelper.createCloakRequest(entityID));
-            }
-
-            if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
-                flags |= MoveAction.FLAG.ELUSIVE;
-            }
-        }
-    } else {
+    if(uncloakedEntities.length !== 0) {
         const uncloakedIDs = uncloakedEntities.map(e => e.getID());
 
         executionPlan.addNext(ActionHelper.createUncloakRequest(uncloakedIDs));
@@ -155,10 +134,24 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
         if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.TRACKING)) {
             executionPlan.addNext(createTrackingIntent(entityID, uncloakedEntities));
         }
+    }
 
-        if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
-            flags |= MoveAction.FLAG.ELUSIVE;
+    if(targetEntity && targetEntity.isNextToTile(targetX, targetY)) {
+        if(entity.isHealValid(gameContext, targetEntity)) {
+            executionPlan.addNext(createHealRequest(entityID, targetID, COMMAND_TYPE.CHAIN_AFTER_MOVE));
+        } else if(entity.isAttackValid(gameContext, targetEntity)) {
+            executionPlan.addNext(createAttackRequest(entityID, targetID, COMMAND_TYPE.CHAIN_AFTER_MOVE));
+        } else {
+            console.error("Heal and attack are both invalid!");
         }
+    }
+
+    if(entity.canCloakAt(gameContext, targetX, targetY)) {
+        executionPlan.addNext(ActionHelper.createCloakRequest(entityID));
+    }
+
+    if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
+        flags |= MoveAction.FLAG.ELUSIVE;
     }
 
     //TODO: Add uncloak after moving.

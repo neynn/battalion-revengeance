@@ -1,8 +1,8 @@
-import { Actor } from "../../engine/turn/actor.js";
+import { TurnActor } from "../../engine/turn/turnActor.js";
 import { ActionHelper } from "../action/actionHelper.js";
 
 export const BattalionActor = function(id) {
-    Actor.call(this, id);
+    TurnActor.call(this, id);
 
     this.name = "";
     this.teamID = null;
@@ -10,7 +10,7 @@ export const BattalionActor = function(id) {
     this.commander = null;
 }
 
-BattalionActor.prototype = Object.create(Actor.prototype);
+BattalionActor.prototype = Object.create(TurnActor.prototype);
 BattalionActor.prototype.constructor = BattalionActor;
 
 BattalionActor.prototype.setName = function(name) {

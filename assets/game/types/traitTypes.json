@@ -1,4 +1,14 @@
 {
+    "UNFAIR": {
+        "name": "TRAIT_NAME_UNFAIR",
+        "desc": "TRAIT_DESC_UNFAIR",
+        "icon": null
+    },
+    "BULLDOZE": {
+        "name": "TRAIT_NAME_BULLDOZE",
+        "desc": "TRAIT_DESC_BULLDOZE",
+        "icon": null
+    },
     "ANNIHILATE": {
         "name": "TRAIT_NAME_ANNIHILATE",
         "desc": "TRAIT_DESC_ANNIHILATE",

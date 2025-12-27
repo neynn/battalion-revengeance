@@ -1,4 +1,4 @@
-export const Actor = function(id) {
+export const TurnActor = function(id) {
     this.id = id;
     this.endRequested = false;
     this.maxActions = 1;
@@ -7,45 +7,45 @@ export const Actor = function(id) {
     this.maxIntents = 10;
 }
 
-Actor.prototype.load = function(blob) {}
+TurnActor.prototype.load = function(blob) {}
 
-Actor.prototype.save = function() {
+TurnActor.prototype.save = function() {
     return {
         "id": this.id
     }
 }
 
-Actor.prototype.update = function(gameContext) {}
+TurnActor.prototype.update = function(gameContext) {}
 
-Actor.prototype.activeUpdate = function(gameContext, actionsLeft) {}
+TurnActor.prototype.activeUpdate = function(gameContext, actionsLeft) {}
 
-Actor.prototype.onTurnStart = function(gameContext) {}
+TurnActor.prototype.onTurnStart = function(gameContext) {}
 
-Actor.prototype.onTurnEnd = function(gameContext) {}
+TurnActor.prototype.onTurnEnd = function(gameContext) {}
 
-Actor.prototype.startTurn = function(gameContext) {
+TurnActor.prototype.startTurn = function(gameContext) {
     this.endRequested = false;
     this.turn++;
     this.onTurnStart(gameContext);
 }
 
-Actor.prototype.endTurn = function(gameContext) {
+TurnActor.prototype.endTurn = function(gameContext) {
     this.onTurnEnd(gameContext);
 }
 
-Actor.prototype.requestTurnEnd = function() {
+TurnActor.prototype.requestTurnEnd = function() {
     this.endRequested = true;
 }
 
-Actor.prototype.setMaxActions = function(maxActions) {
+TurnActor.prototype.setMaxActions = function(maxActions) {
     this.maxActions = maxActions;
 }
 
-Actor.prototype.getID = function() {
+TurnActor.prototype.getID = function() {
     return this.id;
 }
 
-Actor.prototype.addIntent = function(intent) {
+TurnActor.prototype.addIntent = function(intent) {
     if(this.actionIntents.length < this.maxIntents) {
         intent.setActor(this.id);
 
@@ -53,7 +53,7 @@ Actor.prototype.addIntent = function(intent) {
     }
 }
 
-Actor.prototype.tryEnqueueAction = function(gameContext) {
+TurnActor.prototype.tryEnqueueAction = function(gameContext) {
     const { world, actionRouter } = gameContext;
     const { actionQueue, turnManager } = world;
 
