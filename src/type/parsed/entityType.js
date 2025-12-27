@@ -20,7 +20,8 @@ export const EntityType = function(id, config) {
         name = EntityType.MISSING.NAME,
         traits = [],
         sounds = {},
-        sprites = {}
+        sprites = {},
+        effects = {}
     } = config;
 
     this.id = id;
@@ -41,6 +42,7 @@ export const EntityType = function(id, config) {
     this.streamRange = streamRange;
     this.sounds = sounds;
     this.sprites = sprites;
+    this.effects = effects;
     this.traits = traits;
 
     if(this.maxRange < this.minRange) {

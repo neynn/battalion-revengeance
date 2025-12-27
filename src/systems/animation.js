@@ -20,17 +20,24 @@ export const playExplosion = function(gameContext, tileX, tileY) {
     playGFX(gameContext, "explosion", tileX, tileY);
 }
 
+export const playHealEffect = function(gameContext, entity, target) {
+    const effectType = entity.getHealEffect();
+    const { tileX, tileY } = target;
+
+    playGFX(gameContext, effectType, tileX, tileY);
+}
+
 export const playAttackEffect = function(gameContext, entity, target, resolutions) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const spriteType = entity.getAttackSprite();
+    const effectType = entity.getAttackEffect();
     const attackType = entity.getAttackType();
 
     switch(attackType) {
         case ATTACK_TYPE.DISPERSION: {
             const { tileX, tileY } = target;
 
-            playGFX(gameContext, spriteType, tileX, tileY);
+            playGFX(gameContext, effectType, tileX, tileY);
             break;
         }
         default: {
@@ -39,7 +46,7 @@ export const playAttackEffect = function(gameContext, entity, target, resolution
                 const { tileX, tileY } = target;
 
                 if(target !== entity && entity.canSee(gameContext, target)) {
-                    playGFX(gameContext, spriteType, tileX, tileY);
+                    playGFX(gameContext, effectType, tileX, tileY);
                 }
             }
 

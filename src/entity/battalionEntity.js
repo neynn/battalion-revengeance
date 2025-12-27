@@ -66,9 +66,7 @@ BattalionEntity.SPRITE_TYPE = {
     FIRE_RIGHT: "fire_right",
     FIRE_LEFT: "fire_left",
     FIRE_DOWN: "fire_down",
-    FIRE_UP: "fire_up",
-    ATTACK: "attack",
-    DEATH: "death"
+    FIRE_UP: "fire_up"
 };
 
 BattalionEntity.SOUND_TYPE = {
@@ -81,14 +79,16 @@ BattalionEntity.SOUND_TYPE = {
     UNCLOAK: "uncloak"
 };
 
-BattalionEntity.DEFAULT_SPRITES = {
-    [BattalionEntity.SPRITE_TYPE.DEATH]: "explosion"
+BattalionEntity.EFFECT_TYPE = {
+    DEATH: "death",
+    ATTACK: "attack",
+    HEAL: "heal"
 };
 
-BattalionEntity.DEFAULT_ATTACK_EFFECTS = {
-    [ATTACK_TYPE.REGULAR]: "small_attack",
-    [ATTACK_TYPE.DISPERSION]: "gas_attack",
-    [ATTACK_TYPE.STREAMBLAST]: "small_attack" //TODO: Implement
+BattalionEntity.DEFAULT_EFFECTS = {
+    [BattalionEntity.EFFECT_TYPE.DEATH]: "explosion",
+    [BattalionEntity.EFFECT_TYPE.HEAL]: null, //TODO: Implement
+    [BattalionEntity.EFFECT_TYPE.ATTACK]: "small_attack"
 };
 
 BattalionEntity.DEFAULT_SOUNDS = {
@@ -96,6 +96,12 @@ BattalionEntity.DEFAULT_SOUNDS = {
     [BattalionEntity.SOUND_TYPE.CLOAK]: "cloak",
     [BattalionEntity.SOUND_TYPE.DEATH]: "explosion",
     [BattalionEntity.SOUND_TYPE.UNCLOAK]: "uncloak",
+};
+
+BattalionEntity.DEFAULT_ATTACK_EFFECTS = {
+    [ATTACK_TYPE.REGULAR]: "small_attack",
+    [ATTACK_TYPE.DISPERSION]: "gas_attack",
+    [ATTACK_TYPE.STREAMBLAST]: "small_attack" //TODO: Implement
 };
 
 BattalionEntity.prototype = Object.create(Entity.prototype);
@@ -329,7 +335,7 @@ BattalionEntity.prototype.playMove = function(gameContext) {
 }
 
 BattalionEntity.prototype.playDeath = function(gameContext) {
-    const spriteType = this.getDeathSprite();
+    const spriteType = this.getDeathEffect();
 
     this.state = BattalionEntity.STATE.DEAD;
     this.playSound(gameContext, BattalionEntity.SOUND_TYPE.DEATH);
@@ -414,23 +420,37 @@ BattalionEntity.prototype.getSpriteType = function() {
     return BattalionEntity.SPRITE_TYPE.IDLE_RIGHT;
 }
 
-BattalionEntity.prototype.getDeathSprite = function() {
-    let sprite = this.config.sprites[BattalionEntity.SPRITE_TYPE.DEATH];
+BattalionEntity.prototype.getHealEffect = function() {
+    let sprite = this.config.effects[BattalionEntity.EFFECT_TYPE.HEAL];
 
     if(!sprite) {
-        sprite = BattalionEntity.DEFAULT_SPRITES[BattalionEntity.SPRITE_TYPE.DEATH];
+        sprite = BattalionEntity.DEFAULT_EFFECTS[BattalionEntity.EFFECT_TYPE.HEAL];
     }
 
     return sprite;
 }
 
-BattalionEntity.prototype.getAttackSprite = function() {
-    let sprite = this.config.sprites[BattalionEntity.SPRITE_TYPE.ATTACK];
+BattalionEntity.prototype.getDeathEffect = function() {
+    let sprite = this.config.effects[BattalionEntity.EFFECT_TYPE.DEATH];
+
+    if(!sprite) {
+        sprite = BattalionEntity.DEFAULT_EFFECTS[BattalionEntity.EFFECT_TYPE.DEATH];
+    }
+
+    return sprite;
+}
+
+BattalionEntity.prototype.getAttackEffect = function() {
+    let sprite = this.config.effects[BattalionEntity.EFFECT_TYPE.ATTACK];
 
     if(!sprite) {
         const attackType = this.getAttackType();
 
         sprite = BattalionEntity.DEFAULT_ATTACK_EFFECTS[attackType];
+
+        if(!sprite) {
+            sprite = BattalionEntity.DEFAULT_EFFECTS[BattalionEntity.EFFECT_TYPE.ATTACK];
+        }
     }
 
     return sprite;

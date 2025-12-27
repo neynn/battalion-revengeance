@@ -1,7 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { COMMAND_TYPE } from "../../enums.js";
-import { playAttackEffect } from "../../systems/animation.js";
+import { playHealEffect } from "../../systems/animation.js";
 import { ActionHelper } from "../actionHelper.js";
 import { InteractionResolver } from "./interactionResolver.js";
 
@@ -28,8 +28,7 @@ HealAction.prototype.onStart = function(gameContext, data) {
     entity.lookAt(target);
     entity.playHeal(gameContext, target);
 
-    //TODO: Makes no sense.
-    playAttackEffect(gameContext, entity, target, resolutions);
+    playHealEffect(gameContext, entity, target);
 
     this.entity = entity;
     this.resolutions = resolutions;
