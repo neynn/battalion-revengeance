@@ -316,9 +316,8 @@ export const createEditorMap = async function(gameContext, sourceID) {
 export const createStoryMap = async function(gameContext, sourceID) {
     const { world, language } = gameContext;
     const { mapManager } = world;
-    const currentLanguage = language.getCurrent();
     const mapSource = mapManager.getMapSource(sourceID);
-    const [file, translations] = await Promise.all([mapSource.promiseFile(), mapSource.promiseTranslations(currentLanguage.getID())]);
+    const [file, translations] = await Promise.all([mapSource.promiseFile(), mapSource.promiseTranslations()]);
 
     if(file !== null) {
         const { width, height, data } = file;
@@ -332,7 +331,6 @@ export const createStoryMap = async function(gameContext, sourceID) {
 
             if(translations !== null) {
                 language.registerMapTranslations(translations);
-                worldMap.onLanguageUpdate(currentLanguage, translations);
             }
 
             mapManager.enableMap(mapID);

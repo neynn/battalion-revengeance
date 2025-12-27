@@ -17,8 +17,6 @@ WorldMap.EMPTY_LAYER = Layer.create(0, Layer.TYPE.BIT_0);
 WorldMap.OUT_OF_BOUNDS = -1;
 WorldMap.INVALID_LAYER_ID = -1;
 
-WorldMap.prototype.onLanguageUpdate = function(language, translations) {}
-
 WorldMap.prototype.update = function(gameContext) {}
 
 WorldMap.prototype.getID = function() {

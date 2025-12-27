@@ -4,7 +4,7 @@ export const MapSource = function(id, config) {
     const {
         directory = [],
         source = "",
-        language = {}
+        language = ""
     } = config;
 
     this.id = id;
@@ -37,9 +37,9 @@ MapSource.prototype.promiseFile = async function() {
     return file;
 }
 
-MapSource.prototype.promiseTranslations = function(languageID) {
-    if(this.language[languageID]) {
-        const path = PathHandler.getPath(this.directory, this.language[languageID]);
+MapSource.prototype.promiseTranslations = function() {
+    if(this.language.length !== 0) {
+        const path = PathHandler.getPath(this.directory, this.language);
         const promise = PathHandler.promiseJSON(path);
 
         return promise;
