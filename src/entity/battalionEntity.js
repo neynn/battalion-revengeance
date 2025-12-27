@@ -324,9 +324,7 @@ BattalionEntity.prototype.playCloak = function(gameContext) {
     this.playSound(gameContext, BattalionEntity.SOUND_TYPE.CLOAK);
 }
 
-BattalionEntity.prototype.playUncloak = function(gameContext) {
-    this.playSound(gameContext, BattalionEntity.SOUND_TYPE.UNCLOAK);
-}
+BattalionEntity.prototype.playUncloak = function(gameContext) {}
 
 BattalionEntity.prototype.playMove = function(gameContext) {
     this.state = BattalionEntity.STATE.MOVE;
@@ -1259,6 +1257,10 @@ BattalionEntity.prototype.getCloakFlags = function() {
     return JammerField.FLAG.NONE;
 }
 
+BattalionEntity.prototype.getUncloakedEntitiesAtSelf = function(gameContext) {
+    return this.getUncloakedEntities(gameContext, this.tileX, this.tileY);
+}
+
 BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, targetY) {
     const { world } = gameContext;
     const { entityManager } = world;
@@ -1275,6 +1277,7 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, 
         if(entity) {
             const distance = entity.getDistanceToTile(targetX, targetY);
 
+            //ALWAYS uncloak neighbors.
             if(distance === 1) {
                 if(!entity.isVisibleTo(gameContext, this.teamID)) {
                     uncloakedEntities.push(entity);

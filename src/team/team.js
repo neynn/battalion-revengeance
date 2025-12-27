@@ -239,6 +239,7 @@ Team.prototype.onTurnStart = function(gameContext, turn) {
     const { world, actionRouter } = gameContext;
     const { entityManager } = world;
     const deadEntities = [];
+    const uncloakedEntities = [];
 
     for(const entityID of this.entities) {
         const entity = entityManager.getEntity(entityID);
@@ -248,12 +249,28 @@ Team.prototype.onTurnStart = function(gameContext, turn) {
 
             if(entity.isDead()) {
                 deadEntities.push(entityID);
+            } else {
+                if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.RADAR)) {
+                    const uncloaked = entity.getUncloakedEntitiesAtSelf(gameContext);
+
+                    for(const uEntity of uncloaked) {
+                        const uEntityID = uEntity.getID();
+
+                        if(!uncloakedEntities.includes(uEntityID)) {
+                            uncloakedEntities.push(uEntityID);
+                        }
+                    }
+                }
             }
         }
     }
 
     if(deadEntities.length !== 0) {
         actionRouter.forceEnqueue(gameContext, ActionHelper.createDeathRequest(gameContext, deadEntities));
+    }
+
+    if(uncloakedEntities.length !== 0) {
+        actionRouter.forceEnqueue(gameContext, ActionHelper.createUncloakRequest(uncloakedEntities));
     }
 }
 

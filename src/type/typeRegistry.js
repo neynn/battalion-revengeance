@@ -366,6 +366,7 @@ TypeRegistry.MOVEMENT_TYPE = {
 };
 
 TypeRegistry.TRAIT_TYPE = {
+    RADAR: "RADAR",
     UNFAIR: "UNFAIR",
     BULLDOZE: "BULLDOZE",
     ANNIHILATE: "ANNIHILATE",

@@ -235,6 +235,11 @@
         "desc": "TRAIT_DESC_SUPPLY_DISTRIBUTION",
         "icon": "Assets/Traits/Supply Distribution.png"
     },
+    "RADAR": {
+        "name": "TRAIT_NAME_RADAR",
+        "desc": "TRAIT_DESC_RADAR",
+        "icon": "Assets/Traits/Radar.png"
+    },
     "CRAB": {
         "name": "TRAIT_NAME_CRAB",
         "desc": "TRAIT_DESC_CRAB",
@@ -264,12 +269,6 @@
         "desc": "TRAIT_DESC_TANK_POOPER",
         "icon": "Assets/Traits/Tank Pooper.png",
         "note": "This trait is purely cosmetic. (WarMachine)"
-    },
-    "RADAR": {
-        "name": "TRAIT_NAME_RADAR",
-        "desc": "TRAIT_DESC_RADAR",
-        "icon": "Assets/Traits/Radar.png",
-        "note": "This trait is not implemented. Should uncloak stealth units on every turn start."
     },
     "CONQUEROR": {
         "name": "TRAIT_NAME_CONQUEROR",

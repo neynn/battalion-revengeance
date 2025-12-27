@@ -32,6 +32,7 @@
         { "x": 2, "y": 2, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "HEAVY_COMMANDO", "team": "SOMERTIN" },
         { "x": 1, "y": 2, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "HEAVY_COMMANDO", "team": "SOMERTIN" },
         { "x": 4, "y": 2, "stealth": true, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "STEALTH_TANK", "team": "TRANSKAL" },
+        { "x": 5, "y": 6, "stealth": true, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "STEALTH_TANK", "team": "TRANSKAL" },
         { "x": 5, "y": 2, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "TANK_HUNTER", "team": "TRANSKAL", "direction": "WEST" },
         { "x": 6, "y": 5, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "JAMMER_TRUCK", "team": "SOMERTIN", "direction": "WEST" },
         { "x": 7, "y": 1, "health": 100, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "JAMMER_TRUCK", "team": "TRANSKAL", "direction": "WEST" },
