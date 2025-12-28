@@ -2,16 +2,16 @@
     "oasis": {
         "directory": ["assets", "maps", "oasis"],
         "source": "oasis.json",
-        "language": "oasis_text.json"
+        "text": "oasis_text.json"
     },
     "presus": {
         "directory": ["assets", "maps", "presus"],
         "source": "presus.json",
-        "language": "presus_text.json"
+        "text": "presus_text.json"
     },
     "kanye_911": {
         "directory": ["assets", "maps", "kanye_911"],
         "source": "kanye_911.json",
-        "language": "kanye_911_text.json"
+        "text": "kanye_911_text.json"
     }
 }

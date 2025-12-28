@@ -1,3 +1,11 @@
+export const getPercent = function(value, max) {
+	if(max === 0) {
+		return 100;
+	}
+
+	return (1 - (value / max)) * 100;
+}
+
 export const isRectangleRectangleIntersect = function(x1, y1, width1, height1, x2, y2, width2, height2) {
     return x1 + width1 >= x2 && x1 <= x2 + width2 && y1 + height1 >= y2 && y1 <= y2 + height2;
 }

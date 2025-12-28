@@ -1,10 +1,11 @@
 import { PathHandler } from "../resources/pathHandler.js";
 
-export const Language = function(id, files) {
+export const Language = function(id, directory, sources) {
     this.id = id;
-    this.files = files;
-    this.translations = {};
+    this.directory = directory;
+    this.sources = sources;
     this.state = Language.STATE.NONE;
+    this.translations = {};
 }
 
 Language.STATE = {
@@ -19,14 +20,12 @@ Language.LOAD_RESPONSE = {
     LOADING: 2,
 };
 
-Language.IS_STRICT = true;
-
 Language.prototype.getID = function() {
     return this.id;
 }
 
 Language.prototype.loadFiles = function(onResponse) {
-    if(this.files.length === 0) {
+    if(this.sources.length === 0) {
         onResponse(Language.LOAD_RESPONSE.ERROR);
     }
 
@@ -40,9 +39,8 @@ Language.prototype.loadFiles = function(onResponse) {
 
     const requests = [];
 
-    for(let i = 0; i < this.files.length; i++) {
-        const { directory, source } = this.files[i];
-        const path = PathHandler.getPath(directory, source);
+    for(const source of this.sources) {
+        const path = PathHandler.getPath(this.directory, source);
 
         requests.push(PathHandler.promiseJSON(path));
     }
@@ -88,27 +86,7 @@ Language.prototype.loadTranslations = function(files) {
 }
 
 Language.prototype.getTranslation = function(key) {
-    if(typeof key !== "string") {
-        return "";
-    }
-
-    const translation = this.translations[key];
-
-    if(translation === undefined) {
-        if(Language.IS_STRICT) {
-            console.info(`Missing translation! <${key}> in ${this.id}`);
-        }
-
-        return key;
-    }
-
-    if(translation.length === 0 && Language.IS_STRICT) {
-        console.info(`Empty translation! <${key}> in ${this.id}`);
-
-        return key;
-    }
-
-    return translation;
+    return this.translations[key] ?? "";
 }
 
 Language.prototype.getMissingTags = function(template) {
@@ -117,7 +95,7 @@ Language.prototype.getMissingTags = function(template) {
     for(const tagID in template) {
         const tag = this.translations[tagID];
 
-        if(tag === undefined || (tag.length === 0 && Language.IS_STRICT)) {
+        if(tag === undefined || tag.length === 0) {
             missing.add(tagID);
         }
     }

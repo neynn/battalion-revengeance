@@ -1,21 +1,18 @@
 import { EventEmitter } from "../events/eventEmitter.js";
+import { getPercent } from "../math/math.js";
 import { Language } from "./language.js";
 
 export const LanguageHandler = function() {
     this.languages = new Map();
     this.currentLanguage = LanguageHandler.STUB_LANGUAGE;
     this.mapTranslations = {};
+    this.flags = LanguageHandler.FLAG.IS_STRICT;
 
     this.events = new EventEmitter();
     this.events.register(LanguageHandler.EVENT.LANGUAGE_CHANGE);
 }
 
-LanguageHandler.STUB_LANGUAGE = new Language("MISSING", []);
-
-LanguageHandler.TAG_TYPE = {
-    SYSTEM: 0,
-    MAP: 1
-};
+LanguageHandler.STUB_LANGUAGE = new Language("??-??", "", []);
 
 LanguageHandler.LANGUAGE = {
     ENGLISH: "en-US",
@@ -27,14 +24,18 @@ LanguageHandler.EVENT = {
     LANGUAGE_CHANGE: "LANGUAGE_CHANGE"
 };
 
-LanguageHandler.IS_STRICT = 1;
+LanguageHandler.FLAG = {
+    NONE: 0,
+    IS_STRICT: 1 << 0,
+    DO_FALLBACK: 1 << 1
+};
 
 LanguageHandler.prototype.load = function(languages) {
     for(const languageID in languages) {
-        const files = languages[languageID];
+        const { directory = "", sources = [] } = languages[languageID];
 
         if(!this.languages.has(languageID)) {
-            const language = new Language(languageID, files);
+            const language = new Language(languageID, directory, sources);
 
             this.languages.set(languageID, language);
         }
@@ -80,8 +81,22 @@ LanguageHandler.prototype.selectLanguage = function(languageID) {
     }
 }
 
-LanguageHandler.prototype.getSystemTranslation = function(tag) {
-    return this.currentLanguage.getTranslation(tag);
+LanguageHandler.prototype.getSystemTranslation = function(key) {
+    if(typeof key !== "string") {
+        return "";
+    }
+
+    const translation = this.currentLanguage.getTranslation(key);
+
+    if(translation.length === 0) {
+        if(this.flags & LanguageHandler.FLAG.IS_STRICT) {
+            console.warn(`Missing translation! <${key}> in ${this.currentLanguage.getID()}`);
+
+            return key;
+        }
+    }
+
+    return translation;
 }
 
 LanguageHandler.prototype.getMapTranslation = function(tag) {
@@ -94,6 +109,16 @@ LanguageHandler.prototype.getMapTranslation = function(tag) {
     const translation = translations[this.currentLanguage.getID()];
 
     if(!translation) {
+        if(this.flags & LanguageHandler.FLAG.DO_FALLBACK) {
+            const fallback = translations[LanguageHandler.LANGUAGE.ENGLISH];
+
+            if(fallback) {
+                return fallback;
+            } else {
+                return tag;
+            }
+        }
+
         return tag;
     }
 
@@ -106,7 +131,7 @@ LanguageHandler.prototype.getAllMissingTags = function(template, keywords = []) 
 
     for(const [languageID, language] of this.languages) {
         const missing = language.getMissingTags(template);
-        const percentDone = (1 - (missing.size / templateSize)) * 100;
+        const percentDone = getPercent(missing.size, templateSize);
         const filtered = new Set();
 
         languageMissing.set(languageID, {
