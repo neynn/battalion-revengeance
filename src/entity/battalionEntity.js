@@ -542,7 +542,7 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
         return EntityType.MAX_MOVE_COST;
     }
 
-    if(this.config.movementType === TypeRegistry.MOVEMENT_TYPE.FLIGHT) {
+    if(this.config.movementType === TypeRegistry.MOVEMENT_TYPE.FLIGHT && !this.hasTrait(TypeRegistry.TRAIT_TYPE.HIGH_ALTITUDE)) {
         const jammer = worldMap.getJammer(tileX, tileY);
 
         if(jammer.isJammed(gameContext, this.teamID, JammerField.FLAG.AIRSPACE_BLOCKED)) {

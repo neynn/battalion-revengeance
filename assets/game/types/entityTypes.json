@@ -135,7 +135,7 @@
         "movementType": "FLIGHT",
         "name": "ENTITY_NAME_RAPTOR_FIGHTER",
         "desc": "ENTITY_DESC_RAPTOR_FIGHTER",
-        "traits": ["SKYSWEEPER"],
+        "traits": ["SKYSWEEPER", "HIGH_ALTITUDE"],
         "sounds": {
             "move": "raptor_move",
             "fire": "raptor_fire"

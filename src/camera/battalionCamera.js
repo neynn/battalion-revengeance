@@ -3,8 +3,7 @@ import { Overlay } from "../../engine/camera/overlay.js";
 import { SHAPE } from "../../engine/math/constants.js";
 import { Renderer } from "../../engine/renderer/renderer.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
-import { DrawHelper } from "../../engine/util/drawHelper.js";
-import { Scroller } from "../../engine/util/scroller.js";
+import { drawShape, shadeScreen } from "../../engine/util/drawHelper.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { LAYER_TYPE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
@@ -143,11 +142,28 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     this.drawSpriteBatchYSorted(display, spriteManager.getLayer(LAYER_TYPE.GFX), realTime, deltaTime);
     //this.drawSpriteBatchYSorted(display, spriteManager.getLayer(LAYER_TYPE.SEA), realTime, deltaTime);
     //this.drawSpriteBatchYSorted(display, spriteManager.getLayer(LAYER_TYPE.LAND), realTime, deltaTime);
+    //this.shadeScreen(display, "#000000", 0.5);
 
     if(Renderer.DEBUG.MAP) {
         this.debugMap(display, worldMap);
         this.drawInfo(gameContext, display);
     }
+}
+
+BattalionCamera.prototype.shadeScreen = function(display, color, alpha) {
+    const { width, height } = display;
+    let drawWidth = width;
+    let drawHeight = height;
+
+    if(this.worldWidth < drawWidth) {
+        drawWidth = this.worldWidth;
+    }
+
+    if(this.worldHeight < drawHeight) {
+        drawHeight = this.worldHeight;
+    }
+
+    shadeScreen(display, color, alpha, drawWidth, drawHeight);
 }
 
 BattalionCamera.prototype.drawInfo = function(gameContext, display) {
@@ -156,8 +172,9 @@ BattalionCamera.prototype.drawInfo = function(gameContext, display) {
     const { currentRound, currentTurn } = turnManager;
     const { context } = display;
     const actor = turnManager.getCurrentActor();
+    
+    drawShape(display, SHAPE.RECTANGLE, "#222222", 0, 0, 100, 30);
 
-    DrawHelper.drawShape(display, SHAPE.RECTANGLE, "#222222", 0, 0, 100, 30);
     context.fillStyle = "#ff0000";
     context.fillText(`Turn ${currentTurn} | Round ${currentRound}`, 0, 10);
 

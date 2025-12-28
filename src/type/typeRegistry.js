@@ -366,6 +366,7 @@ TypeRegistry.MOVEMENT_TYPE = {
 };
 
 TypeRegistry.TRAIT_TYPE = {
+    HIGH_ALTITUDE: "HIGH_ALTITUDE",
     RADAR: "RADAR",
     UNFAIR: "UNFAIR",
     BULLDOZE: "BULLDOZE",

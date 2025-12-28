@@ -1,4 +1,9 @@
 {
+    "HIGH_ALTITUDE": {
+        "name": "TRAIT_NAME_HIGH_ALTITUDE",
+        "desc": "TRAIT_DESC_HIGH_ALTITUDE",
+        "icon": null
+    },
     "UNFAIR": {
         "name": "TRAIT_NAME_UNFAIR",
         "desc": "TRAIT_DESC_UNFAIR",

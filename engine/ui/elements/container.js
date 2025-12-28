@@ -1,7 +1,7 @@
 import { Collider } from "../../graphics/collider.js";
 import { getRGBAString } from "../../graphics/colorHelper.js";
 import { SHAPE } from "../../math/constants.js";
-import { DrawHelper } from "../../util/drawHelper.js";
+import { drawShape, strokeShape } from "../../util/drawHelper.js";
 import { UIElement } from "../uiElement.js";
 
 export const Container = function(DEBUG_NAME) {
@@ -25,11 +25,11 @@ Container.prototype.constructor = Container;
 
 Container.prototype.onDraw = function(display, localX, localY) {
     if((this.drawFlags & Container.DRAW_FLAG.BACKGROUND) !== 0) {
-        DrawHelper.drawShape(display, SHAPE.RECTANGLE, this.backgroundColor, localX, localY, this.width, this.height);
+        drawShape(display, SHAPE.RECTANGLE, this.backgroundColor, localX, localY, this.width, this.height);
     }
 
     if((this.drawFlags & Container.DRAW_FLAG.OUTLINE) !== 0) {
-        DrawHelper.strokeShape(display, SHAPE.RECTANGLE, this.outlineColor, this.outlineSize, localX, localY, this.width, this.height);
+        strokeShape(display, SHAPE.RECTANGLE, this.outlineColor, this.outlineSize, localX, localY, this.width, this.height);
     }
 }
 

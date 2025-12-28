@@ -1,6 +1,6 @@
 import { getRGBAString } from "../../graphics/colorHelper.js";
 import { SHAPE } from "../../math/constants.js";
-import { DrawHelper } from "../../util/drawHelper.js";
+import { drawShape, strokeShape } from "../../util/drawHelper.js";
 import { UICollider } from "../uiCollider.js";
 import { UIElement } from "../uiElement.js";
 
@@ -48,24 +48,24 @@ Button.prototype.onDebug = function(display, localX, localY) {
     const { context } = display;
     
     context.globalAlpha = 0.2;
-    DrawHelper.drawShape(display, this.shape, "#ff00ff", localX, localY, this.width, this.height);
+    drawShape(display, this.shape, "#ff00ff", localX, localY, this.width, this.height);
 }
 
 Button.prototype.drawBackground = function(display, localX, localY) {
     if((this.drawFlags & Button.DRAW_FLAG.BACKGROUND) !== 0) {
-        DrawHelper.drawShape(display, this.shape, this.backgroundColor, localX, localY, this.width, this.height);
+        drawShape(display, this.shape, this.backgroundColor, localX, localY, this.width, this.height);
     }
 }
 
 Button.prototype.drawHighlight = function(display, localX, localY) {
     if((this.drawFlags & Button.DRAW_FLAG.HIGHLIGHT) !== 0) {
-        DrawHelper.drawShape(display, this.shape, this.highlightColor, localX, localY, this.width, this.height);
+        drawShape(display, this.shape, this.highlightColor, localX, localY, this.width, this.height);
     }
 }
 
 Button.prototype.drawOutline = function(display, localX, localY) {
     if((this.drawFlags & Button.DRAW_FLAG.OUTLINE) !== 0) {
-        DrawHelper.strokeShape(display, this.shape, this.outlineColor, this.outlineSize, localX, localY, this.width, this.height);
+        strokeShape(display, this.shape, this.outlineColor, this.outlineSize, localX, localY, this.width, this.height);
     }
 }
 
