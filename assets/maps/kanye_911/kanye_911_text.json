@@ -1,3 +1,14 @@
 {
-    
+    "DESC_RAPTOR": {
+        "en-US": "Wingdings Q33 NY"
+    },
+    "DESC_EAGLE": {
+        "en-US": "Made with the express purpose of trolling the WTC."
+    },
+    "DESC_WTC_1": {
+        "en-US": "What do you mean planes can't be parked in skyscrapers?"
+    },
+    "DESC_WTC_2": {
+        "en-US": "Jet beams cannot melt steel fuel."
+    }
 }

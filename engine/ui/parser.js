@@ -168,7 +168,9 @@ export const parseInterfaceByID = function(gameContext, userInterface, interface
     const { uiManager } = gameContext;
     const config = uiManager.getInterfaceType(interfaceID);
 
-    parseInterface(gameContext, userInterface, config);
+    if(config) {
+        parseInterface(gameContext, userInterface, config);
+    }
 
     uiManager.addInterface(userInterface);
 }

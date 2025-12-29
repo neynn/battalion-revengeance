@@ -5,8 +5,6 @@ export const UIManager = function(resourceLoader) {
     this.interfaces = [];
 }
 
-UIManager.EMPTY_CONFIG = {};
-
 UIManager.prototype.getIconTexture = function(iconID) {
     const textureID = this.textureMap[iconID];
 
@@ -118,7 +116,7 @@ UIManager.prototype.getInterfaceType = function(typeID) {
     const type = this.rawInterfaces[typeID];
 
     if(type === undefined) {
-        return UIManager.EMPTY_CONFIG;
+        return null;
     }
 
     return type;

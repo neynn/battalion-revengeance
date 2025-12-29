@@ -12,8 +12,6 @@ import { TypeRegistry } from "../type/typeRegistry.js";
 import { createPlayCamera } from "./camera.js";
 import { spawnBuildingFromJSON, spawnEntityFromJSON } from "./spawn.js";
 
-const PLAYER_NAME = "PLAYER";
-
 const createAI = function(gameContext, commanderType, teamName) {
     const { world } = gameContext;
     const { turnManager } = world;
@@ -165,6 +163,7 @@ const loadMap = function(gameContext, worldMap, mapData) {
         }
 
         let actor = null;
+        const isPlayer = teams[teamName].isPlayer;
         const commanderType = teams[teamName].commander;
         const teamAllies = teams[teamName].allies ?? [];
 
@@ -177,7 +176,7 @@ const loadMap = function(gameContext, worldMap, mapData) {
             }
         }
 
-        if(!playerCreated && commanderType === PLAYER_NAME) {
+        if(!playerCreated && isPlayer) {
             actor = createPlayer(gameContext, commanderType, teamName);
             playerCreated = true;
         } else {
@@ -215,6 +214,10 @@ const loadMap = function(gameContext, worldMap, mapData) {
     teamManager.updateStatus(gameContext);
     teamManager.updateOrder(gameContext);
     //ActionHelper.createRegularDialogue(gameContext, DialogueHandler.TYPE.PRELOGUE);
+
+    if(!playerCreated) {
+        console.error("NO PLAYER SPECIFIED!!!");
+    }
 }
 
 export const placeEntityOnMap = function(gameContext, entity) {

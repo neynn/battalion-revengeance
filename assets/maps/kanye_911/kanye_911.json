@@ -2,8 +2,20 @@
     "music": null,
     "width": 10,
     "height": 10,
-    "teams": {},
-    "entities": [],
+    "teams": {
+        "KANYE": { "isPlayer": true, "commander": "KANYE", "color": "RED" },
+        "NYPD": { "commander": "KANYE", "color": "DARK_BLUE" }
+    },
+    "entities": [
+        { "x": 2, "y": 3, "type": "RAPTOR_FIGHTER", "team": "KANYE" },
+        { "x": 3, "y": 4, "type": "VULTURE_DRONE", "team": "KANYE" },
+        { "x": 3, "y": 5, "type": "VULTURE_DRONE", "team": "KANYE" },
+        { "x": 3, "y": 6, "type": "VULTURE_DRONE", "team": "KANYE" },
+        { "x": 2, "y": 7, "type": "RAPTOR_FIGHTER", "team": "KANYE" },
+        { "x": 8, "y": 4, "direction": "WEST", "type": "TURRET", "team": "NYPD" },
+        { "x": 8, "y": 5, "direction": "WEST", "type": "TURRET", "team": "NYPD" }
+    ],
+    "buildings": [],
     "objectives": {},
     "prelogue": [],
     "postlogue": [],

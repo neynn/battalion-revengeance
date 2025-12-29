@@ -53,7 +53,7 @@ Cursor.prototype.addEventHandler = function(type, onEvent) {
     document.addEventListener(type, (event) => {
         event.preventDefault();
         onEvent(event);
-    });
+    }, { passive: false });
 }
 
 Cursor.prototype.eventMouseMove = function(event) {
