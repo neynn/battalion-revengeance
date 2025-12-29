@@ -1209,7 +1209,7 @@ BattalionEntity.prototype.canCloakAt = function(gameContext, tileX, tileY) {
         return false;
     }
 
-    //If the entity does NOT have unfair, it uses the regular cloak calculation.
+    //UNFAIR entities ignore jammers.
     if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.UNFAIR)) {
         const worldMap = gameContext.getActiveMap();
         const jammer = worldMap.getJammer(tileX, tileY);
@@ -1269,10 +1269,10 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, 
     const uncloakedEntities = [];
     let shouldSelfUncloak = false;
 
-    worldMap.fill2DGraph(targetX, targetY, searchRange, (tileX, tileY) => {
+    worldMap.fill2DGraph(targetX, targetY, searchRange, (tileX, tileY, tileD) => {
         const entityID = worldMap.getTopEntity(tileX, tileY);
         const entity = entityManager.getEntity(entityID);
-        
+
         if(entity) {
             const distance = entity.getDistanceToTile(targetX, targetY);
 

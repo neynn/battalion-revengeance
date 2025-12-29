@@ -90,7 +90,7 @@ FloodFill.fill2D = function(startX, startY, mapWidth, mapHeight, range, onFill) 
     queue.push({ "x": startX, "y": startY, "cost": 0 });
 
     if(FloodFill.isNodeInBounds(startX, startY, mapWidth, mapHeight)) {
-        onFill(startX, startY);
+        onFill(startX, startY, 0);
     }
 
     while(index < queue.length) {
@@ -108,7 +108,7 @@ FloodFill.fill2D = function(startX, startY, mapWidth, mapHeight, range, onFill) 
             const neighborID = neighborY * mapWidth + neighborX;
 
             if(!visited.has(neighborID) && FloodFill.isNodeInBounds(neighborX, neighborY, mapWidth, mapHeight)) {
-                onFill(neighborX, neighborY);
+                onFill(neighborX, neighborY, neighborCost);
                 visited.add(neighborID);
                 queue.push({ "x": neighborX, "y": neighborY, "cost": neighborCost });
             } 
