@@ -1209,16 +1209,15 @@ BattalionEntity.prototype.canCloakAt = function(gameContext, tileX, tileY) {
         return false;
     }
 
-    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.UNFAIR)) {
-        return true;
-    }
+    //If the entity does NOT have unfair, it uses the regular cloak calculation.
+    if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.UNFAIR)) {
+        const worldMap = gameContext.getActiveMap();
+        const jammer = worldMap.getJammer(tileX, tileY);
+        const cloakFlag = this.getCloakFlag();
 
-    const worldMap = gameContext.getActiveMap();
-    const jammer = worldMap.getJammer(tileX, tileY);
-    const cloakFlags = this.getCloakFlags();
-
-    if(jammer.isJammed(gameContext, this.teamID, cloakFlags)) {
-        return false;
+        if(jammer.isJammed(gameContext, this.teamID, cloakFlag)) {
+            return false;
+        }
     }
 
     const nearbyEntities = EntityHelper.getEntitiesAround(gameContext, tileX, tileY);
@@ -1244,7 +1243,7 @@ BattalionEntity.prototype.canAct = function() {
     return (this.flags & BattalionEntity.FLAG.CAN_MOVE) && !(this.flags & BattalionEntity.FLAG.HAS_FIRED);
 }
 
-BattalionEntity.prototype.getCloakFlags = function() {
+BattalionEntity.prototype.getCloakFlag = function() {
     //The returned flags need to be unset in a jammer field, otherwise cloaking will not work.
     if(this.hasTrait(TypeRegistry.TRAIT_TYPE.STEALTH)) {
         if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SUBMERGED)) {
@@ -1268,7 +1267,7 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, 
     const jammerFlags = this.getJammerFlags();
     const searchRange = jammerFlags !== JammerField.FLAG.NONE ? this.config.jammerRange : 1;
     const uncloakedEntities = [];
-    let isNeighborUncloaked = false;
+    let shouldSelfUncloak = false;
 
     worldMap.fill2DGraph(targetX, targetY, searchRange, (tileX, tileY) => {
         const entityID = worldMap.getTopEntity(tileX, tileY);
@@ -1279,15 +1278,20 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, 
 
             //ALWAYS uncloak neighbors.
             if(distance === 1) {
-                if(!entity.isVisibleTo(gameContext, this.teamID)) {
-                    uncloakedEntities.push(entity);
-                    isNeighborUncloaked = true;
+                //isVisibleTo check, but split up.
+                if(!this.isAllyWith(gameContext, entity)) {
+                    if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+                        uncloakedEntities.push(entity);
+                    }
+
+                    //Always uncloak next to an enemy.
+                    shouldSelfUncloak = true;
                 }
             } else if(jammerFlags !== JammerField.FLAG.NONE) {
-                const uncloakFlags = entity.getCloakFlags();
+                const cloakFlag = entity.getCloakFlag();
 
-                if((uncloakFlags & jammerFlags) === uncloakFlags) {
-                    if(!entity.isVisibleTo(gameContext, this.teamID)) {
+                if(jammerFlags & cloakFlag) {
+                    if(!entity.hasTrait(TypeRegistry.TRAIT_TYPE.UNFAIR) && !entity.isVisibleTo(gameContext, this.teamID)) {
                         uncloakedEntities.push(entity);
                     }
                 }
@@ -1296,7 +1300,7 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, 
     });
 
     //Stealth units meet.
-    if(isNeighborUncloaked && this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+    if(shouldSelfUncloak && this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
         uncloakedEntities.push(this);
     }
 

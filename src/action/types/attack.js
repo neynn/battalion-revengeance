@@ -154,17 +154,19 @@ AttackAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, 
     const deadEntities = resolver.getDeadEntities();
 
     if(hitEntities.length !== 0) {
+        if(deadEntities.length !== 0) {
+            executionPlan.addNext(ActionHelper.createDeathRequest(gameContext, deadEntities));
+        }               
+
         if(command !== COMMAND_TYPE.COUNTER) {
             if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
                 flags |= AttackAction.FLAG.UNCLOAK;
-            }
+            } 
 
             if(deadEntities.length !== 0) {
                 if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.BEWEGUNGSKRIEG)) {
                     flags |= AttackAction.FLAG.BEWEGUNGSKRIEG;
                 }
-
-                executionPlan.addNext(ActionHelper.createDeathRequest(gameContext, deadEntities));
             }
         }
 
