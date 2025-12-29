@@ -46,11 +46,11 @@ Player.prototype.inspectEntity = function(gameContext, entity) {
     this.showJammer(gameContext, entity);
     this.inspectedEntity = entity;
 
-    const displayName = entity.getName(gameContext);
-    const displayDesc = entity.getDescription(gameContext);
-
-    console.log(displayName, displayDesc);
-    console.log("Inspected Entity", entity);
+    console.log("Inspected Entity", {
+        "dName":  entity.getName(gameContext),
+        "dDesc": entity.getDescription(gameContext),
+        "entity": entity
+    });
 }
 
 Player.prototype.inspectTile = function(gameContext, tileX, tileY) {
@@ -66,7 +66,7 @@ Player.prototype.inspectTile = function(gameContext, tileX, tileY) {
     this.inspectedEntity = null;
     this.camera.jammerOverlay.clear();
 
-    console.log({
+    console.log("Inspected Tile", {
         "x": tileX,
         "y": tileY,
         "name": name,
