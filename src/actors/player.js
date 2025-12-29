@@ -8,7 +8,6 @@ import { SelectState } from "./player/select.js";
 import { isNodeReachable } from "../systems/pathfinding.js";
 import { TILE_ID } from "../enums.js";
 import { saveStoryMap } from "../systems/save.js";
-import { Cursor } from "../../engine/client/cursor.js";
 
 export const Player = function(id, camera) {
     BattalionActor.call(this, id);
@@ -33,10 +32,6 @@ Player.EVENT = {
 Player.STATE = {
     IDLE: "IDLE",
     SELECT: "SELECT"
-};
-
-Player.ACTION = {
-    CLICK: "CLICK"
 };
 
 Player.prototype = Object.create(BattalionActor.prototype);
@@ -112,7 +107,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
     const { router } = client;
     
     router.bind(gameContext, "PLAY");
-    router.on(Player.ACTION.CLICK, () => {
+    router.on("CLICK", () => {
         const { world } = gameContext;
         const { mapManager } = world;
         const worldMap = mapManager.getActiveMap();

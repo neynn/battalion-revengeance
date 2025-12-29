@@ -1,7 +1,7 @@
 export const FactionType = function(id, config) {
     const {
-        name = FactionType.MISSING_NAME,
-        desc = FactionType.MISSING_DESC,
+        name = "MISSING_NAME_FACTION",
+        desc = "MISSING_DESC_FACTION",
         color = "WHITE"
     } = config;
 
@@ -10,6 +10,3 @@ export const FactionType = function(id, config) {
     this.desc = desc;
     this.color = color;
 }
-
-FactionType.MISSING_NAME = "MISSING_NAME_FACTION";
-FactionType.MISSING_DESC = "MISSING_DESC_FACTION";

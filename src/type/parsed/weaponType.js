@@ -1,7 +1,7 @@
 export const WeaponType = function(id, config) {
     const {
-        name = WeaponType.MISSING_NAME,
-        desc = WeaponType.MISSING_DESC,
+        name = "MISSING_NAME_WEAPON",
+        desc = "MISSING_DESC_WEAPON",
         icon = null,
         armorResistance = {}
     } = config;
@@ -12,6 +12,3 @@ export const WeaponType = function(id, config) {
     this.icon = icon;
     this.armorResistance = armorResistance;
 }
-
-WeaponType.MISSING_NAME = "MISSING_NAME_WEAPON";
-WeaponType.MISSING_DESC = "MISSING_DESC_WEAPON";

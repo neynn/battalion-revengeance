@@ -1,7 +1,7 @@
 export const TerrainType = function(id, config) {
     const { 
-        name = TerrainType.MISSING_NAME,
-        desc = TerrainType.MISSING_DESC,
+        name = "MISSING_NAME_TERRAIN",
+        desc = "MISSING_DESC_TERRAIN",
         icon = null,
         rangeGuard = false,
         rangeBoost = 0,
@@ -20,6 +20,3 @@ export const TerrainType = function(id, config) {
     this.protection = protection;
     this.cost = cost;
 }
-
-TerrainType.MISSING_NAME = "MISSING_NAME_TERRAIN";
-TerrainType.MISSING_DESC = "MISSING_DESC_TERRAIN";

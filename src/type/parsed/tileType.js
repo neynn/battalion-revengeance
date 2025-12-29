@@ -1,7 +1,7 @@
 export const TileType = function(id, config) {
     const {
-        name = TileType.MISSING_NAME,
-        desc = TileType.MISSING_DESC,
+        name = "MISSING_NAME_TILE",
+        desc = "MISSING_DESC_TILE",
         climate = "NONE",
         terrain = [],
         passability = {}
@@ -14,6 +14,3 @@ export const TileType = function(id, config) {
     this.terrain = terrain;
     this.passability = passability;
 }
-
-TileType.MISSING_NAME = "MISSING_NAME_TILE";
-TileType.MISSING_DESC = "MISSING_DESC_TILE";

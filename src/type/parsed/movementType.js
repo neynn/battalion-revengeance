@@ -1,7 +1,7 @@
 export const MovementType = function(id, config) {
     const {
-        name = MovementType.MISSING_NAME,
-        desc = MovementType.MISSING_DESC,
+        name = "MISSING_NAME_MOVEMENT",
+        desc = "MISSING_DESC_MOVEMENT",
         icon = null,
     } = config;
 
@@ -10,6 +10,3 @@ export const MovementType = function(id, config) {
     this.desc = desc;
     this.icon = icon;
 }
-
-MovementType.MISSING_NAME = "MISSING_NAME_MOVEMENT";
-MovementType.MISSING_DESC = "MISSING_DESC_MOVEMENT";

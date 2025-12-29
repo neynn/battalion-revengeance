@@ -1,7 +1,7 @@
 export const MoraleType = function(id, config) {
     const {
-        name = MoraleType.MISSING_NAME,
-        desc = MoraleType.MISSING_DESC,
+        name = "MISSING_NAME_MORALE",
+        desc = "MISSING_DESC_MORALE",
         icon = null,
         damageModifier = 1
     } = config;
@@ -12,6 +12,3 @@ export const MoraleType = function(id, config) {
     this.icon = icon;
     this.damageModifier = damageModifier;
 }
-
-MoraleType.MISSING_NAME = "MISSING_NAME_MORALE";
-MoraleType.MISSING_DESC = "MISSING_DESC_MORALE";

@@ -1,7 +1,7 @@
 export const NationType = function(id, config) {
     const {
-        name = NationType.MISSING_NAME,
-        desc = NationType.MISSING_DESC,
+        name = "MISSING_NAME_NATION",
+        desc = "MISSING_DESC_NATION",
         prefix = "PREFIX",
         faction = "NONE",
         power = "NONE",
@@ -18,6 +18,3 @@ export const NationType = function(id, config) {
     this.color = color;
     this.currency = currency;
 }
-
-NationType.MISSING_NAME = "MISSING_NAME_NATION";
-NationType.MISSING_DESC = "MISSING_DESC_NATION";
