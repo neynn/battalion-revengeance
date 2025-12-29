@@ -16,8 +16,8 @@ export const EntityType = function(id, config) {
         minRange = EntityType.DEFAULT.MIN_RANGE,
         maxRange = EntityType.DEFAULT.MAX_RANGE,
         streamRange = EntityType.DEFAULT.STREAM_RANGE,
-        desc = EntityType.MISSING.DESC,
-        name = EntityType.MISSING.NAME,
+        desc = "MISSING_DESC_ENTITY",
+        name = "MISSING_NAME_ENTITY",
         traits = [],
         sounds = {},
         sprites = {},
@@ -63,11 +63,6 @@ export const EntityType = function(id, config) {
         this.movementRange = EntityType.MAX_MOVE_COST;
     }
 }
-
-EntityType.MISSING = {
-    NAME: "MISSING_NAME_ENTITY",
-    DESC: "MISSING_DESC_ENTITY"
-};
 
 EntityType.MIN_MOVE_COST = 1;
 EntityType.MAX_MOVE_COST = 99;

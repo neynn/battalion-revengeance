@@ -10,6 +10,10 @@ export const UnitSurviveObjective = function() {
 UnitSurviveObjective.prototype = Object.create(Objective.prototype);
 UnitSurviveObjective.prototype.constructor = UnitSurviveObjective;
 
+UnitSurviveObjective.prototype.isEmpty = function() {
+    return this.units.length === 0;
+}
+
 UnitSurviveObjective.prototype.addUnit = function(entityID) {
     this.units.push(entityID);
 }

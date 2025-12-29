@@ -10,5 +10,14 @@
     },
     "DESC_WTC_2": {
         "en-US": "Jet beams cannot melt steel fuel."
+    },
+    "NAME_WTC": {
+        "en-US": "World Trade Center"
+    },
+    "PRE_1": {
+        "en-US": "I'm giving this lasagna a massage while preparing to announce I'm doing 9/11!"
+    },
+    "PRE_2": {
+        "en-US": "Thank you for your attention."
     }
 }

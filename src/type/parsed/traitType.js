@@ -4,7 +4,8 @@ export const TraitType = function(id, config) {
         desc = TraitType.MISSING_DESC,
         icon = null,
         moveDamage =  {},
-        armorDamage =  {}
+        armorDamage =  {},
+        cashPerTurn = 0
     } = config;
 
     this.id = id;
@@ -13,6 +14,7 @@ export const TraitType = function(id, config) {
     this.icon = icon;
     this.moveDamage = moveDamage;
     this.armorDamage = armorDamage;
+    this.cashPerTurn = cashPerTurn;
 }
 
 TraitType.MISSING_NAME = "MISSING_NAME_TRAIT";

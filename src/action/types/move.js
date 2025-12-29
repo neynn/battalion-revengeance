@@ -153,9 +153,6 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
     if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
         flags |= MoveAction.FLAG.ELUSIVE;
     }
-
-    //TODO: Add uncloak after moving.
-    //MOVE_CLOAKED -> UNCLOAK -> MOVE_UNCLOAKED
     
     executionPlan.setData({
         "entityID": entityID,

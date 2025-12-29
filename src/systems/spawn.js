@@ -93,7 +93,7 @@ export const spawnEntityFromJSON = function(gameContext, config, externalID = En
             entity.setDirection(getDirectionByName(direction));
         }
 
-        if(health !== -1) {
+        if(health > 0) {
             entity.setHealth(health);
         }
 

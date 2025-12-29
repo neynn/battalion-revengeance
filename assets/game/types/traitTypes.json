@@ -245,6 +245,24 @@
         "desc": "TRAIT_DESC_RADAR",
         "icon": "Assets/Traits/Radar.png"
     },
+    "FINANCIAL_CENTER": {
+        "name": "TRAIT_NAME_FINANCIAL_CENTER",
+        "desc": "TRAIT_DESC_FINANCIAL_CENTER",
+        "icon": "Assets/Traits/Financial Center.png",
+        "cashPerTurn": 100
+    },
+    "FISCAL_CENTER": {
+        "name": "TRAIT_NAME_FISCAL_CENTER",
+        "desc": "TRAIT_DESC_FISCAL_CENTER",
+        "icon": "Assets/Traits/Fiscal Center.png",
+        "cashPerTurn": 200
+    },
+    "FIDUCIARY_CENTER": {
+        "name": "TRAIT_NAME_FIDUCIARY_CENTER",
+        "desc": "TRAIT_DESC_FIDUCIARY_CENTER",
+        "icon": "Assets/Traits/Fiduciary Center.png",
+        "cashPerTurn": 300
+    },
     "CRAB": {
         "name": "TRAIT_NAME_CRAB",
         "desc": "TRAIT_DESC_CRAB",
@@ -297,24 +315,6 @@
         "name": "TRAIT_NAME_INFLAMING",
         "desc": "TRAIT_DESC_INFLAMING",
         "icon": "Assets/Traits/Inflaming.png",
-        "note": "This trait is not implemented."
-    },
-    "FINANCIAL_CENTER": {
-        "name": "TRAIT_NAME_FINANCIAL_CENTER",
-        "desc": "TRAIT_DESC_FINANCIAL_CENTER",
-        "icon": "Assets/Traits/Financial Center.png",
-        "note": "This trait is not implemented."
-    },
-    "FISCAL_CENTER": {
-        "name": "TRAIT_NAME_FISCAL_CENTER",
-        "desc": "TRAIT_DESC_FISCAL_CENTER",
-        "icon": "Assets/Traits/Fiscal Center.png",
-        "note": "This trait is not implemented."
-    },
-    "FIDUCIARY_CENTER": {
-        "name": "TRAIT_NAME_FIDUCIARY_CENTER",
-        "desc": "TRAIT_DESC_FIDUCIARY_CENTER",
-        "icon": "Assets/Traits/Fiduciary Center.png",
         "note": "This trait is not implemented."
     }
 }

@@ -1,4 +1,44 @@
 {
+    "MEME_WTC": {
+        "health": 50,
+        "armorType": "LIGHT",
+        "traits": ["FINANCIAL_CENTER"],
+        "sounds": {
+            "move": "turret_move",
+            "fire": "turret_fire"
+        },
+        "sprites": {
+            "idle_right": "turret_idle_right",
+            "idle_left": "turret_idle_left",
+            "idle_down": "turret_idle_down",
+            "idle_up": "turret_idle_up"
+        }
+    },
+    "EAGLE_STRIKER": {
+        "health": 50,
+        "damage": 25,
+        "weaponType": "MEDIUM",
+        "armorType": "LIGHT",
+        "movementRange": 7,
+        "movementType": "FLIGHT",
+        "name": "ENTITY_NAME_EAGLE_STRIKER",
+        "desc": "ENTITY_DESC_EAGLE_STRIKER",
+        "traits": ["SKYSWEEPER"],
+        "sounds": {
+            "move": "raptor_move",
+            "fire": "raptor_fire"
+        },
+        "sprites": {
+            "idle_right": "vulture_drone_idle_right",
+            "idle_left": "vulture_drone_idle_left",
+            "idle_down": "vulture_drone_idle_down",
+            "idle_up": "vulture_drone_idle_up",
+            "fire_right": "vulture_drone_fire_right",
+            "fire_left": "vulture_drone_fire_left",
+            "fire_down": "vulture_drone_fire_down",
+            "fire_up": "vulture_drone_fire_up"
+        }
+    },
     "MEME_BUREAUCRAT": {
         "health": 30,
         "damage": 15,

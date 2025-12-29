@@ -10,8 +10,8 @@ export const ResourceLoader = function() {
     this.events.register(ResourceLoader.EVENT.TEXTURE_LOADED);
     this.events.register(ResourceLoader.EVENT.TEXTURE_ERROR);
 
-    this.events.on(ResourceLoader.EVENT.TEXTURE_ERROR, ({ texture, error }) => console.error("ERROR", texture, error));
-    this.events.on(ResourceLoader.EVENT.TEXTURE_LOADED, ({ texture, bitmap }) => console.log("LOADED", texture, bitmap));
+    //this.events.on(ResourceLoader.EVENT.TEXTURE_ERROR, ({ texture, error }) => console.error("ERROR", texture, error));
+    //this.events.on(ResourceLoader.EVENT.TEXTURE_LOADED, ({ texture, bitmap }) => console.log("LOADED", texture, bitmap));
 }
 
 ResourceLoader.EVENT = {

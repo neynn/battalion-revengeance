@@ -3,14 +3,14 @@ export const BuildingType = function(id, config) {
         name = BuildingType.MISSING_NAME,
         desc = BuildingType.MISSING_DESC,
         sprite = null,
-        cashPerTurn = 0
+        traits = []
     } = config;
 
     this.id = id;
     this.name = name;
     this.desc = desc;
     this.sprite = sprite;
-    this.cashPerTurn = cashPerTurn;
+    this.traits = traits;
 }
 
 BuildingType.MISSING_NAME = "MISSING_NAME_BUILDING";

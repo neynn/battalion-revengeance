@@ -1,5 +1,5 @@
 {
-    "music": null,
+    "music": "NavalEpic5",
     "width": 10,
     "height": 10,
     "teams": {
@@ -7,17 +7,20 @@
         "NYPD": { "commander": "KANYE", "color": "DARK_BLUE" }
     },
     "entities": [
-        { "x": 2, "y": 3, "type": "RAPTOR_FIGHTER", "team": "KANYE" },
-        { "x": 3, "y": 4, "type": "VULTURE_DRONE", "team": "KANYE" },
-        { "x": 3, "y": 5, "type": "VULTURE_DRONE", "team": "KANYE" },
-        { "x": 3, "y": 6, "type": "VULTURE_DRONE", "team": "KANYE" },
-        { "x": 2, "y": 7, "type": "RAPTOR_FIGHTER", "team": "KANYE" },
-        { "x": 8, "y": 4, "direction": "WEST", "type": "TURRET", "team": "NYPD" },
-        { "x": 8, "y": 5, "direction": "WEST", "type": "TURRET", "team": "NYPD" }
+        { "x": 2, "y": 3, "desc": "DESC_RAPTOR", "type": "RAPTOR_FIGHTER", "team": "KANYE" },
+        { "x": 3, "y": 4, "desc": "DESC_EAGLE", "type": "EAGLE_STRIKER", "team": "KANYE" },
+        { "x": 3, "y": 5, "desc": "DESC_EAGLE", "type": "EAGLE_STRIKER", "team": "KANYE" },
+        { "x": 3, "y": 6, "desc": "DESC_EAGLE", "type": "EAGLE_STRIKER", "team": "KANYE" },
+        { "x": 2, "y": 7, "desc": "DESC_RAPTOR", "type": "RAPTOR_FIGHTER", "team": "KANYE" },
+        { "x": 8, "y": 4, "direction": "WEST", "name": "NAME_WTC", "desc": "DESC_WTC_1", "type": "MEME_WTC", "team": "NYPD" },
+        { "x": 8, "y": 5, "direction": "WEST", "name": "NAME_WTC", "desc": "DESC_WTC_2", "type": "MEME_WTC", "team": "NYPD" }
     ],
     "buildings": [],
     "objectives": {},
-    "prelogue": [],
+    "prelogue": [
+        { "narrator": "KANYE", "text": "PRE_1" },
+        { "narrator": "KANYE", "text": "PRE_2" }
+    ],
     "postlogue": [],
     "defeat": [],
     "localization": [],

@@ -77,7 +77,7 @@ HealAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
             break;
         }
         case COMMAND_TYPE.INITIATE: {
-            if(!entity.hasFlag(BattalionEntity.FLAG.HAS_FIRED | BattalionEntity.FLAG.HAS_MOVED)) {
+            if(entity.hasFlag(BattalionEntity.FLAG.CAN_MOVE) && !entity.hasFlag(BattalionEntity.FLAG.HAS_FIRED)) {
                resolveHeal(gameContext, entity, target, resolver);
             }
     

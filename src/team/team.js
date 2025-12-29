@@ -3,6 +3,7 @@ import { Objective } from "./objective/objective.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { UnitSurviveObjective } from "./objective/types/unitSurvive.js";
 import { LynchpinObjective } from "./objective/types/lynchpin.js";
+import { getGeneratedCash } from "../systems/cash.js";
 
 export const Team = function(id) {
     this.id = id;
@@ -210,6 +211,11 @@ Team.prototype.updateStatus = function() {
     if(necessaryObjectives !== 0 && objectivesWon === necessaryObjectives) {
         this.status = Team.STATUS.WINNER;
     }
+
+    //Edge case: Team was created with NO units(automatically lose).
+    if(this.objectives[Team.OBJECTIVE.UNIT_SURVIVE].isEmpty()) {
+        this.status = Team.STATUS.LOSER;
+    }
 }
 
 Team.prototype.addObjective = function(objective) {
@@ -233,6 +239,18 @@ Team.prototype.onTurnEnd = function(gameContext, turn) {
     }
 
     teamManager.updateStatus(gameContext);
+}
+
+Team.prototype.getBuildingCash = function(gameContext) {
+    let totalCash = 0;
+
+    for(const building of this.buildings) {
+        const cash = getGeneratedCash(gameContext, building.config.traits);
+
+        totalCash += cash;
+    }
+
+    return totalCash;
 }
 
 Team.prototype.onTurnStart = function(gameContext, turn) {
