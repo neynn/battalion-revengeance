@@ -4,7 +4,8 @@
         "sources": [
             "system.json",
             "traits.json",
-            "entities.json"
+            "entities.json",
+            "factions.json"
         ]
     }
 }

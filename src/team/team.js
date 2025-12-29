@@ -10,19 +10,25 @@ export const Team = function(id) {
     this.allies = [];
     this.buildings = [];
     this.entities = [];
-    this.faction = null;
-    this.nation = null;
     this.actor = null;
     this.colorID = null;
     this.color = null;
     this.status = Team.STATUS.IDLE;
     this.exchangeRate = 1;
     this.funds = 0;
+    this.name = "MISSING_NAME_TEAM";
+    this.desc = "MISSING_DESC_TEAM";
+    this.flags = Team.FLAG.NONE;
     this.objectives = [
         new UnitSurviveObjective(),
         new LynchpinObjective()
     ];
 }
+
+Team.FLAG = {
+    NONE: 0,
+    IS_NATION: 1 << 0
+};
 
 Team.OBJECTIVE = {
     UNIT_SURVIVE: 0,
@@ -61,15 +67,14 @@ Team.prototype.removeBuilding = function(building) {
 
 Team.prototype.loadAsNation = function(gameContext, nationID) {
     const { typeRegistry } = gameContext;
-    const nationType = typeRegistry.getNationType(nationID);
-    const { color, faction, currency } = nationType;
-
+    const { name, desc, color, faction, currency } = typeRegistry.getNationType(nationID);
     const factionType = typeRegistry.getFactionType(faction);
     const currencyType = typeRegistry.getCurrencyType(currency);
     const isColorSet = this.setColor(gameContext, color);
 
-    this.nation = nationType;
-    this.faction = factionType;
+    this.name = name;
+    this.desc = desc;
+    this.flags |= Team.FLAG.IS_NATION;
 
     if(!isColorSet) {
         this.setColor(gameContext, factionType.color);
@@ -84,25 +89,26 @@ Team.prototype.loadAsNation = function(gameContext, nationID) {
 
 Team.prototype.loadAsFaction = function(gameContext, factionID) {
     const { typeRegistry } = gameContext;
-    const factionType = typeRegistry.getFactionType(factionID);
-    const { color } = factionType;
+    const { color, name, desc }  = typeRegistry.getFactionType(factionID);
 
-    this.faction = factionType;
+    if((this.flags & Team.FLAG.IS_NATION) === 0) {
+        this.name = name;
+        this.desc = desc;
+    }
+
     this.setColor(gameContext, color);
+}
+
+Team.prototype.getDisplayDesc = function(gameContext) {
+    const { language } = gameContext;
+
+    return language.getSystemTranslation(this.desc);
 }
 
 Team.prototype.getDisplayName = function(gameContext) {
     const { language } = gameContext;
 
-    if(this.nation) {
-        return language.getSystemTranslation(this.nation.name);
-    }
-
-    if(this.faction) {
-        return language.getSystemTranslation(this.faction.name);
-    }
-
-    return language.getSystemTranslation("MISSING_NAME");
+    return language.getSystemTranslation(this.name);
 }
 
 Team.prototype.hasActor = function() {

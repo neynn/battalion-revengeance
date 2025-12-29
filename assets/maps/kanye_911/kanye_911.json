@@ -3,8 +3,8 @@
     "width": 10,
     "height": 10,
     "teams": {
-        "KANYE": { "isPlayer": true, "commander": "KANYE", "color": "RED" },
-        "NYPD": { "commander": "KANYE", "color": "DARK_BLUE" }
+        "KANYE": { "isPlayer": true, "commander": "KANYE", "faction": "KANYE" },
+        "NYPD": { "commander": "KANYE", "faction": "NYPD" }
     },
     "entities": [
         { "x": 2, "y": 3, "desc": "DESC_RAPTOR", "type": "RAPTOR_FIGHTER", "team": "KANYE" },

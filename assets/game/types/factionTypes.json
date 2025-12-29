@@ -17,5 +17,7 @@
     "BLACK": { "name": "FACTION_NAME_BLACK", "desc": "FACTION_DESC_BLACK", "color": "BLACK" },
     "GRAY": { "name": "FACTION_NAME_GRAY", "desc": "FACTION_DESC_GRAY", "color": "GRAY" },
     "CREAM": { "name": "FACTION_NAME_CREAM", "desc": "FACTION_DESC_CREAM", "color": "CREAM" },
-    "LIME": { "name": "FACTION_NAME_LIME", "desc": "FACTION_DESC_LIME", "color": "LIME" }
+    "LIME": { "name": "FACTION_NAME_LIME", "desc": "FACTION_DESC_LIME", "color": "LIME" },
+    "KANYE": { "name": "FACTION_NAME_KANYE", "desc": "FACTION_DESC_KANYE", "color": "BRONZE" },
+    "NYPD": { "name": "FACTION_NAME_NYPD", "desc": "FACTION_DESC_NYPD", "color": "DARK_BLUE" }
 }

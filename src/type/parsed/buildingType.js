@@ -1,7 +1,7 @@
 export const BuildingType = function(id, config) {
     const {
-        name = BuildingType.MISSING_NAME,
-        desc = BuildingType.MISSING_DESC,
+        name = "MISSING_NAME_BUILDING",
+        desc = "MISSING_DESC_BUILDING",
         sprite = null,
         traits = []
     } = config;
@@ -12,6 +12,3 @@ export const BuildingType = function(id, config) {
     this.sprite = sprite;
     this.traits = traits;
 }
-
-BuildingType.MISSING_NAME = "MISSING_NAME_BUILDING";
-BuildingType.MISSING_DESC = "MISSING_DESC_BUILDING";
