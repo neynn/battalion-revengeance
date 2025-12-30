@@ -10,6 +10,24 @@ export const Building = function(id, config, sprite) {
     this.customDesc = null;
 }
 
+Building.prototype.hasTrait = function(traitID) {
+    return this.config.hasTrait(traitID);
+}
+
+Building.prototype.isCapturable = function(gameContext, teamID) {
+    const { teamManager } = gameContext; 
+
+    if(this.teamID === teamID) {
+        return false;
+    }
+
+    if(teamManager.isAlly(this.teamID, teamID)) {
+        return false;
+    }
+
+    return true;
+}
+
 Building.prototype.updateTeam = function(gameContext, teamID) {
     const { teamManager } = gameContext;
 

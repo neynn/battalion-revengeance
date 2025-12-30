@@ -1,4 +1,9 @@
 {
+    "CAPTURABLE": {
+        "name": "TRAIT_NAME_CAPTURABLE",
+        "desc": "TRAIT_DESC_CAPTURABLE",
+        "icon": null
+    },
     "HIGH_ALTITUDE": {
         "name": "TRAIT_NAME_HIGH_ALTITUDE",
         "desc": "TRAIT_DESC_HIGH_ALTITUDE",
@@ -263,6 +268,11 @@
         "icon": "Assets/Traits/Fiduciary Center.png",
         "cashPerTurn": 300
     },
+    "CONQUEROR": {
+        "name": "TRAIT_NAME_CONQUEROR",
+        "desc": "TRAIT_DESC_CONQUEROR",
+        "icon": "Assets/Traits/Conqueror.png"
+    },
     "CRAB": {
         "name": "TRAIT_NAME_CRAB",
         "desc": "TRAIT_DESC_CRAB",
@@ -292,12 +302,6 @@
         "desc": "TRAIT_DESC_TANK_POOPER",
         "icon": "Assets/Traits/Tank Pooper.png",
         "note": "This trait is purely cosmetic. (WarMachine)"
-    },
-    "CONQUEROR": {
-        "name": "TRAIT_NAME_CONQUEROR",
-        "desc": "TRAIT_DESC_CONQUEROR",
-        "icon": "Assets/Traits/Conqueror.png",
-        "note": "This trait is not implemented."
     },
     "STREAMLINED": {
         "name": "TRAIT_NAME_STREAMLINED",

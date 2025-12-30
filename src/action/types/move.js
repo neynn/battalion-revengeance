@@ -5,7 +5,7 @@ import { COMMAND_TYPE, PATH_INTERCEPT } from "../../enums.js";
 import { placeEntityOnMap, removeEntityFromMap } from "../../systems/map.js";
 import { mInterceptPath } from "../../systems/pathfinding.js";
 import { TypeRegistry } from "../../type/typeRegistry.js";
-import { ActionHelper, createAttackRequest, createHealRequest, createTrackingIntent } from "../actionHelper.js";
+import { ActionHelper, createAttackRequest, createCaptureIntent, createHealRequest, createTrackingIntent } from "../actionHelper.js";
 
 export const MoveAction = function() {
     Action.call(this);
@@ -144,6 +144,10 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
         } else {
             console.error("Heal and attack are both invalid!");
         }
+    }
+
+    if(entity.canCapture(gameContext, targetX, targetY)) {
+        executionPlan.addNext(createCaptureIntent(entityID, targetX, targetY));
     }
 
     if(entity.canCloakAt(gameContext, targetX, targetY)) {

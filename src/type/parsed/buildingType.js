@@ -12,3 +12,13 @@ export const BuildingType = function(id, config) {
     this.sprite = sprite;
     this.traits = traits;
 }
+
+BuildingType.prototype.hasTrait = function(traitID) {
+    for(let i = 0; i < this.traits.length; i++) {
+        if(this.traits[i] === traitID) {
+            return true;
+        }
+    }
+
+    return false;
+}

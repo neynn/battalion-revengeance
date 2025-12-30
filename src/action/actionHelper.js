@@ -3,6 +3,14 @@ import { DialogueHandler } from "../dialogue/dialogueHandler.js";
 import { COMMAND_TYPE } from "../enums.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
+export const createCaptureIntent = function(entityID, targetX, targetY) {
+    return new ActionIntent(TypeRegistry.ACTION_TYPE.CAPTURE, {
+        "entityID": entityID,
+        "targetX": targetX,
+        "targetY": targetY
+    });
+}
+
 export const createTrackingIntent = function(entityID, potentialTargets) {
     return new ActionIntent(TypeRegistry.ACTION_TYPE.ATTACK, {
         "entityID": entityID,

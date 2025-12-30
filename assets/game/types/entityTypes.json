@@ -519,7 +519,7 @@
         "damage": 30,
         "weaponType": "HEAVY",
         "armorType": "LIGHT",
-        "movementRange": 5,
+        "movementRange": 50,
         "movementType": "FOOT",
         "sounds": {
             "move": null,
@@ -527,7 +527,7 @@
         },
         "name": "ENTITY_NAME_HEAVY_COMMANDO",
         "desc": "ENTITY_DESC_HEAVY_COMMANDO",
-        "traits": ["TRACKING"],
+        "traits": ["TRACKING", "CONQUEROR"],
         "sprites": {
             "idle_right": "heavy_commando_idle_right",
             "idle_left": "heavy_commando_idle_left",

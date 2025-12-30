@@ -641,6 +641,32 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
     }
 }
 
+BattalionEntity.prototype.canCapture = function(gameContext, tileX, tileY) {
+    if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.CONQUEROR)) {
+        return false;
+    }
+
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+
+    if(!worldMap) {
+        return false;
+    }
+
+    const building = worldMap.getBuilding(tileX, tileY);
+
+    if(!building) {
+        return false;
+    }
+
+    if(!building.hasTrait(TypeRegistry.TRAIT_TYPE.CAPTURABLE)) {
+        return false;
+    }
+
+    return building.isCapturable(gameContext, this.teamID);
+}
+
 BattalionEntity.prototype.canSee = function(gameContext, entity) {
     return entity.isVisibleTo(gameContext, this.teamID);
 }

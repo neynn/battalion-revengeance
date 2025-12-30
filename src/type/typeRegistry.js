@@ -200,6 +200,7 @@ TypeRegistry.MORALE_TYPE = {
 };
 
 TypeRegistry.ACTION_TYPE = {
+    CAPTURE: "CAPTURE",
     HEAL: "HEAL",
     END_TURN: "END_TURN",
     START_TURN: "START_TURN",
@@ -366,6 +367,8 @@ TypeRegistry.MOVEMENT_TYPE = {
 };
 
 TypeRegistry.TRAIT_TYPE = {
+    CAPTURABLE: "CAPTURABLE",
+    CONQUEROR: "CONQUEROR",
     HIGH_ALTITUDE: "HIGH_ALTITUDE",
     RADAR: "RADAR",
     UNFAIR: "UNFAIR",
