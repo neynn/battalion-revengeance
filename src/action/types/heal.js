@@ -50,7 +50,7 @@ HealAction.prototype.onEnd = function(gameContext, data) {
     }
 
     this.entity.playIdle(gameContext);
-    this.entity.onHealEnd();
+    this.entity.setFlag(BattalionEntity.FLAG.HAS_FIRED);
     this.entity = null;
     this.resolutions = [];
 }

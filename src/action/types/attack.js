@@ -99,11 +99,11 @@ AttackAction.prototype.onEnd = function(gameContext, data) {
     this.entity.playIdle(gameContext);
 
     if(hasFlag(flags, AttackAction.FLAG.COUNTER)) {
-        this.entity.onCounterEnd();
+        this.entity.clearLastAttacker();
     } else {
         target.setLastAttacker(entityID);
 
-        this.entity.onAttackEnd();
+        this.entity.setFlag(BattalionEntity.FLAG.HAS_FIRED);
 
         if(hasFlag(flags, AttackAction.FLAG.BEWEGUNGSKRIEG)) {
             this.entity.triggerBewegungskrieg();

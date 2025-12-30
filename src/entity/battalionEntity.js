@@ -1387,22 +1387,7 @@ BattalionEntity.prototype.getJammerFlags = function() {
     return flags;
 }
 
-BattalionEntity.prototype.onMoveStart = function() {}
-
-BattalionEntity.prototype.onMoveEnd = function() {
-    this.setFlag(BattalionEntity.FLAG.HAS_MOVED);
-    this.clearFlag(BattalionEntity.FLAG.CAN_MOVE);
-}
-
-BattalionEntity.prototype.onHealEnd = function() {
-    this.setFlag(BattalionEntity.FLAG.HAS_FIRED);
-}
-
-BattalionEntity.prototype.onAttackEnd = function() {
-    this.setFlag(BattalionEntity.FLAG.HAS_FIRED);
-}
-
-BattalionEntity.prototype.onCounterEnd = function() {
+BattalionEntity.prototype.clearLastAttacker = function() {
     this.lastAttacker = EntityManager.ID.INVALID;
 }
 
@@ -1413,19 +1398,19 @@ BattalionEntity.prototype.setLastAttacker = function(entityID) {
 }
 
 BattalionEntity.prototype.onTurnStart = function(gameContext) {
-    this.lastAttacker = EntityManager.ID.INVALID;
     this.clearFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_FIRED);
     this.clearFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
     this.setFlag(BattalionEntity.FLAG.CAN_MOVE);
+    this.clearLastAttacker();
     this.takeTerrainDamage(gameContext);
 
     console.log("My turn started", this);
 } 
 
 BattalionEntity.prototype.onTurnEnd = function(gameContext) {
-    this.lastAttacker = EntityManager.ID.INVALID;
     this.setFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_FIRED);
     this.clearFlag(BattalionEntity.FLAG.CAN_MOVE);
+    this.clearLastAttacker();
 
     console.log("My turn ended", this);
 }
