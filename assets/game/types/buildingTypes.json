@@ -2,32 +2,38 @@
     "AIR_CONTROL": {
         "name": "BUILDING_NAME_AIR_CONTROL",
         "desc": "BUILDING_DESC_AIR_CONTROL",
-        "sprite": "air_control"
+        "sprite": "air_control",
+        "traits": ["CAPTURABLE"]
     },
     "COMMAND_CENTER": {
         "name": "BUILDING_NAME_COMMAND_CENTER",
         "desc": "BUILDING_DESC_COMMAND_CENTER",
-        "sprite": "command_center"
+        "sprite": "command_center",
+        "traits": ["CAPTURABLE"]
     },
     "FACTORY": {
         "name": "BUILDING_NAME_FACTORY",
         "desc": "BUILDING_DESC_FACTORY",
-        "sprite": "factory"
+        "sprite": "factory",
+        "traits": ["CAPTURABLE"]
     },
     "GROUND_CONTROL": {
         "name": "BUILDING_NAME_GROUND_CONTROL",
         "desc": "BUILDING_DESC_GROUND_CONTROL",
-        "sprite": "ground_control"
+        "sprite": "ground_control",
+        "traits": ["CAPTURABLE"]
     },
     "OIL_ADVANCED_REFINERY": {
         "name": "BUILDING_NAME_OIL_ADVANCED_REFINERY",
         "desc": "BUILDING_DESC_OIL_ADVANCED_REFINERY",
-        "sprite": "oil_advanced_refinery"
+        "sprite": "oil_advanced_refinery",
+        "traits": ["CAPTURABLE"]
     },
     "OIL_REFINERY": {
         "name": "BUILDING_NAME_OIL_REFINERY",
         "desc": "BUILDING_DESC_OIL_REFINERY",
-        "sprite": "oil_refinery"
+        "sprite": "oil_refinery",
+        "traits": ["CAPTURABLE"]
     },
     "OIL_RIG": {
         "name": "BUILDING_NAME_OIL_RIG",
@@ -38,6 +44,7 @@
     "SEA_CONTROL": {
         "name": "BUILDING_NAME_SEA_CONTROL",
         "desc": "BUILDING_DESC_SEA_CONTROL",
-        "sprite": "sea_control"
+        "sprite": "sea_control",
+        "traits": ["CAPTURABLE"]
     }
 }
