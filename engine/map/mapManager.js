@@ -3,7 +3,7 @@ import { MapSource } from "./mapSource.js";
 
 export const MapManager = function() {
     this.mapSources = new Map();
-    this.maps = new Map();
+    this.maps = [];
     this.nextID = 0;
     this.activeMap = null;
 
@@ -27,24 +27,19 @@ MapManager.prototype.getNextID = function() {
     return this.nextID++;
 }
 
-MapManager.prototype.createMap = function(onCreate, externalID) {
-    const mapID = externalID !== undefined ? externalID : this.nextID++;
+MapManager.prototype.addMap = function(worldMap) {
+    const mapID = worldMap.id;
 
-    if(!this.maps.has(mapID)) {
-        const worldMap = onCreate(mapID);
-
-        if(worldMap) {
-            this.maps.set(mapID, worldMap);
-            this.events.emit(MapManager.EVENT.MAP_CREATE, {
-                "id": mapID,
-                "map": worldMap
-            });
-
-            return worldMap;
+    for(let i = 0; i < this.maps.length; i++) {
+        if(this.maps[i].id === mapID) {
+            return;
         }
     }
 
-    return null;
+    this.maps.push(worldMap);
+    this.events.emit(MapManager.EVENT.MAP_CREATE, {
+        "map": worldMap
+    });
 }
 
 MapManager.prototype.update = function(gameContext) {
@@ -68,12 +63,24 @@ MapManager.prototype.load = function(mapSources) {
 
 MapManager.prototype.forAllMaps = function(onCall) {
     if(typeof onCall === "function") {
-        this.maps.forEach((map) => onCall(map))
+        for(const map of this.maps) {
+            onCall(map);
+        }
     }
 }
 
+MapManager.prototype.getMap = function(mapID) {
+    for(let i = 0; i < this.maps.length; i++) {
+        if(this.maps[i].id === mapID) {
+            return this.maps[i];
+        }
+    }
+
+    return null;
+}
+
 MapManager.prototype.enableMap = function(mapID) {
-    const worldMap = this.maps.get(mapID);
+    const worldMap = this.getMap(mapID);
 
     if(!worldMap || worldMap === this.activeMap) {
         return;
@@ -105,30 +112,24 @@ MapManager.prototype.getMapSource = function(sourceID) {
 }
 
 MapManager.prototype.destroyMap = function(mapID) {
-    const loadedMap = this.maps.get(mapID);
+    for(let i = 0; i < this.maps.length; i++) {
+        const worldMap = this.maps[i];
 
-    if(!loadedMap) {
-        return;
+        if(worldMap.id === mapID) {
+            this.maps[i] = this.maps[this.maps.length - 1];
+            this.maps.pop();
+
+            if(this.activeMap === worldMap) {
+                this.disableMap();
+            }
+
+            this.events.emit(MapManager.EVENT.MAP_DESTROY, {
+                "mapID": mapID
+            });
+            
+            break;
+        }
     }
-
-    if(this.activeMap === loadedMap) {
-        this.disableMap();
-    }
-
-    this.maps.delete(mapID);
-    this.events.emit(MapManager.EVENT.MAP_DESTROY, {
-        "mapID": mapID
-    });
-}
-
-MapManager.prototype.getMap = function(mapID) {
-    const loadedMap = this.maps.get(mapID);
-
-    if(!loadedMap) {
-        return null;
-    }
-
-    return loadedMap;
 }
 
 MapManager.prototype.disableMap = function() {
@@ -146,7 +147,7 @@ MapManager.prototype.disableMap = function() {
 
 MapManager.prototype.exit = function() {
     this.events.muteAll();
-    this.maps.clear();
+    this.maps.length = 0;
     this.disableMap();
     this.nextID = 0;
 }

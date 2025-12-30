@@ -265,13 +265,11 @@ export const removeEntityFromMap = function(gameContext, entity) {
 export const createEmptyMap = function(gameContext, width, height) {     
     const { world } = gameContext;
     const { mapManager } = world;
-    const worldMap = mapManager.createMap(id => new BattalionMap(id, width, height));
-    
-    if(worldMap) {
-        const mapID = worldMap.getID();
+    const mapID = mapManager.getNextID();
+    const worldMap = new BattalionMap(mapID, width, height);
 
-        mapManager.enableMap(mapID);
-    }
+    mapManager.addMap(worldMap);
+    mapManager.enableMap(mapID);
 
     return worldMap;
 }
@@ -280,16 +278,14 @@ export const createCustomMap = function(gameContext, mapData) {
     const { world } = gameContext;
     const { mapManager } = world;
     const { width, height, data } = mapData;
-    const worldMap = mapManager.createMap(id => new BattalionMap(id, width, height));
+    const mapID = mapManager.getNextID();
+    const worldMap = new BattalionMap(mapID, width, height);
 
-    if(worldMap) {
-        const mapID = worldMap.getID();
+    worldMap.decodeLayers(data);
+    mapManager.addMap(worldMap);
+    mapManager.enableMap(mapID);
 
-        worldMap.decodeLayers(data);
-        mapManager.enableMap(mapID);
-
-        loadMap(gameContext, worldMap, mapData);
-    }
+    loadMap(gameContext, worldMap, mapData);
 }
 
 export const createEditorMap = async function(gameContext, sourceID) {
@@ -300,17 +296,15 @@ export const createEditorMap = async function(gameContext, sourceID) {
 
     if(file !== null) {
         const { width, height, data } = file;
-        const worldMap = mapManager.createMap(id => new BattalionMap(id, width, height));
+        const mapID = mapManager.getNextID();
+        const worldMap = new BattalionMap(mapID, width, height);
 
-        if(worldMap) {
-            const mapID = worldMap.getID();
-
-            worldMap.setSource(mapSource);
-            worldMap.decodeLayers(data);
-            mapManager.enableMap(mapID);
-            
-            return worldMap;
-        }
+        worldMap.setSource(mapSource);
+        worldMap.decodeLayers(data);
+        mapManager.addMap(worldMap);
+        mapManager.enableMap(mapID);
+        
+        return worldMap;
     }
 
     return null;
@@ -324,21 +318,19 @@ export const createStoryMap = async function(gameContext, sourceID) {
 
     if(file !== null) {
         const { width, height, data } = file;
-        const worldMap = mapManager.createMap(id => new BattalionMap(id, width, height));
+        const mapID = mapManager.getNextID();
+        const worldMap = new BattalionMap(mapID, width, height);
 
-        if(worldMap) {
-            const mapID = worldMap.getID();
-            
-            worldMap.setSource(mapSource);
-            worldMap.decodeLayers(data);
+        worldMap.setSource(mapSource);
+        worldMap.decodeLayers(data);
 
-            if(translations !== null) {
-                language.registerMapTranslations(translations);
-            }
-
-            mapManager.enableMap(mapID);
-
-            loadMap(gameContext, worldMap, file);
+        if(translations !== null) {
+            language.registerMapTranslations(translations);
         }
+
+        mapManager.addMap(worldMap);
+        mapManager.enableMap(mapID);
+
+        loadMap(gameContext, worldMap, file);
     }
 }
