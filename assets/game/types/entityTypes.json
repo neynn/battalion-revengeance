@@ -478,7 +478,7 @@
         "movementType": "WHEELED",
         "name": "ENTITY_NAME_JAMMER_TRUCK",
         "desc": "ENTITY_DESC_JAMMER_TRUCK",
-        "traits": ["JAMMER", "RADAR", "SONAR"],
+        "traits": ["JAMMER", "RADAR"],
         "sounds": {
             "move": "turret_move"
         },

@@ -12,7 +12,7 @@ PlayState.prototype.onEnter = async function(gameContext, stateMachine, transiti
     const { client } = gameContext;
     const { router } = client;
 
-    createStoryMap(gameContext, "kanye_911")
+    createStoryMap(gameContext, "presus")
     .then(() => loadStoryMap(gameContext, {
         "edits": [],
         "entities": [

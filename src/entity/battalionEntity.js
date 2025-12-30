@@ -1299,9 +1299,19 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, 
         }
     });
 
-    //Stealth units meet.
-    if(shouldSelfUncloak && this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-        uncloakedEntities.push(this);
+    //Self uncloaking logic.
+    if(this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+        if(shouldSelfUncloak) {
+            uncloakedEntities.push(this);
+        } else {
+            //Jammer check for self.
+            const jammer = worldMap.getJammer(targetX, targetY);
+            const cloakFlag = this.getCloakFlag();
+
+            if(jammer.isJammed(gameContext, this.teamID, cloakFlag)) {
+                uncloakedEntities.push(this);
+            }
+        }
     }
 
     return uncloakedEntities;
