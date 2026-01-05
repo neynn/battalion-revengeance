@@ -22,9 +22,8 @@ DeathAction.prototype.onStart = function(gameContext, data) {
     for(let i = 0; i < entities.length; i++) {
         const entity = entityManager.getEntity(entities[i]);
 
-        entity.uncloakInstant();
+        entity.setOpacity(1);
         entity.playDeath(gameContext);
-        entity.setHealth(0);
 
         this.entities.push(entity);
     }
@@ -50,12 +49,22 @@ DeathAction.prototype.isFinished = function(gameContext, executionPlan) {
 }
 
 DeathAction.prototype.onEnd = function(gameContext, data) {
-    for(const entity of this.entities) {
-        despawnEntity(gameContext, entity);
-    }
-
+    this.execute(gameContext, data);
     this.opacity = 1;
     this.entities.length = 0;
+}
+
+DeathAction.prototype.execute = function(gameContext, data) {
+    const { world } = gameContext;
+    const { entityManager } = world;
+    const { entities } = data;
+
+    for(let i = 0; i < entities.length; i++) {
+        const entity = entityManager.getEntity(entities[i]);
+
+        entity.setHealth(0);
+        despawnEntity(gameContext, entity);
+    }
 }
 
 DeathAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {

@@ -1,4 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
+import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { playUncloakSound } from "../../systems/sound.js";
 
 export const UncloakAction = function() {
@@ -47,12 +48,26 @@ UncloakAction.prototype.isFinished = function(gameContext, executionPlan) {
 }
 
 UncloakAction.prototype.onEnd = function(gameContext, data) {
+    this.execute(gameContext, data);
+
     for(const entity of this.entities) {
-        entity.uncloakInstant();
+        entity.setOpacity(1);
     }
 
     this.entities.length = 0;
     this.opacity = 0;
+}
+
+UncloakAction.prototype.execute = function(gameContext, data) {
+    const { world } = gameContext;
+    const { entityManager } = world;
+    const { entities } = data;
+
+    for(let i = 0; i < entities.length; i++) {
+        const entity = entityManager.getEntity(entities[i]);
+
+        entity.clearFlag(BattalionEntity.FLAG.IS_CLOAKED);
+    }
 }
 
 UncloakAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
