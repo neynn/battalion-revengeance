@@ -128,12 +128,16 @@ ActionQueue.prototype.registerAction = function(typeID, handler) {
 }
 
 ActionQueue.prototype.exit = function() {
+    this.intentQueue.length = 0;
     this.events.muteAll();
     this.executionQueue.clear();
-    this.state = ActionQueue.STATE.ACTIVE;
     this.isSkipping = false;
     this.current = null;
     this.nextID = 0;
+
+    if(this.state === ActionQueue.STATE.PROCESSING) {
+        this.state = ActionQueue.STATE.ACTIVE;
+    }
 }
 
 ActionQueue.prototype.enqueue = function(execution, forcedPriority = Action.PRIORITY.NONE) {
