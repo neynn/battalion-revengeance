@@ -2,11 +2,12 @@ import { EntityManager } from "../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { Building } from "../entity/building.js";
 import { LAYER_TYPE } from "../enums.js";
-import { EntitySprite } from "../sprite/entitySprite.js";
-import { SchemaSprite } from "../sprite/schemaSprite.js";
+import { createSchemaViewSprite, SchemaView } from "../sprite/schemaView.js";
+import { EntityView } from "../sprite/entityView.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { getDirectionByName } from "./direction.js";
 import { placeEntityOnMap, removeEntityFromMap } from "./map.js";
+import { BuildingView } from "../sprite/buildingView.js";
 
 const createEntityObject = function(gameContext, config, colorID, color) {
     const { world, transform2D, spriteManager, typeRegistry } = gameContext;
@@ -16,8 +17,8 @@ const createEntityObject = function(gameContext, config, colorID, color) {
 
     const entity = entityManager.createEntity((entityID) => {
         const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
-        const entitySprite = new EntitySprite(visualSprite, null, colorID, color);
-        const entityObject = new BattalionEntity(entityID, entitySprite);
+        const entityView = new EntityView(visualSprite, null, colorID, color);
+        const entityObject = new BattalionEntity(entityID, entityView);
         const spawnPosition = transform2D.transformTileToWorld(x, y);
 
         entityObject.loadConfig(entityType);
@@ -127,9 +128,9 @@ export const spawnBuildingFromJSON = function(gameContext, worldMap, config) {
         const { sprite } = buildingType;
 
         worldMap.createBuilding(x, y, (buildingID) => {
-            const visualSprite = SchemaSprite.createVisual(gameContext, sprite, colorID, color, LAYER_TYPE.BUILDING);
-            const buildingSprite = new SchemaSprite(visualSprite, sprite, colorID, color);
-            const buildingObject = new Building(buildingID, buildingType, buildingSprite);
+            const visualSprite = createSchemaViewSprite(gameContext, sprite, colorID, color, LAYER_TYPE.BUILDING);
+            const buildingView = new BuildingView(visualSprite, sprite, colorID, color);
+            const buildingObject = new Building(buildingID, buildingType, buildingView);
 
             buildingObject.setCustomInfo(id, name, desc);
             buildingObject.setTile(gameContext, x, y);

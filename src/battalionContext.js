@@ -19,11 +19,12 @@ import { TeamManager } from "./team/teamManager.js";
 import { TypeRegistry } from "./type/typeRegistry.js";
 import { HealAction } from "./action/types/heal.js";
 import { CaptureAction } from "./action/types/capture.js";
+import { TILE_HEIGHT, TILE_WIDTH } from "./constants.js";
 
 export const BattalionContext = function() {
     GameContext.call(this);
 
-    this.transform2D.setSize(56, 56);
+    this.transform2D.setSize(TILE_WIDTH, TILE_HEIGHT);
     this.typeRegistry = new TypeRegistry();
     this.teamManager = new TeamManager();
     this.portraitHandler = new PortraitHandler();

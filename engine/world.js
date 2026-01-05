@@ -1,7 +1,6 @@
 import { ActionQueue } from "./action/actionQueue.js";
 import { TurnManager } from "./turn/turnManager.js";
 import { EntityManager } from "./entity/entityManager.js";
-import { EventBus } from "./eventBus.js";
 import { MapManager } from "./map/mapManager.js";
 
 export const World = function() {
@@ -9,11 +8,6 @@ export const World = function() {
     this.turnManager = new TurnManager();
     this.entityManager = new EntityManager();
     this.mapManager = new MapManager();
-    this.eventBus = new EventBus();
-    
-    this.actionQueue.events.on(ActionQueue.EVENT.EXECUTION_COMPLETE, ({ plan }) => {
-        this.eventBus.onExecutionComplete(plan);
-    }, { permanent: true });
 }
 
 World.prototype.exit = function() {
@@ -29,3 +23,5 @@ World.prototype.update = function(gameContext) {
     this.mapManager.update(gameContext);
     this.entityManager.update(gameContext);
 }
+
+//TODO: Add query methods.

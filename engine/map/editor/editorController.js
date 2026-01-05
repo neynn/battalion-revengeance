@@ -3,6 +3,7 @@ import { clampValue, loopValue } from "../../math/math.js";
 import { ButtonHandler } from "./buttonHandler.js";
 import { getCursorTile } from "../../camera/contextHelper.js";
 import { TileManager } from "../../tile/tileManager.js";
+import { TILE_WIDTH } from "../../../src/constants.js";
 
 export const EditorController = function(mapEditor, userInterface, camera2D) {
     this.editor = mapEditor;
@@ -73,7 +74,7 @@ EditorController.prototype.initPalletButtons = function(gameContext, buttons, ca
             const tileID = this.editor.getPalletID(palletIndex);
 
             if(tileID !== TileManager.TILE_ID.INVALID) {
-                const scale = slotButtonSize / 56; //TODO
+                const scale = slotButtonSize / TILE_WIDTH;
 
                 camera.drawTile(tileManager, tileID, display.context, localX, localY, scale);
             }

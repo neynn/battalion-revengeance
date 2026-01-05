@@ -1,7 +1,7 @@
-export const Building = function(id, config, sprite) {
+export const Building = function(id, config, view) {
     this.id = id;
     this.config = config;
-    this.sprite = sprite;
+    this.view = view;
     this.tileX = -1;
     this.tileY = -1;
     this.teamID = null;
@@ -45,7 +45,7 @@ Building.prototype.updateTeam = function(gameContext, teamID) {
             nextTeam.addBuilding(this);
     
             this.teamID = teamID;
-            this.sprite.updateSchema(gameContext, colorID, color);
+            this.view.updateSchema(gameContext, colorID, color);
         }
     }
 }
@@ -64,7 +64,7 @@ Building.prototype.setTile = function(gameContext, tileX, tileY) {
 
     this.tileX = tileX;
     this.tileY = tileY;
-    this.sprite.setPosition(x, y);
+    this.view.setPosition(x, y);
 }
 
 Building.prototype.setCustomInfo = function(id, name, desc) {

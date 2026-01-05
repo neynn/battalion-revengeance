@@ -14,11 +14,11 @@ import { transportTypeToEntityType } from "../systems/transport.js";
 import { getAreaEntities, getLineEntities } from "../systems/targeting.js";
 import { playGFX } from "../systems/animation.js";
 
-export const BattalionEntity = function(id, sprite) {
+export const BattalionEntity = function(id, view) {
     Entity.call(this, id, "");
 
     this.config = null;
-    this.sprite = sprite;
+    this.view = view;
     this.health = 1;
     this.maxHealth = 1;
     this.damage = 0;
@@ -196,7 +196,7 @@ BattalionEntity.prototype.isRangeValid = function(gameContext, entity) {
 }
 
 BattalionEntity.prototype.isAnimationFinished = function() {
-    return this.sprite.visual.isFinished();
+    return this.view.visual.isFinished();
 }
 
 BattalionEntity.prototype.isAtFullHealth = function() {
@@ -242,7 +242,7 @@ BattalionEntity.prototype.setHealth = function(health) {
         this.health = health;
     }
 
-    this.sprite.onHealthUpdate(this.health, this.maxHealth);
+    this.view.onHealthUpdate(this.health, this.maxHealth);
 }
 
 BattalionEntity.prototype.setCustomInfo = function(id, name, desc) {
@@ -277,7 +277,7 @@ BattalionEntity.prototype.hasTrait = function(traitID) {
 
 BattalionEntity.prototype.destroy = function() {
     this.isMarkedForDestroy = true;
-    this.sprite.destroy();
+    this.view.destroy();
 }
 
 BattalionEntity.prototype.setTile = function(tileX, tileY) {
@@ -286,17 +286,17 @@ BattalionEntity.prototype.setTile = function(tileX, tileY) {
 }
 
 BattalionEntity.prototype.updatePosition = function(deltaX, deltaY) {
-    this.sprite.updatePosition(deltaX, deltaY);
+    this.view.updatePosition(deltaX, deltaY);
 }
 
 BattalionEntity.prototype.setPosition = function(positionX, positionY) {
-    this.sprite.setPosition(positionX, positionY);
+    this.view.setPosition(positionX, positionY);
 }
 
 BattalionEntity.prototype.setPositionVec = function(positionVector) {
     const { x, y } = positionVector;
 
-    this.sprite.setPosition(x, y);
+    this.view.setPosition(x, y);
 }
 
 BattalionEntity.prototype.setDirection = function(direction) {
@@ -316,7 +316,7 @@ BattalionEntity.prototype.setDirection = function(direction) {
 BattalionEntity.prototype.playIdle = function(gameContext) {
     this.state = BattalionEntity.STATE.IDLE;
     this.updateSprite(gameContext);
-    this.sprite.unlockEnd();
+    this.view.unlockEnd();
 }
 
 BattalionEntity.prototype.playCloak = function(gameContext) {
@@ -345,14 +345,14 @@ BattalionEntity.prototype.playAttack = function(gameContext) {
     this.state = BattalionEntity.STATE.FIRE;
     this.playSound(gameContext, BattalionEntity.SOUND_TYPE.FIRE);
     this.updateSprite(gameContext);
-    this.sprite.lockEnd();
+    this.view.lockEnd();
 }
 
 BattalionEntity.prototype.playHeal = function(gameContext) {
     this.state = BattalionEntity.STATE.FIRE;
     this.playSound(gameContext, BattalionEntity.SOUND_TYPE.HEAL);
     this.updateSprite(gameContext);
-    this.sprite.lockEnd();
+    this.view.lockEnd();
 }
 
 BattalionEntity.prototype.playCounter = function(gameContext, target) {
@@ -459,12 +459,12 @@ BattalionEntity.prototype.updateSprite = function(gameContext) {
     const spriteID = this.config.sprites[spriteType];
 
     if(spriteID) {
-        this.sprite.updateType(gameContext, spriteID);
+        this.view.updateType(gameContext, spriteID);
     }
 }
 
 BattalionEntity.prototype.updateSchema = function(gameContext, schemaID, schema) {
-    this.sprite.updateSchema(gameContext, schemaID, schema);
+    this.view.updateSchema(gameContext, schemaID, schema);
 }
 
 BattalionEntity.prototype.setTeam = function(teamID) {
@@ -1169,7 +1169,7 @@ BattalionEntity.prototype.bufferSprites = function(gameContext) {
         const spriteID = this.config.sprites[spriteName];
 
         if(spriteID) {
-            this.sprite.preload(gameContext, spriteID);
+            this.view.preload(gameContext, spriteID);
         }
     }
 }
@@ -1206,20 +1206,20 @@ BattalionEntity.prototype.isNextToEntity = function(entity) {
 
 BattalionEntity.prototype.cloakInstant = function() {
     if(!this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-        this.sprite.setOpacity(0);
+        this.view.setOpacity(0);
         this.setFlag(BattalionEntity.FLAG.IS_CLOAKED);
     }
 }
 
 BattalionEntity.prototype.uncloakInstant = function() {
     if(this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-        this.sprite.setOpacity(1);
+        this.view.setOpacity(1);
         this.clearFlag(BattalionEntity.FLAG.IS_CLOAKED);
     }
 }
 
 BattalionEntity.prototype.setOpacity = function(opacity) {
-    this.sprite.setOpacity(opacity);
+    this.view.setOpacity(opacity);
 }
 
 BattalionEntity.prototype.canUncloak = function() {

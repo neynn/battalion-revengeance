@@ -1,16 +1,7 @@
 import { Renderer } from "../../engine/renderer/renderer.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
-export const SchemaSprite = function(visual, spriteID, schemaID, schema) {
-    this.visual = visual;
-    this.spriteID = spriteID;
-    this.schemaID = schemaID;
-    this.schema = schema;
-    this.positionX = 0;
-    this.positionY = 0;
-}
-
-SchemaSprite.createVisual = function(gameContext, spriteID, schemaID, schema, layerID) {
+export const createSchemaViewSprite = function(gameContext, spriteID, schemaID, schema, layerID) {
     const { spriteManager } = gameContext;
 
     if(schemaID === TypeRegistry.SCHEMA_TYPE.RED) {
@@ -20,7 +11,16 @@ SchemaSprite.createVisual = function(gameContext, spriteID, schemaID, schema, la
     }
 }
 
-SchemaSprite.prototype.preload = function(gameContext, spriteID) {
+export const SchemaView = function(visual, spriteID, schemaID, schema) {
+    this.visual = visual;
+    this.spriteID = spriteID;
+    this.schemaID = schemaID;
+    this.schema = schema;
+    this.positionX = 0;
+    this.positionY = 0;
+}
+
+SchemaView.prototype.preload = function(gameContext, spriteID) {
     const { spriteManager } = gameContext;
 
     if(this.schemaID === TypeRegistry.SCHEMA_TYPE.RED) {
@@ -30,14 +30,14 @@ SchemaSprite.prototype.preload = function(gameContext, spriteID) {
     }
 }
 
-SchemaSprite.prototype.destroy = function() {
+SchemaView.prototype.destroy = function() {
     this.spriteID = null;
     this.schemaID = null;
     this.schema = null;
     this.visual.terminate();
 }
 
-SchemaSprite.prototype.updateSchema = function(gameContext, schemaID, schema) {
+SchemaView.prototype.updateSchema = function(gameContext, schemaID, schema) {
     if(schemaID !== this.schemaID) {
         this.schemaID = schemaID;
         this.schema = schema;
@@ -45,26 +45,26 @@ SchemaSprite.prototype.updateSchema = function(gameContext, schemaID, schema) {
     }
 }
 
-SchemaSprite.prototype.updateType = function(gameContext, spriteType) {
+SchemaView.prototype.updateType = function(gameContext, spriteType) {
     if(spriteType !== this.spriteID) {
         this.spriteID = spriteType;
         this.updateVisual(gameContext);
     }
 }
 
-SchemaSprite.prototype.updatePosition = function(deltaX, deltaY) {
+SchemaView.prototype.updatePosition = function(deltaX, deltaY) {
     this.positionX += deltaX;
     this.positionY += deltaY;
     this.visual.setPosition(this.positionX, this.positionY);
 }
 
-SchemaSprite.prototype.setPosition = function(positionX, positionY) {
+SchemaView.prototype.setPosition = function(positionX, positionY) {
     this.positionX = positionX;
     this.positionY = positionY;
     this.visual.setPosition(this.positionX, this.positionY);
 }
 
-SchemaSprite.prototype.updateVisual = function(gameContext) {
+SchemaView.prototype.updateVisual = function(gameContext) {
     const { spriteManager } = gameContext;
     const spriteIndex = this.visual.getIndex();
 
@@ -77,23 +77,23 @@ SchemaSprite.prototype.updateVisual = function(gameContext) {
     }
 }
 
-SchemaSprite.prototype.setOpacity = function(opacity) {
+SchemaView.prototype.setOpacity = function(opacity) {
     this.visual.setOpacity(opacity);
 }
 
-SchemaSprite.prototype.lockEnd = function() {
+SchemaView.prototype.lockEnd = function() {
     this.visual.lock();
 }
 
-SchemaSprite.prototype.unlockEnd = function() {
+SchemaView.prototype.unlockEnd = function() {
     this.visual.unlock();
 }
 
-SchemaSprite.prototype.isVisible = function(x, y, w, h) {
+SchemaView.prototype.isVisible = function(x, y, w, h) {
     return this.visual.isVisible(x, y, w, h);
 }
 
-SchemaSprite.prototype.draw = function(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime) {
+SchemaView.prototype.draw = function(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime) {
     this.visual.update(realTime, deltaTime);
     this.visual.draw(display, viewportLeftEdge, viewportTopEdge);
 

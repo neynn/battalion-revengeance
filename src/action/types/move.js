@@ -1,5 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
 import { hasFlag } from "../../../engine/util/flag.js";
+import { TILE_WIDTH } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { COMMAND_TYPE, PATH_INTERCEPT } from "../../enums.js";
 import { placeEntityOnMap, removeEntityFromMap } from "../../systems/map.js";
@@ -20,8 +21,6 @@ MoveAction.FLAG = {
     NONE: 0,
     ELUSIVE: 1 << 0
 };
-
-MoveAction.TRAVEL_DISTANCE = 56;
 
 MoveAction.prototype = Object.create(Action.prototype);
 MoveAction.prototype.constructor = MoveAction;
@@ -55,14 +54,14 @@ MoveAction.prototype.onUpdate = function(gameContext, data) {
     this.distanceMoved += distanceMoved;
     this.entity.updatePosition(deltaX * distanceMoved, deltaY * distanceMoved);
 
-    while(this.distanceMoved >= MoveAction.TRAVEL_DISTANCE && this.pathIndex >= 0) {
+    while(this.distanceMoved >= TILE_WIDTH && this.pathIndex >= 0) {
         const { tileX, tileY } = this.path[this.pathIndex];
         const positionVec = transform2D.transformTileToWorld(tileX, tileY);
     
         this.entity.setDirectionByDelta(deltaX, deltaY);
         this.entity.setPositionVec(positionVec);
         this.entity.setTile(tileX, tileY);
-        this.distanceMoved -= MoveAction.TRAVEL_DISTANCE;
+        this.distanceMoved -= TILE_WIDTH;
         this.pathIndex--;
     }
 }

@@ -50,8 +50,8 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
 
     for(let i = 0; i < entities.length; i++) {
         const entity = entities[i];
-        const { teamID, sprite, state } = entity;
-        const isVisible = sprite.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
+        const { view, teamID, state } = entity;
+        const isVisible = view.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
 
         if(!isVisible) {
             continue;
@@ -63,13 +63,13 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
         }
 
         if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.perspectives.has(teamID)) {
-            sprite.drawCloaked(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+            view.drawCloaked(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
         } else {
-            sprite.drawCloaked(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
-            //sprite.drawNormal(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+            view.drawCloaked(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+            //view.drawNormal(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
         }
 
-        const { positionX, positionY } = sprite;
+        const { positionX, positionY } = view;
         const markerX = positionX - viewportLeftEdge;
         const markerY = positionY - viewportTopEdge;
 
@@ -86,12 +86,12 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
 
     for(let i = 0; i < priorityEntities.length; i++) {
         const entity = priorityEntities[i];
-        const { teamID, sprite } = entity;
+        const { view, teamID } = entity;
 
         if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.perspectives.has(teamID)) {
-            sprite.drawCloaked(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+            view.drawCloaked(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
         } else {
-            sprite.drawNormal(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+            view.drawNormal(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
         }
     }
 }
@@ -192,11 +192,11 @@ BattalionCamera.prototype.drawBuildings = function(display, worldMap, realTime, 
     const viewportBottomEdge = viewportTopEdge + this.wViewportHeight
 
     for(let i = 0; i < length; i++) {
-        const { sprite } = buildings[i];
-        const isVisible = sprite.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
+        const { view } = buildings[i];
+        const isVisible = view.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
 
         if(isVisible) {
-            sprite.draw(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+            view.draw(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
         }
     }
 }
