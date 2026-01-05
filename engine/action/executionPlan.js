@@ -4,7 +4,6 @@ export const ExecutionPlan = function(id, type, intent) {
     this.intent = intent;
     this.data = null;
     this.state = ExecutionPlan.STATE.NONE;
-    this.timePassed = 0;
     this.next = [];
 }
 
@@ -25,10 +24,6 @@ ExecutionPlan.prototype.setData = function(data) {
 ExecutionPlan.prototype.addNext = function(intent) {
     intent.setActor(this.intent.actorID);
     this.next.push(intent);
-}
-
-ExecutionPlan.prototype.advance = function(deltaTime) {
-    this.timePassed += deltaTime;
 }
 
 ExecutionPlan.prototype.setState = function(stateID) {

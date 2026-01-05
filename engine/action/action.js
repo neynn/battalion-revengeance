@@ -10,8 +10,6 @@ Action.PRIORITY = {
 };
 
 Action.prototype.execute = function(gameContext, data) {}
-Action.prototype.onValid = function(gameContext) {}
-Action.prototype.onInvalid = function(gameContext) {}
 Action.prototype.onStart = function(gameContext, executionData) {}
 Action.prototype.onEnd = function(gameContext, executionData) {}
 Action.prototype.onUpdate = function(gameContext, executionData) {}
