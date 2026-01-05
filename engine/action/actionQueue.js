@@ -76,13 +76,12 @@ ActionQueue.prototype.flushExecution = function(gameContext) {
     const { type, data } = this.current;
     const actionType = this.actionTypes.get(type);
 
+    this.current.setState(ExecutionPlan.STATE.RUNNING);
     this.events.emit(ActionQueue.EVENT.EXECUTION_RUNNING, {
         "item": this.current
     });
-    this.current.setState(ExecutionPlan.STATE.RUNNING);
 
-    actionType.onStart(gameContext, data);
-    actionType.onEnd(gameContext, data);
+    actionType.execute(gameContext, data);
 
     this.handleActionEnd();
 }

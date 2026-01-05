@@ -31,8 +31,6 @@ MoveAction.prototype.onStart = function(gameContext, data) {
     const { entityID, path } = data;
     const entity = entityManager.getEntity(entityID);
 
-    removeEntityFromMap(gameContext, entity);
-
     entity.playMove(gameContext);
 
     this.path = path;
@@ -60,7 +58,6 @@ MoveAction.prototype.onUpdate = function(gameContext, data) {
     
         this.entity.setDirectionByDelta(deltaX, deltaY);
         this.entity.setPositionVec(positionVec);
-        this.entity.setTile(tileX, tileY);
         this.distanceMoved -= TILE_WIDTH;
         this.pathIndex--;
     }
@@ -71,30 +68,41 @@ MoveAction.prototype.isFinished = function(gameContext, executionPlan) {
 }
 
 MoveAction.prototype.onEnd = function(gameContext, data) {
-    const { transform2D, teamManager } = gameContext;
-    const { flags } = data;
+    const { transform2D } = gameContext;
     const { deltaX, deltaY, tileX, tileY } = this.path[0];
     const position = transform2D.transformTileToWorld(tileX, tileY);
 
-    this.entity.setTile(tileX, tileY);
+    this.execute(gameContext, data);
     this.entity.setPositionVec(position);
     this.entity.setDirectionByDelta(deltaX, deltaY);
     this.entity.playIdle(gameContext);
-    this.entity.setFlag(BattalionEntity.FLAG.HAS_MOVED);
-    this.entity.clearFlag(BattalionEntity.FLAG.CAN_MOVE);
-
-    if(hasFlag(flags, MoveAction.FLAG.ELUSIVE)) {
-        this.entity.triggerElusive();
-    }
-
-    placeEntityOnMap(gameContext, this.entity);
-
-    teamManager.broadcastEntityMove(gameContext, this.entity);
 
     this.path = [];
     this.pathIndex = 0;
     this.entity = null;
     this.distanceMoved = 0;
+}
+
+MoveAction.prototype.execute = function(gameContext, data) {
+    const { world, teamManager } = gameContext;
+    const { entityManager } = world;
+    const { entityID, path, flags } = data;
+    const { tileX, tileY } = path[0];
+    const entity = entityManager.getEntity(entityID);
+
+    removeEntityFromMap(gameContext, entity);
+
+    entity.setTile(tileX, tileY);
+    entity.setFlag(BattalionEntity.FLAG.HAS_MOVED);
+    entity.clearFlag(BattalionEntity.FLAG.CAN_MOVE);
+
+    if(hasFlag(flags, MoveAction.FLAG.ELUSIVE)) {
+        entity.triggerElusive();
+    }
+
+    placeEntityOnMap(gameContext, entity);
+
+    teamManager.broadcastEntityMove(gameContext, entity);
 }
 
 MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {

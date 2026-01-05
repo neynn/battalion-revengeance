@@ -19,7 +19,6 @@ CloakAction.prototype.onStart = function(gameContext, data) {
     const { entityID  } = data;
     const entity = entityManager.getEntity(entityID);
 
-    entity.setFlag(BattalionEntity.FLAG.IS_CLOAKED);
     entity.playCloak(gameContext);
 
     this.entity = entity;
@@ -43,8 +42,18 @@ CloakAction.prototype.isFinished = function(gameContext, executionPlan) {
 }
 
 CloakAction.prototype.onEnd = function(gameContext, data) {
+    this.execute(gameContext, data);
     this.entity = null;
     this.opacity = 1;
+}
+
+CloakAction.prototype.execute = function(gameContext, data) {
+    const { world } = gameContext;
+    const { entityManager } = world;
+    const { entityID  } = data;
+    const entity = entityManager.getEntity(entityID);
+
+    entity.setFlag(BattalionEntity.FLAG.IS_CLOAKED);
 }
 
 CloakAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
