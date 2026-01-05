@@ -13,6 +13,9 @@ const resolveHeal = function(gameContext, entity, target, resolver) {
 
 export const HealAction = function() {
     Action.call(this);
+
+    this.duration = 0;
+    this.passedTime = 0;
 }
 
 HealAction.prototype = Object.create(Action.prototype);
@@ -30,29 +33,47 @@ HealAction.prototype.onStart = function(gameContext, data) {
 
     playHealEffect(gameContext, entity, target);
 
-    this.entity = entity;
-    this.resolutions = resolutions;
+    this.duration = entity.getAnimationDuration();
 }
 
+HealAction.prototype.onUpdate = function(gameContext, data) {
+    const { timer } = gameContext;
+    const deltaTime = timer.getFixedDeltaTime();
+
+    this.passedTime += deltaTime;
+}
+ 
 HealAction.prototype.isFinished = function(gameContext, executionPlan) {
-    return this.entity.isAnimationFinished();
+    return this.passedTime >= this.duration;
 }
 
 HealAction.prototype.onEnd = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
+    const { entityID } = data;
+    const entity = entityManager.getEntity(entityID);
 
-    for(let i = 0; i < this.resolutions.length; i++) {
-        const { entityID, health } = this.resolutions[i];
+    entity.playIdle(gameContext);
+
+    this.execute(gameContext, data);
+    this.duration = 0;
+    this.passedTime = 0;
+}
+
+HealAction.prototype.execute = function(gameContext, data) {
+    const { world } = gameContext;
+    const { entityManager } = world;
+    const { entityID, resolutions } = data;
+    const entity = entityManager.getEntity(entityID);
+
+    for(let i = 0; i < resolutions.length; i++) {
+        const { entityID, health } = resolutions[i];
         const targetObject = entityManager.getEntity(entityID);
 
         targetObject.setHealth(health);
     }
 
-    this.entity.playIdle(gameContext);
-    this.entity.setFlag(BattalionEntity.FLAG.HAS_FIRED);
-    this.entity = null;
-    this.resolutions = [];
+    entity.setFlag(BattalionEntity.FLAG.HAS_FIRED);
 }
 
 HealAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {

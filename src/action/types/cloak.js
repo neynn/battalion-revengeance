@@ -1,4 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
+import { BattalionEntity } from "../../entity/battalionEntity.js";
 
 export const CloakAction = function() {
     Action.call(this);
@@ -18,6 +19,7 @@ CloakAction.prototype.onStart = function(gameContext, data) {
     const { entityID  } = data;
     const entity = entityManager.getEntity(entityID);
 
+    entity.setFlag(BattalionEntity.FLAG.IS_CLOAKED);
     entity.playCloak(gameContext);
 
     this.entity = entity;

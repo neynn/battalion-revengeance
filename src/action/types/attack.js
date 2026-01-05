@@ -39,8 +39,8 @@ const resolveFirstAttack = function(gameContext, entity, target, resolver) {
 export const AttackAction = function() {
     Action.call(this);
 
-    this.entity = null;
-    this.resolutions = [];
+    this.duration = 0;
+    this.passedTime = 0;
 }
 
 AttackAction.FLAG = {
@@ -75,43 +75,58 @@ AttackAction.prototype.onStart = function(gameContext, data) {
 
     playAttackEffect(gameContext, entity, target, resolutions);
 
-    this.entity = entity;
-    this.resolutions = resolutions;
+    this.duration = entity.getAnimationDuration();
 }
 
+AttackAction.prototype.onUpdate = function(gameContext, data) {
+    const { timer } = gameContext;
+    const deltaTime = timer.getFixedDeltaTime();
+
+    this.passedTime += deltaTime;
+}
+ 
 AttackAction.prototype.isFinished = function(gameContext, executionPlan) {
-    return this.entity.isAnimationFinished();
+    return this.passedTime >= this.duration;
 }
 
 AttackAction.prototype.onEnd = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID, targetID, flags } = data;
+    const { entityID } = data;
+    const entity = entityManager.getEntity(entityID);
+
+    entity.playIdle(gameContext);
+
+    this.execute(gameContext, data);
+    this.duration = 0;
+    this.passedTime = 0;
+}
+
+AttackAction.prototype.execute = function(gameContext, data) {
+    const { world } = gameContext;
+    const { entityManager } = world;
+    const { entityID, targetID, resolutions, flags } = data;
+    const entity = entityManager.getEntity(entityID);
     const target = entityManager.getEntity(targetID);
 
-    for(let i = 0; i < this.resolutions.length; i++) {
-        const { entityID, health } = this.resolutions[i];
+    for(let i = 0; i < resolutions.length; i++) {
+        const { entityID, health } = resolutions[i];
         const targetObject = entityManager.getEntity(entityID);
 
         targetObject.setHealth(health);
     }
 
-    this.entity.playIdle(gameContext);
-
     if(hasFlag(flags, AttackAction.FLAG.COUNTER)) {
-        this.entity.clearLastAttacker();
+        entity.clearLastAttacker();
     } else {
         target.setLastAttacker(entityID);
 
-        this.entity.setFlag(BattalionEntity.FLAG.HAS_FIRED);
+        entity.setFlag(BattalionEntity.FLAG.HAS_FIRED);
 
         if(hasFlag(flags, AttackAction.FLAG.BEWEGUNGSKRIEG)) {
-            this.entity.triggerBewegungskrieg();
+            entity.triggerBewegungskrieg();
         }
     }
-
-    this.entity = null;
-    this.resolutions = [];
 }
 
 AttackAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {

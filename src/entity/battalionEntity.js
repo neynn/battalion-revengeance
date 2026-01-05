@@ -195,10 +195,6 @@ BattalionEntity.prototype.isRangeValid = function(gameContext, entity) {
     return distance <= this.getMaxRange(gameContext);
 }
 
-BattalionEntity.prototype.isAnimationFinished = function() {
-    return this.view.visual.isFinished();
-}
-
 BattalionEntity.prototype.isAtFullHealth = function() {
     return this.health >= this.maxHealth;
 }
@@ -320,7 +316,6 @@ BattalionEntity.prototype.playIdle = function(gameContext) {
 }
 
 BattalionEntity.prototype.playCloak = function(gameContext) {
-    this.setFlag(BattalionEntity.FLAG.IS_CLOAKED);
     this.playSound(gameContext, BattalionEntity.SOUND_TYPE.CLOAK);
 }
 
@@ -436,6 +431,10 @@ BattalionEntity.prototype.getDeathEffect = function() {
     }
 
     return sprite;
+}
+
+BattalionEntity.prototype.getAnimationDuration = function() {
+    return this.view.visual.getTotalFrameTime();
 }
 
 BattalionEntity.prototype.getAttackEffect = function() {
@@ -1205,17 +1204,13 @@ BattalionEntity.prototype.isNextToEntity = function(entity) {
 }
 
 BattalionEntity.prototype.cloakInstant = function() {
-    if(!this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-        this.view.setOpacity(0);
-        this.setFlag(BattalionEntity.FLAG.IS_CLOAKED);
-    }
+    this.view.setOpacity(0);
+    this.setFlag(BattalionEntity.FLAG.IS_CLOAKED);
 }
 
 BattalionEntity.prototype.uncloakInstant = function() {
-    if(this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-        this.view.setOpacity(1);
-        this.clearFlag(BattalionEntity.FLAG.IS_CLOAKED);
-    }
+    this.view.setOpacity(1);
+    this.clearFlag(BattalionEntity.FLAG.IS_CLOAKED);
 }
 
 BattalionEntity.prototype.setOpacity = function(opacity) {

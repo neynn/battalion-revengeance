@@ -304,3 +304,7 @@ Sprite.prototype.setFrameTime = function(frameTime) {
 Sprite.prototype.isFinished = function() {
     return this.currentFrame === (this.frameCount - 1);
 }
+
+Sprite.prototype.getTotalFrameTime = function() {
+    return this.frameTime * this.frameCount;
+}

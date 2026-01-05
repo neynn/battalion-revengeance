@@ -1,2 +1,4 @@
 Keep track of passed action time IN the action, do not rely on sprite states.
 TOO MANY CALLS TO REFRESH()!!!
+create execute for all actions.
+check actor from execution plan -> on the server, check if the SocketClient is the current Actor and then set the actorID of the plan to that actorID
