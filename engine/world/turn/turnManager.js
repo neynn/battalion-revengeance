@@ -1,4 +1,4 @@
-import { EventEmitter } from "../events/eventEmitter.js";
+import { EventEmitter } from "../../events/eventEmitter.js";
 
 export const TurnManager = function() {
     this.nextID = 0;

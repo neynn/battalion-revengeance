@@ -1,32 +1,18 @@
-import { EntityHelper } from "../../engine/util/entityHelper.js";
-import { EVENT_TYPE, TILE_ID } from "../enums.js";
-import { BattalionMap } from "../map/battalionMap.js";
-import { playExplosion } from "../systems/animation.js";
-import { despawnEntity, spawnEntityFromJSON } from "../systems/spawn.js";
+import { EntityHelper } from "../engine/util/entityHelper.js";
+import { WorldEvent } from "../engine/world/event/worldEvent.js"
+import { EVENT_TYPE, TILE_ID } from "./enums.js";
+import { BattalionMap } from "./map/battalionMap.js";
+import { playExplosion } from "./systems/animation.js";
+import { despawnEntity, spawnEntityFromJSON } from "./systems/spawn.js";
 
-export const Event = function(id, actions) {
-    this.id = id;
-    this.turn = Event.INVALID_TIME;
-    this.round = Event.INVALID_TIME;
-    this.next = null;
-    this.actions = actions;
-    this.isTriggered = false; 
+export const BattalionEvent = function(id, actions) {
+    WorldEvent.call(this, id, actions);
 }
 
-Event.INVALID_TIME = -1;
+BattalionEvent.prototype = Object.create(WorldEvent.prototype);
+BattalionEvent.prototype.constructor = BattalionEvent;
 
-Event.prototype.setNext = function(next) {
-    if(next !== undefined && next !== this.id) {
-        this.next = next;
-    }
-}
-
-Event.prototype.setTriggerTime = function(turn = Event.INVALID_TIME, round = Event.INVALID_TIME) {
-    this.turn = turn;
-    this.round = round;
-}
-
-Event.prototype.explodeTile = function(gameContext, layerName, tileX, tileY) {
+BattalionEvent.prototype.explodeTile = function(gameContext, layerName, tileX, tileY) {
     const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
@@ -43,9 +29,7 @@ Event.prototype.explodeTile = function(gameContext, layerName, tileX, tileY) {
     playExplosion(gameContext, tileX, tileY);
 }
 
-Event.prototype.trigger = function(gameContext) {
-    this.isTriggered = true;
-
+BattalionEvent.prototype.execute = function(gameContext) {
     for(let i = 0; i < this.actions.length; i++) {
         const { type } = this.actions[i];
 

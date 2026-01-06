@@ -6,7 +6,7 @@ import { StateMachine } from "./state/stateMachine.js";
 import { Timer } from "./timer.js";
 import { TileManager } from "./tile/tileManager.js";
 import { Renderer } from "./renderer/renderer.js";
-import { World } from "./world.js";
+import { World } from "./world/world.js";
 import { LanguageHandler } from "./language/languageHandler.js";
 import { Transform2D } from "./math/transform2D.js";
 import { FontHandler } from "./fontHandler.js";
@@ -14,6 +14,7 @@ import { MapManager } from "./map/mapManager.js";
 import { ResourceLoader } from "./resources/resourceLoader.js";
 import { ContextWindow } from "./contextWindow.js";
 import { ActionRouter } from "./client/actionRouter.js";
+import { TurnManager } from "./world/turn/turnManager.js";
 
 export const GameContext = function() {
     this.client = new Client();
@@ -76,6 +77,14 @@ export const GameContext = function() {
 
     this.client.cursor.events.on(Cursor.EVENT.BUTTON_UP, ({ button }) => {
         this.renderer.onDragEnd(button);
+    }, { permanent: true });
+
+    this.world.turnManager.events.on(TurnManager.EVENT.NEXT_TURN, ({ turn }) => {
+        this.world.eventHandler.onTurnChange(this, turn);
+    }, { permanent: true });
+
+    this.world.turnManager.events.on(TurnManager.EVENT.NEXT_ROUND, ({ round }) => {
+        this.world.eventHandler.onRoundChange(this, round);
     }, { permanent: true });
 
     this.addDebug();

@@ -1,13 +1,15 @@
-import { ActionQueue } from "./action/actionQueue.js";
+import { ActionQueue } from "../action/actionQueue.js";
 import { TurnManager } from "./turn/turnManager.js";
-import { EntityManager } from "./entity/entityManager.js";
-import { MapManager } from "./map/mapManager.js";
+import { EntityManager } from "../entity/entityManager.js";
+import { MapManager } from "../map/mapManager.js";
+import { EventHandler } from "./event/eventHandler.js";
 
 export const World = function() {
     this.actionQueue = new ActionQueue();
     this.turnManager = new TurnManager();
     this.entityManager = new EntityManager();
     this.mapManager = new MapManager();
+    this.eventHandler = new EventHandler();
 }
 
 World.prototype.exit = function() {
@@ -15,6 +17,7 @@ World.prototype.exit = function() {
     this.turnManager.exit();
     this.entityManager.exit();
     this.mapManager.exit();
+    this.eventHandler.exit();
 }
 
 World.prototype.update = function(gameContext) {

@@ -1,4 +1,4 @@
-import { TurnActor } from "../../engine/turn/turnActor.js";
+import { TurnActor } from "../../engine/world/turn/turnActor.js";
 import { ActionHelper } from "../action/actionHelper.js";
 
 export const BattalionActor = function(id) {

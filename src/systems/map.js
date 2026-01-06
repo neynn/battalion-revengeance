@@ -1,5 +1,6 @@
 import { BattalionActor } from "../actors/battalionActor.js";
 import { Player } from "../actors/player.js";
+import { BattalionEvent } from "../battalionEvent.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { JammerField } from "../map/jammerField.js";
 import { CaptureObjective } from "../team/objective/types/capture.js";
@@ -128,7 +129,8 @@ const createObjectives = function(team, objectives, allObjectives) {
 }
 
 const loadMap = function(gameContext, worldMap, mapData) {
-    const { client, teamManager, eventHandler, dialogueHandler } = gameContext;
+    const { world, client, teamManager, dialogueHandler } = gameContext;
+    const { eventHandler } = world;
     const { musicPlayer } = client;
     const { 
         music,
@@ -210,7 +212,16 @@ const loadMap = function(gameContext, worldMap, mapData) {
     dialogueHandler.loadPrelogue(prelogue);
     dialogueHandler.loadPostlogue(postlogue);
     dialogueHandler.loadDefeat(defeat);
-    eventHandler.loadEvents(events);
+
+   for(const eventName in events) {
+        const {  turn, round, next = null, actions = [] } = events[eventName];
+        const event = new BattalionEvent(eventName, actions);
+
+        event.setTriggerTime(turn, round);
+        event.setNext(next);
+        eventHandler.addEvent(event);
+   }
+    
     teamManager.updateStatus(gameContext);
     teamManager.updateOrder(gameContext);
     //TODO: Open dialogue UI

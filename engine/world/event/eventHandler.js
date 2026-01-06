@@ -1,4 +1,4 @@
-import { Event } from "./event.js";
+import { WorldEvent } from "./worldEvent.js";
 
 export const EventHandler = function() {
     this.events = [];
@@ -8,23 +8,15 @@ EventHandler.prototype.exit = function() {
     this.events.length = 0;
 }
 
-EventHandler.prototype.loadEvents = function(events) {
-    for(const eventName in events) {
-        const {  turn, round, next = null, actions = [] } = events[eventName];
-        const event = new Event(eventName, actions);
-
-        event.setTriggerTime(turn, round);
-        event.setNext(next);
-
-        this.events.push(event);
-    }
+EventHandler.prototype.addEvent = function(event) {
+    this.events.push(event);
 }
 
 EventHandler.prototype.onTurnChange = function(gameContext, globalTurn) {
     for(const event of this.events) {
         const { turn } = event;
 
-        if(turn !== Event.INVALID_TIME && globalTurn >= turn) {
+        if(turn !== WorldEvent.INVALID_TIME && globalTurn >= turn) {
             this.triggerEvent(gameContext, event);
         }
     }
@@ -34,7 +26,7 @@ EventHandler.prototype.onRoundChange = function(gameContext, globalRound) {
     for(const event of this.events) {
         const { round } = event;
 
-        if(round !== Event.INVALID_TIME && globalRound >= round) {
+        if(round !== WorldEvent.INVALID_TIME && globalRound >= round) {
             this.triggerEvent(gameContext, event);
         }
     }

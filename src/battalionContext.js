@@ -1,17 +1,14 @@
 import { GameContext } from "../engine/gameContext.js";
 import { LanguageHandler } from "../engine/language/languageHandler.js";
-import { TurnManager } from "../engine/turn/turnManager.js";
 import { AttackAction } from "./action/types/attack.js";
 import { CloakAction } from "./action/types/cloak.js";
 import { DeathAction } from "./action/types/death.js";
-import { DialogueAction } from "./action/types/dialogue.js";
 import { EndTurnAction } from "./action/types/endTurn.js";
 import { MoveAction } from "./action/types/move.js";
 import { UncloakAction } from "./action/types/uncloak.js";
 import { PortraitHandler } from "./portrait/portraitHandler.js";
 import { DialogueHandler } from "./dialogue/dialogueHandler.js";
 import { LAYER_TYPE } from "./enums.js";
-import { EventHandler } from "./event/eventHandler.js";
 import { MainMenuState } from "./states/mainMenu/mainMenu.js";
 import { MapEditorState } from "./states/mapEditor/mapEditorState.js";
 import { PlayState } from "./states/play.js";
@@ -28,16 +25,7 @@ export const BattalionContext = function() {
     this.typeRegistry = new TypeRegistry();
     this.teamManager = new TeamManager();
     this.portraitHandler = new PortraitHandler();
-    this.eventHandler = new EventHandler();
     this.dialogueHandler = new DialogueHandler();
-
-    this.world.turnManager.events.on(TurnManager.EVENT.NEXT_TURN, ({ turn }) => {
-        this.eventHandler.onTurnChange(this, turn);
-    }, { permanent: true });
-
-    this.world.turnManager.events.on(TurnManager.EVENT.NEXT_ROUND, ({ round }) => {
-        this.eventHandler.onRoundChange(this, round);
-    }, { permanent: true });
 }
 
 BattalionContext.STATE = {
@@ -78,6 +66,5 @@ BattalionContext.prototype.init = function(resources) {
 BattalionContext.prototype.onExit = function() {
     this.teamManager.exit();
     this.portraitHandler.exit();
-    this.eventHandler.exit();
     this.dialogueHandler.exit();
 }
