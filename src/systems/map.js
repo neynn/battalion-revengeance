@@ -213,6 +213,7 @@ const loadMap = function(gameContext, worldMap, mapData) {
     eventHandler.loadEvents(events);
     teamManager.updateStatus(gameContext);
     teamManager.updateOrder(gameContext);
+    //TODO: Open dialogue UI
     //ActionHelper.createRegularDialogue(gameContext, DialogueHandler.TYPE.PRELOGUE);
 
     if(!playerCreated) {

@@ -247,7 +247,7 @@ Team.prototype.onTurnEnd = function(gameContext, turn) {
     teamManager.updateStatus(gameContext);
 }
 
-Team.prototype.getBuildingCash = function(gameContext) {
+Team.prototype.generateBuildingCash = function(gameContext) {
     let totalCash = 0;
 
     for(const building of this.buildings) {
@@ -255,6 +255,10 @@ Team.prototype.getBuildingCash = function(gameContext) {
 
         totalCash += cash;
     }
+
+    this.funds += totalCash;
+
+    console.log(totalCash, this.funds, "THIS TURN");
 
     return totalCash;
 }
@@ -288,6 +292,8 @@ Team.prototype.onTurnStart = function(gameContext, turn) {
             }
         }
     }
+
+    this.generateBuildingCash(gameContext);
 
     if(deadEntities.length !== 0) {
         actionRouter.forceEnqueue(gameContext, ActionHelper.createDeathRequest(gameContext, deadEntities));

@@ -1,5 +1,4 @@
 import { EntityHelper } from "../../engine/util/entityHelper.js";
-import { ActionHelper } from "../action/actionHelper.js";
 import { EVENT_TYPE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { playExplosion } from "../systems/animation.js";
@@ -53,8 +52,8 @@ Event.prototype.trigger = function(gameContext) {
         switch(type) {
             case EVENT_TYPE.DIALOGUE: {
                 const { dialogue, target } = this.actions[i];
-
-                ActionHelper.createCustomDialogue(gameContext, dialogue);
+                //TODO: Open dialogue UI.
+                //ActionHelper.createCustomDialogue(gameContext, dialogue);
                 break;
             }
             case EVENT_TYPE.EXPLODE_TILE: {

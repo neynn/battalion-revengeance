@@ -1,4 +1,6 @@
-Keep track of passed action time IN the action, do not rely on sprite states.
 TOO MANY CALLS TO REFRESH()!!!
-create execute for all actions.
 check actor from execution plan -> on the server, check if the SocketClient is the current Actor and then set the actorID of the plan to that actorID
+
+TODO:
+    - 1. Spawn effect that show how much cash was generated.
+    - 2. Add the dialogue UI... find a suitable target that knows a camera. Target cannnot be a server.

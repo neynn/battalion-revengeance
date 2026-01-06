@@ -8,6 +8,7 @@ import { SelectState } from "./player/select.js";
 import { isNodeReachable } from "../systems/pathfinding.js";
 import { TILE_ID } from "../enums.js";
 import { saveStoryMap } from "../systems/save.js";
+import { createEndTurnIntent } from "../action/actionHelper.js";
 
 export const Player = function(id, camera) {
     BattalionActor.call(this, id);
@@ -120,6 +121,9 @@ Player.prototype.loadKeybinds = function(gameContext) {
     });
 
     router.on("DEBUG_SAVE", () => saveStoryMap(gameContext));
+    router.on("END_TURN", () => {
+        this.addIntent(createEndTurnIntent(this.id));
+    });
 }
 
 Player.prototype.activeUpdate = function(gameContext, remainingActions) {

@@ -207,7 +207,6 @@ TypeRegistry.ACTION_TYPE = {
     MOVE: "MOVE",
     ATTACK: "ATTACK",
     CLOAK: "CLOAK",
-    DIALOGUE: "DIALOGUE",
     DEATH: "DEATH",
     UNCLOAK: "UNCLOAK"
 };

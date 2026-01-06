@@ -3,6 +3,12 @@ import { DialogueHandler } from "../dialogue/dialogueHandler.js";
 import { COMMAND_TYPE } from "../enums.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
+export const createEndTurnIntent = function(actorID) {
+    return new ActionIntent(TypeRegistry.ACTION_TYPE.END_TURN, {
+        "actorID": actorID
+    });
+}
+
 export const createCaptureIntent = function(entityID, targetX, targetY) {
     return new ActionIntent(TypeRegistry.ACTION_TYPE.CAPTURE, {
         "entityID": entityID,
@@ -54,42 +60,9 @@ export const ActionHelper = {
             "entities": entities
         });
     },
-    createDialogueRequest: function(type, dialogue = null) {
-        return new ActionIntent(TypeRegistry.ACTION_TYPE.DIALOGUE, {
-            "type": type,
-            "dialogue": dialogue
-        });
-    },
     createDeathRequest: function(gameContext, entities) {
         return new ActionIntent(TypeRegistry.ACTION_TYPE.DEATH, {
             "entities": entities
-        });
-    },
-    createCustomDialogue: function(gameContext, dialogue = null) {
-        const { world } =  gameContext;
-        const { actionQueue } = world;
-
-        const request = ActionHelper.createDialogueRequest(DialogueHandler.TYPE.CUSTOM, dialogue);
-        const execution = actionQueue.createExecutionPlan(gameContext, request);
-
-        if(execution) {
-            actionQueue.enqueue(execution);
-        }
-    },
-    createRegularDialogue: function(gameContext, type) {
-        const { world } =  gameContext;
-        const { actionQueue } = world;
-
-        const request = ActionHelper.createDialogueRequest(type);
-        const execution = actionQueue.createExecutionPlan(gameContext, request);
-
-        if(execution) {
-            actionQueue.enqueue(execution);
-        } 
-    },
-    createEndTurnRequest: function(actorID) {
-        return new ActionIntent(TypeRegistry.ACTION_TYPE.END_TURN, {
-            "actorID": actorID
         });
     }
 };
