@@ -1018,9 +1018,6 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
         damageAmplifier *= TRAIT_CONFIG.BULLDOZE_DAMAGE;
     }
 
-    //Morale factor.
-    damageAmplifier *= this.moraleAmplifier;
-
     //Logistic factor. Applies only to non-commandos.
     if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.COMMANDO)) {
         logisticFactor = worldMap.getLogisticFactor(gameContext, this.tileX, this.tileY);
@@ -1097,6 +1094,7 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
         damageAmplifier *= TRAIT_CONFIG.SHRAPNEL_DAMAGE;
     }
 
+    damageAmplifier *= this.moraleAmplifier;
     damageAmplifier *= armorFactor;
     damageAmplifier *= terrainFactor;
     damageAmplifier *= logisticFactor;

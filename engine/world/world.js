@@ -2,14 +2,14 @@ import { ActionQueue } from "../action/actionQueue.js";
 import { TurnManager } from "./turn/turnManager.js";
 import { EntityManager } from "../entity/entityManager.js";
 import { MapManager } from "../map/mapManager.js";
-import { EventHandler } from "./event/eventHandler.js";
+import { WorldEventHandler } from "./event/worldEventHandler.js";
 
 export const World = function() {
     this.actionQueue = new ActionQueue();
     this.turnManager = new TurnManager();
     this.entityManager = new EntityManager();
     this.mapManager = new MapManager();
-    this.eventHandler = new EventHandler();
+    this.eventHandler = new WorldEventHandler();
 }
 
 World.prototype.exit = function() {
