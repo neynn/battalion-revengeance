@@ -1,8 +1,6 @@
 import { EventEmitter } from "../events/eventEmitter.js";
-import { MapSource } from "./mapSource.js";
 
 export const MapManager = function() {
-    this.mapSources = new Map();
     this.maps = [];
     this.nextID = 0;
     this.activeMap = null;
@@ -13,8 +11,6 @@ export const MapManager = function() {
     this.events.register(MapManager.EVENT.MAP_ENABLE);
     this.events.register(MapManager.EVENT.MAP_DISABLE);
 }
-
-MapManager.EMPTY_SOURCE = new MapSource("::NO_SOURCE", {});
 
 MapManager.EVENT = {
     MAP_CREATE: "MAP_CREATE",
@@ -45,19 +41,6 @@ MapManager.prototype.addMap = function(worldMap) {
 MapManager.prototype.update = function(gameContext) {
     if(this.activeMap) {
         this.activeMap.update(gameContext);
-    }
-}
-
-MapManager.prototype.load = function(mapSources) {
-    if(typeof mapSources !== "object") {
-        return;
-    }
-
-    for(const sourceID in mapSources) {
-        const source = mapSources[sourceID];
-        const mapSource = new MapSource(sourceID, source);
-
-        this.mapSources.set(sourceID, mapSource);
     }
 }
 
@@ -99,16 +82,6 @@ MapManager.prototype.enableMap = function(mapID) {
 
 MapManager.prototype.getActiveMap = function() {
     return this.activeMap;
-}
-
-MapManager.prototype.getMapSource = function(sourceID) {
-    const mapSource = this.mapSources.get(sourceID)
-
-    if(!mapSource) {
-        return MapManager.EMPTY_SOURCE;
-    }
-
-    return mapSource;
 }
 
 MapManager.prototype.destroyMap = function(mapID) {

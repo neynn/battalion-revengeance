@@ -1,4 +1,4 @@
-import { GameContext } from "../engine/gameContext.js";
+import { ClientGameContext } from "../engine/clientGameContext.js";
 import { LanguageHandler } from "../engine/language/languageHandler.js";
 import { AttackAction } from "./action/types/attack.js";
 import { CloakAction } from "./action/types/cloak.js";
@@ -19,7 +19,7 @@ import { CaptureAction } from "./action/types/capture.js";
 import { TILE_HEIGHT, TILE_WIDTH } from "./constants.js";
 
 export const BattalionContext = function() {
-    GameContext.call(this);
+    ClientGameContext.call(this);
 
     this.transform2D.setSize(TILE_WIDTH, TILE_HEIGHT);
     this.typeRegistry = new TypeRegistry();
@@ -52,7 +52,7 @@ BattalionContext.STATE = {
     MAP_EDITOR: "MAP_EDITOR"
 };
 
-BattalionContext.prototype = Object.create(GameContext.prototype);
+BattalionContext.prototype = Object.create(ClientGameContext.prototype);
 BattalionContext.prototype.constructor = BattalionContext;
 
 BattalionContext.prototype.init = function(resources) {

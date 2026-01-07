@@ -297,9 +297,9 @@ export const createCustomMap = function(gameContext, mapData) {
 }
 
 export const createEditorMap = async function(gameContext, sourceID) {
-    const { world } = gameContext;
+    const { mapRepository, world } = gameContext;
     const { mapManager } = world;
-    const mapSource = mapManager.getMapSource(sourceID);
+    const mapSource = mapRepository.getMapSource(sourceID);
     const file = await mapSource.promiseFile();
 
     if(file !== null) {
@@ -319,9 +319,9 @@ export const createEditorMap = async function(gameContext, sourceID) {
 }
 
 export const createStoryMap = async function(gameContext, sourceID) {
-    const { world, language } = gameContext;
+    const { mapRepository, world, language } = gameContext;
     const { mapManager } = world;
-    const mapSource = mapManager.getMapSource(sourceID);
+    const mapSource = mapRepository.getMapSource(sourceID);
     const [file, translations] = await Promise.all([mapSource.promiseFile(), mapSource.promiseTranslations()]);
 
     if(file !== null) {

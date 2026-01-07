@@ -2,13 +2,13 @@ import { FloodFill } from "../pathfinders/floodFill.js";
 import { Autotiler } from "../tile/autotiler.js";
 import { TileManager } from "../tile/tileManager.js";
 import { Layer } from "./layer.js";
-import { MapManager } from "./mapManager.js";
+import { MapRepository } from "./mapRepository.js";
 
 export const WorldMap = function(id, width, height) {
     this.id = id;
     this.width = width;
     this.height = height;
-    this.source = MapManager.EMPTY_SOURCE;
+    this.source = MapRepository.EMPTY_SOURCE;
     this.layers = [];
     this.entities = new Map();
 }

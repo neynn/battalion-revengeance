@@ -37,8 +37,6 @@ TurnManager.prototype.getGlobalRound = function() {
     return this.currentRound;
 }
 
-TurnManager.prototype.load = function() {}
-
 TurnManager.prototype.exit = function() {
     this.events.muteAll();
     this.actors.clear();

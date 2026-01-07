@@ -19,8 +19,6 @@ EntityManager.ID = {
     INVALID: -1
 };
 
-EntityManager.prototype.load = function() {}
-
 EntityManager.prototype.exit = function() {
     this.events.muteAll();
     this.entityMap.clear();

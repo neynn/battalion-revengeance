@@ -6,7 +6,6 @@ export const BattalionActor = function(id) {
 
     this.name = "";
     this.teamID = null;
-    this.portrait = null;
     this.commander = null;
 }
 
@@ -30,12 +29,6 @@ BattalionActor.prototype.surrender = function(gameContext) {
         const deathRequest = ActionHelper.createDeathRequest(gameContext, entities);
 
         this.addIntent(deathRequest);
-    }
-}
-
-BattalionActor.prototype.drawPortrait = function(context, drawX, drawY) {
-    if(this.portrait && this.portrait.bitmap) {
-        context.drawImage(this.portrait.bitmap, drawX, drawY);
     }
 }
 
@@ -73,10 +66,8 @@ BattalionActor.prototype.activeUpdate = function(gameContext, remainingActions) 
 }
 
 BattalionActor.prototype.loadCommander = function(gameContext, typeID) {
-    const { portraitHandler, typeRegistry } = gameContext;
+    const { typeRegistry } = gameContext;
     const commanderType = typeRegistry.getCommanderType(typeID);
-    const { portrait } = commanderType;
 
     this.commander = commanderType;
-    this.portrait = portraitHandler.getPortraitTexture(portrait); 
 }

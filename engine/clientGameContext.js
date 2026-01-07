@@ -15,14 +15,15 @@ import { ResourceLoader } from "./resources/resourceLoader.js";
 import { ApplicationWindow } from "./applicationWindow.js";
 import { ActionRouter } from "./client/actionRouter.js";
 import { TurnManager } from "./world/turn/turnManager.js";
+import { MapRepository } from "./map/mapRepository.js";
 
-export const GameContext = function() {
+export const ClientGameContext = function() {
     this.client = new Client();
     this.world = new World();
     this.applicationWindow = new ApplicationWindow();
     this.renderer = new Renderer(window.innerWidth, window.innerHeight);
     this.resourceLoader = new ResourceLoader();
-    this.tileManager = new TileManager(this.resourceLoader);
+    this.tileManager = new TileManager();
     this.spriteManager = new SpriteManager(this.resourceLoader);
     this.uiManager = new UIManager(this.resourceLoader);
     this.language = new LanguageHandler();
@@ -31,6 +32,7 @@ export const GameContext = function() {
     this.transform2D = new Transform2D();
     this.timer = new Timer();
     this.actionRouter = new ActionRouter();
+    this.mapRepository = new MapRepository();
 
     this.client.cursor.events.on(Cursor.EVENT.BUTTON_CLICK, (event) => {
         const { button } = event;
@@ -73,9 +75,9 @@ export const GameContext = function() {
     this.addDebug();
 }
 
-GameContext.prototype.onExit = function() {}
+ClientGameContext.prototype.onExit = function() {}
 
-GameContext.prototype.exit = function() {
+ClientGameContext.prototype.exit = function() {
     this.client.exit(this);
     this.world.exit();
     this.renderer.exit();
@@ -86,8 +88,8 @@ GameContext.prototype.exit = function() {
     this.addDebug();
 }
 
-GameContext.prototype.loadResources = function(resources) {
-    this.tileManager.load(resources.tiles, resources.tileMeta, resources.autotilers);
+ClientGameContext.prototype.loadResources = function(resources) {
+    this.tileManager.load(this.resourceLoader, resources.tiles, resources.tileMeta, resources.autotilers);
     this.spriteManager.load(resources.spriteTextures, resources.sprites);
     this.uiManager.load(resources.interfaces, resources.icons);
     this.fonts.load(resources.fonts);
@@ -95,13 +97,11 @@ GameContext.prototype.loadResources = function(resources) {
     this.client.soundPlayer.load(resources.sounds);
     this.client.socket.load(resources.network.socket);
     this.client.router.load(resources.keybinds);
-    this.world.mapManager.load(resources.maps);
-    this.world.entityManager.load();
-    this.world.turnManager.load();
+    this.mapRepository.load(resources.maps);
     this.language.load(resources.languages);
 }
 
-GameContext.prototype.addDebug = function() {
+ClientGameContext.prototype.addDebug = function() {
     const { router } = this.client;
 
     router.bind(this, "DEBUG");

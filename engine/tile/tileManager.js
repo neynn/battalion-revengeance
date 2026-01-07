@@ -1,8 +1,7 @@
 import { Autotiler } from "./autotiler.js";
 import { Tile } from "./tile.js";
 
-export const TileManager = function(resourceLoader) {
-    this.resources = resourceLoader;
+export const TileManager = function() {
     this.autotilers = new Map();
     this.metaInversion = {};
     this.activeTiles = [];
@@ -25,35 +24,11 @@ TileManager.prototype.update = function(gameContext) {
     }
 }
 
-TileManager.prototype.load = function(tileAtlases, tileMeta, autotilers) {
-    if(!tileAtlases || !tileMeta) {
-        console.warn("TileAtlases/TileMeta does not exist!");
-        return;
-    }
-
-    const textureMap = this.resources.createTextures(tileAtlases);
-
+TileManager.prototype.createTiles = function(tileMeta) {
     for(let i = 0; i < tileMeta.length; i++) {
         const { type = null, autotiler = null, texture, tile } = tileMeta[i];
         const tileID = i + 1;
         const tileObject = new Tile(tileID, type, autotiler);
-        const textureConfig = tileAtlases[texture];
-
-        if(textureConfig) {
-            tileObject.init(textureConfig, tile);
-        }
-
-        const textureID = textureMap[texture];
-        const frameCount = tileObject.getFrameCount();
-
-        if(frameCount > 0 && textureID !== undefined) {
-            const textureObject = this.resources.getTextureByID(textureID);
-
-            tileObject.setTexture(textureObject);
-            textureObject.addReference();
-
-            this.resources.loadTexture(textureID);
-        }
 
         this.tiles.push(tileObject);
 
@@ -63,18 +38,61 @@ TileManager.prototype.load = function(tileAtlases, tileMeta, autotilers) {
 
         this.metaInversion[texture][tile] = tileID;
     }
+}
 
-    if(!autotilers) {
-        console.warn("Autotilers do not exist!");
-        return;
-    }
-    
+TileManager.prototype.createAutotilers = function(autotilers) {
     for(const autotilerID in autotilers) {
         const autotiler = this.createAutotiler(autotilers[autotilerID]);
 
         this.autotilers.set(autotilerID, autotiler);
     }
+}
 
+TileManager.prototype.createTileTextures = function(resourceLoader, tileAtlases, tileMeta) {
+    const textureMap = resourceLoader.createTextures(tileAtlases);
+
+    for(let i = 0; i < tileMeta.length; i++) {
+        const { texture, tile } = tileMeta[i];
+        const textureConfig = tileAtlases[texture];
+        const tileObject = this.tiles[i];
+
+        if(textureConfig) {
+            tileObject.init(textureConfig, tile);
+        }
+
+        const textureID = textureMap[texture];
+        const frameCount = tileObject.getFrameCount();
+
+        if(frameCount > 0 && textureID !== undefined) {
+            const textureObject = resourceLoader.getTextureByID(textureID);
+
+            tileObject.setTexture(textureObject);
+            textureObject.addReference();
+
+            resourceLoader.loadTexture(textureID);
+        }
+    }
+}
+
+TileManager.prototype.loadServer = function(tileMeta, autotilers) {
+    if(!tileMeta || !autotilers) {
+        console.warn("TileMeta/Autotilers does not exist!");
+        return;
+    }
+
+    this.createTiles(tileMeta);
+    this.createAutotilers(autotilers);
+}
+
+TileManager.prototype.load = function(resourceLoader, tileAtlases, tileMeta, autotilers) {
+    if(!tileAtlases || !tileMeta || !autotilers) {
+        console.warn("TileAtlases/TileMeta/Autotilers does not exist!");
+        return;
+    }
+
+    this.createTiles(tileMeta);
+    this.createAutotilers(autotilers);
+    this.createTileTextures(resourceLoader, tileAtlases, tileMeta);
     this.enableAllTiles();
 }
 
