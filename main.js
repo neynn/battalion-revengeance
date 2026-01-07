@@ -2,7 +2,7 @@ import { AssetLoader } from "./engine/resources/assetLoader.js";
 import { generateAnimations, generateAutoSheet, makeProdFile, packerToJSONSprites, packerToJSONTiles, saveEntities, saveSprites2, saveSprites3 } from "./helpers.js";
 import { PathHandler } from "./engine/resources/pathHandler.js";
 import { BattalionContext } from "./src/battalionContext.js";
-import { ServerApplication } from "./src/serverContext.js";
+import { ServerApplication } from "./src/server/serverApplication.js";
 
 const assetLoader = new AssetLoader("assets/assets.json", "assets/assets_prod.json")
 const resources = await assetLoader.loadResources(AssetLoader.MODE.DEVELOPER);

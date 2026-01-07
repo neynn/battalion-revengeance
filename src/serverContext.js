@@ -1,8 +1,5 @@
 import { ActionRouter } from "../engine/client/actionRouter.js";
-import { MapRepository } from "../engine/map/mapRepository.js";
-import { Transform2D } from "../engine/math/transform2D.js";
 import { StateMachine } from "../engine/state/stateMachine.js";
-import { TileManager } from "../engine/tile/tileManager.js";
 import { TurnManager } from "../engine/world/turn/turnManager.js";
 import { World } from "../engine/world/world.js";
 import { AttackAction } from "./action/types/attack.js";
@@ -13,11 +10,10 @@ import { EndTurnAction } from "./action/types/endTurn.js";
 import { HealAction } from "./action/types/heal.js";
 import { MoveAction } from "./action/types/move.js";
 import { UncloakAction } from "./action/types/uncloak.js";
-import { TILE_HEIGHT, TILE_WIDTH } from "./constants.js";
 import { TeamManager } from "./team/teamManager.js";
 import { TypeRegistry } from "./type/typeRegistry.js";
 
-const ServerGameContext = function(serverApplication) {
+export const ServerGameContext = function(serverApplication) {
     const { 
         typeRegistry,
         tileManager,
@@ -53,31 +49,3 @@ ServerGameContext.prototype.init = function() {
     }, { permanent: true });
 }
 
-export const ServerApplication = function() {
-    this.gameContexts = [];
-    this.typeRegistry = new TypeRegistry();
-    this.tileManager = new TileManager();
-    this.transform2D = new Transform2D();
-    this.mapRepository = new MapRepository();
-    this.transform2D.setSize(TILE_WIDTH, TILE_HEIGHT);
-}
-
-ServerApplication.prototype.init = function(resources) {
-    this.tileManager.loadServer(resources.tileMeta, resources.autotilers);
-    this.mapRepository.load(resources.maps);
-    this.typeRegistry.load(resources);
-
-    for(let i = 0; i < 10000; i++) {
-        this.createGame();
-    }
-}
-
-ServerApplication.prototype.createGame = function() {
-    const gameContext = new ServerGameContext(this);
-
-    gameContext.init();
-
-    this.gameContexts.push(gameContext);
-
-    return gameContext;
-}
