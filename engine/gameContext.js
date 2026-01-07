@@ -12,14 +12,14 @@ import { Transform2D } from "./math/transform2D.js";
 import { FontHandler } from "./fontHandler.js";
 import { MapManager } from "./map/mapManager.js";
 import { ResourceLoader } from "./resources/resourceLoader.js";
-import { ContextWindow } from "./contextWindow.js";
+import { ApplicationWindow } from "./applicationWindow.js";
 import { ActionRouter } from "./client/actionRouter.js";
 import { TurnManager } from "./world/turn/turnManager.js";
 
 export const GameContext = function() {
     this.client = new Client();
     this.world = new World();
-    this.contextWindow = new ContextWindow();
+    this.applicationWindow = new ApplicationWindow();
     this.renderer = new Renderer(window.innerWidth, window.innerHeight);
     this.resourceLoader = new ResourceLoader();
     this.tileManager = new TileManager(this.resourceLoader);
@@ -31,23 +31,6 @@ export const GameContext = function() {
     this.transform2D = new Transform2D();
     this.timer = new Timer();
     this.actionRouter = new ActionRouter();
-
-    this.timer.input = () => {
-        this.client.update();
-        this.uiManager.update(this);
-    }
-
-    this.timer.update = () => {
-        this.states.update(this);
-        this.world.update(this);
-    }
-
-    this.timer.render = () => {
-        this.contextWindow.update(this);
-        this.spriteManager.update(this);
-        this.tileManager.update(this);
-        this.renderer.update(this);
-    }
 
     this.client.cursor.events.on(Cursor.EVENT.BUTTON_CLICK, (event) => {
         const { button } = event;
@@ -127,8 +110,4 @@ GameContext.prototype.addDebug = function() {
     router.on("DEBUG_INTERFACE", () => Renderer.DEBUG.INTERFACE = 1 - Renderer.DEBUG.INTERFACE);
     router.on("DEBUG_SPRITES", () => Renderer.DEBUG.SPRITES = 1 - Renderer.DEBUG.SPRITES);
     router.on("DEBUG_INFO", () => Renderer.DEBUG.INFO = 1 - Renderer.DEBUG.INFO);
-}
-
-GameContext.prototype.getActiveMap = function() {
-    return this.world.mapManager.getActiveMap();
 }

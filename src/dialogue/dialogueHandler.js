@@ -4,13 +4,14 @@ export const DialogueHandler = function() {
     this.defeat = [];
     this.state = DialogueHandler.STATE.ENABLED;
     this.skipUnveiling = false;
-
     this.currentDialogue = [];
     this.currentIndex = -1;
     this.currentPortrait = null;
     this.currentName = "";
     this.currentText = "";
     this.fullCurrentText = "";
+    this.secondsPerLetter = 0.1;
+    this.secondsPassed = this.secondsPerLetter;
 }
 
 DialogueHandler.STATE = {
@@ -21,41 +22,47 @@ DialogueHandler.STATE = {
 DialogueHandler.TYPE = {
     PRELOGUE: 0,
     POSTLOGUE: 1,
-    DEFEAT: 2,
-    CUSTOM: 3
+    DEFEAT: 2
 };
 
-DialogueHandler.prototype.loadPrelogue = function(prelogue) {
-    this.prelogue = prelogue;
-}
+DialogueHandler.prototype.update = function(gameContext, deltaTime) {
+    if(this.currentDialogue.length !== 0) {
+        this.secondsPassed += deltaTime;
 
-DialogueHandler.prototype.loadPostlogue = function(postlogue) {
-    this.postlogue = postlogue;
-}
+        const skippedLetters = Math.floor(this.secondsPassed / this.secondsPerLetter);
 
-DialogueHandler.prototype.loadDefeat = function(defeat) {
-    this.defeat = defeat;
+        if(skippedLetters > 0) {
+            this.revealLetters(skippedLetters);
+            this.secondsPassed -= skippedLetters * this.secondsPerLetter;
+        }
+    }
 }
 
 DialogueHandler.prototype.exit = function() {
     this.prelogue = [];
     this.postlogue = [];
     this.defeat = [];
-    
     this.currentDialogue = [];
     this.currentIndex = -1;
     this.currentPortrait = null;
     this.currentName = "";
     this.currentText = "";
     this.fullCurrentText = "";
+    this.secondsPerLetter = 0.1;
+    this.secondsPassed = this.secondsPerLetter;
 }
 
-DialogueHandler.prototype.getDialogue = function(type) {
-    switch(type) {
-        case DialogueHandler.TYPE.PRELOGUE: return this.prelogue;
-        case DialogueHandler.TYPE.POSTLOGUE: return this.postlogue;
-        case DialogueHandler.TYPE.DEFEAT: return this.defeat;
-        default: return [];
+DialogueHandler.prototype.loadMapDialogue = function(prelogue, postlogue, defeat) {
+    if(prelogue) {
+        this.prelogue = prelogue;
+    }
+
+    if(postlogue) {
+        this.postlogue = postlogue;
+    }
+
+    if(defeat) {
+        this.defeat = defeat;
     }
 }
 
@@ -76,18 +83,36 @@ DialogueHandler.prototype.disableUnveiling = function() {
     this.skipUnveiling = true;
 }
 
-DialogueHandler.prototype.playDialogue = function(gameContext, dialogue) {
+DialogueHandler.prototype.playDialogue = function(gameContext, type) {    
+    switch(type) {
+        case DialogueHandler.TYPE.PRELOGUE: {
+            this.playCustomDialogue(gameContext, this.prelogue);
+            break;
+        }
+        case DialogueHandler.TYPE.POSTLOGUE: {
+            this.playCustomDialogue(gameContext, this.postlogue);
+            break;
+        }
+        case DialogueHandler.TYPE.DEFEAT: {
+            this.playCustomDialogue(gameContext, this.defeat);
+            break;
+        }
+        default: {
+            console.error("Invalid dialogue type!");
+            break;
+        }
+    }
+}
+
+DialogueHandler.prototype.playCustomDialogue = function(gameContext, dialogue) {
     if(dialogue.length !== 0 && this.state !== DialogueHandler.STATE.DISABLED) {
+        this.currentIndex = -1;
         this.currentDialogue = dialogue;
         this.showNextEntry(gameContext);
     }
 }
 
 DialogueHandler.prototype.isFinished = function() {
-    console.error("CURRENTLY NOT USING DIALOGUE!!!");
-
-    return true;
-
     return this.currentDialogue.length !== 0 && this.currentIndex >= this.currentDialogue.length;
 }
 
@@ -142,10 +167,6 @@ DialogueHandler.prototype.revealLetters = function(letters = 0) {
     }
 }
 
-DialogueHandler.prototype.isEnabled = function() {
-    return this.state === DialogueHandler.STATE.ENABLED;
-}
-
 DialogueHandler.prototype.reset = function() {
     this.currentDialogue = [];
     this.currentIndex = -1;
@@ -153,4 +174,5 @@ DialogueHandler.prototype.reset = function() {
     this.currentName = "";
     this.currentText = "";
     this.fullCurrentText = "";
+    this.secondsPassed = this.secondsPerLetter;
 }

@@ -5,15 +5,16 @@ export const Timer = function(targetFPS = 60) {
     this.deltaTime = 0;
     this.accumulatedTime = 0;
     this.targetFPS = targetFPS;
+    this.maxTicks = 30;
     this.fixedDeltaTime = 1 / targetFPS;
     this.smoothFPS = targetFPS;
     this.smoothFactor = 0.05;
     this._nextFrame = this.nextFrame.bind(this);
 }
 
-Timer.prototype.input = function() {}
-Timer.prototype.update = function() {}
-Timer.prototype.render = function() {}
+Timer.prototype.input = function(deltaTime) {}
+Timer.prototype.update = function(fDeltaTime) {}
+Timer.prototype.render = function(deltaTime) {}
 
 Timer.prototype.setFPS = function(targetFPS) {
     this.targetFPS = targetFPS;
@@ -26,20 +27,18 @@ Timer.prototype.nextFrame = function(timestamp) {
     this.accumulatedTime += this.deltaTime;
     this.smoothFPS = (1 - this.smoothFactor) * this.smoothFPS + this.smoothFactor * (1 / this.deltaTime);
 
-    this.input();
+    this.input(this.deltaTime);
 
     while(this.accumulatedTime > this.fixedDeltaTime) {
-        this.tick++;
-
-        if(this.tick >= this.targetFPS) {
+        if(++this.tick >= this.maxTicks) {
             this.tick = 0;
         }
 
-        this.update();
+        this.update(this.fixedDeltaTime);
         this.accumulatedTime -= this.fixedDeltaTime;
     }
 
-    this.render();
+    this.render(this.deltaTime);
     this.lastTime = this.realTime;
     this.queue();
 }

@@ -209,23 +209,19 @@ const loadMap = function(gameContext, worldMap, mapData) {
     }
 
     worldMap.loadLocalization(localization);
-    dialogueHandler.loadPrelogue(prelogue);
-    dialogueHandler.loadPostlogue(postlogue);
-    dialogueHandler.loadDefeat(defeat);
+    dialogueHandler.loadMapDialogue(prelogue, postlogue, defeat);
 
-   for(const eventName in events) {
+    for(const eventName in events) {
         const {  turn, round, next = null, actions = [] } = events[eventName];
         const event = new BattalionEvent(eventName, actions);
 
         event.setTriggerTime(turn, round);
         event.setNext(next);
         eventHandler.addEvent(event);
-   }
+    }
     
     teamManager.updateStatus(gameContext);
     teamManager.updateOrder(gameContext);
-    //TODO: Open dialogue UI
-    //ActionHelper.createRegularDialogue(gameContext, DialogueHandler.TYPE.PRELOGUE);
 
     if(!playerCreated) {
         console.error("NO PLAYER SPECIFIED!!!");

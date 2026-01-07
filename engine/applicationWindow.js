@@ -1,4 +1,4 @@
-export const ContextWindow = function() {
+export const ApplicationWindow = function() {
     this.isResizeQueued = false;
     this.timeUntilResize = 0;
     this.width = window.innerWidth;
@@ -7,9 +7,9 @@ export const ContextWindow = function() {
     window.addEventListener("resize", () => this.queueResize());
 }
 
-ContextWindow.RESIZE_BUFFER_TIME = 0.2;
+ApplicationWindow.RESIZE_BUFFER_TIME = 0.2;
 
-ContextWindow.prototype.update = function(gameContext) {
+ApplicationWindow.prototype.update = function(gameContext) {
     const { uiManager, renderer, timer } = gameContext;
 
     if(this.isResizeQueued) {
@@ -17,7 +17,7 @@ ContextWindow.prototype.update = function(gameContext) {
 
         this.timeUntilResize += deltaTime;
 
-        if(this.timeUntilResize >= ContextWindow.RESIZE_BUFFER_TIME) {
+        if(this.timeUntilResize >= ApplicationWindow.RESIZE_BUFFER_TIME) {
             this.isResizeQueued = false;
             this.timeUntilResize = 0;
             this.width = window.innerWidth;
@@ -29,7 +29,7 @@ ContextWindow.prototype.update = function(gameContext) {
     }
 }
 
-ContextWindow.prototype.queueResize = function() {
+ApplicationWindow.prototype.queueResize = function() {
     if(!this.isResizeQueued) {
         this.timeUntilResize = 0;
         this.isResizeQueued = true;

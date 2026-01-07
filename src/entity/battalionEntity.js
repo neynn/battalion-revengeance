@@ -1283,8 +1283,8 @@ BattalionEntity.prototype.getUncloakedEntitiesAtSelf = function(gameContext) {
 
 BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, targetY) {
     const { world } = gameContext;
-    const { entityManager } = world;
-    const worldMap = gameContext.getActiveMap();
+    const { mapManager, entityManager } = world;
+    const worldMap = mapManager.getActiveMap();
     const jammerFlags = this.getJammerFlags();
     const searchRange = jammerFlags !== JammerField.FLAG.NONE ? this.config.jammerRange : 1;
     const uncloakedEntities = [];

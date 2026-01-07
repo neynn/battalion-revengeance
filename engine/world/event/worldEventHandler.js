@@ -16,6 +16,7 @@ WorldEventHandler.EVENT = {
 
 WorldEventHandler.prototype.exit = function() {
     this.worldEvents.length = 0;
+    this.triggeredEvents.clear();
 }
 
 WorldEventHandler.prototype.addEvent = function(event) {

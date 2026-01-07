@@ -140,7 +140,9 @@ Player.prototype.showJammer = function(gameContext, entity) {
 }
 
 Player.prototype.showJammerAt = function(gameContext, entity, jammerX, jammerY) {
-    const worldMap = gameContext.getActiveMap();
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
     const jammerRange = entity.config.jammerRange;
 
     this.camera.jammerOverlay.clear();

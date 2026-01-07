@@ -28,6 +28,16 @@ BattalionEvent.prototype.explodeTile = function(gameContext, layerName, tileX, t
     playExplosion(gameContext, tileX, tileY);
 }
 
+BattalionEvent.prototype.playDialogue = function(gameContext, dialogue, target) {
+    //get team from target -> get actor -> call onDialogue.
+}
+
+BattalionEvent.prototype.broadcastDialogue = function(gameContext, dialogue) {
+    const { dialogueHandler } = gameContext;
+
+    dialogueHandler.playCustomDialogue(gameContext, dialogue);
+}
+
 BattalionEvent.prototype.execute = function(gameContext) {
     for(let i = 0; i < this.actions.length; i++) {
         const { type } = this.actions[i];
@@ -35,19 +45,22 @@ BattalionEvent.prototype.execute = function(gameContext) {
         switch(type) {
             case EVENT_TYPE.DIALOGUE: {
                 const { dialogue, target } = this.actions[i];
-                //TODO: Open dialogue UI.
-                //ActionHelper.createCustomDialogue(gameContext, dialogue);
+
+                if(target) {
+                    this.playDialogue(gameContext, dialogue, target);
+                } else {
+                    this.broadcastDialogue(gameContext, dialogue);
+                }
+
                 break;
             }
             case EVENT_TYPE.EXPLODE_TILE: {
                 const { layer, x, y } = this.actions[i];
-
                 this.explodeTile(gameContext, layer, x, y);
                 break;
             }
             case EVENT_TYPE.SPAWN_ENTITY: {
                 const { setup } = this.actions[i];
-
                 spawnEntityFromJSON(gameContext, setup);
                 break; 
             }

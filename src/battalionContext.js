@@ -26,6 +26,24 @@ export const BattalionContext = function() {
     this.teamManager = new TeamManager();
     this.portraitHandler = new PortraitHandler();
     this.dialogueHandler = new DialogueHandler();
+
+    this.timer.input = (deltaTime) => {
+        this.client.update();
+        this.uiManager.update(this);
+    }
+
+    this.timer.update = (fDeltaTime) => {
+        this.states.update(this);
+        this.world.update(this);
+    }
+
+    this.timer.render = (deltaTime) => {
+        this.applicationWindow.update(this);
+        this.dialogueHandler.update(this, deltaTime);
+        this.spriteManager.update(this);
+        this.tileManager.update(this);
+        this.renderer.update(this);
+    }
 }
 
 BattalionContext.STATE = {
