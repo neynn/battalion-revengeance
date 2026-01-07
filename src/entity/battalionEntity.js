@@ -1,5 +1,4 @@
 import { Entity } from "../../engine/entity/entity.js";
-import { EntityHelper } from "../../engine/util/entityHelper.js";
 import { EntityManager } from "../../engine/entity/entityManager.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
@@ -686,16 +685,16 @@ BattalionEntity.prototype.isPathValid = function(gameContext, path) {
         return false;
     }
 
+    const { world } = gameContext;
+    const { mapManager } = world;
     const targetX = path[0].tileX;
     const targetY = path[0].tileY;
-    const tileEntity = EntityHelper.getTileEntity(gameContext, targetX, targetY);
+    const tileEntity = world.getEntityAt(targetX, targetY);
 
     if(tileEntity && tileEntity.isVisibleTo(gameContext, this.teamID)) {
         return false;
     }
 
-    const { world } = gameContext;
-    const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
     let currentX = this.tileX;
     let currentY = this.tileY;
@@ -1224,13 +1223,16 @@ BattalionEntity.prototype.canCloak = function() {
 }
 
 BattalionEntity.prototype.canCloakAt = function(gameContext, tileX, tileY) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+
     if(!this.canCloak()) {
         return false;
     }
 
     //UNFAIR entities ignore jammers.
     if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.UNFAIR)) {
-        const worldMap = gameContext.getActiveMap();
+        const worldMap = mapManager.getActiveMap();
         const jammer = worldMap.getJammer(tileX, tileY);
         const cloakFlag = this.getCloakFlag();
 
@@ -1239,7 +1241,7 @@ BattalionEntity.prototype.canCloakAt = function(gameContext, tileX, tileY) {
         }
     }
 
-    const nearbyEntities = EntityHelper.getEntitiesAround(gameContext, tileX, tileY);
+    const nearbyEntities = world.getEntitiesAround(tileX, tileY);
 
     for(let i = 0; i < nearbyEntities.length; i++) {
         if(!this.isAllyWith(gameContext, nearbyEntities[i])) {

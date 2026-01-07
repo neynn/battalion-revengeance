@@ -1,5 +1,4 @@
 import { getCursorTile } from "../../engine/camera/contextHelper.js";
-import { EntityHelper } from "../../engine/util/entityHelper.js";
 import { StateMachine } from "../../engine/state/stateMachine.js";
 import { Autotiler } from "../../engine/tile/autotiler.js";
 import { BattalionActor } from "./battalionActor.js";
@@ -244,7 +243,8 @@ Player.prototype.showPath = function(autotiler, oPath, entityX, entityY) {
 }
 
 Player.prototype.getVisibleEntity = function(gameContext, tileX, tileY) {
-    const entity = EntityHelper.getTileEntity(gameContext, tileX, tileY);
+    const { world } = gameContext;
+    const entity = world.getEntityAt(tileX, tileY);
 
     if(entity && entity.isVisibleTo(gameContext, this.teamID)) {
         return entity;

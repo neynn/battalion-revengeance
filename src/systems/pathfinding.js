@@ -1,14 +1,14 @@
-import { EntityHelper } from "../../engine/util/entityHelper.js";
 import { hasFlag } from "../../engine/util/flag.js";
 import { PATH_FLAG, PATH_INTERCEPT } from "../enums.js";
 import { EntityType } from "../type/parsed/entityType.js";
 
 export const mInterceptPath = function(gameContext, path, teamID) {
+    const { world } = gameContext;
     let elementsToDelete = path.length;
 
     for(let i = path.length - 1; i >= 0; i--) {
         const { tileX, tileY } = path[i];
-        const entity = EntityHelper.getTileEntity(gameContext, tileX, tileY);
+        const entity = world.getEntityAt(tileX, tileY);
 
         if(!entity) {
             elementsToDelete = i;

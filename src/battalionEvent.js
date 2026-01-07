@@ -1,4 +1,3 @@
-import { EntityHelper } from "../engine/util/entityHelper.js";
 import { WorldEvent } from "../engine/world/event/worldEvent.js"
 import { EVENT_TYPE, TILE_ID } from "./enums.js";
 import { BattalionMap } from "./map/battalionMap.js";
@@ -17,7 +16,7 @@ BattalionEvent.prototype.explodeTile = function(gameContext, layerName, tileX, t
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
     const index = BattalionMap.getLayerIndex(layerName);
-    const entity = EntityHelper.getTileEntity(gameContext, tileX, tileY);
+    const entity = world.getEntityAt(tileX, tileY);
 
     worldMap.editTile(index, tileX, tileY, TILE_ID.NONE);
     worldMap.removeLocalization(tileX, tileY);
