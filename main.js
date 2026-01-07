@@ -16,7 +16,9 @@ gameContext.init(resources);
 
 console.info(assetLoader, gameContext);
 
-const sApp = new ServerApplication();
+const sApp = new ServerApplication({
+	"on": (e) => {}
+});
 
 sApp.init(resources);
 

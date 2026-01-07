@@ -6,3 +6,4 @@ TODO:
     - 2. Add the dialogue UI... find a suitable target that knows a camera. Target cannnot be a server.
     - 3. Send/Receive events from server. The client is NOT allowed to execute events in MP
     - 4. ServerBroadcastEvent like CASH_UPDATE that gets applied once per turn.
+    - 5. View must be ABOVE entity -> View hold sprite & entity.

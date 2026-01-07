@@ -2,7 +2,7 @@ import { EntityManager } from "../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { Building } from "../entity/building.js";
 import { LAYER_TYPE } from "../enums.js";
-import { createSchemaViewSprite, SchemaView } from "../sprite/schemaView.js";
+import { createSchemaViewSprite } from "../sprite/schemaView.js";
 import { EntityView } from "../sprite/entityView.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { getDirectionByName } from "./direction.js";

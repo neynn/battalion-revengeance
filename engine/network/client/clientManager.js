@@ -1,5 +1,5 @@
 import { EventEmitter } from "../../events/eventEmitter.js";
-import { Client } from "./client.js";
+import { SocketClient } from "./socketClient.js";
 
 export const ClientManager = function() {
     this.clients = new Map();
@@ -46,7 +46,7 @@ ClientManager.prototype.getClient = function(clientID) {
 
 ClientManager.prototype.createClient = function(socket) {
     const clientID = socket.id;
-    const client = new Client(clientID, socket);
+    const client = new SocketClient(clientID, socket);
 
     this.clients.set(clientID, client);
     this.events.emit(ClientManager.EVENT.CLIENT_CREATE, {

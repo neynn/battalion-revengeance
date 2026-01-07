@@ -3,7 +3,7 @@ import { RoomManager } from "../room/roomManager.js";
 import { ClientManager } from "../client/clientManager.js";
 import { Logger } from "../../logger.js";
 
-export const ServerContext = function(io) {
+export const SocketServer = function(io) {
     this.io = io;
     this.io.on('connection', (socket) => this.handleConnect(socket));
 
@@ -25,7 +25,7 @@ export const ServerContext = function(io) {
     this.clientManager.events.on(ClientManager.EVENT.USER_ID_ADDED, ({ clientID, userID }) => console.log(`${clientID} is now named ${userID}!`), { permanent: true });
 }
 
-ServerContext.prototype.sendRoomUpdate = function(clientID, roomID) {
+SocketServer.prototype.sendRoomUpdate = function(clientID, roomID) {
     const information = this.roomManager.getRoomInformationMessage(roomID);
     const message = { "type": ROOM_EVENTS.ROOM_UPDATE, "payload": information };
 
@@ -34,21 +34,21 @@ ServerContext.prototype.sendRoomUpdate = function(clientID, roomID) {
     console.log(`${clientID} left room ${roomID}`);
 }
 
-ServerContext.prototype.handleConnect = function(socket) {
+SocketServer.prototype.handleConnect = function(socket) {
     this.registerNetworkEvents(socket);
     this.clientManager.createClient(socket);
 
     console.log(`${socket.id} has connected to the server!`);
 }
 
-ServerContext.prototype.handleDisconnect = function(clientID) {
+SocketServer.prototype.handleDisconnect = function(clientID) {
     this.handleRoomLeave(clientID);
     this.clientManager.destroyClient(clientID);
 
     console.log(`${clientID} has disconnected from the server!`)
 }
 
-ServerContext.prototype.handleRoomLeave = function(clientID) {
+SocketServer.prototype.handleRoomLeave = function(clientID) {
     const client = this.clientManager.getClient(clientID);
 
     if(!client) {
@@ -70,13 +70,13 @@ ServerContext.prototype.handleRoomLeave = function(clientID) {
     return true;
 }
 
-ServerContext.prototype.handleRegister = function(clientID, data) {
+SocketServer.prototype.handleRegister = function(clientID, data) {
     this.clientManager.addUserID(clientID, data["user-id"]);
 
     return true;
 }
 
-ServerContext.prototype.handleRoomCreate = async function(clientID, roomType) {
+SocketServer.prototype.handleRoomCreate = async function(clientID, roomType) {
     const client = this.clientManager.getClient(clientID);
 
     if(!client) {
@@ -117,7 +117,7 @@ ServerContext.prototype.handleRoomCreate = async function(clientID, roomType) {
     return true;
 }
 
-ServerContext.prototype.handleRoomJoin = function(clientID, roomID) {
+SocketServer.prototype.handleRoomJoin = function(clientID, roomID) {
     const client = this.clientManager.getClient(clientID);
 
     if(!client) {
@@ -148,7 +148,7 @@ ServerContext.prototype.handleRoomJoin = function(clientID, roomID) {
     return true;
 }
 
-ServerContext.prototype.handleRoomMessage = function(clientID, message) {
+SocketServer.prototype.handleRoomMessage = function(clientID, message) {
     const client = this.clientManager.getClient(clientID);
 
     if(!client) {
@@ -168,7 +168,7 @@ ServerContext.prototype.handleRoomMessage = function(clientID, message) {
     return true;
 }
 
-ServerContext.prototype.registerNetworkEvents = function(socket) {
+SocketServer.prototype.registerNetworkEvents = function(socket) {
     socket.on(NETWORK_EVENTS.DISCONNECT, () => this.handleDisconnect(socket.id));
 	socket.on(NETWORK_EVENTS.REGISTER, (data, request) => request(this.handleRegister(socket.id, data)));
     socket.on(NETWORK_EVENTS.CREATE_ROOM_REQUEST, (roomType, request) => request(this.handleRoomCreate(socket.id, roomType)));
