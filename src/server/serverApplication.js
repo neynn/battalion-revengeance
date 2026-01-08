@@ -26,6 +26,7 @@ ServerApplication.prototype.init = function(resources) {
 ServerApplication.prototype.createRoom = function(roomID, roomType) {
     const gameContext = new ServerGameContext(this, roomID);
 
+    gameContext.maxClients = 2;
     gameContext.init();
 
     return gameContext;

@@ -10,8 +10,6 @@ export const Socket = function() {
     this.events.register(Socket.EVENT.CONNECTED_TO_SERVER);
     this.events.register(Socket.EVENT.DISCONNECTED_FROM_SERVER);
     this.events.register(Socket.EVENT.MESSAGE_FROM_SERVER);
-
-    this.addDebug();
 }
 
 Socket.DEBUG = {
@@ -31,16 +29,6 @@ Socket.prototype.registerName = function(userID) {
     });
 }
 
-Socket.prototype.addDebug = function() {
-    if(Socket.DEBUG.CONNECT) {
-        this.events.on(Socket.EVENT.CONNECTED_TO_SERVER, ({ id }) => console.log(`${id} is connected to the server!`), { permanent: true });
-    }
-
-    if(Socket.DEBUG.DISCONNECT) {
-        this.events.on(Socket.EVENT.DISCONNECTED_FROM_SERVER, ({ reason }) => console.log(`${reason} is disconnected from the server!`), { permanent: true });
-    }
-}
-
 Socket.prototype.load = function(config) {
     if(config) {
         this.config = config;
@@ -49,6 +37,15 @@ Socket.prototype.load = function(config) {
 
 Socket.prototype.connect = async function() {
     await import(this.config.version).then(moduleID => {});
+
+    if(this.socket && this.socket.connected) {
+        console.error("ALREADY CONNECTED");
+        return;
+    }
+
+    if(this.socket && this.socket.io?.readyState !== "closed") {
+        this.socket.disconnect();
+    }
 
     const socket = io(this.config.server, {
         reconnectionAttempts: this.config.reconnectionAttempts,

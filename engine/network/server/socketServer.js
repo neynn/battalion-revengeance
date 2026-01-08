@@ -46,7 +46,7 @@ SocketServer.prototype.onClientDisconnect = function(clientID) {
     this.onLeaveRoomRequest(clientID);
     this.clientManager.destroyClient(clientID);
 
-    console.log(`${clientID} has disconnected from the server!`)
+    console.log(`${clientID} has disconnected from the server!`);
 }
 
 SocketServer.prototype.onLeaveRoomRequest = function(clientID) {
