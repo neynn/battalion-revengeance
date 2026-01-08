@@ -466,21 +466,9 @@ BattalionEntity.prototype.isVisibleTo = function(gameContext, teamID) {
     return isAlly;
 }
 
-BattalionEntity.prototype.isPathValid = function(gameContext, path) {
-    if(path.length === 0) {
-        return false;
-    }
-
+BattalionEntity.prototype.isPathWalkable = function(gameContext, path) {
     const { world } = gameContext;
     const { mapManager } = world;
-    const targetX = path[0].tileX;
-    const targetY = path[0].tileY;
-    const tileEntity = world.getEntityAt(targetX, targetY);
-
-    if(tileEntity && tileEntity.isVisibleTo(gameContext, this.teamID)) {
-        return false;
-    }
-
     const worldMap = mapManager.getActiveMap();
     let currentX = this.tileX;
     let currentY = this.tileY;
@@ -520,6 +508,23 @@ BattalionEntity.prototype.isPathValid = function(gameContext, path) {
     }
 
     return true;
+}
+
+BattalionEntity.prototype.isPathValid = function(gameContext, path) {
+    if(path.length === 0) {
+        return false;
+    }
+
+    const { world } = gameContext;
+    const targetX = path[0].tileX;
+    const targetY = path[0].tileY;
+    const tileEntity = world.getEntityAt(targetX, targetY);
+
+    if(tileEntity && tileEntity.isVisibleTo(gameContext, this.teamID)) {
+        return false;
+    }
+
+    return this.isPathWalkable(gameContext, path);
 }
 
 BattalionEntity.prototype.getTerrainTypes = function(gameContext) {

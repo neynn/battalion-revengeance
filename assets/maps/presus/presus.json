@@ -1,9 +1,10 @@
 {
-    "music": "NavalEpic2",
+    "music": "NavalEpic7",
     "width": 10,
     "height": 10,
+    "client": "SOMERTIN",
     "teams": {
-        "SOMERTIN": { "isPlayer": true, "commander": "PLAYER", "nation": "SOMERTIN", "color": "DARK_GREEN", "allies": ["DRAGOON"], "objectives": ["DEFEAT_BOAT_1", "CAPTURE_0_0", "SURVIVE_TURN_2"] },
+        "SOMERTIN": { "commander": "PLAYER", "nation": "SOMERTIN", "color": "DARK_GREEN", "allies": ["DRAGOON"], "objectives": ["DEFEAT_BOAT_1", "CAPTURE_0_0", "SURVIVE_TURN_2"] },
         "TRANSKAL": { "commander": "KANYE", "nation": "TRANSKAL", "color": "DARK_BLUE", "objectives": ["PROTECT_BOAT_1"] },
         "DRAGOON": { "commander": "KANYE", "nation": "ELAM", "color": "BRONZE" }
     },

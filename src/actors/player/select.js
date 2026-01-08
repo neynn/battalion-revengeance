@@ -197,13 +197,16 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
     const deltaY = tileY - this.getPathY();
     const absDelta = Math.abs(deltaX) + Math.abs(deltaY);
 
+    //If the next step is valid, then check if the path cuts itself.
+    //If the path does not cut itself, then check if it's walkable.
+    //If it's not walkable, recalculate the optimal path.
     if(absDelta === 1 && this.path.length > 0) {
         const isSplit = this.splitPath(tileX, tileY);
 
         if(!isSplit) {
             this.path.unshift(createStep(deltaX, deltaY, tileX, tileY));
 
-            if(!this.entity.isPathValid(gameContext, this.path)) {
+            if(!this.entity.isPathWalkable(gameContext, this.path)) {
                 this.path = getBestPath(gameContext, this.nodeMap, tileX, tileY);
             }
         }

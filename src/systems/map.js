@@ -130,7 +130,7 @@ const createObjectives = function(team, objectives, allObjectives) {
     }
 }
 
-const loadMap = function(gameContext, worldMap, mapData) {
+const loadMap = function(gameContext, worldMap, mapData, clientTeam) {
     const { world, teamManager } = gameContext;
     const { eventHandler } = world;
     const { 
@@ -147,8 +147,6 @@ const loadMap = function(gameContext, worldMap, mapData) {
         defeat = []
     } = mapData;
 
-    let playerCreated = false;
-
     for(const teamName in teams) {
         const teamObjectives = teams[teamName].objectives ?? [];
         const team = createTeam(gameContext, teamName, teams[teamName]);
@@ -158,6 +156,8 @@ const loadMap = function(gameContext, worldMap, mapData) {
         }
     }
 
+    let playerCreated = false;
+
     for(const teamName in teams) {
         const team = teamManager.getTeam(teamName);
 
@@ -166,7 +166,6 @@ const loadMap = function(gameContext, worldMap, mapData) {
         }
 
         let actor = null;
-        const isPlayer = teams[teamName].isPlayer;
         const commanderType = teams[teamName].commander;
         const teamAllies = teams[teamName].allies ?? [];
 
@@ -179,7 +178,7 @@ const loadMap = function(gameContext, worldMap, mapData) {
             }
         }
 
-        if(!playerCreated && isPlayer && !IS_SERVER) {
+        if(!playerCreated && !IS_SERVER && clientTeam === teamName) {
             actor = createPlayer(gameContext, commanderType, teamName);
             playerCreated = true;
         } else {
@@ -293,7 +292,7 @@ export const createEmptyMap = function(gameContext, width, height) {
 export const createCustomMap = function(gameContext, mapData) {
     const { world } = gameContext;
     const { mapManager } = world;
-    const { width, height, data } = mapData;
+    const { width, height, data, client } = mapData;
     const mapID = mapManager.getNextID();
     const worldMap = new BattalionMap(mapID, width, height);
 
@@ -301,7 +300,7 @@ export const createCustomMap = function(gameContext, mapData) {
     mapManager.addMap(worldMap);
     mapManager.enableMap(mapID);
 
-    loadMap(gameContext, worldMap, mapData);
+    loadMap(gameContext, worldMap, mapData, client);
 }
 
 export const createEditorMap = async function(gameContext, sourceID) {
@@ -333,7 +332,7 @@ export const createStoryMap = async function(gameContext, sourceID) {
     const [file, translations] = await Promise.all([mapSource.promiseFile(pathHandler), mapSource.promiseTranslations(pathHandler)]);
 
     if(file !== null) {
-        const { width, height, data } = file;
+        const { width, height, data, client } = file;
         const mapID = mapManager.getNextID();
         const worldMap = new BattalionMap(mapID, width, height);
 
@@ -347,6 +346,6 @@ export const createStoryMap = async function(gameContext, sourceID) {
         mapManager.addMap(worldMap);
         mapManager.enableMap(mapID);
 
-        loadMap(gameContext, worldMap, file);
+        loadMap(gameContext, worldMap, file, client);
     }
 }
