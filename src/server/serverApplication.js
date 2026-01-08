@@ -23,8 +23,8 @@ ServerApplication.prototype.init = function(resources) {
     this.typeRegistry.load(resources);
 }
 
-ServerApplication.prototype.createRoom = function() {
-    const gameContext = new ServerGameContext(this);
+ServerApplication.prototype.createRoom = function(roomID, roomType) {
+    const gameContext = new ServerGameContext(this, roomID);
 
     gameContext.init();
 

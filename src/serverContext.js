@@ -1,4 +1,5 @@
 import { ActionRouter } from "../engine/client/actionRouter.js";
+import { Room } from "../engine/network/room/room.js";
 import { StateMachine } from "../engine/state/stateMachine.js";
 import { TurnManager } from "../engine/world/turn/turnManager.js";
 import { World } from "../engine/world/world.js";
@@ -13,7 +14,9 @@ import { UncloakAction } from "./action/types/uncloak.js";
 import { TeamManager } from "./team/teamManager.js";
 import { TypeRegistry } from "./type/typeRegistry.js";
 
-export const ServerGameContext = function(serverApplication) {
+export const ServerGameContext = function(serverApplication, id) {
+    Room.call(this, id);
+
     const { 
         typeRegistry,
         tileManager,
@@ -31,6 +34,9 @@ export const ServerGameContext = function(serverApplication) {
     this.states = new StateMachine(this);
     this.actionRouter = new ActionRouter();
 }
+
+ServerGameContext.prototype = Object.create(Room.prototype);
+ServerGameContext.prototype.constructor = ServerGameContext;
 
 ServerGameContext.prototype.init = function() {
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.CAPTURE, new CaptureAction());

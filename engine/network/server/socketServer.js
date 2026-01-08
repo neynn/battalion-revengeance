@@ -88,6 +88,19 @@ SocketServer.prototype.handleRegister = function(clientID, data) {
     return true;
 }
 
+SocketServer.prototype.tCreateRoom = function() {
+    const roomID = this.roomManager.getNextID();
+    const room = this.createRoom(roomID, 0);
+
+    if(!room) {
+        console.error("Room was not created!");
+        return false;
+    }
+
+    this.roomManager.addRoom(room);
+    this.sendRoomUpdate(roomID);
+}
+
 SocketServer.prototype.onCreateRoomRequest = function(clientID, roomType) {
     const client = this.clientManager.getClient(clientID);
 
