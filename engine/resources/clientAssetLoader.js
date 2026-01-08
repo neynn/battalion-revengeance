@@ -1,13 +1,6 @@
-export const ClientAssetLoader = function(devPath, prodPath) {
-    this.devPath = devPath;
-    this.prodPath = prodPath;
+export const ClientAssetLoader = function() {
     this.resources = {};
 }
-
-ClientAssetLoader.MODE = {
-    DEVELOPER: 0,
-    PRODUCTION: 1
-};
 
 ClientAssetLoader.prototype.loadJSONList = async function(pathHandler, fileList) {
     const files = {};
@@ -27,21 +20,23 @@ ClientAssetLoader.prototype.loadJSONList = async function(pathHandler, fileList)
     return files;
 }
 
-ClientAssetLoader.prototype.loadResources = async function(pathHandler, modeID) {
-    switch(modeID) {
-        case ClientAssetLoader.MODE.DEVELOPER: {
-            const files = await pathHandler.promiseJSON(this.devPath);
-            const resources = await this.loadJSONList(pathHandler, files);
+ClientAssetLoader.prototype.loadResourcesDev = async function(pathHandler, path) {
+    const files = await pathHandler.promiseJSON(path);
 
-            this.resources = resources;
-            break;
-        }
-        case ClientAssetLoader.MODE.PRODUCTION: {
-            const resources = await pathHandler.promiseJSON(this.prodPath);
+    if(files) {
+        const resources = await this.loadJSONList(pathHandler, files);
 
-            this.resources = resources;
-            break;
-        }
+        this.resources = resources;
+    }
+
+    return this.resources;
+}
+
+ClientAssetLoader.prototype.loadResourcesProd = async function(pathHandler, path) {
+    const resources = await pathHandler.promiseJSON(path);
+
+    if(resources) {
+        this.resources = resources;
     }
 
     return this.resources;
