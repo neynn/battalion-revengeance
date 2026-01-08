@@ -1,6 +1,5 @@
 import { EntityManager } from "../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { Building } from "../entity/building.js";
 import { LAYER_TYPE } from "../enums.js";
 import { createSchemaViewSprite } from "../sprite/schemaView.js";
 import { EntityView } from "../sprite/entityView.js";
@@ -8,8 +7,20 @@ import { TypeRegistry } from "../type/typeRegistry.js";
 import { getDirectionByName } from "./direction.js";
 import { placeEntityOnMap, removeEntityFromMap } from "./map.js";
 import { BuildingView } from "../sprite/buildingView.js";
+import { ClientBattalionEntity } from "../entity/clientBattalionEntity.js";
+import { ClientBuilding } from "../entity/clientBuilding.js";
+import { IS_SERVER } from "../constants.js";
 
-const createEntityObject = function(gameContext, config, colorID, color) {
+export const createSpawnConfig = function(id, type, tileX, tileY) {
+    return {
+        "id": id,
+        "type": type,
+        "x": tileX,
+        "y": tileY
+    };
+}
+
+const createClientEntityObject = function(gameContext, config, colorID, color) {
     const { world, transform2D, spriteManager, typeRegistry } = gameContext;
     const { entityManager } = world;
     const { id, type, x, y } = config;
@@ -18,7 +29,7 @@ const createEntityObject = function(gameContext, config, colorID, color) {
     const entity = entityManager.createEntity((entityID) => {
         const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
         const entityView = new EntityView(visualSprite, null, colorID, color);
-        const entityObject = new BattalionEntity(entityID, entityView);
+        const entityObject = new ClientBattalionEntity(entityID, entityView);
         const spawnPosition = transform2D.transformTileToWorld(x, y);
 
         entityObject.loadConfig(entityType);
@@ -31,13 +42,43 @@ const createEntityObject = function(gameContext, config, colorID, color) {
     return entity;
 }
 
-export const createSpawnConfig = function(id, type, tileX, tileY) {
-    return {
-        "id": id,
-        "type": type,
-        "x": tileX,
-        "y": tileY
-    };
+const createEntityObject = function(gameContext, config) {
+    const { world, typeRegistry } = gameContext;
+    const { entityManager } = world;
+    const { id, type, x, y } = config;
+    const entityType = typeRegistry.getEntityType(type);
+
+    const entity = entityManager.createEntity((entityID) => {
+        const entityObject = new BattalionEntity(entityID);
+
+        entityObject.loadConfig(entityType);
+        entityObject.setTile(x, y);
+
+        return entityObject;
+    }, id);
+
+    return entity;
+}
+
+export const createClientEntityFromConfig = function(gameContext, config, teamID) {
+    const { teamManager } = gameContext;
+    const team = teamManager.getTeam(teamID);
+
+    if(team) {
+        const { colorID, color } = team;
+        const entity = createClientEntityObject(gameContext, config, colorID, color);
+
+        if(entity) {
+            team.addEntity(entity);
+            entity.setTeam(teamID);
+            entity.bufferSounds(gameContext);
+            entity.bufferSprites(gameContext);
+
+            return entity;
+        } 
+    }
+
+    return null;
 }
 
 export const createEntityFromConfig = function(gameContext, config, teamID) {
@@ -45,14 +86,11 @@ export const createEntityFromConfig = function(gameContext, config, teamID) {
     const team = teamManager.getTeam(teamID);
 
     if(team) {
-        const { colorID, color } = team;
-        const entity = createEntityObject(gameContext, config, colorID, color);
+        const entity = createEntityObject(gameContext, config);
 
         if(entity) {
             team.addEntity(entity);
             entity.setTeam(teamID);
-            entity.bufferSounds(gameContext);
-            entity.bufferSprites(gameContext);
 
             return entity;
         } 
@@ -69,7 +107,7 @@ export const despawnEntity = function(gameContext, entity) {
     entity.destroy();
 }
 
-export const spawnEntityFromJSON = function(gameContext, config, externalID = EntityManager.ID.INVALID) {
+export const spawnEntity = function(gameContext, config, externalID = EntityManager.ID.INVALID) {
     const { 
         x = -1,
         y = -1,
@@ -83,12 +121,19 @@ export const spawnEntityFromJSON = function(gameContext, config, externalID = En
         stealth = false
     } = config;
     const spawnConfig = createSpawnConfig(externalID, type, x, y);
-    const entity = createEntityFromConfig(gameContext, spawnConfig, team);
+    let entity = null;
+
+    if(IS_SERVER) {
+        entity = createEntityFromConfig(gameContext, spawnConfig, team);
+    } else {
+        entity = createClientEntityFromConfig(gameContext, spawnConfig, team);
+    }
 
     if(entity) {
         placeEntityOnMap(gameContext, entity);
 
-        entity.setCustomInfo(id, name, desc);
+        entity.setCustomID(id);
+        entity.setCustomInfo(name, desc);
 
         if(direction !== null) {
             entity.setDirection(getDirectionByName(direction));
@@ -99,16 +144,22 @@ export const spawnEntityFromJSON = function(gameContext, config, externalID = En
         }
 
         if(stealth && entity.canCloak()) {
-            entity.cloakInstant();
+            entity.setFlag(BattalionEntity.FLAG.IS_CLOAKED);
+
+            if(!IS_SERVER) {
+                entity.setOpacity(0);
+            }
         }
 
-        entity.playIdle(gameContext);
+        if(!IS_SERVER) {
+            entity.playIdle(gameContext);
+        }
     }
-
+    
     return entity;
 }
 
-export const spawnBuildingFromJSON = function(gameContext, worldMap, config) {
+export const spawnBuilding = function(gameContext, worldMap, config) {
     const { typeRegistry, teamManager } = gameContext;
     const {
         id = null,
@@ -130,7 +181,7 @@ export const spawnBuildingFromJSON = function(gameContext, worldMap, config) {
         worldMap.createBuilding(x, y, (buildingID) => {
             const visualSprite = createSchemaViewSprite(gameContext, sprite, colorID, color, LAYER_TYPE.BUILDING);
             const buildingView = new BuildingView(visualSprite, sprite, colorID, color);
-            const buildingObject = new Building(buildingID, buildingType, buildingView);
+            const buildingObject = new ClientBuilding(buildingID, buildingType, buildingView);
 
             buildingObject.setCustomInfo(id, name, desc);
             buildingObject.setTile(gameContext, x, y);

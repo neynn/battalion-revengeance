@@ -2,7 +2,7 @@ import { WorldEvent } from "../engine/world/event/worldEvent.js"
 import { EVENT_TYPE, TILE_ID } from "./enums.js";
 import { BattalionMap } from "./map/battalionMap.js";
 import { playExplosion } from "./systems/animation.js";
-import { despawnEntity, spawnEntityFromJSON } from "./systems/spawn.js";
+import { despawnEntity, spawnEntity } from "./systems/spawn.js";
 
 export const BattalionEvent = function(id, actions) {
     WorldEvent.call(this, id, actions);
@@ -61,7 +61,7 @@ BattalionEvent.prototype.execute = function(gameContext) {
             }
             case EVENT_TYPE.SPAWN_ENTITY: {
                 const { setup } = this.actions[i];
-                spawnEntityFromJSON(gameContext, setup);
+                spawnEntity(gameContext, setup);
                 break; 
             }
         }

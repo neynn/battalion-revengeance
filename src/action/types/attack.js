@@ -70,7 +70,7 @@ AttackAction.prototype.onStart = function(gameContext, data) {
     }
 
     if(hasFlag(flags, AttackAction.FLAG.UNCLOAK)) {
-        entity.uncloakInstant();
+        entity.setOpacity(1);
     }
 
     playAttackEffect(gameContext, entity, target, resolutions);
@@ -114,6 +114,10 @@ AttackAction.prototype.execute = function(gameContext, data) {
         const targetObject = entityManager.getEntity(entityID);
 
         targetObject.setHealth(health);
+    }
+
+    if(hasFlag(flags, AttackAction.FLAG.UNCLOAK)) {
+        entity.clearFlag(BattalionEntity.FLAG.IS_CLOAKED);
     }
 
     if(hasFlag(flags, AttackAction.FLAG.COUNTER)) {

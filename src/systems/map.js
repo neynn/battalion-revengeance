@@ -11,7 +11,7 @@ import { SurviveObjective } from "../team/objective/types/survive.js";
 import { TimeLimitObjective } from "../team/objective/types/timeLimit.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { createPlayCamera } from "./camera.js";
-import { spawnBuildingFromJSON, spawnEntityFromJSON } from "./spawn.js";
+import { spawnBuilding, spawnEntity } from "./spawn.js";
 
 const createAI = function(gameContext, commanderType, teamName) {
     const { world } = gameContext;
@@ -191,11 +191,11 @@ const loadMap = function(gameContext, worldMap, mapData) {
     }
 
     for(let i = 0; i < entities.length; i++) {
-        spawnEntityFromJSON(gameContext, entities[i]);
+        spawnEntity(gameContext, entities[i]);
     }
 
     for(let i = 0; i < buildings.length; i++) {
-        spawnBuildingFromJSON(gameContext, worldMap, buildings[i]);
+        spawnBuilding(gameContext, worldMap, buildings[i]);
     }
 
     for(const objectiveName in objectives) {

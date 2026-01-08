@@ -12,7 +12,6 @@ const io = new Server(server, {
     }
 });
 
-
 const serverApplication = new ServerApplication(io);
 
 serverApplication.pathHandler.setRoot(import.meta.url);

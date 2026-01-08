@@ -1,7 +1,6 @@
-export const Building = function(id, config, view) {
+export const Building = function(id, config) {
     this.id = id;
     this.config = config;
-    this.view = view;
     this.tileX = -1;
     this.tileY = -1;
     this.teamID = null;
@@ -9,6 +8,9 @@ export const Building = function(id, config, view) {
     this.customName = null;
     this.customDesc = null;
 }
+
+Building.prototype.onTileUpdate = function(gameContext, previousX, previousY) {}
+Building.prototype.onTeamUpdate = function(gameContext, team) {}
 
 Building.prototype.hasTrait = function(traitID) {
     return this.config.hasTrait(traitID);
@@ -35,7 +37,6 @@ Building.prototype.updateTeam = function(gameContext, teamID) {
         const nextTeam = teamManager.getTeam(teamID);
 
         if(nextTeam) {
-            const { colorID, color } = nextTeam;
             const previousTeam = teamManager.getTeam(this.teamID);
 
             if(previousTeam) {
@@ -45,7 +46,7 @@ Building.prototype.updateTeam = function(gameContext, teamID) {
             nextTeam.addBuilding(this);
     
             this.teamID = teamID;
-            this.view.updateSchema(gameContext, colorID, color);
+            this.onTeamUpdate(gameContext, nextTeam);
         }
     }
 }
@@ -59,12 +60,12 @@ Building.prototype.isPlacedOn = function(tileX, tileY) {
 }
 
 Building.prototype.setTile = function(gameContext, tileX, tileY) {
-    const { transform2D } = gameContext;
-    const { x, y } = transform2D.transformTileToWorld(tileX, tileY);
+    const previousX = this.tileX;
+    const previousY = this.tileY;
 
     this.tileX = tileX;
     this.tileY = tileY;
-    this.view.setPosition(x, y);
+    this.onTileUpdate(gameContext, previousX, previousY);
 }
 
 Building.prototype.setCustomInfo = function(id, name, desc) {
@@ -77,24 +78,4 @@ Building.prototype.setCustomInfo = function(id, name, desc) {
     if(desc) {
         this.customDesc = desc;
     }
-}
-
-Building.prototype.getDescription = function(gameContext) {
-    const { language } = gameContext;
-    
-    if(this.customDesc) {
-        return language.getMapTranslation(this.customDesc);
-    }
-
-    return language.getSystemTranslation(this.config.desc);
-}
-
-Building.prototype.getName = function(gameContext) {
-    const { language } = gameContext;
-    
-    if(this.customName) {
-        return language.getMapTranslation(this.customName);
-    }
-
-    return language.getSystemTranslation(this.config.name);
 }

@@ -11,21 +11,19 @@ import { getDirectionByDelta } from "../systems/direction.js";
 import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG } from "../enums.js";
 import { transportTypeToEntityType } from "../systems/transport.js";
 import { getAreaEntities, getLineEntities } from "../systems/targeting.js";
-import { playGFX } from "../systems/animation.js";
 
-export const BattalionEntity = function(id, view) {
+export const BattalionEntity = function(id) {
     Entity.call(this, id, "");
 
+    this.customID = null;
+    this.customName = null;
+    this.customDesc = null;
     this.config = null;
-    this.view = view;
     this.health = 1;
     this.maxHealth = 1;
     this.damage = 0;
     this.moraleType = TypeRegistry.MORALE_TYPE.NONE;
     this.moraleAmplifier = 1;
-    this.customName = null;
-    this.customDesc = null;
-    this.customID = null;
     this.tileX = -1;
     this.tileY = -1;
     this.tileZ = -1;
@@ -57,54 +55,11 @@ BattalionEntity.STATE = {
     DEAD: 3
 };
 
-BattalionEntity.SPRITE_TYPE = {
-    IDLE_RIGHT: "idle_right",
-    IDLE_LEFT: "idle_left",
-    IDLE_DOWN: "idle_down",
-    IDLE_UP: "idle_up",
-    FIRE_RIGHT: "fire_right",
-    FIRE_LEFT: "fire_left",
-    FIRE_DOWN: "fire_down",
-    FIRE_UP: "fire_up"
-};
-
-BattalionEntity.SOUND_TYPE = {
-    HEAL: "heal",
-    MOVE: "move",
-    FIRE: "fire",
-    CLOAK: "cloak",
-    DEATH: "death",
-    RECRUIT: "recruit",
-    UNCLOAK: "uncloak"
-};
-
-BattalionEntity.EFFECT_TYPE = {
-    DEATH: "death",
-    ATTACK: "attack",
-    HEAL: "heal"
-};
-
-BattalionEntity.DEFAULT_EFFECTS = {
-    [BattalionEntity.EFFECT_TYPE.DEATH]: "explosion",
-    [BattalionEntity.EFFECT_TYPE.HEAL]: null, //TODO: Implement
-    [BattalionEntity.EFFECT_TYPE.ATTACK]: "small_attack"
-};
-
-BattalionEntity.DEFAULT_SOUNDS = {
-    [BattalionEntity.SOUND_TYPE.HEAL]: null, //TODO: Implement
-    [BattalionEntity.SOUND_TYPE.CLOAK]: "cloak",
-    [BattalionEntity.SOUND_TYPE.DEATH]: "explosion",
-    [BattalionEntity.SOUND_TYPE.UNCLOAK]: "uncloak",
-};
-
-BattalionEntity.DEFAULT_ATTACK_EFFECTS = {
-    [ATTACK_TYPE.REGULAR]: "small_attack",
-    [ATTACK_TYPE.DISPERSION]: "gas_attack",
-    [ATTACK_TYPE.STREAMBLAST]: "small_attack" //TODO: Implement
-};
-
 BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
+
+BattalionEntity.prototype.onHealthUpdate = function() {}
+BattalionEntity.prototype.onLoad = function(gameContext, data) {}
 
 BattalionEntity.prototype.save = function() {
     return {
@@ -113,8 +68,6 @@ BattalionEntity.prototype.save = function() {
         "health": this.health,
         "maxHealth": this.maxHealth,
         "morale": this.moraleType,
-        "name": this.customName,
-        "desc": this.customDesc,
         "id": this.customID,
         "tileX": this.tileX,
         "tileY": this.tileY,
@@ -122,8 +75,10 @@ BattalionEntity.prototype.save = function() {
         "teamID": this.teamID,
         "transport": this.transportID,
         "direction": this.direction,
-        "state": this.state
-    }
+        "state": this.state,
+        "name": this.customName,
+        "desc": this.customDesc
+    };
 }
 
 BattalionEntity.prototype.load = function(gameContext, data) {
@@ -133,16 +88,11 @@ BattalionEntity.prototype.load = function(gameContext, data) {
     this.tileZ = data.tileZ;
     this.transportID = data.transport;
     this.state = data.state;
+    this.customID = data.id;
 
-    this.setCustomInfo(data.id, data.name, data.desc);
     this.setDirection(data.direction);
     this.setHealth(data.health);
-
-    if(this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-        this.cloakInstant();
-    }
-
-    this.updateSprite(gameContext);
+    this.onLoad(gameContext, data);
 }
 
 BattalionEntity.prototype.loadConfig = function(config) {
@@ -154,6 +104,15 @@ BattalionEntity.prototype.loadConfig = function(config) {
     this.damage = damage;
 
     this.setHealth(this.health);
+}
+
+BattalionEntity.prototype.setCustomInfo = function(name, desc) {
+    this.customName = name;
+    this.customDesc = desc;
+}
+
+BattalionEntity.prototype.setCustomID = function(customID) {
+    this.customID = customID;
 }
 
 BattalionEntity.prototype.getRangeType = function() {
@@ -237,33 +196,7 @@ BattalionEntity.prototype.setHealth = function(health) {
         this.health = health;
     }
 
-    this.view.onHealthUpdate(this.health, this.maxHealth);
-}
-
-BattalionEntity.prototype.setCustomInfo = function(id, name, desc) {
-    this.customID = id;
-    this.customName = name;
-    this.customDesc = desc;
-}
-
-BattalionEntity.prototype.getDescription = function(gameContext) {
-    const { language } = gameContext;
-    
-    if(this.customDesc) {
-        return language.getMapTranslation(this.customDesc);
-    }
-
-    return language.getSystemTranslation(this.config.desc);
-}
-
-BattalionEntity.prototype.getName = function(gameContext) {
-    const { language } = gameContext;
-    
-    if(this.customName) {
-        return language.getMapTranslation(this.customName);
-    }
-
-    return language.getSystemTranslation(this.config.name);
+    this.onHealthUpdate();
 }
 
 BattalionEntity.prototype.hasTrait = function(traitID) {
@@ -272,26 +205,11 @@ BattalionEntity.prototype.hasTrait = function(traitID) {
 
 BattalionEntity.prototype.destroy = function() {
     this.isMarkedForDestroy = true;
-    this.view.destroy();
 }
 
 BattalionEntity.prototype.setTile = function(tileX, tileY) {
     this.tileX = tileX;
     this.tileY = tileY;
-}
-
-BattalionEntity.prototype.updatePosition = function(deltaX, deltaY) {
-    this.view.updatePosition(deltaX, deltaY);
-}
-
-BattalionEntity.prototype.setPosition = function(positionX, positionY) {
-    this.view.setPosition(positionX, positionY);
-}
-
-BattalionEntity.prototype.setPositionVec = function(positionVector) {
-    const { x, y } = positionVector;
-
-    this.view.setPosition(x, y);
 }
 
 BattalionEntity.prototype.setDirection = function(direction) {
@@ -306,51 +224,6 @@ BattalionEntity.prototype.setDirection = function(direction) {
     }
 
     return false;
-}
-
-BattalionEntity.prototype.playIdle = function(gameContext) {
-    this.state = BattalionEntity.STATE.IDLE;
-    this.updateSprite(gameContext);
-    this.view.unlockEnd();
-}
-
-BattalionEntity.prototype.playCloak = function(gameContext) {
-    this.playSound(gameContext, BattalionEntity.SOUND_TYPE.CLOAK);
-}
-
-BattalionEntity.prototype.playUncloak = function(gameContext) {}
-
-BattalionEntity.prototype.playMove = function(gameContext) {
-    this.state = BattalionEntity.STATE.MOVE;
-    this.updateSprite(gameContext);
-    this.playSound(gameContext, BattalionEntity.SOUND_TYPE.MOVE);
-}
-
-BattalionEntity.prototype.playDeath = function(gameContext) {
-    const spriteType = this.getDeathEffect();
-
-    this.state = BattalionEntity.STATE.DEAD;
-    this.playSound(gameContext, BattalionEntity.SOUND_TYPE.DEATH);
-
-    playGFX(gameContext, spriteType, this.tileX, this.tileY);
-}
-
-BattalionEntity.prototype.playAttack = function(gameContext) {
-    this.state = BattalionEntity.STATE.FIRE;
-    this.playSound(gameContext, BattalionEntity.SOUND_TYPE.FIRE);
-    this.updateSprite(gameContext);
-    this.view.lockEnd();
-}
-
-BattalionEntity.prototype.playHeal = function(gameContext) {
-    this.state = BattalionEntity.STATE.FIRE;
-    this.playSound(gameContext, BattalionEntity.SOUND_TYPE.HEAL);
-    this.updateSprite(gameContext);
-    this.view.lockEnd();
-}
-
-BattalionEntity.prototype.playCounter = function(gameContext, target) {
-    this.playAttack(gameContext, target);
 }
 
 BattalionEntity.prototype.setDirectionByDelta = function(deltaX, deltaY) {
@@ -376,93 +249,6 @@ BattalionEntity.prototype.lookAt = function(entity) {
     const direction = this.getDirectionTo(entity);
 
     return this.setDirection(direction);
-}
-
-BattalionEntity.prototype.getSpriteType = function() {
-    switch(this.state) {
-        case BattalionEntity.STATE.IDLE: {
-            switch(this.direction) {
-                case DIRECTION.NORTH: return BattalionEntity.SPRITE_TYPE.IDLE_UP;
-                case DIRECTION.EAST: return BattalionEntity.SPRITE_TYPE.IDLE_RIGHT;
-                case DIRECTION.SOUTH: return BattalionEntity.SPRITE_TYPE.IDLE_DOWN;
-                case DIRECTION.WEST: return BattalionEntity.SPRITE_TYPE.IDLE_LEFT;
-            }
-            break;
-        }
-        case BattalionEntity.STATE.MOVE: {
-            switch(this.direction) {
-                case DIRECTION.NORTH: return BattalionEntity.SPRITE_TYPE.IDLE_UP;
-                case DIRECTION.EAST: return BattalionEntity.SPRITE_TYPE.IDLE_RIGHT;
-                case DIRECTION.SOUTH: return BattalionEntity.SPRITE_TYPE.IDLE_DOWN;
-                case DIRECTION.WEST: return BattalionEntity.SPRITE_TYPE.IDLE_LEFT;
-            }
-            break;
-        }
-        case BattalionEntity.STATE.FIRE: {
-            switch(this.direction) {
-                case DIRECTION.NORTH: return BattalionEntity.SPRITE_TYPE.FIRE_UP;
-                case DIRECTION.EAST: return BattalionEntity.SPRITE_TYPE.FIRE_RIGHT;
-                case DIRECTION.SOUTH: return BattalionEntity.SPRITE_TYPE.FIRE_DOWN;
-                case DIRECTION.WEST: return BattalionEntity.SPRITE_TYPE.FIRE_LEFT;
-            }
-            break;
-        }
-    }
-
-    return BattalionEntity.SPRITE_TYPE.IDLE_RIGHT;
-}
-
-BattalionEntity.prototype.getHealEffect = function() {
-    let sprite = this.config.effects[BattalionEntity.EFFECT_TYPE.HEAL];
-
-    if(!sprite) {
-        sprite = BattalionEntity.DEFAULT_EFFECTS[BattalionEntity.EFFECT_TYPE.HEAL];
-    }
-
-    return sprite;
-}
-
-BattalionEntity.prototype.getDeathEffect = function() {
-    let sprite = this.config.effects[BattalionEntity.EFFECT_TYPE.DEATH];
-
-    if(!sprite) {
-        sprite = BattalionEntity.DEFAULT_EFFECTS[BattalionEntity.EFFECT_TYPE.DEATH];
-    }
-
-    return sprite;
-}
-
-BattalionEntity.prototype.getAnimationDuration = function() {
-    return this.view.visual.getTotalFrameTime();
-}
-
-BattalionEntity.prototype.getAttackEffect = function() {
-    let sprite = this.config.effects[BattalionEntity.EFFECT_TYPE.ATTACK];
-
-    if(!sprite) {
-        const attackType = this.getAttackType();
-
-        sprite = BattalionEntity.DEFAULT_ATTACK_EFFECTS[attackType];
-
-        if(!sprite) {
-            sprite = BattalionEntity.DEFAULT_EFFECTS[BattalionEntity.EFFECT_TYPE.ATTACK];
-        }
-    }
-
-    return sprite;
-}
-
-BattalionEntity.prototype.updateSprite = function(gameContext) {
-    const spriteType = this.getSpriteType();
-    const spriteID = this.config.sprites[spriteType];
-
-    if(spriteID) {
-        this.view.updateType(gameContext, spriteID);
-    }
-}
-
-BattalionEntity.prototype.updateSchema = function(gameContext, schemaID, schema) {
-    this.view.updateSchema(gameContext, schemaID, schema);
 }
 
 BattalionEntity.prototype.setTeam = function(teamID) {
@@ -1127,49 +913,6 @@ BattalionEntity.prototype.getAttackDamage = function(gameContext, target, damage
     return damage;
 }
 
-BattalionEntity.prototype.playSound = function(gameContext, soundType) {
-    const { client } = gameContext;
-    const { soundPlayer } = client;
-    let soundID = this.config.sounds[soundType];
-
-    if(!soundID) {
-        soundID = BattalionEntity.DEFAULT_SOUNDS[soundType];
-    }
-
-    if(soundID) {
-        soundPlayer.play(soundID);
-    }
-}
-
-BattalionEntity.prototype.bufferSounds = function(gameContext) {
-    const { client } = gameContext;
-    const { soundPlayer } = client;
-
-    for(const soundName in this.config.sounds) {
-        const sound = this.config.sounds[soundName];
-
-        if(Array.isArray(sound)) {
-            for(const soundID of sound) {
-                soundPlayer.bufferAudio(soundID);
-            }
-        } else {
-            soundPlayer.bufferAudio(sound);
-        }
-    }
-}
-
-BattalionEntity.prototype.bufferSprites = function(gameContext) {
-    const spriteNames = Object.values(BattalionEntity.SPRITE_TYPE);
-
-    for(const spriteName of spriteNames) {
-        const spriteID = this.config.sprites[spriteName];
-
-        if(spriteID) {
-            this.view.preload(gameContext, spriteID);
-        }
-    }
-}
-
 BattalionEntity.prototype.isAxisMeeting = function(target) {
     const { tileX, tileY } = target;
     const deltaX = this.tileX - tileX;
@@ -1198,20 +941,6 @@ BattalionEntity.prototype.isNextToTile = function(tileX, tileY) {
 
 BattalionEntity.prototype.isNextToEntity = function(entity) {
     return this.getDistanceToEntity(entity) === 1;
-}
-
-BattalionEntity.prototype.cloakInstant = function() {
-    this.view.setOpacity(0);
-    this.setFlag(BattalionEntity.FLAG.IS_CLOAKED);
-}
-
-BattalionEntity.prototype.uncloakInstant = function() {
-    this.view.setOpacity(1);
-    this.clearFlag(BattalionEntity.FLAG.IS_CLOAKED);
-}
-
-BattalionEntity.prototype.setOpacity = function(opacity) {
-    this.view.setOpacity(opacity);
 }
 
 BattalionEntity.prototype.canUncloak = function() {
