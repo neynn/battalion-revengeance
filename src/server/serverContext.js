@@ -1,18 +1,18 @@
-import { ActionRouter } from "../engine/client/actionRouter.js";
-import { Room } from "../engine/network/room/room.js";
-import { StateMachine } from "../engine/state/stateMachine.js";
-import { TurnManager } from "../engine/world/turn/turnManager.js";
-import { World } from "../engine/world/world.js";
-import { AttackAction } from "./action/types/attack.js";
-import { CaptureAction } from "./action/types/capture.js";
-import { CloakAction } from "./action/types/cloak.js";
-import { DeathAction } from "./action/types/death.js";
-import { EndTurnAction } from "./action/types/endTurn.js";
-import { HealAction } from "./action/types/heal.js";
-import { MoveAction } from "./action/types/move.js";
-import { UncloakAction } from "./action/types/uncloak.js";
-import { TeamManager } from "./team/teamManager.js";
-import { TypeRegistry } from "./type/typeRegistry.js";
+import { ActionRouter } from "../../engine/client/actionRouter.js";
+import { Room } from "../../engine/network/room/room.js";
+import { StateMachine } from "../../engine/state/stateMachine.js";
+import { TurnManager } from "../../engine/world/turn/turnManager.js";
+import { World } from "../../engine/world/world.js";
+import { AttackAction } from "../action/types/attack.js";
+import { CaptureAction } from "../action/types/capture.js";
+import { CloakAction } from "../action/types/cloak.js";
+import { DeathAction } from "../action/types/death.js";
+import { EndTurnAction } from "../action/types/endTurn.js";
+import { HealAction } from "../action/types/heal.js";
+import { MoveAction } from "../action/types/move.js";
+import { UncloakAction } from "../action/types/uncloak.js";
+import { TeamManager } from "../team/teamManager.js";
+import { TypeRegistry } from "../type/typeRegistry.js";
 
 export const ServerGameContext = function(serverApplication, id) {
     Room.call(this, id);
@@ -37,6 +37,10 @@ export const ServerGameContext = function(serverApplication, id) {
 
 ServerGameContext.prototype = Object.create(Room.prototype);
 ServerGameContext.prototype.constructor = ServerGameContext;
+
+ServerGameContext.prototype.processMessage = function(messenger, message) {
+    console.log(messenger, message);
+}
 
 ServerGameContext.prototype.init = function() {
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.CAPTURE, new CaptureAction());

@@ -46,7 +46,7 @@ RoomManager.prototype.getNextID = function() {
 RoomManager.prototype.processMessage = function(roomID, messengerID, message) {
     const room = this.rooms.get(roomID);
 
-    if(!room || !message || !message.type || !message.payload) {
+    if(!room || typeof message !== "object") {
         this.events.emit(RoomManager.EVENT.MESSAGE_LOST, {
             "roomID": roomID,
             "messengerID": messengerID,

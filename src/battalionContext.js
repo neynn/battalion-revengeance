@@ -17,6 +17,7 @@ import { TypeRegistry } from "./type/typeRegistry.js";
 import { HealAction } from "./action/types/heal.js";
 import { CaptureAction } from "./action/types/capture.js";
 import { TILE_HEIGHT, TILE_WIDTH } from "./constants.js";
+import { ArenaState } from "./states/arena/arena.js";
 
 export const BattalionContext = function() {
     ClientGameContext.call(this);
@@ -48,6 +49,7 @@ export const BattalionContext = function() {
 
 BattalionContext.STATE = {
     PLAY: "PLAY",
+    ARENA: "ARENA",
     MAIN_MENU: "MAIN_MENU",
     MAP_EDITOR: "MAP_EDITOR"
 };
@@ -76,6 +78,7 @@ BattalionContext.prototype.init = function(resources) {
 
     this.states.addState(BattalionContext.STATE.MAIN_MENU, new MainMenuState());
     this.states.addState(BattalionContext.STATE.MAP_EDITOR, new MapEditorState());
+    this.states.addState(BattalionContext.STATE.ARENA, new ArenaState());
     this.states.addState(BattalionContext.STATE.PLAY, new PlayState());
     this.states.setNextState(this, BattalionContext.STATE.MAIN_MENU);
     this.timer.start();

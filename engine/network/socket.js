@@ -35,6 +35,12 @@ Socket.prototype.load = function(config) {
     }
 }
 
+Socket.prototype.disconnect = function() {
+    if(this.socket) {
+        this.socket.disconnect();
+    }
+}
+
 Socket.prototype.connect = async function() {
     await import(this.config.version).then(moduleID => {});
 

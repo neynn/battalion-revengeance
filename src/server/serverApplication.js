@@ -2,7 +2,7 @@ import { MapRepository } from "../../engine/map/mapRepository.js";
 import { SocketServer } from "../../engine/network/server/socketServer.js";
 import { ServerPathHandler } from "../../engine/resources/serverPathHandler.js";
 import { TileManager } from "../../engine/tile/tileManager.js";
-import { ServerGameContext } from "../serverContext.js";
+import { ServerGameContext } from "./serverContext.js";
 import { createPvPServerMap } from "../systems/map.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 

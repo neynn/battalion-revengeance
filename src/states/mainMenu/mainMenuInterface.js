@@ -1,4 +1,3 @@
-import { Socket } from "../../../engine/network/socket.js";
 import { parseInterfaceByID } from "../../../engine/ui/parser.js";
 import { UICollider } from "../../../engine/ui/uiCollider.js";
 import { UserInterface } from "../../../engine/ui/userInterface.js";
@@ -13,23 +12,15 @@ MainMenuInterface.prototype.constructor = MainMenuInterface;
 
 MainMenuInterface.prototype.load = function(gameContext, stateMachine) {
     const { spriteManager, client } = gameContext;
-    const { socket, musicPlayer } = client;
+    const { musicPlayer } = client;
 
     parseInterfaceByID(gameContext, this, "MAIN_MENU");
 
-    socket.events.on(Socket.EVENT.CONNECTED_TO_SERVER, ({id}) => {
-        console.log(id);
-        socket.registerName("neyn");
-        socket.createRoom(0);
-    });
-
     this.getElement("BUTTON_PLAY").setClick(() => stateMachine.setNextState(gameContext, BattalionContext.STATE.PLAY));
     this.getElement("BUTTON_EDIT").setClick(() => stateMachine.setNextState(gameContext, BattalionContext.STATE.MAP_EDITOR));
+    this.getElement("BUTTON_VERSUS").setClick(() => stateMachine.setNextState(gameContext, BattalionContext.STATE.ARENA));
     this.getElement("BUTTON_EXTRA").setClick(() => musicPlayer.playPlaylist("EPIC_NAVAL"));
-    this.getElement("BUTTON_VERSUS").setClick(() => {
-        socket.connect();
-    });
-
+    
     const buttonPlay = this.getElement("BUTTON_PLAY");
     const buttonVersus = this.getElement("BUTTON_VERSUS");
     const buttonEdit = this.getElement("BUTTON_EDIT");
