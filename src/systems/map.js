@@ -297,10 +297,10 @@ export const createCustomMap = function(gameContext, mapData) {
 }
 
 export const createEditorMap = async function(gameContext, sourceID) {
-    const { mapRepository, world } = gameContext;
+    const { pathHandler, mapRepository, world } = gameContext;
     const { mapManager } = world;
     const mapSource = mapRepository.getMapSource(sourceID);
-    const file = await mapSource.promiseFile();
+    const file = await mapSource.promiseFile(pathHandler);
 
     if(file !== null) {
         const { width, height, data } = file;
@@ -319,10 +319,10 @@ export const createEditorMap = async function(gameContext, sourceID) {
 }
 
 export const createStoryMap = async function(gameContext, sourceID) {
-    const { mapRepository, world, language } = gameContext;
+    const { pathHandler, mapRepository, world, language } = gameContext;
     const { mapManager } = world;
     const mapSource = mapRepository.getMapSource(sourceID);
-    const [file, translations] = await Promise.all([mapSource.promiseFile(), mapSource.promiseTranslations()]);
+    const [file, translations] = await Promise.all([mapSource.promiseFile(pathHandler), mapSource.promiseTranslations(pathHandler)]);
 
     if(file !== null) {
         const { width, height, data } = file;

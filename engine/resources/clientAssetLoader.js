@@ -1,25 +1,23 @@
-import { PathHandler } from "./pathHandler.js";
-
-export const AssetLoader = function(devPath, prodPath) {
+export const ClientAssetLoader = function(devPath, prodPath) {
     this.devPath = devPath;
     this.prodPath = prodPath;
     this.resources = {};
 }
 
-AssetLoader.MODE = {
+ClientAssetLoader.MODE = {
     DEVELOPER: 0,
     PRODUCTION: 1
 };
 
-AssetLoader.prototype.loadJSONList = async function(fileList) {
+ClientAssetLoader.prototype.loadJSONList = async function(pathHandler, fileList) {
     const files = {};
     const promises = [];
 
     for(const fileID in fileList) {
         const fileMeta = fileList[fileID];
         const { directory, source } = fileMeta;
-        const path = PathHandler.getPath(directory, source);
-        const promise = PathHandler.promiseJSON(path).then(file => files[fileID] = file);
+        const path = pathHandler.getPath(directory, source);
+        const promise = pathHandler.promiseJSON(path).then(file => files[fileID] = file);
 
         promises.push(promise);
     }
@@ -29,17 +27,17 @@ AssetLoader.prototype.loadJSONList = async function(fileList) {
     return files;
 }
 
-AssetLoader.prototype.loadResources = async function(modeID) {
+ClientAssetLoader.prototype.loadResources = async function(pathHandler, modeID) {
     switch(modeID) {
-        case AssetLoader.MODE.DEVELOPER: {
-            const files = await PathHandler.promiseJSON(this.devPath);
-            const resources = await this.loadJSONList(files);
+        case ClientAssetLoader.MODE.DEVELOPER: {
+            const files = await pathHandler.promiseJSON(this.devPath);
+            const resources = await this.loadJSONList(pathHandler, files);
 
             this.resources = resources;
             break;
         }
-        case AssetLoader.MODE.PRODUCTION: {
-            const resources = await PathHandler.promiseJSON(this.prodPath);
+        case ClientAssetLoader.MODE.PRODUCTION: {
+            const resources = await pathHandler.promiseJSON(this.prodPath);
 
             this.resources = resources;
             break;
@@ -49,7 +47,7 @@ AssetLoader.prototype.loadResources = async function(modeID) {
     return this.resources;
 }
 
-AssetLoader.prototype.download = function(filename, data) {
+ClientAssetLoader.prototype.download = function(filename, data) {
     const blob = new Blob([data], { type: "text/json" });
     const link = document.createElement("a");
   
@@ -67,6 +65,6 @@ AssetLoader.prototype.download = function(filename, data) {
     link.remove();
 }
 
-AssetLoader.prototype.mergeResources = function() {
+ClientAssetLoader.prototype.mergeResources = function() {
     this.download("assets", JSON.stringify(this.resources));
 }

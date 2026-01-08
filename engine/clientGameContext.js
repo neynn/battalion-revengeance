@@ -16,10 +16,12 @@ import { ApplicationWindow } from "./applicationWindow.js";
 import { ActionRouter } from "./client/actionRouter.js";
 import { TurnManager } from "./world/turn/turnManager.js";
 import { MapRepository } from "./map/mapRepository.js";
+import { ClientPathHandler } from "./resources/pathHandler.js";
 
 export const ClientGameContext = function() {
     this.client = new Client();
     this.world = new World();
+    this.pathHandler = new ClientPathHandler();
     this.applicationWindow = new ApplicationWindow();
     this.renderer = new Renderer(window.innerWidth, window.innerHeight);
     this.resourceLoader = new ResourceLoader();

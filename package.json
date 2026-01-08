@@ -1,0 +1,9 @@
+{
+    "name": "battalion-revengeance",
+    "version": "0.0.1",
+    "description": "Battalion Revengeance",
+    "type": "module",
+    "dependencies": {
+        "socket.io": "^4.8.0"
+    }
+}

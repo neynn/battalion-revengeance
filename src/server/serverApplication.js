@@ -1,6 +1,7 @@
 import { MapRepository } from "../../engine/map/mapRepository.js";
 import { Transform2D } from "../../engine/math/transform2D.js";
 import { SocketServer } from "../../engine/network/server/socketServer.js";
+import { ServerPathHandler } from "../../engine/resources/server/serverPathHandler.js";
 import { TileManager } from "../../engine/tile/tileManager.js";
 import { TILE_HEIGHT, TILE_WIDTH } from "../constants.js";
 import { ServerGameContext } from "../serverContext.js";
@@ -10,6 +11,7 @@ export const ServerApplication = function(io) {
     SocketServer.call(this, io);
 
     this.gameRooms = [];
+    this.pathHandler = new ServerPathHandler();
     this.typeRegistry = new TypeRegistry();
     this.tileManager = new TileManager();
     this.transform2D = new Transform2D();

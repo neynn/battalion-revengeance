@@ -1,5 +1,3 @@
-import { PathHandler } from "../resources/pathHandler.js";
-
 export const MapSource = function(id, config) {
     const {
         directory = [],
@@ -17,7 +15,7 @@ export const MapSource = function(id, config) {
 
 MapSource.CACHE_ENABLED = 1;
 
-MapSource.prototype.promiseFile = async function() {
+MapSource.prototype.promiseFile = async function(pathHandler) {
     if(this.source.length === 0) {
         return Promise.resolve(null);
     }
@@ -28,8 +26,8 @@ MapSource.prototype.promiseFile = async function() {
         }
     }
 
-    const path = PathHandler.getPath(this.directory, this.source);
-    const file = await PathHandler.promiseJSON(path);
+    const path = pathHandler.getPath(this.directory, this.source);
+    const file = await pathHandler.promiseJSON(path);
 
     if(MapSource.CACHE_ENABLED) {
         this.file = file;
@@ -38,7 +36,7 @@ MapSource.prototype.promiseFile = async function() {
     return file;
 }
 
-MapSource.prototype.promiseTranslations = async function() {
+MapSource.prototype.promiseTranslations = async function(pathHandler) {
     if(this.text.length === 0) {
         return Promise.resolve(null);
     }
@@ -49,8 +47,8 @@ MapSource.prototype.promiseTranslations = async function() {
         }
     }
 
-    const path = PathHandler.getPath(this.directory, this.text);
-    const file = await PathHandler.promiseJSON(path);
+    const path = pathHandler.getPath(this.directory, this.text);
+    const file = await pathHandler.promiseJSON(path);
 
     if(MapSource.CACHE_ENABLED) {
         this.translations = file;
