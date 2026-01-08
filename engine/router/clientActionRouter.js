@@ -28,7 +28,7 @@ ClientActionRouter.prototype.dispatch = function(gameContext, executionPlan) {
         case ClientActionRouter.TARGET.SERVER: {
             const { type, intent } = executionPlan;
 
-            if(this.sendableActions.has(type)) {
+            if(this.sendable.has(type)) {
                 const json = intent.toJSON();
             }
 
