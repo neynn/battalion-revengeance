@@ -1,6 +1,6 @@
 export const Room = function(id) {
     this.id = id;
-    this.members = new Map();
+    this.members = [];
     this.leaderID = null;
     this.maxClients = 0;
     this.isStarted = false;
@@ -15,19 +15,19 @@ Room.prototype.getID = function() {
 }
 
 Room.prototype.isEmpty = function() {
-    return this.members.size === 0;
+    return this.members.length === 0;
 }
 
 Room.prototype.isFull = function() {
-    return this.members.size >= this.maxClients;
+    return this.members.length >= this.maxClients;
 }
 
-Room.prototype.addMember = function(clientID, client) {
-    if(this.members.size >= this.maxClients) {
+Room.prototype.addMember = function(client) {
+    if(this.members.length >= this.maxClients) {
         return false;
     }
 
-    this.members.set(clientID, client);
+    this.members.push(client);
     
     return true;
 }
@@ -43,27 +43,49 @@ Room.prototype.setMaxMembers = function(maxClients) {
 }
 
 Room.prototype.hasMember = function(clientID) {
-    return this.members.has(clientID);
+    for(let i = 0; i < this.members.length; i++) {
+        const member = this.members[i];
+
+        if(member.getID() === clientID) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+Room.prototype.getMember = function(clientID) {
+    for(let i = 0; i < this.members.length; i++) {
+        const member = this.members[i];
+
+        if(member.getID() === clientID) {
+            return member;
+        }
+    }
+
+    return null;
 }
 
 Room.prototype.removeMember = function(clientID) {
-    if(!this.members.has(clientID)) {
-        return false;
+    for(let i = 0; i < this.members.length; i++) {
+        const member = this.members[i];
+
+        if(member.getID() === clientID) {
+            this.members[i] = this.members[this.members.length - 1];
+            this.members.pop();
+            break;
+        }
     }
-
-    this.members.delete(clientID);
-
-    return true;
 }
 
-Room.prototype.setLeader = function(leaderID) {
-    const client = this.members.get(leaderID);
+Room.prototype.setLeader = function(clientID) {
+    const client = this.getMember(clientID);
 
     if(!client) {
         return false;
     }
 
-    this.leaderID = leaderID;
+    this.leaderID = clientID;
 
     return true;
 }
@@ -73,7 +95,7 @@ Room.prototype.isLeader = function(clientID) {
 }
 
 Room.prototype.getLeader = function() {
-    const leader = this.members.get(this.leaderID);
+    const leader = this.getMember(this.leaderID);
 
     if(!leader) {
         return null;
@@ -83,7 +105,7 @@ Room.prototype.getLeader = function() {
 }
 
 Room.prototype.hasLeader = function() {
-    return this.members.has(this.leaderID);
+    return this.hasMember(this.leaderID);
 }
 
 Room.prototype.canJoin = function(clientID) {
@@ -91,18 +113,21 @@ Room.prototype.canJoin = function(clientID) {
         return false;
     }
 
-    if(this.members.has(clientID)) {
+    if(this.hasMember(clientID)) {
         return false;
     }
 
     return true;
 }
 
-Room.prototype.getNextMember = function() {
-    const iterator = this.members.keys();
-    const nextClient = iterator.next().value;
+Room.prototype.appointNextLeader = function() {
+    if(this.members.length === 0) {
+        return false;
+    }
 
-    return nextClient;
+    this.leaderID = this.members[0].getID();
+
+    return true;
 }
 
 Room.prototype.sendMessage = function(message, clientID) {
@@ -110,7 +135,7 @@ Room.prototype.sendMessage = function(message, clientID) {
         return false;
     }
 
-    if(clientID && this.members.has(clientID)) {
+    if(clientID && this.hasMember(clientID)) {
         this.onMessageSend(message, clientID);
     } else {
         this.onMessageBroadcast(message);

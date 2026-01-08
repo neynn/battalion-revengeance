@@ -25,6 +25,4 @@ const resources = await assetLoader.loadResourcesDev(pathHandler, pathHandler.ge
 
 serverApplication.init(resources);
 
-server.listen(3000, () => {
-    console.log('server running at http://localhost:3000');
-}); 
+server.listen(3000, () => console.log("Server started!")); 

@@ -7,6 +7,10 @@ export const SocketClient = function(id, socket) {
     this.roomID = RoomManager.INVALID_ID;
 }
 
+SocketClient.prototype.getID = function() {
+    return this.id;
+}
+
 SocketClient.prototype.getSocket = function() {
     return this.socket;
 }
@@ -26,7 +30,7 @@ SocketClient.prototype.joinRoom = function(room) {
         this.socket.join(roomID);
         this.roomID = roomID;
 
-        room.addMember(this.id, this);
+        room.addMember(this);
     }
 }
 

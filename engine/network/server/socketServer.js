@@ -71,9 +71,7 @@ SocketServer.prototype.onLeaveRoomRequest = function(clientID) {
         this.roomManager.destroyRoom(roomID);
     } else {
         if(!room.hasLeader()) {
-            const nextLeader = room.getNextMember();
-
-            room.setLeader(nextLeader);
+            room.appointNextLeader();
         }
 
         this.sendRoomUpdate(roomID);
