@@ -20,6 +20,7 @@ MainMenuInterface.prototype.load = function(gameContext, stateMachine) {
     socket.events.on(Socket.EVENT.CONNECTED_TO_SERVER, ({id}) => {
         console.log(id);
         socket.registerName("neyn");
+        socket.createRoom(0);
     });
 
     this.getElement("BUTTON_PLAY").setClick(() => stateMachine.setNextState(gameContext, BattalionContext.STATE.PLAY));

@@ -2,7 +2,7 @@ import { BattalionEvent } from "./battalionEvent.js";
 import { TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { playExplosion } from "../systems/animation.js";
-import { despawnEntity, spawnEntity } from "../systems/spawn.js";
+import { despawnEntity, spawnClientEntity } from "../systems/spawn.js";
 
 export const ClientBattalionEvent = function(id, actions) {
     BattalionEvent.call(this, id, actions);
@@ -47,5 +47,5 @@ ClientBattalionEvent.prototype.onTileExplode = function(gameContext, action) {
 ClientBattalionEvent.prototype.onSpawn = function(gameContext, action) {
     const { setup } = action;
 
-    spawnEntity(gameContext, setup);
+    spawnClientEntity(gameContext, setup);
 }
