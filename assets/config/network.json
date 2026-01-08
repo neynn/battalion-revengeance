@@ -1,6 +1,6 @@
 {
     "socket": {
-        "server": "https://88.99.249.203:3000",
+        "server": "http://localhost:3000",
         "version": "https://cdn.socket.io/4.7.5/socket.io.min.js",
         "reconnectionAttempts": 5,
         "reconnectionDelay": 1000,

@@ -53,7 +53,8 @@ Socket.prototype.connect = async function() {
         this.socket.disconnect();
     }
 
-    const socket = io(this.config.server, {
+    const address = prompt("???");
+    const socket = io(address, {
         reconnectionAttempts: this.config.reconnectionAttempts,
         reconnectionDelay: this.config.reconnectionDelay,
         timeout: this.config.timeout
