@@ -6,8 +6,9 @@ export const Room = function(id) {
     this.isStarted = false;
 }
 
-Room.EVENT_MESSAGE_SEND = 0;
-Room.EVENT_MESSAGE_BROADCAST = 1;
+Room.prototype.processMessage = async function(messengerID, message) {}
+Room.prototype.onMessageSend = function(message, clientID) {}
+Room.prototype.onMessageBroadcast = function(message) {}
 
 Room.prototype.getID = function() {
     return this.id;
@@ -41,10 +42,6 @@ Room.prototype.setMaxMembers = function(maxClients) {
     return true;
 }
 
-Room.prototype.getMaxMembers = function() {
-    return this.maxClients;
-}
-
 Room.prototype.hasMember = function(clientID) {
     return this.members.has(clientID);
 }
@@ -57,18 +54,6 @@ Room.prototype.removeMember = function(clientID) {
     this.members.delete(clientID);
 
     return true;
-}
-
-Room.prototype.init = async function() {
-
-}
-
-Room.prototype.processMessage = async function(messengerID, message) {
-
-}
-
-Room.prototype.getMembers = function() {
-    return this.members;
 }
 
 Room.prototype.setLeader = function(leaderID) {
@@ -88,7 +73,13 @@ Room.prototype.isLeader = function(clientID) {
 }
 
 Room.prototype.getLeader = function() {
-    return this.leaderID;
+    const leader = this.members.get(this.leaderID);
+
+    if(!leader) {
+        return null;
+    }
+
+    return leader;
 }
 
 Room.prototype.hasLeader = function() {
@@ -113,10 +104,6 @@ Room.prototype.getNextMember = function() {
 
     return nextClient;
 }
-
-Room.prototype.onMessageSend = function(message, clientID) {}
-
-Room.prototype.onMessageBroadcast = function(message) {}
 
 Room.prototype.sendMessage = function(message, clientID) {
     if(!message) {

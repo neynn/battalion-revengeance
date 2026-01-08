@@ -8,7 +8,6 @@ import { TypeRegistry } from "../type/typeRegistry.js";
 export const ServerApplication = function(io) {
     SocketServer.call(this, io);
 
-    this.gameRooms = [];
     this.pathHandler = new ServerPathHandler();
     this.typeRegistry = new TypeRegistry();
     this.tileManager = new TileManager();
@@ -24,12 +23,10 @@ ServerApplication.prototype.init = function(resources) {
     this.typeRegistry.load(resources);
 }
 
-ServerApplication.prototype.createGame = function() {
+ServerApplication.prototype.createRoom = function() {
     const gameContext = new ServerGameContext(this);
 
     gameContext.init();
-
-    this.gameRooms.push(gameContext);
 
     return gameContext;
 }

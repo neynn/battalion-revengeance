@@ -1,20 +1,16 @@
 import { NETWORK_EVENTS, ROOM_EVENTS } from "../events.js";
 import { RoomManager } from "../room/roomManager.js";
 import { ClientManager } from "../client/clientManager.js";
-import { Logger } from "../../logger.js";
 
 export const SocketServer = function(io) {
     this.io = io;
-    this.io.on('connection', (socket) => this.handleConnect(socket));
+    this.io.on('connection', (socket) => this.onClientConnect(socket));
 
     this.roomManager = new RoomManager();
     this.clientManager = new ClientManager();
 
     this.roomManager.events.on(RoomManager.EVENT.ROOM_OPENED, ({ id }) => console.log(`Room ${id} has been opened!`), { permanent: true });
     this.roomManager.events.on(RoomManager.EVENT.ROOM_CLOSED, ({ id }) => console.log(`Room ${id} has been closed!`), { permanent: true });
-    this.roomManager.events.on(RoomManager.EVENT.CLIENT_JOINED, ({ roomID, clientID }) => this.sendRoomUpdate(clientID, roomID), { permanent: true });
-    this.roomManager.events.on(RoomManager.EVENT.CLIENT_LEFT, ({ roomID, clientID }) => this.sendRoomUpdate(clientID, roomID), { permanent: true });
-    this.roomManager.events.on(RoomManager.EVENT.CLIENT_LEADER, ({ roomID, clientID }) => this.sendRoomUpdate(clientID, roomID), { permanent: true });
     this.roomManager.events.on(RoomManager.EVENT.MESSAGE_RECEIVED, ({ roomID, messengerID }) => console.log(`Message received! ${roomID, messengerID}`), { permanent: true });
     this.roomManager.events.on(RoomManager.EVENT.MESSAGE_LOST, ({ roomID, messengerID }) => `Message lost! ${roomID, messengerID}`, { permanent: true });
     this.roomManager.events.on(RoomManager.EVENT.MESSAGE_SEND, ({ clientID, message }) => this.io.to(clientID).emit(NETWORK_EVENTS.MESSAGE, message), { permanent: true });
@@ -25,47 +21,63 @@ export const SocketServer = function(io) {
     this.clientManager.events.on(ClientManager.EVENT.USER_ID_ADDED, ({ clientID, userID }) => console.log(`${clientID} is now named ${userID}!`), { permanent: true });
 }
 
-SocketServer.prototype.sendRoomUpdate = function(clientID, roomID) {
+SocketServer.prototype.createRoom = function(roomID, roomType) {
+    console.error("CreateRoom was not overridden!");
+    return null;
+}
+
+SocketServer.prototype.sendRoomUpdate = function(roomID) {
     const information = this.roomManager.getRoomInformationMessage(roomID);
     const message = { "type": ROOM_EVENTS.ROOM_UPDATE, "payload": information };
 
     this.io.in(roomID).emit(NETWORK_EVENTS.MESSAGE, message);
 
-    console.log(`${clientID} left room ${roomID}`);
+    console.log(information);
 }
 
-SocketServer.prototype.handleConnect = function(socket) {
+SocketServer.prototype.onClientConnect = function(socket) {
     this.registerNetworkEvents(socket);
     this.clientManager.createClient(socket);
 
     console.log(`${socket.id} has connected to the server!`);
 }
 
-SocketServer.prototype.handleDisconnect = function(clientID) {
-    this.handleRoomLeave(clientID);
+SocketServer.prototype.onClientDisconnect = function(clientID) {
+    this.onLeaveRoomRequest(clientID);
     this.clientManager.destroyClient(clientID);
 
     console.log(`${clientID} has disconnected from the server!`)
 }
 
-SocketServer.prototype.handleRoomLeave = function(clientID) {
+SocketServer.prototype.onLeaveRoomRequest = function(clientID) {
     const client = this.clientManager.getClient(clientID);
 
     if(!client) {
-        Logger.log(false, "Client does not exist!", "NETWORK_EVENTS.LEAVE_ROOM_REQUEST", { clientID });
+        console.error("Client does not exist!");
         return false;
     }
 
     const roomID = client.getRoomID();
+    const room = this.roomManager.getRoom(roomID);
 
-    if(roomID === null) {
-        Logger.log(false, "Client is not in a room!", "NETWORK_EVENTS.LEAVE_ROOM_REQUEST", { clientID, roomID });
+    if(!room) {
+        console.error("Room does not exist!");
         return false;
     }
 
-    client.leaveRoom();
+    client.leaveRoom(room);
 
-    this.roomManager.removeClientFromRoom(clientID, roomID);
+    if(room.isEmpty()) {
+        this.roomManager.destroyRoom(roomID);
+    } else {
+        if(!room.hasLeader()) {
+            const nextLeader = room.getNextMember();
+
+            room.setLeader(nextLeader);
+        }
+
+        this.sendRoomUpdate(roomID);
+    }
 
     return true;
 }
@@ -76,90 +88,84 @@ SocketServer.prototype.handleRegister = function(clientID, data) {
     return true;
 }
 
-SocketServer.prototype.handleRoomCreate = async function(clientID, roomType) {
+SocketServer.prototype.onCreateRoomRequest = function(clientID, roomType) {
     const client = this.clientManager.getClient(clientID);
 
     if(!client) {
-        Logger.log(false, "Client does not exist!", "NETWORK_EVENTS.CREATE_ROOM_REQUEST", null, { clientID });
+        console.error("Client does not exist!");
         return false;
     }
 
     const clientRoomID = client.getRoomID();
 
-    if(clientRoomID !== null) {
-        Logger.log(false, "Client is already in room!", "NETWORK_EVENTS.CREATE_ROOM_REQUEST", { clientID, clientRoomID });
+    if(clientRoomID !== RoomManager.INVALID_ID) {
+        console.error("Client is already in room!");
         return false;
     }
 
-    const room = await this.roomManager.createRoom(roomType);
+    const roomID = this.roomManager.getNextID();
+    const room = this.createRoom(roomID, roomType);
 
     if(!room) {
-        Logger.log(false, "Room was not created!", "NETWORK_EVENTS.CREATE_ROOM_REQUEST", { roomType });
+        console.error("Room was not created!");
         return false;
     }
 
-    const roomID = room.getID();
-    const isJoinable = this.roomManager.canJoin(clientID, roomID);
-
-    if(!isJoinable) {
-        Logger.log(false, "Room is not joinable!", "NETWORK_EVENTS.CREATE_ROOM_REQUEST", null);
-
+    if(!room.canJoin(clientID)) {
+        console.error("Room is not joinable!");
         return false;
     }
 
-    const userID = client.getUserID();
+    client.joinRoom(room);
+    room.setLeader(clientID);
 
-    client.joinRoom(roomID);
-
-    this.roomManager.addClientToRoom(clientID, userID, roomID);
-    this.roomManager.appointLeader(roomID, clientID);
+    this.roomManager.addRoom(room);
+    this.sendRoomUpdate(roomID);
 
     return true;
 }
 
-SocketServer.prototype.handleRoomJoin = function(clientID, roomID) {
+SocketServer.prototype.onJoinRoomRequest = function(clientID, roomID) {
     const client = this.clientManager.getClient(clientID);
 
     if(!client) {
-        Logger.log(false, "Client does not exist!", "NETWORK_EVENTS.JOIN_ROOM_REQUEST", { clientID });
+        console.error("Client does not exist!");
         return false;
     }
 
     const clientRoomID = client.getRoomID();
 
-    if(clientRoomID !== null) {
-        Logger.log(false, "Client is already in room!", "NETWORK_EVENTS.JOIN_ROOM_REQUEST", { clientID, clientRoomID});
+    if(clientRoomID !== RoomManager.INVALID_ID) {
+        console.error("Client is already in a room!");
         return false;
     }
 
-    const isJoinable = this.roomManager.canJoin(clientID, roomID);
+    const room = this.roomManager.getRoom(roomID);
 
-    if(!isJoinable) {
-        Logger.log(false, "Room is not joinable!", "NETWORK_EVENTS.JOIN_ROOM_REQUEST", { clientID, roomID });
+    if(!room || !room.canJoin(clientID)) {
+        console.error("Room is not joinable!");
         return false;
     }
 
-    const userID = client.getUserID();
+    client.joinRoom(room);
 
-    client.joinRoom(roomID);
-
-    this.roomManager.addClientToRoom(clientID, userID, roomID);
+    this.sendRoomUpdate(roomID);
 
     return true;
 }
 
-SocketServer.prototype.handleRoomMessage = function(clientID, message) {
+SocketServer.prototype.onMessageRoomRequest = function(clientID, message) {
     const client = this.clientManager.getClient(clientID);
 
     if(!client) {
-        Logger.log(false, "Client does not exist!", "NETWORK_EVENTS.MESSAGE_ROOM_REQUEST", { clientID });
+        console.error("Client does not exist!");
         return false;
     }
 
     const clientRoomID = client.getRoomID();
 
-    if(clientRoomID === null) {
-        Logger.log(false, "Client is not in a room!", "NETWORK_EVENTS.MESSAGE_ROOM_REQUEST", { clientID });
+    if(clientRoomID === RoomManager.INVALID_ID) {
+        console.error("Client is not in a room!");
         return false;
     }
     
@@ -169,10 +175,10 @@ SocketServer.prototype.handleRoomMessage = function(clientID, message) {
 }
 
 SocketServer.prototype.registerNetworkEvents = function(socket) {
-    socket.on(NETWORK_EVENTS.DISCONNECT, () => this.handleDisconnect(socket.id));
+    socket.on(NETWORK_EVENTS.DISCONNECT, () => this.onClientDisconnect(socket.id));
 	socket.on(NETWORK_EVENTS.REGISTER, (data, request) => request(this.handleRegister(socket.id, data)));
-    socket.on(NETWORK_EVENTS.CREATE_ROOM_REQUEST, (roomType, request) => request(this.handleRoomCreate(socket.id, roomType)));
-    socket.on(NETWORK_EVENTS.JOIN_ROOM_REQUEST, (roomID, request) => request(this.handleRoomJoin(socket.id, roomID)));
-    socket.on(NETWORK_EVENTS.LEAVE_ROOM_REQUEST, (request) => request(this.handleRoomLeave(socket.id)));
-    socket.on(NETWORK_EVENTS.MESSAGE_ROOM_REQUEST, (message, request) => request(this.handleRoomMessage(socket.id, message)));
+    socket.on(NETWORK_EVENTS.CREATE_ROOM_REQUEST, (roomType, request) => request(this.onCreateRoomRequest(socket.id, roomType)));
+    socket.on(NETWORK_EVENTS.JOIN_ROOM_REQUEST, (roomID, request) => request(this.onJoinRoomRequest(socket.id, roomID)));
+    socket.on(NETWORK_EVENTS.LEAVE_ROOM_REQUEST, (request) => request(this.onLeaveRoomRequest(socket.id)));
+    socket.on(NETWORK_EVENTS.MESSAGE_ROOM_REQUEST, (message, request) => request(this.onMessageRoomRequest(socket.id, message)));
 }

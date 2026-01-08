@@ -1,33 +1,23 @@
 import { EventEmitter } from "../../events/eventEmitter.js";
-import { Logger } from "../../logger.js";
-import { Member } from "./member.js";
 
 export const RoomManager = function() {
+    this.nextID = 0;
     this.rooms = new Map();
-    this.roomTypes = {};
 
     this.events = new EventEmitter();
     this.events.register(RoomManager.EVENT.ROOM_OPENED);
     this.events.register(RoomManager.EVENT.ROOM_CLOSED);
-    this.events.register(RoomManager.EVENT.CLIENT_JOINED);
-    this.events.register(RoomManager.EVENT.CLIENT_LEFT);
-    this.events.register(RoomManager.EVENT.CLIENT_LEADER);
     this.events.register(RoomManager.EVENT.MESSAGE_RECEIVED);
     this.events.register(RoomManager.EVENT.MESSAGE_LOST);
     this.events.register(RoomManager.EVENT.MESSAGE_SEND);
     this.events.register(RoomManager.EVENT.MESSAGE_BROADCAST);
 }
 
-RoomManager.ID = {
-    NEXT: 0
-};
+RoomManager.INVALID_ID = -1;
 
 RoomManager.EVENT = {
     ROOM_OPENED: "ROOM_OPENED",
     ROOM_CLOSED: "ROOM_CLOSED",
-    CLIENT_JOINED: "CLIENT_JOINED",
-    CLIENT_LEFT: "CLIENT_LEFT",
-    CLIENT_LEADER: "CLIENT_LEADER",
     MESSAGE_RECEIVED: "MESSAGE_RECEIVED",
     MESSAGE_LOST: "MESSAGE_LOST",
     MESSAGE_SEND: "MESSAGE_SEND",
@@ -36,7 +26,7 @@ RoomManager.EVENT = {
 
 RoomManager.prototype.exit = function() {
     this.rooms.clear();
-    RoomManager.ID.NEXT = 0;
+    this.nextID = 0;
 }
 
 RoomManager.prototype.getRoom = function(roomID) {
@@ -49,15 +39,9 @@ RoomManager.prototype.getRoom = function(roomID) {
     return room;
 }
 
-RoomManager.prototype.registerRoomType = function(typeID, object) {
-    if(this.roomTypes[typeID] !== undefined) {
-        return false;
-    }
-
-    this.roomTypes[typeID] = object;
-
-    return true;
-}
+RoomManager.prototype.getNextID = function() {
+    return this.nextID++;
+} 
 
 RoomManager.prototype.processMessage = function(roomID, messengerID, message) {
     const room = this.rooms.get(roomID);
@@ -83,69 +67,25 @@ RoomManager.prototype.processMessage = function(roomID, messengerID, message) {
     return true;
 }
 
-RoomManager.prototype.createRoom = async function(typeID) {
-    const RoomType = this.roomTypes[typeID];
+RoomManager.prototype.addRoom = function(room) {
+    const roomID = room.getID();
 
-    if(!RoomType) {
-        return null;
+    if(!this.rooms.has(roomID)) {
+        room.onMessageSend = (message, clientID) => this.events.emit(RoomManager.EVENT.MESSAGE_SEND, {
+            "clientID": clientID,
+            "message": message
+        });
+
+        room.onMessageBroadcast = (message) => this.events.emit(RoomManager.EVENT.MESSAGE_BROADCAST, {
+            "roomID": roomID,
+            "message": message
+        });
+
+        this.rooms.set(roomID, room);
+        this.events.emit(RoomManager.EVENT.ROOM_OPENED, {
+            "id": roomID
+        });
     }
-
-    const roomID = RoomManager.ID.NEXT++;
-    const room = new RoomType(roomID);
-
-    await room.init();
-    
-    room.onMessageSend = (message, clientID) => this.events.emit(RoomManager.EVENT.MESSAGE_SEND, {
-        "clientID": clientID,
-        "message": message
-    });
-
-    room.onMessageBroadcast = (message) => this.events.emit(RoomManager.EVENT.MESSAGE_BROADCAST, {
-        "roomID": roomID,
-        "message": message
-    });
-
-    this.rooms.set(roomID, room);
-    this.events.emit(RoomManager.EVENT.ROOM_OPENED, {
-        "id": roomID
-    });
-    
-    return room;
-}
-
-RoomManager.prototype.appointLeader = function(roomID, clientID) {
-    const room = this.rooms.get(roomID);
-
-    if(!room) {
-        Logger.log(false, "Room does not exist!", "RoomManager.prototype.appointLeader", { roomID, clientID });
-
-        return false;
-    }
-
-    if(!room.hasMember(clientID)) {
-        Logger.log(false, "Client is not in room!", "RoomManager.prototype.appointLeader", { roomID, clientID });
-
-        return false;
-    }
-
-    room.setLeader(clientID);
-
-    this.events.emit(RoomManager.EVENT.CLIENT_LEADER, {
-        "roomID": roomID,
-        "clientID": clientID
-    });
-
-    return true;
-}
-
-RoomManager.prototype.canJoin = function(clientID, roomID) {
-    const room = this.rooms.get(roomID);
-
-    if(!room) {
-        return false;
-    }
-
-    return room.canJoin(clientID);
 }
 
 RoomManager.prototype.getRoomInformationMessage = function(roomID) {
@@ -155,98 +95,39 @@ RoomManager.prototype.getRoomInformationMessage = function(roomID) {
         return {
             "id": roomID,
             "members": [],
-            "maxMembers": 0
+            "maxMembers": 0,
+            "leader": ""
         };
     }
 
-    const members = [];
-    const maxClients = room.getMaxMembers();
-    const clients = room.getMembers();
+    const { maxClients, members } = room;
+    const clients = [];
+    const leader = room.getLeader();
+    const leaderName = leader !== null ? leader.getUserID() : "";
 
-    for(const [clientID, client] of clients) {
-        const name = client.getName();
-
-        members.push(name);
-    }
+    members.forEach(member => clients.push(member.getUserID()));
 
     return {
         "id": roomID,
-        "members": members,
-        "maxMembers": maxClients
+        "members": clients,
+        "maxMembers": maxClients,
+        "leader": leaderName
     };
-}
-
-RoomManager.prototype.addClientToRoom = function(clientID, clientName, roomID) {
-    if(!this.canJoin(clientID, roomID)) {
-        Logger.log(false,  "Room is not joinable!", "RoomManager.prototype.addClientToRoom", { clientID, roomID });
-
-        return false;
-    }
-
-    const room = this.rooms.get(roomID);
-    const member = new Member(clientID, clientName);
-
-    room.addMember(clientID, member);
-
-    this.events.emit(RoomManager.EVENT.CLIENT_JOINED, {
-        "roomID": roomID,
-        "clientID": clientID
-    });
-
-    return true;
-}
-
-RoomManager.prototype.removeClientFromRoom = function(clientID, roomID) {
-    const room = this.rooms.get(roomID);
-
-    if(!room) {
-        Logger.log(false, "Room does not exist!", "RoomManager.prototype.removeClientFromRoom", { clientID, roomID });
-
-        return false;
-    }
-
-    if(!room.hasMember(clientID)) {
-        Logger.log(false, "Client is not in room!", "RoomManager.prototype.removeClientFromRoom", { clientID, roomID });
-
-        return false;
-    }
-
-    room.removeMember(clientID);
-
-    this.events.emit(RoomManager.EVENT.CLIENT_LEFT, {
-        "roomID": roomID,
-        "clientID": clientID
-    });
-
-    if(room.isEmpty()) {
-        this.destroyRoom(roomID);
-
-        return true;
-    }
-
-    if(!room.hasLeader()) {
-        const nextLeader = room.getNextMember();
-        this.appointLeader(nextLeader, roomID);
-    }
-
-    return true;
 }
 
 RoomManager.prototype.destroyRoom = function(roomID) {
     if(!this.rooms.has(roomID)) {
-        Logger.log(false, "Room does not exist!", "RoomManager.prototype.destroyRoom", { roomID });
-
+        console.error("Room does not exist!");
         return false;
     }
 
     this.rooms.delete(roomID);
-    
     this.events.emit(RoomManager.EVENT.ROOM_CLOSED, {
         "id": roomID
     });
 
     if(this.rooms.size === 0) {
-        RoomManager.ID.NEXT = 0;
+        this.nextID = 0;
     }
 
     return true;
