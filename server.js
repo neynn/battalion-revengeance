@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 import { Server } from 'socket.io';
 import { ServerApplication } from './src/server/serverApplication.js';
-import { ServerAssetLoader } from './engine/resources/server/serverAssetLoader.js';
+import { AssetLoader } from './engine/resources/assetLoader.js';
 
 const server = createServer();
 const io = new Server(server, {
@@ -13,11 +13,12 @@ const io = new Server(server, {
 });
 
 const serverApplication = new ServerApplication(io);
+const pathHandler = serverApplication.pathHandler;
 
-serverApplication.pathHandler.setRoot(import.meta.url);
+pathHandler.setRoot(import.meta.url);
 
-const assetLoader = new ServerAssetLoader();
-const resources = await assetLoader.loadResources(serverApplication.pathHandler);
+const assetLoader = new AssetLoader();
+const resources = await assetLoader.loadResourcesDev(pathHandler, pathHandler.getPath(["assets"], "assets.json"));
 
 serverApplication.init(resources);
 

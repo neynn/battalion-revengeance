@@ -1,8 +1,8 @@
-import { ClientAssetLoader } from "./engine/resources/clientAssetLoader.js";
+import { AssetLoader } from "./engine/resources/assetLoader.js";
 import { BattalionContext } from "./src/battalionContext.js";
 
 const gameContext = new BattalionContext();
-const assetLoader = new ClientAssetLoader();
+const assetLoader = new AssetLoader();
 const resources = await assetLoader.loadResourcesDev(gameContext.pathHandler, "assets/assets.json");
 
 gameContext.loadResources(resources);

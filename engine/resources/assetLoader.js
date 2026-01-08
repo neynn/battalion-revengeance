@@ -1,8 +1,8 @@
-export const ClientAssetLoader = function() {
+export const AssetLoader = function() {
     this.resources = {};
 }
 
-ClientAssetLoader.prototype.loadJSONList = async function(pathHandler, fileList) {
+AssetLoader.prototype.loadJSONList = async function(pathHandler, fileList) {
     const files = {};
     const promises = [];
 
@@ -20,7 +20,7 @@ ClientAssetLoader.prototype.loadJSONList = async function(pathHandler, fileList)
     return files;
 }
 
-ClientAssetLoader.prototype.loadResourcesDev = async function(pathHandler, path) {
+AssetLoader.prototype.loadResourcesDev = async function(pathHandler, path) {
     const files = await pathHandler.promiseJSON(path);
 
     if(files) {
@@ -32,7 +32,7 @@ ClientAssetLoader.prototype.loadResourcesDev = async function(pathHandler, path)
     return this.resources;
 }
 
-ClientAssetLoader.prototype.loadResourcesProd = async function(pathHandler, path) {
+AssetLoader.prototype.loadResourcesProd = async function(pathHandler, path) {
     const resources = await pathHandler.promiseJSON(path);
 
     if(resources) {
@@ -42,7 +42,7 @@ ClientAssetLoader.prototype.loadResourcesProd = async function(pathHandler, path
     return this.resources;
 }
 
-ClientAssetLoader.prototype.download = function(filename, data) {
+AssetLoader.prototype.download = function(filename, data) {
     const blob = new Blob([data], { type: "text/json" });
     const link = document.createElement("a");
   
@@ -60,6 +60,6 @@ ClientAssetLoader.prototype.download = function(filename, data) {
     link.remove();
 }
 
-ClientAssetLoader.prototype.mergeResources = function() {
+AssetLoader.prototype.mergeResources = function() {
     this.download("assets", JSON.stringify(this.resources));
 }

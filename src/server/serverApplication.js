@@ -1,6 +1,6 @@
 import { MapRepository } from "../../engine/map/mapRepository.js";
 import { SocketServer } from "../../engine/network/server/socketServer.js";
-import { ServerPathHandler } from "../../engine/resources/server/serverPathHandler.js";
+import { ServerPathHandler } from "../../engine/resources/serverPathHandler.js";
 import { TileManager } from "../../engine/tile/tileManager.js";
 import { ServerGameContext } from "../serverContext.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
