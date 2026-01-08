@@ -14,7 +14,6 @@ export const BattalionMap = function(id, width, height) {
     this.buildings = [];
     this.edits = [];
     this.jammerFields = new Map();
-    this.music = null;
     this.layers = [
         this.createLayer(Layer.TYPE.BIT_16),
         this.createLayer(Layer.TYPE.BIT_16),

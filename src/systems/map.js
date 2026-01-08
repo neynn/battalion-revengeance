@@ -1,6 +1,6 @@
 import { BattalionActor } from "../actors/battalionActor.js";
 import { Player } from "../actors/player.js";
-import { BattalionEvent } from "../battalionEvent.js";
+import { IS_SERVER } from "../constants.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { JammerField } from "../map/jammerField.js";
 import { CaptureObjective } from "../team/objective/types/capture.js";
@@ -12,8 +12,10 @@ import { TimeLimitObjective } from "../team/objective/types/timeLimit.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { createPlayCamera } from "./camera.js";
 import { spawnBuilding, spawnEntity } from "./spawn.js";
+import { ClientBattalionEvent } from "../event/clientBattalionEvent.js";
+import { ServerBattalionEvent } from "../event/serverBattalionEvent.js";
 
-const createAI = function(gameContext, commanderType, teamName) {
+const createActor = function(gameContext, commanderType, teamName) {
     const { world } = gameContext;
     const { turnManager } = world;
     const actor = turnManager.createActor((actorID) => {
@@ -129,9 +131,8 @@ const createObjectives = function(team, objectives, allObjectives) {
 }
 
 const loadMap = function(gameContext, worldMap, mapData) {
-    const { world, client, teamManager, dialogueHandler } = gameContext;
+    const { world, teamManager } = gameContext;
     const { eventHandler } = world;
-    const { musicPlayer } = client;
     const { 
         music,
         playlist,
@@ -178,11 +179,11 @@ const loadMap = function(gameContext, worldMap, mapData) {
             }
         }
 
-        if(!playerCreated && isPlayer) {
+        if(!playerCreated && isPlayer && !IS_SERVER) {
             actor = createPlayer(gameContext, commanderType, teamName);
             playerCreated = true;
         } else {
-            actor = createAI(gameContext, commanderType, teamName);
+            actor = createActor(gameContext, commanderType, teamName);
         }
 
         if(actor) {
@@ -198,22 +199,33 @@ const loadMap = function(gameContext, worldMap, mapData) {
         spawnBuilding(gameContext, worldMap, buildings[i]);
     }
 
-    for(const objectiveName in objectives) {
-        console.log(objectives[objectiveName]);
-    }
+    if(!IS_SERVER) {
+        const { dialogueHandler, client } = gameContext;
+        const { musicPlayer } = client;
 
-    if(playlist) {
-        musicPlayer.playPlaylist(playlist);
-    } else {
-        musicPlayer.play(music);
-    }
+        if(playlist) {
+            musicPlayer.playPlaylist(playlist);
+        } else {
+            musicPlayer.play(music);
+        }
 
-    worldMap.loadLocalization(localization);
-    dialogueHandler.loadMapDialogue(prelogue, postlogue, defeat);
+        worldMap.loadLocalization(localization);
+        dialogueHandler.loadMapDialogue(prelogue, postlogue, defeat);
+
+        if(!playerCreated) {
+            console.error("NO PLAYER SPECIFIED!");
+        } 
+    }
 
     for(const eventName in events) {
-        const {  turn, round, next = null, actions = [] } = events[eventName];
-        const event = new BattalionEvent(eventName, actions);
+        const { turn, round, next = null, actions = [] } = events[eventName];
+        let event = null;
+
+        if(IS_SERVER) {
+            event = new ServerBattalionEvent(eventName, actions);
+        } else {
+            event = new ClientBattalionEvent(eventName, actions);
+        }
 
         event.setTriggerTime(turn, round);
         event.setNext(next);
@@ -222,10 +234,6 @@ const loadMap = function(gameContext, worldMap, mapData) {
     
     teamManager.updateStatus(gameContext);
     teamManager.updateOrder(gameContext);
-
-    if(!playerCreated) {
-        console.error("NO PLAYER SPECIFIED!!!");
-    }
 }
 
 export const placeEntityOnMap = function(gameContext, entity) {
