@@ -1,4 +1,3 @@
-import { ActionRouter } from "../../engine/client/actionRouter.js";
 import { Room } from "../../engine/network/room/room.js";
 import { StateMachine } from "../../engine/state/stateMachine.js";
 import { TurnManager } from "../../engine/world/turn/turnManager.js";
@@ -13,6 +12,7 @@ import { MoveAction } from "../action/types/move.js";
 import { UncloakAction } from "../action/types/uncloak.js";
 import { TeamManager } from "../team/teamManager.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
+import { ServerActionRouter } from "../../engine/router/serverActionRouter.js";
 
 export const ServerGameContext = function(serverApplication, id) {
     Room.call(this, id);
@@ -32,7 +32,7 @@ export const ServerGameContext = function(serverApplication, id) {
     this.world = new World();
     this.teamManager = new TeamManager();
     this.states = new StateMachine(this);
-    this.actionRouter = new ActionRouter();
+    this.actionRouter = new ServerActionRouter();
 }
 
 ServerGameContext.prototype = Object.create(Room.prototype);

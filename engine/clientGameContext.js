@@ -13,10 +13,10 @@ import { FontHandler } from "./fontHandler.js";
 import { MapManager } from "./map/mapManager.js";
 import { ResourceLoader } from "./resources/resourceLoader.js";
 import { ApplicationWindow } from "./applicationWindow.js";
-import { ActionRouter } from "./client/actionRouter.js";
 import { TurnManager } from "./world/turn/turnManager.js";
 import { MapRepository } from "./map/mapRepository.js";
 import { ClientPathHandler } from "./resources/pathHandler.js";
+import { ClientActionRouter } from "./router/clientActionRouter.js";
 
 export const ClientGameContext = function() {
     this.client = new Client();
@@ -33,7 +33,7 @@ export const ClientGameContext = function() {
     this.states = new StateMachine(this);
     this.transform2D = new Transform2D();
     this.timer = new Timer();
-    this.actionRouter = new ActionRouter();
+    this.actionRouter = new ClientActionRouter();
     this.mapRepository = new MapRepository();
 
     this.client.cursor.events.on(Cursor.EVENT.BUTTON_CLICK, (event) => {
