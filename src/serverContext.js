@@ -17,12 +17,14 @@ export const ServerGameContext = function(serverApplication) {
     const { 
         typeRegistry,
         tileManager,
-        pathHandler
+        pathHandler,
+        mapRepository
     } = serverApplication;
 
     this.pathHandler = pathHandler;
     this.typeRegistry = typeRegistry;
     this.tileManager = tileManager;
+    this.mapRepository = mapRepository;
 
     this.world = new World();
     this.teamManager = new TeamManager();
