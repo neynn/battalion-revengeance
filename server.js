@@ -6,7 +6,10 @@ import { AssetLoader } from './engine/resources/assetLoader.js';
 const server = createServer();
 const io = new Server(server, {
     cors: {
-        origin: "http://127.0.0.1:5500",
+        origin: [
+            "http://127.0.0.1:5500",
+            "https://neynn.github.io/battalion-revengeance"
+        ],
         methods: ["GET", "POST"],
         credentials: true
     }
