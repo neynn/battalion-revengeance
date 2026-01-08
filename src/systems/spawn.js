@@ -10,6 +10,7 @@ import { BuildingView } from "../sprite/buildingView.js";
 import { ClientBattalionEntity } from "../entity/clientBattalionEntity.js";
 import { ClientBuilding } from "../entity/clientBuilding.js";
 import { IS_SERVER } from "../constants.js";
+import { Building } from "../entity/building.js";
 
 export const createSpawnConfig = function(id, type, tileX, tileY) {
     return {
@@ -174,20 +175,33 @@ export const spawnBuilding = function(gameContext, worldMap, config) {
     const teamObject = teamManager.getTeam(team);
 
     if(teamObject) {
-        const { colorID, color } = teamObject;
         const buildingType = typeRegistry.getBuildingType(type);
-        const { sprite } = buildingType;
 
-        worldMap.createBuilding(x, y, (buildingID) => {
-            const visualSprite = createSchemaViewSprite(gameContext, sprite, colorID, color, LAYER_TYPE.BUILDING);
-            const buildingView = new BuildingView(visualSprite, sprite, colorID, color);
-            const buildingObject = new ClientBuilding(buildingID, buildingType, buildingView);
+        if(IS_SERVER) {
+            worldMap.createBuilding(x, y, (buildingID) => {
+                const buildingObject = new Building(buildingID, buildingType);
 
-            buildingObject.setCustomInfo(id, name, desc);
-            buildingObject.setTile(gameContext, x, y);
-            buildingObject.updateTeam(gameContext, team);
+                buildingObject.setCustomInfo(id, name, desc);
+                buildingObject.setTile(gameContext, x, y);
+                buildingObject.updateTeam(gameContext, team);
 
-            return buildingObject;
-        });
+                return buildingObject;
+            });
+        } else {
+            const { colorID, color } = teamObject;
+            const { sprite } = buildingType;
+
+            worldMap.createBuilding(x, y, (buildingID) => {
+                const visualSprite = createSchemaViewSprite(gameContext, sprite, colorID, color, LAYER_TYPE.BUILDING);
+                const buildingView = new BuildingView(visualSprite, sprite, colorID, color);
+                const buildingObject = new ClientBuilding(buildingID, buildingType, buildingView);
+
+                buildingObject.setCustomInfo(id, name, desc);
+                buildingObject.setTile(gameContext, x, y);
+                buildingObject.updateTeam(gameContext, team);
+
+                return buildingObject;
+            });
+        }
     }
 }
