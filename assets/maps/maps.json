@@ -1,4 +1,9 @@
 {
+    "volcano": {
+        "directory": ["assets", "maps", "volcano"],
+        "source": "volcano.json",
+        "text": "volcano_text.json"
+    },
     "oasis": {
         "directory": ["assets", "maps", "oasis"],
         "source": "oasis.json",

@@ -26,10 +26,8 @@ ServerApplication.prototype.init = function(resources) {
 ServerApplication.prototype.createRoom = function(roomID, roomType) {
     const gameContext = new ServerGameContext(this, roomID);
 
-    gameContext.maxClients = 3;
+    gameContext.maxClients = 2;
     gameContext.init();
-
-    //createPvPServerMap(gameContext, "presus").then(() => console.log(gameContext));
 
     return gameContext;
 }

@@ -65,14 +65,14 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
 
     switch(type) {
         case GAME_EVENT.MP_CLIENT_START_MATCH: {
-            createPvPServerMap(this, "presus")
+            createPvPServerMap(this, "volcano")
             .then(() => {
                 for(let i = 0; i < this.members.length; i++) {
                     const member = this.members[i];
                     const memberID = member.getID()
 
                     this.sendMessage(GAME_EVENT.MP_SERVER_LOAD_MAP, {
-                        "mapID": "presus",
+                        "mapID": "volcano",
                         "client": this.teamManager.activeTeams[i] //HACKY!
                     }, memberID);
                 }

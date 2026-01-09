@@ -1,0 +1,28 @@
+{
+    "music": null,
+    "width": 5,
+    "height": 5,
+    "client": "TEST",
+    "teams": {
+        "TEST": { "commander": "KANYE", "faction": "GREEN" },
+        "TEST2": { "commander": "KANYE", "faction": "GOLD" }
+    },
+    "entities": [
+        { "x": 1, "y": 1, "type": "ENTWICKLUNG", "team": "TEST" },
+        { "x": 3, "y": 3, "type": "ENTWICKLUNG", "team": "TEST2" }
+    ],
+    "objectives": {},
+    "prelogue": [],
+    "postlogue": [],
+    "defeat": [],
+    "localization": [],
+    "events": {},
+    "flags": [],
+    "data": {
+        "GROUND": [1,25],
+        "DECORATION": [44,1,48,3,32,1,56,1,0,3,52,1,56,1,0,1,20,1,0,1,52,1,56,1,0,3,52,1,45,1,60,3,36,1],
+        "CLOUD": [0,25],
+        "FLAG": [0,25],
+        "TEAM": [0,25]
+    }
+}
