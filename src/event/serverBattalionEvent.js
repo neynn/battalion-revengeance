@@ -15,10 +15,14 @@ ServerBattalionEvent.prototype.onTileExplode = function(gameContext, action) {
     const actionIntent = createTileExplodeIntent(layer, x, y);
 
     actionRouter.forceEnqueue(gameContext, actionIntent);
+
+    //No trigger sent for onTileExplode
 }
 
 ServerBattalionEvent.prototype.onSpawn = function(gameContext, action) {
     const { setup } = action;
 
     spawnServerEntity(gameContext, setup);
+
+    gameContext.sendEventTrigger(this.id);
 }

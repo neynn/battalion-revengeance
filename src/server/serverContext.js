@@ -42,7 +42,6 @@ export const ServerGameContext = function(serverApplication, id) {
 
     this.world.actionQueue.toFlush();
     this.world.actionQueue.events.on(ActionQueue.EVENT.PLAN_FINISHED, ({ plan }) => this.sendExecutionPlan(plan), { permanent: true });
-    this.world.eventHandler.events.on(WorldEventHandler.EVENT.WORLD_EVENT_TRIGGERED, ({ id }) => this.sendEventTrigger(id));
 }
 
 ServerGameContext.prototype = Object.create(Room.prototype);
@@ -65,14 +64,14 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
 
     switch(type) {
         case GAME_EVENT.MP_CLIENT_START_MATCH: {
-            createPvPServerMap(this, "volcano")
+            createPvPServerMap(this, "presus")
             .then(() => {
                 for(let i = 0; i < this.members.length; i++) {
                     const member = this.members[i];
-                    const memberID = member.getID()
+                    const memberID = member.getID();
 
                     this.sendMessage(GAME_EVENT.MP_SERVER_LOAD_MAP, {
-                        "mapID": "volcano",
+                        "mapID": "presus",
                         "client": this.teamManager.activeTeams[i] //HACKY!
                     }, memberID);
                 }
@@ -86,7 +85,6 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
             if(this.readyClients >= this.members.length && !this.isStarted) {
                 this.broadcastMessage(GAME_EVENT.MP_SERVER_START_MAP, {});
                 this.isStarted = true;
-                this.world.turnManager.getNextActor(this);
             }
 
             break;

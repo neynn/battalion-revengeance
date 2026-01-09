@@ -1,6 +1,5 @@
 export const TurnActor = function(id) {
     this.id = id;
-    this.maxActions = 1;
     this.turn = 0;
     this.actionIntents = [];
     this.maxIntents = 10;
@@ -16,7 +15,7 @@ TurnActor.prototype.save = function() {
 
 TurnActor.prototype.update = function(gameContext) {}
 
-TurnActor.prototype.activeUpdate = function(gameContext, actionsLeft) {}
+TurnActor.prototype.activeUpdate = function(gameContext) {}
 
 TurnActor.prototype.onTurnStart = function(gameContext) {}
 
@@ -30,10 +29,6 @@ TurnActor.prototype.startTurn = function(gameContext) {
 TurnActor.prototype.endTurn = function(gameContext) {
     this.actionIntents.length = 0;
     this.onTurnEnd(gameContext);
-}
-
-TurnActor.prototype.setMaxActions = function(maxActions) {
-    this.maxActions = maxActions;
 }
 
 TurnActor.prototype.getID = function() {

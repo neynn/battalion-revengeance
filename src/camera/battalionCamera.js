@@ -171,16 +171,11 @@ BattalionCamera.prototype.drawInfo = function(gameContext, display) {
     const { turnManager } = world;
     const { currentRound, currentTurn } = turnManager;
     const { context } = display;
-    const actor = turnManager.getCurrentActor();
     
     drawShape(display, SHAPE.RECTANGLE, "#222222", 0, 0, 100, 30);
 
     context.fillStyle = "#ff0000";
     context.fillText(`Turn ${currentTurn} | Round ${currentRound}`, 0, 10);
-
-    if(actor) {
-        context.fillText(`Actor ${actor.name} ${actor.turn}`, 0, 20);
-    }
 }
 
 BattalionCamera.prototype.drawBuildings = function(display, worldMap, realTime, deltaTime) {

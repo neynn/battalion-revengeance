@@ -258,8 +258,6 @@ Team.prototype.generateBuildingCash = function(gameContext) {
 
     this.funds += totalCash;
 
-    console.log(totalCash, this.funds, "THIS TURN");
-
     return totalCash;
 }
 

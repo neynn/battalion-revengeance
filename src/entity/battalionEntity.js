@@ -1158,8 +1158,8 @@ BattalionEntity.prototype.onTurnStart = function(gameContext) {
     this.setFlag(BattalionEntity.FLAG.CAN_MOVE);
     this.clearLastAttacker();
     this.takeTerrainDamage(gameContext);
-    //TODO: THIS CAUSES HEAVY BUGS
-    
+    //TODO: Terrain damage should NOT be computed here, heavy bugs!
+
     //console.log("My turn started", this);
 } 
 

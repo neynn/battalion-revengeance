@@ -125,7 +125,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
     });
 }
 
-Player.prototype.activeUpdate = function(gameContext, remainingActions) {
+Player.prototype.activeUpdate = function(gameContext) {
     this.tryEnqueueAction(gameContext);
 }
 

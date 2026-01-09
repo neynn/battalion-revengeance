@@ -1,18 +1,10 @@
-import { EventEmitter } from "../../events/eventEmitter.js";
 import { WorldEvent } from "./worldEvent.js";
 
 export const WorldEventHandler = function() {
     this.worldEvents = [];
     this.triggeredEvents = new Set();
     this.allowSelfExecution = true;
-
-    this.events = new EventEmitter();
-    this.events.register(WorldEventHandler.EVENT.WORLD_EVENT_TRIGGERED);
 }
-
-WorldEventHandler.EVENT = {
-    WORLD_EVENT_TRIGGERED: "WORLD_EVENT_TRIGGERED"
-};
 
 WorldEventHandler.prototype.disableSelf = function() {
     this.allowSelfExecution = false;
@@ -96,10 +88,6 @@ WorldEventHandler.prototype.triggerEvent = function(gameContext, event) {
         this.triggeredEvents.add(id);
 
         currentEvent.execute(gameContext);
-
-        this.events.emit(WorldEventHandler.EVENT.WORLD_EVENT_TRIGGERED, {
-            "id": id
-        });
 
         if(next !== null) {
             currentEvent = this.getEvent(next);

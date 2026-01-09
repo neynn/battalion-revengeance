@@ -18,3 +18,4 @@ TurnManager is bugged to high hell.
 
 MP_SERVER_SPAWN_ENTITY <- is an event.
 onTurnStart causes heavy damage.
+BUG: Entities have their flags set before they start -> other players see markers.

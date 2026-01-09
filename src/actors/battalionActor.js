@@ -37,18 +37,15 @@ BattalionActor.prototype.setTeam = function(teamID) {
 }
 
 BattalionActor.prototype.onTurnStart = function(gameContext) {
-    const { teamManager, world } = gameContext;
-    const { turnManager } = world;
-    const globalTurn = turnManager.getGlobalTurn();
+    const { teamManager } = gameContext;
 
-    if(globalTurn <= 1) {
-        return;
-    }
+    //Only register after turn 1. TODO
+    if(this.turn > 1) {
+        const team = teamManager.getTeam(this.teamID);
 
-    const team = teamManager.getTeam(this.teamID);
-
-    if(team) {
-        team.onTurnStart(gameContext, this.turn);
+        if(team) {
+            team.onTurnStart(gameContext, this.turn);
+        }
     }
 }
 
@@ -61,7 +58,7 @@ BattalionActor.prototype.onTurnEnd = function(gameContext) {
     }
 }
 
-BattalionActor.prototype.activeUpdate = function(gameContext, remainingActions) {}
+BattalionActor.prototype.activeUpdate = function(gameContext) {}
 
 BattalionActor.prototype.loadCommander = function(gameContext, typeID) {
     const { typeRegistry } = gameContext;
