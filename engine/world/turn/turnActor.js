@@ -23,6 +23,7 @@ TurnActor.prototype.onTurnEnd = function(gameContext) {}
 
 TurnActor.prototype.startTurn = function(gameContext) {
     this.turn++;
+    this.actionIntents.length = 0;
     this.onTurnStart(gameContext);
 }
 

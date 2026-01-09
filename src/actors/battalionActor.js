@@ -38,14 +38,10 @@ BattalionActor.prototype.setTeam = function(teamID) {
 
 BattalionActor.prototype.onTurnStart = function(gameContext) {
     const { teamManager } = gameContext;
+    const team = teamManager.getTeam(this.teamID);
 
-    //Only register after turn 1. TODO
-    if(this.turn > 1) {
-        const team = teamManager.getTeam(this.teamID);
-
-        if(team) {
-            team.onTurnStart(gameContext, this.turn);
-        }
+    if(team) {
+        team.onTurnStart(gameContext, this.turn);
     }
 }
 

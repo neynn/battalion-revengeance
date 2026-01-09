@@ -32,7 +32,6 @@ export const BattalionEntity = function(id) {
     this.teamID = null;
     this.transportID = null;
     this.lastAttacker = EntityManager.ID.INVALID;
-    this.flags = BattalionEntity.FLAG.CAN_MOVE;
 }
 
 BattalionEntity.HYBRID_ENABLED = false;
@@ -1152,23 +1151,17 @@ BattalionEntity.prototype.setLastAttacker = function(entityID) {
     }
 }
 
-BattalionEntity.prototype.onTurnStart = function(gameContext) {
+BattalionEntity.prototype.onTurnStart = function() {
     this.clearFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_FIRED);
     this.clearFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
     this.setFlag(BattalionEntity.FLAG.CAN_MOVE);
     this.clearLastAttacker();
-    //this.takeTerrainDamage(gameContext);
-    //TODO: Terrain damage should NOT be computed here, heavy bugs!
-
-    //console.log("My turn started", this);
 } 
 
-BattalionEntity.prototype.onTurnEnd = function(gameContext) {
+BattalionEntity.prototype.onTurnEnd = function() {
     this.setFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_FIRED);
     this.clearFlag(BattalionEntity.FLAG.CAN_MOVE);
     this.clearLastAttacker();
-
-    //console.log("My turn ended", this);
 }
 
 BattalionEntity.prototype.triggerBewegungskrieg = function() {

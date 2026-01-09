@@ -34,6 +34,6 @@ ClientBattalionEvent.prototype.onTileExplode = function(gameContext, action) {
 
 ClientBattalionEvent.prototype.onSpawn = function(gameContext, action) {
     const { setup } = action;
-
+    
     spawnClientEntity(gameContext, setup);
 }

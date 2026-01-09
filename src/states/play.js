@@ -17,7 +17,7 @@ PlayState.prototype.onEnter = async function(gameContext, stateMachine, transiti
     eventHandler.enableSelf();
     actionRouter.toClient();
 
-    createStoryMap(gameContext, "volcano")
+    createStoryMap(gameContext, "presus")
     .then(() => {
         loadStoryMap(gameContext, {
             "edits": [],

@@ -264,41 +264,53 @@ Team.prototype.generateBuildingCash = function(gameContext) {
 Team.prototype.onTurnStart = function(gameContext, turn) {
     const { world, actionRouter } = gameContext;
     const { entityManager } = world;
-    const deadEntities = [];
-    const uncloakedEntities = [];
 
-    for(const entityID of this.entities) {
-        const entity = entityManager.getEntity(entityID);
+    if(turn <= 1) {
+        for(const entityID of this.entities) {
+            const entity = entityManager.getEntity(entityID);
 
-        if(entity) {
-            entity.onTurnStart(gameContext);
+            if(entity) {
+                entity.onTurnStart();  
+            }
+        }
+    } else {
+        const deadEntities = [];
+        const uncloakedEntities = [];
 
-            if(entity.isDead()) {
-                deadEntities.push(entityID);
-            } else {
-                if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.RADAR)) {
-                    const uncloaked = entity.getUncloakedEntitiesAtSelf(gameContext);
+        for(const entityID of this.entities) {
+            const entity = entityManager.getEntity(entityID);
 
-                    for(const uEntity of uncloaked) {
-                        const uEntityID = uEntity.getID();
+            if(entity) {
+                entity.onTurnStart();
+                entity.takeTerrainDamage(gameContext);
 
-                        if(!uncloakedEntities.includes(uEntityID)) {
-                            uncloakedEntities.push(uEntityID);
+                if(entity.isDead()) {
+                    deadEntities.push(entityID);
+                } else {
+                    if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.RADAR)) {
+                        const uncloaked = entity.getUncloakedEntitiesAtSelf(gameContext);
+
+                        for(const uEntity of uncloaked) {
+                            const uEntityID = uEntity.getID();
+
+                            if(!uncloakedEntities.includes(uEntityID)) {
+                                uncloakedEntities.push(uEntityID);
+                            }
                         }
                     }
                 }
             }
         }
-    }
 
-    this.generateBuildingCash(gameContext);
+        this.generateBuildingCash(gameContext);
 
-    if(deadEntities.length !== 0) {
-        actionRouter.forceEnqueue(gameContext, ActionHelper.createDeathRequest(gameContext, deadEntities));
-    }
+        if(deadEntities.length !== 0) {
+            actionRouter.forceEnqueue(gameContext, ActionHelper.createDeathRequest(gameContext, deadEntities));
+        }
 
-    if(uncloakedEntities.length !== 0) {
-        actionRouter.forceEnqueue(gameContext, ActionHelper.createUncloakRequest(uncloakedEntities));
+        if(uncloakedEntities.length !== 0) {
+            actionRouter.forceEnqueue(gameContext, ActionHelper.createUncloakRequest(uncloakedEntities));
+        }
     }
 }
 

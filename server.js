@@ -8,7 +8,7 @@ const io = new Server(server, {
     cors: {
         origin: [
             "http://127.0.0.1:5500",
-            "https://neynn.github.io/battalion-revengeance"
+            "https://neynn.github.io"
         ],
         methods: ["GET", "POST"],
         credentials: true
@@ -25,4 +25,4 @@ const resources = await assetLoader.loadResourcesDev(pathHandler, pathHandler.ge
 
 serverApplication.init(resources);
 
-server.listen(3000, () => console.log("Server started!")); 
+server.listen(3000, "0.0.0.0", () => console.log("Server started!")); 
