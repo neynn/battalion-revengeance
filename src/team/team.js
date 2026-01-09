@@ -264,24 +264,17 @@ Team.prototype.generateBuildingCash = function(gameContext) {
 Team.prototype.onTurnStart = function(gameContext, turn) {
     const { world, actionRouter } = gameContext;
     const { entityManager } = world;
+    const deadEntities = [];
+    const uncloakedEntities = [];
 
-    if(turn <= 1) {
-        for(const entityID of this.entities) {
-            const entity = entityManager.getEntity(entityID);
+    for(const entityID of this.entities) {
+        const entity = entityManager.getEntity(entityID);
 
-            if(entity) {
-                entity.onTurnStart();  
-            }
-        }
-    } else {
-        const deadEntities = [];
-        const uncloakedEntities = [];
+        if(entity) {
+            entity.onTurnStart();  
 
-        for(const entityID of this.entities) {
-            const entity = entityManager.getEntity(entityID);
-
-            if(entity) {
-                entity.onTurnStart();
+            //Entities are immune to taking damage/proccing on their first turn.
+            if(entity.turns > 1) {
                 entity.takeTerrainDamage(gameContext);
 
                 if(entity.isDead()) {
@@ -301,16 +294,19 @@ Team.prototype.onTurnStart = function(gameContext, turn) {
                 }
             }
         }
+    }
 
+    if(deadEntities.length !== 0) {
+        actionRouter.forceEnqueue(gameContext, ActionHelper.createDeathRequest(gameContext, deadEntities));
+    }
+
+    if(uncloakedEntities.length !== 0) {
+        actionRouter.forceEnqueue(gameContext, ActionHelper.createUncloakRequest(uncloakedEntities));
+    }
+
+    //Do not generate cash on the first turn.
+    if(turn > 1) {
         this.generateBuildingCash(gameContext);
-
-        if(deadEntities.length !== 0) {
-            actionRouter.forceEnqueue(gameContext, ActionHelper.createDeathRequest(gameContext, deadEntities));
-        }
-
-        if(uncloakedEntities.length !== 0) {
-            actionRouter.forceEnqueue(gameContext, ActionHelper.createUncloakRequest(uncloakedEntities));
-        }
     }
 }
 

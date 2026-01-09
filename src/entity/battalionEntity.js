@@ -32,6 +32,7 @@ export const BattalionEntity = function(id) {
     this.teamID = null;
     this.transportID = null;
     this.lastAttacker = EntityManager.ID.INVALID;
+    this.turns = 0;
 }
 
 BattalionEntity.HYBRID_ENABLED = false;
@@ -76,7 +77,8 @@ BattalionEntity.prototype.save = function() {
         "direction": this.direction,
         "state": this.state,
         "name": this.customName,
-        "desc": this.customDesc
+        "desc": this.customDesc,
+        "turns": this.turns
     };
 }
 
@@ -88,7 +90,8 @@ BattalionEntity.prototype.load = function(gameContext, data) {
     this.transportID = data.transport;
     this.state = data.state;
     this.customID = data.id;
-
+    this.turns = data.turns;
+    
     this.setDirection(data.direction);
     this.setHealth(data.health);
     this.onLoad(gameContext, data);
@@ -1156,6 +1159,7 @@ BattalionEntity.prototype.onTurnStart = function() {
     this.clearFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
     this.setFlag(BattalionEntity.FLAG.CAN_MOVE);
     this.clearLastAttacker();
+    this.turns++;
 } 
 
 BattalionEntity.prototype.onTurnEnd = function() {
