@@ -112,6 +112,9 @@ TurnManager.prototype.setCurrentActor = function(gameContext, actorID) {
         this.globalTurn++;
         this.currentActor = actor;
         this.currentActor.startTurn(gameContext);
+        this.events.emit(TurnManager.EVENT.NEXT_TURN, {
+            "turn": this.globalTurn
+        });
     }
 }
 
