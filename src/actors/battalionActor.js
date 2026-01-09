@@ -61,9 +61,7 @@ BattalionActor.prototype.onTurnEnd = function(gameContext) {
     }
 }
 
-BattalionActor.prototype.activeUpdate = function(gameContext, remainingActions) {
-    this.requestTurnEnd();
-}
+BattalionActor.prototype.activeUpdate = function(gameContext, remainingActions) {}
 
 BattalionActor.prototype.loadCommander = function(gameContext, typeID) {
     const { typeRegistry } = gameContext;

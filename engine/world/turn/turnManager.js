@@ -229,9 +229,5 @@ TurnManager.prototype.update = function(gameContext) {
 
     if(actor) {
         actor.activeUpdate(gameContext, this.actionsLeft);
-
-        if(actor.endRequested) {
-            this.actionsLeft = 0;
-        }
     }
 }

@@ -4,7 +4,6 @@ import { despawnEntity } from "../../systems/spawn.js";
 export const DeathAction = function() {
     Action.call(this);
 
-    this.priority = Action.PRIORITY.HIGH;
     this.opacity = 1;
     this.entities = [];
 }

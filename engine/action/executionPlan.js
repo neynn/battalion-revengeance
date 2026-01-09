@@ -34,6 +34,15 @@ ExecutionPlan.prototype.setState = function(stateID) {
     this.state = stateID;
 }
 
+ExecutionPlan.prototype.toJSONServer = function() {
+    return {
+        "id": this.id,
+        "type": this.type,
+        "data": this.data,
+        "intent": this.intent
+    }
+}
+
 ExecutionPlan.prototype.toJSON = function() {
     const next = [];
 

@@ -1,20 +1,37 @@
+import { TypeRegistry } from "../../src/type/typeRegistry.js";
 import { Action } from "../action/action.js";
+import { ActionIntent } from "../action/actionIntent.js";
 import { ActionRouter } from "./actionRouter.js";
+
+const MAX_ACTIONS_PER_TICK = 1000;
 
 export const ServerActionRouter = function() {
     ActionRouter.call(this);
+
+    this.receivable.add(TypeRegistry.ACTION_TYPE.MOVE);
+    this.receivable.add(TypeRegistry.ACTION_TYPE.ATTACK);
+    this.receivable.add(TypeRegistry.ACTION_TYPE.END_TURN);
 }
 
 ServerActionRouter.prototype = Object.create(ActionRouter.prototype);
 ServerActionRouter.prototype.constructor = ServerActionRouter;
 
-ServerActionRouter.prototype.dispatch = function(gameContext, executionPlan) {
-    const { world, client } = gameContext;
+ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
+    const { world } = gameContext;
     const { actionQueue } = world;
-    const { socket } = client;
+    let count = 0;
 
-    actionQueue.enqueue(executionPlan);
-    //SEND THE PLAN TO CLIENTS!
+    while(count < MAX_ACTIONS_PER_TICK && actionQueue.isRunning()) {
+        actionQueue.update(gameContext);
+        count++;
+    }
+}
+
+ServerActionRouter.prototype.dispatch = function(gameContext, executionPlan) {
+    const { world } = gameContext;
+    const { actionQueue } = world;
+
+    //Keep dispatch for now. Gets called in TurnActor.
 }
 
 ServerActionRouter.prototype.forceEnqueue = function(gameContext, actionIntent) {
@@ -27,5 +44,28 @@ ServerActionRouter.prototype.forceEnqueue = function(gameContext, actionIntent) 
     }
 
     actionQueue.enqueue(executionPlan, Action.PRIORITY.HIGH);
-    //SEND THE PLAN TO CLIENTS!
+    this.updateActionQueue();
+}
+
+ServerActionRouter.prototype.onPlayerIntent = function(gameContext, clientID, intent) {
+    const { world } = gameContext;
+    const { actionQueue } = world;
+    const { actor, type, data } = intent;
+
+    if(!this.receivable.has(type)) {
+        return;
+    }
+    
+    const actionIntent = new ActionIntent(type, data);
+
+    actionIntent.setActor(actor);
+
+    const executionPlan = actionQueue.createExecutionPlan(gameContext, actionIntent);
+
+    if(!executionPlan) {
+        return;
+    }
+
+    actionQueue.enqueue(executionPlan);
+    this.updateActionQueue(gameContext);
 }

@@ -414,6 +414,31 @@ export const createStoryMap = async function(gameContext, sourceID) {
     }
 }
 
+export const createStaticClientMPMap = async function(gameContext, sourceID, client) {
+    const { pathHandler, mapRepository, world, language } = gameContext;
+    const { mapManager } = world;
+    const mapSource = mapRepository.getMapSource(sourceID);
+    const [file, translations] = await Promise.all([mapSource.promiseFile(pathHandler), mapSource.promiseTranslations(pathHandler)]);
+
+    if(file !== null) {
+        const { width, height, data } = file;
+        const mapID = mapManager.getNextID();
+        const worldMap = new BattalionMap(mapID, width, height);
+
+        worldMap.setSource(mapSource);
+        worldMap.decodeLayers(data);
+
+        if(translations !== null) {
+            language.registerMapTranslations(translations);
+        }
+
+        mapManager.addMap(worldMap);
+        mapManager.enableMap(mapID);
+
+        loadClientMap(gameContext, worldMap, file, client);
+    }
+}
+
 export const createPvPServerMap = async function(gameContext, sourceID) {
     const { pathHandler, mapRepository, world } = gameContext;
     const { mapManager } = world;

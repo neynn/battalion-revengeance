@@ -13,6 +13,10 @@ import { UncloakAction } from "../action/types/uncloak.js";
 import { TeamManager } from "../team/teamManager.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { ServerActionRouter } from "../../engine/router/serverActionRouter.js";
+import { GAME_EVENT } from "../enums.js";
+import { createPvPServerMap } from "../systems/map.js";
+import { ActionQueue } from "../../engine/action/actionQueue.js";
+import { WorldEventHandler } from "../../engine/world/event/worldEventHandler.js";
 
 export const ServerGameContext = function(serverApplication, id) {
     Room.call(this, id);
@@ -33,13 +37,73 @@ export const ServerGameContext = function(serverApplication, id) {
     this.teamManager = new TeamManager();
     this.states = new StateMachine(this);
     this.actionRouter = new ServerActionRouter();
+    this.readyClients = 0;
+
+    this.world.actionQueue.toFlush();
+    this.world.actionQueue.events.on(ActionQueue.EVENT.PLAN_FINISHED, ({ plan }) => this.sendExecutionPlan(plan), { permanent: true });
+    this.world.eventHandler.events.on(WorldEventHandler.EVENT.WORLD_EVENT_TRIGGERED, ({ id }) => this.sendEventTrigger(id));
 }
 
 ServerGameContext.prototype = Object.create(Room.prototype);
 ServerGameContext.prototype.constructor = ServerGameContext;
 
-ServerGameContext.prototype.processMessage = function(messenger, message) {
-    console.log(messenger, message);
+ServerGameContext.prototype.sendEventTrigger = function(eventID) {
+    this.broadcastMessage(GAME_EVENT.MP_SERVER_TRIGGER_EVENT, {
+        "eventID": eventID
+    });
+}
+
+ServerGameContext.prototype.sendExecutionPlan = function(plan) {
+    this.broadcastMessage(GAME_EVENT.MP_SERVER_EXECUTE_PLAN, {
+        "plan": plan.toJSONServer()
+    });
+}
+
+ServerGameContext.prototype.processMessage = function(messengerID, message) {
+    const { type, payload } = message;
+
+    switch(type) {
+        case GAME_EVENT.MP_CLIENT_START_MATCH: {
+            createPvPServerMap(this, "presus")
+            .then(() => {
+                for(let i = 0; i < this.members.length; i++) {
+                    const member = this.members[i];
+                    const memberID = member.getID()
+
+                    this.sendMessage(GAME_EVENT.MP_SERVER_LOAD_MAP, {
+                        "mapID": "presus",
+                        "client": this.teamManager.activeTeams[i] //HACKY!
+                    }, memberID);
+                }
+            });
+
+            break;
+        }
+        case GAME_EVENT.MP_CLIENT_MAP_LOADED: {
+            this.readyClients++;
+
+            if(this.readyClients >= this.members.length && !this.isStarted) {
+                this.broadcastMessage(GAME_EVENT.MP_SERVER_START_MAP, {});
+                this.isStarted = true;
+                this.world.turnManager.getNextActor(this);
+            }
+
+            break;
+        }
+        case GAME_EVENT.MP_CLIENT_ACTION_INTENT: {
+            const { intent } = payload;
+
+            if(this.isStarted) {
+                this.actionRouter.onPlayerIntent(this, messengerID, intent);
+            }
+
+            break;
+        }
+        default: {
+            console.error("Unsupported event!");
+            break;
+        }
+    }
 }
 
 ServerGameContext.prototype.init = function() {

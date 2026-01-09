@@ -1,6 +1,8 @@
 import { getRandomElement } from "../../../engine/math/math.js";
 import { Socket } from "../../../engine/network/socket.js";
 import { State } from "../../../engine/state/state.js";
+import { GAME_EVENT } from "../../enums.js";
+import { createStaticClientMPMap } from "../../systems/map.js";
 import { ArenaInterface } from "./arenaInterface.js";
 
 export const ArenaState = function() {}
@@ -11,12 +13,57 @@ ArenaState.prototype = Object.create(State.prototype);
 ArenaState.prototype.constructor = ArenaState;
 
 ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
-    const { client } = gameContext;
+    const { client, actionRouter, world } = gameContext;
+    const { eventHandler } = world;
     const { socket } = client;
 
-    socket.events.on(Socket.EVENT.CONNECTED_TO_SERVER, ({id}) => {
+    eventHandler.disableSelf();
+    actionRouter.toServer();
+
+    socket.events.on(Socket.EVENT.CONNECTED_TO_SERVER, ({ id }) => {
         console.log(id);
         socket.registerName(NAME);
+    });
+
+    socket.events.on(Socket.EVENT.MESSAGE_FROM_SERVER, ({ message }) => {
+        const { type, payload } = message;
+
+        switch(type) {
+            case GAME_EVENT.MP_SERVER_LOAD_MAP: {
+                const { mapID, client } = payload;
+
+                createStaticClientMPMap(gameContext, mapID, client)
+                .then(() => {
+                    socket.messageRoom(GAME_EVENT.MP_CLIENT_MAP_LOADED, {});
+                });
+
+                break;
+            }
+            case GAME_EVENT.MP_SERVER_LOAD_MAP_CUSTOM: {
+
+                break;
+            }
+            case GAME_EVENT.MP_SERVER_START_MAP: {
+                console.log("MAP_STARTED");
+                break;
+            }
+            case GAME_EVENT.MP_SERVER_EXECUTE_PLAN: {
+                const { plan } = payload;
+
+                actionRouter.fromServer(gameContext, plan);
+                break;
+            }
+            case GAME_EVENT.MP_SERVER_TRIGGER_EVENT: {
+                const { eventID } = payload;
+
+                eventHandler.forceTrigger(eventID);
+                break;
+            }
+            default: {
+                console.error("Unsupported event!", type);
+                break;
+            }
+        }
     });
 
     const arenaInterface = new ArenaInterface();

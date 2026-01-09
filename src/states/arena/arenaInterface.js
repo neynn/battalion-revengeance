@@ -1,6 +1,7 @@
 import { parseInterfaceByID } from "../../../engine/ui/parser.js";
 import { UserInterface } from "../../../engine/ui/userInterface.js";
 import { BattalionContext } from "../../battalionContext.js";
+import { GAME_EVENT } from "../../enums.js";
 
 export const ArenaInterface = function() {
     UserInterface.call(this);
@@ -32,8 +33,8 @@ ArenaInterface.prototype.load = function(gameContext, stateMachine) {
     });
 
     this.getElement("BUTTON_START_INSTANCE").setClick(() => {
-        socket.messageRoom(0, {
-            "message": "TEST MESSAGE"
+        socket.messageRoom(GAME_EVENT.MP_CLIENT_START_MATCH, {
+            //map-id
         });
     });
 }

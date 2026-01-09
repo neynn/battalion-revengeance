@@ -1,6 +1,5 @@
 export const TurnActor = function(id) {
     this.id = id;
-    this.endRequested = false;
     this.maxActions = 1;
     this.turn = 0;
     this.actionIntents = [];
@@ -24,7 +23,6 @@ TurnActor.prototype.onTurnStart = function(gameContext) {}
 TurnActor.prototype.onTurnEnd = function(gameContext) {}
 
 TurnActor.prototype.startTurn = function(gameContext) {
-    this.endRequested = false;
     this.turn++;
     this.onTurnStart(gameContext);
 }
@@ -32,10 +30,6 @@ TurnActor.prototype.startTurn = function(gameContext) {
 TurnActor.prototype.endTurn = function(gameContext) {
     this.actionIntents.length = 0;
     this.onTurnEnd(gameContext);
-}
-
-TurnActor.prototype.requestTurnEnd = function() {
-    this.endRequested = true;
 }
 
 TurnActor.prototype.setMaxActions = function(maxActions) {

@@ -130,18 +130,24 @@ Room.prototype.appointNextLeader = function() {
     return true;
 }
 
-Room.prototype.sendMessage = function(message, clientID) {
-    if(!message) {
-        return false;
-    }
+Room.prototype.broadcastMessage = function(type, payload) {
+    const message = {
+        "type": type,
+        "payload": payload
+    };
 
-    if(clientID && this.hasMember(clientID)) {
+    this.onMessageBroadcast(message);
+}
+
+Room.prototype.sendMessage = function(type, payload, clientID) {
+    if(this.hasMember(clientID)) {
+        const message = {
+            "type": type,
+            "payload": payload
+        };
+
         this.onMessageSend(message, clientID);
-    } else {
-        this.onMessageBroadcast(message);
     }
-
-    return true;
 }
 
 Room.prototype.start = function() {

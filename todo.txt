@@ -7,3 +7,11 @@ TODO:
     - 3. Send/Receive events from server. The client is NOT allowed to execute events in MP
     - 4. ServerBroadcastEvent like CASH_UPDATE that gets applied once per turn.
     - 5. View must be ABOVE entity -> View hold sprite & entity.
+
+Client clicks "START"
+Server loads map async
+Server tells clients to LOAD_MAP or LOAD_MAP_CUSTOM. Assume LOAD_MAP for now. Also SEND each actor the "client" for the map.
+When CLIENT loaded -> send MP_CLIENT_MAP_LOADED to server.
+When ALL CLIENTS loaded -> send MP_SERVER_START_MAP to clients
+SERVER EXECUTES THE EVENT!!!
+TurnManager is bugged to high hell.

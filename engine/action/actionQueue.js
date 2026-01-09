@@ -14,6 +14,7 @@ export const ActionQueue = function() {
 
     this.events = new EventEmitter();
     this.events.register(ActionQueue.EVENT.INVALID_PLAN);
+    this.events.register(ActionQueue.EVENT.PLAN_FINISHED);
 }
 
 ActionQueue.MAX_ACTIONS = 100;
@@ -26,7 +27,8 @@ ActionQueue.STATE = {
 };
 
 ActionQueue.EVENT = {
-    INVALID_PLAN: "INVALID_PLAN"
+    INVALID_PLAN: "INVALID_PLAN",
+    PLAN_FINISHED: "PLAN_FINISHED"
 };
 
 ActionQueue.prototype.update = function(gameContext) {
@@ -90,6 +92,11 @@ ActionQueue.prototype.endExecutionPlan = function() {
     }
 
     this.current.setState(ExecutionPlan.STATE.FINISHED);
+
+    this.events.emit(ActionQueue.EVENT.PLAN_FINISHED, {
+        "plan": this.current
+    });
+
     this.isSkipping = false;
     this.current = null;
 }

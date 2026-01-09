@@ -14,6 +14,14 @@ WorldEventHandler.EVENT = {
     WORLD_EVENT_TRIGGERED: "WORLD_EVENT_TRIGGERED"
 };
 
+WorldEventHandler.prototype.disableSelf = function() {
+    this.allowSelfExecution = false;
+}
+
+WorldEventHandler.prototype.enableSelf = function() {
+    this.allowSelfExecution = true;
+}
+
 WorldEventHandler.prototype.exit = function() {
     this.worldEvents.length = 0;
     this.triggeredEvents.clear();
