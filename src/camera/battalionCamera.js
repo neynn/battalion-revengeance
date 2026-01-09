@@ -65,8 +65,8 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
         if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.perspectives.has(teamID)) {
             view.drawCloaked(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
         } else {
-            view.drawCloaked(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
-            //view.drawNormal(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+            //view.drawCloaked(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+            view.drawNormal(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
         }
 
         const { positionX, positionY } = view;

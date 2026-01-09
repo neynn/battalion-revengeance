@@ -1157,7 +1157,7 @@ BattalionEntity.prototype.onTurnStart = function(gameContext) {
     this.clearFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
     this.setFlag(BattalionEntity.FLAG.CAN_MOVE);
     this.clearLastAttacker();
-    this.takeTerrainDamage(gameContext);
+    //this.takeTerrainDamage(gameContext);
     //TODO: Terrain damage should NOT be computed here, heavy bugs!
 
     //console.log("My turn started", this);

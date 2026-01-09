@@ -1,7 +1,7 @@
 {
     "music": null,
-    "width": 5,
-    "height": 5,
+    "width": 9,
+    "height": 9,
     "client": "TEST",
     "teams": {
         "TEST": { "commander": "KANYE", "faction": "GREEN" },
@@ -9,7 +9,9 @@
     },
     "entities": [
         { "x": 1, "y": 1, "type": "ENTWICKLUNG", "team": "TEST" },
-        { "x": 3, "y": 3, "type": "ENTWICKLUNG", "team": "TEST2" }
+        { "x": 7, "y": 1, "type": "ENTWICKLUNG", "team": "TEST2" },
+        { "x": 1, "y": 3, "stealth": true, "type": "STEALTH_TANK", "team": "TEST" },
+        { "x": 7, "y": 3, "stealth": true, "type": "STEALTH_TANK", "team": "TEST2" }
     ],
     "objectives": {},
     "prelogue": [],
@@ -19,10 +21,10 @@
     "events": {},
     "flags": [],
     "data": {
-        "GROUND": [1,25],
-        "DECORATION": [44,1,48,3,32,1,56,1,0,3,52,1,56,1,0,1,20,1,0,1,52,1,56,1,0,3,52,1,45,1,60,3,36,1],
-        "CLOUD": [0,25],
-        "FLAG": [0,25],
-        "TEAM": [0,25]
+        "GROUND": [1,81],
+        "DECORATION": [44,1,48,7,32,1,56,1,0,7,52,1,56,1,0,7,52,1,56,1,0,7,52,1,56,1,0,7,52,1,56,1,0,7,52,1,56,1,0,7,52,1,56,1,0,7,52,1,45,1,60,7,36,1],
+        "CLOUD": [0,40,20,1,0,40],
+        "FLAG": [0,81],
+        "TEAM": [0,81]
     }
 }
