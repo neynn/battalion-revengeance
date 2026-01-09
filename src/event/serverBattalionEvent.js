@@ -1,7 +1,6 @@
 import { BattalionEvent } from "./battalionEvent.js";
-import { TILE_ID } from "../enums.js";
-import { BattalionMap } from "../map/battalionMap.js";
-import { despawnEntity, spawnServerEntity } from "../systems/spawn.js";
+import { spawnServerEntity } from "../systems/spawn.js";
+import { createTileExplodeIntent } from "../action/actionHelper.js";
 
 export const ServerBattalionEvent = function(id, actions) {
     BattalionEvent.call(this, id, actions);
@@ -11,18 +10,11 @@ ServerBattalionEvent.prototype = Object.create(BattalionEvent.prototype);
 ServerBattalionEvent.prototype.constructor = ServerBattalionEvent;
 
 ServerBattalionEvent.prototype.onTileExplode = function(gameContext, action) {
-    const { world } = gameContext;
-    const { mapManager } = world;
+    const { actionRouter } = gameContext;
     const { layer, x, y } = action;
-    const worldMap = mapManager.getActiveMap();
-    const index = BattalionMap.getLayerIndex(layer);
-    const entity = world.getEntityAt(x, y);
+    const actionIntent = createTileExplodeIntent(layer, x, y);
 
-    worldMap.editTile(index, x, y, TILE_ID.NONE);
-
-    if(entity !== null) {
-        despawnEntity(gameContext, entity);
-    }
+    actionRouter.forceEnqueue(gameContext, actionIntent);
 }
 
 ServerBattalionEvent.prototype.onSpawn = function(gameContext, action) {

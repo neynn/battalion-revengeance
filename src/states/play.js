@@ -9,8 +9,12 @@ PlayState.prototype = Object.create(State.prototype);
 PlayState.prototype.constructor = PlayState;
 
 PlayState.prototype.onEnter = async function(gameContext, stateMachine, transition) {
-    const { client } = gameContext;
+    const { client, world, actionRouter } = gameContext;
+    const { eventHandler } = world;
     const { router } = client;
+
+    eventHandler.enableSelf();
+    actionRouter.toClient();
 
     createStoryMap(gameContext, "presus")
     .then(() => loadStoryMap(gameContext, {

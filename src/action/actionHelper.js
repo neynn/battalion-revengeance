@@ -1,7 +1,14 @@
 import { ActionIntent } from "../../engine/action/actionIntent.js";
-import { DialogueHandler } from "../dialogue/dialogueHandler.js";
 import { COMMAND_TYPE } from "../enums.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
+
+export const createTileExplodeIntent = function(layerID, tileX, tileY) {
+    return new ActionIntent(TypeRegistry.ACTION_TYPE.EXPLODE_TILE, {
+        "layerID": layerID,
+        "tileX": tileX,
+        "tileY": tileY
+    });
+}
 
 export const createEndTurnIntent = function(actorID) {
     return new ActionIntent(TypeRegistry.ACTION_TYPE.END_TURN, {

@@ -21,6 +21,7 @@ EndTurnAction.prototype.execute = function(gameContext, data) {
     const { actorID } = data;
 
     turnManager.cancelActorActions();
+    turnManager.getNextActor(gameContext);
 }
 
 EndTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {

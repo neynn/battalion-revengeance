@@ -1,6 +1,5 @@
 import { GAME_EVENT } from "../../src/enums.js";
 import { TypeRegistry } from "../../src/type/typeRegistry.js";
-import { Action } from "../action/action.js";
 import { ActionIntent } from "../action/actionIntent.js";
 import { ExecutionPlan } from "../action/executionPlan.js";
 import { ActionRouter } from "./actionRouter.js";
@@ -55,6 +54,10 @@ ClientActionRouter.prototype.dispatch = function(gameContext, executionPlan) {
 }
 
 ClientActionRouter.prototype.forceEnqueue = function(gameContext, actionIntent) {
+    if(this.target === ClientActionRouter.TARGET.SERVER) {
+        return;
+    }
+
     const { world } = gameContext;
     const { actionQueue } = world;
     const executionPlan = actionQueue.createExecutionPlan(gameContext, actionIntent);
@@ -65,7 +68,7 @@ ClientActionRouter.prototype.forceEnqueue = function(gameContext, actionIntent) 
 
     switch(this.target) {
         case ClientActionRouter.TARGET.CLIENT: {
-            actionQueue.enqueue(executionPlan, Action.PRIORITY.HIGH);
+            actionQueue.enqueue(executionPlan);
             break;
         }
         case ClientActionRouter.TARGET.SERVER: {

@@ -15,3 +15,6 @@ When CLIENT loaded -> send MP_CLIENT_MAP_LOADED to server.
 When ALL CLIENTS loaded -> send MP_SERVER_START_MAP to clients
 SERVER EXECUTES THE EVENT!!!
 TurnManager is bugged to high hell.
+
+MP_SERVER_SPAWN_ENTITY <- is an event.
+onTurnStart causes heavy damage.

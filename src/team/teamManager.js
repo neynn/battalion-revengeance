@@ -192,6 +192,7 @@ TeamManager.prototype.updateOrder = function(gameContext) {
 
     if(order.length > 1) {
         turnManager.setActorOrder(order);
+        turnManager.getNextActor(gameContext); //TODO
     }
 }
 

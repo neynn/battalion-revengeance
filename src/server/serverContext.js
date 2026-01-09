@@ -17,6 +17,7 @@ import { GAME_EVENT } from "../enums.js";
 import { createPvPServerMap } from "../systems/map.js";
 import { ActionQueue } from "../../engine/action/actionQueue.js";
 import { WorldEventHandler } from "../../engine/world/event/worldEventHandler.js";
+import { ExplodeTileAction } from "../action/types/explodeTile.js";
 
 export const ServerGameContext = function(serverApplication, id) {
     Room.call(this, id);
@@ -107,6 +108,7 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
 }
 
 ServerGameContext.prototype.init = function() {
+    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.CAPTURE, new CaptureAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.MOVE, new MoveAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.HEAL, new HealAction());

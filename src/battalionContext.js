@@ -18,6 +18,7 @@ import { HealAction } from "./action/types/heal.js";
 import { CaptureAction } from "./action/types/capture.js";
 import { TILE_HEIGHT, TILE_WIDTH } from "./constants.js";
 import { ArenaState } from "./states/arena/arena.js";
+import { ExplodeTileAction } from "./action/types/explodeTile.js";
 
 export const BattalionContext = function() {
     ClientGameContext.call(this);
@@ -64,6 +65,7 @@ BattalionContext.prototype.init = function(resources) {
 
     this.typeRegistry.load(resources);
 
+    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.CAPTURE, new CaptureAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.MOVE, new MoveAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.HEAL, new HealAction());

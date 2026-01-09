@@ -8,6 +8,7 @@ export const TurnManager = function() {
     this.actionsLeft = 0;
     this.currentRound = 1;
     this.currentTurn = 0;
+    this.currentActor = null;
 
     this.events = new EventEmitter();
     this.events.register(TurnManager.EVENT.NEXT_TURN);
@@ -225,9 +226,9 @@ TurnManager.prototype.update = function(gameContext) {
         actor.update(gameContext);
     }
 
-    const actor = this.getNextActor(gameContext);
+    const currentActor = this.getCurrentActor();
 
-    if(actor) {
-        actor.activeUpdate(gameContext, this.actionsLeft);
+    if(currentActor) {
+        currentActor.activeUpdate(gameContext, this.actionsLeft);
     }
 }

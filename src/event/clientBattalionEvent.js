@@ -1,8 +1,6 @@
 import { BattalionEvent } from "./battalionEvent.js";
-import { TILE_ID } from "../enums.js";
-import { BattalionMap } from "../map/battalionMap.js";
-import { playExplosion } from "../systems/animation.js";
-import { despawnEntity, spawnClientEntity } from "../systems/spawn.js";
+import { spawnClientEntity } from "../systems/spawn.js";
+import { createTileExplodeIntent } from "../action/actionHelper.js";
 
 export const ClientBattalionEvent = function(id, actions) {
     BattalionEvent.call(this, id, actions);
@@ -27,21 +25,11 @@ ClientBattalionEvent.prototype.onDialogue = function(gameContext, action) {
 }
 
 ClientBattalionEvent.prototype.onTileExplode = function(gameContext, action) {
-    const { world } = gameContext;
-    const { mapManager } = world;
+    const { actionRouter } = gameContext;
     const { layer, x, y } = action;
-    const worldMap = mapManager.getActiveMap();
-    const index = BattalionMap.getLayerIndex(layer);
-    const entity = world.getEntityAt(x, y);
+    const actionIntent = createTileExplodeIntent(layer, x, y);
 
-    worldMap.editTile(index, x, y, TILE_ID.NONE);
-    worldMap.removeLocalization(x, y);
-
-    if(entity !== null) {
-        despawnEntity(gameContext, entity);
-    }
-
-    playExplosion(gameContext, x, y);
+    actionRouter.forceEnqueue(gameContext, actionIntent);
 }
 
 ClientBattalionEvent.prototype.onSpawn = function(gameContext, action) {

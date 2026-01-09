@@ -62,6 +62,7 @@ DeathAction.prototype.execute = function(gameContext, data) {
         const entity = entityManager.getEntity(entities[i]);
 
         entity.setHealth(0);
+
         despawnEntity(gameContext, entity);
     }
 }

@@ -53,7 +53,7 @@ Socket.prototype.connect = async function() {
         this.socket.disconnect();
     }
 
-    const address = prompt("???");
+    const address = prompt("???", "http://localhost:3000");
     const socket = io(address, {
         reconnectionAttempts: this.config.reconnectionAttempts,
         reconnectionDelay: this.config.reconnectionDelay,

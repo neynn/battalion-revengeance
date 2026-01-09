@@ -1,5 +1,4 @@
 import { TypeRegistry } from "../../src/type/typeRegistry.js";
-import { Action } from "../action/action.js";
 import { ActionIntent } from "../action/actionIntent.js";
 import { ActionRouter } from "./actionRouter.js";
 
@@ -11,20 +10,29 @@ export const ServerActionRouter = function() {
     this.receivable.add(TypeRegistry.ACTION_TYPE.MOVE);
     this.receivable.add(TypeRegistry.ACTION_TYPE.ATTACK);
     this.receivable.add(TypeRegistry.ACTION_TYPE.END_TURN);
+    this.isUpdating = false;
 }
 
 ServerActionRouter.prototype = Object.create(ActionRouter.prototype);
 ServerActionRouter.prototype.constructor = ServerActionRouter;
 
 ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
+    if(this.isUpdating) {
+        return;
+    }
+
     const { world } = gameContext;
     const { actionQueue } = world;
     let count = 0;
+
+    this.isUpdating = true;
 
     while(count < MAX_ACTIONS_PER_TICK && actionQueue.isRunning()) {
         actionQueue.update(gameContext);
         count++;
     }
+
+    this.isUpdating = false;
 }
 
 ServerActionRouter.prototype.dispatch = function(gameContext, executionPlan) {
@@ -43,8 +51,9 @@ ServerActionRouter.prototype.forceEnqueue = function(gameContext, actionIntent) 
         return;
     }
 
-    actionQueue.enqueue(executionPlan, Action.PRIORITY.HIGH);
-    this.updateActionQueue();
+    actionQueue.enqueue(executionPlan);
+
+    this.updateActionQueue(gameContext);
 }
 
 ServerActionRouter.prototype.onPlayerIntent = function(gameContext, clientID, intent) {
@@ -67,5 +76,6 @@ ServerActionRouter.prototype.onPlayerIntent = function(gameContext, clientID, in
     }
 
     actionQueue.enqueue(executionPlan);
+    
     this.updateActionQueue(gameContext);
 }

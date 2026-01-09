@@ -1158,8 +1158,9 @@ BattalionEntity.prototype.onTurnStart = function(gameContext) {
     this.setFlag(BattalionEntity.FLAG.CAN_MOVE);
     this.clearLastAttacker();
     this.takeTerrainDamage(gameContext);
-
-    console.log("My turn started", this);
+    //TODO: THIS CAUSES HEAVY BUGS
+    
+    //console.log("My turn started", this);
 } 
 
 BattalionEntity.prototype.onTurnEnd = function(gameContext) {
@@ -1167,7 +1168,7 @@ BattalionEntity.prototype.onTurnEnd = function(gameContext) {
     this.clearFlag(BattalionEntity.FLAG.CAN_MOVE);
     this.clearLastAttacker();
 
-    console.log("My turn ended", this);
+    //console.log("My turn ended", this);
 }
 
 BattalionEntity.prototype.triggerBewegungskrieg = function() {
