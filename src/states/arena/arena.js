@@ -56,7 +56,7 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
             case GAME_EVENT.MP_SERVER_TRIGGER_EVENT: {
                 const { eventID } = payload;
 
-                eventHandler.forceTrigger(eventID);
+                eventHandler.forceTrigger(gameContext, eventID);
                 break;
             }
             default: {

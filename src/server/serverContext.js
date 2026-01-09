@@ -16,8 +16,9 @@ import { ServerActionRouter } from "../../engine/router/serverActionRouter.js";
 import { GAME_EVENT } from "../enums.js";
 import { createPvPServerMap } from "../systems/map.js";
 import { ActionQueue } from "../../engine/action/actionQueue.js";
-import { WorldEventHandler } from "../../engine/world/event/worldEventHandler.js";
 import { ExplodeTileAction } from "../action/types/explodeTile.js";
+import { StartTurnAction } from "../action/types/startTurn.js";
+import { createStartTurnIntent } from "../action/actionHelper.js";
 
 export const ServerGameContext = function(serverApplication, id) {
     Room.call(this, id);
@@ -84,6 +85,7 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
 
             if(this.readyClients >= this.members.length && !this.isStarted) {
                 this.broadcastMessage(GAME_EVENT.MP_SERVER_START_MAP, {});
+                this.actionRouter.forceEnqueue(this, createStartTurnIntent());
                 this.isStarted = true;
             }
 
@@ -106,6 +108,7 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
 }
 
 ServerGameContext.prototype.init = function() {
+    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.START_TURN, new StartTurnAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.CAPTURE, new CaptureAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.MOVE, new MoveAction());

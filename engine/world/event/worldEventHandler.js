@@ -68,9 +68,9 @@ WorldEventHandler.prototype.forceTrigger = function(gameContext, eventID) {
         return;
     }
 
-    event.execute(gameContext);
-
     this.triggeredEvents.add(eventID);
+    
+    event.execute(gameContext);
 }
 
 WorldEventHandler.prototype.triggerEvent = function(gameContext, event) {

@@ -86,13 +86,13 @@ TurnManager.prototype.isActor = function(actorID) {
     return this.currentActor.getID() === actorID;
 }
 
-TurnManager.prototype.setNextActor = function(gameContext) {
+TurnManager.prototype.getNextActor = function() {
     if(this.actorOrder.length === 0 || this.currentActor !== null) {
-        return;
+        return null;
     }
 
-    if(this.previousActor === null) {
-        this.setCurrentActor(gameContext, this.actorOrder[0]);
+    if(this.previousActor === null) {   
+        return this.actorOrder[0];
     } else {
         const index = this.actorOrder.indexOf(this.previousActor);
 
@@ -100,9 +100,11 @@ TurnManager.prototype.setNextActor = function(gameContext) {
             const nextIndex = (index + 1) % this.actorOrder.length;
             const nextID = this.actorOrder[nextIndex];
 
-            this.setCurrentActor(gameContext, nextID);
+            return nextID;
         }
     }
+
+    return null;
 }
 
 TurnManager.prototype.setCurrentActor = function(gameContext, actorID) {

@@ -1,4 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
+import { createStartTurnIntent } from "../actionHelper.js";
 
 export const EndTurnAction = function() {
     Action.call(this);
@@ -18,10 +19,8 @@ EndTurnAction.prototype.onEnd = function(gameContext, data) {
 EndTurnAction.prototype.execute = function(gameContext, data) {
     const { world } = gameContext;
     const { turnManager } = world;
-    const { actorID } = data;
 
     turnManager.clearCurrentActor(gameContext);
-    turnManager.setNextActor(gameContext);
 }
 
 EndTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
@@ -33,5 +32,7 @@ EndTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPlan,
         executionPlan.setData({
             "actorID": actorID
         });
+
+        executionPlan.addNext(createStartTurnIntent());
     }
 }

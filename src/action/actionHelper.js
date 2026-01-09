@@ -2,6 +2,12 @@ import { ActionIntent } from "../../engine/action/actionIntent.js";
 import { COMMAND_TYPE } from "../enums.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
+export const createStartTurnIntent = function() {
+    return new ActionIntent(TypeRegistry.ACTION_TYPE.START_TURN, {
+
+    });
+}
+
 export const createTileExplodeIntent = function(layerID, tileX, tileY) {
     return new ActionIntent(TypeRegistry.ACTION_TYPE.EXPLODE_TILE, {
         "layerID": layerID,

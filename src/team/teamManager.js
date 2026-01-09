@@ -171,7 +171,7 @@ TeamManager.prototype.updateStatus = function(gameContext) {
     }
 
     if(losers.length !== 0) {
-        this.updateOrder(gameContext);
+        //this.updateOrder(gameContext); TODO!!!
     }
 
     this.checkWinner();
@@ -192,7 +192,6 @@ TeamManager.prototype.updateOrder = function(gameContext) {
 
     if(order.length > 1) {
         turnManager.setActorOrder(order);
-        turnManager.setNextActor(gameContext); //TODO!!!
     }
 }
 
