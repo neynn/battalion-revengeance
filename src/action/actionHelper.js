@@ -30,10 +30,13 @@ export const createCaptureIntent = function(entityID, targetX, targetY) {
     });
 }
 
-export const createTrackingIntent = function(entityID, potentialTargets) {
+export const createTrackingIntent = function(entity, potentialTargets) {
+    const entityID = entity.getID();
+    const targetID = potentialTargets[0].getID();
+    
     return new ActionIntent(TypeRegistry.ACTION_TYPE.ATTACK, {
         "entityID": entityID,
-        "targetID": potentialTargets[0].getID(), //TODO: Custom logic like "only targetable" and "weakest".
+        "targetID": targetID,
         "command": COMMAND_TYPE.CHAIN_AFTER_MOVE
     });
 }

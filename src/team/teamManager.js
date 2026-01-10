@@ -146,7 +146,7 @@ TeamManager.prototype.checkWinner = function() {
     }
 }
 
-TeamManager.prototype.updateStatus = function(gameContext) {
+TeamManager.prototype.updateStatus = function() {
     if(this.isConcluded) {
         return;
     }
@@ -171,15 +171,14 @@ TeamManager.prototype.updateStatus = function(gameContext) {
     }
 
     if(losers.length !== 0) {
-        //this.updateOrder(gameContext); TODO!!!
+        //this.updateOrder(gameContext);
+        //TODO: Emit LOSER event and update the turn order.
     }
 
     this.checkWinner();
 }
 
-TeamManager.prototype.updateOrder = function(gameContext) {
-    const { world } = gameContext;
-    const { turnManager } = world;
+TeamManager.prototype.getTurnOrder = function() {
     const order = [];
 
     for(let i = 0; i < this.activeTeams.length; i++) {
@@ -190,9 +189,7 @@ TeamManager.prototype.updateOrder = function(gameContext) {
         order.push(actor);
     }
 
-    if(order.length > 1) {
-        turnManager.setActorOrder(order);
-    }
+    return order;
 }
 
 TeamManager.prototype.broadcastEntityMove = function(gameContext, entity) {
@@ -203,7 +200,7 @@ TeamManager.prototype.broadcastEntityMove = function(gameContext, entity) {
         team.onEntityMove(gameContext, entity);
     }
 
-    this.updateStatus(gameContext);
+    this.updateStatus();
 }
 
 TeamManager.prototype.broadcastEntityDeath = function(gameContext, entity) {
@@ -214,5 +211,5 @@ TeamManager.prototype.broadcastEntityDeath = function(gameContext, entity) {
         team.onEntityDeath(entity);
     }
 
-    this.updateStatus(gameContext);
+    this.updateStatus();
 }

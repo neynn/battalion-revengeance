@@ -13,7 +13,7 @@ import { TeamManager } from "../team/teamManager.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { ServerActionRouter } from "../../engine/router/serverActionRouter.js";
 import { GAME_EVENT } from "../enums.js";
-import { createPvPServerMap } from "../systems/map.js";
+import { mpCreateStaticServerMap } from "../systems/map.js";
 import { ActionQueue } from "../../engine/action/actionQueue.js";
 import { ExplodeTileAction } from "../action/types/explodeTile.js";
 import { StartTurnAction } from "../action/types/startTurn.js";
@@ -64,7 +64,7 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
 
     switch(type) {
         case GAME_EVENT.MP_CLIENT_START_MATCH: {
-            createPvPServerMap(this, "volcano")
+            mpCreateStaticServerMap(this, "volcano")
             .then(() => {
                 for(let i = 0; i < this.members.length; i++) {
                     const member = this.members[i];

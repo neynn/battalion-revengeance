@@ -133,16 +133,6 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
     const uncloakedEntities = entity.getUncloakedEntities(gameContext, targetX, targetY);
     let flags = MoveAction.FLAG.NONE;
 
-    if(uncloakedEntities.length !== 0) {
-        const uncloakedIDs = uncloakedEntities.map(e => e.getID());
-
-        executionPlan.addNext(ActionHelper.createUncloakRequest(uncloakedIDs));
-
-        if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.TRACKING)) {
-            executionPlan.addNext(createTrackingIntent(entityID, uncloakedEntities));
-        }
-    }
-
     if(targetEntity && targetEntity.isNextToTile(targetX, targetY)) {
         if(entity.isHealValid(gameContext, targetEntity)) {
             executionPlan.addNext(createHealRequest(entityID, targetID, COMMAND_TYPE.CHAIN_AFTER_MOVE));
@@ -150,6 +140,16 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
             executionPlan.addNext(createAttackRequest(entityID, targetID, COMMAND_TYPE.CHAIN_AFTER_MOVE));
         } else {
             console.error("Heal and attack are both invalid!");
+        }
+    }
+
+    if(uncloakedEntities.length !== 0) {
+        const uncloakedIDs = uncloakedEntities.map(e => e.getID());
+
+        executionPlan.addNext(ActionHelper.createUncloakRequest(uncloakedIDs));
+
+        if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.TRACKING)) {
+            executionPlan.addNext(createTrackingIntent(entity, uncloakedEntities));
         }
     }
 

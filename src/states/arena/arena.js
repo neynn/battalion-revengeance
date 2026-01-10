@@ -2,7 +2,7 @@ import { getRandomElement } from "../../../engine/math/math.js";
 import { Socket } from "../../../engine/network/socket.js";
 import { State } from "../../../engine/state/state.js";
 import { GAME_EVENT } from "../../enums.js";
-import { createStaticClientMPMap } from "../../systems/map.js";
+import { mpCreateStaticClientMap } from "../../systems/map.js";
 import { ArenaInterface } from "./arenaInterface.js";
 
 export const ArenaState = function() {}
@@ -32,7 +32,7 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
             case GAME_EVENT.MP_SERVER_LOAD_MAP: {
                 const { mapID, client } = payload;
 
-                createStaticClientMPMap(gameContext, mapID, client)
+                mpCreateStaticClientMap(gameContext, mapID, client)
                 .then(() => {
                     socket.messageRoom(GAME_EVENT.MP_CLIENT_MAP_LOADED, {});
                 });

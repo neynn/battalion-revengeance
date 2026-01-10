@@ -129,23 +129,7 @@ const createObjectives = function(team, objectives, allObjectives) {
     }
 }
 
-const loadClientMap = function(gameContext, worldMap, mapData, clientTeam) {
-    const { world, teamManager } = gameContext;
-    const { eventHandler } = world;
-    const { 
-        music,
-        playlist,
-        teams = {},
-        entities = [],
-        objectives = {},
-        events = {},
-        buildings = [],
-        localization = [],
-        prelogue = [],
-        postlogue = [],
-        defeat = []
-    } = mapData;
-
+const createTeams = function(gameContext, teams, objectives) {
     for(const teamName in teams) {
         const teamObjectives = teams[teamName].objectives ?? [];
         const team = createTeam(gameContext, teamName, teams[teamName]);
@@ -154,7 +138,10 @@ const loadClientMap = function(gameContext, worldMap, mapData, clientTeam) {
             createObjectives(team, teamObjectives, objectives);
         }
     }
+}
 
+const finalizeClientTeams = function(gameContext, teams, clientTeam) {
+    const { teamManager } = gameContext;
     let playerCreated = false;
 
     for(const teamName in teams) {
@@ -164,7 +151,6 @@ const loadClientMap = function(gameContext, worldMap, mapData, clientTeam) {
             continue;
         }
 
-        let actor = null;
         const commanderType = teams[teamName].commander;
         const teamAllies = teams[teamName].allies ?? [];
 
@@ -176,6 +162,8 @@ const loadClientMap = function(gameContext, worldMap, mapData, clientTeam) {
                 allyTeam.addAlly(teamName);
             }
         }
+
+        let actor = null;
 
         if(!playerCreated && clientTeam === teamName) {
             actor = createPlayer(gameContext, commanderType, teamName);
@@ -189,68 +177,13 @@ const loadClientMap = function(gameContext, worldMap, mapData, clientTeam) {
         }
     }
 
-    for(let i = 0; i < entities.length; i++) {
-        spawnClientEntity(gameContext, entities[i]);
-    }
-
-    for(let i = 0; i < buildings.length; i++) {
-        spawnClientBuilding(gameContext, worldMap, buildings[i]);
-    }
-
-    const { dialogueHandler, client } = gameContext;
-    const { musicPlayer } = client;
-
-    if(playlist) {
-        musicPlayer.playPlaylist(playlist);
-    } else {
-        musicPlayer.play(music);
-    }
-
-    worldMap.loadLocalization(localization);
-    dialogueHandler.loadMapDialogue(prelogue, postlogue, defeat);
-
     if(!playerCreated) {
         console.error("NO PLAYER SPECIFIED!");
     } 
-
-    for(const eventName in events) {
-        const { turn, round, next = null, actions = [] } = events[eventName];
-        const event = new ClientBattalionEvent(eventName, actions);
-
-        event.setTriggerTime(turn, round);
-        event.setNext(next);
-        eventHandler.addEvent(event);
-    }
-    
-    teamManager.updateStatus(gameContext);
-    teamManager.updateOrder(gameContext);
 }
 
-const loadServerMap = function(gameContext, worldMap, mapData) {
-    const { world, teamManager } = gameContext;
-    const { eventHandler } = world;
-    const { 
-        music,
-        playlist,
-        teams = {},
-        entities = [],
-        objectives = {},
-        events = {},
-        buildings = [],
-        localization = [],
-        prelogue = [],
-        postlogue = [],
-        defeat = []
-    } = mapData;
-
-    for(const teamName in teams) {
-        const teamObjectives = teams[teamName].objectives ?? [];
-        const team = createTeam(gameContext, teamName, teams[teamName]);
-
-        if(team) {
-            createObjectives(team, teamObjectives, objectives);
-        }
-    }
+const finalizeServerTeams = function(gameContext, teams) {
+    const { teamManager } = gameContext;
 
     for(const teamName in teams) {
         const team = teamManager.getTeam(teamName);
@@ -277,6 +210,75 @@ const loadServerMap = function(gameContext, worldMap, mapData) {
             team.setActor(actor.getID());
         }
     }
+}
+
+const loadClientMap = function(gameContext, worldMap, mapData, clientTeam) {
+    const { world, teamManager, dialogueHandler, client } = gameContext;
+    const { eventHandler, turnManager } = world;
+    const { musicPlayer } = client;
+    const { 
+        music,
+        playlist,
+        teams = {},
+        entities = [],
+        objectives = {},
+        events = {},
+        buildings = [],
+        localization = [],
+        prelogue = [],
+        postlogue = [],
+        defeat = []
+    } = mapData;
+
+    createTeams(gameContext, teams, objectives);
+    finalizeClientTeams(gameContext, teams, clientTeam);
+
+    for(let i = 0; i < entities.length; i++) {
+        spawnClientEntity(gameContext, entities[i]);
+    }
+
+    for(let i = 0; i < buildings.length; i++) {
+        spawnClientBuilding(gameContext, worldMap, buildings[i]);
+    }
+
+    if(playlist) {
+        musicPlayer.playPlaylist(playlist);
+    } else {
+        musicPlayer.play(music);
+    }
+
+    worldMap.loadLocalization(localization);
+    dialogueHandler.loadMapDialogue(prelogue, postlogue, defeat);
+
+    for(const eventName in events) {
+        const { turn, round, next = null, actions = [] } = events[eventName];
+        const event = new ClientBattalionEvent(eventName, actions);
+
+        event.setTriggerTime(turn, round);
+        event.setNext(next);
+        eventHandler.addEvent(event);
+    }
+    
+    teamManager.updateStatus();
+
+    const turnOrder = teamManager.getTurnOrder();
+
+    turnManager.setActorOrder(turnOrder);
+}
+
+const loadServerMap = function(gameContext, worldMap, mapData) {
+    const { world, teamManager } = gameContext;
+    const { eventHandler, turnManager } = world;
+    const { 
+        teams = {},
+        entities = [],
+        objectives = {},
+        events = {},
+        buildings = []
+    } = mapData;
+
+    createTeams(gameContext, teams, objectives);
+    finalizeServerTeams(gameContext, teams);
 
     for(let i = 0; i < entities.length; i++) {
         spawnServerEntity(gameContext, entities[i]);
@@ -294,9 +296,12 @@ const loadServerMap = function(gameContext, worldMap, mapData) {
         event.setNext(next);
         eventHandler.addEvent(event);
     }
-    
-    teamManager.updateStatus(gameContext);
-    teamManager.updateOrder(gameContext);
+
+    teamManager.updateStatus();
+
+    const turnOrder = teamManager.getTurnOrder();
+
+    turnManager.setActorOrder(turnOrder);
 }
 
 export const placeEntityOnMap = function(gameContext, entity) {
@@ -414,7 +419,7 @@ export const createStoryMap = async function(gameContext, sourceID) {
     }
 }
 
-export const createStaticClientMPMap = async function(gameContext, sourceID, client) {
+export const mpCreateStaticClientMap = async function(gameContext, sourceID, client) {
     const { pathHandler, mapRepository, world, language } = gameContext;
     const { mapManager } = world;
     const mapSource = mapRepository.getMapSource(sourceID);
@@ -439,7 +444,7 @@ export const createStaticClientMPMap = async function(gameContext, sourceID, cli
     }
 }
 
-export const createPvPServerMap = async function(gameContext, sourceID) {
+export const mpCreateStaticServerMap = async function(gameContext, sourceID) {
     const { pathHandler, mapRepository, world } = gameContext;
     const { mapManager } = world;
     const mapSource = mapRepository.getMapSource(sourceID);

@@ -244,7 +244,7 @@ Team.prototype.onTurnEnd = function(gameContext, turn) {
         objective.onTurnEnd(turn);
     }
 
-    teamManager.updateStatus(gameContext);
+    teamManager.updateStatus();
 }
 
 Team.prototype.generateBuildingCash = function(gameContext) {

@@ -29,6 +29,7 @@ StartTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPla
     const { turnManager } = world;
     const nextActorID = turnManager.getNextActor();
 
+    //TODO: Get next turn, then check if any construction grows. Add that as next.
     if(nextActorID !== null) {
         executionPlan.setData({
             "actorID": nextActorID
