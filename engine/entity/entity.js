@@ -6,7 +6,7 @@ export const Entity = function(id, DEBUG_NAME = "") {
 }
 
 Entity.prototype.isDestroyed = function() {
-    return this.isMarkedForDestroy();
+    return this.isMarkedForDestroy;
 }
 
 Entity.prototype.clearFlags = function() {

@@ -90,21 +90,17 @@ EntityManager.prototype.getEntity = function(entityID) {
     return null;
 }
 
-EntityManager.prototype.createEntity = function(onCreate, externalID) {
-    const entityID = externalID !== EntityManager.ID.INVALID ? externalID : this.nextID++;
+EntityManager.prototype.getNextID = function() {
+    return this.nextID++;
+}
 
-    if(!this.entityMap.has(entityID)) {
-        const entity = onCreate(entityID);
+EntityManager.prototype.addEntity = function(entity) {
+    const entityID = entity.getID();
 
-        if(entity) {
-            this.entityMap.set(entityID, this.entities.length);
-            this.entities.push(entity);
-
-            return entity;
-        }
+    if(entityID !== EntityManager.ID.INVALID && !this.entityMap.has(entityID)) {
+        this.entityMap.set(entityID, this.entities.length);
+        this.entities.push(entity);
     }
-
-    return null;
 }
 
 EntityManager.prototype.destroyEntity = function(index) {

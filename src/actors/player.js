@@ -15,7 +15,7 @@ export const Player = function(id, camera) {
     this.tileX = -1;
     this.tileY = -1;
     this.camera = camera;
-    this.inspectedEntity = null;
+    this.lastInspectedEntity = null;
 
     this.states = new StateMachine(this);
     this.states.addState(Player.STATE.IDLE, new IdleState());
@@ -39,7 +39,7 @@ Player.prototype.constructor = Player;
 
 Player.prototype.inspectEntity = function(gameContext, entity) {
     this.showJammer(gameContext, entity);
-    this.inspectedEntity = entity;
+    this.lastInspectedEntity = entity;
 
     console.log("Inspected Entity", {
         "dName":  entity.getName(gameContext),
@@ -58,7 +58,7 @@ Player.prototype.inspectTile = function(gameContext, tileX, tileY) {
     const climateType = worldMap.getClimateType(gameContext, tileX, tileY);
     const tileType = worldMap.getTileType(gameContext, tileX, tileY);
 
-    this.inspectedEntity = null;
+    this.lastInspectedEntity = null;
     this.camera.jammerOverlay.clear();
 
     console.log("Inspected Tile", {
@@ -76,7 +76,7 @@ Player.prototype.onClick = function(gameContext, worldMap, tileX, tileY) {
     const entity = this.getVisibleEntity(gameContext, tileX, tileY);
 
     if(entity) {
-        if(this.inspectedEntity === entity) {
+        if(this.lastInspectedEntity === entity) {
             this.inspectTile(gameContext, tileX, tileY);
         } else {
             this.inspectEntity(gameContext, entity);        
@@ -153,9 +153,9 @@ Player.prototype.showJammerAt = function(gameContext, entity, jammerX, jammerY) 
 }
 
 Player.prototype.update = function(gameContext) {
-    if(this.inspectedEntity && this.inspectEntity.isDestroyed()) {
+    if(this.lastInspectedEntity && this.lastInspectedEntity.isDestroyed()) {
         //TODO: Un-Inspect entity!
-        this.inspectEntity = null;
+        this.lastInspectedEntity = null;
     }
 
     const { x, y } = getCursorTile(gameContext);

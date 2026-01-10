@@ -20,83 +20,56 @@ export const createSpawnConfig = function(id, type, tileX, tileY) {
     };
 }
 
-const createClientEntityObject = function(gameContext, config, colorID, color) {
-    const { world, transform2D, spriteManager, typeRegistry } = gameContext;
+const createServerEntityObject = function(gameContext, teamID, typeID, tileX, tileY) {
+    const { teamManager, typeRegistry, world } = gameContext;
     const { entityManager } = world;
-    const { id, type, x, y } = config;
-    const entityType = typeRegistry.getEntityType(type);
-
-    const entity = entityManager.createEntity((entityID) => {
-        const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
-        const entityView = new EntityView(visualSprite, null, colorID, color);
-        const entityObject = new ClientBattalionEntity(entityID, entityView);
-        const spawnPosition = transform2D.transformTileToWorld(x, y);
-
-        entityObject.loadConfig(entityType);
-        entityObject.setPositionVec(spawnPosition);
-        entityObject.setTile(x, y);
-
-        return entityObject;
-    }, id);
-
-    return entity;
-}
-
-const createEntityObject = function(gameContext, config) {
-    const { world, typeRegistry } = gameContext;
-    const { entityManager } = world;
-    const { id, type, x, y } = config;
-    const entityType = typeRegistry.getEntityType(type);
-
-    const entity = entityManager.createEntity((entityID) => {
-        const entityObject = new BattalionEntity(entityID);
-
-        entityObject.loadConfig(entityType);
-        entityObject.setTile(x, y);
-
-        return entityObject;
-    }, id);
-
-    return entity;
-}
-
-export const createClientEntityFromConfig = function(gameContext, config, teamID) {
-    const { teamManager } = gameContext;
     const team = teamManager.getTeam(teamID);
 
-    if(team) {
-        const { colorID, color } = team;
-        const entity = createClientEntityObject(gameContext, config, colorID, color);
-
-        if(entity) {
-            team.addEntity(entity);
-            entity.setTeam(teamID);
-            entity.bufferSounds(gameContext);
-            entity.bufferSprites(gameContext);
-
-            return entity;
-        } 
+    if(!team) {
+        return null;
     }
 
-    return null;
+    const entityID = entityManager.getNextID();
+    const entityType = typeRegistry.getEntityType(typeID);
+    const entityObject = new BattalionEntity(entityID);
+
+    entityObject.loadConfig(entityType);
+    entityObject.setTile(tileX, tileY);
+    entityObject.setTeam(teamID);
+    team.addEntity(entityObject);
+    entityManager.addEntity(entityObject);
+
+    return entityObject;
 }
 
-export const createEntityFromConfig = function(gameContext, config, teamID) {
-    const { teamManager } = gameContext;
+export const createClientEntityObject = function(gameContext, config, teamID) {
+    const { teamManager, world, transform2D, spriteManager, typeRegistry } = gameContext;
+    const { entityManager } = world;
+    const { id, type, x, y } = config;
     const team = teamManager.getTeam(teamID);
 
-    if(team) {
-        const entity = createEntityObject(gameContext, config);
-
-        if(entity) {
-            team.addEntity(entity);
-            entity.setTeam(teamID);
-
-            return entity;
-        } 
+    if(!team) {
+        return null;
     }
 
-    return null;
+    const { colorID, color } = team;
+    const entityType = typeRegistry.getEntityType(type);
+    const entityID = entityManager.getNextID();
+    const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
+    const entityView = new EntityView(visualSprite, null, colorID, color);
+    const entityObject = new ClientBattalionEntity(entityID, entityView);
+    const spawnPosition = transform2D.transformTileToWorld(x, y);
+
+    entityObject.loadConfig(entityType);
+    entityObject.setPositionVec(spawnPosition);
+    entityObject.setTile(x, y);
+    entityObject.setTeam(teamID);
+    entityObject.bufferSounds(gameContext);
+    entityObject.bufferSprites(gameContext);
+    team.addEntity(entityObject);
+    entityManager.addEntity(entityObject);
+
+    return entityObject;
 }
 
 export const despawnEntity = function(gameContext, entity) {
@@ -113,7 +86,7 @@ export const despawnEntity = function(gameContext, entity) {
     entityManager.destroyEntityByID(entityID);
 }
 
-export const spawnServerEntity = function(gameContext, config, externalID = EntityManager.ID.INVALID) {
+export const spawnServerEntity = function(gameContext, config) {
     const { 
         x = -1,
         y = -1,
@@ -126,8 +99,7 @@ export const spawnServerEntity = function(gameContext, config, externalID = Enti
         health = -1,
         stealth = false
     } = config;
-    const spawnConfig = createSpawnConfig(externalID, type, x, y);
-    const entity = createEntityFromConfig(gameContext, spawnConfig, team);
+    const entity = createServerEntityObject(gameContext, team, type, x, y);
 
     if(entity) {
         placeEntityOnMap(gameContext, entity);
@@ -165,7 +137,7 @@ export const spawnClientEntity = function(gameContext, config, externalID = Enti
         stealth = false
     } = config;
     const spawnConfig = createSpawnConfig(externalID, type, x, y);
-    const entity = createClientEntityFromConfig(gameContext, spawnConfig, team);
+    const entity = createClientEntityObject(gameContext, spawnConfig, team);
 
     if(entity) {
         placeEntityOnMap(gameContext, entity);
