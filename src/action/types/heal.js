@@ -2,7 +2,7 @@ import { Action } from "../../../engine/action/action.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { COMMAND_TYPE } from "../../enums.js";
 import { playHealEffect } from "../../systems/animation.js";
-import { ActionHelper } from "../actionHelper.js";
+import { createDeathIntent } from "../actionHelper.js";
 import { InteractionResolver } from "./interactionResolver.js";
 
 const resolveHeal = function(gameContext, entity, target, resolver) {
@@ -111,7 +111,7 @@ HealAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
 
      if(hitEntities.length !== 0) {
         if(deadEntities.length !== 0) {
-            executionPlan.addNext(ActionHelper.createDeathRequest(gameContext, deadEntities));
+            executionPlan.addNext(createDeathIntent(gameContext, deadEntities));
         }
 
         executionPlan.setData({

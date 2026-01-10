@@ -1,5 +1,5 @@
 import { TurnActor } from "../../engine/world/turn/turnActor.js";
-import { ActionHelper } from "../action/actionHelper.js";
+import { createDeathIntent } from "../action/actionHelper.js";
 
 export const BattalionActor = function(id) {
     TurnActor.call(this, id);
@@ -26,7 +26,7 @@ BattalionActor.prototype.surrender = function(gameContext) {
     
     if(team) {
         const { entities } = team;
-        const deathRequest = ActionHelper.createDeathRequest(gameContext, entities);
+        const deathRequest = createDeathIntent(gameContext, entities);
 
         this.addIntent(deathRequest);
     }

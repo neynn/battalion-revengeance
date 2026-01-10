@@ -65,20 +65,20 @@ export const createMoveRequest = function(entityID, path, targetID) {
     });
 }
 
-export const ActionHelper = {
-    createCloakRequest: function(entityID) {
-        return new ActionIntent(TypeRegistry.ACTION_TYPE.CLOAK, {
-            "entityID": entityID
-        });
-    },
-    createUncloakRequest: function(entities) {
-        return new ActionIntent(TypeRegistry.ACTION_TYPE.UNCLOAK, {
-            "entities": entities
-        });
-    },
-    createDeathRequest: function(gameContext, entities) {
-        return new ActionIntent(TypeRegistry.ACTION_TYPE.DEATH, {
-            "entities": entities
-        });
-    }
-};
+export const createCloakIntent = function(entityID) {
+    return new ActionIntent(TypeRegistry.ACTION_TYPE.CLOAK, {
+        "entityID": entityID
+    });
+}
+
+export const createUncloakIntent = function(entities) {
+    return new ActionIntent(TypeRegistry.ACTION_TYPE.UNCLOAK, {
+        "entities": entities
+    });
+}
+
+export const createDeathIntent = function(entities) {
+    return new ActionIntent(TypeRegistry.ACTION_TYPE.DEATH, {
+        "entities": entities
+    });
+}

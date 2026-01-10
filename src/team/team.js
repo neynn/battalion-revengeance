@@ -1,4 +1,4 @@
-import { ActionHelper } from "../action/actionHelper.js";
+import { createDeathIntent, createUncloakIntent } from "../action/actionHelper.js";
 import { Objective } from "./objective/objective.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { UnitSurviveObjective } from "./objective/types/unitSurvive.js";
@@ -297,11 +297,11 @@ Team.prototype.onTurnStart = function(gameContext, turn) {
     }
 
     if(deadEntities.length !== 0) {
-        actionRouter.forceEnqueue(gameContext, ActionHelper.createDeathRequest(gameContext, deadEntities));
+        actionRouter.forceEnqueue(gameContext, createDeathIntent(gameContext, deadEntities));
     }
 
     if(uncloakedEntities.length !== 0) {
-        actionRouter.forceEnqueue(gameContext, ActionHelper.createUncloakRequest(uncloakedEntities));
+        actionRouter.forceEnqueue(gameContext, createUncloakIntent(uncloakedEntities));
     }
 
     //Do not generate cash on the first turn.

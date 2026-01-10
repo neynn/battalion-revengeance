@@ -6,7 +6,7 @@ import { COMMAND_TYPE, PATH_INTERCEPT } from "../../enums.js";
 import { placeEntityOnMap, removeEntityFromMap } from "../../systems/map.js";
 import { mInterceptPath } from "../../systems/pathfinding.js";
 import { TypeRegistry } from "../../type/typeRegistry.js";
-import { ActionHelper, createAttackRequest, createCaptureIntent, createHealRequest, createTrackingIntent } from "../actionHelper.js";
+import { createAttackRequest, createCaptureIntent, createCloakIntent, createHealRequest, createTrackingIntent, createUncloakIntent } from "../actionHelper.js";
 
 export const MoveAction = function() {
     Action.call(this);
@@ -146,7 +146,7 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
     if(uncloakedEntities.length !== 0) {
         const uncloakedIDs = uncloakedEntities.map(e => e.getID());
 
-        executionPlan.addNext(ActionHelper.createUncloakRequest(uncloakedIDs));
+        executionPlan.addNext(createUncloakIntent(uncloakedIDs));
 
         if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.TRACKING)) {
             executionPlan.addNext(createTrackingIntent(entity, uncloakedEntities));
@@ -158,7 +158,7 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
     }
 
     if(entity.canCloakAt(gameContext, targetX, targetY)) {
-        executionPlan.addNext(ActionHelper.createCloakRequest(entityID));
+        executionPlan.addNext(createCloakIntent(entityID));
     }
 
     if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
