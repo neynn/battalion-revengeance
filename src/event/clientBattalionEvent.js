@@ -1,6 +1,5 @@
 import { BattalionEvent } from "./battalionEvent.js";
-import { spawnClientEntity } from "../systems/spawn.js";
-import { createTileExplodeIntent } from "../action/actionHelper.js";
+import { createSpawnIntent, createTileExplodeIntent } from "../action/actionHelper.js";
 
 export const ClientBattalionEvent = function(id, actions) {
     BattalionEvent.call(this, id, actions);
@@ -33,7 +32,9 @@ ClientBattalionEvent.prototype.onTileExplode = function(gameContext, action) {
 }
 
 ClientBattalionEvent.prototype.onSpawn = function(gameContext, action) {
-    const { setup } = action;
-    
-    spawnClientEntity(gameContext, setup);
+    const { actionRouter } = gameContext;
+    const { entities } = action;
+    const actionIntent = createSpawnIntent(entities);
+
+    actionRouter.forceEnqueue(gameContext, actionIntent);
 }

@@ -96,7 +96,9 @@
             "actions": [
                 {
                     "type": "SPAWN_ENTITY",
-                    "setup": { "x": 0, "y": 9, "type": "STEALTH_TANK", "team": "SOMERTIN" }
+                    "entities": [
+                        { "x": 0, "y": 9, "type": "STEALTH_TANK", "team": "SOMERTIN" }
+                    ]
                 }
             ]
         }

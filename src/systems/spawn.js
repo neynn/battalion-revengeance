@@ -25,7 +25,7 @@ export const despawnEntity = function(gameContext, entity) {
     entityManager.destroyEntityByID(entityID);
 }
 
-export const createServerEntityObject = function(gameContext, teamID, typeID, tileX, tileY) {
+export const createServerEntityObject = function(gameContext, entityID, teamID, typeID, tileX, tileY) {
     const { teamManager, typeRegistry, world } = gameContext;
     const { entityManager } = world;
     const team = teamManager.getTeam(teamID);
@@ -34,7 +34,6 @@ export const createServerEntityObject = function(gameContext, teamID, typeID, ti
         return null;
     }
 
-    const entityID = entityManager.getNextID();
     const entityType = typeRegistry.getEntityType(typeID);
     const entityObject = new BattalionEntity(entityID);
 
@@ -75,7 +74,7 @@ export const createClientEntityObject = function(gameContext, entityID, teamID, 
     return entityObject;
 }
 
-export const spawnServerEntity = function(gameContext, config) {
+export const spawnServerEntity = function(gameContext, config, entityID) {
     const { 
         x = -1,
         y = -1,
@@ -88,13 +87,11 @@ export const spawnServerEntity = function(gameContext, config) {
         health = -1,
         stealth = false
     } = config;
-    const entity = createServerEntityObject(gameContext, team, type, x, y);
+    const entity = createServerEntityObject(gameContext, entityID, team, type, x, y);
 
     if(!entity) {
-        return EntityManager.ID.INVALID;
+        return;
     }
-
-    const entityID = entity.getID();
 
     placeEntityOnMap(gameContext, entity);
 
@@ -112,8 +109,6 @@ export const spawnServerEntity = function(gameContext, config) {
     if(stealth && entity.canCloak()) {
         entity.setFlag(BattalionEntity.FLAG.IS_CLOAKED);
     }
-    
-    return entityID;
 }
 
 export const spawnClientEntity = function(gameContext, config, externalID = EntityManager.ID.INVALID) {

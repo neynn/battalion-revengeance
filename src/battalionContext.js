@@ -67,7 +67,7 @@ BattalionContext.prototype.init = function(resources) {
 
     this.typeRegistry.load(resources);
 
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.SPAWN, new EntitySpawnAction());
+    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.SPAWN, new EntitySpawnAction(false));
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.START_TURN, new StartTurnAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.CAPTURE, new CaptureAction());

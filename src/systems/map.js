@@ -456,10 +456,15 @@ ServerMapFactory.prototype.finalizeTeams = function(gameContext, teams) {
 }
 
 ServerMapFactory.prototype.spawnEntities = function(gameContext, entities) {
+    const { world } = gameContext;
+    const { entityManager } = world; 
+
     this.entityMap.length = 0;
 
     for(let i = 0; i < entities.length; i++) {
-        const entityID = spawnServerEntity(gameContext, entities[i]);
+        const entityID = entityManager.getNextID();
+        
+        spawnServerEntity(gameContext, entities[i], entityID);
 
         this.entityMap.push(entityID);
     }
