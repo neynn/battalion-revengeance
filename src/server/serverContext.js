@@ -1,6 +1,5 @@
 import { Room } from "../../engine/network/room/room.js";
 import { StateMachine } from "../../engine/state/stateMachine.js";
-import { TurnManager } from "../../engine/world/turn/turnManager.js";
 import { World } from "../../engine/world/world.js";
 import { AttackAction } from "../action/types/attack.js";
 import { CaptureAction } from "../action/types/capture.js";
@@ -118,13 +117,5 @@ ServerGameContext.prototype.init = function() {
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.DEATH, new DeathAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.UNCLOAK, new UncloakAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.END_TURN, new EndTurnAction());
-
-    this.world.turnManager.events.on(TurnManager.EVENT.NEXT_TURN, ({ turn }) => {
-        this.world.eventHandler.onTurnChange(this, turn);
-    }, { permanent: true });
-
-    this.world.turnManager.events.on(TurnManager.EVENT.NEXT_ROUND, ({ round }) => {
-        this.world.eventHandler.onRoundChange(this, round);
-    }, { permanent: true });
 }
 

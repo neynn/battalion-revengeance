@@ -13,7 +13,6 @@ import { FontHandler } from "./fontHandler.js";
 import { MapManager } from "./map/mapManager.js";
 import { ResourceLoader } from "./resources/resourceLoader.js";
 import { ApplicationWindow } from "./applicationWindow.js";
-import { TurnManager } from "./world/turn/turnManager.js";
 import { MapRepository } from "./map/mapRepository.js";
 import { ClientPathHandler } from "./resources/pathHandler.js";
 import { ClientActionRouter } from "./router/clientActionRouter.js";
@@ -64,14 +63,6 @@ export const ClientGameContext = function() {
 
     this.client.cursor.events.on(Cursor.EVENT.BUTTON_UP, ({ button }) => {
         this.renderer.onDragEnd(button);
-    }, { permanent: true });
-
-    this.world.turnManager.events.on(TurnManager.EVENT.NEXT_TURN, ({ turn }) => {
-        this.world.eventHandler.onTurnChange(this, turn);
-    }, { permanent: true });
-
-    this.world.turnManager.events.on(TurnManager.EVENT.NEXT_ROUND, ({ round }) => {
-        this.world.eventHandler.onRoundChange(this, round);
     }, { permanent: true });
 
     this.addDebug();

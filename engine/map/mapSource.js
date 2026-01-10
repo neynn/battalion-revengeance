@@ -2,7 +2,8 @@ export const MapSource = function(id, config) {
     const {
         directory = [],
         source = "",
-        text = ""
+        text = "",
+        mpMaxClients = 0
     } = config;
 
     this.id = id;
@@ -11,6 +12,7 @@ export const MapSource = function(id, config) {
     this.text = text;
     this.file = null;
     this.translations = null;
+    this.mpMaxClients = mpMaxClients;
 }
 
 MapSource.CACHE_ENABLED = 1;

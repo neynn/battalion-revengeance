@@ -1,5 +1,3 @@
-import { WorldEvent } from "./worldEvent.js";
-
 export const WorldEventHandler = function() {
     this.worldEvents = [];
     this.triggeredEvents = new Set();
@@ -23,29 +21,17 @@ WorldEventHandler.prototype.addEvent = function(event) {
     this.worldEvents.push(event);
 }
 
-WorldEventHandler.prototype.onTurnChange = function(gameContext, globalTurn) {
+WorldEventHandler.prototype.checkEventTriggers = function(gameContext) {
     if(!this.allowSelfExecution) {
         return;
     }
 
-    for(const event of this.worldEvents) {
-        const { turn } = event;
-
-        if(turn !== WorldEvent.INVALID_TIME && globalTurn >= turn) {
-            this.triggerEvent(gameContext, event);
-        }
-    }
-}
-
-WorldEventHandler.prototype.onRoundChange = function(gameContext, globalRound) {
-    if(!this.allowSelfExecution) {
-        return;
-    }
+    const { world } = gameContext;
+    const { turnManager } = world;
+    const { globalTurn, globalRound } = turnManager;
 
     for(const event of this.worldEvents) {
-        const { round } = event;
-
-        if(round !== WorldEvent.INVALID_TIME && globalRound >= round) {
+        if(event.isTriggeredByTurn(globalTurn) || event.isTriggeredByRound(globalRound)) {
             this.triggerEvent(gameContext, event);
         }
     }

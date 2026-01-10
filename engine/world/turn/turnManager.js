@@ -1,33 +1,19 @@
-import { EventEmitter } from "../../events/eventEmitter.js";
-
 export const TurnManager = function() {
     this.nextID = 0;
     this.actors = new Map();
     this.actorOrder = [];
     this.globalTurn = 0;
+    this.globalRound = 0;
     this.currentActor = null;
     this.previousActor = null;
-
-    this.events = new EventEmitter();
-    this.events.register(TurnManager.EVENT.NEXT_TURN);
-    this.events.register(TurnManager.EVENT.NEXT_ROUND);
-    this.events.register(TurnManager.EVENT.ACTOR_CREATE);
-    this.events.register(TurnManager.EVENT.ACTOR_DESTROY);
 }
 
-TurnManager.EVENT = {
-    NEXT_TURN: "NEXT_TURN",
-    NEXT_ROUND: "NEXT_ROUND",
-    ACTOR_CREATE: "ACTOR_CREATE",
-    ACTOR_DESTROY: "ACTOR_DESTROY"
-};
-
 TurnManager.prototype.exit = function() {
-    this.events.muteAll();
+    this.nextID = 0;
     this.actors.clear();
     this.actorOrder.length = 0;
-    this.nextID = 0;
     this.globalTurn = 0;
+    this.globalRound = 0;
     this.currentActor = null;
     this.previousActor = null;
 }
@@ -46,10 +32,6 @@ TurnManager.prototype.createActor = function(onCreate, externalID) {
 
         if(actor) {
             this.actors.set(actorID, actor);
-            this.events.emit(TurnManager.EVENT.ACTOR_CREATE, {
-                "id": actorID,
-                "actor": actor
-            });
 
             return actor;
         }
@@ -62,9 +44,6 @@ TurnManager.prototype.createActor = function(onCreate, externalID) {
 TurnManager.prototype.destroyActor = function(actorID) {
     if(this.actors.has(actorID)) {
         this.actors.delete(actorID);
-        this.events.emit(TurnManager.EVENT.ACTOR_DESTROY, {
-            "id": actorID
-        });
     }
 }
 
@@ -114,9 +93,6 @@ TurnManager.prototype.setCurrentActor = function(gameContext, actorID) {
         this.globalTurn++;
         this.currentActor = actor;
         this.currentActor.startTurn(gameContext);
-        this.events.emit(TurnManager.EVENT.NEXT_TURN, {
-            "turn": this.globalTurn
-        });
     }
 }
 

@@ -20,3 +20,11 @@ WorldEvent.prototype.setTriggerTime = function(turn = WorldEvent.INVALID_TIME, r
     this.turn = turn;
     this.round = round;
 }
+
+WorldEvent.prototype.isTriggeredByTurn = function(globalTurn) {
+    return this.turn !== WorldEvent.INVALID_TIME && globalTurn >= this.turn;
+}
+
+WorldEvent.prototype.isTriggeredByRound = function(globalRound) {
+    return this.round !== WorldEvent.INVALID_TIME && globalRound >= this.round;
+}
