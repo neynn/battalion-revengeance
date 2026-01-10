@@ -1,18 +1,13 @@
-import { EventEmitter } from "../events/eventEmitter.js";
-
 export const EntityManager = function() {
     this.nextID = 0;
     this.entities = [];
     this.entityMap = new Map();
-
-    this.events = new EventEmitter();
-    this.events.register(EntityManager.EVENT.ENTITY_CREATE);
-    this.events.register(EntityManager.EVENT.ENTITY_DESTROY);
+    this.flags = EntityManager.FLAG.NONE;
 }
 
-EntityManager.EVENT = {
-    ENTITY_CREATE: "ENTITY_CREATE",
-    ENTITY_DESTROY: "ENTITY_DESTROY"
+EntityManager.FLAG = {
+    NONE: 0,
+    DO_UPDATES: 1 << 0
 };
 
 EntityManager.ID = {
@@ -20,10 +15,9 @@ EntityManager.ID = {
 };
 
 EntityManager.prototype.exit = function() {
-    this.events.muteAll();
-    this.entityMap.clear();
-    this.entities.length = 0;
     this.nextID = 0;
+    this.entities.length = 0;
+    this.entityMap.clear();
 }
 
 EntityManager.prototype.forEachEntity = function(onCall) {
@@ -38,14 +32,24 @@ EntityManager.prototype.forEachEntity = function(onCall) {
     }
 }
 
-EntityManager.prototype.update = function(gameContext) {
+EntityManager.prototype.cleanup = function() {
     for(let i = this.entities.length - 1; i >= 0; i--) {
-        const entity = this.entities[i];
-
-        if(entity.isMarkedForDestroy) {
+        if(this.entities[i].isMarkedForDestroy) {
             this.destroyEntity(i);
-        } else {
-            entity.update(gameContext);
+        }
+    }
+}
+
+EntityManager.prototype.update = function(gameContext) {
+    if(this.flags & EntityManager.FLAG.DO_UPDATES) {
+        for(let i = this.entities.length - 1; i >= 0; i--) {
+            const entity = this.entities[i];
+
+            if(entity.isMarkedForDestroy) {
+                this.destroyEntity(i);
+            } else {
+                entity.update(gameContext);
+            }
         }
     }
 }
@@ -63,6 +67,8 @@ EntityManager.prototype.getEntity = function(entityID) {
     if(entityID === targetID) {
         if(!entity.isMarkedForDestroy) {
             return entity;
+        } else {
+            return null;
         }
     }
 
@@ -75,6 +81,8 @@ EntityManager.prototype.getEntity = function(entityID) {
 
             if(!entity.isMarkedForDestroy) {
                 return entity;
+            } else {
+                return null;
             }
         }
     }
@@ -91,10 +99,6 @@ EntityManager.prototype.createEntity = function(onCreate, externalID) {
         if(entity) {
             this.entityMap.set(entityID, this.entities.length);
             this.entities.push(entity);
-            this.events.emit(EntityManager.EVENT.ENTITY_CREATE, {
-                "id": entityID,
-                "entity": entity
-            });
 
             return entity;
         }
@@ -114,7 +118,12 @@ EntityManager.prototype.destroyEntity = function(index) {
     this.entityMap.delete(entityID);
     this.entities[index] = this.entities[swapEntityIndex];
     this.entities.pop();
-    this.events.emit(EntityManager.EVENT.ENTITY_DESTROY, {
-        "id": entityID
-    });
+}
+
+EntityManager.prototype.destroyEntityByID = function(entityID) {
+    const index = this.entityMap.get(entityID);
+
+    if(index !== undefined) {
+        this.destroyEntity(index);
+    }
 }

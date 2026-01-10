@@ -142,7 +142,6 @@ ClientBattalionEntity.prototype.playCounter = function(gameContext, target) {
 }
 
 ClientBattalionEntity.prototype.destroy = function() {
-    this.isMarkedForDestroy = true;
     this.view.destroy();
 }
 

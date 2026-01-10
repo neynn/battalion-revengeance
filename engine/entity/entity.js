@@ -5,6 +5,10 @@ export const Entity = function(id, DEBUG_NAME = "") {
     this.flags = 0;
 }
 
+Entity.prototype.isDestroyed = function() {
+    return this.isMarkedForDestroy();
+}
+
 Entity.prototype.clearFlags = function() {
     this.flags = 0;
 }

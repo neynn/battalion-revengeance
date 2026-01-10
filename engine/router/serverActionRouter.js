@@ -22,7 +22,7 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
     }
 
     const { world } = gameContext;
-    const { actionQueue } = world;
+    const { actionQueue, entityManager } = world;
     let count = 0;
 
     this.isUpdating = true;

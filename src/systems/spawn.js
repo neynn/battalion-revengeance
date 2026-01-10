@@ -100,11 +100,17 @@ export const createEntityFromConfig = function(gameContext, config, teamID) {
 }
 
 export const despawnEntity = function(gameContext, entity) {
-    const { teamManager } = gameContext;
+    const { teamManager, world } = gameContext;
+    const { entityManager } = world;
+    const entityID = entity.getID();
 
     removeEntityFromMap(gameContext, entity);
-    teamManager.broadcastEntityDeath(gameContext, entity);
+
+    entity.isMarkedForDestroy = true;
     entity.destroy();
+    
+    teamManager.broadcastEntityDeath(gameContext, entity);
+    entityManager.destroyEntityByID(entityID);
 }
 
 export const spawnServerEntity = function(gameContext, config, externalID = EntityManager.ID.INVALID) {

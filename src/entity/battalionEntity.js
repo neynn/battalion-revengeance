@@ -58,6 +58,7 @@ BattalionEntity.STATE = {
 BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
 
+BattalionEntity.prototype.destroy = function() {}
 BattalionEntity.prototype.onHealthUpdate = function() {}
 BattalionEntity.prototype.onLoad = function(gameContext, data) {}
 
@@ -203,10 +204,6 @@ BattalionEntity.prototype.setHealth = function(health) {
 
 BattalionEntity.prototype.hasTrait = function(traitID) {
     return this.config.hasTrait(traitID);
-}
-
-BattalionEntity.prototype.destroy = function() {
-    this.isMarkedForDestroy = true;
 }
 
 BattalionEntity.prototype.setTile = function(tileX, tileY) {

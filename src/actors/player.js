@@ -153,6 +153,11 @@ Player.prototype.showJammerAt = function(gameContext, entity, jammerX, jammerY) 
 }
 
 Player.prototype.update = function(gameContext) {
+    if(this.inspectedEntity && this.inspectEntity.isDestroyed()) {
+        //TODO: Un-Inspect entity!
+        this.inspectEntity = null;
+    }
+
     const { x, y } = getCursorTile(gameContext);
 
     if(x !== this.tileX || y !== this.tileY) {
