@@ -18,6 +18,7 @@ import { ActionQueue } from "../../engine/action/actionQueue.js";
 import { ExplodeTileAction } from "../action/types/explodeTile.js";
 import { StartTurnAction } from "../action/types/startTurn.js";
 import { createStartTurnIntent } from "../action/actionHelper.js";
+import { EntitySpawnAction } from "../action/types/entitySpawn.js";
 
 export const ServerGameContext = function(serverApplication, id) {
     Room.call(this, id);
@@ -56,12 +57,6 @@ ServerGameContext.STATE = {
 ServerGameContext.prototype = Object.create(Room.prototype);
 ServerGameContext.prototype.constructor = ServerGameContext;
 
-ServerGameContext.prototype.sendEventTrigger = function(eventID) {
-    this.broadcastMessage(GAME_EVENT.MP_SERVER_TRIGGER_EVENT, {
-        "eventID": eventID
-    });
-}
-
 ServerGameContext.prototype.sendExecutionPlan = function(plan) {
     this.broadcastMessage(GAME_EVENT.MP_SERVER_EXECUTE_PLAN, {
         "plan": plan.toJSONServer()
@@ -79,14 +74,14 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
 
             this.state = ServerGameContext.STATE.STARTING;
 
-            this.mapFactory.createStaticMap(this, "volcano")
+            this.mapFactory.createStaticMap(this, "presus")
             .then(() => {
                 for(let i = 0; i < this.members.length; i++) {
                     const member = this.members[i];
                     const memberID = member.getID();
 
                     this.sendMessage(GAME_EVENT.MP_SERVER_LOAD_MAP, {
-                        "mapID": "volcano",
+                        "mapID": "presus",
                         "client": this.teamManager.activeTeams[i], //HACKY!
                         "entityMap": this.mapFactory.entityMap
                     }, memberID);
@@ -123,6 +118,7 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
 }
 
 ServerGameContext.prototype.init = function() {
+    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.SPAWN, new EntitySpawnAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.START_TURN, new StartTurnAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.CAPTURE, new CaptureAction());

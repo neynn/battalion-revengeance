@@ -20,6 +20,10 @@ EntityManager.prototype.exit = function() {
     this.entityMap.clear();
 }
 
+EntityManager.prototype.hasEntity = function(entityID) {
+    return this.entityMap.has(entityID);
+}
+
 EntityManager.prototype.forEachEntity = function(onCall) {
     if(typeof onCall === "function") {
         for(let i = 0; i < this.entities.length; i++) {

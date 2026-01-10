@@ -2,6 +2,12 @@ import { ActionIntent } from "../../engine/action/actionIntent.js";
 import { COMMAND_TYPE } from "../enums.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 
+export const createSpawnIntent = function(entities) {
+    return new ActionIntent(TypeRegistry.ACTION_TYPE.SPAWN, {
+        "entities": entities
+    });
+}
+
 export const createStartTurnIntent = function() {
     return new ActionIntent(TypeRegistry.ACTION_TYPE.START_TURN, {
 

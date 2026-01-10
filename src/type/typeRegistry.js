@@ -200,6 +200,7 @@ TypeRegistry.MORALE_TYPE = {
 };
 
 TypeRegistry.ACTION_TYPE = {
+    SPAWN: "SPAWN",
     EXPLODE_TILE: "EXPLODE_TILE",
     CAPTURE: "CAPTURE",
     HEAL: "HEAL",
