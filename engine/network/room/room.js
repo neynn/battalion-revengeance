@@ -3,7 +3,6 @@ export const Room = function(id) {
     this.members = [];
     this.leaderID = null;
     this.maxClients = 0;
-    this.isStarted = false;
 }
 
 Room.prototype.processMessage = async function(messengerID, message) {}
@@ -148,12 +147,4 @@ Room.prototype.sendMessage = function(type, payload, clientID) {
 
         this.onMessageSend(message, clientID);
     }
-}
-
-Room.prototype.start = function() {
-    this.isStarted = true;
-}
-
-Room.prototype.exit = function() {
-    this.isStarted = false;
 }

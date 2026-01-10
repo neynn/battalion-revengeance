@@ -111,7 +111,7 @@ HealAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
 
      if(hitEntities.length !== 0) {
         if(deadEntities.length !== 0) {
-            executionPlan.addNext(createDeathIntent(gameContext, deadEntities));
+            executionPlan.addNext(createDeathIntent(deadEntities));
         }
 
         executionPlan.setData({

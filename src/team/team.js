@@ -297,7 +297,7 @@ Team.prototype.onTurnStart = function(gameContext, turn) {
     }
 
     if(deadEntities.length !== 0) {
-        actionRouter.forceEnqueue(gameContext, createDeathIntent(gameContext, deadEntities));
+        actionRouter.forceEnqueue(gameContext, createDeathIntent(deadEntities));
     }
 
     if(uncloakedEntities.length !== 0) {

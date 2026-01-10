@@ -26,7 +26,7 @@ BattalionActor.prototype.surrender = function(gameContext) {
     
     if(team) {
         const { entities } = team;
-        const deathRequest = createDeathIntent(gameContext, entities);
+        const deathRequest = createDeathIntent(entities);
 
         this.addIntent(deathRequest);
     }

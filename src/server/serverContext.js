@@ -13,7 +13,7 @@ import { TeamManager } from "../team/teamManager.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { ServerActionRouter } from "../../engine/router/serverActionRouter.js";
 import { GAME_EVENT } from "../enums.js";
-import { mpCreateStaticServerMap } from "../systems/map.js";
+import { ServerMapFactory } from "../systems/map.js";
 import { ActionQueue } from "../../engine/action/actionQueue.js";
 import { ExplodeTileAction } from "../action/types/explodeTile.js";
 import { StartTurnAction } from "../action/types/startTurn.js";
@@ -38,11 +38,20 @@ export const ServerGameContext = function(serverApplication, id) {
     this.teamManager = new TeamManager();
     this.states = new StateMachine(this);
     this.actionRouter = new ServerActionRouter();
+    this.mapFactory = new ServerMapFactory();
+    this.state = ServerGameContext.STATE.NONE;
     this.readyClients = 0;
 
     this.world.actionQueue.toFlush();
     this.world.actionQueue.events.on(ActionQueue.EVENT.PLAN_FINISHED, ({ plan }) => this.sendExecutionPlan(plan), { permanent: true });
+    this.world.entityManager.nextID = 1000;
 }
+
+ServerGameContext.STATE = {
+    NONE: 0,
+    STARTING: 1,
+    STARTED: 2
+};
 
 ServerGameContext.prototype = Object.create(Room.prototype);
 ServerGameContext.prototype.constructor = ServerGameContext;
@@ -64,7 +73,13 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
 
     switch(type) {
         case GAME_EVENT.MP_CLIENT_START_MATCH: {
-            mpCreateStaticServerMap(this, "volcano")
+            if(!this.isLeader(messengerID) || this.state !== ServerGameContext.STATE.NONE) {
+                return;
+            }
+
+            this.state = ServerGameContext.STATE.STARTING;
+
+            this.mapFactory.createStaticMap(this, "volcano")
             .then(() => {
                 for(let i = 0; i < this.members.length; i++) {
                     const member = this.members[i];
@@ -72,7 +87,8 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
 
                     this.sendMessage(GAME_EVENT.MP_SERVER_LOAD_MAP, {
                         "mapID": "volcano",
-                        "client": this.teamManager.activeTeams[i] //HACKY!
+                        "client": this.teamManager.activeTeams[i], //HACKY!
+                        "entityMap": this.mapFactory.entityMap
                     }, memberID);
                 }
             });
@@ -82,10 +98,10 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
         case GAME_EVENT.MP_CLIENT_MAP_LOADED: {
             this.readyClients++;
 
-            if(this.readyClients >= this.members.length && !this.isStarted) {
+            if(this.readyClients >= this.members.length && this.state === ServerGameContext.STATE.STARTING) {
                 this.broadcastMessage(GAME_EVENT.MP_SERVER_START_MAP, {});
                 this.actionRouter.forceEnqueue(this, createStartTurnIntent());
-                this.isStarted = true;
+                this.state = ServerGameContext.STATE.STARTED;
             }
 
             break;
@@ -93,7 +109,7 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
         case GAME_EVENT.MP_CLIENT_ACTION_INTENT: {
             const { intent } = payload;
 
-            if(this.isStarted) {
+            if(this.state === ServerGameContext.STATE.STARTED) {
                 this.actionRouter.onPlayerIntent(this, messengerID, intent);
             }
 

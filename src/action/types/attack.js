@@ -174,7 +174,7 @@ AttackAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, 
 
     if(hitEntities.length !== 0) {
         if(deadEntities.length !== 0) {
-            executionPlan.addNext(createDeathIntent(gameContext, deadEntities));
+            executionPlan.addNext(createDeathIntent(deadEntities));
         }               
 
         if(command !== COMMAND_TYPE.COUNTER) {

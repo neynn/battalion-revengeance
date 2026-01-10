@@ -182,36 +182,6 @@ const finalizeClientTeams = function(gameContext, teams, clientTeam) {
     } 
 }
 
-const finalizeServerTeams = function(gameContext, teams) {
-    const { teamManager } = gameContext;
-
-    for(const teamName in teams) {
-        const team = teamManager.getTeam(teamName);
-
-        if(!team) {
-            continue;
-        }
-
-        const commanderType = teams[teamName].commander;
-        const teamAllies = teams[teamName].allies ?? [];
-
-        for(const teamID of teamAllies) {
-            const allyTeam = teamManager.getTeam(teamID);
-
-            if(allyTeam) {
-                team.addAlly(teamID);
-                allyTeam.addAlly(teamName);
-            }
-        }
-
-        const actor = createActor(gameContext, commanderType, teamName);
-
-        if(actor) {
-            team.setActor(actor.getID());
-        }
-    }
-}
-
 const loadClientMap = function(gameContext, worldMap, mapData, clientTeam) {
     const { world, teamManager, dialogueHandler, client } = gameContext;
     const { eventHandler, turnManager } = world;
@@ -259,44 +229,6 @@ const loadClientMap = function(gameContext, worldMap, mapData, clientTeam) {
         eventHandler.addEvent(event);
     }
     
-    teamManager.updateStatus();
-
-    const turnOrder = teamManager.getTurnOrder();
-
-    turnManager.setActorOrder(turnOrder);
-}
-
-const loadServerMap = function(gameContext, worldMap, mapData) {
-    const { world, teamManager } = gameContext;
-    const { eventHandler, turnManager } = world;
-    const { 
-        teams = {},
-        entities = [],
-        objectives = {},
-        events = {},
-        buildings = []
-    } = mapData;
-
-    createTeams(gameContext, teams, objectives);
-    finalizeServerTeams(gameContext, teams);
-
-    for(let i = 0; i < entities.length; i++) {
-        spawnServerEntity(gameContext, entities[i]);
-    }
-
-    for(let i = 0; i < buildings.length; i++) {
-        spawnServerBuilding(gameContext, worldMap, buildings[i]);
-    }
-
-    for(const eventName in events) {
-        const { turn, round, next = null, actions = [] } = events[eventName];
-        const event = new ServerBattalionEvent(eventName, actions);
-
-        event.setTriggerTime(turn, round);
-        event.setNext(next);
-        eventHandler.addEvent(event);
-    }
-
     teamManager.updateStatus();
 
     const turnOrder = teamManager.getTurnOrder();
@@ -358,20 +290,6 @@ export const createEmptyMap = function(gameContext, width, height) {
     return worldMap;
 }
 
-export const createCustomMap = function(gameContext, mapData) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const { width, height, data, client } = mapData;
-    const mapID = mapManager.getNextID();
-    const worldMap = new BattalionMap(mapID, width, height);
-
-    worldMap.decodeLayers(data);
-    mapManager.addMap(worldMap);
-    mapManager.enableMap(mapID);
-
-    loadClientMap(gameContext, worldMap, mapData, client);
-}
-
 export const createEditorMap = async function(gameContext, sourceID) {
     const { pathHandler, mapRepository, world } = gameContext;
     const { mapManager } = world;
@@ -419,10 +337,69 @@ export const createStoryMap = async function(gameContext, sourceID) {
     }
 }
 
-export const mpCreateStaticClientMap = async function(gameContext, sourceID, client) {
+const mpClientLoadMap = function(gameContext, worldMap, mapData, clientTeam, entityMap) {
+    const { world, teamManager, dialogueHandler, client } = gameContext;
+    const { eventHandler, turnManager } = world;
+    const { musicPlayer } = client;
+    const { 
+        music,
+        playlist,
+        teams = {},
+        entities = [],
+        objectives = {},
+        events = {},
+        buildings = [],
+        localization = [],
+        prelogue = [],
+        postlogue = [],
+        defeat = []
+    } = mapData;
+
+    createTeams(gameContext, teams, objectives);
+    finalizeClientTeams(gameContext, teams, clientTeam);
+
+    if(entityMap.length === entities.length) {
+        for(let i = 0; i < entities.length; i++) {
+            const mappedID = entityMap[i];
+
+            spawnClientEntity(gameContext, entities[i], mappedID);
+        }
+    }
+
+    for(let i = 0; i < buildings.length; i++) {
+        spawnClientBuilding(gameContext, worldMap, buildings[i]);
+    }
+
+    if(playlist) {
+        musicPlayer.playPlaylist(playlist);
+    } else {
+        musicPlayer.play(music);
+    }
+
+    worldMap.loadLocalization(localization);
+    dialogueHandler.loadMapDialogue(prelogue, postlogue, defeat);
+
+    for(const eventName in events) {
+        const { turn, round, next = null, actions = [] } = events[eventName];
+        const event = new ClientBattalionEvent(eventName, actions);
+
+        event.setTriggerTime(turn, round);
+        event.setNext(next);
+        eventHandler.addEvent(event);
+    }
+    
+    teamManager.updateStatus();
+
+    const turnOrder = teamManager.getTurnOrder();
+
+    turnManager.setActorOrder(turnOrder);
+}
+
+export const mpClientCreateStaticMap = async function(gameContext, payload) {
     const { pathHandler, mapRepository, world, language } = gameContext;
     const { mapManager } = world;
-    const mapSource = mapRepository.getMapSource(sourceID);
+    const { mapID, client, entityMap } = payload;
+    const mapSource = mapRepository.getMapSource(mapID);
     const [file, translations] = await Promise.all([mapSource.promiseFile(pathHandler), mapSource.promiseTranslations(pathHandler)]);
 
     if(file !== null) {
@@ -440,11 +417,100 @@ export const mpCreateStaticClientMap = async function(gameContext, sourceID, cli
         mapManager.addMap(worldMap);
         mapManager.enableMap(mapID);
 
-        loadClientMap(gameContext, worldMap, file, client);
+        mpClientLoadMap(gameContext, worldMap, file, client, entityMap);
     }
 }
 
-export const mpCreateStaticServerMap = async function(gameContext, sourceID) {
+export const ServerMapFactory = function() {
+    this.entityMap = [];
+}
+
+ServerMapFactory.prototype.finalizeTeams = function(gameContext, teams) {
+    const { teamManager } = gameContext;
+
+    for(const teamName in teams) {
+        const team = teamManager.getTeam(teamName);
+
+        if(!team) {
+            continue;
+        }
+
+        const commanderType = teams[teamName].commander;
+        const teamAllies = teams[teamName].allies ?? [];
+
+        for(const teamID of teamAllies) {
+            const allyTeam = teamManager.getTeam(teamID);
+
+            if(allyTeam) {
+                team.addAlly(teamID);
+                allyTeam.addAlly(teamName);
+            }
+        }
+
+        const actor = createActor(gameContext, commanderType, teamName);
+
+        if(actor) {
+            team.setActor(actor.getID());
+        }
+    }
+}
+
+ServerMapFactory.prototype.spawnEntities = function(gameContext, entities) {
+    this.entityMap.length = 0;
+
+    for(let i = 0; i < entities.length; i++) {
+        const entityID = spawnServerEntity(gameContext, entities[i]);
+
+        this.entityMap.push(entityID);
+    }
+}
+
+ServerMapFactory.prototype.spawnBuildings = function(gameContext, worldMap, buildings) {
+    for(let i = 0; i < buildings.length; i++) {
+        spawnServerBuilding(gameContext, worldMap, buildings[i]);
+    }
+}
+
+ServerMapFactory.prototype.createEvents = function(gameContext, events) {
+    const { world } = gameContext;
+    const { eventHandler } = world;
+
+    for(const eventName in events) {
+        const { turn, round, next = null, actions = [] } = events[eventName];
+        const event = new ServerBattalionEvent(eventName, actions);
+
+        event.setTriggerTime(turn, round);
+        event.setNext(next);
+        eventHandler.addEvent(event);
+    }
+}
+
+ServerMapFactory.prototype.loadMap = function(gameContext, worldMap, mapData) {
+    const { world, teamManager } = gameContext;
+    const { turnManager } = world;
+    const { 
+        teams = {},
+        entities = [],
+        objectives = {},
+        events = {},
+        buildings = []
+    } = mapData;
+
+    createTeams(gameContext, teams, objectives);
+
+    this.finalizeTeams(gameContext, teams);
+    this.spawnEntities(gameContext, entities);
+    this.spawnBuildings(gameContext, worldMap, buildings);
+    this.createEvents(gameContext, events);
+
+    teamManager.updateStatus();
+
+    const turnOrder = teamManager.getTurnOrder();
+
+    turnManager.setActorOrder(turnOrder);
+}
+
+ServerMapFactory.prototype.createStaticMap = async function(gameContext, sourceID) {
     const { pathHandler, mapRepository, world } = gameContext;
     const { mapManager } = world;
     const mapSource = mapRepository.getMapSource(sourceID);
@@ -460,6 +526,6 @@ export const mpCreateStaticServerMap = async function(gameContext, sourceID) {
         mapManager.addMap(worldMap);
         mapManager.enableMap(mapID);
 
-        loadServerMap(gameContext, worldMap, file);
+        this.loadMap(gameContext, worldMap, file);
     } 
 }

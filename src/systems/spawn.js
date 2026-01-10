@@ -11,16 +11,21 @@ import { ClientBattalionEntity } from "../entity/clientBattalionEntity.js";
 import { ClientBuilding } from "../entity/clientBuilding.js";
 import { Building } from "../entity/building.js";
 
-export const createSpawnConfig = function(id, type, tileX, tileY) {
-    return {
-        "id": id,
-        "type": type,
-        "x": tileX,
-        "y": tileY
-    };
+export const despawnEntity = function(gameContext, entity) {
+    const { teamManager, world } = gameContext;
+    const { entityManager } = world;
+    const entityID = entity.getID();
+
+    removeEntityFromMap(gameContext, entity);
+
+    entity.isMarkedForDestroy = true;
+    entity.destroy();
+    
+    teamManager.broadcastEntityDeath(gameContext, entity);
+    entityManager.destroyEntityByID(entityID);
 }
 
-const createServerEntityObject = function(gameContext, teamID, typeID, tileX, tileY) {
+export const createServerEntityObject = function(gameContext, teamID, typeID, tileX, tileY) {
     const { teamManager, typeRegistry, world } = gameContext;
     const { entityManager } = world;
     const team = teamManager.getTeam(teamID);
@@ -42,10 +47,9 @@ const createServerEntityObject = function(gameContext, teamID, typeID, tileX, ti
     return entityObject;
 }
 
-export const createClientEntityObject = function(gameContext, config, teamID) {
+export const createClientEntityObject = function(gameContext, entityID, teamID, typeID, tileX, tileY) {
     const { teamManager, world, transform2D, spriteManager, typeRegistry } = gameContext;
     const { entityManager } = world;
-    const { id, type, x, y } = config;
     const team = teamManager.getTeam(teamID);
 
     if(!team) {
@@ -53,16 +57,15 @@ export const createClientEntityObject = function(gameContext, config, teamID) {
     }
 
     const { colorID, color } = team;
-    const entityType = typeRegistry.getEntityType(type);
-    const entityID = entityManager.getNextID();
+    const entityType = typeRegistry.getEntityType(typeID);
     const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
     const entityView = new EntityView(visualSprite, null, colorID, color);
     const entityObject = new ClientBattalionEntity(entityID, entityView);
-    const spawnPosition = transform2D.transformTileToWorld(x, y);
+    const spawnPosition = transform2D.transformTileToWorld(tileX, tileY);
 
     entityObject.loadConfig(entityType);
     entityObject.setPositionVec(spawnPosition);
-    entityObject.setTile(x, y);
+    entityObject.setTile(tileX, tileY);
     entityObject.setTeam(teamID);
     entityObject.bufferSounds(gameContext);
     entityObject.bufferSprites(gameContext);
@@ -70,20 +73,6 @@ export const createClientEntityObject = function(gameContext, config, teamID) {
     entityManager.addEntity(entityObject);
 
     return entityObject;
-}
-
-export const despawnEntity = function(gameContext, entity) {
-    const { teamManager, world } = gameContext;
-    const { entityManager } = world;
-    const entityID = entity.getID();
-
-    removeEntityFromMap(gameContext, entity);
-
-    entity.isMarkedForDestroy = true;
-    entity.destroy();
-    
-    teamManager.broadcastEntityDeath(gameContext, entity);
-    entityManager.destroyEntityByID(entityID);
 }
 
 export const spawnServerEntity = function(gameContext, config) {
@@ -101,26 +90,30 @@ export const spawnServerEntity = function(gameContext, config) {
     } = config;
     const entity = createServerEntityObject(gameContext, team, type, x, y);
 
-    if(entity) {
-        placeEntityOnMap(gameContext, entity);
+    if(!entity) {
+        return EntityManager.ID.INVALID;
+    }
 
-        entity.setCustomID(id);
-        entity.setCustomInfo(name, desc);
+    const entityID = entity.getID();
 
-        if(direction !== null) {
-            entity.setDirection(getDirectionByName(direction));
-        }
+    placeEntityOnMap(gameContext, entity);
 
-        if(health > 0) {
-            entity.setHealth(health);
-        }
+    entity.setCustomID(id);
+    entity.setCustomInfo(name, desc);
 
-        if(stealth && entity.canCloak()) {
-            entity.setFlag(BattalionEntity.FLAG.IS_CLOAKED);
-        }
+    if(direction !== null) {
+        entity.setDirection(getDirectionByName(direction));
+    }
+
+    if(health > 0) {
+        entity.setHealth(health);
+    }
+
+    if(stealth && entity.canCloak()) {
+        entity.setFlag(BattalionEntity.FLAG.IS_CLOAKED);
     }
     
-    return entity;
+    return entityID;
 }
 
 export const spawnClientEntity = function(gameContext, config, externalID = EntityManager.ID.INVALID) {
@@ -136,32 +129,43 @@ export const spawnClientEntity = function(gameContext, config, externalID = Enti
         health = -1,
         stealth = false
     } = config;
-    const spawnConfig = createSpawnConfig(externalID, type, x, y);
-    const entity = createClientEntityObject(gameContext, spawnConfig, team);
 
-    if(entity) {
-        placeEntityOnMap(gameContext, entity);
+    const { world } = gameContext;
+    const { entityManager } = world;
 
-        entity.setCustomID(id);
-        entity.setCustomInfo(name, desc);
-
-        if(direction !== null) {
-            entity.setDirection(getDirectionByName(direction));
-        }
-
-        if(health > 0) {
-            entity.setHealth(health);
-        }
-
-        if(stealth && entity.canCloak()) {
-            entity.setFlag(BattalionEntity.FLAG.IS_CLOAKED);
-            entity.setOpacity(0);
-        }
-
-        entity.playIdle(gameContext);
+    if(externalID === EntityManager.ID.INVALID) {
+        externalID = entityManager.getNextID();
     }
 
-    return entity;
+    const entity = createClientEntityObject(gameContext, externalID, team, type, x, y);
+
+    if(!entity) {
+        return EntityManager.ID.INVALID;
+    }
+
+    const entityID = entity.getID();
+
+    placeEntityOnMap(gameContext, entity);
+
+    entity.setCustomID(id);
+    entity.setCustomInfo(name, desc);
+
+    if(direction !== null) {
+        entity.setDirection(getDirectionByName(direction));
+    }
+
+    if(health > 0) {
+        entity.setHealth(health);
+    }
+
+    if(stealth && entity.canCloak()) {
+        entity.setFlag(BattalionEntity.FLAG.IS_CLOAKED);
+        entity.setOpacity(0);
+    }
+
+    entity.playIdle(gameContext);
+
+    return entityID;
 }
 
 export const spawnServerBuilding = function(gameContext, worldMap, config) {

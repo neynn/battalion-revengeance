@@ -1,7 +1,6 @@
-import { EntityManager } from "../../engine/entity/entityManager.js";
 import { PrettyJSON } from "../../engine/resources/prettyJSON.js";
 import { placeEntityOnMap } from "./map.js";
-import { createClientEntityObject, createSpawnConfig } from "./spawn.js";
+import { createClientEntityObject } from "./spawn.js";
 
 export const saveStoryMap = function(gameContext) {
     const { world } = gameContext;
@@ -26,15 +25,15 @@ export const saveStoryMap = function(gameContext) {
 
 export const loadStoryMap = function(gameContext, data) {
     const { world } = gameContext;
-    const { mapManager } = world;
+    const { mapManager, entityManager } = world;
     const worldMap = mapManager.getActiveMap();
 
     worldMap.loadEdits(data.edits);
 
     for(const blob of data.entities) {
         const { type, tileX, tileY, teamID } = blob;
-        const config = createSpawnConfig(EntityManager.ID.INVALID, type, tileX, tileY);
-        const entity = createClientEntityObject(gameContext, config, teamID);
+        const entityID = entityManager.getNextID();
+        const entity = createClientEntityObject(gameContext, entityID, teamID, type, tileX, tileY);
 
         if(entity) {
             entity.load(gameContext, blob);
