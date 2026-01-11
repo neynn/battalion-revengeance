@@ -8,6 +8,7 @@ export const BattalionEvent = function(id, actions) {
 BattalionEvent.prototype = Object.create(WorldEvent.prototype);
 BattalionEvent.prototype.constructor = BattalionEvent;
 
+BattalionEvent.prototype.onPlayEffect = function(gameContext, action) {}
 BattalionEvent.prototype.onDialogue = function(gameContext, action) {}
 BattalionEvent.prototype.onTileExplode = function(gameContext, action) {}
 BattalionEvent.prototype.onSpawn = function(gameContext, action) {}
@@ -28,6 +29,14 @@ BattalionEvent.prototype.execute = function(gameContext) {
             case EVENT_TYPE.SPAWN_ENTITY: {
                 this.onSpawn(gameContext, this.actions[i]);
                 break; 
+            }
+            case EVENT_TYPE.PLAY_EFFECT: {
+                this.onPlayEffect(gameContext, this.actions[i]);
+                break;
+            }
+            default: {
+                console.error("Unknown event type!", type);
+                break;
             }
         }
     }

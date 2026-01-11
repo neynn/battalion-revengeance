@@ -2,14 +2,13 @@ import { TypeRegistry } from "../../src/type/typeRegistry.js";
 import { ActionIntent } from "../action/actionIntent.js";
 import { ActionRouter } from "./actionRouter.js";
 
-const MAX_ACTIONS_PER_TICK = 1000;
-
 export const ServerActionRouter = function() {
     ActionRouter.call(this);
 
     this.receivable.add(TypeRegistry.ACTION_TYPE.MOVE);
     this.receivable.add(TypeRegistry.ACTION_TYPE.ATTACK);
     this.receivable.add(TypeRegistry.ACTION_TYPE.END_TURN);
+    this.maxActionsPerTick = 1000;
     this.isUpdating = false;
 }
 
@@ -27,7 +26,7 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
 
     this.isUpdating = true;
 
-    while(count < MAX_ACTIONS_PER_TICK && actionQueue.isRunning()) {
+    while(count < this.maxActionsPerTick && actionQueue.isRunning()) {
         actionQueue.update(gameContext);
         count++;
     }

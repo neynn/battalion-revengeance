@@ -1,20 +1,21 @@
 export const WorldEventHandler = function() {
     this.worldEvents = [];
     this.triggeredEvents = new Set();
-    this.allowSelfExecution = true;
+    this.blockAllEvents = false;
 }
 
-WorldEventHandler.prototype.disableSelf = function() {
-    this.allowSelfExecution = false;
+WorldEventHandler.prototype.allowEvents = function() {
+    this.blockAllEvents = false;
 }
 
-WorldEventHandler.prototype.enableSelf = function() {
-    this.allowSelfExecution = true;
+WorldEventHandler.prototype.blockEvents = function() {
+    this.blockAllEvents = true;
 }
 
 WorldEventHandler.prototype.exit = function() {
     this.worldEvents.length = 0;
     this.triggeredEvents.clear();
+    this.blockAllEvents = false;
 }
 
 WorldEventHandler.prototype.addEvent = function(event) {
@@ -22,7 +23,7 @@ WorldEventHandler.prototype.addEvent = function(event) {
 }
 
 WorldEventHandler.prototype.checkEventTriggers = function(gameContext) {
-    if(!this.allowSelfExecution) {
+    if(this.blockAllEvents) {
         return;
     }
 

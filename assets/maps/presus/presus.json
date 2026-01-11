@@ -99,6 +99,13 @@
                     "entities": [
                         { "x": 0, "y": 9, "type": "STEALTH_TANK", "team": "SOMERTIN" }
                     ]
+                },
+                { 
+                    "type": "PLAY_EFFECT",
+                    "effects": [
+                        { "type": "GFX", "gfx": "explosion", "x": 0, "y": 9 },
+                        { "type": "SFX", "sfx": "uncloak" }
+                    ]
                 }
             ]
         }

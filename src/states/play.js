@@ -14,7 +14,7 @@ PlayState.prototype.onEnter = async function(gameContext, stateMachine, transiti
     const { eventHandler } = world;
     const { router } = client;
 
-    eventHandler.enableSelf();
+    eventHandler.allowEvents();
     actionRouter.toClient();
 
     createStoryMap(gameContext, "presus")

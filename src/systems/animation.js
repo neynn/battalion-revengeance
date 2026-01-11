@@ -1,4 +1,5 @@
 import { ATTACK_TYPE, LAYER_TYPE } from "../enums.js";
+import { playSFX } from "./sound.js";
 
 export const playGFX = function(gameContext, spriteType, tileX, tileY) {
     const { spriteManager, transform2D } = gameContext;
@@ -12,11 +13,8 @@ export const playGFX = function(gameContext, spriteType, tileX, tileY) {
     }
 }
 
-export const playExplosion = function(gameContext, tileX, tileY) {
-    const { client } = gameContext;
-    const { soundPlayer } = client;
-
-    soundPlayer.play("explosion");
+export const playExplosion = function(gameContext, tileX, tileY) {;
+    playSFX(gameContext, "explosion");
     playGFX(gameContext, "explosion", tileX, tileY);
 }
 

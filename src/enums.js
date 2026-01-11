@@ -38,7 +38,14 @@ export const COMMAND_TYPE = {
     CHAIN_AFTER_MOVE: 2
 };
 
+export const EFFECT_TYPE = {
+    GFX: "GFX",
+    SFX: "SFX",
+    EXPLOSION: "EXPLOSION"
+};
+
 export const EVENT_TYPE = {
+    PLAY_EFFECT: "PLAY_EFFECT",
     DIALOGUE: "DIALOGUE",
     EXPLODE_TILE: "EXPLODE_TILE",
     SPAWN_ENTITY: "SPAWN_ENTITY"

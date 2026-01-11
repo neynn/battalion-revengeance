@@ -1,19 +1,2 @@
-TOO MANY CALLS TO REFRESH()!!!
-check actor from execution plan -> on the server, check if the SocketClient is the current Actor and then set the actorID of the plan to that actorID
-
-TODO:
-    - 1. Spawn effect that show how much cash was generated.
-    - 2. Add the dialogue UI... find a suitable target that knows a camera. Target cannnot be a server.
-    - 3. Send/Receive events from server. The client is NOT allowed to execute events in MP
-    - 4. ServerBroadcastEvent like CASH_UPDATE that gets applied once per turn.
-    - 5. View must be ABOVE entity -> View hold sprite & entity.
-
-Client clicks "START"
-Server loads map async
-Server tells clients to LOAD_MAP or LOAD_MAP_CUSTOM. Assume LOAD_MAP for now. Also SEND each actor the "client" for the map.
-When CLIENT loaded -> send MP_CLIENT_MAP_LOADED to server.
-When ALL CLIENTS loaded -> send MP_SERVER_START_MAP to clients
-SERVER EXECUTES THE EVENT!!!
-TurnManager is bugged to high hell.
-
 mpMaxClients as a tag on the MapSource.
+Initialize the actions of events as types! No need for seperate WorldEvent types!
