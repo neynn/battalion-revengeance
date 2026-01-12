@@ -13,3 +13,5 @@ Actions:
 4. Moving ON a NON-FRIENDLY building automatically reveals the stealth unit.
 
 Units uncloak if on an enemy building
+
+Redo streamlined: Reduced production cost. Further from base is not possible because of stealth rules.

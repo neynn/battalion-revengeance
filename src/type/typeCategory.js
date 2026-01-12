@@ -15,25 +15,27 @@ TypeCategory.prototype.checkEnums = function(enums) {
         const name = names[i];
 
         if(this.types[name] === undefined) {
-            console.warn(`${this.DEBUG_NAME}: Enum value ${name} is wrong!`);
+            console.warn(`${this.DEBUG_NAME}: Enum value ${name} does not exist as type!`);
+        }
+    }
+
+    for(const typeID in this.types) {
+        if(enums[typeID] === undefined) {
+            console.warn(`${this.DEBUG_NAME}: Enum value ${typeID} is missing!`);
         }
     }
 }
 
-TypeCategory.prototype.setTypes = function(types, enums) {
+TypeCategory.prototype.setTypes = function(types) {
     for(const typeName in types) {
         this.types[typeName] = types[typeName];
     }
-
-    this.checkEnums(enums);
 } 
 
-TypeCategory.prototype.loadTypes = function(types, TypeClass, enums) {
+TypeCategory.prototype.loadTypes = function(types, TypeClass) {
     for(const typeName in types) {
         this.types[typeName] = new TypeClass(typeName, types[typeName]);
     }
-
-    this.checkEnums(enums);
 }
 
 TypeCategory.prototype.getType = function(typeID) {

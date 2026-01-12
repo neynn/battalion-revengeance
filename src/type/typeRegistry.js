@@ -429,23 +429,23 @@ TypeRegistry.TRAIT_TYPE = {
 };
 
 TypeRegistry.prototype.load = function(resources) {
-    this.categories[TypeRegistry.CATEGORY.CURRENCY].setTypes(resources.currencyTypes, TypeRegistry.CURRENCY_TYPE);
-    this.categories[TypeRegistry.CATEGORY.POWER].setTypes(resources.powerTypes, TypeRegistry.POWER_TYPE);
-    this.categories[TypeRegistry.CATEGORY.SCHEMA].setTypes(SCHEMA_TYPES, TypeRegistry.SCHEMA_TYPE);
+    this.categories[TypeRegistry.CATEGORY.CURRENCY].setTypes(resources.currencyTypes);
+    this.categories[TypeRegistry.CATEGORY.POWER].setTypes(resources.powerTypes);
+    this.categories[TypeRegistry.CATEGORY.SCHEMA].setTypes(SCHEMA_TYPES);
 
-    this.categories[TypeRegistry.CATEGORY.ENTITY].loadTypes(resources.entityTypes, EntityType, TypeRegistry.ENTITY_TYPE);
-    this.categories[TypeRegistry.CATEGORY.MORALE].loadTypes(resources.moraleTypes, MoraleType, TypeRegistry.MORALE_TYPE);
-    this.categories[TypeRegistry.CATEGORY.ARMOR].loadTypes(resources.armorTypes, ArmorType, TypeRegistry.ARMOR_TYPE);
-    this.categories[TypeRegistry.CATEGORY.CLIMATE].loadTypes(resources.climateTypes, ClimateType, TypeRegistry.CLIMATE_TYPE);
-    this.categories[TypeRegistry.CATEGORY.MOVEMENT].loadTypes(resources.movementTypes, MovementType, TypeRegistry.MOVEMENT_TYPE);
-    this.categories[TypeRegistry.CATEGORY.TERRAIN].loadTypes(resources.terrainTypes, TerrainType, TypeRegistry.TERRAIN_TYPE);
-    this.categories[TypeRegistry.CATEGORY.TILE].loadTypes(resources.tileTypes, TileType, TypeRegistry.TILE_TYPE);
-    this.categories[TypeRegistry.CATEGORY.TRAIT].loadTypes(resources.traitTypes, TraitType, TypeRegistry.TRAIT_TYPE);
-    this.categories[TypeRegistry.CATEGORY.WEAPON].loadTypes(resources.weaponTypes, WeaponType, TypeRegistry.WEAPON_TYPE);
-    this.categories[TypeRegistry.CATEGORY.NATION].loadTypes(resources.nationTypes, NationType, TypeRegistry.NATION_TYPE);
-    this.categories[TypeRegistry.CATEGORY.FACTION].loadTypes(resources.factionTypes, FactionType, TypeRegistry.FACTION_TYPE);
-    this.categories[TypeRegistry.CATEGORY.COMMANDER].loadTypes(resources.commanderTypes, CommanderType, TypeRegistry.COMMANDER_TYPE);
-    this.categories[TypeRegistry.CATEGORY.BUILDING].loadTypes(resources.buildingTypes, BuildingType, TypeRegistry.BUILDING_TYPE);
+    this.categories[TypeRegistry.CATEGORY.ENTITY].loadTypes(resources.entityTypes, EntityType);
+    this.categories[TypeRegistry.CATEGORY.MORALE].loadTypes(resources.moraleTypes, MoraleType);
+    this.categories[TypeRegistry.CATEGORY.ARMOR].loadTypes(resources.armorTypes, ArmorType);
+    this.categories[TypeRegistry.CATEGORY.CLIMATE].loadTypes(resources.climateTypes, ClimateType);
+    this.categories[TypeRegistry.CATEGORY.MOVEMENT].loadTypes(resources.movementTypes, MovementType);
+    this.categories[TypeRegistry.CATEGORY.TERRAIN].loadTypes(resources.terrainTypes, TerrainType);
+    this.categories[TypeRegistry.CATEGORY.TILE].loadTypes(resources.tileTypes, TileType);
+    this.categories[TypeRegistry.CATEGORY.TRAIT].loadTypes(resources.traitTypes, TraitType);
+    this.categories[TypeRegistry.CATEGORY.WEAPON].loadTypes(resources.weaponTypes, WeaponType);
+    this.categories[TypeRegistry.CATEGORY.NATION].loadTypes(resources.nationTypes, NationType);
+    this.categories[TypeRegistry.CATEGORY.FACTION].loadTypes(resources.factionTypes, FactionType);
+    this.categories[TypeRegistry.CATEGORY.COMMANDER].loadTypes(resources.commanderTypes, CommanderType);
+    this.categories[TypeRegistry.CATEGORY.BUILDING].loadTypes(resources.buildingTypes, BuildingType);
 }
 
 TypeRegistry.prototype.getTerrainType = function(typeID) {
