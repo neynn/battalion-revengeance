@@ -206,7 +206,13 @@ BattalionEntity.prototype.setHealth = function(health) {
 }
 
 BattalionEntity.prototype.hasTrait = function(traitID) {
-    return this.config.hasTrait(traitID);
+    for(let i = 0; i < this.config.traits.length; i++) {
+        if(this.config.traits[i] === traitID) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 BattalionEntity.prototype.setTile = function(tileX, tileY) {
@@ -459,7 +465,7 @@ BattalionEntity.prototype.canCapture = function(gameContext, tileX, tileY) {
         return false;
     }
 
-    return building.isCapturable(gameContext, this.teamID);
+    return building.isEnemy(gameContext, this.teamID);
 }
 
 BattalionEntity.prototype.canSee = function(gameContext, entity) {
@@ -1090,6 +1096,13 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, 
 
             if(jammer.isJammed(gameContext, this.teamID, cloakFlag)) {
                 uncloakedEntities.push(this);
+            } else {
+                const building = worldMap.getBuilding(targetX, targetY);
+
+                //Enemy stealth units must uncloak on a spawner as they'd leak information otherwise (spawning wouldn't work)
+                if(building && building.hasTrait(TypeRegistry.TRAIT_TYPE.CONSTRUCTION) && building.isEnemy(gameContext, this.teamID)) {
+                    uncloakedEntities.push(this);
+                }
             }
         }
     }

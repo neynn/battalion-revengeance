@@ -11,3 +11,5 @@ Actions:
 2. true => call onPlayerIntent and call isIntentValid()
 3. true => enqueue.
 4. Moving ON a NON-FRIENDLY building automatically reveals the stealth unit.
+
+Units uncloak if on an enemy building

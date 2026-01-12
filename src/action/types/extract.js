@@ -24,7 +24,7 @@ ExtractAction.prototype.execute = function(gameContext, data) {
     const worldMap = mapManager.getActiveMap();
     const { tileX, tileY } = entity;
 
-    worldMap.extractOre(gameContext, tileX, tileY);
+    worldMap.extractOre(tileX, tileY);
     entity.addCash(value);
     entity.setFlag(BattalionEntity.FLAG.HAS_FIRED);
 }
@@ -32,14 +32,14 @@ ExtractAction.prototype.execute = function(gameContext, data) {
 ExtractAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
     const { entityManager, mapManager } = world;
-    const { entityID} = actionIntent;
+    const { entityID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
     const worldMap = mapManager.getActiveMap();
 
     if(entity && !entity.isDead() && entity.canAct()) {
         if(entity.canExtract()) {
             const { tileX, tileY } = entity;
-            const oreValue = worldMap.getOreValue(gameContext, tileX, tileY);
+            const oreValue = worldMap.getOreValue(tileX, tileY);
 
             if(oreValue > 0) {
                 executionPlan.setData({

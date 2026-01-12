@@ -12,7 +12,8 @@
         "DEBUG_LOAD": "+9",
         "DEBUG_KILL": "+8",
         "DEBUG_SAVE": "+q",
-        "END_TURN": "+t"
+        "END_TURN": "+t",
+        "EXTRACT": "+e"
     },
     "EDIT": {
         "TOGGLE_AUTOTILER": "+a",

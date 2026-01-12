@@ -1,4 +1,14 @@
 {
+    "CONSTRUCTOR": {
+        "name": "TRAIT_NAME_CONSTRUCTOR",
+        "desc": "TRAIT_DESC_CONSTRUCTOR",
+        "icon": null
+    },
+    "CONSTRUCTION": {
+        "name": "TRAIT_NAME_CONSTRUCTION",
+        "desc": "TRAIT_DESC_CONSTRUCTION",
+        "icon": null
+    },
     "EXTRACTOR": {
         "name": "TRAIT_NAME_EXTRACTOR",
         "desc": "TRAIT_DESC_EXTRACTOR",

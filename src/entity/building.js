@@ -13,10 +13,16 @@ Building.prototype.onTileUpdate = function(gameContext, previousX, previousY) {}
 Building.prototype.onTeamUpdate = function(gameContext, team) {}
 
 Building.prototype.hasTrait = function(traitID) {
-    return this.config.hasTrait(traitID);
+    for(let i = 0; i < this.config.traits.length; i++) {
+        if(this.config.traits[i] === traitID) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
-Building.prototype.isCapturable = function(gameContext, teamID) {
+Building.prototype.isEnemy = function(gameContext, teamID) {
     const { teamManager } = gameContext; 
 
     if(this.teamID === teamID) {
