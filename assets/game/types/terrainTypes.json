@@ -1,7 +1,7 @@
 {
     "UNEVEN": {
-        "name": "TRAIT_NAME_UNEVEN",
-        "desc": "TRAIT_DESC_UNEVEN",
+        "name": "TERRAIN_NAME_UNEVEN",
+        "desc": "TERRAIN_DESC_UNEVEN",
         "icon": "Assets/Traits/Uneven.png",
         "damage": {
             "TRACKED": 40
@@ -14,105 +14,90 @@
             "WHEELED": 0.2
         }
     },
+    "EXTRACTABLE": {
+        "name": "TERRAIN_NAME_EXTRACTABLE",
+        "desc": "TERRAIN_DESC_EXTRACTABLE",
+        "note": "This terrain is purely cosmetic. Ore extraction is defined by TileID.",
+        "protection": {},
+        "cost": {}
+    },
     "RUGGED": {
-        "name": "TRAIT_NAME_RUGGED",
-        "desc": "TRAIT_DESC_RUGGED",
+        "name": "TERRAIN_NAME_RUGGED",
+        "desc": "TERRAIN_DESC_RUGGED",
         "icon": "Assets/Traits/Rugged.png",
-        "protection": {
-
-        },
+        "protection": {},
         "cost": {}
     },
     "PRECIPITOUS": {
-        "name": "TRAIT_NAME_PRECIPITOUS",
-        "desc": "TRAIT_DESC_PRECIPITOUS",
+        "name": "TERRAIN_NAME_PRECIPITOUS",
+        "desc": "TERRAIN_DESC_PRECIPITOUS",
         "icon": "Assets/Traits/Precipitous.png",
-        "protection": {
-
-        },
+        "protection": {},
         "cost": {}
     },
     "IMPASSABLE": {
-        "name": "TRAIT_NAME_IMPASSABLE",
-        "desc": "TRAIT_DESC_IMPASSABLE",
+        "name": "TERRAIN_NAME_IMPASSABLE",
+        "desc": "TERRAIN_DESC_IMPASSABLE",
         "icon": "Assets/Traits/Impassable.png",
-        "protection": {
-
-        },
+        "protection": {},
         "cost": {}
     },
     "TRICKY_WATERS": {
-        "name": "TRAIT_NAME_TRICKY_WATERS",
-        "desc": "TRAIT_DESC_TRICKY_WATERS",
+        "name": "TERRAIN_NAME_TRICKY_WATERS",
+        "desc": "TERRAIN_DESC_TRICKY_WATERS",
         "icon": "Assets/Traits/Tricky Waters.png",
-        "protection": {
-
-        },
+        "protection": {},
         "cost": {}
     },
     "CONCEALMENT": {
-        "name": "TRAIT_NAME_CONCEALMENT",
-        "desc": "TRAIT_DESC_CONCEALMENT",
+        "name": "TERRAIN_NAME_CONCEALMENT",
+        "desc": "TERRAIN_DESC_CONCEALMENT",
         "icon": "Assets/Traits/Concealment.png",
-        "protection": {
-
-        },
+        "protection": {},
         "cost": {}
     },
     "NAVAL_CONCEALMENT": {
-        "name": "TRAIT_NAME_NAVAL_CONCEALMENT",
-        "desc": "TRAIT_DESC_NAVAL_CONCEALMENT",
+        "name": "TERRAIN_NAME_NAVAL_CONCEALMENT",
+        "desc": "TERRAIN_DESC_NAVAL_CONCEALMENT",
         "icon": "Assets/Traits/Naval Concealment.png",
-        "protection": {
-
-        },
+        "protection": {},
         "cost": {}
     },
     "BUNKER": {
-        "name": "TRAIT_NAME_BUNKER",
-        "desc": "TRAIT_DESC_BUNKER",
+        "name": "TERRAIN_NAME_BUNKER",
+        "desc": "TERRAIN_DESC_BUNKER",
         "icon": "Assets/Traits/Bunker.png",
-        "protection": {
-
-        },
+        "protection": {},
         "cost": {}
     },
     "SHALLOW": {
-        "name": "TRAIT_NAME_SHALLOW",
-        "desc": "TRAIT_DESC_SHALLOW",
+        "name": "TERRAIN_NAME_SHALLOW",
+        "desc": "TERRAIN_DESC_SHALLOW",
         "icon": "Assets/Traits/Shallow.png",
-        "protection": {
-
-        },
+        "protection": {},
         "cost": {}
     },
     "VANTAGE": {
-        "name": "TRAIT_NAME_VANTAGE",
-        "desc": "TRAIT_DESC_VANTAGE",
+        "name": "TERRAIN_NAME_VANTAGE",
+        "desc": "TERRAIN_DESC_VANTAGE",
         "icon": "Assets/Traits/Vantage.png",
         "rangeBoost": 1,
-        "protection": {
-
-        },
+        "protection": {},
         "cost": {}
     },
     "DANGEROUS": {
-        "name": "TRAIT_NAME_DANGEROUS",
-        "desc": "TRAIT_DESC_DANGEROUS",
+        "name": "TERRAIN_NAME_DANGEROUS",
+        "desc": "TERRAIN_DESC_DANGEROUS",
         "icon": "Assets/Traits/Dangerous.png",
-        "protection": {
-
-        },
+        "protection": {},
         "cost": {}
     },
     "SHIELDED": {
-        "name": "TRAIT_NAME_SHIELDED",
-        "desc": "TRAIT_DESC_SHIELDED",
+        "name": "TERRAIN_NAME_SHIELDED",
+        "desc": "TERRAIN_DESC_SHIELDED",
         "icon": null,
         "rangeGuard": true,
-        "protection": {
-
-        },
+        "protection": {},
         "cost": {}
     }
 }

@@ -156,7 +156,7 @@ AttackAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, 
             break;
         }
         case COMMAND_TYPE.INITIATE: {
-            if(entity.hasFlag(BattalionEntity.FLAG.CAN_MOVE) && !entity.hasFlag(BattalionEntity.FLAG.HAS_FIRED)) {
+            if(entity.canAct()) {
                resolveFirstAttack(gameContext, entity, target, resolver);
             }
     

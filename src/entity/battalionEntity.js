@@ -33,6 +33,7 @@ export const BattalionEntity = function(id) {
     this.transportID = null;
     this.lastAttacker = EntityManager.ID.INVALID;
     this.turns = 0;
+    this.localCash = 0;
 }
 
 BattalionEntity.HYBRID_ENABLED = false;
@@ -79,7 +80,8 @@ BattalionEntity.prototype.save = function() {
         "state": this.state,
         "name": this.customName,
         "desc": this.customDesc,
-        "turns": this.turns
+        "turns": this.turns,
+        "cash": this.localCash
     };
 }
 
@@ -92,7 +94,8 @@ BattalionEntity.prototype.load = function(gameContext, data) {
     this.state = data.state;
     this.customID = data.id;
     this.turns = data.turns;
-    
+    this.localCash = data.cash;
+
     this.setDirection(data.direction);
     this.setHealth(data.health);
     this.onLoad(gameContext, data);
@@ -244,6 +247,10 @@ BattalionEntity.prototype.getDirectionTo = function(entity) {
     }
 }
 
+BattalionEntity.prototype.addCash = function(value) {
+    this.localCash += value;
+}
+
 BattalionEntity.prototype.lookAt = function(entity) {
     const direction = this.getDirectionTo(entity);
 
@@ -319,9 +326,9 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
     const { world, typeRegistry } = gameContext;
     const { entityManager } = world;
     const { terrain, passability } = tileType;
-    let tileCost = passability[this.config.movementType] ?? EntityType.MAX_MOVE_COST;
+    let tileCost = passability[this.config.movementType] ?? passability['*'] ?? -1;
 
-    if(tileCost >= EntityType.MAX_MOVE_COST) {
+    if(tileCost < 0) {
         return EntityType.MAX_MOVE_COST;
     }
 
@@ -995,6 +1002,10 @@ BattalionEntity.prototype.canMove = function() {
 
 BattalionEntity.prototype.canAct = function() {
     return (this.flags & BattalionEntity.FLAG.CAN_MOVE) && !(this.flags & BattalionEntity.FLAG.HAS_FIRED);
+}
+
+BattalionEntity.prototype.canExtract = function() {
+    return this.hasTrait(TypeRegistry.TRAIT_TYPE.EXTRACTOR);
 }
 
 BattalionEntity.prototype.getCloakFlag = function() {

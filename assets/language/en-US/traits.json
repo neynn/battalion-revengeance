@@ -1,4 +1,5 @@
 {
+    "TRAIT_DESC_EXTRACTOR": "This unit can extract resources from ore deposits.",
     "TRAIT_DESC_CAPTURABLE": "This building can be captured.",
     "TRAIT_DESC_HIGH_ALTITUDE": "This unit can fly in restricted airspace.",
     "TRAIT_DESC_UNFAIR": "This unit can cloak anywhere. Truly unfair. (May also come with bugs)",

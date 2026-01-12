@@ -1,5 +1,6 @@
 import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
+import { TILE_ID } from "../enums.js";
 import { TileType } from "../type/parsed/tileType.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { JammerField } from "./jammerField.js";
@@ -154,6 +155,46 @@ BattalionMap.prototype.getTerrainTypes = function(gameContext, tileX, tileY) {
     }
 
     return types;
+}
+
+BattalionMap.prototype.getOreValue = function(tileX, tileY) {
+    for(const layerID of BattalionMap.SEARCH_ORDER) {
+        const typeID = this.getTile(layerID, tileX, tileY);
+
+        switch(typeID) {
+            case TILE_ID.ORE_LEFT: return 500;
+            case TILE_ID.ORE_RIGHT: return 500;
+            case TILE_ID.ORE_LEFT_USED: return 300;
+            case TILE_ID.ORE_RIGHT_USED: return 300;
+        }
+    }
+
+    return 0;
+}
+
+BattalionMap.prototype.extractOre = function(tileX, tileY) {
+    for(const layerID of BattalionMap.SEARCH_ORDER) {
+        const typeID = this.getTile(layerID, tileX, tileY);
+        
+        switch(typeID) {
+            case TILE_ID.ORE_LEFT: {
+                this.placeTile(TILE_ID.ORE_LEFT_USED, layerID, tileX, tileY);
+                return;
+            }
+            case TILE_ID.ORE_RIGHT: {
+                this.placeTile(TILE_ID.ORE_RIGHT_USED, layerID, tileX, tileY);
+                return;
+            }
+            case TILE_ID.ORE_LEFT_USED: {
+                this.placeTile(TILE_ID.ORE_LEFT_DEPLETED, layerID, tileX, tileY);
+                return;
+            }
+            case TILE_ID.ORE_RIGHT_USED: {
+                this.placeTile(TILE_ID.ORE_RIGHT_DEPLETED, layerID, tileX, tileY);
+                return;
+            }
+        }
+    }
 }
 
 BattalionMap.prototype.getTileType = function(gameContext, tileX, tileY) {

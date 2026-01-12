@@ -1,4 +1,9 @@
 {
+    "EXTRACTOR": {
+        "name": "TRAIT_NAME_EXTRACTOR",
+        "desc": "TRAIT_DESC_EXTRACTOR",
+        "icon": null
+    },
     "CAPTURABLE": {
         "name": "TRAIT_NAME_CAPTURABLE",
         "desc": "TRAIT_DESC_CAPTURABLE",

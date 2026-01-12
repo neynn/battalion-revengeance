@@ -4,7 +4,48 @@
         "desc": "TILE_DESC_NONE",
         "climate": "NONE",
         "terrain": [],
-        "passability": {}
+        "passability": {
+            "*": -1
+        }
+    },
+    "RICH_ORE": {
+        "name": "TILE_NAME_RICH_ORE",
+        "desc": "TILE_DESC_RICH_ORE",
+        "climate": "TEMPERATE",
+        "terrain": ["EXTRACTABLE"],
+        "passability": {
+            "FOOT": 1,
+            "WHEELED": 1,
+            "TRACKED": 1,
+            "FLIGHT": 1,
+            "AMPHIBIOUS": 1
+        }
+    },
+    "USED_ORE": {
+        "name": "TILE_NAME_USED_ORE",
+        "desc": "TILE_DESC_USED_ORE",
+        "climate": "TEMPERATE",
+        "terrain": ["EXTRACTABLE"],
+        "passability": {
+            "FOOT": 1,
+            "WHEELED": 1,
+            "TRACKED": 1,
+            "FLIGHT": 1,
+            "AMPHIBIOUS": 1
+        }
+    },
+    "DEPLETED_ORE": {
+        "name": "TILE_NAME_DEPLETED_ORE",
+        "desc": "TILE_DESC_DEPLETED_ORE",
+        "climate": "TEMPERATE",
+        "terrain": [],
+        "passability": {
+            "FOOT": 1,
+            "WHEELED": 1,
+            "TRACKED": 1,
+            "FLIGHT": 1,
+            "AMPHIBIOUS": 1
+        }
     },
     "GRASS": {
         "name": "TILE_NAME_GRASS",
@@ -52,13 +93,8 @@
         "terrain": ["UNEVEN"],
         "allowBargePickup": true,
         "passability": {
-            "FOOT": 1,
-            "WHEELED": 1,
-            "TRACKED": 1,
-            "FLIGHT": 1,
-            "RUDDER": 1,
-            "HEAVY_RUDDER": 1,
-            "AMPHIBIOUS": 1
+            "*": 1,
+            "STATIONARY": -1
         }
     },
     "ISLAND": {
@@ -128,13 +164,8 @@
         "climate": "NONE",
         "terrain": [],
         "passability": {
-            "FOOT": 1,
-            "WHEELED": 1,
-            "TRACKED": 1,
-            "FLIGHT": 1,
-            "RUDDER": 1,
-            "HEAVY_RUDDER": 1,
-            "AMPHIBIOUS": 1
+            "*": 1,
+            "STATIONARY": -1
         }
     },
     "VOLCANO": {
@@ -142,6 +173,8 @@
         "desc": "TILE_DESC_VOLCANO",
         "climate": "HELLISH",
         "terrain": [],
-        "passability": {}
+        "passability": {
+            "*": -1
+        }
     }
 }

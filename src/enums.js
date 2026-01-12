@@ -122,7 +122,14 @@ export const TILE_ID = {
     PATH_LEFT: 104,
     PATH_CENTER: 105,
 
-    JAMMER: 113
+    JAMMER: 113,
+
+    ORE_LEFT: 114,
+    ORE_RIGHT: 115,
+    ORE_LEFT_USED: 116,
+    ORE_RIGHT_USED: 117,
+    ORE_LEFT_DEPLETED: 118,
+    ORE_RIGHT_DEPLETED: 119
 };
 
 export const DIRECTION = {

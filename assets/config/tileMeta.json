@@ -119,5 +119,12 @@
     { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "14" },
     { "type": "NONE", "autotiler": "battalion_path", "texture": "path", "tile": "15" },
 
-    { "type": "NONE", "texture": "jammer", "tile": "0" }
+    { "type": "NONE", "texture": "jammer", "tile": "0" },
+
+    { "type": "RICH_ORE", "texture": "ore_deposit", "tile": "LEFT" },
+    { "type": "RICH_ORE", "texture": "ore_deposit", "tile": "RIGHT" },
+    { "type": "USED_ORE", "texture": "ore_deposit", "tile": "LEFT_USED" },
+    { "type": "USED_ORE", "texture": "ore_deposit", "tile": "RIGHT_USED" },
+    { "type": "DEPLETED_ORE", "texture": "ore_deposit", "tile": "LEFT_DEPLETED" },
+    { "type": "DEPLETED_ORE", "texture": "ore_deposit", "tile": "RIGHT_DEPLETED" }
 ]

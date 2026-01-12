@@ -19,6 +19,8 @@ import { ExplodeTileAction } from "../action/types/explodeTile.js";
 import { StartTurnAction } from "../action/types/startTurn.js";
 import { createStartTurnIntent } from "../action/actionHelper.js";
 import { EntitySpawnAction } from "../action/types/entitySpawn.js";
+import { mpIsPlayerIntentValid } from "../action/actionValidator.js";
+import { ExtractAction } from "../action/types/extract.js";
 
 export const ServerGameContext = function(serverApplication, id) {
     Room.call(this, id);
@@ -69,30 +71,6 @@ ServerGameContext.prototype.sendExecutionPlan = function(plan) {
     });
 }
 
-ServerGameContext.prototype.isPlayerIntentValid = function(intent, clientID) {
-    if(typeof intent !== "object") {
-        return false;
-    }
-
-    const { type, data } = intent;
-
-    switch(type) {
-        case TypeRegistry.ACTION_TYPE.ATTACK: {
-            return true;
-        }
-        case TypeRegistry.ACTION_TYPE.MOVE: {
-            return true;
-        }
-        case TypeRegistry.ACTION_TYPE.END_TURN: {
-            return true;
-        }
-        default: {
-            console.error("Faulty action sent!");
-            return false;
-        }
-    }
-}
-
 ServerGameContext.prototype.processMessage = function(messengerID, message) {
     const { type, payload } = message;
 
@@ -135,7 +113,7 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
             const { intent } = payload;
 
             if(this.state === ServerGameContext.STATE.STARTED) {
-                if(this.isPlayerIntentValid(intent, messengerID)) {
+                if(mpIsPlayerIntentValid(this, intent, messengerID)) {
                     this.actionRouter.onPlayerIntent(this, intent);
                 }
             }
@@ -150,6 +128,7 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
 }
 
 ServerGameContext.prototype.init = function() {
+    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.EXTRACT, new ExtractAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.SPAWN, new EntitySpawnAction(true));
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.START_TURN, new StartTurnAction());
     this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction());
