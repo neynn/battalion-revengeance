@@ -837,9 +837,16 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
 
     //Armor factor.
     if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.ARMOR_PIERCE)) {
-        const weaponType = typeRegistry.getWeaponType(this.config.weaponType);
+        const armorType = typeRegistry.getArmorType(targetArmor);
+        const { resistance } = armorType;
+        const resistanceFactor = resistance[this.config.weaponType] ?? resistance['*'] ?? 0;
 
-        armorFactor *= weaponType.armorResistance[targetArmor] ?? 1;
+        //Maxes out at 100%
+        if(resistanceFactor > 1) {
+            armorFactor = 0;
+        } else {
+            armorFactor *= (1 - resistanceFactor);
+        }
     }
 
     //Target tile.
@@ -849,8 +856,13 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
         const { protection } = typeRegistry.getTerrainType(terrain[i]);
         const protectionFactor = protection[targetMove] ?? protection['*'] ?? 0;
 
-        //Terrain protection factor.
-        terrainFactor *= (1 - protectionFactor);
+        //Terrain protection factor. Maxes out at 100%
+        if(protectionFactor > 1) {
+            terrainFactor = 0;
+            break;
+        } else {
+            terrainFactor *= (1 - protectionFactor);
+        }
     }
 
     //Attacker traits.
@@ -858,10 +870,10 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
         const { moveDamage, armorDamage } = typeRegistry.getTraitType(this.config.traits[i]);
         
         //Move factor.
-        damageAmplifier *= moveDamage[targetMove] ?? 1;
+        damageAmplifier *= moveDamage[targetMove] ?? moveDamage['*'] ?? 1;
 
         //Armor factor.
-        damageAmplifier *= armorDamage[targetArmor] ?? 1;
+        damageAmplifier *= armorDamage[targetArmor] ?? armorDamage['*'] ?? 1;
     }
 
     //Steer trait. Reduces damage received by STEER for each tile the target can travel further. Up to STEER_MAX_REDUCTION.
@@ -909,11 +921,7 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
 
     damageAmplifier *= this.moraleAmplifier;
     damageAmplifier *= armorFactor;
-
-    if(terrainFactor >= 0) {
-        damageAmplifier *= terrainFactor;
-    }
-
+    damageAmplifier *= terrainFactor;
     damageAmplifier *= logisticFactor;
     damageAmplifier *= healthFactor;
 
