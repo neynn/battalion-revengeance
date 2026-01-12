@@ -342,7 +342,12 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
     
     for(let i = 0; i < terrain.length; i++) {
         const { cost } = typeRegistry.getTerrainType(terrain[i]);
-        const terrainModifier = cost[this.config.movementType] ?? 0;
+        const terrainModifier = cost[this.config.movementType] ?? cost['*'] ?? 0;
+
+        //Some terrains may disable entities from walking over them.
+        if(cost < 0) {
+            return EntityType.MAX_MOVE_COST;
+        }
 
         tileCost += terrainModifier;
     }
@@ -833,9 +838,10 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
 
     for(let i = 0; i < terrain.length; i++) {
         const { protection } = typeRegistry.getTerrainType(terrain[i]);
+        const protectionFactor = protection[targetMove] ?? protection['*'] ?? 0;
 
-        //Terrain factor.
-        terrainFactor *= (1 - (protection[targetMove] ?? 0));
+        //Terrain protection factor.
+        terrainFactor *= (1 - protectionFactor);
     }
 
     //Attacker traits.
@@ -894,7 +900,11 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
 
     damageAmplifier *= this.moraleAmplifier;
     damageAmplifier *= armorFactor;
-    damageAmplifier *= terrainFactor;
+
+    if(terrainFactor >= 0) {
+        damageAmplifier *= terrainFactor;
+    }
+
     damageAmplifier *= logisticFactor;
     damageAmplifier *= healthFactor;
 

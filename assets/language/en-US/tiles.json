@@ -29,7 +29,7 @@
     "TILE_DESC_BRIDGE": "Bridges are useful for connecting lands, but they lack defensive cover.",
     "TILE_DESC_RIVER": "The open sea form the theater for naval combat.",
     "TILE_DESC_SWIRL": "Reefs slow movement and improve defense against attacks.",
-    "TILE_DESC_RICH_ORE": "Extractors can extract 500 cash from this tile.",
-    "TILE_DESC_USED_ORE": "Extractors can extract 300 cash from this tile.",
+    "TILE_DESC_RICH_ORE": "Extractors can extract 500 [Cash] from this tile.",
+    "TILE_DESC_USED_ORE": "Extractors can extract 300 [Cash] from this tile.",
     "TILE_DESC_DEPLETED_ORE": "Nothing else can be extracted from this tile."
 }

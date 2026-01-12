@@ -15,8 +15,10 @@
         "terrain": ["SHIELDED"],
         "passability": {
             "FOOT": 1,
+            "WHEELED": 1,
+            "TRACKED": 1,
             "FLIGHT": 1,
-            "*": -1
+            "AMPHIBIOUS": 1
         }
     },
     "HILL": {
@@ -39,10 +41,8 @@
         "terrain": ["PRECIPITOUS", "BUNKER"],
         "passability": {
             "FOOT": 1,
-            "WHEELED": 1,
-            "TRACKED": 1,
             "FLIGHT": 1,
-            "AMPHIBIOUS": 1
+            "*": -1
         }
     },
     "FOREST": {

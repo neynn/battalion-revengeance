@@ -27,7 +27,9 @@
         "icon": "Assets/Traits/Precipitous.png",
         "protection": {},
         "cost": {
-            "FOOT": 0.4
+            "FOOT": 0.4,
+            "FLIGHT": 0,
+            "*": -1
         }
     },
     "EXTRACTABLE": {

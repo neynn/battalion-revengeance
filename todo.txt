@@ -10,7 +10,4 @@ Actions:
 1. Check if the clientId is the currentActor
 2. true => call onPlayerIntent and call isIntentValid()
 3. true => enqueue.
-
 4. Moving ON a NON-FRIENDLY building automatically reveals the stealth unit.
-
-Add * for terrain.
