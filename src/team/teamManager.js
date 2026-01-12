@@ -31,6 +31,14 @@ TeamManager.prototype.exit = function() {
     this.isConcluded = false;
 }
 
+TeamManager.prototype.onNextTurn = function(gameContext) {
+    for(let i = 0; i < this.activeTeams.length; i++) {
+        const team = this.getTeam(this.activeTeams[i]);
+        
+        team.generateGlobalBuildingCash(gameContext);
+    }
+}
+
 TeamManager.prototype.createTeam = function(teamID) {
     if(this.teams.has(teamID)) {
         console.log("Team creation failed!")

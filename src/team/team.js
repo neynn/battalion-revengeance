@@ -3,7 +3,7 @@ import { Objective } from "./objective/objective.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { UnitSurviveObjective } from "./objective/types/unitSurvive.js";
 import { LynchpinObjective } from "./objective/types/lynchpin.js";
-import { getGeneratedCash } from "../systems/cash.js";
+import { getGeneratedCash, getGlobalGeneratedCash } from "../systems/cash.js";
 
 export const Team = function(id) {
     this.id = id;
@@ -252,6 +252,20 @@ Team.prototype.generateBuildingCash = function(gameContext) {
 
     for(const building of this.buildings) {
         const cash = getGeneratedCash(gameContext, building.config.traits);
+
+        totalCash += cash;
+    }
+
+    this.funds += totalCash;
+
+    return totalCash;
+}
+
+Team.prototype.generateGlobalBuildingCash = function(gameContext) {
+    let totalCash = 0;
+
+    for(const building of this.buildings) {
+        const cash = getGlobalGeneratedCash(gameContext, building.config.traits);
 
         totalCash += cash;
     }

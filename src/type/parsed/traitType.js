@@ -5,7 +5,8 @@ export const TraitType = function(id, config) {
         icon = null,
         moveDamage =  {},
         armorDamage =  {},
-        cashPerTurn = 0
+        cashPerTurn = 0,
+        cashPerGlobalTurn = 0
     } = config;
 
     this.id = id;
@@ -15,4 +16,5 @@ export const TraitType = function(id, config) {
     this.moveDamage = moveDamage;
     this.armorDamage = armorDamage;
     this.cashPerTurn = cashPerTurn;
+    this.cashPerGlobalTurn = cashPerGlobalTurn;
 }

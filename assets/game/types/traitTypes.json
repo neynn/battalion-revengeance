@@ -201,10 +201,7 @@
     "JUDGEMENT": {
         "name": "TRAIT_NAME_JUDGEMENT",
         "desc": "TRAIT_DESC_JUDGEMENT",
-        "icon": "Assets/Traits/JUDGEMENT.png",
-        "moveDamage": {
-            "*": 1000
-        }
+        "icon": "Assets/Traits/JUDGEMENT.png"
     },
     "STEER": {
         "name": "TRAIT_NAME_STEER",

@@ -16,12 +16,13 @@ StartTurnAction.prototype.onEnd = function(gameContext, data) {
 }
 
 StartTurnAction.prototype.execute = function(gameContext, data) {
-    const { world } = gameContext;
+    const { world, teamManager } = gameContext;
     const { turnManager, eventHandler } = world;
     const { actorID } = data;
 
     turnManager.setCurrentActor(gameContext, actorID);
     eventHandler.checkEventTriggers(gameContext);
+    teamManager.onNextTurn(gameContext);
 }
 
 StartTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
