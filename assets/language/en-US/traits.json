@@ -1,5 +1,4 @@
 {
-    "TRAIT_DESC_CONSTRUCTOR": "This unit can create new units.",
     "TRAIT_DESC_CONSTRUCTION": "This building can create new units.",
     "TRAIT_DESC_EXTRACTOR": "This unit can extract resources from ore deposits.",
     "TRAIT_DESC_CAPTURABLE": "This building can be captured.",

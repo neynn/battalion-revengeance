@@ -812,6 +812,7 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
     let terrainFactor = 1;
     let logisticFactor = 1;
     let healthFactor = 1;
+    let traitFactor = 1;
     let damageAmplifier = 1;
 
     if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.INDOMITABLE)) {
@@ -870,10 +871,15 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
         const { moveDamage, armorDamage } = typeRegistry.getTraitType(this.config.traits[i]);
         
         //Move factor.
-        damageAmplifier *= moveDamage[targetMove] ?? moveDamage['*'] ?? 1;
+        traitFactor *= (1 + (moveDamage[targetMove] ?? moveDamage['*'] ?? 0));
 
         //Armor factor.
-        damageAmplifier *= armorDamage[targetArmor] ?? armorDamage['*'] ?? 1;
+        traitFactor *= (1 + (armorDamage[targetArmor] ?? armorDamage['*'] ?? 0));
+    }
+
+    //Trait factor is supposed to be bonus damage.
+    if(traitFactor < 0) {
+        traitFactor = 0;
     }
 
     //Steer trait. Reduces damage received by STEER for each tile the target can travel further. Up to STEER_MAX_REDUCTION.
@@ -924,6 +930,7 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
     damageAmplifier *= terrainFactor;
     damageAmplifier *= logisticFactor;
     damageAmplifier *= healthFactor;
+    damageAmplifier *= traitFactor;
 
     return damageAmplifier;
 }

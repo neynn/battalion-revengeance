@@ -1,9 +1,4 @@
 {
-    "CONSTRUCTOR": {
-        "name": "TRAIT_NAME_CONSTRUCTOR",
-        "desc": "TRAIT_DESC_CONSTRUCTOR",
-        "icon": null
-    },
     "CONSTRUCTION": {
         "name": "TRAIT_NAME_CONSTRUCTION",
         "desc": "TRAIT_DESC_CONSTRUCTION",
@@ -109,7 +104,7 @@
         "desc": "TRAIT_DESC_ANTI_INFANTRY",
         "icon": "Assets/Traits/Anti-Infantry.png",
         "moveDamage": {
-            "FOOT": 2
+            "FOOT": 1
         }
     },
     "ANTI_TANK": {
@@ -117,7 +112,7 @@
         "desc": "TRAIT_DESC_ANTI_TANK",
         "icon": "Assets/Traits/Anti-Tank.png",
         "moveDamage": {
-            "TRACKED": 1.5
+            "TRACKED": 0.5
         }
     },
     "ANTI_AIR": {
@@ -125,7 +120,7 @@
         "desc": "TRAIT_DESC_ANTI_AIR",
         "icon": "Assets/Traits/Anti-Air.png",
         "moveDamage": {
-            "FLIGHT": 2
+            "FLIGHT": 1
         }
     },
     "ANTI_SHIP": {
@@ -133,8 +128,8 @@
         "desc": "TRAIT_DESC_ANTI_SHIP",
         "icon": "Assets/Traits/Anti-Ship.png",
         "moveDamage": {
-            "RUDDER": 2,
-            "HEAVY_RUDDER": 1.5
+            "RUDDER": 1,
+            "HEAVY_RUDDER": 0.5
         }
     },
     "ANTI_STRUCTURE": {
@@ -142,7 +137,7 @@
         "desc": "TRAIT_DESC_ANTI_STRUCTURE",
         "icon": "Assets/Traits/Anti-Structure.png",
         "moveDamage": {
-            "STATIONARY": 2
+            "STATIONARY": 1
         }
     },
     "STEALTH": {
@@ -198,21 +193,17 @@
     "SELF_DESTRUCT": {
         "name": "TRAIT_NAME_SELF_DESTRUCT",
         "desc": "TRAIT_DESC_SELF_DESTRUCT",
-        "icon": "Assets/Traits/Self-Destruct.png"
+        "icon": "Assets/Traits/Self-Destruct.png",
+        "armorDamage": {
+            "MEDIUM": 0.5
+        }
     },
     "JUDGEMENT": {
         "name": "TRAIT_NAME_JUDGEMENT",
         "desc": "TRAIT_DESC_JUDGEMENT",
         "icon": "Assets/Traits/JUDGEMENT.png",
         "moveDamage": {
-            "STATIONARY": 1000,
-            "FOOT": 1000,
-            "WHEELED": 1000,
-            "TRACKED": 1000,
-            "FLIGHT": 1000,
-            "RUDDER": 1000,
-            "HEAVY_RUDDER": 1000,
-            "AMPHIBIOUS": 1000
+            "*": 1000
         }
     },
     "STEER": {
