@@ -10,9 +10,8 @@ import { HealAction } from "../action/types/heal.js";
 import { MoveAction } from "../action/types/move.js";
 import { UncloakAction } from "../action/types/uncloak.js";
 import { TeamManager } from "../team/teamManager.js";
-import { TypeRegistry } from "../type/typeRegistry.js";
 import { ServerActionRouter } from "../../engine/router/serverActionRouter.js";
-import { GAME_EVENT } from "../enums.js";
+import { ACTION_TYPE, GAME_EVENT } from "../enums.js";
 import { ServerMapFactory } from "../systems/map.js";
 import { ActionQueue } from "../../engine/action/actionQueue.js";
 import { ExplodeTileAction } from "../action/types/explodeTile.js";
@@ -128,17 +127,17 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
 }
 
 ServerGameContext.prototype.init = function() {
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.EXTRACT, new ExtractAction());
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.SPAWN, new EntitySpawnAction(true));
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.START_TURN, new StartTurnAction());
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction());
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.CAPTURE, new CaptureAction());
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.MOVE, new MoveAction());
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.HEAL, new HealAction());
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.ATTACK, new AttackAction());
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.CLOAK, new CloakAction());
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.DEATH, new DeathAction());
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.UNCLOAK, new UncloakAction());
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.END_TURN, new EndTurnAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.EXTRACT, new ExtractAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.SPAWN, new EntitySpawnAction(true));
+    this.world.actionQueue.registerAction(ACTION_TYPE.START_TURN, new StartTurnAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.CAPTURE, new CaptureAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.MOVE, new MoveAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.HEAL, new HealAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.ATTACK, new AttackAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.CLOAK, new CloakAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.DEATH, new DeathAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.UNCLOAK, new UncloakAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.END_TURN, new EndTurnAction());
 }
 

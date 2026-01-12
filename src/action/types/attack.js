@@ -1,9 +1,8 @@
 import { Action } from "../../../engine/action/action.js";
 import { hasFlag } from "../../../engine/util/flag.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
-import { ATTACK_TYPE, COMMAND_TYPE } from "../../enums.js";
+import { ATTACK_TYPE, COMMAND_TYPE, TRAIT_TYPE } from "../../enums.js";
 import { playAttackEffect } from "../../systems/animation.js";
-import { TypeRegistry } from "../../type/typeRegistry.js";
 import { createAttackRequest, createDeathIntent } from "../actionHelper.js";
 import { InteractionResolver } from "./interactionResolver.js";
 
@@ -183,7 +182,7 @@ AttackAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, 
             } 
 
             if(deadEntities.length !== 0) {
-                if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.BEWEGUNGSKRIEG)) {
+                if(entity.hasTrait(TRAIT_TYPE.BEWEGUNGSKRIEG)) {
                     flags |= AttackAction.FLAG.BEWEGUNGSKRIEG;
                 }
             }

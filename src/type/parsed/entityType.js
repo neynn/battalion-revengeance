@@ -1,3 +1,5 @@
+import { ARMOR_TYPE, MOVEMENT_TYPE, WEAPON_TYPE } from "../../enums.js";
+
 export const EntityType = function(id, config) {
     const MAX_TRAITS = 4;
     const MIN_JAMMER_RANGE = 1;
@@ -7,10 +9,10 @@ export const EntityType = function(id, config) {
         dimY = EntityType.DEFAULT.SIZE_Y,
         health = EntityType.DEFAULT.HEALTH,
         damage = EntityType.DEFAULT.DAMAGE,
-        weaponType = EntityType.DEFAULT.WEAPON_TYPE,
-        armorType = EntityType.DEFAULT.ARMOR_TYPE,
+        weaponType = WEAPON_TYPE.NONE,
+        armorType = ARMOR_TYPE.NONE,
         movementRange = EntityType.DEFAULT.MOVEMENT_RANGE,
-        movementType = EntityType.DEFAULT.MOVEMENT_TYPE,
+        movementType = MOVEMENT_TYPE.STATIONARY,
         movementSpeed = EntityType.DEFAULT.MOVEMENT_SPEED,
         jammerRange = EntityType.DEFAULT.JAMMER_RANGE,
         minRange = EntityType.DEFAULT.MIN_RANGE,
@@ -77,8 +79,5 @@ EntityType.DEFAULT = {
     MOVEMENT_RANGE: 0,
     STREAM_RANGE: 1,
     JAMMER_RANGE: 1,
-    HEALTH: 1,
-    MOVEMENT_TYPE: "STATIONARY",
-    WEAPON_TYPE: "NONE",
-    ARMOR_TYPE: "NONE"
+    HEALTH: 1
 };

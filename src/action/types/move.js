@@ -2,10 +2,9 @@ import { Action } from "../../../engine/action/action.js";
 import { hasFlag } from "../../../engine/util/flag.js";
 import { TILE_WIDTH } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
-import { COMMAND_TYPE, PATH_INTERCEPT } from "../../enums.js";
+import { COMMAND_TYPE, PATH_INTERCEPT, TRAIT_TYPE } from "../../enums.js";
 import { placeEntityOnMap, removeEntityFromMap } from "../../systems/map.js";
 import { mInterceptPath } from "../../systems/pathfinding.js";
-import { TypeRegistry } from "../../type/typeRegistry.js";
 import { createAttackRequest, createCaptureIntent, createCloakIntent, createHealRequest, createTrackingIntent, createUncloakIntent } from "../actionHelper.js";
 
 export const MoveAction = function() {
@@ -148,7 +147,7 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
 
         executionPlan.addNext(createUncloakIntent(uncloakedIDs));
 
-        if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.TRACKING)) {
+        if(entity.hasTrait(TRAIT_TYPE.TRACKING)) {
             executionPlan.addNext(createTrackingIntent(entity, uncloakedEntities));
         }
     }
@@ -161,7 +160,7 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
         executionPlan.addNext(createCloakIntent(entityID));
     }
 
-    if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.ELUSIVE)) {
+    if(entity.hasTrait(TRAIT_TYPE.ELUSIVE)) {
         flags |= MoveAction.FLAG.ELUSIVE;
     }
     

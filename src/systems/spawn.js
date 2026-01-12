@@ -1,9 +1,8 @@
 import { EntityManager } from "../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { LAYER_TYPE } from "../enums.js";
+import { BUILDING_TYPE, LAYER_TYPE } from "../enums.js";
 import { createSchemaViewSprite } from "../sprite/schemaView.js";
 import { EntityView } from "../sprite/entityView.js";
-import { TypeRegistry } from "../type/typeRegistry.js";
 import { getDirectionByName } from "./direction.js";
 import { placeEntityOnMap, removeEntityFromMap } from "./map.js";
 import { BuildingView } from "../sprite/buildingView.js";
@@ -171,7 +170,7 @@ export const spawnServerBuilding = function(gameContext, worldMap, config) {
         desc = null,
         x = -1,
         y = -1,
-        type = TypeRegistry.BUILDING_TYPE.AIR_CONTROL,
+        type = BUILDING_TYPE.AIR_CONTROL,
         team = null
     } = config;
 
@@ -200,7 +199,7 @@ export const spawnClientBuilding = function(gameContext, worldMap, config) {
         desc = null,
         x = -1,
         y = -1,
-        type = TypeRegistry.BUILDING_TYPE.AIR_CONTROL,
+        type = BUILDING_TYPE.AIR_CONTROL,
         team = null
     } = config;
 

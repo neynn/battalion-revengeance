@@ -4,11 +4,10 @@ import { WorldMap } from "../../engine/map/worldMap.js";
 import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { JammerField } from "../map/jammerField.js";
-import { TypeRegistry } from "../type/typeRegistry.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { createNode, mGetLowestCostNode } from "../systems/pathfinding.js";
 import { getDirectionByDelta } from "../systems/direction.js";
-import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG } from "../enums.js";
+import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE } from "../enums.js";
 import { transportTypeToEntityType } from "../systems/transport.js";
 import { getAreaEntities, getLineEntities } from "../systems/targeting.js";
 
@@ -22,7 +21,7 @@ export const BattalionEntity = function(id) {
     this.health = 1;
     this.maxHealth = 1;
     this.damage = 0;
-    this.moraleType = TypeRegistry.MORALE_TYPE.NONE;
+    this.moraleType = MORALE_TYPE.NONE;
     this.moraleAmplifier = 1;
     this.tileX = -1;
     this.tileY = -1;
@@ -138,11 +137,11 @@ BattalionEntity.prototype.getRangeType = function() {
 }
 
 BattalionEntity.prototype.getAttackType = function() {
-    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.DISPERSION) || this.hasTrait(TypeRegistry.TRAIT_TYPE.JUDGEMENT)) {
+    if(this.hasTrait(TRAIT_TYPE.DISPERSION) || this.hasTrait(TRAIT_TYPE.JUDGEMENT)) {
         return ATTACK_TYPE.DISPERSION;
     }
 
-    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.STREAMBLAST)) {
+    if(this.hasTrait(TRAIT_TYPE.STREAMBLAST)) {
         return ATTACK_TYPE.STREAMBLAST;
     }
 
@@ -181,7 +180,7 @@ BattalionEntity.prototype.getHealthAfterDamage = function(damage = 0) {
     const health = Math.floor(this.health - damage);
 
     if(health <= 0) {
-        if(this.health > TRAIT_CONFIG.HEROIC_THRESHOLD && this.hasTrait(TypeRegistry.TRAIT_TYPE.HEROIC)) {
+        if(this.health > TRAIT_CONFIG.HEROIC_THRESHOLD && this.hasTrait(TRAIT_TYPE.HEROIC)) {
             return TRAIT_CONFIG.HEROIC_THRESHOLD;
         }
 
@@ -339,7 +338,7 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
         return EntityType.MAX_MOVE_COST;
     }
 
-    if(this.config.movementType === TypeRegistry.MOVEMENT_TYPE.FLIGHT && !this.hasTrait(TypeRegistry.TRAIT_TYPE.HIGH_ALTITUDE)) {
+    if(this.config.movementType === MOVEMENT_TYPE.FLIGHT && !this.hasTrait(TRAIT_TYPE.HIGH_ALTITUDE)) {
         const jammer = worldMap.getJammer(tileX, tileY);
 
         if(jammer.isJammed(gameContext, this.teamID, JammerField.FLAG.AIRSPACE_BLOCKED)) {
@@ -444,7 +443,7 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
 }
 
 BattalionEntity.prototype.canCapture = function(gameContext, tileX, tileY) {
-    if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.CONQUEROR)) {
+    if(!this.hasTrait(TRAIT_TYPE.CONQUEROR)) {
         return false;
     }
 
@@ -462,7 +461,7 @@ BattalionEntity.prototype.canCapture = function(gameContext, tileX, tileY) {
         return false;
     }
 
-    if(!building.hasTrait(TypeRegistry.TRAIT_TYPE.CAPTURABLE)) {
+    if(!building.hasTrait(TRAIT_TYPE.CAPTURABLE)) {
         return false;
     }
 
@@ -607,7 +606,7 @@ BattalionEntity.prototype.isAttackPositionValid = function(gameContext, target) 
 
     //Streamblast and clean shot entities can only attack in a direct lane.
     if(!this.isAxisMeeting(target)) {
-        if(this.hasTrait(TypeRegistry.TRAIT_TYPE.STREAMBLAST) || this.hasTrait(TypeRegistry.TRAIT_TYPE.CLEAR_SHOT)) {
+        if(this.hasTrait(TRAIT_TYPE.STREAMBLAST) || this.hasTrait(TRAIT_TYPE.CLEAR_SHOT)) {
             return false;
         }
     }
@@ -624,7 +623,7 @@ BattalionEntity.prototype.isAttackValid = function(gameContext, target) {
         return false;
     }
 
-    if(this.config.weaponType === TypeRegistry.WEAPON_TYPE.NONE) {
+    if(this.config.weaponType === WEAPON_TYPE.NONE) {
         return false;
     }
 
@@ -645,19 +644,19 @@ BattalionEntity.prototype.isAttackValid = function(gameContext, target) {
     const targetMove = target.config.movementType;
 
     //Flight units can only be attacked with skysweeper.
-    if(targetMove === TypeRegistry.MOVEMENT_TYPE.FLIGHT && !this.hasTrait(TypeRegistry.TRAIT_TYPE.SKYSWEEPER)) {
+    if(targetMove === MOVEMENT_TYPE.FLIGHT && !this.hasTrait(TRAIT_TYPE.SKYSWEEPER)) {
         return false;
     }
 
     //Seabound entities can only attack RUDDER/HEAVY_RUDDER.
-    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SEABOUND)) {
-        if(targetMove !== TypeRegistry.MOVEMENT_TYPE.RUDDER && targetMove !== TypeRegistry.MOVEMENT_TYPE.HEAVY_RUDDER) {
+    if(this.hasTrait(TRAIT_TYPE.SEABOUND)) {
+        if(targetMove !== MOVEMENT_TYPE.RUDDER && targetMove !== MOVEMENT_TYPE.HEAVY_RUDDER) {
             return false;
         }
     }
 
     //Special submarine case. Submarines can only be targeted by DEPTH_CHARGE.
-    if(target.hasTrait(TypeRegistry.TRAIT_TYPE.SUBMERGED) && !this.hasTrait(TypeRegistry.TRAIT_TYPE.DEPTH_CHARGE)) {
+    if(target.hasTrait(TRAIT_TYPE.SUBMERGED) && !this.hasTrait(TRAIT_TYPE.DEPTH_CHARGE)) {
         return false;
     }
 
@@ -686,7 +685,7 @@ BattalionEntity.prototype.isHealValid = function(gameContext, target) {
     }
 
     //Only suppliers can heal.
-    if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.SUPPLY_DISTRIBUTION)) {
+    if(!this.hasTrait(TRAIT_TYPE.SUPPLY_DISTRIBUTION)) {
         return false;
     }
 
@@ -700,7 +699,7 @@ BattalionEntity.prototype.isHealValid = function(gameContext, target) {
 
 BattalionEntity.prototype.isProtectedFromRange = function(gameContext) {
     //Flying units are never protected by tiles/canyons!
-    if(this.config.movementType === TypeRegistry.MOVEMENT_TYPE.FLIGHT) {
+    if(this.config.movementType === MOVEMENT_TYPE.FLIGHT) {
         return false;
     }
 
@@ -737,7 +736,7 @@ BattalionEntity.prototype.isCounterValid = function(target) {
     }
 
     //Certain entities can never counter.
-    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.BLIND_SPOT) || this.hasTrait(TypeRegistry.TRAIT_TYPE.SELF_DESTRUCT)) {
+    if(this.hasTrait(TRAIT_TYPE.BLIND_SPOT) || this.hasTrait(TRAIT_TYPE.SELF_DESTRUCT)) {
         return false;
     }
 
@@ -749,12 +748,12 @@ BattalionEntity.prototype.isCounterValid = function(target) {
     }
 
     //TANK_HUNTER disables TRACKED from countering.
-    if(target.hasTrait(TypeRegistry.TRAIT_TYPE.TANK_HUNTER) && this.config.movementType === TypeRegistry.MOVEMENT_TYPE.TRACKED) {
+    if(target.hasTrait(TRAIT_TYPE.TANK_HUNTER) && this.config.movementType === MOVEMENT_TYPE.TRACKED) {
         return false;
     }
 
     //MOBILE_BATTERY cannot be countered by ranged units.
-    if(target.hasTrait(TypeRegistry.TRAIT_TYPE.MOBILE_BATTERY)) {
+    if(target.hasTrait(TRAIT_TYPE.MOBILE_BATTERY)) {
         switch(this.getRangeType()) {
             case RANGE_TYPE.RANGE: {
                 return false;
@@ -781,7 +780,7 @@ BattalionEntity.prototype.getHealAmplifier = function(gameContext) {
     let damageAmplifier = 1;
     let logisticFactor = 1;
 
-    if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.INDOMITABLE)) {
+    if(!this.hasTrait(TRAIT_TYPE.INDOMITABLE)) {
         healthFactor = this.health / this.maxHealth;
 
         if(healthFactor > 1) {
@@ -789,7 +788,7 @@ BattalionEntity.prototype.getHealAmplifier = function(gameContext) {
         }
     }
 
-    if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.COMMANDO)) {
+    if(!this.hasTrait(TRAIT_TYPE.COMMANDO)) {
         logisticFactor = worldMap.getLogisticFactor(gameContext, this.tileX, this.tileY);
     }
 
@@ -816,7 +815,7 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
     let traitFactor = 1;
     let damageAmplifier = 1;
 
-    if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.INDOMITABLE)) {
+    if(!this.hasTrait(TRAIT_TYPE.INDOMITABLE)) {
         healthFactor = this.health / this.maxHealth;
 
         if(healthFactor >= 1) {
@@ -824,21 +823,21 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
         }
     }
     
-    if(healthFactor >= 1 && this.hasTrait(TypeRegistry.TRAIT_TYPE.ANNIHILATE)) {
+    if(healthFactor >= 1 && this.hasTrait(TRAIT_TYPE.ANNIHILATE)) {
         damageAmplifier *= TRAIT_CONFIG.ANNIHILATE_DAMAGE;
     }
 
-    if(target.isAtFullHealth() && this.hasTrait(TypeRegistry.TRAIT_TYPE.BULLDOZE)) {
+    if(target.isAtFullHealth() && this.hasTrait(TRAIT_TYPE.BULLDOZE)) {
         damageAmplifier *= TRAIT_CONFIG.BULLDOZE_DAMAGE;
     }
 
     //Logistic factor. Applies only to non-commandos.
-    if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.COMMANDO)) {
+    if(!this.hasTrait(TRAIT_TYPE.COMMANDO)) {
         logisticFactor = worldMap.getLogisticFactor(gameContext, this.tileX, this.tileY);
     }
 
     //Armor factor.
-    if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.ARMOR_PIERCE)) {
+    if(!this.hasTrait(TRAIT_TYPE.ARMOR_PIERCE)) {
         const armorType = typeRegistry.getArmorType(targetArmor);
         const { resistance } = armorType;
         const resistanceFactor = resistance[this.config.weaponType] ?? resistance['*'] ?? 0;
@@ -884,8 +883,8 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
     }
 
     //Steer trait. Reduces damage received by STEER for each tile the target can travel further. Up to STEER_MAX_REDUCTION.
-    if(target.hasTrait(TypeRegistry.TRAIT_TYPE.STEER)) {
-        if(this.config.movementType === TypeRegistry.MOVEMENT_TYPE.RUDDER || this.config.movementType === TypeRegistry.MOVEMENT_TYPE.HEAVY_RUDDER) {
+    if(target.hasTrait(TRAIT_TYPE.STEER)) {
+        if(this.config.movementType === MOVEMENT_TYPE.RUDDER || this.config.movementType === MOVEMENT_TYPE.HEAVY_RUDDER) {
             const deltaRange = target.config.movementRange - this.config.movementRange;
 
             if(deltaRange > 0) {
@@ -902,17 +901,17 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
 
     //If it's not a counter it must be a normal attack.
     if(damageFlags & ATTACK_FLAG.COUNTER) {
-        if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SLUGGER)) {
+        if(this.hasTrait(TRAIT_TYPE.SLUGGER)) {
             healthFactor = 1;
         }
     } else {
         //Blitz factor.
-        if(this.hasTrait(TypeRegistry.TRAIT_TYPE.BLITZ)) {
+        if(this.hasTrait(TRAIT_TYPE.BLITZ)) {
             damageAmplifier *= TRAIT_CONFIG.BLITZ_MULTIPLIER;
         }
 
         //Schwerpunkt factor.
-        if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SCHWERPUNKT) && targetMove === TypeRegistry.MOVEMENT_TYPE.FOOT) {
+        if(this.hasTrait(TRAIT_TYPE.SCHWERPUNKT) && targetMove === MOVEMENT_TYPE.FOOT) {
             damageAmplifier *= TRAIT_CONFIG.SCHWERPUNKT_MULTIPLIER;
         }
 
@@ -941,7 +940,7 @@ BattalionEntity.prototype.getAttackDamage = function(gameContext, target, damage
     const damageAmplifier = this.getAttackAmplifier(gameContext, target, damageFlags);
     let damage = this.damage * damageAmplifier;
 
-	if(target.hasTrait(TypeRegistry.TRAIT_TYPE.CEMENTED_STEEL_ARMOR) && !this.hasTrait(TypeRegistry.TRAIT_TYPE.CAVITATION_EXPLOSION)) {
+	if(target.hasTrait(TRAIT_TYPE.CEMENTED_STEEL_ARMOR) && !this.hasTrait(TRAIT_TYPE.CAVITATION_EXPLOSION)) {
 		damage -= TRAIT_CONFIG.CEMENTED_STEEL_ARMOR_REDUCTION;
 	}
 
@@ -952,13 +951,13 @@ BattalionEntity.prototype.getAttackDamage = function(gameContext, target, damage
     //Unknown calculation.
 	if(
         damage > 25 &&
-        targetMove === TypeRegistry.MOVEMENT_TYPE.FLIGHT &&
-        !this.hasTrait(TypeRegistry.TRAIT_TYPE.ANTI_AIR)
+        targetMove === MOVEMENT_TYPE.FLIGHT &&
+        !this.hasTrait(TRAIT_TYPE.ANTI_AIR)
     ) {
 		damage = 25;
 	}
 
-    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.JUDGEMENT)) {
+    if(this.hasTrait(TRAIT_TYPE.JUDGEMENT)) {
         damage = 10000;
     }
 
@@ -1000,7 +999,7 @@ BattalionEntity.prototype.canUncloak = function() {
 }
 
 BattalionEntity.prototype.canCloak = function() {
-    return !this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.hasTrait(TypeRegistry.TRAIT_TYPE.STEALTH);
+    return !this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.hasTrait(TRAIT_TYPE.STEALTH);
 }
 
 BattalionEntity.prototype.canCloakAt = function(gameContext, tileX, tileY) {
@@ -1012,7 +1011,7 @@ BattalionEntity.prototype.canCloakAt = function(gameContext, tileX, tileY) {
     }
 
     //UNFAIR entities ignore jammers.
-    if(!this.hasTrait(TypeRegistry.TRAIT_TYPE.UNFAIR)) {
+    if(!this.hasTrait(TRAIT_TYPE.UNFAIR)) {
         const worldMap = mapManager.getActiveMap();
         const jammer = worldMap.getJammer(tileX, tileY);
         const cloakFlag = this.getCloakFlag();
@@ -1038,7 +1037,7 @@ BattalionEntity.prototype.canCloakAtSelf = function(gameContext) {
 }
 
 BattalionEntity.prototype.canMove = function() {
-    return this.config.movementRange !== 0 && this.config.movementType !== TypeRegistry.MOVEMENT_TYPE.STATIONARY;
+    return this.config.movementRange !== 0 && this.config.movementType !== MOVEMENT_TYPE.STATIONARY;
 }
 
 BattalionEntity.prototype.canAct = function() {
@@ -1046,13 +1045,13 @@ BattalionEntity.prototype.canAct = function() {
 }
 
 BattalionEntity.prototype.canExtract = function() {
-    return this.hasTrait(TypeRegistry.TRAIT_TYPE.EXTRACTOR);
+    return this.hasTrait(TRAIT_TYPE.EXTRACTOR);
 }
 
 BattalionEntity.prototype.getCloakFlag = function() {
     //The returned flags need to be unset in a jammer field, otherwise cloaking will not work.
-    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.STEALTH)) {
-        if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SUBMERGED)) {
+    if(this.hasTrait(TRAIT_TYPE.STEALTH)) {
+        if(this.hasTrait(TRAIT_TYPE.SUBMERGED)) {
             return JammerField.FLAG.SONAR;
         }
 
@@ -1097,7 +1096,7 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, 
                 const cloakFlag = entity.getCloakFlag();
 
                 if(jammerFlags & cloakFlag) {
-                    if(!entity.hasTrait(TypeRegistry.TRAIT_TYPE.UNFAIR) && !entity.isVisibleTo(gameContext, this.teamID)) {
+                    if(!entity.hasTrait(TRAIT_TYPE.UNFAIR) && !entity.isVisibleTo(gameContext, this.teamID)) {
                         uncloakedEntities.push(entity);
                     }
                 }
@@ -1120,7 +1119,7 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, 
                 const building = worldMap.getBuilding(targetX, targetY);
 
                 //Enemy stealth units must uncloak on a spawner as they'd leak information otherwise (spawning wouldn't work)
-                if(building && building.hasTrait(TypeRegistry.TRAIT_TYPE.CONSTRUCTION) && building.isEnemy(gameContext, this.teamID)) {
+                if(building && building.hasTrait(TRAIT_TYPE.CONSTRUCTION) && building.isEnemy(gameContext, this.teamID)) {
                     uncloakedEntities.push(this);
                 }
             }
@@ -1188,12 +1187,12 @@ BattalionEntity.prototype.getJammerFlags = function() {
     let flags = JammerField.FLAG.NONE;
 
     //JAMMER also blocks airspace traffic.
-    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.JAMMER)) {
+    if(this.hasTrait(TRAIT_TYPE.JAMMER)) {
         flags |= JammerField.FLAG.RADAR;
         flags |= JammerField.FLAG.AIRSPACE_BLOCKED;
     }
 
-    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SONAR)) {
+    if(this.hasTrait(TRAIT_TYPE.SONAR)) {
         flags |= JammerField.FLAG.SONAR;
     }
 
@@ -1253,16 +1252,16 @@ BattalionEntity.prototype.getAbsorberHealth = function(damage) {
 }
 
 BattalionEntity.prototype.mResolveAttackTraits = function(resolver) {
-    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SELF_DESTRUCT)) {
+    if(this.hasTrait(TRAIT_TYPE.SELF_DESTRUCT)) {
         resolver.add(this.id, 0);
 
-    } else if(this.hasTrait(TypeRegistry.TRAIT_TYPE.OVERHEAT)) {
+    } else if(this.hasTrait(TRAIT_TYPE.OVERHEAT)) {
         const overheatDamage = this.getOverheatDamage();
         const overheatHealth = this.getHealthAfterDamage(overheatDamage);
 
         resolver.add(this.id, overheatHealth);
 
-    } else if(this.hasTrait(TypeRegistry.TRAIT_TYPE.ABSORBER)) {
+    } else if(this.hasTrait(TRAIT_TYPE.ABSORBER)) {
         const { totalDamage } = resolver;
         const absorberHealth = this.getAbsorberHealth(totalDamage);
 
@@ -1300,7 +1299,7 @@ BattalionEntity.prototype.mResolveStreamblastAttack = function(gameContext, targ
 
 BattalionEntity.prototype.mResolveDispersionAttack = function(gameContext, target, resolver) {
     const { tileX, tileY } = target;
-    const range = this.hasTrait(TypeRegistry.TRAIT_TYPE.JUDGEMENT) ? TRAIT_CONFIG.JUDGEMENT_RANGE : TRAIT_CONFIG.DISPERSION_RANGE;
+    const range = this.hasTrait(TRAIT_TYPE.JUDGEMENT) ? TRAIT_CONFIG.JUDGEMENT_RANGE : TRAIT_CONFIG.DISPERSION_RANGE;
     const targets = getAreaEntities(gameContext, tileX, tileY, range);
 
     for(let i = 0; i < targets.length; i++) {
@@ -1323,7 +1322,7 @@ BattalionEntity.prototype.mResolveCounterAttack = function(gameContext, target, 
 
     resolver.addAttack(target, damage);
 
-    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SHRAPNEL)) {
+    if(this.hasTrait(TRAIT_TYPE.SHRAPNEL)) {
         this.mResolveShrapnel(gameContext, target, ATTACK_FLAG.COUNTER, resolver);
     }
 
@@ -1335,7 +1334,7 @@ BattalionEntity.prototype.mResolveRegularAttack = function(gameContext, target, 
 
     resolver.addAttack(target, damage);
 
-    if(this.hasTrait(TypeRegistry.TRAIT_TYPE.SHRAPNEL)) {
+    if(this.hasTrait(TRAIT_TYPE.SHRAPNEL)) {
         this.mResolveShrapnel(gameContext, target, ATTACK_FLAG.NONE, resolver);
     }
 

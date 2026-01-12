@@ -1,4 +1,4 @@
-import { TypeRegistry } from "../type/typeRegistry.js";
+import { ACTION_TYPE } from "../enums.js";
 
 export const mpIsPlayerIntentValid = function(gameContext, intent, clientID) {
     if(typeof intent !== "object") {
@@ -8,13 +8,13 @@ export const mpIsPlayerIntentValid = function(gameContext, intent, clientID) {
     const { type, data } = intent;
 
     switch(type) {
-        case TypeRegistry.ACTION_TYPE.ATTACK: {
+        case ACTION_TYPE.ATTACK: {
             return true;
         }
-        case TypeRegistry.ACTION_TYPE.MOVE: {
+        case ACTION_TYPE.MOVE: {
             return true;
         }
-        case TypeRegistry.ACTION_TYPE.END_TURN: {
+        case ACTION_TYPE.END_TURN: {
             return true;
         }
         default: {

@@ -8,11 +8,11 @@ import { DefendObjective } from "../team/objective/types/defend.js";
 import { ProtectObjective } from "../team/objective/types/protect.js";
 import { SurviveObjective } from "../team/objective/types/survive.js";
 import { TimeLimitObjective } from "../team/objective/types/timeLimit.js";
-import { TypeRegistry } from "../type/typeRegistry.js";
 import { createPlayCamera } from "./camera.js";
 import { spawnClientBuilding, spawnClientEntity, spawnServerBuilding, spawnServerEntity } from "./spawn.js";
 import { ClientBattalionEvent } from "../event/clientBattalionEvent.js";
 import { ServerBattalionEvent } from "../event/serverBattalionEvent.js";
+import { OBJECTIVE_TYPE } from "../enums.js";
 
 const createActor = function(gameContext, commanderType, teamName) {
     const { world } = gameContext;
@@ -97,27 +97,27 @@ const createObjectives = function(team, objectives, allObjectives) {
         const { type } = config;
 
         switch(type) {
-            case TypeRegistry.OBJECTIVE_TYPE.DEFEAT: {
+            case OBJECTIVE_TYPE.DEFEAT: {
                 team.addObjective(new DefeatObjective(config.target));
                 break;
             }
-            case TypeRegistry.OBJECTIVE_TYPE.PROTECT: {
+            case OBJECTIVE_TYPE.PROTECT: {
                 team.addObjective(new ProtectObjective(config.targets));
                 break;
             }
-            case TypeRegistry.OBJECTIVE_TYPE.CAPTURE: {
+            case OBJECTIVE_TYPE.CAPTURE: {
                 team.addObjective(new CaptureObjective(config.tiles));
                 break;
             }
-            case TypeRegistry.OBJECTIVE_TYPE.DEFEND: {
+            case OBJECTIVE_TYPE.DEFEND: {
                 team.addObjective(new DefendObjective(config.tiles));
                 break;
             }
-            case TypeRegistry.OBJECTIVE_TYPE.SURVIVE: {
+            case OBJECTIVE_TYPE.SURVIVE: {
                 team.addObjective(new SurviveObjective(config.turn));
                 break;
             }
-            case TypeRegistry.OBJECTIVE_TYPE.TIME_LIMIT: {
+            case OBJECTIVE_TYPE.TIME_LIMIT: {
                 team.addObjective(new TimeLimitObjective(config.turn));
                 break;
             }

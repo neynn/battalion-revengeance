@@ -1,10 +1,10 @@
 import { Renderer } from "../../engine/renderer/renderer.js";
-import { TypeRegistry } from "../type/typeRegistry.js";
+import { SCHEMA_TYPE } from "../enums.js";
 
 export const createSchemaViewSprite = function(gameContext, spriteID, schemaID, schema, layerID) {
     const { spriteManager } = gameContext;
 
-    if(schemaID === TypeRegistry.SCHEMA_TYPE.RED) {
+    if(schemaID === SCHEMA_TYPE.RED) {
         return spriteManager.createSpriteWithAlias(spriteID, schemaID, layerID);
     } else {
         return spriteManager.createColoredSprite(spriteID, schemaID, schema, layerID);
@@ -23,7 +23,7 @@ export const SchemaView = function(visual, spriteID, schemaID, schema) {
 SchemaView.prototype.preload = function(gameContext, spriteID) {
     const { spriteManager } = gameContext;
 
-    if(this.schemaID === TypeRegistry.SCHEMA_TYPE.RED) {
+    if(this.schemaID === SCHEMA_TYPE.RED) {
         spriteManager.createSpriteAlias(spriteID, this.schemaID);
     } else {
         spriteManager.createCopyTexture(spriteID, this.schemaID, this.schema);
@@ -70,7 +70,7 @@ SchemaView.prototype.updateVisual = function(gameContext) {
 
     if(this.schemaID === null) {
         spriteManager.updateSprite(spriteIndex, this.spriteID);
-    } else if(this.schemaID === TypeRegistry.SCHEMA_TYPE.RED) {
+    } else if(this.schemaID === SCHEMA_TYPE.RED) {
         spriteManager.updateSpriteWithAlias(spriteIndex, this.spriteID, this.schemaID);
     } else {
         spriteManager.updateColoredSprite(spriteIndex, this.spriteID, this.schemaID, this.schema);

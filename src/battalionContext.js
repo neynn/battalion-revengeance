@@ -8,7 +8,7 @@ import { MoveAction } from "./action/types/move.js";
 import { UncloakAction } from "./action/types/uncloak.js";
 import { PortraitHandler } from "./portrait/portraitHandler.js";
 import { DialogueHandler } from "./dialogue/dialogueHandler.js";
-import { LAYER_TYPE } from "./enums.js";
+import { ACTION_TYPE, LAYER_TYPE } from "./enums.js";
 import { MainMenuState } from "./states/mainMenu/mainMenu.js";
 import { MapEditorState } from "./states/mapEditor/mapEditorState.js";
 import { PlayState } from "./states/play.js";
@@ -68,18 +68,18 @@ BattalionContext.prototype.init = function(resources) {
 
     this.typeRegistry.load(resources);
 
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.EXTRACT, new ExtractAction());
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.SPAWN, new EntitySpawnAction(false));
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.START_TURN, new StartTurnAction());
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction());
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.CAPTURE, new CaptureAction());
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.MOVE, new MoveAction());
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.HEAL, new HealAction());
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.ATTACK, new AttackAction());
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.CLOAK, new CloakAction());
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.DEATH, new DeathAction());
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.UNCLOAK, new UncloakAction());
-    this.world.actionQueue.registerAction(TypeRegistry.ACTION_TYPE.END_TURN, new EndTurnAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.EXTRACT, new ExtractAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.SPAWN, new EntitySpawnAction(false));
+    this.world.actionQueue.registerAction(ACTION_TYPE.START_TURN, new StartTurnAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.CAPTURE, new CaptureAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.MOVE, new MoveAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.HEAL, new HealAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.ATTACK, new AttackAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.CLOAK, new CloakAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.DEATH, new DeathAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.UNCLOAK, new UncloakAction());
+    this.world.actionQueue.registerAction(ACTION_TYPE.END_TURN, new EndTurnAction());
 
     this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);
     this.portraitHandler.load(resources.portraits);

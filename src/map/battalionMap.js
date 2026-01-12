@@ -1,16 +1,15 @@
 import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
-import { TILE_ID } from "../enums.js";
+import { CLIMATE_TYPE, TILE_ID, TILE_TYPE } from "../enums.js";
 import { TileType } from "../type/parsed/tileType.js";
-import { TypeRegistry } from "../type/typeRegistry.js";
 import { JammerField } from "./jammerField.js";
 
 export const BattalionMap = function(id, width, height) {
     WorldMap.call(this, id, width, height);
 
     this.buildingID = 0;
-    this.globalClimate = TypeRegistry.CLIMATE_TYPE.NONE;
-    this.climate = TypeRegistry.CLIMATE_TYPE.NONE;
+    this.globalClimate = CLIMATE_TYPE.NONE;
+    this.climate = CLIMATE_TYPE.NONE;
     this.localization = [];
     this.buildings = [];
     this.edits = [];
@@ -92,8 +91,8 @@ BattalionMap.prototype.saveFlags = function() {
 }
 
 BattalionMap.prototype.setClimate = function(local, global) {
-    this.climate = local ?? TypeRegistry.CLIMATE_TYPE.NONE;
-    this.globalClimate = global ?? TypeRegistry.CLIMATE_TYPE.NONE;
+    this.climate = local ?? CLIMATE_TYPE.NONE;
+    this.globalClimate = global ?? CLIMATE_TYPE.NONE;
 }
 
 BattalionMap.prototype.getLogisticFactor = function(gameContext, tileX, tileY) {
@@ -106,7 +105,7 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
     const { tileManager, typeRegistry } = gameContext;
 
     //Maps may have a global climate that overrides all.
-    if(this.globalClimate !== TypeRegistry.CLIMATE_TYPE.NONE) {
+    if(this.globalClimate !== CLIMATE_TYPE.NONE) {
         return typeRegistry.getClimateType(this.globalClimate);
     }
 
@@ -119,7 +118,7 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
             if(type !== null) {
                 const { climate } = typeRegistry.getTileType(type);
 
-                if(climate !== TypeRegistry.CLIMATE_TYPE.NONE) {
+                if(climate !== CLIMATE_TYPE.NONE) {
                     return typeRegistry.getClimateType(climate);
                 }
             }
@@ -127,12 +126,12 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
     }
 
     //Backup local climate if the tile has no climate.
-    if(this.climate !== TypeRegistry.CLIMATE_TYPE.NONE) {
+    if(this.climate !== CLIMATE_TYPE.NONE) {
         return typeRegistry.getClimateType(this.climate);
     }
 
     //Always ensure to return a proper climate type.
-    return typeRegistry.getClimateType(TypeRegistry.CLIMATE_TYPE.TEMPERATE);
+    return typeRegistry.getClimateType(CLIMATE_TYPE.TEMPERATE);
 }
 
 BattalionMap.prototype.getTerrainTypes = function(gameContext, tileX, tileY) {
@@ -147,7 +146,7 @@ BattalionMap.prototype.getTerrainTypes = function(gameContext, tileX, tileY) {
         const typeID = this.getTile(layerID, tileX, tileY);
         const { type } = tileManager.getTile(typeID);
 
-        if(type !== null && type !== TypeRegistry.TILE_TYPE.NONE) {
+        if(type !== null && type !== TILE_TYPE.NONE) {
             const { terrain } = typeRegistry.getTileType(type);
 
             for(let i = 0; i < terrain.length; i++) {
@@ -205,19 +204,19 @@ BattalionMap.prototype.getTileType = function(gameContext, tileX, tileY) {
     const { tileManager, typeRegistry } = gameContext;
 
     if(this.isTileOutOfBounds(tileX, tileY)) {
-        return typeRegistry.getTileType(TypeRegistry.TILE_TYPE.NONE);
+        return typeRegistry.getTileType(TILE_TYPE.NONE);
     }
 
     for(const layerID of BattalionMap.SEARCH_ORDER) {
         const typeID = this.getTile(layerID, tileX, tileY);
         const { type } = tileManager.getTile(typeID);
 
-        if(type !== null && type !== TypeRegistry.TILE_TYPE.NONE) {
+        if(type !== null && type !== TILE_TYPE.NONE) {
             return typeRegistry.getTileType(type);
         }
     }
 
-    return typeRegistry.getTileType(TypeRegistry.TILE_TYPE.NONE);
+    return typeRegistry.getTileType(TILE_TYPE.NONE);
 }
 
 BattalionMap.prototype.getTileName = function(gameContext, tileX, tileY) {

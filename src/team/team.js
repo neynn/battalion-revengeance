@@ -1,9 +1,9 @@
 import { createDeathIntent, createUncloakIntent } from "../action/actionHelper.js";
 import { Objective } from "./objective/objective.js";
-import { TypeRegistry } from "../type/typeRegistry.js";
 import { UnitSurviveObjective } from "./objective/types/unitSurvive.js";
 import { LynchpinObjective } from "./objective/types/lynchpin.js";
 import { getGeneratedCash, getGlobalGeneratedCash } from "../systems/cash.js";
+import { TRAIT_TYPE } from "../enums.js";
 
 export const Team = function(id) {
     this.id = id;
@@ -294,7 +294,7 @@ Team.prototype.onTurnStart = function(gameContext, turn) {
                 if(entity.isDead()) {
                     deadEntities.push(entityID);
                 } else {
-                    if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.RADAR)) {
+                    if(entity.hasTrait(TRAIT_TYPE.RADAR)) {
                         const uncloaked = entity.getUncloakedEntitiesAtSelf(gameContext);
 
                         for(const uEntity of uncloaked) {
@@ -328,11 +328,11 @@ Team.prototype.addEntity = function(entity) {
     const entityID = entity.getID();
 
     if(!this.hasEntity(entityID)) {
-        if(!entity.hasTrait(TypeRegistry.TRAIT_TYPE.FIXED)) {
+        if(!entity.hasTrait(TRAIT_TYPE.FIXED)) {
             this.objectives[Team.OBJECTIVE.UNIT_SURVIVE].addUnit(entityID);
         }
 
-        if(entity.hasTrait(TypeRegistry.TRAIT_TYPE.LYNCHPIN)) {
+        if(entity.hasTrait(TRAIT_TYPE.LYNCHPIN)) {
             this.objectives[Team.OBJECTIVE.LYNCHPIN].addLynchpin(entityID);
         }
         

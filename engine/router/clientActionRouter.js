@@ -1,5 +1,4 @@
-import { GAME_EVENT } from "../../src/enums.js";
-import { TypeRegistry } from "../../src/type/typeRegistry.js";
+import { ACTION_TYPE, GAME_EVENT } from "../../src/enums.js";
 import { ActionIntent } from "../action/actionIntent.js";
 import { ExecutionPlan } from "../action/executionPlan.js";
 import { ActionRouter } from "./actionRouter.js";
@@ -9,9 +8,9 @@ export const ClientActionRouter = function() {
 
     this.target = ClientActionRouter.TARGET.CLIENT;
     this.sendable = new Set();
-    this.sendable.add(TypeRegistry.ACTION_TYPE.MOVE);
-    this.sendable.add(TypeRegistry.ACTION_TYPE.ATTACK);
-    this.sendable.add(TypeRegistry.ACTION_TYPE.END_TURN);
+    this.sendable.add(ACTION_TYPE.MOVE);
+    this.sendable.add(ACTION_TYPE.ATTACK);
+    this.sendable.add(ACTION_TYPE.END_TURN);
 }
 
 ClientActionRouter.TARGET = {
