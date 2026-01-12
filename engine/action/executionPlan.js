@@ -22,7 +22,6 @@ ExecutionPlan.prototype.setData = function(data) {
 }
 
 ExecutionPlan.prototype.addNext = function(intent) {
-    intent.setActor(this.intent.actorID);
     this.next.push(intent);
 }
 

@@ -38,8 +38,6 @@ TurnActor.prototype.getID = function() {
 
 TurnActor.prototype.addIntent = function(intent) {
     if(this.actionIntents.length < this.maxIntents) {
-        intent.setActor(this.id);
-
         this.actionIntents.push(intent);
     }
 }

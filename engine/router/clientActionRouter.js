@@ -8,6 +8,7 @@ export const ClientActionRouter = function() {
     ActionRouter.call(this);
 
     this.target = ClientActionRouter.TARGET.CLIENT;
+    this.sendable = new Set();
     this.sendable.add(TypeRegistry.ACTION_TYPE.MOVE);
     this.sendable.add(TypeRegistry.ACTION_TYPE.ATTACK);
     this.sendable.add(TypeRegistry.ACTION_TYPE.END_TURN);
@@ -78,15 +79,14 @@ ClientActionRouter.prototype.forceEnqueue = function(gameContext, actionIntent) 
     }
 }
 
-ClientActionRouter.prototype.fromServer = function(gameContext, plan) {
+ClientActionRouter.prototype.onServerPlan = function(gameContext, plan) {
     const { world } = gameContext;
     const { actionQueue } = world;
     const { intent } = plan;
-    const { actor, type, data } = intent;
+    const { type, data } = intent;
     const actionIntent = new ActionIntent(type, data);
     const executionPlan = new ExecutionPlan(-1, type, actionIntent);
 
     executionPlan.setData(plan.data);
-    actionIntent.setActor(actor);
     actionQueue.enqueue(executionPlan);
 }

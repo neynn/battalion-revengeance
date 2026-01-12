@@ -1,2 +1,12 @@
 mpMaxClients as a tag on the MapSource.
-Initialize the actions of events as types! No need for seperate WorldEvent types!
+
+PvP:
+Teams are preset, but the colors can change. Also allow custom colors.
+
+Actions: 
+1. Get the actorID from the clientID
+2. Check if it's that actor's turn.
+
+1. Check if the clientId is the currentActor
+2. true => call onPlayerIntent and call isIntentValid()
+3. true => enqueue.

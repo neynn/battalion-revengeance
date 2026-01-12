@@ -69,6 +69,30 @@ ServerGameContext.prototype.sendExecutionPlan = function(plan) {
     });
 }
 
+ServerGameContext.prototype.isPlayerIntentValid = function(intent, clientID) {
+    if(typeof intent !== "object") {
+        return false;
+    }
+
+    const { type, data } = intent;
+
+    switch(type) {
+        case TypeRegistry.ACTION_TYPE.ATTACK: {
+            return true;
+        }
+        case TypeRegistry.ACTION_TYPE.MOVE: {
+            return true;
+        }
+        case TypeRegistry.ACTION_TYPE.END_TURN: {
+            return true;
+        }
+        default: {
+            console.error("Faulty action sent!");
+            return false;
+        }
+    }
+}
+
 ServerGameContext.prototype.processMessage = function(messengerID, message) {
     const { type, payload } = message;
 
@@ -111,7 +135,9 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
             const { intent } = payload;
 
             if(this.state === ServerGameContext.STATE.STARTED) {
-                this.actionRouter.onPlayerIntent(this, messengerID, intent);
+                if(this.isPlayerIntentValid(intent, messengerID)) {
+                    this.actionRouter.onPlayerIntent(this, intent);
+                }
             }
 
             break;

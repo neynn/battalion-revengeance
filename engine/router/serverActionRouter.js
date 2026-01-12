@@ -1,13 +1,9 @@
-import { TypeRegistry } from "../../src/type/typeRegistry.js";
 import { ActionIntent } from "../action/actionIntent.js";
 import { ActionRouter } from "./actionRouter.js";
 
 export const ServerActionRouter = function() {
     ActionRouter.call(this);
 
-    this.receivable.add(TypeRegistry.ACTION_TYPE.MOVE);
-    this.receivable.add(TypeRegistry.ACTION_TYPE.ATTACK);
-    this.receivable.add(TypeRegistry.ACTION_TYPE.END_TURN);
     this.maxActionsPerTick = 1000;
     this.isUpdating = false;
 }
@@ -21,7 +17,7 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
     }
 
     const { world } = gameContext;
-    const { actionQueue, entityManager } = world;
+    const { actionQueue } = world;
     let count = 0;
 
     this.isUpdating = true;
@@ -55,22 +51,15 @@ ServerActionRouter.prototype.forceEnqueue = function(gameContext, actionIntent) 
     this.updateActionQueue(gameContext);
 }
 
-ServerActionRouter.prototype.onPlayerIntent = function(gameContext, clientID, intent) {
+ServerActionRouter.prototype.onPlayerIntent = function(gameContext, intent) {
     const { world } = gameContext;
     const { actionQueue } = world;
-    const { actor, type, data } = intent;
-
-    if(!this.receivable.has(type)) {
-        return;
-    }
-    
+    const { type, data } = intent;
     const actionIntent = new ActionIntent(type, data);
-
-    actionIntent.setActor(actor);
-
     const executionPlan = actionQueue.createExecutionPlan(gameContext, actionIntent);
 
     if(!executionPlan) {
+        console.error("Invalid execution plan created!");
         return;
     }
 
