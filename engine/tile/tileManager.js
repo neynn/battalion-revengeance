@@ -185,18 +185,6 @@ TileManager.prototype.getTileCount = function() {
 }
 
 //@Deprecated
-TileManager.prototype.getTileIDByArray = function(overlay) {
-    if(!overlay) {
-        return TileManager.TILE_ID.EMPTY;
-    }
-
-    const [atlas, texture] = overlay;
-    const tileID = this.getTileID(atlas, texture);
-
-    return tileID;
-}
-
-//@Deprecated
 TileManager.prototype.getTileID = function(atlasID, textureID) {
     const atlas = this.metaInversion[atlasID];
 

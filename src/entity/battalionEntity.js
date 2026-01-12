@@ -334,7 +334,8 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
     const { terrain, passability } = tileType;
     let tileCost = passability[this.config.movementType] ?? passability['*'] ?? -1;
 
-    if(tileCost < 0) {
+    //Prevents infinite/looping steps.
+    if(tileCost <= 0) {
         return EntityType.MAX_MOVE_COST;
     }
 

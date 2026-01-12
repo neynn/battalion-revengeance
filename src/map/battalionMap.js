@@ -105,6 +105,7 @@ BattalionMap.prototype.getLogisticFactor = function(gameContext, tileX, tileY) {
 BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
     const { tileManager, typeRegistry } = gameContext;
 
+    //Maps may have a global climate that overrides all.
     if(this.globalClimate !== TypeRegistry.CLIMATE_TYPE.NONE) {
         return typeRegistry.getClimateType(this.globalClimate);
     }
@@ -114,6 +115,7 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
             const typeID = this.getTile(layerID, tileX, tileY);
             const { type } = tileManager.getTile(typeID);
 
+            //A climate type of NONE means falling through. This allows roads to be climate agnostic.
             if(type !== null) {
                 const { climate } = typeRegistry.getTileType(type);
 
@@ -124,10 +126,12 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
         }
     }
 
+    //Backup local climate if the tile has no climate.
     if(this.climate !== TypeRegistry.CLIMATE_TYPE.NONE) {
         return typeRegistry.getClimateType(this.climate);
     }
 
+    //Always ensure to return a proper climate type.
     return typeRegistry.getClimateType(TypeRegistry.CLIMATE_TYPE.TEMPERATE);
 }
 
