@@ -692,6 +692,11 @@ BattalionEntity.prototype.isHealValid = function(gameContext, target) {
 }
 
 BattalionEntity.prototype.isProtectedFromRange = function(gameContext) {
+    //Flying units are never protected by tiles/canyons!
+    if(this.config.movementType === TypeRegistry.MOVEMENT_TYPE.FLIGHT) {
+        return false;
+    }
+
     const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
@@ -700,8 +705,6 @@ BattalionEntity.prototype.isProtectedFromRange = function(gameContext) {
     const startY = this.tileY;
     const endX = startX + this.config.dimX;
     const endY = startY + this.config.dimY;
-
-    //TODO Flight units should get have rangeGuard.
 
     for(let i = startY; i < endY; i++) {
         for(let j = startX; j < endX; j++) {
