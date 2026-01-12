@@ -696,6 +696,8 @@ BattalionEntity.prototype.isProtectedFromRange = function(gameContext) {
     const endX = startX + this.config.dimX;
     const endY = startY + this.config.dimY;
 
+    //TODO Flight units should get have rangeGuard.
+
     for(let i = startY; i < endY; i++) {
         for(let j = startX; j < endX; j++) {
             const terrainTypes = worldMap.getTerrainTypes(gameContext, j, i);
@@ -833,7 +835,7 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
         const { protection } = typeRegistry.getTerrainType(terrain[i]);
 
         //Terrain factor.
-        terrainFactor *= protection[targetMove] ?? 1;
+        terrainFactor *= (1 - (protection[targetMove] ?? 0));
     }
 
     //Attacker traits.

@@ -8,6 +8,56 @@
             "*": -1
         }
     },
+    "CANYON": {
+        "name": "TILE_NAME_CANYON",
+        "desc": "TILE_DESC_CANYON",
+        "climate": "TEMPERATE",
+        "terrain": ["SHIELDED"],
+        "passability": {
+            "FOOT": 1,
+            "FLIGHT": 1,
+            "*": -1
+        }
+    },
+    "HILL": {
+        "name": "TILE_NAME_HILL",
+        "desc": "TILE_DESC_HILL",
+        "climate": "TEMPERATE",
+        "terrain": ["VANTAGE", "RUGGED", "__CAMOUFLAGE"],
+        "passability": {
+            "FOOT": 1,
+            "WHEELED": 1,
+            "TRACKED": 1,
+            "FLIGHT": 1,
+            "AMPHIBIOUS": 1
+        }
+    },
+    "MOUNTAIN": {
+        "name": "TILE_NAME_MOUNTAIN",
+        "desc": "TILE_DESC_MOUNTAIN",
+        "climate": "TEMPERATE",
+        "terrain": ["PRECIPITOUS", "BUNKER"],
+        "passability": {
+            "FOOT": 1,
+            "WHEELED": 1,
+            "TRACKED": 1,
+            "FLIGHT": 1,
+            "AMPHIBIOUS": 1
+        }
+    },
+    "FOREST": {
+        "name": "TILE_NAME_FOREST",
+        "desc": "TILE_DESC_FOREST",
+        "climate": "TEMPERATE",
+        "terrain": ["RUGGED", "__CAMOUFLAGE"],
+        "passability": {
+            "FOOT": 1,
+            "WHEELED": 1,
+            "TRACKED": 1,
+            "FLIGHT": 1,
+            "AMPHIBIOUS": 1
+        }
+    },
     "RICH_ORE": {
         "name": "TILE_NAME_RICH_ORE",
         "desc": "TILE_DESC_RICH_ORE",
@@ -51,7 +101,7 @@
         "name": "TILE_NAME_GRASS",
         "desc": "TILE_DESC_GRASS",
         "climate": "TEMPERATE",
-        "terrain": ["UNEVEN"],
+        "terrain": ["UNEVEN", "__COVER"],
         "passability": {
             "FOOT": 1,
             "WHEELED": 1,
@@ -101,7 +151,7 @@
         "name": "TILE_NAME_ISLAND",
         "desc": "TILE_DESC_ISLAND",
         "climate": "TEMPERATE",
-        "terrain": [],
+        "terrain": ["__REDUCED_MOBILITY", "__CAMOUFLAGE"],
         "passability": {
             "FLIGHT": 1,
             "RUDDER": 1,

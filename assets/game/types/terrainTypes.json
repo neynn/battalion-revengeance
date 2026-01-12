@@ -6,32 +6,34 @@
         "damage": {
             "TRACKED": 40
         },
-        "protection": {
-
-        },
+        "protection": {},
         "cost": {
-            "TRACKED": 0.2,
             "WHEELED": 0.2
         }
-    },
-    "EXTRACTABLE": {
-        "name": "TERRAIN_NAME_EXTRACTABLE",
-        "desc": "TERRAIN_DESC_EXTRACTABLE",
-        "note": "This terrain is purely cosmetic. Ore extraction is defined by TileID.",
-        "protection": {},
-        "cost": {}
     },
     "RUGGED": {
         "name": "TERRAIN_NAME_RUGGED",
         "desc": "TERRAIN_DESC_RUGGED",
         "icon": "Assets/Traits/Rugged.png",
         "protection": {},
-        "cost": {}
+        "cost": {
+            "TRACKED": 0.2,
+            "WHEELED": 0.4
+        }
     },
     "PRECIPITOUS": {
         "name": "TERRAIN_NAME_PRECIPITOUS",
         "desc": "TERRAIN_DESC_PRECIPITOUS",
         "icon": "Assets/Traits/Precipitous.png",
+        "protection": {},
+        "cost": {
+            "FOOT": 0.4
+        }
+    },
+    "EXTRACTABLE": {
+        "name": "TERRAIN_NAME_EXTRACTABLE",
+        "desc": "TERRAIN_DESC_EXTRACTABLE",
+        "note": "This terrain is purely cosmetic. Ore extraction is defined by TileID.",
         "protection": {},
         "cost": {}
     },
@@ -67,7 +69,9 @@
         "name": "TERRAIN_NAME_BUNKER",
         "desc": "TERRAIN_DESC_BUNKER",
         "icon": "Assets/Traits/Bunker.png",
-        "protection": {},
+        "protection": {
+            "FOOT": 0.4
+        },
         "cost": {}
     },
     "SHALLOW": {
@@ -75,7 +79,9 @@
         "desc": "TERRAIN_DESC_SHALLOW",
         "icon": "Assets/Traits/Shallow.png",
         "protection": {},
-        "cost": {}
+        "cost": {
+            "HEAVY_RUDDER": -1
+        }
     },
     "VANTAGE": {
         "name": "TERRAIN_NAME_VANTAGE",
