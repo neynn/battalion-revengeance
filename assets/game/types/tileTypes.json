@@ -175,7 +175,7 @@
         "name": "TILE_NAME_ROCKS",
         "desc": "TILE_DESC_ROCKS",
         "climate": "NONE",
-        "terrain": [],
+        "terrain": ["DANGEROUS"],
         "passability": {
             "FLIGHT": 1,
             "RUDDER": 1,

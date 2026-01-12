@@ -314,7 +314,7 @@ BattalionEntity.prototype.getTerrainDamage = function(gameContext, tileX, tileY)
             for(let i = 0; i < terrainTypes.length; i++) {
                 const { damage } = terrainTypes[i];
 
-                totalDamage += damage[this.config.movementType] ?? 0;
+                totalDamage += damage[this.config.movementType] ?? damage['*'] ?? 0;
             }
         }
     }

@@ -3,9 +3,7 @@
         "name": "TERRAIN_NAME_UNEVEN",
         "desc": "TERRAIN_DESC_UNEVEN",
         "icon": "Assets/Traits/Uneven.png",
-        "damage": {
-            "TRACKED": 40
-        },
+        "damage": {},
         "protection": {},
         "cost": {
             "WHEELED": 0.2
@@ -97,6 +95,10 @@
         "name": "TERRAIN_NAME_DANGEROUS",
         "desc": "TERRAIN_DESC_DANGEROUS",
         "icon": "Assets/Traits/Dangerous.png",
+        "damage": {
+            "*": 20,
+            "FLIGHT": 0
+        },
         "protection": {},
         "cost": {}
     },
