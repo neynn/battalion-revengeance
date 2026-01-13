@@ -41,6 +41,14 @@ Team.STATUS = {
     LOSER: 2
 };
 
+Team.prototype.reduceCash = function(cash) {
+    this.cash -= cash;
+}
+
+Team.prototype.hasEnoughCash = function(cash) {
+    return this.cash >= cash;
+}
+
 Team.prototype.addBuilding = function(building) {
     const buildingID = building.getID();
 

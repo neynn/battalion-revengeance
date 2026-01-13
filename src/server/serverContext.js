@@ -20,6 +20,8 @@ import { createStartTurnIntent } from "../action/actionHelper.js";
 import { EntitySpawnAction } from "../action/types/entitySpawn.js";
 import { mpIsPlayerIntentValid } from "../action/actionValidator.js";
 import { ExtractAction } from "../action/types/extract.js";
+import { PurchaseEntityAction } from "../action/types/purchaseEntity.js";
+import { ProduceEntityAction } from "../action/types/produceEntity.js";
 
 export const ServerGameContext = function(serverApplication, id) {
     Room.call(this, id);
@@ -127,8 +129,10 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
 }
 
 ServerGameContext.prototype.init = function() {
+    this.world.actionQueue.registerAction(ACTION_TYPE.PRODUCE_ENTITY, new ProduceEntityAction(true));
+    this.world.actionQueue.registerAction(ACTION_TYPE.PURCHASE_ENTITY, new PurchaseEntityAction(true));
     this.world.actionQueue.registerAction(ACTION_TYPE.EXTRACT, new ExtractAction());
-    this.world.actionQueue.registerAction(ACTION_TYPE.SPAWN, new EntitySpawnAction(true));
+    this.world.actionQueue.registerAction(ACTION_TYPE.ENTITY_SPAWN, new EntitySpawnAction(true));
     this.world.actionQueue.registerAction(ACTION_TYPE.START_TURN, new StartTurnAction());
     this.world.actionQueue.registerAction(ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction());
     this.world.actionQueue.registerAction(ACTION_TYPE.CAPTURE, new CaptureAction());

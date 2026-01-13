@@ -15,3 +15,6 @@ Actions:
 Units uncloak if on an enemy building
 
 Redo streamlined: Reduced production cost. Further from base is not possible because of stealth rules.
+
+IsActive flag for Actors?
+No isCurrentActor validation for EndTurn? -> mpIsPlayerIntentValid does that.

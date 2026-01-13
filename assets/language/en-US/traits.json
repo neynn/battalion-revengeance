@@ -1,5 +1,5 @@
 {
-    "TRAIT_NAME_CONSTRUCTION": "Construction",
+    "TRAIT_NAME_SPAWNER": "Spawner",
     "TRAIT_NAME_EXTRACTOR": "Extractor",
     "TRAIT_NAME_CAPTURABLE": "Capturable",
     "TRAIT_NAME_HIGH_ALTITUDE": "High Altitude",
@@ -59,7 +59,7 @@
     "TRAIT_NAME_TERRIFYING": "Terrifying",
     "TRAIT_NAME_INFLAMING": "Inflaming",
 
-    "TRAIT_DESC_CONSTRUCTION": "This building can create new units.",
+    "TRAIT_DESC_SPAWNER": "This building can create new units.",
     "TRAIT_DESC_EXTRACTOR": "This unit can extract resources from ore deposits.",
     "TRAIT_DESC_CAPTURABLE": "This building can be captured.",
     "TRAIT_DESC_HIGH_ALTITUDE": "This unit can fly in restricted airspace.",

@@ -1,7 +1,7 @@
 {
-    "CONSTRUCTION": {
-        "name": "TRAIT_NAME_CONSTRUCTION",
-        "desc": "TRAIT_DESC_CONSTRUCTION",
+    "SPAWNER": {
+        "name": "TRAIT_NAME_SPAWNER",
+        "desc": "TRAIT_DESC_SPAWNER",
         "icon": null
     },
     "EXTRACTOR": {

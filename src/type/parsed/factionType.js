@@ -1,8 +1,10 @@
+import { COLOR_TYPE } from "../../enums.js";
+
 export const FactionType = function(id, config) {
     const {
         name = "MISSING_NAME_FACTION",
         desc = "MISSING_DESC_FACTION",
-        color = "WHITE"
+        color = COLOR_TYPE.WHITE
     } = config;
 
     this.id = id;

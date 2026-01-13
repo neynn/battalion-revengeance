@@ -1,6 +1,14 @@
 import { ActionIntent } from "../../engine/action/actionIntent.js";
 import { ACTION_TYPE, COMMAND_TYPE } from "../enums.js";
 
+export const createPurchseEntityIntent = function(tileX, tileY, typeID) {
+    return new ActionIntent(ACTION_TYPE.PURCHASE_ENTITY, {
+        "tileX": tileX,
+        "tileY": tileY,
+        "typeID": typeID
+    });
+}
+
 export const createExtractIntent = function(entityID) {
     return new ActionIntent(ACTION_TYPE.EXTRACT, {
         "entityID": entityID
@@ -8,7 +16,7 @@ export const createExtractIntent = function(entityID) {
 }
 
 export const createSpawnIntent = function(entities) {
-    return new ActionIntent(ACTION_TYPE.SPAWN, {
+    return new ActionIntent(ACTION_TYPE.ENTITY_SPAWN, {
         "entities": entities
     });
 }

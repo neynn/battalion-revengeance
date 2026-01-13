@@ -4,7 +4,7 @@ import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ATTACK_TYPE, COMMAND_TYPE, TRAIT_TYPE } from "../../enums.js";
 import { playAttackEffect } from "../../systems/animation.js";
 import { createAttackRequest, createDeathIntent } from "../actionHelper.js";
-import { InteractionResolver } from "./interactionResolver.js";
+import { InteractionResolver } from "../interactionResolver.js";
 
 const resolveCounterAttack = function(gameContext, entity, target, resolver) {
     if(entity.isCounterValid(target) && entity.isAttackValid(gameContext, target) && entity.isAttackPositionValid(gameContext, target)) {

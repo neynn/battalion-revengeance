@@ -32,6 +32,10 @@ export const GAME_EVENT = {
     MP_SERVER_TRIGGER_EVENT: 16
 };
 
+export const COLOR_TYPE = {
+    WHITE: "WHITE"
+};
+
 export const TILE_TYPE = {
     NONE: "NONE",
     GRASS: "GRASS",
@@ -52,7 +56,7 @@ export const TILE_TYPE = {
 
 export const TRAIT_TYPE = {
     TANK_POOPER: "TANK_POOPER",
-    CONSTRUCTION: "CONSTRUCTION",
+    SPAWNER: "SPAWNER",
     EXTRACTOR: "EXTRACTOR",
     CAPTURABLE: "CAPTURABLE",
     CONQUEROR: "CONQUEROR",
@@ -247,8 +251,10 @@ export const ENTITY_TYPE = {
 };
 
 export const ACTION_TYPE = {
+    PURCHASE_ENTITY: "PURCHASE_ENTITY",
+    PRODUCE_ENTITY: "PRODUCE_ENTITY",
     EXTRACT: "EXTRACT",
-    SPAWN: "SPAWN",
+    ENTITY_SPAWN: "ENTITY_SPAWN",
     EXPLODE_TILE: "EXPLODE_TILE",
     CAPTURE: "CAPTURE",
     HEAL: "HEAL",

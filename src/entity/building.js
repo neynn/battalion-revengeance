@@ -12,6 +12,10 @@ export const Building = function(id, config) {
 Building.prototype.onTileUpdate = function(gameContext, previousX, previousY) {}
 Building.prototype.onTeamUpdate = function(gameContext, team) {}
 
+Building.prototype.isOwnedBy = function(teamID) {
+    return this.teamID === teamID;
+}
+
 Building.prototype.hasTrait = function(traitID) {
     for(let i = 0; i < this.config.traits.length; i++) {
         if(this.config.traits[i] === traitID) {

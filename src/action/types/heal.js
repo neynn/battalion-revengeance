@@ -3,7 +3,7 @@ import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { COMMAND_TYPE } from "../../enums.js";
 import { playHealEffect } from "../../systems/animation.js";
 import { createDeathIntent } from "../actionHelper.js";
-import { InteractionResolver } from "./interactionResolver.js";
+import { InteractionResolver } from "../interactionResolver.js";
 
 const resolveHeal = function(gameContext, entity, target, resolver) {
     if(entity.isHealValid(gameContext, target) && entity.isHealPositionValid(gameContext, target)) {

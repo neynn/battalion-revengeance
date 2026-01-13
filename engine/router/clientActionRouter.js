@@ -8,6 +8,7 @@ export const ClientActionRouter = function() {
 
     this.target = ClientActionRouter.TARGET.CLIENT;
     this.sendable = new Set();
+    this.sendable.add(ACTION_TYPE.PURCHASE_ENTITY);
     this.sendable.add(ACTION_TYPE.MOVE);
     this.sendable.add(ACTION_TYPE.ATTACK);
     this.sendable.add(ACTION_TYPE.END_TURN);

@@ -22,6 +22,8 @@ import { ExplodeTileAction } from "./action/types/explodeTile.js";
 import { StartTurnAction } from "./action/types/startTurn.js";
 import { EntitySpawnAction } from "./action/types/entitySpawn.js";
 import { ExtractAction } from "./action/types/extract.js";
+import { PurchaseEntityAction } from "./action/types/purchaseEntity.js";
+import { ProduceEntityAction } from "./action/types/produceEntity.js";
 
 export const BattalionContext = function() {
     ClientGameContext.call(this);
@@ -68,8 +70,10 @@ BattalionContext.prototype.init = function(resources) {
 
     this.typeRegistry.load(resources);
 
+    this.world.actionQueue.registerAction(ACTION_TYPE.PRODUCE_ENTITY, new ProduceEntityAction(false));
+    this.world.actionQueue.registerAction(ACTION_TYPE.PURCHASE_ENTITY, new PurchaseEntityAction(false));
     this.world.actionQueue.registerAction(ACTION_TYPE.EXTRACT, new ExtractAction());
-    this.world.actionQueue.registerAction(ACTION_TYPE.SPAWN, new EntitySpawnAction(false));
+    this.world.actionQueue.registerAction(ACTION_TYPE.ENTITY_SPAWN, new EntitySpawnAction(false));
     this.world.actionQueue.registerAction(ACTION_TYPE.START_TURN, new StartTurnAction());
     this.world.actionQueue.registerAction(ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction());
     this.world.actionQueue.registerAction(ACTION_TYPE.CAPTURE, new CaptureAction());

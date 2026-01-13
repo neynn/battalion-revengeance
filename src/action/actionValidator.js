@@ -8,6 +8,9 @@ export const mpIsPlayerIntentValid = function(gameContext, intent, clientID) {
     const { type, data } = intent;
 
     switch(type) {
+        case ACTION_TYPE.PURCHASE_ENTITY: {
+            return true;
+        }
         case ACTION_TYPE.ATTACK: {
             return true;
         }

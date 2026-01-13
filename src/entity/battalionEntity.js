@@ -1119,7 +1119,7 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, 
                 const building = worldMap.getBuilding(targetX, targetY);
 
                 //Enemy stealth units must uncloak on a spawner as they'd leak information otherwise (spawning wouldn't work)
-                if(building && building.hasTrait(TRAIT_TYPE.CONSTRUCTION) && building.isEnemy(gameContext, this.teamID)) {
+                if(building && building.hasTrait(TRAIT_TYPE.SPAWNER) && building.isEnemy(gameContext, this.teamID)) {
                     uncloakedEntities.push(this);
                 }
             }

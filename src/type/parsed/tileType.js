@@ -1,10 +1,12 @@
+import { CLIMATE_TYPE } from "../../enums.js";
+
 export const TileType = function(id, config) {
     const MAX_TERRAIN = 4;
 
     const {
         name = "MISSING_NAME_TILE",
         desc = "MISSING_DESC_TILE",
-        climate = "NONE",
+        climate = CLIMATE_TYPE.NONE,
         terrain = [],
         passability = {}
     } = config;
