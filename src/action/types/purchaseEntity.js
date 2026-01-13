@@ -1,5 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
 import { TRAIT_TYPE } from "../../enums.js";
+import { createClientEntityObject, createServerEntityObject } from "../../systems/spawn.js";
 
 export const PurchaseEntityAction = function(isServer) {
     Action.call(this);
@@ -19,13 +20,32 @@ PurchaseEntityAction.prototype.onEnd = function(gameContext, data) {
 }
 
 PurchaseEntityAction.prototype.execute = function(gameContext, data) {
-    const { world } = gameContext;
-    const { turnManager } = world;
-}
+    const { teamManager } = gameContext;
+    const { id, tileX, tileY, teamID, typeID, cost, morale } = data;
+    let entity = null;
+
+    if(this.isServer) {
+        entity = createServerEntityObject(gameContext, id, teamID, typeID, tileX, tileY);
+    } else {
+        entity = createClientEntityObject(gameContext, id, teamID, typeID, tileX, tileY);
+
+        if(entity) {
+            entity.playIdle(gameContext);
+        }
+    }
+
+    if(entity) {
+        //Apply morale.
+    }
+
+    const team = teamManager.getTeam(teamID);
+
+    team.reduceCash(cost);
+} 
 
 PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { world, teamManager } = gameContext;
-    const { turnManager, mapManager } = world;
+    const { turnManager, mapManager, entityManager } = world;
     const { tileX, tileY, typeID } = actionIntent;
     const worldMap = mapManager.getActiveMap();
     const building = worldMap.getBuilding(tileX, tileY);
@@ -53,7 +73,11 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
     //check if team.hasEnoughCash(cash)
     //Morale? Calculate and give to plan.
 
+    const entityID = entityManager.getNextID();
+
     executionPlan.setData({
+        "id": entityID,
+        "teamID": teamID,
         "tileX": tileX,
         "tileY": tileY,
         "typeID": typeID,

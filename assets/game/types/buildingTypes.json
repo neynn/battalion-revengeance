@@ -15,7 +15,7 @@
         "name": "BUILDING_NAME_FACTORY",
         "desc": "BUILDING_DESC_FACTORY",
         "sprite": "factory",
-        "traits": ["CAPTURABLE", "FISCAL_CENTER"]
+        "traits": ["CAPTURABLE", "FISCAL_CENTER", "SPAWNER"]
     },
     "GROUND_CONTROL": {
         "name": "BUILDING_NAME_GROUND_CONTROL",

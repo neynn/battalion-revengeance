@@ -7,7 +7,7 @@ import { SelectState } from "./player/select.js";
 import { isNodeReachable } from "../systems/pathfinding.js";
 import { TILE_ID } from "../enums.js";
 import { saveStoryMap } from "../systems/save.js";
-import { createEndTurnIntent, createExtractIntent } from "../action/actionHelper.js";
+import { createEndTurnIntent, createExtractIntent, createPurchseEntityIntent } from "../action/actionHelper.js";
 
 export const Player = function(id, camera) {
     BattalionActor.call(this, id);
@@ -126,9 +126,10 @@ Player.prototype.loadKeybinds = function(gameContext) {
 
     //TODO:
     router.on("EXTRACT", () => {
-        if(this.lastInspectedEntity) {
-            this.addIntent(createExtractIntent(this.lastInspectedEntity.id));
-        }
+        //if(this.lastInspectedEntity) {
+        //    this.addIntent(createExtractIntent(this.lastInspectedEntity.id));
+        //}
+        this.addIntent(createPurchseEntityIntent(2, 6, "ANNIHILATOR_TANK"));
     });
 }
 

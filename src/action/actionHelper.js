@@ -1,6 +1,14 @@
 import { ActionIntent } from "../../engine/action/actionIntent.js";
 import { ACTION_TYPE, COMMAND_TYPE } from "../enums.js";
 
+export const createProduceEntityIntent = function(entityID, typeID, direction) {
+    return new ActionIntent(ACTION_TYPE.PRODUCE_ENTITY, {
+        "entityID": entityID,
+        "typeID": typeID,
+        "direction": direction
+    });
+} 
+
 export const createPurchseEntityIntent = function(tileX, tileY, typeID) {
     return new ActionIntent(ACTION_TYPE.PURCHASE_ENTITY, {
         "tileX": tileX,

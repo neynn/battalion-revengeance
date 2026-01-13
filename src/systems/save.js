@@ -1,5 +1,4 @@
 import { PrettyJSON } from "../../engine/resources/prettyJSON.js";
-import { placeEntityOnMap } from "./map.js";
 import { createClientEntityObject } from "./spawn.js";
 
 export const saveStoryMap = function(gameContext) {
@@ -37,7 +36,6 @@ export const loadStoryMap = function(gameContext, data) {
 
         if(entity) {
             entity.load(gameContext, blob);
-            placeEntityOnMap(gameContext, entity);
         }
     }
 }

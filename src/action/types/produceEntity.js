@@ -33,5 +33,7 @@ ProduceEntityAction.prototype.fillExecutionPlan = function(gameContext, executio
         return;
     }
 
-    executionPlan.setData({});
+    executionPlan.setData({
+        
+    });
 }

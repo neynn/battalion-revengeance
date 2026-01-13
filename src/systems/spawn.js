@@ -42,6 +42,8 @@ export const createServerEntityObject = function(gameContext, entityID, teamID, 
     team.addEntity(entityObject);
     entityManager.addEntity(entityObject);
 
+    placeEntityOnMap(gameContext, entityObject);
+
     return entityObject;
 }
 
@@ -70,6 +72,8 @@ export const createClientEntityObject = function(gameContext, entityID, teamID, 
     team.addEntity(entityObject);
     entityManager.addEntity(entityObject);
 
+    placeEntityOnMap(gameContext, entityObject);
+
     return entityObject;
 }
 
@@ -91,8 +95,6 @@ export const spawnServerEntity = function(gameContext, config, entityID) {
     if(!entity) {
         return;
     }
-
-    placeEntityOnMap(gameContext, entity);
 
     entity.setCustomID(id);
     entity.setCustomInfo(name, desc);
@@ -138,8 +140,6 @@ export const spawnClientEntity = function(gameContext, config, externalID = Enti
     }
 
     const entityID = entity.getID();
-
-    placeEntityOnMap(gameContext, entity);
 
     entity.setCustomID(id);
     entity.setCustomInfo(name, desc);
