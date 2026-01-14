@@ -2,13 +2,11 @@ import { FloodFill } from "../pathfinders/floodFill.js";
 import { Autotiler } from "../tile/autotiler.js";
 import { TileManager } from "../tile/tileManager.js";
 import { Layer } from "./layer.js";
-import { MapRepository } from "./mapRepository.js";
 
 export const WorldMap = function(id, width, height) {
     this.id = id;
     this.width = width;
     this.height = height;
-    this.source = MapRepository.EMPTY_SOURCE;
     this.layers = [];
     this.entities = new Map();
 }
@@ -21,14 +19,6 @@ WorldMap.prototype.update = function(gameContext) {}
 
 WorldMap.prototype.getID = function() {
     return this.id;
-}
-
-WorldMap.prototype.setSource = function(source) {
-    this.source = source;
-}
-
-WorldMap.prototype.getSource = function() {
-    return this.source;
 }
 
 WorldMap.prototype.applyAutotiler = function(autotiler, tileX, tileY, layerID, isInverted) {

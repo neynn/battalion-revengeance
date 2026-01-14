@@ -7,11 +7,11 @@ import { MapSettings } from "../map/settings.js";
 
 export const ClientMapFactory = {
     mpClientCreateStaticMap: async function(gameContext, payload) {
-        const { pathHandler, mapRepository, world, language } = gameContext;
+        const { pathHandler, mapRegistry, world, language } = gameContext;
         const { mapManager } = world;
         const { settings, client } = payload;
         const { mapID } = settings;
-        const mapSource = mapRepository.getMapSource(mapID);
+        const mapSource = mapRegistry.getMapPreview(mapID);
         const [file, translations] = await Promise.all([mapSource.promiseFile(pathHandler), mapSource.promiseTranslations(pathHandler)]);
 
         if(file !== null) {
@@ -19,7 +19,6 @@ export const ClientMapFactory = {
             const mapID = mapManager.getNextID();
             const worldMap = new BattalionMap(mapID, width, height);
 
-            worldMap.setSource(mapSource);
             worldMap.decodeLayers(data);
 
             if(translations !== null) {
@@ -33,10 +32,10 @@ export const ClientMapFactory = {
         }
     },
     createStoryMap: async function(gameContext, settings) {
-        const { pathHandler, mapRepository, world, language } = gameContext;
+        const { pathHandler, mapRegistry, world, language } = gameContext;
         const { mapManager } = world;
         const { mapID } = settings;
-        const mapSource = mapRepository.getMapSource(mapID);
+        const mapSource = mapRegistry.getMapPreview(mapID);
         const [file, translations] = await Promise.all([mapSource.promiseFile(pathHandler), mapSource.promiseTranslations(pathHandler)]);
 
         if(file !== null) {
@@ -44,7 +43,6 @@ export const ClientMapFactory = {
             const mapID = mapManager.getNextID();
             const worldMap = new BattalionMap(mapID, width, height);
 
-            worldMap.setSource(mapSource);
             worldMap.decodeLayers(data);
 
             if(translations !== null) {
@@ -58,9 +56,9 @@ export const ClientMapFactory = {
         }
     },
     createEditorMap: async function(gameContext, sourceID) {
-        const { pathHandler, mapRepository, world } = gameContext;
+        const { pathHandler, mapRegistry, world } = gameContext;
         const { mapManager } = world;
-        const mapSource = mapRepository.getMapSource(sourceID);
+        const mapSource = mapRegistry.getMapPreview(sourceID);
         const file = await mapSource.promiseFile(pathHandler);
 
         if(file !== null) {
@@ -68,7 +66,6 @@ export const ClientMapFactory = {
             const mapID = mapManager.getNextID();
             const worldMap = new BattalionMap(mapID, width, height);
 
-            worldMap.setSource(mapSource);
             worldMap.decodeLayers(data);
             mapManager.addMap(worldMap);
             mapManager.enableMap(mapID);
@@ -204,10 +201,10 @@ export const ClientMapFactory = {
 
 export const ServerMapFactory = {
     mpCreateMap: async function(gameContext, settings) {
-        const { pathHandler, mapRepository, world } = gameContext;
+        const { pathHandler, mapRegistry, world } = gameContext;
         const { mapManager } = world;
         const { mapID } = settings;
-        const mapSource = mapRepository.getMapSource(mapID);
+        const mapSource = mapRegistry.getMapPreview(mapID);
         const file = await mapSource.promiseFile(pathHandler);
 
         if(file !== null) {
@@ -215,7 +212,6 @@ export const ServerMapFactory = {
             const mapID = mapManager.getNextID();
             const worldMap = new BattalionMap(mapID, width, height);
 
-            worldMap.setSource(mapSource);
             worldMap.decodeLayers(data);
             mapManager.addMap(worldMap);
             mapManager.enableMap(mapID);

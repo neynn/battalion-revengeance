@@ -2,7 +2,9 @@
     "volcano": {
         "directory": ["assets", "maps", "volcano"],
         "source": "volcano.json",
-        "text": "volcano_text.json"
+        "text": "volcano_text.json",
+        "maxActors": 2,
+        "teams": ["TEST", "TEST2"]
     },
     "oasis": {
         "directory": ["assets", "maps", "oasis"],

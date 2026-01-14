@@ -13,9 +13,9 @@ import { FontHandler } from "./fontHandler.js";
 import { MapManager } from "./map/mapManager.js";
 import { ResourceLoader } from "./resources/resourceLoader.js";
 import { ApplicationWindow } from "./applicationWindow.js";
-import { MapRepository } from "./map/mapRepository.js";
 import { ClientPathHandler } from "./resources/pathHandler.js";
 import { ClientActionRouter } from "./router/clientActionRouter.js";
+import { MapRegistry } from "../src/map/mapRegistry.js";
 
 export const ClientGameContext = function() {
     this.client = new Client();
@@ -33,7 +33,7 @@ export const ClientGameContext = function() {
     this.transform2D = new Transform2D();
     this.timer = new Timer();
     this.actionRouter = new ClientActionRouter();
-    this.mapRepository = new MapRepository();
+    this.mapRegistry = new MapRegistry();
 
     this.client.cursor.events.on(Cursor.EVENT.BUTTON_CLICK, (event) => {
         const { button } = event;
@@ -90,7 +90,7 @@ ClientGameContext.prototype.loadResources = function(resources) {
     this.client.soundPlayer.load(resources.sounds);
     this.client.socket.load(resources.network.socket);
     this.client.router.load(resources.keybinds);
-    this.mapRepository.load(resources.maps);
+    this.mapRegistry.load(resources.maps);
     this.language.load(resources.languages);
 }
 

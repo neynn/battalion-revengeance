@@ -31,13 +31,13 @@ export const ServerGameContext = function(serverApplication, id) {
         typeRegistry,
         tileManager,
         pathHandler,
-        mapRepository
+        mapRegistry
     } = serverApplication;
 
     this.pathHandler = pathHandler;
     this.typeRegistry = typeRegistry;
     this.tileManager = tileManager;
-    this.mapRepository = mapRepository;
+    this.mapRegistry = mapRegistry;
 
     this.world = new World();
     this.teamManager = new TeamManager();
@@ -76,6 +76,8 @@ ServerGameContext.prototype.sendExecutionPlan = function(plan) {
 ServerGameContext.prototype.processMessage = function(messengerID, message) {
     const { type, payload } = message;
 
+    //Client sends GAME_EVENT.PICK_COLOR
+    //mapSettings sets ClientID -> ColorPick
     switch(type) {
         case GAME_EVENT.MP_CLIENT_START_MATCH: {
             if(!this.isLeader(messengerID) || this.state !== ServerGameContext.STATE.NONE) {
@@ -85,7 +87,7 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
 
             this.mapSettings.mapID = "presus";
             this.state = ServerGameContext.STATE.STARTING;
-            
+
             ServerMapFactory.mpCreateMap(this, this.mapSettings)
             .then(() => {
                 const settings = this.mapSettings.toJSON();
@@ -148,4 +150,3 @@ ServerGameContext.prototype.init = function() {
     this.world.actionQueue.registerAction(ACTION_TYPE.UNCLOAK, new UncloakAction());
     this.world.actionQueue.registerAction(ACTION_TYPE.END_TURN, new EndTurnAction());
 }
-
