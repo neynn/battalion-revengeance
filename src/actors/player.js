@@ -189,7 +189,6 @@ Player.prototype.showEntity = function(gameContext, entity) {
     const minRange = entity.config.minRange;
     const maxRange = entity.getMaxRange(gameContext);
     const isJammer = entity.isJammer();
-    const placedIndices = new Set();
 
     this.clearOverlays();
 

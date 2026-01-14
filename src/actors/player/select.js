@@ -49,9 +49,10 @@ SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, t
             const request = createMoveRequest(this.entity.getID(), this.path, EntityManager.ID.INVALID);
 
             player.addIntent(request);
-            stateMachine.setNextState(gameContext, Player.STATE.IDLE);
         }
     }
+
+    stateMachine.setNextState(gameContext, Player.STATE.IDLE);
 }
 
 SelectState.prototype.getPathX = function() {

@@ -432,6 +432,7 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
                     nodeMap.set(neighborID, childNode);
                 }
             } else if(!nodeMap.has(neighborID)) {
+                //Hacky but possible because every node has a minimum cost of 1.
                 flags |= PATH_FLAG.UNREACHABLE;
 
                 const childNode = createNode(neighborID, neighborX, neighborY, tileCost, type, id, flags);
