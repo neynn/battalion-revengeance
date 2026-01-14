@@ -1,4 +1,8 @@
 {
+    "SPECTATOR": {
+        "CLICK": "-M1",
+        "ESCAPE": "+Escape"
+    },
     "PLAY": {
         "TOGGLE_RANGE": "+v",
         "CLICK": "-M1",

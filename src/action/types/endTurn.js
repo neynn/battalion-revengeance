@@ -24,15 +24,6 @@ EndTurnAction.prototype.execute = function(gameContext, data) {
 }
 
 EndTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    const { world } = gameContext;
-    const { turnManager } = world;
-    const { actorID } = actionIntent;
-
-    if(turnManager.isActor(actorID)) {
-        executionPlan.setData({
-            "actorID": actorID
-        });
-
-        executionPlan.addNext(createStartTurnIntent());
-    }
+    executionPlan.setData({});
+    executionPlan.addNext(createStartTurnIntent());
 }

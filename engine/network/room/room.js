@@ -5,6 +5,8 @@ export const Room = function(id) {
     this.maxClients = 0;
 }
 
+Room.prototype.onClientJoin = function(clientID) {}
+Room.prototype.onClientLeave = function(clientID) {}
 Room.prototype.processMessage = async function(messengerID, message) {}
 Room.prototype.onMessageSend = function(message, clientID) {}
 Room.prototype.onMessageBroadcast = function(message) {}
@@ -27,6 +29,7 @@ Room.prototype.addMember = function(client) {
     }
 
     this.members.push(client);
+    this.onClientJoin(client.getID())
     
     return true;
 }
@@ -72,6 +75,7 @@ Room.prototype.removeMember = function(clientID) {
         if(member.getID() === clientID) {
             this.members[i] = this.members[this.members.length - 1];
             this.members.pop();
+            this.onClientLeave(clientID);
             break;
         }
     }

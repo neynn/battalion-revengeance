@@ -5,7 +5,7 @@ export const MapPreview = function(id, config) {
         text = "",
         name = "MISSING_PREVIEW_NAME",
         desc = "MISSING_PREVIEW_DESC",
-        maxActors = 0,
+        maxPlayers = 0,
         teams = []
     } = config;
 
@@ -15,7 +15,7 @@ export const MapPreview = function(id, config) {
     this.text = text;
     this.name = name;
     this.desc = desc;
-    this.maxActors = maxActors;
+    this.maxPlayers = maxPlayers;
     this.file = null;
     this.translations = null;
     this.teams = teams;

@@ -1,7 +1,6 @@
 import { State } from "../../engine/state/state.js";
 import { createStartTurnIntent } from "../action/actionHelper.js";
 import { BattalionContext } from "../battalionContext.js";
-import { SCHEMA_TYPE } from "../enums.js";
 import { MapSettings } from "../map/settings.js";
 import { ClientMapFactory } from "../systems/map.js";
 import { loadStoryMap } from "../systems/save.js";
@@ -22,7 +21,6 @@ PlayState.prototype.onEnter = async function(gameContext, stateMachine, transiti
 
     settings.mapID = "presus";
     settings.mode = MapSettings.MODE.STORY;
-    settings.setColorPreference("SOMERTIN", SCHEMA_TYPE.PURPLE);
 
     ClientMapFactory.createStoryMap(gameContext, settings)
     .then(() => {

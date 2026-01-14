@@ -22,6 +22,7 @@ export const TRAIT_CONFIG = {
 };
 
 export const GAME_EVENT = {
+    MP_CLIENT_SELECT_MAP: 8,
     MP_CLIENT_START_MATCH: 9,
     MP_CLIENT_ACTION_INTENT: 10,
     MP_CLIENT_MAP_LOADED: 11,

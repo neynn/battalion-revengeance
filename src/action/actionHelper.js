@@ -43,10 +43,8 @@ export const createTileExplodeIntent = function(layerID, tileX, tileY) {
     });
 }
 
-export const createEndTurnIntent = function(actorID) {
-    return new ActionIntent(ACTION_TYPE.END_TURN, {
-        "actorID": actorID
-    });
+export const createEndTurnIntent = function() {
+    return new ActionIntent(ACTION_TYPE.END_TURN, {});
 }
 
 export const createCaptureIntent = function(entityID, targetX, targetY) {

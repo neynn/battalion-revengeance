@@ -26,7 +26,8 @@ ServerApplication.prototype.init = function(resources) {
 ServerApplication.prototype.createRoom = function(roomID, roomType) {
     const gameContext = new ServerGameContext(this, roomID);
 
-    gameContext.maxClients = 3;
+    //All rooms have a maximum of 8 players.
+    gameContext.maxClients = 8;
     gameContext.init();
 
     return gameContext;

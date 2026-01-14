@@ -2,14 +2,14 @@ import { BattalionMap } from "../map/battalionMap.js";
 import { spawnClientBuilding, spawnClientEntity, spawnServerBuilding, spawnServerEntity } from "./spawn.js";
 import { ClientBattalionEvent } from "../event/clientBattalionEvent.js";
 import { ServerBattalionEvent } from "../event/serverBattalionEvent.js";
-import { createActor, createPlayer, createTeam } from "../map/generic.js";
+import { createActor, createPlayer, createSpectator, createTeam } from "../map/generic.js";
 import { MapSettings } from "../map/settings.js";
 
 export const ClientMapFactory = {
     mpClientCreateStaticMap: async function(gameContext, payload) {
         const { pathHandler, mapRegistry, world, language } = gameContext;
         const { mapManager } = world;
-        const { settings, client } = payload;
+        const { settings, client, isSpectator } = payload;
         const { mapID } = settings;
         const mapSource = mapRegistry.getMapPreview(mapID);
         const [file, translations] = await Promise.all([mapSource.promiseFile(pathHandler), mapSource.promiseTranslations(pathHandler)]);
@@ -29,6 +29,10 @@ export const ClientMapFactory = {
             mapManager.enableMap(mapID);
 
             ClientMapFactory.loadMap(gameContext, worldMap, file, client, settings);
+            
+            if(isSpectator) {
+                createSpectator(gameContext);
+            }
         }
     },
     createStoryMap: async function(gameContext, settings) {

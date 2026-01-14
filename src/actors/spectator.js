@@ -1,43 +1,22 @@
 import { getCursorTile } from "../../engine/camera/contextHelper.js";
-import { StateMachine } from "../../engine/state/stateMachine.js";
 import { Autotiler } from "../../engine/tile/autotiler.js";
 import { BattalionActor } from "./battalionActor.js";
-import { IdleState } from "./player/idle.js";
-import { SelectState } from "./player/select.js";
 import { isNodeReachable } from "../systems/pathfinding.js";
 import { TILE_ID } from "../enums.js";
-import { saveStoryMap } from "../systems/save.js";
-import { createEndTurnIntent, createExtractIntent, createPurchseEntityIntent } from "../action/actionHelper.js";
 
-export const Player = function(id, camera) {
+export const Spectator = function(id, camera) {
     BattalionActor.call(this, id);
 
     this.tileX = -1;
     this.tileY = -1;
     this.camera = camera;
     this.lastInspectedEntity = null;
-
-    this.states = new StateMachine(this);
-    this.states.addState(Player.STATE.IDLE, new IdleState());
-    this.states.addState(Player.STATE.SELECT, new SelectState());
 }
 
-Player.EVENT = {
-    ENTITY_CLICK: 0,
-    BUILDING_CLICK: 1,
-    TILE_CLICK: 2,
-    TILE_CHANGE: 3
-};
+Spectator.prototype = Object.create(BattalionActor.prototype);
+Spectator.prototype.constructor = Spectator;
 
-Player.STATE = {
-    IDLE: "IDLE",
-    SELECT: "SELECT"
-};
-
-Player.prototype = Object.create(BattalionActor.prototype);
-Player.prototype.constructor = Player;
-
-Player.prototype.inspectEntity = function(gameContext, entity) {
+Spectator.prototype.inspectEntity = function(gameContext, entity) {
     this.showJammer(gameContext, entity);
     this.lastInspectedEntity = entity;
 
@@ -48,7 +27,7 @@ Player.prototype.inspectEntity = function(gameContext, entity) {
     });
 }
 
-Player.prototype.inspectTile = function(gameContext, tileX, tileY) {
+Spectator.prototype.inspectTile = function(gameContext, tileX, tileY) {
     const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
@@ -72,8 +51,9 @@ Player.prototype.inspectTile = function(gameContext, tileX, tileY) {
     });
 }
 
-Player.prototype.onClick = function(gameContext, worldMap, tileX, tileY) {
-    const entity = this.getVisibleEntity(gameContext, tileX, tileY);
+Spectator.prototype.onClick = function(gameContext, worldMap, tileX, tileY) {
+    const { world } = gameContext;
+    const entity = world.getEntityAt(tileX, tileY);
 
     if(entity) {
         if(this.lastInspectedEntity === entity) {
@@ -82,31 +62,24 @@ Player.prototype.onClick = function(gameContext, worldMap, tileX, tileY) {
             this.inspectEntity(gameContext, entity);        
         }
 
-        const { teamManager } = gameContext;
-        const { teamID } = entity;
-        const isAlly = teamManager.isAlly(this.teamID, teamID);
-        const isControlled = this.isControlling(entity);
-
-        this.states.eventEnter(gameContext, Player.EVENT.ENTITY_CLICK, { "entity": entity, "isAlly": isAlly, "isControlled": isControlled });
         return;
     }
 
     const building = worldMap.getBuilding(tileX, tileY);
 
     if(building) {
-        this.states.eventEnter(gameContext, Player.EVENT.BUILDING_CLICK, { "building": building });
+        //Inspect building? Treat it as tile for inspection?
         return;
     }
 
     this.inspectTile(gameContext, tileX, tileY);
-    this.states.eventEnter(gameContext, Player.EVENT.TILE_CLICK, { "x": tileX, "y": tileY });
 }
 
-Player.prototype.loadKeybinds = function(gameContext) {
+Spectator.prototype.loadKeybinds = function(gameContext) {
     const { client } = gameContext;
     const { router } = client;
     
-    router.bind(gameContext, "PLAY");
+    router.bind(gameContext, "SPECTATOR");
     router.on("CLICK", () => {
         const { world } = gameContext;
         const { mapManager } = world;
@@ -118,26 +91,9 @@ Player.prototype.loadKeybinds = function(gameContext) {
             this.onClick(gameContext, worldMap, x, y);
         }
     });
-
-    router.on("DEBUG_SAVE", () => saveStoryMap(gameContext));
-    router.on("END_TURN", () => {
-        this.addIntent(createEndTurnIntent());
-    });
-
-    //TODO:
-    router.on("EXTRACT", () => {
-        //if(this.lastInspectedEntity) {
-        //    this.addIntent(createExtractIntent(this.lastInspectedEntity.id));
-        //}
-        this.addIntent(createPurchseEntityIntent(2, 6, "ANNIHILATOR_TANK"));
-    });
 }
 
-Player.prototype.activeUpdate = function(gameContext) {
-    this.tryEnqueueAction(gameContext);
-}
-
-Player.prototype.showJammer = function(gameContext, entity) {
+Spectator.prototype.showJammer = function(gameContext, entity) {
     if(entity.isJammer()) {
         const { tileX, tileY } = entity;
 
@@ -147,7 +103,7 @@ Player.prototype.showJammer = function(gameContext, entity) {
     }
 }
 
-Player.prototype.showJammerAt = function(gameContext, entity, jammerX, jammerY) {
+Spectator.prototype.showJammerAt = function(gameContext, entity, jammerX, jammerY) {
     const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
@@ -160,7 +116,7 @@ Player.prototype.showJammerAt = function(gameContext, entity, jammerX, jammerY) 
     });
 }
 
-Player.prototype.update = function(gameContext) {
+Spectator.prototype.update = function(gameContext) {
     if(this.lastInspectedEntity && this.lastInspectedEntity.isDestroyed()) {
         //TODO: Un-Inspect entity!
         this.lastInspectedEntity = null;
@@ -169,24 +125,20 @@ Player.prototype.update = function(gameContext) {
     const { x, y } = getCursorTile(gameContext);
 
     if(x !== this.tileX || y !== this.tileY) {
-        this.states.eventEnter(gameContext, Player.EVENT.TILE_CHANGE, {
-            "x": x,
-            "y": y
-        });
+        //TILE CHANGED!
     }
 
     this.tileX = x;
     this.tileY = y;
-    this.states.update(gameContext);
 }
 
-Player.prototype.clearOverlays = function() {
+Spectator.prototype.clearOverlays = function() {
     this.camera.selectOverlay.clear();
     this.camera.pathOverlay.clear();
     this.camera.jammerOverlay.clear();
 }
 
-Player.prototype.addNodeMapRender = function(nodeMap) {
+Spectator.prototype.addNodeMapRender = function(nodeMap) {
     this.clearOverlays();
 
     for(const [index, node] of nodeMap) {
@@ -197,7 +149,7 @@ Player.prototype.addNodeMapRender = function(nodeMap) {
     }
 }
 
-Player.prototype.showPath = function(autotiler, oPath, entityX, entityY) { 
+Spectator.prototype.showPath = function(autotiler, oPath, entityX, entityY) { 
     const path = oPath.toReversed();
 
     let previousX = entityX;
@@ -255,15 +207,4 @@ Player.prototype.showPath = function(autotiler, oPath, entityX, entityY) {
     }
 
     this.camera.pathOverlay.add(tileID, entityX, entityY);
-}
-
-Player.prototype.getVisibleEntity = function(gameContext, tileX, tileY) {
-    const { world } = gameContext;
-    const entity = world.getEntityAt(tileX, tileY);
-
-    if(entity && entity.isVisibleTo(gameContext, this.teamID)) {
-        return entity;
-    }
-
-    return null;
 }

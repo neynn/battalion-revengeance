@@ -11,7 +11,7 @@ import { MoveAction } from "../action/types/move.js";
 import { UncloakAction } from "../action/types/uncloak.js";
 import { TeamManager } from "../team/teamManager.js";
 import { ServerActionRouter } from "../../engine/router/serverActionRouter.js";
-import { ACTION_TYPE, GAME_EVENT } from "../enums.js";
+import { ACTION_TYPE, GAME_EVENT, SCHEMA_TYPE } from "../enums.js";
 import { ServerMapFactory } from "../systems/map.js";
 import { ActionQueue } from "../../engine/action/actionQueue.js";
 import { ExplodeTileAction } from "../action/types/explodeTile.js";
@@ -61,6 +61,16 @@ ServerGameContext.STATE = {
 ServerGameContext.prototype = Object.create(Room.prototype);
 ServerGameContext.prototype.constructor = ServerGameContext;
 
+ServerGameContext.prototype.onClientJoin = function(clientID) {
+    const index = this.mapSettings.getFreePlayerSlotIndex();
+
+    this.mapSettings.addPlayer(index, clientID);
+}
+
+ServerGameContext.prototype.onClientLeave = function(clientID) {
+    this.mapSettings.removePlayer(clientID);
+}
+
 ServerGameContext.prototype.sendEventTrigger = function(eventID) {
     this.broadcastMessage(GAME_EVENT.MP_SERVER_TRIGGER_EVENT, {
         "eventID": eventID
@@ -73,32 +83,63 @@ ServerGameContext.prototype.sendExecutionPlan = function(plan) {
     });
 }
 
+ServerGameContext.prototype.mpSelectMap = function(mapID) {
+    const preview = this.mapRegistry.getMapPreview(mapID);
+    const { maxPlayers, teams } = preview;
+
+    this.mapSettings.clear();
+    this.mapSettings.mapID = mapID;
+    this.mapSettings.maxPlayers = maxPlayers;
+    this.mapSettings.createSlots(teams);
+
+    for(let i = 0; i < this.members.length; i++) {
+        const member = this.members[i];
+        const clientID = member.getID();
+
+        this.mapSettings.addPlayer(i, clientID);
+    }
+}
+
 ServerGameContext.prototype.processMessage = function(messengerID, message) {
     const { type, payload } = message;
 
     //Client sends GAME_EVENT.PICK_COLOR
     //mapSettings sets ClientID -> ColorPick
     switch(type) {
+        case GAME_EVENT.MP_CLIENT_SELECT_MAP: {
+
+            break;
+        }
         case GAME_EVENT.MP_CLIENT_START_MATCH: {
             if(!this.isLeader(messengerID) || this.state !== ServerGameContext.STATE.NONE) {
                 return;
             }
 
 
-            this.mapSettings.mapID = "presus";
+            //Done in MP_CLIENT_SELECT_MAP!!!
+            this.mpSelectMap("volcano");
+
+            if(!this.mapSettings.canStart()) {
+                console.error("Map could not start!");
+                return;
+            }
+
             this.state = ServerGameContext.STATE.STARTING;
+            this.mapSettings.selectColor(messengerID, SCHEMA_TYPE.CREAM);
+            this.mapSettings.lockSlots();
 
             ServerMapFactory.mpCreateMap(this, this.mapSettings)
             .then(() => {
                 const settings = this.mapSettings.toJSON();
 
                 for(let i = 0; i < this.members.length; i++) {
-                    const member = this.members[i];
-                    const memberID = member.getID();
+                    const memberID = this.members[i].getID();
+                    const teamID = this.mapSettings.getTeamID(memberID);
 
                     this.sendMessage(GAME_EVENT.MP_SERVER_LOAD_MAP, {
                         "settings": settings,
-                        "client": this.teamManager.activeTeams[i], //HACKY!
+                        "client": teamID,
+                        "isSpectator": (teamID === null)
                     }, memberID);
                 }
             });
