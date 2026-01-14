@@ -1176,5 +1176,17 @@
             "rows": 8,
             "columns": 8
         }
+    },
+    "assault_infantry": {
+        "directory": ["assets","sprites","textures"],
+        "source": "assault_infantry.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 8,
+            "columns": 8
+        }
     }
 }

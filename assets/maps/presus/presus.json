@@ -26,6 +26,8 @@
         { "x": 4, "y": 1, "type": "GORLITZ_TANK", "team": "SOMERTIN" },
         { "x": 5, "y": 1, "type": "GUARDS", "team": "SOMERTIN" },
         { "x": 6, "y": 1, "type": "CRAB_TANK", "team": "SOMERTIN" },
+        { "x": 7, "y": 1, "type": "MEME_CARL", "team": "TRANSKAL" },
+        { "x": 8, "y": 1, "type": "ASSAULT_INFANTRY", "team": "SOMERTIN" },
 
         { "x": 5, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "LEVIATHAN_BARGE", "team": "SOMERTIN" },
         { "x": 8, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "U_BOAT", "team": "SOMERTIN" },
@@ -38,7 +40,7 @@
         { "x": 5, "y": 6, "stealth": true, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "STEALTH_TANK", "team": "TRANSKAL" },
         { "x": 5, "y": 2, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "TANK_HUNTER", "team": "TRANSKAL", "direction": "WEST" },
         { "x": 6, "y": 5, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "JAMMER_TRUCK", "team": "SOMERTIN", "direction": "WEST" },
-        { "x": 7, "y": 1, "health": 100, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "JAMMER_TRUCK", "team": "TRANSKAL", "direction": "WEST" },
+        { "x": 7, "y": 2, "health": 100, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "JAMMER_TRUCK", "team": "TRANSKAL", "direction": "WEST" },
         { "x": 7, "y": 5, "type": "JAMMER_TRUCK", "team": "DRAGOON", "direction": "WEST" }
     ],
     "buildings": [

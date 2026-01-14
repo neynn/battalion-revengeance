@@ -1412,5 +1412,67 @@
         "texture": "guards",
         "frameTime": 0.1,
         "autoFrames": {"start": 33,"jump": 1,"repeat": 8}
+    },
+    "assault_infantry_idle_right": {
+        "texture": "assault_infantry",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 9,"jump": 1,"repeat": 4}
+    },
+    "assault_infantry_idle_down": {
+        "texture": "assault_infantry",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 17,"jump": 1,"repeat": 4}
+    },
+    "assault_infantry_idle_left": {
+        "texture": "assault_infantry",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 25,"jump": 1,"repeat": 4}
+    },
+    "assault_infantry_idle_up": {
+        "texture": "assault_infantry",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "assault_infantry_move_right": {
+        "texture": "assault_infantry",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 9,"jump": 1,"repeat": 4}
+    },
+    "assault_infantry_move_down": {
+        "texture": "assault_infantry",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 17,"jump": 1,"repeat": 4}
+    },
+    "assault_infantry_move_left": {
+        "texture": "assault_infantry",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 25,"jump": 1,"repeat": 4}
+    },
+    "assault_infantry_move_up": {
+        "texture": "assault_infantry",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "assault_infantry_fire_right": {
+        "texture": "assault_infantry",
+        "shift":{"x":12,"y":0},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 41,"jump": 1,"repeat": 8}
+    },
+    "assault_infantry_fire_down": {
+        "texture": "assault_infantry",
+        "frameTime": 0.1,
+        "autoFrames": {"start": 49,"jump": 1,"repeat": 8}
+    },
+    "assault_infantry_fire_left": {
+        "texture": "assault_infantry",
+        "shift":{"x":-12,"y":0},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 57,"jump": 1,"repeat": 8}
+    },
+    "assault_infantry_fire_up": {
+        "texture": "assault_infantry",
+        "frameTime": 0.1,
+        "autoFrames": {"start": 33,"jump": 1,"repeat": 8}
     }
 }

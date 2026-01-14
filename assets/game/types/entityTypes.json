@@ -1,4 +1,31 @@
 {
+    "MEME_CARL": {
+        "health": 9999,
+        "weaponType": "NONE",
+        "armorType": "MEDIUM",
+        "movementType": "FOOT",
+        "movementRange": 3,
+        "name": "ENTITY_NAME_MEME_CARL",
+        "desc": "ENTITY_DESC_MEME_CARL",
+        "traits": ["CRAB"],
+        "sounds": {
+            "move": "infantry_move"
+        },
+        "sprites": {
+            "idle_right": "guards_idle_right",
+            "idle_left": "guards_idle_left",
+            "idle_down": "guards_idle_down",
+            "idle_up": "guards_idle_up",
+            "move_right": "guards_idle_right",
+            "move_left": "guards_idle_left",
+            "move_down": "guards_idle_down",
+            "move_up": "guards_idle_up",
+            "fire_right": "guards_fire_right",
+            "fire_left": "guards_fire_left",
+            "fire_down": "guards_fire_down",
+            "fire_up": "guards_fire_up"
+        }
+    },
     "MEME_WTC": {
         "health": 50,
         "armorType": "LIGHT",
@@ -14,6 +41,31 @@
             "idle_up": "turret_idle_up"
         }
     },
+    "ASSAULT_INFANTRY": {
+        "health": 80,
+        "damage": 25,
+        "weaponType": "MEDIUM",
+        "armorType": "LIGHT",
+        "movementRange": 30,
+        "movementType": "FOOT",
+        "sounds": {
+            "move": "infantry_move",
+            "fire": "assault_infantry_fire"
+        },
+        "name": "ENTITY_NAME_ASSAULT_INFANTRY",
+        "desc": "ENTITY_DESC_ASSAULT_INFANTRY",
+        "traits": ["CONQUEROR", "SCHWERPUNKT"],
+        "sprites": {
+            "idle_right": "assault_infantry_idle_right",
+            "idle_left": "assault_infantry_idle_left",
+            "idle_down": "assault_infantry_idle_down",
+            "idle_up": "assault_infantry_idle_up",
+            "fire_right": "assault_infantry_fire_right",
+            "fire_left": "assault_infantry_fire_left",
+            "fire_down": "assault_infantry_fire_down",
+            "fire_up": "assault_infantry_fire_up"
+        }
+    },
     "GUARDS": {
         "health": 105,
         "damage": 35,
@@ -25,7 +77,36 @@
         "desc": "ENTITY_DESC_GUARDS",
         "traits": ["CONQUEROR", "INDOMITABLE"],
         "sounds": {
-            "move": "guards_move",
+            "move": "infantry_move",
+            "fire": "guards_fire"
+        },
+        "sprites": {
+            "idle_right": "guards_idle_right",
+            "idle_left": "guards_idle_left",
+            "idle_down": "guards_idle_down",
+            "idle_up": "guards_idle_up",
+            "move_right": "guards_idle_right",
+            "move_left": "guards_idle_left",
+            "move_down": "guards_idle_down",
+            "move_up": "guards_idle_up",
+            "fire_right": "guards_fire_right",
+            "fire_left": "guards_fire_left",
+            "fire_down": "guards_fire_down",
+            "fire_up": "guards_fire_up"
+        }
+    },
+    "PALADIN": {
+        "health": 140,
+        "damage": 50,
+        "weaponType": "MEDIUM",
+        "armorType": "MEDIUM",
+        "movementRange": 2,
+        "movementType": "FOOT",
+        "name": "ENTITY_NAME_PALADIN",
+        "desc": "ENTITY_DESC_PALADIN",
+        "traits": ["CONQUEROR", "INDOMITABLE", "HEROIC"],
+        "sounds": {
+            "move": "infantry_move",
             "fire": "guards_fire"
         },
         "sprites": {
@@ -131,8 +212,8 @@
         "desc": "ENTITY_DESC_ALEPH",
         "traits": ["JUDGEMENT", "INDOMITABLE", "SELF_DESTRUCT", "FIXED"],
         "sounds": {
-            "move": "aleph_move",
-            "fire": "aleph_fire"
+            "move": "bomber_move",
+            "fire": "bomber_fire"
         },
         "sprites": {
             "idle_right": "aleph_idle_right",
@@ -156,8 +237,8 @@
         "desc": "ENTITY_DESC_CONDOR_BOMBER",
         "traits": ["CAVITATION_EXPLOSION"],
         "sounds": {
-            "move": "aleph_move",
-            "fire": "aleph_fire"
+            "move": "bomber_move",
+            "fire": "bomber_fire"
         },
         "sprites": {
             "idle_right": "condor_idle_right",
@@ -181,8 +262,8 @@
         "desc": "ENTITY_DESC_SOLOVEY_BOMBER",
         "traits": ["ANTI_STRUCTURE"],
         "sounds": {
-            "move": "aleph_move",
-            "fire": "aleph_fire"
+            "move": "bomber_move",
+            "fire": "bomber_fire"
         },
         "sprites": {
             "idle_right": "condor_idle_right",
@@ -735,15 +816,15 @@
         }
     },
     "INTREPID": {
-        "health": 10,
-        "damage": 0,
-        "weaponType": "NONE",
-        "armorType": "NONE",
-        "movementRange": 1,
-        "movementType": "STATIONARY",
+        "health": 50,
+        "damage": 15,
+        "weaponType": "LIGHT",
+        "armorType": "LIGHT",
+        "movementRange": 6,
+        "movementType": "RUDDER",
         "name": "ENTITY_NAME_INTREPID",
         "desc": "ENTITY_DESC_INTREPID",
-        "traits": [],
+        "traits": ["CONQUEROR"],
         "sprites": {
             "idle_right": "intrepid_idle_right",
             "idle_left": "intrepid_idle_left",
