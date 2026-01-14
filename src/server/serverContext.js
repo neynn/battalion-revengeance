@@ -12,7 +12,7 @@ import { UncloakAction } from "../action/types/uncloak.js";
 import { TeamManager } from "../team/teamManager.js";
 import { ServerActionRouter } from "../../engine/router/serverActionRouter.js";
 import { ACTION_TYPE, GAME_EVENT } from "../enums.js";
-import { MPMapSettings, ServerMapFactory } from "../systems/map.js";
+import { ServerMapFactory } from "../systems/map.js";
 import { ActionQueue } from "../../engine/action/actionQueue.js";
 import { ExplodeTileAction } from "../action/types/explodeTile.js";
 import { StartTurnAction } from "../action/types/startTurn.js";
@@ -22,6 +22,7 @@ import { mpIsPlayerIntentValid } from "../action/actionValidator.js";
 import { ExtractAction } from "../action/types/extract.js";
 import { PurchaseEntityAction } from "../action/types/purchaseEntity.js";
 import { ProduceEntityAction } from "../action/types/produceEntity.js";
+import { MapSettings } from "../map/settings.js";
 
 export const ServerGameContext = function(serverApplication, id) {
     Room.call(this, id);
@@ -42,8 +43,7 @@ export const ServerGameContext = function(serverApplication, id) {
     this.teamManager = new TeamManager();
     this.states = new StateMachine(this);
     this.actionRouter = new ServerActionRouter();
-    this.mapFactory = new ServerMapFactory();
-    this.mapSettings = new MPMapSettings();
+    this.mapSettings = new MapSettings();
     this.state = ServerGameContext.STATE.NONE;
     this.readyClients = 0;
 
@@ -85,7 +85,8 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
 
             this.mapSettings.mapID = "presus";
             this.state = ServerGameContext.STATE.STARTING;
-            this.mapFactory.mpCreateMap(this, this.mapSettings)
+            
+            ServerMapFactory.mpCreateMap(this, this.mapSettings)
             .then(() => {
                 const settings = this.mapSettings.toJSON();
 

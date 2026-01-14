@@ -1,7 +1,9 @@
 import { State } from "../../engine/state/state.js";
 import { createStartTurnIntent } from "../action/actionHelper.js";
 import { BattalionContext } from "../battalionContext.js";
-import { createStoryMap } from "../systems/map.js";
+import { SCHEMA_TYPE } from "../enums.js";
+import { MapSettings } from "../map/settings.js";
+import { ClientMapFactory } from "../systems/map.js";
 import { loadStoryMap } from "../systems/save.js";
 
 export const PlayState = function() {}
@@ -13,11 +15,16 @@ PlayState.prototype.onEnter = async function(gameContext, stateMachine, transiti
     const { client, world, actionRouter } = gameContext;
     const { eventHandler } = world;
     const { router } = client;
+    const settings = new MapSettings();
 
     eventHandler.allowEvents();
     actionRouter.toClient();
 
-    createStoryMap(gameContext, "presus")
+    settings.mapID = "presus";
+    settings.mode = MapSettings.MODE.STORY;
+    settings.setColorPreference("SOMERTIN", SCHEMA_TYPE.PURPLE);
+
+    ClientMapFactory.createStoryMap(gameContext, settings)
     .then(() => {
         loadStoryMap(gameContext, {
             "edits": [],
