@@ -64,6 +64,22 @@ export const EntityType = function(id, config) {
     if(this.movementRange >= EntityType.MAX_MOVE_COST) {
         this.movementRange = EntityType.MAX_MOVE_COST;
     }
+
+    if(this.sprites["move_right"] === undefined) {
+        this.sprites["move_right"] = this.sprites["idle_right"];
+    }
+
+    if(this.sprites["move_left"] === undefined) {
+        this.sprites["move_left"] = this.sprites["idle_left"];
+    }
+
+    if(this.sprites["move_up"] === undefined) {
+        this.sprites["move_up"] = this.sprites["idle_up"];
+    }
+
+    if(this.sprites["move_down"] === undefined) {
+        this.sprites["move_down"] = this.sprites["idle_down"];
+    }
 }
 
 EntityType.MIN_MOVE_COST = 1;

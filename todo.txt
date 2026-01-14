@@ -1,22 +1,3 @@
-mpMaxClients as a tag on the MapSource.
-
-PvP:
-Teams are preset, but the colors can change. Also allow custom colors.
-
-Actions: 
-1. Get the actorID from the clientID
-2. Check if it's that actor's turn.
-
-1. Check if the clientId is the currentActor
-2. true => call onPlayerIntent and call isIntentValid()
-3. true => enqueue.
-4. Moving ON a NON-FRIENDLY building automatically reveals the stealth unit.
-
-Units uncloak if on an enemy building
-
 Redo streamlined: Reduced production cost. Further from base is not possible because of stealth rules.
 
-IsActive flag for Actors?
-No isCurrentActor validation for EndTurn? -> mpIsPlayerIntentValid does that.
 repairAction -> start repair and finish repair on the next active turn. onHit -> remove IS_REPAIRING flag.
-TODO: map slots before starting the map.

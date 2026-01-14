@@ -26,7 +26,7 @@ ClientBattalionEntity.DEFAULT_ATTACK_EFFECTS = {
     [ATTACK_TYPE.STREAMBLAST]: "small_attack" //TODO: Implement
 };
 
-ClientBattalionEntity.SPRITE_TYPE = {
+ClientBattalionEntity.SPRITE_TYPE = {    
     IDLE_RIGHT: "idle_right",
     IDLE_LEFT: "idle_left",
     IDLE_DOWN: "idle_down",
@@ -34,7 +34,11 @@ ClientBattalionEntity.SPRITE_TYPE = {
     FIRE_RIGHT: "fire_right",
     FIRE_LEFT: "fire_left",
     FIRE_DOWN: "fire_down",
-    FIRE_UP: "fire_up"
+    FIRE_UP: "fire_up",
+    MOVE_RIGHT: "move_right",
+    MOVE_LEFT: "move_left",
+    MOVE_DOWN: "move_down",
+    MOVE_UP: "move_up",
 };
 
 ClientBattalionEntity.SOUND_TYPE = {
@@ -222,10 +226,10 @@ ClientBattalionEntity.prototype.getSpriteType = function() {
         }
         case BattalionEntity.STATE.MOVE: {
             switch(this.direction) {
-                case DIRECTION.NORTH: return ClientBattalionEntity.SPRITE_TYPE.IDLE_UP;
-                case DIRECTION.EAST: return ClientBattalionEntity.SPRITE_TYPE.IDLE_RIGHT;
-                case DIRECTION.SOUTH: return ClientBattalionEntity.SPRITE_TYPE.IDLE_DOWN;
-                case DIRECTION.WEST: return ClientBattalionEntity.SPRITE_TYPE.IDLE_LEFT;
+                case DIRECTION.NORTH: return ClientBattalionEntity.SPRITE_TYPE.MOVE_UP;
+                case DIRECTION.EAST: return ClientBattalionEntity.SPRITE_TYPE.MOVE_RIGHT;
+                case DIRECTION.SOUTH: return ClientBattalionEntity.SPRITE_TYPE.MOVE_DOWN;
+                case DIRECTION.WEST: return ClientBattalionEntity.SPRITE_TYPE.MOVE_LEFT;
             }
             break;
         }

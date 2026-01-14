@@ -14,6 +14,35 @@
             "idle_up": "turret_idle_up"
         }
     },
+    "GUARDS": {
+        "health": 105,
+        "damage": 35,
+        "weaponType": "MEDIUM",
+        "armorType": "LIGHT",
+        "movementRange": 3,
+        "movementType": "FOOT",
+        "name": "ENTITY_NAME_GUARDS",
+        "desc": "ENTITY_DESC_GUARDS",
+        "traits": ["CONQUEROR", "INDOMITABLE"],
+        "sounds": {
+            "move": "guards_move",
+            "fire": "guards_fire"
+        },
+        "sprites": {
+            "idle_right": "guards_idle_right",
+            "idle_left": "guards_idle_left",
+            "idle_down": "guards_idle_down",
+            "idle_up": "guards_idle_up",
+            "move_right": "guards_idle_right",
+            "move_left": "guards_idle_left",
+            "move_down": "guards_idle_down",
+            "move_up": "guards_idle_up",
+            "fire_right": "guards_fire_right",
+            "fire_left": "guards_fire_left",
+            "fire_down": "guards_fire_down",
+            "fire_up": "guards_fire_up"
+        }
+    },
     "EAGLE_STRIKER": {
         "health": 50,
         "damage": 25,
