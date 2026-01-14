@@ -154,7 +154,7 @@
         "movementType": "FLIGHT",
         "name": "ENTITY_NAME_CONDOR_BOMBER",
         "desc": "ENTITY_DESC_CONDOR_BOMBER",
-        "traits": ["CAVITATION_EXPLOSION", "DEPTH_CHARGE"],
+        "traits": ["CAVITATION_EXPLOSION"],
         "sounds": {
             "move": "aleph_move",
             "fire": "aleph_fire"
@@ -168,6 +168,56 @@
             "fire_left": "condor_fire_left",
             "fire_down": "condor_fire_down",
             "fire_up": "condor_fire_up"
+        }
+    },
+    "SOLOVEY_BOMBER": {
+        "health": 100,
+        "damage": 40,
+        "weaponType": "HEAVY",
+        "armorType": "LIGHT",
+        "movementRange": 6,
+        "movementType": "FLIGHT",
+        "name": "ENTITY_NAME_SOLOVEY_BOMBER",
+        "desc": "ENTITY_DESC_SOLOVEY_BOMBER",
+        "traits": ["ANTI_STRUCTURE"],
+        "sounds": {
+            "move": "aleph_move",
+            "fire": "aleph_fire"
+        },
+        "sprites": {
+            "idle_right": "condor_idle_right",
+            "idle_left": "condor_idle_left",
+            "idle_down": "condor_idle_down",
+            "idle_up": "condor_idle_up",
+            "fire_right": "condor_fire_right",
+            "fire_left": "condor_fire_left",
+            "fire_down": "condor_fire_down",
+            "fire_up": "condor_fire_up"
+        }
+    },
+    "CRAB_TANK": {
+        "health": 90,
+        "damage": 30,
+        "weaponType": "LIGHT",
+        "armorType": "MEDIUM",
+        "movementRange": 6,
+        "movementType": "AMPHIBIOUS",
+        "name": "ENTITY_NAME_CRAB_TANK",
+        "desc": "ENTITY_DESC_CRAB_TANK",
+        "traits": ["CRAB"],
+        "sounds": {
+            "move": "tracked_move",
+            "fire": "tank_fire"
+        },
+        "sprites": {
+            "idle_right": "scorpion_tank_idle_right",
+            "idle_left": "scorpion_tank_idle_left",
+            "idle_down": "scorpion_tank_idle_down",
+            "idle_up": "scorpion_tank_idle_up",
+            "fire_right": "scorpion_tank_fire_right",
+            "fire_left": "scorpion_tank_fire_left",
+            "fire_down": "scorpion_tank_fire_down",
+            "fire_up": "scorpion_tank_fire_up"
         }
     },
     "ASEKARA_TANK": {
@@ -393,6 +443,31 @@
             "fire_up": "turret_fire_up"
         }
     },
+    "KOSCHEI": {
+        "health": 120,
+        "damage": 55,
+        "weaponType": "MEDIUM",
+        "armorType": "HEAVY",
+        "movementRange": 5,
+        "movementType": "TRACKED",
+        "name": "ENTITY_NAME_KOSCHEI",
+        "desc": "ENTITY_DESC_KOSCHEI",
+        "traits": ["SCHWERPUNKT", "BEWEGUNGSKRIEG"],
+        "sounds": {
+            "move": "entwicklung_move",
+            "fire": "entwicklung_fire"
+        },
+        "sprites": {
+            "idle_right": "entwicklung_idle_right",
+            "idle_left": "entwicklung_idle_left",
+            "idle_down": "entwicklung_idle_down",
+            "idle_up": "entwicklung_idle_up",
+            "fire_right": "entwicklung_fire_right",
+            "fire_left": "entwicklung_fire_left",
+            "fire_down": "entwicklung_fire_down",
+            "fire_up": "entwicklung_fire_up"
+        }
+    },
     "ENTWICKLUNG": {
         "health": 170,
         "damage": 65,
@@ -402,7 +477,7 @@
         "movementType": "TRACKED",
         "name": "ENTITY_NAME_ENTWICKLUNG",
         "desc": "ENTITY_DESC_ENTWICKLUNG",
-        "traits": ["SCHWERPUNKT", "OVERHEAT", "BEWEGUNGSKRIEG", "TERRIFYING"],
+        "traits": ["SCHWERPUNKT", "BEWEGUNGSKRIEG", "TERRIFYING", "OVERHEAT"],
         "sounds": {
             "move": "entwicklung_move",
             "fire": "entwicklung_fire"
@@ -581,7 +656,7 @@
         },
         "name": "ENTITY_NAME_U_BOAT",
         "desc": "ENTITY_DESC_U_BOAT",
-        "traits": ["STEALTH", "SEABOUND", "SUBMERGED", "DEPTH_CHARGE"],
+        "traits": ["SUBMERGED", "STEALTH", "SEABOUND", "DEPTH_CHARGE"],
         "sprites": {
             "idle_right": "u_boat_idle_right",
             "idle_left": "u_boat_idle_left",

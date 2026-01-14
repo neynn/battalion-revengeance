@@ -4,7 +4,7 @@
     "height": 10,
     "client": "SOMERTIN",
     "teams": {
-        "SOMERTIN": { "commander": "PLAYER", "nation": "SOMERTIN", "color": "CREAM", "allies": ["DRAGOON"], "objectives": ["DEFEAT_BOAT_1", "CAPTURE_0_0", "SURVIVE_TURN_2"] },
+        "SOMERTIN": { "commander": "PLAYER", "nation": "SOMERTIN", "color": "BLACK", "allies": ["DRAGOON"], "objectives": ["DEFEAT_BOAT_1", "CAPTURE_0_0", "SURVIVE_TURN_2"] },
         "TRANSKAL": { "commander": "KANYE", "nation": "TRANSKAL", "color": "DARK_BLUE", "objectives": ["PROTECT_BOAT_1"] },
         "DRAGOON": { "commander": "KANYE", "nation": "ELAM", "color": "BRONZE" }
     },
@@ -25,6 +25,7 @@
         { "x": 3, "y": 1, "type": "AYIN", "team": "SOMERTIN" },
         { "x": 4, "y": 1, "type": "GORLITZ_TANK", "team": "SOMERTIN" },
         { "x": 5, "y": 1, "type": "GUARDS", "team": "SOMERTIN" },
+        { "x": 6, "y": 1, "type": "CRAB_TANK", "team": "SOMERTIN" },
 
         { "x": 5, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "LEVIATHAN_BARGE", "team": "SOMERTIN" },
         { "x": 8, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "U_BOAT", "team": "SOMERTIN" },
