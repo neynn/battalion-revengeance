@@ -18,3 +18,4 @@ Redo streamlined: Reduced production cost. Further from base is not possible bec
 
 IsActive flag for Actors?
 No isCurrentActor validation for EndTurn? -> mpIsPlayerIntentValid does that.
+repairAction -> start repair and finish repair on the next active turn. onHit -> remove IS_REPAIRING flag.

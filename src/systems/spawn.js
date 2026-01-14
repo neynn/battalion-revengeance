@@ -4,7 +4,6 @@ import { BUILDING_TYPE, LAYER_TYPE } from "../enums.js";
 import { createSchemaViewSprite } from "../sprite/schemaView.js";
 import { EntityView } from "../sprite/entityView.js";
 import { getDirectionByName } from "./direction.js";
-import { placeEntityOnMap, removeEntityFromMap } from "./map.js";
 import { BuildingView } from "../sprite/buildingView.js";
 import { ClientBattalionEntity } from "../entity/clientBattalionEntity.js";
 import { ClientBuilding } from "../entity/clientBuilding.js";
@@ -15,8 +14,7 @@ export const despawnEntity = function(gameContext, entity) {
     const { entityManager } = world;
     const entityID = entity.getID();
 
-    removeEntityFromMap(gameContext, entity);
-
+    entity.removeFromMap(gameContext);
     entity.isMarkedForDestroy = true;
     entity.destroy();
     
@@ -41,8 +39,7 @@ export const createServerEntityObject = function(gameContext, entityID, teamID, 
     entityObject.setTeam(teamID);
     team.addEntity(entityObject);
     entityManager.addEntity(entityObject);
-
-    placeEntityOnMap(gameContext, entityObject);
+    entityObject.placeOnMap(gameContext);
 
     return entityObject;
 }
@@ -71,8 +68,7 @@ export const createClientEntityObject = function(gameContext, entityID, teamID, 
     entityObject.bufferSprites(gameContext);
     team.addEntity(entityObject);
     entityManager.addEntity(entityObject);
-
-    placeEntityOnMap(gameContext, entityObject);
+    entityObject.placeOnMap(gameContext);
 
     return entityObject;
 }

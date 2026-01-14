@@ -12,7 +12,7 @@ import { UncloakAction } from "../action/types/uncloak.js";
 import { TeamManager } from "../team/teamManager.js";
 import { ServerActionRouter } from "../../engine/router/serverActionRouter.js";
 import { ACTION_TYPE, GAME_EVENT } from "../enums.js";
-import { ServerMapFactory } from "../systems/map.js";
+import { MPMapSettings, ServerMapFactory } from "../systems/map.js";
 import { ActionQueue } from "../../engine/action/actionQueue.js";
 import { ExplodeTileAction } from "../action/types/explodeTile.js";
 import { StartTurnAction } from "../action/types/startTurn.js";
@@ -43,6 +43,7 @@ export const ServerGameContext = function(serverApplication, id) {
     this.states = new StateMachine(this);
     this.actionRouter = new ServerActionRouter();
     this.mapFactory = new ServerMapFactory();
+    this.mapSettings = new MPMapSettings();
     this.state = ServerGameContext.STATE.NONE;
     this.readyClients = 0;
 
@@ -81,18 +82,20 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
                 return;
             }
 
-            this.state = ServerGameContext.STATE.STARTING;
 
-            this.mapFactory.createStaticMap(this, "presus")
+            this.mapSettings.mapID = "presus";
+            this.state = ServerGameContext.STATE.STARTING;
+            this.mapFactory.mpCreateMap(this, this.mapSettings)
             .then(() => {
+                const settings = this.mapSettings.toJSON();
+
                 for(let i = 0; i < this.members.length; i++) {
                     const member = this.members[i];
                     const memberID = member.getID();
 
                     this.sendMessage(GAME_EVENT.MP_SERVER_LOAD_MAP, {
-                        "mapID": "presus",
+                        "settings": settings,
                         "client": this.teamManager.activeTeams[i], //HACKY!
-                        "entityMap": this.mapFactory.entityMap
                     }, memberID);
                 }
             });

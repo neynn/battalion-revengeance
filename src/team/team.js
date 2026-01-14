@@ -3,7 +3,7 @@ import { Objective } from "./objective/objective.js";
 import { UnitSurviveObjective } from "./objective/types/unitSurvive.js";
 import { LynchpinObjective } from "./objective/types/lynchpin.js";
 import { getGeneratedCash, getGlobalGeneratedCash } from "../systems/cash.js";
-import { TRAIT_TYPE } from "../enums.js";
+import { SCHEMA_TYPE, TRAIT_TYPE } from "../enums.js";
 
 export const Team = function(id) {
     this.id = id;
@@ -11,7 +11,7 @@ export const Team = function(id) {
     this.buildings = [];
     this.entities = [];
     this.actor = null;
-    this.colorID = null;
+    this.colorID = SCHEMA_TYPE.RED;
     this.color = null;
     this.status = Team.STATUS.IDLE;
     this.exchangeRate = 1;

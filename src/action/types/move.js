@@ -3,7 +3,6 @@ import { hasFlag } from "../../../engine/util/flag.js";
 import { TILE_WIDTH } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { COMMAND_TYPE, PATH_INTERCEPT, TRAIT_TYPE } from "../../enums.js";
-import { placeEntityOnMap, removeEntityFromMap } from "../../systems/map.js";
 import { mInterceptPath } from "../../systems/pathfinding.js";
 import { createAttackRequest, createCaptureIntent, createCloakIntent, createHealRequest, createTrackingIntent, createUncloakIntent } from "../actionHelper.js";
 
@@ -89,8 +88,7 @@ MoveAction.prototype.execute = function(gameContext, data) {
     const { tileX, tileY } = path[0];
     const entity = entityManager.getEntity(entityID);
 
-    removeEntityFromMap(gameContext, entity);
-
+    entity.removeFromMap(gameContext);
     entity.setTile(tileX, tileY);
     entity.setFlag(BattalionEntity.FLAG.HAS_MOVED);
     entity.clearFlag(BattalionEntity.FLAG.CAN_MOVE);
@@ -99,8 +97,7 @@ MoveAction.prototype.execute = function(gameContext, data) {
         entity.triggerElusive();
     }
 
-    placeEntityOnMap(gameContext, entity);
-
+    entity.placeOnMap(gameContext);
     teamManager.broadcastEntityMove(gameContext, entity);
 }
 

@@ -1,7 +1,6 @@
 import { BattalionActor } from "../actors/battalionActor.js";
 import { Player } from "../actors/player.js";
 import { BattalionMap } from "../map/battalionMap.js";
-import { JammerField } from "../map/jammerField.js";
 import { CaptureObjective } from "../team/objective/types/capture.js";
 import { DefeatObjective } from "../team/objective/types/defeat.js";
 import { DefendObjective } from "../team/objective/types/defend.js";
@@ -54,38 +53,6 @@ const createPlayer = function(gameContext, commanderType, teamName) {
     return actor;
 }
 
-const createTeam = function(gameContext, teamID, config) {
-    const { teamManager } = gameContext;
-    const { 
-        nation,
-        faction,
-        color,
-        customColor
-    } = config;
-    const team = teamManager.createTeam(teamID);
-
-    if(!team) {
-        console.log("Team could not be created!");
-        return null;
-    }
-
-    if(nation) {
-        team.loadAsNation(gameContext, nation);
-    }
-
-    if(faction) {
-        team.loadAsFaction(gameContext, faction);
-    }
-
-    if(customColor) {
-        team.setCustomColor(customColor);
-    } else if(color) {
-        team.setColor(gameContext, color);
-    }
-
-    return team;
-}
-
 const createObjectives = function(team, objectives, allObjectives) {
     for(const objectiveID of objectives) {
         const config = allObjectives[objectiveID];
@@ -129,15 +96,34 @@ const createObjectives = function(team, objectives, allObjectives) {
     }
 }
 
-const createTeams = function(gameContext, teams, objectives) {
-    for(const teamName in teams) {
-        const teamObjectives = teams[teamName].objectives ?? [];
-        const team = createTeam(gameContext, teamName, teams[teamName]);
+const createTeam = function(gameContext, teamID, config, allObjectives) {
+    const { teamManager } = gameContext;
+    const { 
+        nation = null,
+        faction = null,
+        color = null,
+        objectives = []
+    } = config;
+    const team = teamManager.createTeam(teamID);
 
-        if(team) {
-            createObjectives(team, teamObjectives, objectives);
-        }
+    if(!team) {
+        console.log("Team could not be created!");
+        return;
     }
+
+    if(nation) {
+        team.loadAsNation(gameContext, nation);
+    }
+
+    if(faction) {
+        team.loadAsFaction(gameContext, faction);
+    }
+
+    if(color) {
+        team.setColor(gameContext, color);
+    }
+
+    createObjectives(team, objectives, allObjectives);
 }
 
 const finalizeClientTeams = function(gameContext, teams, clientTeam) {
@@ -200,7 +186,10 @@ const loadClientMap = function(gameContext, worldMap, mapData, clientTeam) {
         defeat = []
     } = mapData;
 
-    createTeams(gameContext, teams, objectives);
+    for(const teamName in teams) {
+        createTeam(gameContext, teamName, teams[teamName], objectives);
+    }
+
     finalizeClientTeams(gameContext, teams, clientTeam);
 
     for(let i = 0; i < entities.length; i++) {
@@ -234,48 +223,6 @@ const loadClientMap = function(gameContext, worldMap, mapData, clientTeam) {
     const turnOrder = teamManager.getTurnOrder();
 
     turnManager.setActorOrder(turnOrder);
-}
-
-export const placeEntityOnMap = function(gameContext, entity) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-
-    if(worldMap) {
-        const { tileX, tileY, teamID, config } = entity;
-        const { dimX, dimY, jammerRange } = config;
-        const entityID = entity.getID();
-        const jammerFlags = entity.getJammerFlags();
-
-        worldMap.addEntity(tileX, tileY, dimX, dimY, entityID);
-    
-        if(jammerFlags !== JammerField.FLAG.NONE) {
-            worldMap.fill2DGraph(tileX, tileY, jammerRange, (nextX, nextY) => {
-                worldMap.addJammer(nextX, nextY, teamID, jammerFlags);
-            });
-        }
-    }
-}
-
-export const removeEntityFromMap = function(gameContext, entity) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-
-    if(worldMap) {
-        const { tileX, tileY, teamID, config } = entity;
-        const { dimX, dimY, jammerRange } = config;
-        const entityID = entity.getID();
-        const jammerFlags = entity.getJammerFlags();
-
-        worldMap.removeEntity(tileX, tileY, dimX, dimY, entityID);
-
-        if(jammerFlags !== JammerField.FLAG.NONE) {
-            worldMap.fill2DGraph(tileX, tileY, jammerRange, (nextX, nextY) => {
-                worldMap.removeJammer(nextX, nextY, teamID, jammerFlags);
-            });
-        }
-    }
 }
 
 export const createEmptyMap = function(gameContext, width, height) {     
@@ -355,7 +302,10 @@ const mpClientLoadMap = function(gameContext, worldMap, mapData, clientTeam, ent
         defeat = []
     } = mapData;
 
-    createTeams(gameContext, teams, objectives);
+    for(const teamName in teams) {
+        createTeam(gameContext, teamName, teams[teamName], objectives);
+    }
+
     finalizeClientTeams(gameContext, teams, clientTeam);
 
     if(entityMap.length === entities.length) {
@@ -398,7 +348,8 @@ const mpClientLoadMap = function(gameContext, worldMap, mapData, clientTeam, ent
 export const mpClientCreateStaticMap = async function(gameContext, payload) {
     const { pathHandler, mapRepository, world, language } = gameContext;
     const { mapManager } = world;
-    const { mapID, client, entityMap } = payload;
+    const { settings, client } = payload;
+    const { mapID, entities, teams } = settings;
     const mapSource = mapRepository.getMapSource(mapID);
     const [file, translations] = await Promise.all([mapSource.promiseFile(pathHandler), mapSource.promiseTranslations(pathHandler)]);
 
@@ -417,13 +368,11 @@ export const mpClientCreateStaticMap = async function(gameContext, payload) {
         mapManager.addMap(worldMap);
         mapManager.enableMap(mapID);
 
-        mpClientLoadMap(gameContext, worldMap, file, client, entityMap);
+        mpClientLoadMap(gameContext, worldMap, file, client, entities);
     }
 }
 
-export const ServerMapFactory = function() {
-    this.entityMap = [];
-}
+export const ServerMapFactory = function() {}
 
 ServerMapFactory.prototype.finalizeTeams = function(gameContext, teams) {
     const { teamManager } = gameContext;
@@ -455,18 +404,16 @@ ServerMapFactory.prototype.finalizeTeams = function(gameContext, teams) {
     }
 }
 
-ServerMapFactory.prototype.spawnEntities = function(gameContext, entities) {
+ServerMapFactory.prototype.spawnEntities = function(gameContext, entities, settings) {
     const { world } = gameContext;
     const { entityManager } = world; 
-
-    this.entityMap.length = 0;
 
     for(let i = 0; i < entities.length; i++) {
         const entityID = entityManager.getNextID();
         
         spawnServerEntity(gameContext, entities[i], entityID);
 
-        this.entityMap.push(entityID);
+        settings.addEntity(entityID);
     }
 }
 
@@ -490,7 +437,7 @@ ServerMapFactory.prototype.createEvents = function(gameContext, events) {
     }
 }
 
-ServerMapFactory.prototype.loadMap = function(gameContext, worldMap, mapData) {
+ServerMapFactory.prototype.loadMap = function(gameContext, worldMap, mapData, settings) {
     const { world, teamManager } = gameContext;
     const { turnManager } = world;
     const { 
@@ -501,10 +448,12 @@ ServerMapFactory.prototype.loadMap = function(gameContext, worldMap, mapData) {
         buildings = []
     } = mapData;
 
-    createTeams(gameContext, teams, objectives);
+    for(const teamName in teams) {
+        createTeam(gameContext, teamName, teams[teamName], objectives);
+    }
 
     this.finalizeTeams(gameContext, teams);
-    this.spawnEntities(gameContext, entities);
+    this.spawnEntities(gameContext, entities, settings);
     this.spawnBuildings(gameContext, worldMap, buildings);
     this.createEvents(gameContext, events);
 
@@ -515,10 +464,11 @@ ServerMapFactory.prototype.loadMap = function(gameContext, worldMap, mapData) {
     turnManager.setActorOrder(turnOrder);
 }
 
-ServerMapFactory.prototype.createStaticMap = async function(gameContext, sourceID) {
+ServerMapFactory.prototype.mpCreateMap = async function(gameContext, settings) {
     const { pathHandler, mapRepository, world } = gameContext;
     const { mapManager } = world;
-    const mapSource = mapRepository.getMapSource(sourceID);
+    const { mapID } = settings;
+    const mapSource = mapRepository.getMapSource(mapID);
     const file = await mapSource.promiseFile(pathHandler);
 
     if(file !== null) {
@@ -531,6 +481,31 @@ ServerMapFactory.prototype.createStaticMap = async function(gameContext, sourceI
         mapManager.addMap(worldMap);
         mapManager.enableMap(mapID);
 
-        this.loadMap(gameContext, worldMap, file);
+        this.loadMap(gameContext, worldMap, file, settings);
     } 
+}
+
+export const MPMapSettings = function() {
+    this.mapID = null;
+    this.teams = {};
+    this.entities = [];
+    this.mode = MPMapSettings.MODE.PVP;
+}
+
+MPMapSettings.MODE = {
+    COOP: 0,
+    PVP: 1
+};
+
+MPMapSettings.prototype.addEntity = function(entityID) {
+    this.entities.push(entityID);
+}
+
+MPMapSettings.prototype.toJSON = function() {
+    return {
+        "mapID": this.mapID,
+        "teams": this.teams,
+        "entities": this.entities,
+        "mode": this.mode
+    }
 }

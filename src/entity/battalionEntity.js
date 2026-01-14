@@ -1347,3 +1347,45 @@ BattalionEntity.prototype.mResolveHeal = function(gameContext, target, resolver)
 
     resolver.addHeal(target, heal);
 }
+
+BattalionEntity.prototype.placeOnMap = function(gameContext) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+
+    if(!worldMap) {
+        return;
+    }
+
+    const { dimX, dimY, jammerRange } = this.config;
+    const jammerFlags = this.getJammerFlags();
+
+    worldMap.addEntity(this.tileX, this.tileY, dimX, dimY, this.id);
+
+    if(jammerFlags !== JammerField.FLAG.NONE) {
+        worldMap.fill2DGraph(this.tileX, this.tileY, jammerRange, (nextX, nextY) => {
+            worldMap.addJammer(nextX, nextY, this.teamID, jammerFlags);
+        });
+    }
+}
+
+BattalionEntity.prototype.removeFromMap = function(gameContext) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+
+    if(!worldMap) {
+        return;
+    }
+
+    const { dimX, dimY, jammerRange } = this.config;
+    const jammerFlags = this.getJammerFlags();
+
+    worldMap.removeEntity(this.tileX, this.tileY, dimX, dimY, this.id);
+
+    if(jammerFlags !== JammerField.FLAG.NONE) {
+        worldMap.fill2DGraph(this.tileX, this.tileY, jammerRange, (nextX, nextY) => {
+            worldMap.removeJammer(nextX, nextY, this.teamID, jammerFlags);
+        });
+    }
+}
