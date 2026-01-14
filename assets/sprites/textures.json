@@ -1188,5 +1188,17 @@
             "rows": 8,
             "columns": 8
         }
+    },
+    "bolt_tank": {
+        "directory": ["assets","sprites","textures"],
+        "source": "bolt_tank.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 80,
+            "frameHeight": 80,
+            "rows": 8,
+            "columns": 8
+        }
     }
 }

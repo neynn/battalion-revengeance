@@ -26,7 +26,7 @@
         { "x": 4, "y": 1, "type": "GORLITZ_TANK", "team": "SOMERTIN" },
         { "x": 5, "y": 1, "type": "GUARDS", "team": "SOMERTIN" },
         { "x": 6, "y": 1, "type": "CRAB_TANK", "team": "SOMERTIN" },
-        { "x": 7, "y": 1, "type": "MEME_CARL", "team": "TRANSKAL" },
+        { "x": 7, "y": 1, "type": "BOLT_TANK", "team": "SOMERTIN" },
         { "x": 8, "y": 1, "type": "ASSAULT_INFANTRY", "team": "SOMERTIN" },
 
         { "x": 5, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "LEVIATHAN_BARGE", "team": "SOMERTIN" },

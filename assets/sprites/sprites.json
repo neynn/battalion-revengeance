@@ -1474,5 +1474,53 @@
         "texture": "assault_infantry",
         "frameTime": 0.1,
         "autoFrames": {"start": 33,"jump": 1,"repeat": 8}
+    },
+    "bolt_tank_idle_right": {
+        "texture": "bolt_tank",
+        "shift":{"x":-12,"y":-12},
+        "frameTime": 0.2,
+        "autoFrames": {"start": 9,"jump": 1,"repeat": 4}
+    },
+    "bolt_tank_idle_down": {
+        "texture": "bolt_tank",
+        "shift":{"x":-12,"y":-12},
+        "frameTime": 0.2,
+        "autoFrames": {"start": 17,"jump": 1,"repeat": 4}
+    },
+    "bolt_tank_idle_left": {
+        "texture": "bolt_tank",
+        "shift":{"x":-12,"y":-12},
+        "frameTime": 0.2,
+        "autoFrames": {"start": 25,"jump": 1,"repeat": 4}
+    },
+    "bolt_tank_idle_up": {
+        "texture": "bolt_tank",
+        "shift":{"x":-12,"y":-12},
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "bolt_tank_fire_right": {
+        "texture": "bolt_tank",
+        "shift":{"x":-2,"y":-12},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 41,"jump": 1,"repeat": 8}
+    },
+    "bolt_tank_fire_down": {
+        "texture": "bolt_tank",
+        "shift":{"x":-12,"y":-12},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 49,"jump": 1,"repeat": 8}
+    },
+    "bolt_tank_fire_left": {
+        "texture": "bolt_tank",
+        "shift":{"x":-22,"y":-12},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 57,"jump": 1,"repeat": 8}
+    },
+    "bolt_tank_fire_up": {
+        "texture": "bolt_tank",
+        "shift":{"x":-12,"y":-12},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 33,"jump": 1,"repeat": 8}
     }
 }

@@ -301,6 +301,31 @@
             "fire_up": "scorpion_tank_fire_up"
         }
     },
+    "BOLT_TANK": {
+        "health": 75,
+        "damage": 25,
+        "weaponType": "LIGHT",
+        "armorType": "LIGHT",
+        "movementRange": 6,
+        "movementType": "TRACKED",
+        "name": "ENTITY_NAME_BOLT_TANK",
+        "desc": "ENTITY_DESC_BOLT_TANK",
+        "traits": ["SCHWERPUNKT"],
+        "sounds": {
+            "move": "tracked_move",
+            "fire": "bolt_fire"
+        },
+        "sprites": {
+            "idle_right": "bolt_tank_idle_right",
+            "idle_left": "bolt_tank_idle_left",
+            "idle_down": "bolt_tank_idle_down",
+            "idle_up": "bolt_tank_idle_up",
+            "fire_right": "bolt_tank_fire_right",
+            "fire_left": "bolt_tank_fire_left",
+            "fire_down": "bolt_tank_fire_down",
+            "fire_up": "bolt_tank_fire_up"
+        }
+    },
     "ASEKARA_TANK": {
         "health": 100,
         "damage": 35,
