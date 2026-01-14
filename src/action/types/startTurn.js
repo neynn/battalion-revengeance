@@ -18,11 +18,15 @@ StartTurnAction.prototype.onEnd = function(gameContext, data) {
 StartTurnAction.prototype.execute = function(gameContext, data) {
     const { world, teamManager } = gameContext;
     const { turnManager, eventHandler } = world;
-    const { actorID } = data;
+    const { teamID } = data;
+    const team = teamManager.getTeam(teamID);
+    const { actor } = team;
 
-    turnManager.setCurrentActor(gameContext, actorID);
+    turnManager.setCurrentActor(gameContext, actor);
     eventHandler.checkEventTriggers(gameContext);
     teamManager.onNextTurn(gameContext);
+
+    //TODO: Get next turn, then check if any construction grows. Add that as next.
 }
 
 StartTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
@@ -30,10 +34,12 @@ StartTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPla
     const { turnManager } = world;
     const nextActorID = turnManager.getNextActor();
 
-    //TODO: Get next turn, then check if any construction grows. Add that as next.
     if(nextActorID !== null) {
+        const actor = turnManager.getActor(nextActorID);
+        const { teamID } = actor;
+
         executionPlan.setData({
-            "actorID": nextActorID
+            "teamID": teamID
         });
     }
 }
