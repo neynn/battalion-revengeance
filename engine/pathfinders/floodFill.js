@@ -84,13 +84,14 @@ FloodFill.flattenTree = function(startNode) {
 FloodFill.fill2D = function(startX, startY, mapWidth, mapHeight, range, onFill) {
     const queue = [];
     const visited = new Set();
+    const startID = startY * mapWidth + startX;
     let index = 0;
 
-    visited.add(startY * mapWidth + startX);
+    visited.add(startID);
     queue.push({ "x": startX, "y": startY, "cost": 0 });
 
     if(FloodFill.isNodeInBounds(startX, startY, mapWidth, mapHeight)) {
-        onFill(startX, startY, 0);
+        onFill(startX, startY, 0, startID);
     }
 
     while(index < queue.length) {
@@ -108,7 +109,7 @@ FloodFill.fill2D = function(startX, startY, mapWidth, mapHeight, range, onFill) 
             const neighborID = neighborY * mapWidth + neighborX;
 
             if(!visited.has(neighborID) && FloodFill.isNodeInBounds(neighborX, neighborY, mapWidth, mapHeight)) {
-                onFill(neighborX, neighborY, neighborCost);
+                onFill(neighborX, neighborY, neighborCost, neighborID);
                 visited.add(neighborID);
                 queue.push({ "x": neighborX, "y": neighborY, "cost": neighborCost });
             } 

@@ -5,7 +5,7 @@ import { BattalionActor } from "./battalionActor.js";
 import { IdleState } from "./player/idle.js";
 import { SelectState } from "./player/select.js";
 import { isNodeReachable } from "../systems/pathfinding.js";
-import { TILE_ID } from "../enums.js";
+import { PATH_FLAG, RANGE_TYPE, TILE_ID } from "../enums.js";
 import { saveStoryMap } from "../systems/save.js";
 import { createEndTurnIntent, createExtractIntent, createPurchseEntityIntent } from "../action/actionHelper.js";
 
@@ -16,6 +16,7 @@ export const Player = function(id, camera) {
     this.tileY = -1;
     this.camera = camera;
     this.lastInspectedEntity = null;
+    this.nodeMap = new Map();
 
     this.states = new StateMachine(this);
     this.states.addState(Player.STATE.IDLE, new IdleState());
@@ -38,7 +39,7 @@ Player.prototype = Object.create(BattalionActor.prototype);
 Player.prototype.constructor = Player;
 
 Player.prototype.inspectEntity = function(gameContext, entity) {
-    this.showJammer(gameContext, entity);
+    this.showEntity(gameContext, entity);
     this.lastInspectedEntity = entity;
 
     console.log("Inspected Entity", {
@@ -59,7 +60,7 @@ Player.prototype.inspectTile = function(gameContext, tileX, tileY) {
     const tileType = worldMap.getTileType(gameContext, tileX, tileY);
 
     this.lastInspectedEntity = null;
-    this.camera.jammerOverlay.clear();
+    this.clearOverlays();
 
     console.log("Inspected Tile", {
         "x": tileX,
@@ -79,6 +80,8 @@ Player.prototype.onClick = function(gameContext, worldMap, tileX, tileY) {
         if(this.lastInspectedEntity === entity) {
             this.inspectTile(gameContext, tileX, tileY);
         } else {
+            this.nodeMap.clear();
+            entity.mGetNodeMap(gameContext, this.nodeMap);
             this.inspectEntity(gameContext, entity);        
         }
 
@@ -137,29 +140,6 @@ Player.prototype.activeUpdate = function(gameContext) {
     this.tryEnqueueAction(gameContext);
 }
 
-Player.prototype.showJammer = function(gameContext, entity) {
-    if(entity.isJammer()) {
-        const { tileX, tileY } = entity;
-
-        this.showJammerAt(gameContext, entity, tileX, tileY);
-    } else {
-        this.camera.jammerOverlay.clear();
-    }
-}
-
-Player.prototype.showJammerAt = function(gameContext, entity, jammerX, jammerY) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-    const jammerRange = entity.config.jammerRange;
-
-    this.camera.jammerOverlay.clear();
-
-    worldMap.fill2DGraph(jammerX, jammerY, jammerRange, (nextX, nextY) => {
-        this.camera.jammerOverlay.add(TILE_ID.JAMMER, nextX, nextY);
-    });
-}
-
 Player.prototype.update = function(gameContext) {
     if(this.lastInspectedEntity && this.lastInspectedEntity.isDestroyed()) {
         //TODO: Un-Inspect entity!
@@ -186,14 +166,86 @@ Player.prototype.clearOverlays = function() {
     this.camera.jammerOverlay.clear();
 }
 
-Player.prototype.addNodeMapRender = function(nodeMap) {
+Player.prototype.showJammerAt = function(gameContext, entity, jammerX, jammerY) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const jammerRange = entity.config.jammerRange;
+
+    this.camera.jammerOverlay.clear();
+
+    worldMap.fill2DGraph(jammerX, jammerY, jammerRange, (nextX, nextY) => {
+        this.camera.jammerOverlay.add(TILE_ID.JAMMER, nextX, nextY);
+    });
+}
+
+Player.prototype.showEntity = function(gameContext, entity) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const rangeType = entity.getRangeType();
+    const { tileX, tileY } = entity;
+    const canAttack = entity.canAttack();
+    const minRange = entity.config.minRange;
+    const maxRange = entity.getMaxRange(gameContext);
+    const isJammer = entity.isJammer();
+    const placedIndices = new Set();
+
     this.clearOverlays();
 
-    for(const [index, node] of nodeMap) {
-        const { x, y } = node;
-        const id = isNodeReachable(node) ? TILE_ID.OVERLAY_MOVE : TILE_ID.OVERLAY_ATTACK;
+    switch(rangeType) {
+        case RANGE_TYPE.MELEE: {
+            for(const [index, node] of this.nodeMap) {
+                const { x, y, flags } = node;
 
-        this.camera.selectOverlay.add(id, x, y);
+                if((flags & PATH_FLAG.UNREACHABLE) === 0) {
+                    this.camera.selectOverlay.add(TILE_ID.OVERLAY_MOVE, x, y);
+                } else if(canAttack) {
+                    this.camera.selectOverlay.add(TILE_ID.OVERLAY_ATTACK_LIGHT, x, y);
+                }
+            }
+
+            break;
+        }
+        case RANGE_TYPE.HYBRID:
+        case RANGE_TYPE.RANGE: {
+            for(const [index, node] of this.nodeMap) {
+                const { x, y, flags } = node;
+                const distance = entity.getDistanceToTile(x, y);
+
+                //The node is reachable
+                if((flags & PATH_FLAG.UNREACHABLE) === 0) {
+                    if(distance >= minRange && distance <= maxRange) {
+                        this.camera.selectOverlay.add(TILE_ID.OVERLAY_MOVE_ATTACK, x, y);
+                    } else {
+                        this.camera.selectOverlay.add(TILE_ID.OVERLAY_MOVE, x, y);
+                    }
+                } else {
+                    //The node is unreachable, but still in attack range!
+                    if(distance >= minRange && distance <= maxRange) {
+                        this.camera.selectOverlay.add(TILE_ID.OVERLAY_ATTACK_LIGHT, x, y);
+                    } else {
+                        //Not reachable and NOT in attack range.
+                        //This node is invisible to the unit.
+                    }
+                }
+            }
+
+            //Fill the rest out to signal attack range.
+            worldMap.fill2DGraph(tileX, tileY, maxRange, (nextX, nextY, distance, index) => {
+                if(distance >= minRange && !this.nodeMap.has(index)) {
+                    this.camera.selectOverlay.add(TILE_ID.OVERLAY_ATTACK, nextX, nextY);
+                }
+            });
+
+            break;
+        }
+    }
+
+    if(isJammer) {
+        this.showJammerAt(gameContext, entity, tileX, tileY);
+    } else {
+        this.camera.jammerOverlay.clear();
     }
 }
 

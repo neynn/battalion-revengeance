@@ -138,7 +138,7 @@ Spectator.prototype.clearOverlays = function() {
     this.camera.jammerOverlay.clear();
 }
 
-Spectator.prototype.addNodeMapRender = function(nodeMap) {
+Spectator.prototype.showNodeMap = function(nodeMap) {
     this.clearOverlays();
 
     for(const [index, node] of nodeMap) {

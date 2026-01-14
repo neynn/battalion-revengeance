@@ -11,7 +11,7 @@ export const SelectState = function() {
 
     this.path = [];
     this.entity = null;
-    this.nodeMap = new Map();
+    this.nodeMap = null;
 }
 
 SelectState.prototype = Object.create(PlayerState.prototype);
@@ -20,7 +20,6 @@ SelectState.prototype.constructor = SelectState;
 SelectState.prototype.onExit = function(gameContext, stateMachine) {
     this.path = [];
     this.entity = null;
-    this.nodeMap.clear();
 }
 
 SelectState.prototype.onEnter = function(gameContext, stateMachine, enterData) {
@@ -32,12 +31,8 @@ SelectState.prototype.onEnter = function(gameContext, stateMachine, enterData) {
 SelectState.prototype.selectEntity = function(gameContext, stateMachine, entity) {
     const player = stateMachine.getContext();
 
-    this.nodeMap.clear();
     this.entity = entity;
-    this.entity.mGetNodeMap(gameContext, this.nodeMap);
-
-    player.addNodeMapRender(this.nodeMap);
-
+    this.nodeMap = player.nodeMap;
     this.onTileChange(gameContext, stateMachine, this.entity.tileX, this.entity.tileY);
 }
 

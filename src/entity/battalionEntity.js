@@ -1032,6 +1032,10 @@ BattalionEntity.prototype.canCloakAt = function(gameContext, tileX, tileY) {
     return true;
 }
 
+BattalionEntity.prototype.canAttack = function() {
+    return this.config.weaponType !== WEAPON_TYPE.NONE;
+}
+
 BattalionEntity.prototype.canCloakAtSelf = function(gameContext) {
     return this.canCloakAt(gameContext, this.tileX, this.tileY);
 }
