@@ -28,11 +28,13 @@
         { "x": 6, "y": 1, "type": "CRAB_TANK", "team": "SOMERTIN" },
         { "x": 7, "y": 1, "type": "BOLT_TANK", "team": "SOMERTIN" },
         { "x": 8, "y": 1, "type": "ASSAULT_INFANTRY", "team": "SOMERTIN" },
+        { "x": 9, "y": 1, "type": "BERTHA_BATTERY", "team": "SOMERTIN" },
 
         { "x": 5, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "LEVIATHAN_BARGE", "team": "SOMERTIN" },
         { "x": 8, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "U_BOAT", "team": "SOMERTIN" },
         { "x": 8, "y": 3, "id": "BOAT_1", "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "U_BOAT", "team": "TRANSKAL" },
         { "x": 4, "y": 4, "stealth": true, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "U_BOAT", "team": "TRANSKAL" },
+        { "x": 3, "y": 3, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "HUNTER_SUPPORT", "team": "SOMERTIN" },
         { "x": 3, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "SUPER_BATTLESHIP", "team": "SOMERTIN" },
         { "x": 2, "y": 2, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "HEAVY_COMMANDO", "team": "SOMERTIN" },
         { "x": 1, "y": 2, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "HEAVY_COMMANDO", "team": "SOMERTIN" },

@@ -1200,5 +1200,17 @@
             "rows": 8,
             "columns": 8
         }
+    },
+    "bertha_battery": {
+        "directory": ["assets","sprites","textures"],
+        "source": "bertha_battery.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 100,
+            "frameHeight": 100,
+            "rows": 8,
+            "columns": 8
+        }
     }
 }

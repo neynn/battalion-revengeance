@@ -819,16 +819,72 @@
             "fire_up": "corvette_fighter_fire_up"
         }
     },
+    "BERTHA_BATTERY": {
+        "health": 80,
+        "damage": 45,
+        "weaponType": "HEAVY",
+        "armorType": "MEDIUM",
+        "movementRange": 2,
+        "movementType": "TRACKED",
+        "minRange": 3,
+        "maxRange": 7,
+        "name": "ENTITY_NAME_BERTHA_BATTERY",
+        "desc": "ENTITY_DESC_BERTHA_BATTERY",
+        "traits": ["ANTI_STRUCTURE"],
+        "sounds": {
+            "move": "bertha_move",
+            "fire": "bertha_fire"
+        },
+        "sprites": {
+            "idle_right": "bertha_battery_idle_right",
+            "idle_left": "bertha_battery_idle_left",
+            "idle_down": "bertha_battery_idle_down",
+            "idle_up": "bertha_battery_idle_up",
+            "fire_right": "bertha_battery_fire_right",
+            "fire_left": "bertha_battery_fire_left",
+            "fire_down": "bertha_battery_fire_down",
+            "fire_up": "bertha_battery_fire_up"
+        }
+    },
+    "BRIMSTONE_BATTERY": {
+        "health": 100,
+        "damage": 70,
+        "weaponType": "MEDIUM",
+        "armorType": "LIGHT",
+        "movementRange": 2,
+        "movementType": "TRACKED",
+        "minRange": 3,
+        "maxRange": 7,
+        "name": "ENTITY_NAME_BRIMSTONE_BATTERY",
+        "desc": "ENTITY_DESC_BRIMSTONE_BATTERY",
+        "traits": ["BEWEGUNGSKRIEG", "SCHWERPUNKT", "MOBILE_BATTERY"],
+        "sounds": {
+            "move": "betha_move",
+            "fire": "bertha_fire"
+        },
+        "sprites": {
+            "idle_right": "bertha_battery_idle_right",
+            "idle_left": "bertha_battery_idle_left",
+            "idle_down": "bertha_battery_idle_down",
+            "idle_up": "bertha_battery_idle_up",
+            "fire_right": "bertha_battery_fire_right",
+            "fire_left": "bertha_battery_fire_left",
+            "fire_down": "bertha_battery_fire_down",
+            "fire_up": "bertha_battery_fire_up"
+        }
+    },
     "HUNTER_SUPPORT": {
         "health": 10,
-        "damage": 0,
-        "weaponType": "NONE",
-        "armorType": "NONE",
-        "movementRange": 1,
-        "movementType": "STATIONARY",
+        "damage": 10,
+        "weaponType": "MEDIUM",
+        "armorType": "MEDIUM",
+        "movementRange": 3,
+        "movementType": "RUDDER",
+        "minRange": 2,
+        "maxRange": 4,
         "name": "ENTITY_NAME_HUNTER_SUPPORT",
         "desc": "ENTITY_DESC_HUNTER_SUPPORT",
-        "traits": [],
+        "traits": ["DISPERSION"],
         "sprites": {
             "idle_right": "hunter_support_idle_right",
             "idle_left": "hunter_support_idle_left",

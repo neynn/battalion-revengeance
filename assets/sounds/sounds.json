@@ -20,9 +20,11 @@
     "turret_fire": { "directory": ["assets", "sounds", "units"], "source": "turret_fire.mp3", "allowStacking": true, "volume": 0.6 },
     "gorlitz_fire": { "directory": ["assets", "sounds", "units"], "source": "gorlitz_fire.mp3", "allowStacking": true, "volume": 0.6 },
 
+    "bertha_move": { "directory": ["assets", "sounds", "units", "move"], "source": "bertha_move.mp3", "allowStacking": true, "volume": 0.6 },
     "infantry_move": { "directory": ["assets", "sounds", "units", "move"], "source": "infantry_move.mp3", "allowStacking": true, "volume": 0.6 },
     "bomber_move": { "directory": ["assets", "sounds", "units", "move"], "source": "bomber_move.mp3", "allowStacking": true, "volume": 0.6 },
 
+    "bertha_fire": { "directory": ["assets", "sounds", "units", "fire"], "source": "bertha_fire.mp3", "allowStacking": true, "volume": 0.6 },
     "bolt_fire": { "directory": ["assets", "sounds", "units", "fire"], "source": "bolt_fire.mp3", "allowStacking": true, "volume": 0.6 },
     "guards_fire": { "directory": ["assets", "sounds", "units", "fire"], "source": "guards_fire.mp3", "allowStacking": true, "volume": 0.6 },
     "bomber_fire": { "directory": ["assets", "sounds", "units", "fire"], "source": "bomber_fire.mp3", "allowStacking": true, "volume": 0.6 },
