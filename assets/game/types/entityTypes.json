@@ -1,31 +1,4 @@
 {
-    "MEME_CARL": {
-        "health": 9999,
-        "weaponType": "NONE",
-        "armorType": "MEDIUM",
-        "movementType": "FOOT",
-        "movementRange": 3,
-        "name": "ENTITY_NAME_MEME_CARL",
-        "desc": "ENTITY_DESC_MEME_CARL",
-        "traits": ["CRAB"],
-        "sounds": {
-            "move": "infantry_move"
-        },
-        "sprites": {
-            "idle_right": "guards_idle_right",
-            "idle_left": "guards_idle_left",
-            "idle_down": "guards_idle_down",
-            "idle_up": "guards_idle_up",
-            "move_right": "guards_idle_right",
-            "move_left": "guards_idle_left",
-            "move_down": "guards_idle_down",
-            "move_up": "guards_idle_up",
-            "fire_right": "guards_fire_right",
-            "fire_left": "guards_fire_left",
-            "fire_down": "guards_fire_down",
-            "fire_up": "guards_fire_up"
-        }
-    },
     "MEME_WTC": {
         "health": 50,
         "armorType": "LIGHT",
@@ -39,6 +12,31 @@
             "idle_left": "turret_idle_left",
             "idle_down": "turret_idle_down",
             "idle_up": "turret_idle_up"
+        }
+    },
+    "INFANTRY": {
+        "health": 70,
+        "damage": 20,
+        "weaponType": "LIGHT",
+        "armorType": "LIGHT",
+        "movementRange": 3,
+        "movementType": "FOOT",
+        "name": "ENTITY_NAME_INFANTRY",
+        "desc": "ENTITY_DESC_INFANTRY",
+        "traits": ["CONQUEROR"],
+        "sounds": {
+            "move": "infantry_move",
+            "fire": "infantry_fire"
+        },
+        "sprites": {
+            "idle_right": "infantry_idle_right",
+            "idle_left": "infantry_idle_left",
+            "idle_down": "infantry_idle_down",
+            "idle_up": "infantry_idle_up",
+            "fire_right": "infantry_fire_right",
+            "fire_left": "infantry_fire_left",
+            "fire_down": "infantry_fire_down",
+            "fire_up": "infantry_fire_up"
         }
     },
     "ASSAULT_INFANTRY": {
@@ -105,6 +103,64 @@
         "name": "ENTITY_NAME_PALADIN",
         "desc": "ENTITY_DESC_PALADIN",
         "traits": ["CONQUEROR", "INDOMITABLE", "HEROIC"],
+        "sounds": {
+            "move": "infantry_move",
+            "fire": "guards_fire"
+        },
+        "sprites": {
+            "idle_right": "guards_idle_right",
+            "idle_left": "guards_idle_left",
+            "idle_down": "guards_idle_down",
+            "idle_up": "guards_idle_up",
+            "move_right": "guards_idle_right",
+            "move_left": "guards_idle_left",
+            "move_down": "guards_idle_down",
+            "move_up": "guards_idle_up",
+            "fire_right": "guards_fire_right",
+            "fire_left": "guards_fire_left",
+            "fire_down": "guards_fire_down",
+            "fire_up": "guards_fire_up"
+        }
+    },
+    "SPARTANS": {
+        "health": 220,
+        "damage": 90,
+        "weaponType": "MEDIUM",
+        "armorType": "MEDIUM",
+        "movementRange": 5,
+        "movementType": "FOOT",
+        "name": "ENTITY_NAME_SPARTANS",
+        "desc": "ENTITY_DESC_SPARTANS",
+        "traits": ["INDOMITABLE"],
+        "sounds": {
+            "move": "infantry_move",
+            "fire": "guards_fire"
+        },
+        "sprites": {
+            "idle_right": "guards_idle_right",
+            "idle_left": "guards_idle_left",
+            "idle_down": "guards_idle_down",
+            "idle_up": "guards_idle_up",
+            "move_right": "guards_idle_right",
+            "move_left": "guards_idle_left",
+            "move_down": "guards_idle_down",
+            "move_up": "guards_idle_up",
+            "fire_right": "guards_fire_right",
+            "fire_left": "guards_fire_left",
+            "fire_down": "guards_fire_down",
+            "fire_up": "guards_fire_up"
+        }
+    },
+    "PANZERHENKER": {
+        "health": 150,
+        "damage": 50,
+        "weaponType": "MEDIUM",
+        "armorType": "MEDIUM",
+        "movementRange": 4,
+        "movementType": "FOOT",
+        "name": "ENTITY_NAME_PANZERHENKER",
+        "desc": "ENTITY_DESC_PANZERHENKER",
+        "traits": ["INDOMITABLE", "ANTI_TANK", "EXECUTIONER"],
         "sounds": {
             "move": "infantry_move",
             "fire": "guards_fire"
@@ -276,31 +332,6 @@
             "fire_up": "condor_fire_up"
         }
     },
-    "CRAB_TANK": {
-        "health": 90,
-        "damage": 30,
-        "weaponType": "LIGHT",
-        "armorType": "MEDIUM",
-        "movementRange": 6,
-        "movementType": "AMPHIBIOUS",
-        "name": "ENTITY_NAME_CRAB_TANK",
-        "desc": "ENTITY_DESC_CRAB_TANK",
-        "traits": ["CRAB"],
-        "sounds": {
-            "move": "tracked_move",
-            "fire": "tank_fire"
-        },
-        "sprites": {
-            "idle_right": "scorpion_tank_idle_right",
-            "idle_left": "scorpion_tank_idle_left",
-            "idle_down": "scorpion_tank_idle_down",
-            "idle_up": "scorpion_tank_idle_up",
-            "fire_right": "scorpion_tank_fire_right",
-            "fire_left": "scorpion_tank_fire_left",
-            "fire_down": "scorpion_tank_fire_down",
-            "fire_up": "scorpion_tank_fire_up"
-        }
-    },
     "BOLT_TANK": {
         "health": 75,
         "damage": 25,
@@ -310,7 +341,7 @@
         "movementType": "TRACKED",
         "name": "ENTITY_NAME_BOLT_TANK",
         "desc": "ENTITY_DESC_BOLT_TANK",
-        "traits": ["SCHWERPUNKT"],
+        "traits": ["SCHWERPUNKT", "BLITZ"],
         "sounds": {
             "move": "tracked_move",
             "fire": "bolt_fire"
@@ -336,6 +367,31 @@
         "name": "ENTITY_NAME_ASEKARA_TANK",
         "desc": "ENTITY_DESC_ASEKARA_TANK",
         "traits": ["STREAMLINED", "SCHWERPUNKT", "BEWEGUNGSKRIEG"],
+        "sounds": {
+            "move": "tracked_move",
+            "fire": "tank_fire"
+        },
+        "sprites": {
+            "idle_right": "scorpion_tank_idle_right",
+            "idle_left": "scorpion_tank_idle_left",
+            "idle_down": "scorpion_tank_idle_down",
+            "idle_up": "scorpion_tank_idle_up",
+            "fire_right": "scorpion_tank_fire_right",
+            "fire_left": "scorpion_tank_fire_left",
+            "fire_down": "scorpion_tank_fire_down",
+            "fire_up": "scorpion_tank_fire_up"
+        }
+    },
+    "CRAB_TANK": {
+        "health": 90,
+        "damage": 30,
+        "weaponType": "LIGHT",
+        "armorType": "MEDIUM",
+        "movementRange": 6,
+        "movementType": "AMPHIBIOUS",
+        "name": "ENTITY_NAME_CRAB_TANK",
+        "desc": "ENTITY_DESC_CRAB_TANK",
+        "traits": ["CRAB"],
         "sounds": {
             "move": "tracked_move",
             "fire": "tank_fire"

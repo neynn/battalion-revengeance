@@ -1570,5 +1570,47 @@
         "shift":{"x":-22,"y":-49},
         "frameTime": 0.1,
         "autoFrames": {"start": 33,"jump": 1,"repeat": 8}
+    },
+    "infantry_idle_right": {
+        "texture": "infantry",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 9,"jump": 1,"repeat": 4}
+    },
+    "infantry_idle_down": {
+        "texture": "infantry",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 17,"jump": 1,"repeat": 4}
+    },
+    "infantry_idle_left": {
+        "texture": "infantry",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 25,"jump": 1,"repeat": 4}
+    },
+    "infantry_idle_up": {
+        "texture": "infantry",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "infantry_fire_right": {
+        "texture": "infantry",
+        "shift":{"x":9,"y":0},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 41,"jump": 1,"repeat": 8}
+    },
+    "infantry_fire_down": {
+        "texture": "infantry",
+        "frameTime": 0.1,
+        "autoFrames": {"start": 49,"jump": 1,"repeat": 8}
+    },
+    "infantry_fire_left": {
+        "texture": "infantry",
+        "shift":{"x":-9,"y":0},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 57,"jump": 1,"repeat": 8}
+    },
+    "infantry_fire_up": {
+        "texture": "infantry",
+        "frameTime": 0.1,
+        "autoFrames": {"start": 33,"jump": 1,"repeat": 8}
     }
 }

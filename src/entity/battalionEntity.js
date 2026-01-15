@@ -120,6 +120,10 @@ BattalionEntity.prototype.setCustomID = function(customID) {
     this.customID = customID;
 }
 
+BattalionEntity.prototype.getHealthFactor = function() {
+    return this.health / this.maxHealth;
+}
+
 BattalionEntity.prototype.getRangeType = function() {
     if(this.config.maxRange > 1) {
         if(this.config.minRange === 1 && BattalionEntity.HYBRID_ENABLED) {
@@ -919,6 +923,12 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
         //Stealth factor.
         if(this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
             damageAmplifier *= TRAIT_CONFIG.STEALTH_MULTIPLIER;
+        }
+
+        const isExecutable = target.getHealthFactor() < 0.5;
+
+        if(isExecutable && this.hasTrait(TRAIT_TYPE.EXECUTIONER)) {
+            damageAmplifier *= TRAIT_CONFIG.EXECUTIONER_DAMAGE;
         }
     }
 

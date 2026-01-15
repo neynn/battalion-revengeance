@@ -1,4 +1,9 @@
 {
+    "EXECUTIONER": {
+        "name": "TRAIT_NAME_EXECUTIONER",
+        "desc": "TRAIT_DESC_EXECUTIONER",
+        "icon": null
+    },
     "SPAWNER": {
         "name": "TRAIT_NAME_SPAWNER",
         "desc": "TRAIT_DESC_SPAWNER",
