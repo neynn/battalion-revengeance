@@ -23,7 +23,7 @@
             "columns": 4
         }
     },
-    "condor_bomber": {
+    "blimp": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "condor_bomber.png",
         "autoRegions": {
@@ -35,7 +35,7 @@
             "columns": 4
         }
     },
-    "condor_bomber_fire": {
+    "blimp_fire": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "condor_bomber_fire.png",
         "autoRegions": {

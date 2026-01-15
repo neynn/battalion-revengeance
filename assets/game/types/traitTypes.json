@@ -1,4 +1,14 @@
 {
+    "STUN": {
+        "name": "TRAIT_NAME_STUN",
+        "desc": "TRAIT_DESC_STUN",
+        "icon": null
+    },
+    "IRREPARABLE": {
+        "name": "TRAIT_NAME_IRREPARABLE",
+        "desc": "TRAIT_DESC_IRREPARABLE",
+        "icon": null
+    },
     "EXECUTIONER": {
         "name": "TRAIT_NAME_EXECUTIONER",
         "desc": "TRAIT_DESC_EXECUTIONER",
@@ -109,7 +119,7 @@
         "desc": "TRAIT_DESC_ANTI_INFANTRY",
         "icon": "Assets/Traits/Anti-Infantry.png",
         "moveDamage": {
-            "FOOT": 1
+            "FOOT": 0.5
         }
     },
     "ANTI_TANK": {
@@ -125,7 +135,7 @@
         "desc": "TRAIT_DESC_ANTI_AIR",
         "icon": "Assets/Traits/Anti-Air.png",
         "moveDamage": {
-            "FLIGHT": 1
+            "FLIGHT": 0.5
         }
     },
     "ANTI_SHIP": {
@@ -133,7 +143,7 @@
         "desc": "TRAIT_DESC_ANTI_SHIP",
         "icon": "Assets/Traits/Anti-Ship.png",
         "moveDamage": {
-            "RUDDER": 1,
+            "RUDDER": 0.5,
             "HEAVY_RUDDER": 0.5
         }
     },
@@ -142,7 +152,7 @@
         "desc": "TRAIT_DESC_ANTI_STRUCTURE",
         "icon": "Assets/Traits/Anti-Structure.png",
         "moveDamage": {
-            "STATIONARY": 1
+            "STATIONARY": 0.5
         }
     },
     "STEALTH": {
@@ -198,10 +208,7 @@
     "SELF_DESTRUCT": {
         "name": "TRAIT_NAME_SELF_DESTRUCT",
         "desc": "TRAIT_DESC_SELF_DESTRUCT",
-        "icon": "Assets/Traits/Self-Destruct.png",
-        "armorDamage": {
-            "MEDIUM": 0.5
-        }
+        "icon": "Assets/Traits/Self-Destruct.png"
     },
     "JUDGEMENT": {
         "name": "TRAIT_NAME_JUDGEMENT",

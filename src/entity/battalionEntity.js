@@ -752,6 +752,11 @@ BattalionEntity.prototype.isCounterValid = function(target) {
         return false;
     }
 
+    //Stun can never be countered.
+    if(target.hasTrait(TRAIT_TYPE.STUN)) {
+        return false;
+    }
+
     //TANK_HUNTER disables TRACKED from countering.
     if(target.hasTrait(TRAIT_TYPE.TANK_HUNTER) && this.config.movementType === MOVEMENT_TYPE.TRACKED) {
         return false;

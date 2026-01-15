@@ -43,50 +43,50 @@
         "frameTime": 0.1,
         "autoFrames": {"start": 4,"jump": 4,"repeat": 8}
     },
-    "condor_bomber_idle_right": {
-        "texture": "condor_bomber",
+    "blimp_idle_right": {
+        "texture": "blimp",
         "shift": {"x":0,"y":-56},
         "frameTime": 0.2,
         "autoFrames": {"start": 1,"jump": 4,"repeat": 4}
     },
-    "condor_bomber_idle_down": {
-        "texture": "condor_bomber",
+    "blimp_idle_down": {
+        "texture": "blimp",
         "shift": {"x":0,"y":-56},
         "frameTime": 0.2,
         "autoFrames": {"start": 2,"jump": 4,"repeat": 4}
     },
-    "condor_bomber_idle_left": {
-        "texture": "condor_bomber",
+    "blimp_idle_left": {
+        "texture": "blimp",
         "shift": {"x":0,"y":-56},
         "frameTime": 0.2,
         "autoFrames": {"start": 3,"jump": 4,"repeat": 4}
     },
-    "condor_bomber_idle_up": {
-        "texture": "condor_bomber",
+    "blimp_idle_up": {
+        "texture": "blimp",
         "shift": {"x":0,"y":-56},
         "frameTime": 0.2,
         "autoFrames": {"start": 4,"jump": 4,"repeat": 4}
     },
-    "condor_bomber_fire_right": {
-        "texture": "condor_bomber_fire",
+    "blimp_fire_right": {
+        "texture": "blimp_fire",
         "shift": {"x":-44,"y":-44},
         "frameTime": 0.1,
         "autoFrames": {"start": 1,"jump": 4,"repeat": 12}
     },
-    "condor_bomber_fire_down": {
-        "texture": "condor_bomber_fire",
+    "blimp_fire_down": {
+        "texture": "blimp_fire",
         "shift": {"x":-44,"y":-44},
         "frameTime": 0.1,
         "autoFrames": {"start": 2,"jump": 4,"repeat": 12}
     },
-    "condor_bomber_fire_left": {
-        "texture": "condor_bomber_fire",
+    "blimp_fire_left": {
+        "texture": "blimp_fire",
         "shift": {"x":-44,"y":-44},
         "frameTime": 0.1,
         "autoFrames": {"start": 3,"jump": 4,"repeat": 12}
     },
-    "condor_bomber_fire_up": {
-        "texture": "condor_bomber_fire",
+    "blimp_fire_up": {
+        "texture": "blimp_fire",
         "shift": {"x":-44,"y":-44},
         "frameTime": 0.1,
         "autoFrames": {"start": 4,"jump": 4,"repeat": 12}

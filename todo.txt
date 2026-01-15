@@ -1,3 +1,6 @@
 Redo streamlined: Reduced production cost. Further from base is not possible because of stealth rules.
 
 repairAction -> start repair and finish repair on the next active turn. onHit -> remove IS_REPAIRING flag.
+
+stun trait -> disable counter
+scrap mobile battery, call it counter battery. i ALLOWS ranged counters.

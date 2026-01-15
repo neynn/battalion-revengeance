@@ -58,6 +58,8 @@ export const TILE_TYPE = {
 };
 
 export const TRAIT_TYPE = {
+    STUN: "STUN",
+    IRREPARABLE: "IRREPARABLE",
     EXECUTIONER: "EXECUTIONER",
     TANK_POOPER: "TANK_POOPER",
     SPAWNER: "SPAWNER",
