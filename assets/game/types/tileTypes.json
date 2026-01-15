@@ -168,11 +168,22 @@
             "STATIONARY": -1
         }
     },
+    "SEA": {
+        "name": "TILE_NAME_SEA",
+        "desc": "TILE_DESC_SEA",
+        "climate": "NONE",
+        "terrain": [],
+        "passability": {
+            "FLIGHT": 1,
+            "RUDDER": 1,
+            "HEAVY_RUDDER": 1
+        }
+    },
     "RIVER": {
         "name": "TILE_NAME_RIVER",
         "desc": "TILE_DESC_RIVER",
         "climate": "NONE",
-        "terrain": [],
+        "terrain": ["SHALLOW"],
         "passability": {
             "FLIGHT": 1,
             "RUDDER": 1,
@@ -184,7 +195,7 @@
         "name": "TILE_NAME_SHORE",
         "desc": "TILE_DESC_SHORE",
         "climate": "NONE", 
-        "terrain": ["UNEVEN"],
+        "terrain": ["SHALLOW", "UNEVEN"],
         "allowBargePickup": true,
         "passability": {
             "*": 1,

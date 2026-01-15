@@ -47,6 +47,7 @@ export const TILE_TYPE = {
     ISLAND: "ISLAND",
     SWIRL: "SWIRL",
     ROCKS: "ROCKS",
+    SEA: "SEA",
     RIVER: "RIVER",
     ROAD: "ROAD",
     BRIDGE: "BRIDGE",

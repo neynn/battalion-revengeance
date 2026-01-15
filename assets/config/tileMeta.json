@@ -32,7 +32,7 @@
     { "type": "RIVER", "autotiler": "battalion_river", "texture": "river", "tile": "ANIMATION_7" },
     { "type": "RIVER", "autotiler": "battalion_river", "texture": "river", "tile": "ANIMATION_8" },
     { "type": "RIVER", "autotiler": "battalion_river", "texture": "river", "tile": "ANIMATION_9" },
-    { "type": "RIVER", "autotiler": "battalion_river", "texture": "river", "tile": "ANIMATION_10" },
+    { "type": "SEA", "autotiler": "battalion_river", "texture": "river", "tile": "ANIMATION_10" },
     { "type": "RIVER", "autotiler": "battalion_river", "texture": "river", "tile": "ANIMATION_11" },
     { "type": "RIVER", "autotiler": "battalion_river", "texture": "river", "tile": "ANIMATION_12" },
     { "type": "RIVER", "autotiler": "battalion_river", "texture": "river", "tile": "ANIMATION_13" },
