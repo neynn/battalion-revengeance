@@ -762,6 +762,23 @@ BattalionEntity.prototype.isCounterValid = function(target) {
         return false;
     }
 
+    switch(target.getRangeType()) {
+        case RANGE_TYPE.RANGE: {
+            if(!this.hasTrait(TRAIT_TYPE.COUNTER_BATTERY)) {
+                return false;
+            }
+
+            break;
+        }
+        case RANGE_TYPE.HYBRID: {
+            if(!this.hasTrait(TRAIT_TYPE.COUNTER_BATTERY) && !this.isNextToEntity(target)) {
+                return false;
+            }
+
+            break;
+        }
+    }
+
     return true;
 }
 

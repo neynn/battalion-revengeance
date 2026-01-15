@@ -58,6 +58,7 @@ export const TILE_TYPE = {
 };
 
 export const TRAIT_TYPE = {
+    COUNTER_BATTERY: "COUNTER_BATTERY",
     STUN: "STUN",
     IRREPARABLE: "IRREPARABLE",
     EXECUTIONER: "EXECUTIONER",
