@@ -4,3 +4,5 @@ repairAction -> start repair and finish repair on the next active turn. onHit ->
 
 stun trait -> disable counter
 scrap mobile battery, call it counter battery. i ALLOWS ranged counters.
+
+add suicide bombers & professional terrorists

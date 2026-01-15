@@ -1612,5 +1612,58 @@
         "texture": "infantry",
         "frameTime": 0.1,
         "autoFrames": {"start": 33,"jump": 1,"repeat": 8}
+    },
+
+
+
+
+
+
+
+
+
+    "suicide_idle_up": {
+        "texture": "suicide_move",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "suicide_idle_right": {
+        "texture": "suicide_move",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 5,"jump": 1,"repeat": 4}
+    },
+    "suicide_idle_down": {
+        "texture": "suicide_move",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 9,"jump": 1,"repeat": 4}
+    },
+    "suicide_idle_left": {
+        "texture": "suicide_move",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 13,"jump": 1,"repeat": 4}
+    },
+    "suicide_fire_up": {
+        "texture": "suicide_fire_up",
+        "shift":{"x":0,"y":-56},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 12}
+    },
+    "suicide_fire_right": {
+        "texture": "suicide_fire_right",
+        "shift":{"x":56,"y":0},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 12}
+    },
+    "suicide_fire_down": {
+        "texture": "suicide_fire_down",
+        "shift":{"x":0,"y":56},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 12}
+    },
+    "suicide_fire_left": {
+        "texture": "suicide_fire_left",
+        "shift":{"x":-56,"y":0},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 12}
     }
 }

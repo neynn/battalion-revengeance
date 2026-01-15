@@ -36,6 +36,8 @@
         { "x": 0, "y": 4, "type": "MORTAR_TRUCK", "team": "SOMERTIN" },
         { "x": 0, "y": 5, "type": "ANNIHILATOR_TANK", "team": "SOMERTIN" },
         { "x": 0, "y": 6, "type": "SPIDER_TANK", "team": "SOMERTIN" },
+        { "x": 0, "y": 7, "type": "SUICIDE_BOMBER", "team": "SOMERTIN" },
+        { "x": 0, "y": 8, "stealth": true, "type": "PROFESSIONAL_TERRORIST", "team": "SOMERTIN" },
 
         { "x": 5, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "LEVIATHAN_BARGE", "team": "SOMERTIN" },
         { "x": 8, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "U_BOAT", "team": "SOMERTIN" },

@@ -236,6 +236,56 @@
             "fire_up": "spider_tank_fire_up"
         }
     },
+    "SUICIDE_BOMBER": {
+        "health": 50,
+        "damage": 23,
+        "weaponType": "HEAVY",
+        "armorType": "LIGHT",
+        "movementRange": 3,
+        "movementType": "FOOT",
+        "name": "ENTITY_NAME_SUICIDE_BOMBER",
+        "desc": "ENTITY_DESC_SUICIDE_BOMBER",
+        "traits": ["SELF_DESTRUCT", "INDOMITABLE", "CAVITATION_EXPLOSION"],
+        "sounds": {
+            "move": "infantry_move",
+            "fire": "suicide_fire"
+        },
+        "sprites": {
+            "idle_right": "suicide_idle_right",
+            "idle_left": "suicide_idle_left",
+            "idle_down": "suicide_idle_down",
+            "idle_up": "suicide_idle_up",
+            "fire_right": "suicide_fire_right",
+            "fire_left": "suicide_fire_left",
+            "fire_down": "suicide_fire_down",
+            "fire_up": "suicide_fire_up"
+        }
+    },
+    "PROFESSIONAL_TERRORIST": {
+        "health": 50,
+        "damage": 50,
+        "weaponType": "HEAVY",
+        "armorType": "LIGHT",
+        "movementRange": 30,
+        "movementType": "FOOT",
+        "name": "ENTITY_NAME_PROFESSIONAL_TERRORIST",
+        "desc": "ENTITY_DESC_PROFESSIONAL_TERRORIST",
+        "traits": ["SELF_DESTRUCT", "INDOMITABLE", "CAVITATION_EXPLOSION", "STEALTH"],
+        "sounds": {
+            "move": "infantry_move",
+            "fire": "suicide_fire"
+        },
+        "sprites": {
+            "idle_right": "suicide_idle_right",
+            "idle_left": "suicide_idle_left",
+            "idle_down": "suicide_idle_down",
+            "idle_up": "suicide_idle_up",
+            "fire_right": "suicide_fire_right",
+            "fire_left": "suicide_fire_left",
+            "fire_down": "suicide_fire_down",
+            "fire_up": "suicide_fire_up"
+        }
+    },
     "MORTAR_TRUCK": {
         "health": 50,
         "damage": 50,

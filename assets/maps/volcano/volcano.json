@@ -9,8 +9,9 @@
     },
     "entities": [
         { "x": 1, "y": 1, "type": "ENTWICKLUNG", "team": "TEST" },
-        { "x": 7, "y": 1, "type": "ENTWICKLUNG", "team": "TEST2" },
         { "x": 1, "y": 3, "stealth": true, "type": "STEALTH_TANK", "team": "TEST" },
+        { "x": 1, "y": 4, "stealth": true, "type": "PROFESSIONAL_TERRORIST", "team": "TEST" },
+        { "x": 7, "y": 1, "type": "ENTWICKLUNG", "team": "TEST2" },
         { "x": 7, "y": 3, "stealth": true, "type": "STEALTH_TANK", "team": "TEST2" }
     ],
     "objectives": {},
