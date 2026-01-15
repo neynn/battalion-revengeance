@@ -31,6 +31,11 @@
         { "x": 9, "y": 1, "type": "BERTHA_BATTERY", "team": "SOMERTIN" },
         { "x": 0, "y": 2, "type": "INFANTRY", "team": "SOMERTIN" },
         { "x": 1, "y": 2, "type": "BLIMP", "team": "SOMERTIN" },
+        { "x": 2, "y": 2, "type": "STRIKE_COMMANDO", "team": "SOMERTIN" },
+        { "x": 0, "y": 3, "type": "ROCKET_TRUCK", "team": "SOMERTIN" },
+        { "x": 0, "y": 4, "type": "MORTAR_TRUCK", "team": "SOMERTIN" },
+        { "x": 0, "y": 5, "type": "ANNIHILATOR_TANK", "team": "SOMERTIN" },
+        { "x": 0, "y": 6, "type": "SPIDER_TANK", "team": "SOMERTIN" },
 
         { "x": 5, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "LEVIATHAN_BARGE", "team": "SOMERTIN" },
         { "x": 8, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "U_BOAT", "team": "SOMERTIN" },
