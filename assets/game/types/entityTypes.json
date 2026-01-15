@@ -1,19 +1,4 @@
 {
-    "MEME_WTC": {
-        "health": 50,
-        "armorType": "LIGHT",
-        "traits": ["FINANCIAL_CENTER"],
-        "sounds": {
-            "move": "turret_move",
-            "fire": "turret_fire"
-        },
-        "sprites": {
-            "idle_right": "turret_idle_right",
-            "idle_left": "turret_idle_left",
-            "idle_down": "turret_idle_down",
-            "idle_up": "turret_idle_up"
-        }
-    },
     "INFANTRY": {
         "health": 70,
         "damage": 20,
@@ -180,55 +165,167 @@
             "fire_up": "guards_fire_up"
         }
     },
-    "EAGLE_STRIKER": {
-        "health": 50,
-        "damage": 25,
-        "weaponType": "MEDIUM",
-        "armorType": "LIGHT",
-        "movementRange": 7,
-        "movementType": "FLIGHT",
-        "name": "ENTITY_NAME_EAGLE_STRIKER",
-        "desc": "ENTITY_DESC_EAGLE_STRIKER",
-        "traits": ["SKYSWEEPER", "IRREPARABLE"],
-        "sounds": {
-            "move": "raptor_move",
-            "fire": "raptor_fire"
-        },
-        "sprites": {
-            "idle_right": "vulture_drone_idle_right",
-            "idle_left": "vulture_drone_idle_left",
-            "idle_down": "vulture_drone_idle_down",
-            "idle_up": "vulture_drone_idle_up",
-            "fire_right": "vulture_drone_fire_right",
-            "fire_left": "vulture_drone_fire_left",
-            "fire_down": "vulture_drone_fire_down",
-            "fire_up": "vulture_drone_fire_up"
-        }
-    },
-    "MEME_BUREAUCRAT": {
-        "health": 30,
-        "damage": 15,
+    "STRIKE_COMMANDO": {
+        "health": 40,
+        "damage": 28,
         "weaponType": "LIGHT",
         "armorType": "LIGHT",
-        "movementSpeed": 392,
-        "movementRange": 8,
-        "movementType": "TRACKED",
-        "name": "ENTITY_NAME_MEME_BUREAUCRAT",
-        "desc": "ENTITY_DESC_MEME_BUREAUCRAT",
-        "traits": [],
+        "movementRange": 3,
+        "movementType": "FOOT",
+        "name": "ENTITY_NAME_STRIKE_COMMANDO",
+        "desc": "ENTITY_DESC_STRIKE_COMMANDO",
+        "traits": ["CONQUEROR", "TRACKING"],
         "sounds": {
-            "move": "cockroach_move",
-            "fire": "cockroach_fire"
+            "move": "infantry_move",
+            "fire": "infantry_fire"
         },
         "sprites": {
-            "idle_right": "cockroach_idle_right",
-            "idle_left": "cockroach_idle_left",
-            "idle_down": "cockroach_idle_down",
-            "idle_up": "cockroach_idle_up",
-            "fire_right": "cockroach_fire_right",
-            "fire_left": "cockroach_fire_left",
-            "fire_down": "cockroach_fire_down",
-            "fire_up": "cockroach_fire_up"
+            "idle_right": "strike_commando_idle_right",
+            "idle_left": "strike_commando_idle_left",
+            "idle_down": "strike_commando_idle_down",
+            "idle_up": "strike_commando_idle_up",
+            "fire_right": "strike_commando_fire_right",
+            "fire_left": "strike_commando_fire_left",
+            "fire_down": "strike_commando_fire_down",
+            "fire_up": "strike_commando_fire_up"
+        }
+    },
+    "HEAVY_COMMANDO": {
+        "health": 40,
+        "damage": 30,
+        "weaponType": "HEAVY",
+        "armorType": "LIGHT",
+        "movementRange": 30,
+        "movementType": "FOOT",
+        "sounds": {
+            "move": null,
+            "fire": null
+        },
+        "name": "ENTITY_NAME_HEAVY_COMMANDO",
+        "desc": "ENTITY_DESC_HEAVY_COMMANDO",
+        "traits": ["CONQUEROR", "TRACKING"],
+        "sprites": {
+            "idle_right": "heavy_commando_idle_right",
+            "idle_left": "heavy_commando_idle_left",
+            "idle_down": "heavy_commando_idle_down",
+            "idle_up": "heavy_commando_idle_up",
+            "fire_right": "heavy_commando_fire_right",
+            "fire_left": "heavy_commando_fire_left",
+            "fire_down": "heavy_commando_fire_down",
+            "fire_up": "heavy_commando_fire_up"
+        }
+    },
+    "SPIDER_TANK": {
+        "health": 32,
+        "damage": 55,
+        "weaponType": "LIGHT",
+        "armorType": "LIGHT",
+        "movementRange": 4,
+        "movementType": "FOOT",
+        "name": "ENTITY_NAME_SPIDER_TANK",
+        "desc": "ENTITY_DESC_SPIDER_TANK",
+        "traits": ["STUN"],
+        "sprites": {
+            "idle_right": "spider_tank_idle_right",
+            "idle_left": "spider_tank_idle_left",
+            "idle_down": "spider_tank_idle_down",
+            "idle_up": "spider_tank_idle_up",
+            "fire_right": "spider_tank_fire_right",
+            "fire_left": "spider_tank_fire_left",
+            "fire_down": "spider_tank_fire_down",
+            "fire_up": "spider_tank_fire_up"
+        }
+    },
+    "MORTAR_TRUCK": {
+        "health": 50,
+        "damage": 50,
+        "weaponType": "MEDIUM",
+        "armorType": "LIGHT",
+        "movementRange": 5,
+        "movementType": "WHEELED",
+        "minRange": 2,
+        "maxRange": 3,
+        "name": "ENTITY_NAME_MORTAR_TRUCK",
+        "desc": "ENTITY_DESC_MORTAR_TRUCK",
+        "traits": [],
+        "sprites": {
+            "idle_right": "mortar_truck_idle_right",
+            "idle_left": "mortar_truck_idle_left",
+            "idle_down": "mortar_truck_idle_down",
+            "idle_up": "mortar_truck_idle_up",
+            "fire_right": "mortar_truck_fire_right",
+            "fire_left": "mortar_truck_fire_left",
+            "fire_down": "mortar_truck_fire_down",
+            "fire_up": "mortar_truck_fire_up"
+        }
+    },
+    "ROCKET_TRUCK": {
+        "health": 40,
+        "damage": 40,
+        "weaponType": "HEAVY",
+        "armorType": "LIGHT",
+        "movementRange": 4,
+        "movementType": "WHEELED",
+        "minRange": 3,
+        "maxRange": 5,
+        "name": "ENTITY_NAME_ROCKET_TRUCK",
+        "desc": "ENTITY_DESC_ROCKET_TRUCK",
+        "traits": ["MOBILE_BATTERY", "SKYSWEEPER", "DEPTH_CHARGE"],
+        "sprites": {
+            "idle_right": "rocket_truck_idle_right",
+            "idle_left": "rocket_truck_idle_left",
+            "idle_down": "rocket_truck_idle_down",
+            "idle_up": "rocket_truck_idle_up",
+            "fire_right": "rocket_truck_fire_right",
+            "fire_left": "rocket_truck_fire_left",
+            "fire_down": "rocket_truck_fire_down",
+            "fire_up": "rocket_truck_fire_up"
+        }
+    },
+    "JAMMER_TRUCK": {
+        "health": 50,
+        "damage": 0,
+        "jammerRange": 2,
+        "weaponType": "NONE",
+        "armorType": "LIGHT",
+        "movementRange": 5,
+        "movementType": "WHEELED",
+        "name": "ENTITY_NAME_JAMMER_TRUCK",
+        "desc": "ENTITY_DESC_JAMMER_TRUCK",
+        "traits": ["JAMMER", "RADAR"],
+        "sounds": {
+            "move": "turret_move"
+        },
+        "sprites": {
+            "idle_right": "jammer_truck_idle_right",
+            "idle_left": "jammer_truck_idle_left",
+            "idle_down": "jammer_truck_idle_down",
+            "idle_up": "jammer_truck_idle_up"
+        }
+    },
+    "CRAB_TANK": {
+        "health": 90,
+        "damage": 30,
+        "weaponType": "LIGHT",
+        "armorType": "MEDIUM",
+        "movementRange": 6,
+        "movementType": "AMPHIBIOUS",
+        "name": "ENTITY_NAME_CRAB_TANK",
+        "desc": "ENTITY_DESC_CRAB_TANK",
+        "traits": ["CRAB"],
+        "sounds": {
+            "move": "tracked_move",
+            "fire": "tank_fire"
+        },
+        "sprites": {
+            "idle_right": "scorpion_tank_idle_right",
+            "idle_left": "scorpion_tank_idle_left",
+            "idle_down": "scorpion_tank_idle_down",
+            "idle_up": "scorpion_tank_idle_up",
+            "fire_right": "scorpion_tank_fire_right",
+            "fire_left": "scorpion_tank_fire_left",
+            "fire_down": "scorpion_tank_fire_down",
+            "fire_up": "scorpion_tank_fire_up"
         }
     },
     "COCKROACH": {
@@ -255,106 +352,6 @@
             "fire_left": "cockroach_fire_left",
             "fire_down": "cockroach_fire_down",
             "fire_up": "cockroach_fire_up"
-        }
-    },
-    "ALEPH": {
-        "health": 50,
-        "damage": 50,
-        "weaponType": "HEAVY",
-        "armorType": "LIGHT",
-        "movementRange": 6,
-        "movementType": "FLIGHT",
-        "name": "ENTITY_NAME_ALEPH",
-        "desc": "ENTITY_DESC_ALEPH",
-        "traits": ["JUDGEMENT", "INDOMITABLE", "SELF_DESTRUCT", "FIXED"],
-        "sounds": {
-            "move": "bomber_move",
-            "fire": "bomber_fire"
-        },
-        "sprites": {
-            "idle_right": "aleph_idle_right",
-            "idle_left": "aleph_idle_left",
-            "idle_down": "aleph_idle_down",
-            "idle_up": "aleph_idle_up",
-            "fire_right": "aleph_fire_right",
-            "fire_left": "aleph_fire_left",
-            "fire_down": "aleph_fire_down",
-            "fire_up": "aleph_fire_up"
-        }
-    },
-    "BLIMP": {
-        "health": 72,
-        "damage": 70,
-        "weaponType": "HEAVY",
-        "armorType": "LIGHT",
-        "movementRange": 2,
-        "movementType": "FLIGHT",
-        "name": "ENTITY_NAME_BLIMP",
-        "desc": "ENTITY_DESC_BLIMP",
-        "traits": ["DEPTH_CHARGE", "BLIND_SPOT"],
-        "sounds": {
-            "move": "bomber_move",
-            "fire": "bomber_fire"
-        },
-        "sprites": {
-            "idle_right": "blimp_idle_right",
-            "idle_left": "blimp_idle_left",
-            "idle_down": "blimp_idle_down",
-            "idle_up": "blimp_idle_up",
-            "fire_right": "blimp_fire_right",
-            "fire_left": "blimp_fire_left",
-            "fire_down": "blimp_fire_down",
-            "fire_up": "blimp_fire_up"
-        }
-    },
-    "CONDOR_BOMBER": {
-        "health": 50,
-        "damage": 35,
-        "weaponType": "MEDIUM",
-        "armorType": "LIGHT",
-        "movementRange": 6,
-        "movementType": "FLIGHT",
-        "name": "ENTITY_NAME_CONDOR_BOMBER",
-        "desc": "ENTITY_DESC_CONDOR_BOMBER",
-        "traits": ["CAVITATION_EXPLOSION"],
-        "sounds": {
-            "move": "bomber_move",
-            "fire": "bomber_fire"
-        },
-        "sprites": {
-            "idle_right": "condor_idle_right",
-            "idle_left": "condor_idle_left",
-            "idle_down": "condor_idle_down",
-            "idle_up": "condor_idle_up",
-            "fire_right": "condor_fire_right",
-            "fire_left": "condor_fire_left",
-            "fire_down": "condor_fire_down",
-            "fire_up": "condor_fire_up"
-        }
-    },
-    "SOLOVEY_BOMBER": {
-        "health": 100,
-        "damage": 40,
-        "weaponType": "HEAVY",
-        "armorType": "LIGHT",
-        "movementRange": 6,
-        "movementType": "FLIGHT",
-        "name": "ENTITY_NAME_SOLOVEY_BOMBER",
-        "desc": "ENTITY_DESC_SOLOVEY_BOMBER",
-        "traits": ["ANTI_STRUCTURE"],
-        "sounds": {
-            "move": "bomber_move",
-            "fire": "bomber_fire"
-        },
-        "sprites": {
-            "idle_right": "condor_idle_right",
-            "idle_left": "condor_idle_left",
-            "idle_down": "condor_idle_down",
-            "idle_up": "condor_idle_up",
-            "fire_right": "condor_fire_right",
-            "fire_left": "condor_fire_left",
-            "fire_down": "condor_fire_down",
-            "fire_up": "condor_fire_up"
         }
     },
     "BOLT_TANK": {
@@ -405,56 +402,6 @@
             "fire_left": "scorpion_tank_fire_left",
             "fire_down": "scorpion_tank_fire_down",
             "fire_up": "scorpion_tank_fire_up"
-        }
-    },
-    "CRAB_TANK": {
-        "health": 90,
-        "damage": 30,
-        "weaponType": "LIGHT",
-        "armorType": "MEDIUM",
-        "movementRange": 6,
-        "movementType": "AMPHIBIOUS",
-        "name": "ENTITY_NAME_CRAB_TANK",
-        "desc": "ENTITY_DESC_CRAB_TANK",
-        "traits": ["CRAB"],
-        "sounds": {
-            "move": "tracked_move",
-            "fire": "tank_fire"
-        },
-        "sprites": {
-            "idle_right": "scorpion_tank_idle_right",
-            "idle_left": "scorpion_tank_idle_left",
-            "idle_down": "scorpion_tank_idle_down",
-            "idle_up": "scorpion_tank_idle_up",
-            "fire_right": "scorpion_tank_fire_right",
-            "fire_left": "scorpion_tank_fire_left",
-            "fire_down": "scorpion_tank_fire_down",
-            "fire_up": "scorpion_tank_fire_up"
-        }
-    },
-    "RAPTOR_FIGHTER": {
-        "health": 50,
-        "damage": 15,
-        "weaponType": "LIGHT",
-        "armorType": "LIGHT",
-        "movementRange": 8,
-        "movementType": "FLIGHT",
-        "name": "ENTITY_NAME_RAPTOR_FIGHTER",
-        "desc": "ENTITY_DESC_RAPTOR_FIGHTER",
-        "traits": ["SKYSWEEPER", "HIGH_ALTITUDE"],
-        "sounds": {
-            "move": "raptor_move",
-            "fire": "raptor_fire"
-        },
-        "sprites": {
-            "idle_right": "raptor_fighter_idle_right",
-            "idle_left": "raptor_fighter_idle_left",
-            "idle_down": "raptor_fighter_idle_down",
-            "idle_up": "raptor_fighter_idle_up",
-            "fire_right": "raptor_fighter_fire_right",
-            "fire_left": "raptor_fighter_fire_left",
-            "fire_down": "raptor_fighter_fire_down",
-            "fire_up": "raptor_fighter_fire_up"
         }
     },
     "FLAK_TANK": {
@@ -585,52 +532,6 @@
             "fire_up": "gorlitz_fire_up"
         }
     },
-    "LEVIATHAN_BARGE": {
-        "health": 100,
-        "damage": 0,
-        "weaponType": "NONE",
-        "armorType": "MEDIUM",
-        "movementRange": 5,
-        "movementType": "RUDDER",
-        "name": "ENTITY_NAME_LEVIATHAN_BARGE",
-        "desc": "ENTITY_DESC_LEVIATHAN_BARGE",
-        "traits": ["NAVAL_TRANSPORT"],
-        "sounds": {
-            "move": "rudder_move"
-        },
-        "sprites": {
-            "idle_right": "leviathan_barge_idle_right",
-            "idle_left": "leviathan_barge_idle_left",
-            "idle_down": "leviathan_barge_idle_down",
-            "idle_up": "leviathan_barge_idle_up"
-        }
-    },
-    "TURRET": {
-        "health": 150,
-        "damage": 30,
-        "weaponType": "MEDIUM",
-        "armorType": "MEDIUM",
-        "minRange": 2,
-        "maxRange": 5,
-        "movementType": "STATIONARY",
-        "name": "ENTITY_NAME_TURRET",
-        "desc": "ENTITY_DESC_TURRET",
-        "traits": ["FIXED"],
-        "sounds": {
-            "move": "turret_move",
-            "fire": "turret_fire"
-        },
-        "sprites": {
-            "idle_right": "turret_idle_right",
-            "idle_left": "turret_idle_left",
-            "idle_down": "turret_idle_down",
-            "idle_up": "turret_idle_up",
-            "fire_right": "turret_fire_right",
-            "fire_left": "turret_fire_left",
-            "fire_down": "turret_fire_down",
-            "fire_up": "turret_fire_up"
-        }
-    },
     "KOSCHEI": {
         "health": 120,
         "damage": 55,
@@ -706,81 +607,6 @@
             "fire_up": "entwicklung_fire_up"
         }
     },
-    "BATTLESHIP": {
-        "health": 140,
-        "damage": 50,
-        "minRange": 3,
-        "maxRange": 6,
-        "weaponType": "HEAVY",
-        "armorType": "HEAVY",
-        "movementRange": 4,
-        "movementType": "HEAVY_RUDDER",
-        "name": "ENTITY_NAME_BATTLESHIP",
-        "desc": "ENTITY_DESC_BATTLESHIP",
-        "traits": ["CEMENTED_STEEL_ARMOR"],
-        "sounds": {
-            "move": "rudder_move",
-            "fire": "battleship_fire"
-        },
-        "sprites": {
-            "idle_right": "battle_cruiser_idle_right",
-            "idle_left": "battle_cruiser_idle_left",
-            "idle_down": "battle_cruiser_idle_down",
-            "idle_up": "battle_cruiser_idle_up",
-            "fire_right": "battle_cruiser_fire_right",
-            "fire_left": "battle_cruiser_fire_left",
-            "fire_down": "battle_cruiser_fire_down",
-            "fire_up": "battle_cruiser_fire_up"
-        }
-    },
-    "SUPER_BATTLESHIP": {
-        "health": 2500,
-        "damage": 250,
-        "minRange": 4,
-        "maxRange": 8,
-        "weaponType": "HEAVY",
-        "armorType": "HEAVY",
-        "movementRange": 4,
-        "movementType": "HEAVY_RUDDER",
-        "name": "ENTITY_NAME_SUPER_BATTLESHIP",
-        "desc": "ENTITY_DESC_SUPER_BATTLESHIP",
-        "traits": ["SKYSWEEPER", "CEMENTED_STEEL_ARMOR"],
-        "sounds": {
-            "move": "rudder_move",
-            "fire": "battleship_fire"
-        },
-        "sprites": {
-            "idle_right": "battle_cruiser_idle_right",
-            "idle_left": "battle_cruiser_idle_left",
-            "idle_down": "battle_cruiser_idle_down",
-            "idle_up": "battle_cruiser_idle_up",
-            "fire_right": "battle_cruiser_fire_right",
-            "fire_left": "battle_cruiser_fire_left",
-            "fire_down": "battle_cruiser_fire_down",
-            "fire_up": "battle_cruiser_fire_up"
-        }
-    },
-    "JAMMER_TRUCK": {
-        "health": 50,
-        "damage": 0,
-        "jammerRange": 2,
-        "weaponType": "NONE",
-        "armorType": "LIGHT",
-        "movementRange": 5,
-        "movementType": "WHEELED",
-        "name": "ENTITY_NAME_JAMMER_TRUCK",
-        "desc": "ENTITY_DESC_JAMMER_TRUCK",
-        "traits": ["JAMMER", "RADAR"],
-        "sounds": {
-            "move": "turret_move"
-        },
-        "sprites": {
-            "idle_right": "jammer_truck_idle_right",
-            "idle_left": "jammer_truck_idle_left",
-            "idle_down": "jammer_truck_idle_down",
-            "idle_up": "jammer_truck_idle_up"
-        }
-    },
     "STEALTH_TANK": {
         "health": 70,
         "damage":35,
@@ -806,81 +632,6 @@
             "fire_up": "stealth_tank_fire_up"
         }
     },
-    "STRIKE_COMMANDO": {
-        "health": 40,
-        "damage": 28,
-        "weaponType": "LIGHT",
-        "armorType": "LIGHT",
-        "movementRange": 3,
-        "movementType": "FOOT",
-        "name": "ENTITY_NAME_STRIKE_COMMANDO",
-        "desc": "ENTITY_DESC_STRIKE_COMMANDO",
-        "traits": ["CONQUEROR", "TRACKING"],
-        "sounds": {
-            "move": "infantry_move",
-            "fire": "infantry_fire"
-        },
-        "sprites": {
-            "idle_right": "strike_commando_idle_right",
-            "idle_left": "strike_commando_idle_left",
-            "idle_down": "strike_commando_idle_down",
-            "idle_up": "strike_commando_idle_up",
-            "fire_right": "strike_commando_fire_right",
-            "fire_left": "strike_commando_fire_left",
-            "fire_down": "strike_commando_fire_down",
-            "fire_up": "strike_commando_fire_up"
-        }
-    },
-    "HEAVY_COMMANDO": {
-        "health": 40,
-        "damage": 30,
-        "weaponType": "HEAVY",
-        "armorType": "LIGHT",
-        "movementRange": 30,
-        "movementType": "FOOT",
-        "sounds": {
-            "move": null,
-            "fire": null
-        },
-        "name": "ENTITY_NAME_HEAVY_COMMANDO",
-        "desc": "ENTITY_DESC_HEAVY_COMMANDO",
-        "traits": ["CONQUEROR", "TRACKING"],
-        "sprites": {
-            "idle_right": "heavy_commando_idle_right",
-            "idle_left": "heavy_commando_idle_left",
-            "idle_down": "heavy_commando_idle_down",
-            "idle_up": "heavy_commando_idle_up",
-            "fire_right": "heavy_commando_fire_right",
-            "fire_left": "heavy_commando_fire_left",
-            "fire_down": "heavy_commando_fire_down",
-            "fire_up": "heavy_commando_fire_up"
-        }
-    },
-    "U_BOAT": {
-        "health": 50,
-        "damage": 50,
-        "weaponType": "HEAVY",
-        "armorType": "LIGHT",
-        "movementRange": 4,
-        "movementType": "RUDDER",
-        "sounds": {
-            "move": "rudder_move",
-            "fire": "entwicklung_fire"
-        },
-        "name": "ENTITY_NAME_U_BOAT",
-        "desc": "ENTITY_DESC_U_BOAT",
-        "traits": ["STEALTH", "SUBMERGED", "DEPTH_CHARGE", "SEABOUND"],
-        "sprites": {
-            "idle_right": "u_boat_idle_right",
-            "idle_left": "u_boat_idle_left",
-            "idle_down": "u_boat_idle_down",
-            "idle_up": "u_boat_idle_up",
-            "fire_right": "u_boat_fire_right",
-            "fire_left": "u_boat_fire_left",
-            "fire_down": "u_boat_fire_down",
-            "fire_up": "u_boat_fire_up"
-        }
-    },
     "ANNIHILATOR_TANK": {
         "health": 140,
         "damage": 70,
@@ -903,27 +654,6 @@
             "fire_left": "annihilator_tank_fire_left",
             "fire_down": "annihilator_tank_fire_down",
             "fire_up": "annihilator_tank_fire_up"
-        }
-    },
-    "CORVETTE_FIGHTER": {
-        "health": 90,
-        "damage": 45,
-        "weaponType": "MEDIUM",
-        "armorType": "MEDIUM",
-        "movementRange": 5,
-        "movementType": "HEAVY_RUDDER",
-        "name": "ENTITY_NAME_CORVETTE_FIGHTER",
-        "desc": "ENTITY_DESC_CORVETTE_FIGHTER",
-        "traits": ["BLITZ"],
-        "sprites": {
-            "idle_right": "corvette_fighter_idle_right",
-            "idle_left": "corvette_fighter_idle_left",
-            "idle_down": "corvette_fighter_idle_down",
-            "idle_up": "corvette_fighter_idle_up",
-            "fire_right": "corvette_fighter_fire_right",
-            "fire_left": "corvette_fighter_fire_left",
-            "fire_down": "corvette_fighter_fire_down",
-            "fire_up": "corvette_fighter_fire_up"
         }
     },
     "BERTHA_BATTERY": {
@@ -980,6 +710,29 @@
             "fire_up": "bertha_battery_fire_up"
         }
     },
+    "WARMACHINE": {
+        "health": 75,
+        "damage": 60,
+        "weaponType": "MEDIUM",
+        "armorType": "MEDIUM",
+        "movementRange": 1,
+        "movementType": "TRACKED",
+        "minRange": 2,
+        "maxRange": 3,
+        "name": "ENTITY_NAME_WARMACHINE",
+        "desc": "ENTITY_DESC_WARMACHINE",
+        "traits": ["TANK_POOPER", "EXTRACTOR", "LYNCHPIN", "SKYSWEEPER"],
+        "sprites": {
+            "idle_right": "warmachine_idle_right",
+            "idle_left": "warmachine_idle_left",
+            "idle_down": "warmachine_idle_down",
+            "idle_up": "warmachine_idle_up",
+            "fire_right": "warmachine_fire_right",
+            "fire_left": "warmachine_fire_left",
+            "fire_down": "warmachine_fire_down",
+            "fire_up": "warmachine_fire_up"
+        }
+    },
     "HUNTER_SUPPORT": {
         "health": 90,
         "damage": 17,
@@ -1022,71 +775,274 @@
             "fire_up": "intrepid_fire_up"
         }
     },
-    "MORTAR_TRUCK": {
+    "U_BOAT": {
         "health": 50,
         "damage": 50,
-        "weaponType": "MEDIUM",
-        "armorType": "LIGHT",
-        "movementRange": 5,
-        "movementType": "WHEELED",
-        "minRange": 2,
-        "maxRange": 3,
-        "name": "ENTITY_NAME_MORTAR_TRUCK",
-        "desc": "ENTITY_DESC_MORTAR_TRUCK",
-        "traits": [],
-        "sprites": {
-            "idle_right": "mortar_truck_idle_right",
-            "idle_left": "mortar_truck_idle_left",
-            "idle_down": "mortar_truck_idle_down",
-            "idle_up": "mortar_truck_idle_up",
-            "fire_right": "mortar_truck_fire_right",
-            "fire_left": "mortar_truck_fire_left",
-            "fire_down": "mortar_truck_fire_down",
-            "fire_up": "mortar_truck_fire_up"
-        }
-    },
-    "ROCKET_TRUCK": {
-        "health": 40,
-        "damage": 40,
         "weaponType": "HEAVY",
         "armorType": "LIGHT",
         "movementRange": 4,
-        "movementType": "WHEELED",
-        "minRange": 3,
-        "maxRange": 5,
-        "name": "ENTITY_NAME_ROCKET_TRUCK",
-        "desc": "ENTITY_DESC_ROCKET_TRUCK",
-        "traits": ["MOBILE_BATTERY", "SKYSWEEPER", "DEPTH_CHARGE"],
+        "movementType": "RUDDER",
+        "sounds": {
+            "move": "rudder_move",
+            "fire": "entwicklung_fire"
+        },
+        "name": "ENTITY_NAME_U_BOAT",
+        "desc": "ENTITY_DESC_U_BOAT",
+        "traits": ["STEALTH", "SUBMERGED", "DEPTH_CHARGE", "SEABOUND"],
         "sprites": {
-            "idle_right": "rocket_truck_idle_right",
-            "idle_left": "rocket_truck_idle_left",
-            "idle_down": "rocket_truck_idle_down",
-            "idle_up": "rocket_truck_idle_up",
-            "fire_right": "rocket_truck_fire_right",
-            "fire_left": "rocket_truck_fire_left",
-            "fire_down": "rocket_truck_fire_down",
-            "fire_up": "rocket_truck_fire_up"
+            "idle_right": "u_boat_idle_right",
+            "idle_left": "u_boat_idle_left",
+            "idle_down": "u_boat_idle_down",
+            "idle_up": "u_boat_idle_up",
+            "fire_right": "u_boat_fire_right",
+            "fire_left": "u_boat_fire_left",
+            "fire_down": "u_boat_fire_down",
+            "fire_up": "u_boat_fire_up"
         }
     },
-    "SPIDER_TANK": {
-        "health": 32,
-        "damage": 55,
+    "LEVIATHAN_BARGE": {
+        "health": 100,
+        "damage": 0,
+        "weaponType": "NONE",
+        "armorType": "MEDIUM",
+        "movementRange": 5,
+        "movementType": "RUDDER",
+        "name": "ENTITY_NAME_LEVIATHAN_BARGE",
+        "desc": "ENTITY_DESC_LEVIATHAN_BARGE",
+        "traits": ["NAVAL_TRANSPORT"],
+        "sounds": {
+            "move": "rudder_move"
+        },
+        "sprites": {
+            "idle_right": "leviathan_barge_idle_right",
+            "idle_left": "leviathan_barge_idle_left",
+            "idle_down": "leviathan_barge_idle_down",
+            "idle_up": "leviathan_barge_idle_up"
+        }
+    },
+    "BATTLESHIP": {
+        "health": 140,
+        "damage": 50,
+        "minRange": 3,
+        "maxRange": 6,
+        "weaponType": "HEAVY",
+        "armorType": "HEAVY",
+        "movementRange": 4,
+        "movementType": "HEAVY_RUDDER",
+        "name": "ENTITY_NAME_BATTLESHIP",
+        "desc": "ENTITY_DESC_BATTLESHIP",
+        "traits": ["CEMENTED_STEEL_ARMOR"],
+        "sounds": {
+            "move": "rudder_move",
+            "fire": "battleship_fire"
+        },
+        "sprites": {
+            "idle_right": "battle_cruiser_idle_right",
+            "idle_left": "battle_cruiser_idle_left",
+            "idle_down": "battle_cruiser_idle_down",
+            "idle_up": "battle_cruiser_idle_up",
+            "fire_right": "battle_cruiser_fire_right",
+            "fire_left": "battle_cruiser_fire_left",
+            "fire_down": "battle_cruiser_fire_down",
+            "fire_up": "battle_cruiser_fire_up"
+        }
+    },
+    "SUPER_BATTLESHIP": {
+        "health": 2500,
+        "damage": 250,
+        "minRange": 4,
+        "maxRange": 8,
+        "weaponType": "HEAVY",
+        "armorType": "HEAVY",
+        "movementRange": 4,
+        "movementType": "HEAVY_RUDDER",
+        "name": "ENTITY_NAME_SUPER_BATTLESHIP",
+        "desc": "ENTITY_DESC_SUPER_BATTLESHIP",
+        "traits": ["SKYSWEEPER", "CEMENTED_STEEL_ARMOR"],
+        "sounds": {
+            "move": "rudder_move",
+            "fire": "battleship_fire"
+        },
+        "sprites": {
+            "idle_right": "battle_cruiser_idle_right",
+            "idle_left": "battle_cruiser_idle_left",
+            "idle_down": "battle_cruiser_idle_down",
+            "idle_up": "battle_cruiser_idle_up",
+            "fire_right": "battle_cruiser_fire_right",
+            "fire_left": "battle_cruiser_fire_left",
+            "fire_down": "battle_cruiser_fire_down",
+            "fire_up": "battle_cruiser_fire_up"
+        }
+    },
+    "CORVETTE_FIGHTER": {
+        "health": 90,
+        "damage": 45,
+        "weaponType": "MEDIUM",
+        "armorType": "MEDIUM",
+        "movementRange": 5,
+        "movementType": "HEAVY_RUDDER",
+        "name": "ENTITY_NAME_CORVETTE_FIGHTER",
+        "desc": "ENTITY_DESC_CORVETTE_FIGHTER",
+        "traits": ["BLITZ"],
+        "sprites": {
+            "idle_right": "corvette_fighter_idle_right",
+            "idle_left": "corvette_fighter_idle_left",
+            "idle_down": "corvette_fighter_idle_down",
+            "idle_up": "corvette_fighter_idle_up",
+            "fire_right": "corvette_fighter_fire_right",
+            "fire_left": "corvette_fighter_fire_left",
+            "fire_down": "corvette_fighter_fire_down",
+            "fire_up": "corvette_fighter_fire_up"
+        }
+    },
+    "EAGLE_STRIKER": {
+        "health": 50,
+        "damage": 25,
+        "weaponType": "MEDIUM",
+        "armorType": "LIGHT",
+        "movementRange": 7,
+        "movementType": "FLIGHT",
+        "name": "ENTITY_NAME_EAGLE_STRIKER",
+        "desc": "ENTITY_DESC_EAGLE_STRIKER",
+        "traits": ["SKYSWEEPER", "IRREPARABLE"],
+        "sounds": {
+            "move": "raptor_move",
+            "fire": "raptor_fire"
+        },
+        "sprites": {
+            "idle_right": "vulture_drone_idle_right",
+            "idle_left": "vulture_drone_idle_left",
+            "idle_down": "vulture_drone_idle_down",
+            "idle_up": "vulture_drone_idle_up",
+            "fire_right": "vulture_drone_fire_right",
+            "fire_left": "vulture_drone_fire_left",
+            "fire_down": "vulture_drone_fire_down",
+            "fire_up": "vulture_drone_fire_up"
+        }
+    },
+    "ALEPH": {
+        "health": 50,
+        "damage": 50,
+        "weaponType": "HEAVY",
+        "armorType": "LIGHT",
+        "movementRange": 6,
+        "movementType": "FLIGHT",
+        "name": "ENTITY_NAME_ALEPH",
+        "desc": "ENTITY_DESC_ALEPH",
+        "traits": ["JUDGEMENT", "INDOMITABLE", "SELF_DESTRUCT", "FIXED"],
+        "sounds": {
+            "move": "bomber_move",
+            "fire": "bomber_fire"
+        },
+        "sprites": {
+            "idle_right": "aleph_idle_right",
+            "idle_left": "aleph_idle_left",
+            "idle_down": "aleph_idle_down",
+            "idle_up": "aleph_idle_up",
+            "fire_right": "aleph_fire_right",
+            "fire_left": "aleph_fire_left",
+            "fire_down": "aleph_fire_down",
+            "fire_up": "aleph_fire_up"
+        }
+    },
+    "BLIMP": {
+        "health": 72,
+        "damage": 70,
+        "weaponType": "HEAVY",
+        "armorType": "LIGHT",
+        "movementRange": 2,
+        "movementType": "FLIGHT",
+        "name": "ENTITY_NAME_BLIMP",
+        "desc": "ENTITY_DESC_BLIMP",
+        "traits": ["DEPTH_CHARGE", "BLIND_SPOT"],
+        "sounds": {
+            "move": "bomber_move",
+            "fire": "bomber_fire"
+        },
+        "sprites": {
+            "idle_right": "blimp_idle_right",
+            "idle_left": "blimp_idle_left",
+            "idle_down": "blimp_idle_down",
+            "idle_up": "blimp_idle_up",
+            "fire_right": "blimp_fire_right",
+            "fire_left": "blimp_fire_left",
+            "fire_down": "blimp_fire_down",
+            "fire_up": "blimp_fire_up"
+        }
+    },
+    "CONDOR_BOMBER": {
+        "health": 50,
+        "damage": 35,
+        "weaponType": "MEDIUM",
+        "armorType": "LIGHT",
+        "movementRange": 6,
+        "movementType": "FLIGHT",
+        "name": "ENTITY_NAME_CONDOR_BOMBER",
+        "desc": "ENTITY_DESC_CONDOR_BOMBER",
+        "traits": ["CAVITATION_EXPLOSION", "DEPTH_CHARGE"],
+        "sounds": {
+            "move": "bomber_move",
+            "fire": "bomber_fire"
+        },
+        "sprites": {
+            "idle_right": "condor_idle_right",
+            "idle_left": "condor_idle_left",
+            "idle_down": "condor_idle_down",
+            "idle_up": "condor_idle_up",
+            "fire_right": "condor_fire_right",
+            "fire_left": "condor_fire_left",
+            "fire_down": "condor_fire_down",
+            "fire_up": "condor_fire_up"
+        }
+    },
+    "SOLOVEY_BOMBER": {
+        "health": 100,
+        "damage": 40,
+        "weaponType": "HEAVY",
+        "armorType": "LIGHT",
+        "movementRange": 6,
+        "movementType": "FLIGHT",
+        "name": "ENTITY_NAME_SOLOVEY_BOMBER",
+        "desc": "ENTITY_DESC_SOLOVEY_BOMBER",
+        "traits": ["ANTI_STRUCTURE"],
+        "sounds": {
+            "move": "bomber_move",
+            "fire": "bomber_fire"
+        },
+        "sprites": {
+            "idle_right": "condor_idle_right",
+            "idle_left": "condor_idle_left",
+            "idle_down": "condor_idle_down",
+            "idle_up": "condor_idle_up",
+            "fire_right": "condor_fire_right",
+            "fire_left": "condor_fire_left",
+            "fire_down": "condor_fire_down",
+            "fire_up": "condor_fire_up"
+        }
+    },
+    "RAPTOR_FIGHTER": {
+        "health": 50,
+        "damage": 15,
         "weaponType": "LIGHT",
         "armorType": "LIGHT",
-        "movementRange": 4,
-        "movementType": "FOOT",
-        "name": "ENTITY_NAME_SPIDER_TANK",
-        "desc": "ENTITY_DESC_SPIDER_TANK",
-        "traits": ["STUN"],
+        "movementRange": 8,
+        "movementType": "FLIGHT",
+        "name": "ENTITY_NAME_RAPTOR_FIGHTER",
+        "desc": "ENTITY_DESC_RAPTOR_FIGHTER",
+        "traits": ["SKYSWEEPER"],
+        "sounds": {
+            "move": "raptor_move",
+            "fire": "raptor_fire"
+        },
         "sprites": {
-            "idle_right": "spider_tank_idle_right",
-            "idle_left": "spider_tank_idle_left",
-            "idle_down": "spider_tank_idle_down",
-            "idle_up": "spider_tank_idle_up",
-            "fire_right": "spider_tank_fire_right",
-            "fire_left": "spider_tank_fire_left",
-            "fire_down": "spider_tank_fire_down",
-            "fire_up": "spider_tank_fire_up"
+            "idle_right": "raptor_fighter_idle_right",
+            "idle_left": "raptor_fighter_idle_left",
+            "idle_down": "raptor_fighter_idle_down",
+            "idle_up": "raptor_fighter_idle_up",
+            "fire_right": "raptor_fighter_fire_right",
+            "fire_left": "raptor_fighter_fire_left",
+            "fire_down": "raptor_fighter_fire_down",
+            "fire_up": "raptor_fighter_fire_up"
         }
     },
     "VULTURE_DRONE": {
@@ -1110,29 +1066,6 @@
             "fire_up": "vulture_drone_fire_up"
         }
     },
-    "WARMACHINE": {
-        "health": 75,
-        "damage": 60,
-        "weaponType": "MEDIUM",
-        "armorType": "MEDIUM",
-        "movementRange": 1,
-        "movementType": "TRACKED",
-        "minRange": 2,
-        "maxRange": 3,
-        "name": "ENTITY_NAME_WARMACHINE",
-        "desc": "ENTITY_DESC_WARMACHINE",
-        "traits": ["TANK_POOPER", "EXTRACTOR", "LYNCHPIN", "SKYSWEEPER"],
-        "sprites": {
-            "idle_right": "warmachine_idle_right",
-            "idle_left": "warmachine_idle_left",
-            "idle_down": "warmachine_idle_down",
-            "idle_up": "warmachine_idle_up",
-            "fire_right": "warmachine_fire_right",
-            "fire_left": "warmachine_fire_left",
-            "fire_down": "warmachine_fire_down",
-            "fire_up": "warmachine_fire_up"
-        }
-    },
     "ALBATROSS_TRANSPORT": {
         "health": 10,
         "damage": 0,
@@ -1150,6 +1083,32 @@
             "idle_up": "albatross_transport_idle_up"
         }
     },
+    "TURRET": {
+        "health": 150,
+        "damage": 30,
+        "weaponType": "MEDIUM",
+        "armorType": "MEDIUM",
+        "minRange": 2,
+        "maxRange": 5,
+        "movementType": "STATIONARY",
+        "name": "ENTITY_NAME_TURRET",
+        "desc": "ENTITY_DESC_TURRET",
+        "traits": ["FIXED"],
+        "sounds": {
+            "move": "turret_move",
+            "fire": "turret_fire"
+        },
+        "sprites": {
+            "idle_right": "turret_idle_right",
+            "idle_left": "turret_idle_left",
+            "idle_down": "turret_idle_down",
+            "idle_up": "turret_idle_up",
+            "fire_right": "turret_fire_right",
+            "fire_left": "turret_fire_left",
+            "fire_down": "turret_fire_down",
+            "fire_up": "turret_fire_up"
+        }
+    },
     "BLOCKADE": {
         "health": 70,
         "weaponType": "NONE",
@@ -1163,6 +1122,47 @@
             "idle_left": "blockade_idle_left",
             "idle_down": "blockade_idle_down",
             "idle_up": "blockade_idle_up"
+        }
+    },
+    "MEME_WTC": {
+        "health": 50,
+        "armorType": "LIGHT",
+        "traits": ["FINANCIAL_CENTER"],
+        "sounds": {
+            "move": "turret_move",
+            "fire": "turret_fire"
+        },
+        "sprites": {
+            "idle_right": "turret_idle_right",
+            "idle_left": "turret_idle_left",
+            "idle_down": "turret_idle_down",
+            "idle_up": "turret_idle_up"
+        }
+    },
+    "MEME_BUREAUCRAT": {
+        "health": 30,
+        "damage": 15,
+        "weaponType": "LIGHT",
+        "armorType": "LIGHT",
+        "movementSpeed": 392,
+        "movementRange": 8,
+        "movementType": "TRACKED",
+        "name": "ENTITY_NAME_MEME_BUREAUCRAT",
+        "desc": "ENTITY_DESC_MEME_BUREAUCRAT",
+        "traits": [],
+        "sounds": {
+            "move": "cockroach_move",
+            "fire": "cockroach_fire"
+        },
+        "sprites": {
+            "idle_right": "cockroach_idle_right",
+            "idle_left": "cockroach_idle_left",
+            "idle_down": "cockroach_idle_down",
+            "idle_up": "cockroach_idle_up",
+            "fire_right": "cockroach_fire_right",
+            "fire_left": "cockroach_fire_left",
+            "fire_down": "cockroach_fire_down",
+            "fire_up": "cockroach_fire_up"
         }
     }
 }

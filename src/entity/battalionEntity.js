@@ -1112,7 +1112,7 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, 
                     //Always uncloak next to an enemy.
                     shouldSelfUncloak = true;
                 }
-            } else if(jammerFlags !== JammerField.FLAG.NONE) {
+            } else {
                 const cloakFlag = entity.getCloakFlag();
 
                 if(jammerFlags & cloakFlag) {
