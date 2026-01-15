@@ -752,7 +752,7 @@ BattalionEntity.prototype.isCounterValid = function(target) {
         return false;
     }
 
-    //Stun can never be countered.
+    //STUN can never be countered.
     if(target.hasTrait(TRAIT_TYPE.STUN)) {
         return false;
     }
@@ -771,6 +771,7 @@ BattalionEntity.prototype.isCounterValid = function(target) {
             break;
         }
         case RANGE_TYPE.HYBRID: {
+            //Edge case: If two hybrids are next to each other, treat attacking as melee.
             if(!this.hasTrait(TRAIT_TYPE.COUNTER_BATTERY) && !this.isNextToEntity(target)) {
                 return false;
             }

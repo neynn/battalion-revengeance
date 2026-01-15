@@ -1284,5 +1284,65 @@
             "rows": 1,
             "columns": 12
         }
+    },
+    "infantry_truck_move": {
+        "directory": ["assets","sprites","textures","infantry_truck"],
+        "source": "infantry_truck_move.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "infantry_truck_fire_up": {
+        "directory": ["assets","sprites","textures","infantry_truck"],
+        "source": "infantry_truck_fire_up.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 56,
+            "frameHeight": 112,
+            "rows": 1,
+            "columns": 8
+        }
+    },
+    "infantry_truck_fire_right": {
+        "directory": ["assets","sprites","textures","infantry_truck"],
+        "source": "infantry_truck_fire_right.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 70,
+            "frameHeight": 56,
+            "rows": 1,
+            "columns": 8
+        }
+    },
+    "infantry_truck_fire_down": {
+        "directory": ["assets","sprites","textures","infantry_truck"],
+        "source": "infantry_truck_fire_down.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 1,
+            "columns": 8
+        }
+    },
+    "infantry_truck_fire_left": {
+        "directory": ["assets","sprites","textures","infantry_truck"],
+        "source": "infantry_truck_fire_left.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 70,
+            "frameHeight": 56,
+            "rows": 1,
+            "columns": 8
+        }
     }
 }

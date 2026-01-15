@@ -1613,15 +1613,6 @@
         "frameTime": 0.1,
         "autoFrames": {"start": 33,"jump": 1,"repeat": 8}
     },
-
-
-
-
-
-
-
-
-
     "suicide_idle_up": {
         "texture": "suicide_move",
         "frameTime": 0.2,
@@ -1650,13 +1641,11 @@
     },
     "suicide_fire_right": {
         "texture": "suicide_fire_right",
-        "shift":{"x":56,"y":0},
         "frameTime": 0.1,
         "autoFrames": {"start": 1,"jump": 1,"repeat": 12}
     },
     "suicide_fire_down": {
         "texture": "suicide_fire_down",
-        "shift":{"x":0,"y":56},
         "frameTime": 0.1,
         "autoFrames": {"start": 1,"jump": 1,"repeat": 12}
     },
@@ -1665,5 +1654,46 @@
         "shift":{"x":-56,"y":0},
         "frameTime": 0.1,
         "autoFrames": {"start": 1,"jump": 1,"repeat": 12}
+    },
+    "infantry_truck_idle_up": {
+        "texture": "infantry_truck_move",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "infantry_truck_idle_right": {
+        "texture": "infantry_truck_move",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 5,"jump": 1,"repeat": 4}
+    },
+    "infantry_truck_idle_down": {
+        "texture": "infantry_truck_move",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 9,"jump": 1,"repeat": 4}
+    },
+    "infantry_truck_idle_left": {
+        "texture": "infantry_truck_move",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 13,"jump": 1,"repeat": 4}
+    },
+    "infantry_truck_fire_up": {
+        "texture": "infantry_truck_fire_up",
+        "frameTime": 0.1,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 8}
+    },
+    "infantry_truck_fire_right": {
+        "texture": "infantry_truck_fire_right",
+        "frameTime": 0.1,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 8}
+    },
+    "infantry_truck_fire_down": {
+        "texture": "infantry_truck_fire_down",
+        "frameTime": 0.1,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 8}
+    },
+    "infantry_truck_fire_left": {
+        "texture": "infantry_truck_fire_left",
+        "shift":{"x":-12,"y":0},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 8}
     }
 }

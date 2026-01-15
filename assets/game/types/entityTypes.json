@@ -286,6 +286,31 @@
             "fire_up": "suicide_fire_up"
         }
     },
+    "INFANTRY_TRUCK": {
+        "health": 80,
+        "damage": 25,
+        "weaponType": "MEDIUM",
+        "armorType": "LIGHT",
+        "movementRange": 60,
+        "movementType": "WHEELED",
+        "name": "ENTITY_NAME_INFANTRY_TRUCK",
+        "desc": "ENTITY_DESC_INFANTRY_TRUCK",
+        "traits": ["CONQUEROR"],
+        "sounds": {
+            "move": "truck_move",
+            "fire": "infantry_fire"
+        },
+        "sprites": {
+            "idle_right": "infantry_truck_idle_right",
+            "idle_left": "infantry_truck_idle_left",
+            "idle_down": "infantry_truck_idle_down",
+            "idle_up": "infantry_truck_idle_up",
+            "fire_right": "infantry_truck_fire_right",
+            "fire_left": "infantry_truck_fire_left",
+            "fire_down": "infantry_truck_fire_down",
+            "fire_up": "infantry_truck_fire_up"
+        }
+    },
     "MORTAR_TRUCK": {
         "health": 50,
         "damage": 50,

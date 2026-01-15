@@ -20,6 +20,7 @@
     "turret_fire": { "directory": ["assets", "sounds", "units"], "source": "turret_fire.mp3", "allowStacking": true, "volume": 0.6 },
     "gorlitz_fire": { "directory": ["assets", "sounds", "units"], "source": "gorlitz_fire.mp3", "allowStacking": true, "volume": 0.6 },
 
+    "truck_move": { "directory": ["assets", "sounds", "units", "move"], "source": "truck_move.mp3", "allowStacking": true, "volume": 0.6 },
     "bertha_move": { "directory": ["assets", "sounds", "units", "move"], "source": "bertha_move.mp3", "allowStacking": true, "volume": 0.6 },
     "infantry_move": { "directory": ["assets", "sounds", "units", "move"], "source": "infantry_move.mp3", "allowStacking": true, "volume": 0.6 },
     "bomber_move": { "directory": ["assets", "sounds", "units", "move"], "source": "bomber_move.mp3", "allowStacking": true, "volume": 0.6 },
