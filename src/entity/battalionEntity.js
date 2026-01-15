@@ -762,22 +762,6 @@ BattalionEntity.prototype.isCounterValid = function(target) {
         return false;
     }
 
-    //MOBILE_BATTERY cannot be countered by ranged units.
-    if(target.hasTrait(TRAIT_TYPE.MOBILE_BATTERY)) {
-        switch(this.getRangeType()) {
-            case RANGE_TYPE.RANGE: {
-                return false;
-            }
-            case RANGE_TYPE.HYBRID: {
-                if(!this.isNextToEntity(target)) {
-                    return false;
-                }
-
-                break;
-            }
-        }
-    }
-
     return true;
 }
 

@@ -185,11 +185,6 @@
         "desc": "TRAIT_DESC_BEWEGUNGSKRIEG",
         "icon": "Assets/Traits/Bewegungskrieg.png"
     },
-    "MOBILE_BATTERY": {
-        "name": "TRAIT_NAME_MOBILE_BATTERY",
-        "desc": "TRAIT_DESC_MOBILE_BATTERY",
-        "icon": "Assets/Traits/Mobile Battery.png"
-    },
     "CEMENTED_STEEL_ARMOR": {
         "name": "TRAIT_NAME_CEMENTED_STEEL_ARMOR",
         "desc": "TRAIT_DESC_CEMENTED_STEEL_ARMOR",
