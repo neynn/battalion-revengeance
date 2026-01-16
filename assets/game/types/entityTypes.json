@@ -263,7 +263,7 @@
     },
     "PROFESSIONAL_TERRORIST": {
         "health": 50,
-        "damage": 50,
+        "damage": 80,
         "weaponType": "HEAVY",
         "armorType": "LIGHT",
         "movementRange": 30,
@@ -345,7 +345,7 @@
         "maxRange": 5,
         "name": "ENTITY_NAME_ROCKET_TRUCK",
         "desc": "ENTITY_DESC_ROCKET_TRUCK",
-        "traits": ["SKYSWEEPER", "DEPTH_CHARGE"],
+        "traits": ["COUNTER_BATTERY", "SKYSWEEPER", "DEPTH_CHARGE"],
         "sprites": {
             "idle_right": "rocket_truck_idle_right",
             "idle_left": "rocket_truck_idle_left",
