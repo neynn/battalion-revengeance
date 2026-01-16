@@ -1344,5 +1344,17 @@
             "rows": 1,
             "columns": 8
         }
+    },
+    "light_infantry": {
+        "directory": ["assets","sprites","textures"],
+        "source": "light_infantry.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 8,
+            "columns": 8
+        }
     }
 }

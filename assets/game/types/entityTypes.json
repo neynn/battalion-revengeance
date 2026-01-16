@@ -1,4 +1,29 @@
 {
+    "LIGHT_INFANTRY": {
+        "health": 50,
+        "damage": 10,
+        "weaponType": "LIGHT",
+        "armorType": "LIGHT",
+        "movementRange": 4,
+        "movementType": "FOOT",
+        "name": "ENTITY_NAME_LIGHT_INFANTRY",
+        "desc": "ENTITY_DESC_LIGHT_INFANTRY",
+        "traits": [],
+        "sounds": {
+            "move": "infantry_move",
+            "fire": "light_infantry_fire"
+        },
+        "sprites": {
+            "idle_right": "light_infantry_idle_right",
+            "idle_left": "light_infantry_idle_left",
+            "idle_down": "light_infantry_idle_down",
+            "idle_up": "light_infantry_idle_up",
+            "fire_right": "light_infantry_fire_right",
+            "fire_left": "light_infantry_fire_left",
+            "fire_down": "light_infantry_fire_down",
+            "fire_up": "light_infantry_fire_up"
+        }
+    },
     "INFANTRY": {
         "health": 70,
         "damage": 20,
