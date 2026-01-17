@@ -159,6 +159,8 @@ Display.prototype.copyTo = function(target, width, height) {
 
 Display.prototype.toDocument = function() {
     if(this.canvas !== null) {
+        this.canvas.style.position = "absolute";
+        
         document.body.appendChild(this.canvas);
     }
 }

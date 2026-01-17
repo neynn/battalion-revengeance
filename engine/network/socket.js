@@ -41,7 +41,7 @@ Socket.prototype.disconnect = function() {
     }
 }
 
-Socket.prototype.connect = async function() {
+Socket.prototype.connect = async function(address) {
     await import(this.config.version).then(moduleID => {});
 
     if(this.socket && this.socket.connected) {
@@ -53,7 +53,6 @@ Socket.prototype.connect = async function() {
         this.socket.disconnect();
     }
 
-    const address = prompt("???", "http://localhost:3000");
     const socket = io(address, {
         reconnectionAttempts: this.config.reconnectionAttempts,
         reconnectionDelay: this.config.reconnectionDelay,

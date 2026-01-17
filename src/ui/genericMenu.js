@@ -15,6 +15,5 @@ GenericMenu.prototype.attachTo = function(domNode) {
     domNode.addChild(this.element);
 }
 
-GenericMenu.prototype.addButton = function(button) {
-    this.element.appendChild(button.element);
-}
+GenericMenu.prototype.init = function(gameContext) {}
+GenericMenu.prototype.exit = function(gameContext) {}

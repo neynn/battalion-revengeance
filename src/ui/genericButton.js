@@ -1,15 +1,36 @@
-export const GenericButton = function(element, config) {
+export const GenericButton = function(element, width, height) {
+    this.width = width;
+    this.height = height;
     this.element = element;
-    this.config = config;
     this.element.onclick = () => this.click();
     this.image = document.createElement("img");
     this.text = document.createElement("p");
     this.element.appendChild(this.image);
     this.element.appendChild(this.text);
     this.clickHandlers = [];
+    this.state = GenericButton.STATE.ENABLED;
+}
+
+GenericButton.STATE = {
+    DISABLED: 0,
+    ENABLED: 1
+};
+
+GenericButton.prototype.disable = function() {
+    this.state = GenericButton.STATE.DISABLED;
+    this.image.src = "assets/gui/generic_button_disabled.png";
+}
+
+GenericButton.prototype.enable = function() {
+    this.state = GenericButton.STATE.ENABLED;
+    this.image.src = "assets/gui/generic_button.png";
 }
 
 GenericButton.prototype.click = function() {
+    if(this.state === GenericButton.STATE.DISABLED) {
+        return;
+    }
+    
     for(let i = 0; i < this.clickHandlers.length; i++) {
         this.clickHandlers[i](this);
     }
@@ -19,48 +40,54 @@ GenericButton.prototype.addClick = function(onClick) {
     if(typeof onClick === "function") {
         this.clickHandlers.push(onClick);
     }
-
-    return this;
 }
 
 GenericButton.prototype.addMainClass = function(classID) {
     this.element.classList.add(classID);
-
-    return this;
 }
 
 GenericButton.prototype.addTextClass = function(classID) {
     this.text.classList.add(classID);
-
-    return this;
 }
 
 GenericButton.prototype.addImageClass = function(classID) {
     this.image.classList.add(classID);
-
-    return this;
 }
 
 GenericButton.prototype.setText = function(text) {
     this.text.innerText = text;
-
-    return this;
 }
 
 GenericButton.prototype.setImage = function(source) {
     this.image.src = source;
-
-    return this;
 }
 
 GenericButton.prototype.hide = function() {
-    this.element.style.display = "block";
-
-    return this;
+    this.element.style.display = "none";
 }
 
 GenericButton.prototype.show = function() {
-    this.element.style.display = "none";
+    this.element.style.display = "block";
+}
 
-    return this;
+GenericButton.prototype.load = function() {
+    this.image.src = "assets/gui/generic_button.png";
+
+    this.element.onmouseover = () => {
+        if(this.state === GenericButton.STATE.ENABLED) {
+            this.image.src = "assets/gui/generic_button_hovered.png";
+        }
+    }
+
+    this.element.onmouseout = () => {
+        if(this.state === GenericButton.STATE.ENABLED) {
+            this.image.src = "assets/gui/generic_button.png"; 
+        }
+    }
+
+    this.element.onmousedown = () => {
+        if(this.state === GenericButton.STATE.ENABLED) {
+            this.image.src = "assets/gui/generic_button_pressed.png";
+        }
+    }
 }

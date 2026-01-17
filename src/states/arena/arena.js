@@ -3,7 +3,6 @@ import { Socket } from "../../../engine/network/socket.js";
 import { State } from "../../../engine/state/state.js";
 import { GAME_EVENT } from "../../enums.js";
 import { ClientMapFactory } from "../../systems/map.js";
-import { ArenaInterface } from "./arenaInterface.js";
 
 export const ArenaState = function() {}
 
@@ -13,7 +12,7 @@ ArenaState.prototype = Object.create(State.prototype);
 ArenaState.prototype.constructor = ArenaState;
 
 ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
-    const { client, actionRouter, world } = gameContext;
+    const { client, actionRouter, world, uiCore } = gameContext;
     const { eventHandler } = world;
     const { socket } = client;
 
@@ -64,11 +63,7 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
         }
     });
 
-    const arenaInterface = new ArenaInterface();
-    
-    arenaInterface.load(gameContext, stateMachine);
-
-    socket.connect();
+    uiCore.arena.show();
 }
 
 ArenaState.prototype.onExit = function(gameContext, stateMachine) {

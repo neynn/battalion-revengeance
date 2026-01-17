@@ -4,6 +4,10 @@ export const UICore = function() {
     this.arena = new ArenaLobby();
 }
 
-UICore.prototype.exit = function(gameContext) {
+UICore.prototype.init = function(gameContext) {
+    this.arena.init(gameContext);
+}
 
+UICore.prototype.exit = function(gameContext) {
+    this.arena.exit(gameContext);
 }
