@@ -81,8 +81,8 @@
         "armorType": "LIGHT",
         "movementRange": 4,
         "movementType": "FOOT",
-        "minRange": 1,
-        "maxRange": 3,
+        "minRange": 2,
+        "maxRange": 4,
         "name": "ENTITY_NAME_SNIPERS",
         "desc": "ENTITY_DESC_SNIPERS",
         "traits": ["COMMANDO", "ARMOR_PIERCE"],
@@ -124,6 +124,33 @@
             "fire_left": "marines_fire_left",
             "fire_down": "marines_fire_down",
             "fire_up": "marines_fire_up"
+        }
+    },
+    "STORMTROOPERS": {
+        "health": 70,
+        "damage": 30,
+        "weaponType": "MEDIUM",
+        "armorType": "LIGHT",
+        "movementRange": 3,
+        "movementType": "FOOT",
+        "minRange": 2,
+        "maxRange": 3,
+        "name": "ENTITY_NAME_STORMTROOPERS",
+        "desc": "ENTITY_DESC_STORMTROOPERS",
+        "traits": ["CONQUEROR", "ELUSIVE"],
+        "sounds": {
+            "move": "infantry_move",
+            "fire": "stormtroopers_fire"
+        },
+        "sprites": {
+            "idle_right": "stormtroopers_idle_right",
+            "idle_left": "stormtroopers_idle_left",
+            "idle_down": "stormtroopers_idle_down",
+            "idle_up": "stormtroopers_idle_up",
+            "fire_right": "stormtroopers_fire_right",
+            "fire_left": "stormtroopers_fire_left",
+            "fire_down": "stormtroopers_fire_down",
+            "fire_up": "stormtroopers_fire_up"
         }
     },
     "GUARDS": {
@@ -446,7 +473,7 @@
         "desc": "ENTITY_DESC_JAMMER_TRUCK",
         "traits": ["JAMMER", "RADAR"],
         "sounds": {
-            "move": "turret_move"
+            "move": "truck_move"
         },
         "sprites": {
             "idle_right": "jammer_truck_idle_right",

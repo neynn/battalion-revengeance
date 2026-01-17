@@ -1821,5 +1821,47 @@
         "shift":{"x":-13,"y":0},
         "frameTime": 0.1,
         "autoFrames": {"start": 57,"jump": 1,"repeat": 8}
+    },
+    "stormtroopers_idle_up": {
+        "texture": "stormtroopers",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "stormtroopers_idle_right": {
+        "texture": "stormtroopers",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 9,"jump": 1,"repeat": 4}
+    },
+    "stormtroopers_idle_down": {
+        "texture": "stormtroopers",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 17,"jump": 1,"repeat": 4}
+    },
+    "stormtroopers_idle_left": {
+        "texture": "stormtroopers",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 25,"jump": 1,"repeat": 4}
+    },
+    "stormtroopers_fire_up": {
+        "texture": "stormtroopers",
+        "frameTime": 0.1,
+        "autoFrames": {"start": 33,"jump": 1,"repeat": 8}
+    },
+    "stormtroopers_fire_right": {
+        "texture": "stormtroopers",
+        "shift":{"x":10,"y":0},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 41,"jump": 1,"repeat": 8}
+    },
+    "stormtroopers_fire_down": {
+        "texture": "stormtroopers",
+        "frameTime": 0.1,
+        "autoFrames": {"start": 49,"jump": 1,"repeat": 8}
+    },
+    "stormtroopers_fire_left": {
+        "texture": "stormtroopers",
+        "shift":{"x":-10,"y":0},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 57,"jump": 1,"repeat": 8}
     }
 }

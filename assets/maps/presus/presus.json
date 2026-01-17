@@ -42,7 +42,8 @@
         { "x": 1, "y": 9, "type": "LIGHT_INFANTRY", "team": "SOMERTIN" },
         { "x": 1, "y": 8, "type": "SNIPERS", "team": "SOMERTIN" },
         { "x": 1, "y": 7, "type": "MARINES", "team": "SOMERTIN" },
-
+        { "x": 1, "y": 6, "type": "STORMTROOPERS", "team": "SOMERTIN" },
+        
         { "x": 3, "y": 7, "type": "ANNIHILATOR_TANK", "team": "TRANSKAL" },
         { "x": 5, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "LEVIATHAN_BARGE", "team": "SOMERTIN" },
         { "x": 8, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "U_BOAT", "team": "SOMERTIN" },
