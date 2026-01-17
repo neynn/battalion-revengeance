@@ -1089,6 +1089,24 @@ BattalionEntity.prototype.getUncloakedEntitiesAtSelf = function(gameContext) {
     return this.getUncloakedEntities(gameContext, this.tileX, this.tileY);
 }
 
+BattalionEntity.prototype.isDiscoveredAt = function(gameContext, tileX, tileY) {
+    if(!this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+        return false;
+    }
+
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const jammer = worldMap.getJammer(tileX, tileY);
+    const cloakFlag = this.getCloakFlag();
+
+    if(this.hasTrait(TRAIT_TYPE.UNFAIR)) {
+        return false;
+    }
+
+    return jammer.isJammed(gameContext, this.teamID, cloakFlag);
+}
+
 BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, targetY) {
     const { world } = gameContext;
     const { mapManager, entityManager } = world;

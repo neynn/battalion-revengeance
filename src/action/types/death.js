@@ -1,4 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
+import { DEATH_FADE_RATE } from "../../constants.js";
 import { despawnEntity } from "../../systems/spawn.js";
 
 export const DeathAction = function() {
@@ -7,8 +8,6 @@ export const DeathAction = function() {
     this.opacity = 1;
     this.entities = [];
 }
-
-DeathAction.FADE_RATE = 1.5;
 
 DeathAction.prototype = Object.create(Action.prototype);
 DeathAction.prototype.constructor = DeathAction;
@@ -32,7 +31,7 @@ DeathAction.prototype.onUpdate = function(gameContext, data) {
     const { timer } = gameContext;
     const fixedDeltaTime = timer.getFixedDeltaTime();
 
-    this.opacity -= DeathAction.FADE_RATE * fixedDeltaTime;
+    this.opacity -= DEATH_FADE_RATE * fixedDeltaTime;
 
     if(this.opacity < 0) {
         this.opacity = 0;

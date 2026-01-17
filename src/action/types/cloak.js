@@ -1,4 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
+import { FADE_RATE } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 
 export const CloakAction = function() {
@@ -7,8 +8,6 @@ export const CloakAction = function() {
     this.opacity = 1;
     this.entity = null;
 }
-
-CloakAction.FADE_RATE = 3;
 
 CloakAction.prototype = Object.create(Action.prototype);
 CloakAction.prototype.constructor = CloakAction;
@@ -28,7 +27,7 @@ CloakAction.prototype.onUpdate = function(gameContext, data) {
     const { timer } = gameContext;
     const fixedDeltaTime = timer.getFixedDeltaTime();
 
-    this.opacity -= CloakAction.FADE_RATE * fixedDeltaTime;
+    this.opacity -= FADE_RATE * fixedDeltaTime;
 
     if(this.opacity < 0) {
         this.opacity = 0;

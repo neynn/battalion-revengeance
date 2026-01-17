@@ -1,4 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
+import { FADE_RATE } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { playUncloakSound } from "../../systems/sound.js";
 
@@ -8,8 +9,6 @@ export const UncloakAction = function() {
     this.opacity = 0;
     this.entities = [];
 }
-
-UncloakAction.FADE_RATE = 3;
 
 UncloakAction.prototype = Object.create(Action.prototype);
 UncloakAction.prototype.constructor = UncloakAction;
@@ -32,7 +31,7 @@ UncloakAction.prototype.onUpdate = function(gameContext, data) {
     const { timer } = gameContext;
     const fixedDeltaTime = timer.getFixedDeltaTime();
 
-    this.opacity += UncloakAction.FADE_RATE * fixedDeltaTime;
+    this.opacity += FADE_RATE * fixedDeltaTime;
 
     if(this.opacity > 1) {
         this.opacity = 1;

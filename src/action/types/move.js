@@ -1,9 +1,10 @@
 import { Action } from "../../../engine/action/action.js";
 import { hasFlag } from "../../../engine/util/flag.js";
-import { TILE_WIDTH } from "../../constants.js";
+import { FADE_RATE, TILE_WIDTH } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { COMMAND_TYPE, PATH_INTERCEPT, TRAIT_TYPE } from "../../enums.js";
 import { mInterceptPath } from "../../systems/pathfinding.js";
+import { playUncloakSound } from "../../systems/sound.js";
 import { createAttackRequest, createCaptureIntent, createCloakIntent, createHealRequest, createTrackingIntent, createUncloakIntent } from "../actionHelper.js";
 
 export const MoveAction = function() {
@@ -13,7 +14,15 @@ export const MoveAction = function() {
     this.path = [];
     this.pathIndex = 0;
     this.distanceMoved = 0;
+    this.state = MoveAction.STATE.NONE;
+    this.wasDiscovered = false;
+    this.opacity = 0;
 }
+
+MoveAction.STATE = {
+    NONE: 0,
+    DISCOVERED: 1
+};
 
 MoveAction.FLAG = {
     NONE: 0,
@@ -39,25 +48,52 @@ MoveAction.prototype.onStart = function(gameContext, data) {
 MoveAction.prototype.onUpdate = function(gameContext, data) {
     const { timer, transform2D } = gameContext;
     const deltaTime = timer.getFixedDeltaTime();
-    const { deltaX, deltaY } = this.path[this.pathIndex]; 
-    const distanceMoved = this.entity.getDistanceMoved(deltaTime);
-    const directionChanged = this.entity.setDirectionByDelta(deltaX, deltaY);
 
-    if(directionChanged) {
-        this.entity.updateSprite(gameContext);
-    }
+    switch(this.state) {
+        case MoveAction.STATE.NONE: {
+            const { deltaX, deltaY } = this.path[this.pathIndex]; 
+            const distanceMoved = this.entity.getDistanceMoved(deltaTime);
+            const directionChanged = this.entity.setDirectionByDelta(deltaX, deltaY);
 
-    this.distanceMoved += distanceMoved;
-    this.entity.updatePosition(deltaX * distanceMoved, deltaY * distanceMoved);
+            if(directionChanged) {
+                this.entity.updateSprite(gameContext);
+            }
 
-    while(this.distanceMoved >= TILE_WIDTH && this.pathIndex >= 0) {
-        const { tileX, tileY } = this.path[this.pathIndex];
-        const positionVec = transform2D.transformTileToWorld(tileX, tileY);
-    
-        this.entity.setDirectionByDelta(deltaX, deltaY);
-        this.entity.setPositionVec(positionVec);
-        this.distanceMoved -= TILE_WIDTH;
-        this.pathIndex--;
+            this.distanceMoved += distanceMoved;
+            this.entity.updatePosition(deltaX * distanceMoved, deltaY * distanceMoved);
+
+            while(this.distanceMoved >= TILE_WIDTH && this.pathIndex >= 0) {
+                const { deltaX, deltaY } = this.path[this.pathIndex]; 
+                const { tileX, tileY } = this.path[this.pathIndex];
+                const positionVec = transform2D.transformTileToWorld(tileX, tileY);
+            
+                this.entity.setDirectionByDelta(deltaX, deltaY);
+                this.entity.setPositionVec(positionVec);
+                this.distanceMoved -= TILE_WIDTH;
+                this.pathIndex--;
+
+                if(!this.wasDiscovered && this.entity.isDiscoveredAt(gameContext, tileX, tileY)) {
+                    this.state = MoveAction.STATE.DISCOVERED;
+                    this.wasDiscovered = true;
+
+                    playUncloakSound(gameContext);
+                }
+            }
+
+            break;
+        }
+        case MoveAction.STATE.DISCOVERED: {
+            this.opacity += FADE_RATE * deltaTime;
+
+            if(this.opacity > 1) {
+                this.opacity = 1;
+                this.state = MoveAction.STATE.NONE;
+            }
+
+            this.entity.setOpacity(this.opacity);
+
+            break;
+        }
     }
 }
 
@@ -79,19 +115,30 @@ MoveAction.prototype.onEnd = function(gameContext, data) {
     this.pathIndex = 0;
     this.entity = null;
     this.distanceMoved = 0;
+    this.state = MoveAction.STATE.NONE;
+    this.wasDiscovered = false;
+    this.opacity = 0;
 }
 
 MoveAction.prototype.execute = function(gameContext, data) {
     const { world, teamManager } = gameContext;
     const { entityManager } = world;
     const { entityID, path, flags } = data;
-    const { tileX, tileY } = path[0];
     const entity = entityManager.getEntity(entityID);
 
     entity.removeFromMap(gameContext);
-    entity.setTile(tileX, tileY);
     entity.setFlag(BattalionEntity.FLAG.HAS_MOVED);
     entity.clearFlag(BattalionEntity.FLAG.CAN_MOVE);
+
+    for(let i = path.length - 1; i >= 0; i--) {
+        const { tileX, tileY } = path[i];
+
+        entity.setTile(tileX, tileY);
+
+        if(entity.isDiscoveredAt(gameContext, tileX, tileY)) {
+            entity.clearFlag(BattalionEntity.FLAG.IS_CLOAKED);
+        }
+    }
 
     if(hasFlag(flags, MoveAction.FLAG.ELUSIVE)) {
         entity.triggerElusive();
