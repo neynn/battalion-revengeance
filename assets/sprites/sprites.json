@@ -1614,22 +1614,22 @@
         "autoFrames": {"start": 33,"jump": 1,"repeat": 8}
     },
     "suicide_idle_up": {
-        "texture": "suicide_move",
+        "texture": "suicide",
         "frameTime": 0.2,
         "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
     },
     "suicide_idle_right": {
-        "texture": "suicide_move",
+        "texture": "suicide",
         "frameTime": 0.2,
         "autoFrames": {"start": 5,"jump": 1,"repeat": 4}
     },
     "suicide_idle_down": {
-        "texture": "suicide_move",
+        "texture": "suicide",
         "frameTime": 0.2,
         "autoFrames": {"start": 9,"jump": 1,"repeat": 4}
     },
     "suicide_idle_left": {
-        "texture": "suicide_move",
+        "texture": "suicide",
         "frameTime": 0.2,
         "autoFrames": {"start": 13,"jump": 1,"repeat": 4}
     },
@@ -1696,8 +1696,6 @@
         "frameTime": 0.1,
         "autoFrames": {"start": 1,"jump": 1,"repeat": 8}
     },
-
-
     "light_infantry_idle_up": {
         "texture": "light_infantry",
         "frameTime": 0.2,
@@ -1725,6 +1723,7 @@
     },
     "light_infantry_fire_right": {
         "texture": "light_infantry",
+        "shift":{"x":8,"y":0},
         "frameTime": 0.1,
         "autoFrames": {"start": 41,"jump": 1,"repeat": 8}
     },
@@ -1735,6 +1734,48 @@
     },
     "light_infantry_fire_left": {
         "texture": "light_infantry",
+        "shift":{"x":-8,"y":0},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 57,"jump": 1,"repeat": 8}
+    },
+    "snipers_idle_up": {
+        "texture": "snipers",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "snipers_idle_right": {
+        "texture": "snipers",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 9,"jump": 1,"repeat": 4}
+    },
+    "snipers_idle_down": {
+        "texture": "snipers",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 17,"jump": 1,"repeat": 4}
+    },
+    "snipers_idle_left": {
+        "texture": "snipers",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 25,"jump": 1,"repeat": 4}
+    },
+    "snipers_fire_up": {
+        "texture": "snipers",
+        "frameTime": 0.1,
+        "autoFrames": {"start": 33,"jump": 1,"repeat": 8}
+    },
+    "snipers_fire_right": {
+        "texture": "snipers",
+        "shift":{"x":8,"y":0},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 41,"jump": 1,"repeat": 8}
+    },
+    "snipers_fire_down": {
+        "texture": "snipers",
+        "frameTime": 0.1,
+        "autoFrames": {"start": 49,"jump": 1,"repeat": 8}
+    },
+    "snipers_fire_left": {
+        "texture": "snipers",
         "shift":{"x":-8,"y":0},
         "frameTime": 0.1,
         "autoFrames": {"start": 57,"jump": 1,"repeat": 8}

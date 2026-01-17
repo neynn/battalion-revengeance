@@ -74,6 +74,33 @@
             "fire_up": "assault_infantry_fire_up"
         }
     },
+    "SNIPERS": {
+        "health": 70,
+        "damage": 30,
+        "weaponType": "LIGHT",
+        "armorType": "LIGHT",
+        "movementRange": 4,
+        "movementType": "FOOT",
+        "minRange": 1,
+        "maxRange": 3,
+        "name": "ENTITY_NAME_SNIPERS",
+        "desc": "ENTITY_DESC_SNIPERS",
+        "traits": ["COMMANDO", "ARMOR_PIERCE"],
+        "sounds": {
+            "move": "infantry_move",
+            "fire": "light_infantry_fire"
+        },
+        "sprites": {
+            "idle_right": "snipers_idle_right",
+            "idle_left": "snipers_idle_left",
+            "idle_down": "snipers_idle_down",
+            "idle_up": "snipers_idle_up",
+            "fire_right": "snipers_fire_right",
+            "fire_left": "snipers_fire_left",
+            "fire_down": "snipers_fire_down",
+            "fire_up": "snipers_fire_up"
+        }
+    },
     "GUARDS": {
         "health": 105,
         "damage": 35,

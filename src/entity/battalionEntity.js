@@ -849,17 +849,19 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
     }
 
     //Armor factor.
-    if(!this.hasTrait(TRAIT_TYPE.ARMOR_PIERCE)) {
-        const armorType = typeRegistry.getArmorType(targetArmor);
-        const { resistance } = armorType;
-        const resistanceFactor = resistance[this.config.weaponType] ?? resistance['*'] ?? 0;
+    const armorType = typeRegistry.getArmorType(targetArmor);
+    const { resistance } = armorType;
+    const resistanceFactor = resistance[this.config.weaponType] ?? resistance['*'] ?? 0;
 
-        //Maxes out at 100%
-        if(resistanceFactor > 1) {
-            armorFactor = 0;
-        } else {
-            armorFactor *= (1 - resistanceFactor);
-        }
+    //Maxes out at 100%
+    if(resistanceFactor > 1) {
+        armorFactor = 0;
+    } else {
+        armorFactor *= (1 - resistanceFactor);
+    }
+
+    if(armorFactor < 1 && this.hasTrait(TRAIT_TYPE.ARMOR_PIERCE)) {
+        armorFactor = 1;
     }
 
     //Target tile.

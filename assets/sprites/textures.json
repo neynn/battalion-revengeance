@@ -1225,9 +1225,9 @@
             "columns": 8
         }
     },
-    "suicide_move": {
+    "suicide": {
         "directory": ["assets","sprites","textures","suicide"],
-        "source": "suicide_move.png",
+        "source": "suicide.png",
         "autoRegions": {
             "startX": 0,
             "startY": 0,
@@ -1348,6 +1348,18 @@
     "light_infantry": {
         "directory": ["assets","sprites","textures"],
         "source": "light_infantry.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 8,
+            "columns": 8
+        }
+    },
+    "snipers": {
+        "directory": ["assets","sprites","textures"],
+        "source": "snipers.png",
         "autoRegions": {
             "startX": 0,
             "startY": 0,
