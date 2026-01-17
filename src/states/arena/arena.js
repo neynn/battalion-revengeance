@@ -42,6 +42,7 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
             }
             case GAME_EVENT.MP_SERVER_START_MAP: {
                 console.log("MAP_STARTED");
+                uiCore.arena.hide();
                 break;
             }
             case GAME_EVENT.MP_SERVER_EXECUTE_PLAN: {
