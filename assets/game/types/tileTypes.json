@@ -187,7 +187,7 @@
         "passability": {
             "FLIGHT": 1,
             "RUDDER": 1,
-            "HEAVY_RUDDER": 1,
+            "HEAVY_RUDDER": -1,
             "AMPHIBIOUS": 1
         }
     },

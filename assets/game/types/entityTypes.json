@@ -88,7 +88,34 @@
         "traits": ["COMMANDO", "ARMOR_PIERCE"],
         "sounds": {
             "move": "infantry_move",
-            "fire": ["snipers_fire_1", "snipers_fire_2", "snipers_fire_3"]
+            "fire": ["snipers_fire_2", "snipers_fire_3"]
+        },
+        "sprites": {
+            "idle_right": "snipers_idle_right",
+            "idle_left": "snipers_idle_left",
+            "idle_down": "snipers_idle_down",
+            "idle_up": "snipers_idle_up",
+            "fire_right": "snipers_fire_right",
+            "fire_left": "snipers_fire_left",
+            "fire_down": "snipers_fire_down",
+            "fire_up": "snipers_fire_up"
+        }
+    },
+    "HEAVY_SNIPER": {
+        "health": 70,
+        "damage": 40,
+        "weaponType": "HEAVY",
+        "armorType": "LIGHT",
+        "movementRange": 4,
+        "movementType": "FOOT",
+        "minRange": 2,
+        "maxRange": 5,
+        "name": "ENTITY_NAME_HEAVY_SNIPER",
+        "desc": "ENTITY_DESC_HEAVY_SNIPER",
+        "traits": ["COMMANDO", "ARMOR_PIERCE", "BULLDOZE"],
+        "sounds": {
+            "move": "infantry_move",
+            "fire": "snipers_fire_1"
         },
         "sprites": {
             "idle_right": "snipers_idle_right",
