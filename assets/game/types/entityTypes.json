@@ -103,7 +103,7 @@
     },
     "HEAVY_SNIPER": {
         "health": 70,
-        "damage": 40,
+        "damage": 35,
         "weaponType": "HEAVY",
         "armorType": "LIGHT",
         "movementRange": 4,
