@@ -153,6 +153,31 @@
             "fire_up": "stormtroopers_fire_up"
         }
     },
+    "SPEC_OPS": {
+        "health": 50,
+        "damage": 25,
+        "weaponType": "LIGHT",
+        "armorType": "LIGHT",
+        "movementRange": 4,
+        "movementType": "FOOT",
+        "name": "ENTITY_NAME_SPEC_OPS",
+        "desc": "ENTITY_DESC_SPEC_OPS",
+        "traits": ["CONQUEROR", "ANTI_STRUCTURE", "STEALTH"],
+        "sounds": {
+            "move": "infantry_move",
+            "fire": "marines_fire"
+        },
+        "sprites": {
+            "idle_right": "spec_ops_idle_right",
+            "idle_left": "spec_ops_idle_left",
+            "idle_down": "spec_ops_idle_down",
+            "idle_up": "spec_ops_idle_up",
+            "fire_right": "spec_ops_fire_right",
+            "fire_left": "spec_ops_fire_left",
+            "fire_down": "spec_ops_fire_down",
+            "fire_up": "spec_ops_fire_up"
+        }
+    },
     "GUARDS": {
         "health": 105,
         "damage": 35,

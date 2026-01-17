@@ -1404,5 +1404,17 @@
             "rows": 4,
             "columns": 4
         }
+    },
+    "spec_ops": {
+        "directory": ["assets","sprites","textures"],
+        "source": "spec_ops.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 8,
+            "columns": 8
+        }
     }
 }
