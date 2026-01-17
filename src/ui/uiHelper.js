@@ -11,3 +11,17 @@ export const createGenericButton = () => {
 
     return button;
 }
+
+export const placeButton = function(button, x, y) {
+    button.element.style.position = "absolute";
+    button.element.style.left = `${x}px`;
+    button.element.style.top = `${y}px`; 
+}
+
+export const getNextX = function(button, step, padding) {
+    return padding * step + button.width * (step - 1);
+}
+
+export const getNextY = function(button, step, padding) {
+    return padding * step + button.height * (step - 1);
+}

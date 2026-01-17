@@ -1,7 +1,7 @@
 import { BattalionContext } from "../../battalionContext.js";
 import { GAME_EVENT } from "../../enums.js";
 import { GenericMenu } from "../genericMenu.js";
-import { createGenericButton } from "../uiHelper.js";
+import { createGenericButton, getNextX, placeButton } from "../uiHelper.js";
 
 export const ArenaLobby = function() {
     GenericMenu.call(this, "ArenaLobby");
@@ -40,37 +40,13 @@ ArenaLobby.prototype.init = function(gameContext) {
         this.element.style.left = `calc(50% - ${this.background.width / 2}px)`;
 
         const padding = 10;
-        let step = 1;
 
-        backButton.element.style.position = "absolute";
-        backButton.element.style.left = `${padding}px`;
-        backButton.element.style.top = `${padding}px`; 
-
-        joinButton.element.style.position = "absolute";
-        joinButton.element.style.left = `${padding * step + joinButton.width * (step - 1)}px`;
-        joinButton.element.style.top = `${this.background.height - joinButton.height - padding}px`; 
-
-        connectButton.element.style.position = "absolute";
-        connectButton.element.style .left = `${this.background.width - connectButton.width - padding}px`;
-        connectButton.element.style.top = `${padding}px`;
-
-        createButton.element.style.position = "absolute";
-        createButton.element.style.left = `${this.background.width - createButton.width - padding}px`;
-        createButton.element.style.top = `${this.background.height - createButton.height - padding}px`; 
-
-        step++;
-    
-        leaveButton.element.style.position = "absolute";
-        leaveButton.element.style.left = `${padding * step + leaveButton.width * (step - 1)}px`;
-        leaveButton.element.style.top = `${this.background.height - leaveButton.height - padding}px`; 
-
-        step++;
-
-        startButton.element.style.position = "absolute";
-        startButton.element.style.left = `${padding * step + startButton.width * (step - 1)}px`;
-        startButton.element.style.top = `${this.background.height - leaveButton.height - padding}px`; 
-
-        step++;
+        placeButton(backButton, padding, padding);
+        placeButton(joinButton, getNextX(joinButton, 1, padding), this.background.height - joinButton.height - padding);
+        placeButton(connectButton, this.background.width - connectButton.width - padding, padding);
+        placeButton(createButton, this.background.width - createButton.width - padding, this.background.height - createButton.height - padding);
+        placeButton(leaveButton, getNextX(leaveButton, 2, padding), this.background.height - leaveButton.height - padding);
+        placeButton(startButton, getNextX(startButton, 3, padding), this.background.height - leaveButton.height - padding);
     };
 
     //startButton.disable();

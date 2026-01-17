@@ -1,6 +1,5 @@
 export const GenericMenu = function(id) {
     this.element = document.getElementById(id);
-    this.buttons = [];
 }
 
 GenericMenu.prototype.hide = function() {
@@ -9,10 +8,6 @@ GenericMenu.prototype.hide = function() {
 
 GenericMenu.prototype.show = function() {
     this.element.style.display = "block";
-}
-
-GenericMenu.prototype.attachTo = function(domNode) {
-    domNode.addChild(this.element);
 }
 
 GenericMenu.prototype.init = function(gameContext) {}
