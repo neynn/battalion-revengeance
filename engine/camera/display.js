@@ -156,3 +156,9 @@ Display.prototype.copyTo = function(target, width, height) {
         0, 0, width, height
     );
 }
+
+Display.prototype.toDocument = function() {
+    if(this.canvas !== null) {
+        document.body.appendChild(this.canvas);
+    }
+}

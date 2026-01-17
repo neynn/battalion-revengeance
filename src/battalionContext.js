@@ -24,6 +24,7 @@ import { EntitySpawnAction } from "./action/types/entitySpawn.js";
 import { ExtractAction } from "./action/types/extract.js";
 import { PurchaseEntityAction } from "./action/types/purchaseEntity.js";
 import { ProduceEntityAction } from "./action/types/produceEntity.js";
+import { UICore } from "./ui/uiCore.js";
 
 export const BattalionContext = function() {
     ClientGameContext.call(this);
@@ -33,6 +34,7 @@ export const BattalionContext = function() {
     this.teamManager = new TeamManager();
     this.portraitHandler = new PortraitHandler();
     this.dialogueHandler = new DialogueHandler();
+    this.uiCore = new UICore();
 
     this.timer.input = (deltaTime) => {
         this.client.update();
@@ -100,4 +102,5 @@ BattalionContext.prototype.onExit = function() {
     this.teamManager.exit();
     this.portraitHandler.exit();
     this.dialogueHandler.exit();
+    this.uiCore.exit();
 }

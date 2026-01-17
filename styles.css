@@ -3,4 +3,21 @@ body {
   overflow: hidden;
   background-color: #111111;
 }
-  
+
+.generic_button {
+  position: absolute;
+  width: 126px;
+  height: 71px;
+}
+
+.generic_button_image {
+  position: absolute;
+}
+
+.generic_button_text {
+  position: relative;
+  text-align: center;
+  pointer-events: none;
+  margin: 0px;
+  top: 23px;
+}

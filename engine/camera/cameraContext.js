@@ -2,11 +2,10 @@ import { Display } from "./display.js";
 import { isRectangleRectangleIntersect } from "../math/math.js";
 import { Cursor } from "../client/cursor.js";
 
-export const CameraContext = function(id, renderer, camera, root) {
+export const CameraContext = function(id, renderer, camera) {
     this.id = id;
     this.renderer = renderer;
     this.camera = camera;
-    this.root = root;
     this.positionX = 0;
     this.positionY = 0;
     this.flags = CameraContext.FLAG.NONE;
@@ -94,7 +93,6 @@ CameraContext.prototype.getWorldPosition = function(screenX, screenY) {
 CameraContext.prototype.setPosition = function(x, y) {
     this.positionX = Math.floor(x);
     this.positionY = Math.floor(y);
-    this.root.setPosition(this.positionX, this.positionY);
 }
 
 CameraContext.prototype.centerCameraOnScreen = function() {
@@ -185,16 +183,6 @@ CameraContext.prototype.refresh = function() {
 
     if(this.flags & CameraContext.FLAG.AUTO_CENTER) {
         this.centerCameraOnScreen();
-    }
-
-    if(this.flags & CameraContext.FLAG.USE_BUFFER) {
-        const { width, height } = this.display;
-
-        this.root.setSize(width, height);
-    } else {
-        const { sViewportWidth, sViewportHeight } = this.camera;
-
-        this.root.setSize(sViewportWidth, sViewportHeight);
     }
 }
 

@@ -89,7 +89,5 @@ export const createPlayCamera = function(gameContext) {
 
     addZoom(gameContext, context);
 
-    context.root.addChild(document.getElementById("DialogueBox"));
-
     return context;
 }
