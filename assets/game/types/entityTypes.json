@@ -113,7 +113,7 @@
         "traits": ["CONQUEROR", "COMMANDO", "CRAB"],
         "sounds": {
             "move": "infantry_move",
-            "fire": ["marines_fire", "infantry_fire"]
+            "fire": "marines_fire"
         },
         "sprites": {
             "idle_right": "marines_idle_right",
@@ -459,6 +459,29 @@
             "fire_left": "rocket_truck_fire_left",
             "fire_down": "rocket_truck_fire_down",
             "fire_up": "rocket_truck_fire_up"
+        }
+    },
+    "SUPPLY_TRUCK": {
+        "health": 30,
+        "damage": 20,
+        "weaponType": "NONE",
+        "armorType": "LIGHT",
+        "movementRange": 5,
+        "movementType": "WHEELED",
+        "minRange": 1,
+        "maxRange": 2,
+        "name": "ENTITY_NAME_SUPPLY_TRUCK",
+        "desc": "ENTITY_DESC_SUPPLY_TRUCK",
+        "traits": ["SUPPLY_DISTRIBUTION"],
+        "sounds": {
+            "move": "truck_move",
+            "heal": "heal"
+        },
+        "sprites": {
+            "idle_right": "supply_truck_idle_right",
+            "idle_left": "supply_truck_idle_left",
+            "idle_down": "supply_truck_idle_down",
+            "idle_up": "supply_truck_idle_up"
         }
     },
     "JAMMER_TRUCK": {

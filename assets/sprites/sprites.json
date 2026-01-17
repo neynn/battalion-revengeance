@@ -1863,5 +1863,25 @@
         "shift":{"x":-10,"y":0},
         "frameTime": 0.1,
         "autoFrames": {"start": 57,"jump": 1,"repeat": 8}
+    },
+    "supply_truck_idle_up": {
+        "texture": "supply_truck",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "supply_truck_idle_right": {
+        "texture": "supply_truck",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 5,"jump": 1,"repeat": 4}
+    },
+    "supply_truck_idle_down": {
+        "texture": "supply_truck",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 9,"jump": 1,"repeat": 4}
+    },
+    "supply_truck_idle_left": {
+        "texture": "supply_truck",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 13,"jump": 1,"repeat": 4}
     }
 }

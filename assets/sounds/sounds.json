@@ -19,6 +19,7 @@
     "turret_move": { "directory": ["assets", "sounds", "units"], "source": "turret_move.mp3", "allowStacking": false, "volume": 0.6 },
     "turret_fire": { "directory": ["assets", "sounds", "units"], "source": "turret_fire.mp3", "allowStacking": true, "volume": 0.6 },
     "gorlitz_fire": { "directory": ["assets", "sounds", "units"], "source": "gorlitz_fire.mp3", "allowStacking": true, "volume": 0.6 },
+    "heal": { "directory": ["assets", "sounds"], "source": "heal.mp3", "allowStacking": true, "volume": 1 },
 
     "truck_move": { "directory": ["assets", "sounds", "units", "move"], "source": "truck_move.mp3", "allowStacking": true, "volume": 0.6 },
     "bertha_move": { "directory": ["assets", "sounds", "units", "move"], "source": "bertha_move.mp3", "allowStacking": true, "volume": 0.6 },
