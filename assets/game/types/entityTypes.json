@@ -54,7 +54,7 @@
         "damage": 25,
         "weaponType": "MEDIUM",
         "armorType": "LIGHT",
-        "movementRange": 30,
+        "movementRange": 3,
         "movementType": "FOOT",
         "sounds": {
             "move": "infantry_move",
@@ -88,7 +88,7 @@
         "traits": ["COMMANDO", "ARMOR_PIERCE"],
         "sounds": {
             "move": "infantry_move",
-            "fire": "light_infantry_fire"
+            "fire": ["snipers_fire_1", "snipers_fire_2", "snipers_fire_3"]
         },
         "sprites": {
             "idle_right": "snipers_idle_right",
@@ -99,6 +99,31 @@
             "fire_left": "snipers_fire_left",
             "fire_down": "snipers_fire_down",
             "fire_up": "snipers_fire_up"
+        }
+    },
+    "MARINES": {
+        "health": 80,
+        "damage": 25,
+        "weaponType": "LIGHT",
+        "armorType": "LIGHT",
+        "movementRange": 4,
+        "movementType": "AMPHIBIOUS",
+        "name": "ENTITY_NAME_MARINES",
+        "desc": "ENTITY_DESC_MARINES",
+        "traits": ["CONQUEROR", "COMMANDO", "CRAB"],
+        "sounds": {
+            "move": "infantry_move",
+            "fire": ["marines_fire", "infantry_fire"]
+        },
+        "sprites": {
+            "idle_right": "marines_idle_right",
+            "idle_left": "marines_idle_left",
+            "idle_down": "marines_idle_down",
+            "idle_up": "marines_idle_up",
+            "fire_right": "marines_fire_right",
+            "fire_left": "marines_fire_left",
+            "fire_down": "marines_fire_down",
+            "fire_up": "marines_fire_up"
         }
     },
     "GUARDS": {

@@ -1779,5 +1779,47 @@
         "shift":{"x":-8,"y":0},
         "frameTime": 0.1,
         "autoFrames": {"start": 57,"jump": 1,"repeat": 8}
+    },
+    "marines_idle_up": {
+        "texture": "marines",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "marines_idle_right": {
+        "texture": "marines",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 9,"jump": 1,"repeat": 4}
+    },
+    "marines_idle_down": {
+        "texture": "marines",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 17,"jump": 1,"repeat": 4}
+    },
+    "marines_idle_left": {
+        "texture": "marines",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 25,"jump": 1,"repeat": 4}
+    },
+    "marines_fire_up": {
+        "texture": "marines",
+        "frameTime": 0.1,
+        "autoFrames": {"start": 33,"jump": 1,"repeat": 8}
+    },
+    "marines_fire_right": {
+        "texture": "marines",
+        "shift":{"x":13,"y":0},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 41,"jump": 1,"repeat": 8}
+    },
+    "marines_fire_down": {
+        "texture": "marines",
+        "frameTime": 0.1,
+        "autoFrames": {"start": 49,"jump": 1,"repeat": 8}
+    },
+    "marines_fire_left": {
+        "texture": "marines",
+        "shift":{"x":-13,"y":0},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 57,"jump": 1,"repeat": 8}
     }
 }

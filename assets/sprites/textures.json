@@ -1368,5 +1368,17 @@
             "rows": 8,
             "columns": 8
         }
+    },
+    "marines": {
+        "directory": ["assets","sprites","textures"],
+        "source": "marines.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 8,
+            "columns": 8
+        }
     }
 }
