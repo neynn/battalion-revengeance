@@ -64,6 +64,7 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
     });
 
     uiCore.arena.show();
+    uiCore.arena.loadEvents(gameContext);
 }
 
 ArenaState.prototype.onExit = function(gameContext, stateMachine) {
