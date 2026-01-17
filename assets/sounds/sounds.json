@@ -21,11 +21,13 @@
     "gorlitz_fire": { "directory": ["assets", "sounds", "units"], "source": "gorlitz_fire.mp3", "allowStacking": true, "volume": 0.6 },
     "heal": { "directory": ["assets", "sounds"], "source": "heal.mp3", "allowStacking": true, "volume": 1 },
 
+    "zeus_move": { "directory": ["assets", "sounds", "units", "move"], "source": "zeus_move.mp3", "allowStacking": true, "volume": 0.6 },
     "truck_move": { "directory": ["assets", "sounds", "units", "move"], "source": "truck_move.mp3", "allowStacking": true, "volume": 0.6 },
     "bertha_move": { "directory": ["assets", "sounds", "units", "move"], "source": "bertha_move.mp3", "allowStacking": true, "volume": 0.6 },
     "infantry_move": { "directory": ["assets", "sounds", "units", "move"], "source": "infantry_move.mp3", "allowStacking": true, "volume": 0.6 },
     "bomber_move": { "directory": ["assets", "sounds", "units", "move"], "source": "bomber_move.mp3", "allowStacking": true, "volume": 0.6 },
 
+    "zeus_fire": { "directory": ["assets", "sounds", "units", "fire"], "source": "zeus_fire.mp3", "allowStacking": true, "volume": 0.6 },
     "stormtroopers_fire": { "directory": ["assets", "sounds", "units", "fire"], "source": "stormtroopers_fire.mp3", "allowStacking": true, "volume": 0.6 },
     "marines_fire": { "directory": ["assets", "sounds", "units", "fire"], "source": "marines_fire.mp3", "allowStacking": true, "volume": 0.6 },
     "snipers_fire_1": { "directory": ["assets", "sounds", "units", "fire"], "source": "snipers_fire_1.mp3", "allowStacking": true, "volume": 0.6 },

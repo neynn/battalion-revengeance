@@ -1268,6 +1268,56 @@
             "fire_up": "condor_fire_up"
         }
     },
+    "ZEUS": {
+        "health": 70,
+        "damage": 35,
+        "weaponType": "MEDIUM",
+        "armorType": "LIGHT",
+        "movementRange": 8,
+        "movementType": "FLIGHT",
+        "name": "ENTITY_NAME_ZEUS",
+        "desc": "ENTITY_DESC_ZEUS",
+        "traits": ["SKYSWEEPER", "HIGH_ALTITUDE"],
+        "sounds": {
+            "move": "zeus_move",
+            "fire": "zeus_fire"
+        },
+        "sprites": {
+            "idle_right": "zeus_idle_right",
+            "idle_left": "zeus_idle_left",
+            "idle_down": "zeus_idle_down",
+            "idle_up": "zeus_idle_up",
+            "fire_right": "zeus_fire_right",
+            "fire_left": "zeus_fire_left",
+            "fire_down": "zeus_fire_down",
+            "fire_up": "zeus_fire_up"
+        }
+    },
+    "STIHIE": {
+        "health": 70,
+        "damage": 35,
+        "weaponType": "MEDIUM",
+        "armorType": "LIGHT",
+        "movementRange": 8,
+        "movementType": "FLIGHT",
+        "name": "ENTITY_NAME_STIHIE",
+        "desc": "ENTITY_DESC_STIHIE",
+        "traits": ["SKYSWEEPER", "STEALTH"],
+        "sounds": {
+            "move": "zeus_move",
+            "fire": "zeus_fire"
+        },
+        "sprites": {
+            "idle_right": "zeus_idle_right",
+            "idle_left": "zeus_idle_left",
+            "idle_down": "zeus_idle_down",
+            "idle_up": "zeus_idle_up",
+            "fire_right": "zeus_fire_right",
+            "fire_left": "zeus_fire_left",
+            "fire_down": "zeus_fire_down",
+            "fire_up": "zeus_fire_up"
+        }
+    },
     "ALEPH": {
         "health": 50,
         "damage": 50,
