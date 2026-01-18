@@ -21,10 +21,10 @@ StartTurnAction.prototype.execute = function(gameContext, data) {
     const { turnManager, eventHandler } = world;
     const { teamID } = data;
     const team = teamManager.getTeam(teamID);
-    const { actor } = team;
+    const actor = teamManager.findActorByTeam(gameContext, teamID);
 
     team.startTurn(gameContext);
-    turnManager.setCurrentActor(gameContext, actor);
+    turnManager.setCurrentActor(gameContext, actor.getID());
     eventHandler.checkEventTriggers(gameContext);
 
     const { activeTeams } = teamManager;

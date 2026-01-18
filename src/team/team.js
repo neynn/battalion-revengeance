@@ -11,7 +11,6 @@ export const Team = function(id) {
     this.allies = [];
     this.buildings = [];
     this.entities = [];
-    this.actor = null;
     this.colorID = SCHEMA_TYPE.RED;
     this.color = null;
     this.status = Team.STATUS.IDLE;
@@ -159,14 +158,6 @@ Team.prototype.getDisplayName = function(gameContext) {
     const { language } = gameContext;
 
     return language.getSystemTranslation(this.name);
-}
-
-Team.prototype.hasActor = function() {
-    return this.actor !== null
-}
-
-Team.prototype.setActor = function(actorID) {
-    this.actor = actorID;
 }
 
 Team.prototype.getID = function() {

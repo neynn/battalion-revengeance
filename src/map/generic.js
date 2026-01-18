@@ -86,61 +86,47 @@ export const createTeam = function(gameContext, teamID, config, allObjectives) {
 export const createActor = function(gameContext, commanderType, teamName) {
     const { world } = gameContext;
     const { turnManager } = world;
-    const actor = turnManager.createActor((actorID) => {
-        const actorObject = new BattalionActor(actorID);
+    const actorID = turnManager.getNextID();
+    const actor = new BattalionActor(actorID);
 
-        actorObject.setTeam(teamName);
-
-        return actorObject;
-    });
-
+    turnManager.addActor(actor);
+    actor.setTeam(teamName);
     actor.loadCommander(gameContext, commanderType);
     actor.setName("NPC");
-
-    return actor;
 }
 
 export const createPlayer = function(gameContext, commanderType, teamName) {
     const { world } = gameContext;
     const { turnManager } = world;
-    const actor = turnManager.createActor((actorID) => {
-        const context = createPlayCamera(gameContext);
-        const camera = context.getCamera();
-        const actorObject = new Player(actorID, camera);
+    const context = createPlayCamera(gameContext);
+    const camera = context.getCamera();
+    const actorID = turnManager.getNextID();
+    const actor = new Player(actorID, camera);
 
-        actorObject.setTeam(teamName);
-        camera.addPerspective(teamName);
-        camera.setMainPerspective(teamName);
-
-        return actorObject;
-    });
-
+    turnManager.addActor(actor);
+    camera.addPerspective(teamName);
+    camera.setMainPerspective(teamName);
+    actor.setTeam(teamName);
     actor.loadKeybinds(gameContext);
     actor.loadCommander(gameContext, commanderType);
     actor.states.setNextState(gameContext, Player.STATE.IDLE);
     actor.setName("PLAYER");
-
-    return actor;
 }
 
 export const createSpectator = function(gameContext) {
     const { world, teamManager } = gameContext;
     const { activeTeams } = teamManager;
     const { turnManager } = world;
-    const actor = turnManager.createActor((actorID) => {
-        const context = createPlayCamera(gameContext);
-        const camera = context.getCamera();
-        const actorObject = new Spectator(actorID, camera);
+    const context = createPlayCamera(gameContext);
+    const camera = context.getCamera();
+    const actorID = turnManager.getNextID();
+    const actor = new Spectator(actorID, camera);
 
-        for(const teamID of activeTeams) {
-            camera.addPerspective(teamID);
-        }
+    for(const teamID of activeTeams) {
+        camera.addPerspective(teamID);
+    }
 
-        return actorObject;
-    });
-
+    turnManager.addActor(actor);
     actor.loadKeybinds(gameContext);
     actor.setName("SPECTATOR");
-
-    return actor; 
 }

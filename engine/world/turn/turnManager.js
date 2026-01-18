@@ -1,6 +1,6 @@
 export const TurnManager = function() {
     this.nextID = 0;
-    this.actors = new Map();
+    this.actors = [];
     this.actorOrder = [];
     this.globalTurn = 0;
     this.globalRound = 0;
@@ -10,7 +10,7 @@ export const TurnManager = function() {
 
 TurnManager.prototype.exit = function() {
     this.nextID = 0;
-    this.actors.clear();
+    this.actors.length = 0;
     this.actorOrder.length = 0;
     this.globalTurn = 0;
     this.globalRound = 0;
@@ -20,41 +20,52 @@ TurnManager.prototype.exit = function() {
 
 TurnManager.prototype.forAllActors = function(onCall) {
     if(typeof onCall === "function") {
-        this.actors.forEach((actor) => onCall(actor));
+        for(let i = 0; i < this.actors.length; i++) {
+            onCall(this.actors[i]);
+        }
     }
 }
 
-TurnManager.prototype.createActor = function(onCreate, externalID) {
-    const actorID = externalID !== undefined ? externalID : this.nextID++;
-
-    if(!this.actors.has(actorID)) {
-        const actor = onCreate(actorID);
-
-        if(actor) {
-            this.actors.set(actorID, actor);
-
-            return actor;
+TurnManager.prototype.getActorIndex = function(actorID) {
+    for(let i = 0; i < this.actors.length; i++) {
+        if(this.actors[i].getID() === actorID) {
+            return i;
         }
     }
 
-    return null;
+    return -1;
+}
+
+TurnManager.prototype.getNextID = function() {
+    return this.nextID++;
+}
+
+TurnManager.prototype.addActor = function(actor) {
+    const actorID = actor.getID();
+
+    if(this.getActorIndex(actorID) === -1) {
+        this.actors.push(actor);
+    }
 }
 
 //TODO: Destroy if current.
 TurnManager.prototype.destroyActor = function(actorID) {
-    if(this.actors.has(actorID)) {
-        this.actors.delete(actorID);
+    const index = this.getActorIndex(actorID);
+
+    if(index !== -1) {
+        this.actors[index] = this.actors[this.actors.length - 1];
+        this.actors.pop();
     }
 }
 
 TurnManager.prototype.getActor = function(actorID) {
-    const actor = this.actors.get(actorID);
+    const index = this.getActorIndex(actorID);
 
-    if(!actor) {
+    if(index === -1) {
         return null;
     }
 
-    return actor;
+    return this.actors[index];
 }
 
 TurnManager.prototype.isActor = function(actorID) {
@@ -111,16 +122,17 @@ TurnManager.prototype.setActorOrder = function(order) {
 
     for(let i = 0; i < order.length; i++) {
         const actorID = order[i];
+        const index = this.getActorIndex(actorID);
 
-        if(this.actors.has(actorID)) {
+        if(index !== -1) {
             this.actorOrder.push(actorID);
         }
     }
 }
 
 TurnManager.prototype.update = function(gameContext) {
-    for(const [actorID, actor] of this.actors) {
-        actor.update(gameContext);
+    for(let i = 0; i < this.actors.length; i++) {
+        this.actors[i].update(gameContext);
     }
 
     if(this.currentActor) {

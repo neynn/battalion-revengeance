@@ -110,12 +110,10 @@ export const ClientMapFactory = {
             }
         }
 
-        const actor = clientTeam === teamName ? createPlayer(gameContext, commander, teamName) : createActor(gameContext, commander, teamName);
-
-        if(actor) {
-            const actorID = actor.getID();
-
-            team.setActor(actorID);
+        if(clientTeam === teamName) {
+            createPlayer(gameContext, commander, teamName);
+        } else {
+            createActor(gameContext, commander, teamName);
         }
     },
     loadMap: function(gameContext, worldMap, mapData, clientTeam, settings) {
@@ -196,10 +194,7 @@ export const ClientMapFactory = {
         }
         
         teamManager.updateStatus();
-
-        const turnOrder = teamManager.getTurnOrder();
-
-        turnManager.setActorOrder(turnOrder);
+        teamManager.setTurnOrder(gameContext);
     }
 };
 
@@ -268,11 +263,7 @@ export const ServerMapFactory = {
             }
         }
 
-        const actor = createActor(gameContext, commander, teamName);
-
-        if(actor) {
-            team.setActor(actor.getID());
-        }
+        createActor(gameContext, commander, teamName);
     },
     loadMap: function(gameContext, worldMap, mapData, settings) {
         const { world, teamManager } = gameContext;
@@ -306,9 +297,6 @@ export const ServerMapFactory = {
         ServerMapFactory.createEvents(gameContext, events);
 
         teamManager.updateStatus();
-
-        const turnOrder = teamManager.getTurnOrder();
-
-        turnManager.setActorOrder(turnOrder);
+        teamManager.setTurnOrder(gameContext);
     }
 };

@@ -178,16 +178,32 @@ TeamManager.prototype.updateStatus = function() {
     this.checkWinner();
 }
 
-TeamManager.prototype.getTurnOrder = function() {
-    const order = [];
+TeamManager.prototype.findActorByTeam = function(gameContext, teamID) {
+    const { world } = gameContext;
+    const { turnManager } = world;  
+    const { actors } = turnManager;
 
-    for(let i = 0; i < this.activeTeams.length; i++) {
-        const teamID = this.activeTeams[i];
-        const team = this.getTeam(teamID);
-        const { actor } = team;
-
-        order.push(actor);
+    for(const actor of actors) {
+        if(actor.teamID === teamID) {
+            return actor;
+        }
     }
 
-    return order;
+    return null;
+}
+
+TeamManager.prototype.setTurnOrder = function(gameContext) {
+    const { world } = gameContext;
+    const { turnManager } = world;
+    const order = [];
+
+    for(const teamID of this.activeTeams) {
+        const actor = this.findActorByTeam(gameContext, teamID);
+
+        if(actor) {
+            order.push(actor.getID());
+        }
+    }
+
+    turnManager.setActorOrder(order);
 }

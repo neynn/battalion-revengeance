@@ -1,21 +1,21 @@
 import { ACTION_TYPE } from "../enums.js";
 
 export const isClientTurn = function(gameContext, messengerID) {
-    const { mapSettings, teamManager, world } = gameContext;
+    const { mapSettings, world } = gameContext;
     const { turnManager } = world;
     const { slots } = mapSettings;
+    const { currentActor } = turnManager;
 
+    if(!currentActor) {
+        return false;
+    }
+
+    //TODO: Create a ServerActor that has clientID and check currentActor.clientID === clientID. O(1)!
     for(const slot of slots) {
         const { clientID, teamID } = slot;
 
-        if(clientID === messengerID) {
-            const team = teamManager.getTeam(teamID);
-            
-            if(team) {
-                const { actor } = team;
-                
-                return turnManager.isActor(actor);
-            }
+        if(clientID === messengerID && currentActor.teamID === teamID) {
+            return true;
         }
     }
 
