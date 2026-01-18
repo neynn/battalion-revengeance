@@ -2,7 +2,7 @@ import { Action } from "../../../engine/action/action.js";
 import { hasFlag } from "../../../engine/util/flag.js";
 import { FADE_RATE, TILE_WIDTH } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
-import { COMMAND_TYPE, PATH_INTERCEPT, TRAIT_TYPE } from "../../enums.js";
+import { COMMAND_TYPE, PATH_INTERCEPT, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { mInterceptPath } from "../../systems/pathfinding.js";
 import { playUncloakSound } from "../../systems/sound.js";
 import { createAttackRequest, createCaptureIntent, createCloakIntent, createHealRequest, createTrackingIntent, createUncloakIntent } from "../actionHelper.js";
@@ -124,7 +124,9 @@ MoveAction.prototype.execute = function(gameContext, data) {
     const { world, teamManager } = gameContext;
     const { entityManager } = world;
     const { entityID, path, flags } = data;
+    const { activeTeams } = teamManager;
     const entity = entityManager.getEntity(entityID);
+    const team = entity.getTeam(gameContext);
 
     entity.removeFromMap(gameContext);
     entity.setFlag(BattalionEntity.FLAG.HAS_MOVED);
@@ -145,7 +147,15 @@ MoveAction.prototype.execute = function(gameContext, data) {
     }
 
     entity.placeOnMap(gameContext);
-    teamManager.broadcastEntityMove(gameContext, entity);
+    team.addStatistic(TEAM_STAT.UNITS_MOVED, 1);
+    
+    for(const teamID of activeTeams) {
+        const team = teamManager.getTeam(teamID);
+
+        team.onEntityMove(gameContext, entity);
+    }
+
+    teamManager.updateStatus();
 }
 
 MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {

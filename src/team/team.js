@@ -52,7 +52,7 @@ Team.prototype.addStatistic = function(statID, value) {
         return;
     }
 
-    this.stats[statID] = value;
+    this.stats[statID] += value;
 }
 
 Team.prototype.calculateFinalScore = function() {

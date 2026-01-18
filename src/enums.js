@@ -39,7 +39,8 @@ export const TEAM_STAT = {
     ORE_EXTRACTED: 12,
     RESOUCES_SPENT: 13,
     ROUNDS_TAKEN: 14,
-    COUNT: 15
+    UNITS_MOVED: 15,
+    COUNT: 16
 };
 
 export const GAME_EVENT = {

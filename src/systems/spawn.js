@@ -1,6 +1,6 @@
 import { EntityManager } from "../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { BUILDING_TYPE, LAYER_TYPE } from "../enums.js";
+import { BUILDING_TYPE, LAYER_TYPE, TEAM_STAT } from "../enums.js";
 import { createSchemaViewSprite } from "../sprite/schemaView.js";
 import { EntityView } from "../sprite/entityView.js";
 import { getDirectionByName } from "./direction.js";
@@ -12,14 +12,24 @@ import { Building } from "../entity/building.js";
 export const despawnEntity = function(gameContext, entity) {
     const { teamManager, world } = gameContext;
     const { entityManager } = world;
+    const { activeTeams } = teamManager;
     const entityID = entity.getID();
+    const team = entity.getTeam(gameContext);
 
     entity.removeFromMap(gameContext);
     entity.isMarkedForDestroy = true;
     entity.destroy();
     
-    teamManager.broadcastEntityDeath(gameContext, entity);
+    team.addStatistic(TEAM_STAT.UNITS_LOST, 1);
+
+    for(const teamID of activeTeams) {
+        const team = teamManager.getTeam(teamID);
+
+        team.onEntityDeath(entity);
+    }
+
     entityManager.destroyEntityByID(entityID);
+    teamManager.updateStatus();
 }
 
 export const createServerEntityObject = function(gameContext, entityID, teamID, typeID, tileX, tileY) {

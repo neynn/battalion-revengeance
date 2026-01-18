@@ -1,5 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
+import { TEAM_STAT } from "../../enums.js";
 
 export const ExtractAction = function() {
     Action.call(this);
@@ -18,35 +19,30 @@ ExtractAction.prototype.onEnd = function(gameContext, data) {
 
 ExtractAction.prototype.execute = function(gameContext, data) {
     const { world } = gameContext;
-    const { entityManager, mapManager } = world;
+    const { entityManager } = world;
     const { entityID, value } = data;
     const entity = entityManager.getEntity(entityID);
-    const worldMap = mapManager.getActiveMap();
-    const { tileX, tileY } = entity;
+    const team = entity.getTeam(gameContext);
 
-    worldMap.extractOre(tileX, tileY);
     entity.addCash(value);
     entity.setFlag(BattalionEntity.FLAG.HAS_FIRED);
+    team.addStatistic(TEAM_STAT.ORE_EXTRACTED, value);
 }
 
 ExtractAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
-    const { entityManager, mapManager } = world;
+    const { entityManager } = world;
     const { entityID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
-    const worldMap = mapManager.getActiveMap();
 
-    if(entity && !entity.isDead() && entity.canAct()) {
-        if(entity.canExtract()) {
-            const { tileX, tileY } = entity;
-            const oreValue = worldMap.getOreValue(tileX, tileY);
+    if(entity && !entity.isDead() && entity.canAct() && entity.canExtract()) {
+        const oreValue = entity.getOreValue(gameContext);
 
-            if(oreValue > 0) {
-                executionPlan.setData({
-                    "entityID": entityID,
-                    "value": oreValue
-                });
-            }
+        if(oreValue > 0) {
+            executionPlan.setData({
+                "entityID": entityID,
+                "value": oreValue
+            });
         }
     }
 }

@@ -1,5 +1,4 @@
 import { EventEmitter } from "../../engine/events/eventEmitter.js";
-import { TEAM_STAT } from "../enums.js";
 import { Team } from "./team.js";
 
 export const TeamManager = function() {
@@ -191,26 +190,4 @@ TeamManager.prototype.getTurnOrder = function() {
     }
 
     return order;
-}
-
-TeamManager.prototype.broadcastEntityMove = function(gameContext, entity) {
-    for(let i = 0; i < this.activeTeams.length; i++) {
-        const teamID = this.activeTeams[i];
-        const team = this.getTeam(teamID);
-
-        team.onEntityMove(gameContext, entity);
-    }
-
-    this.updateStatus();
-}
-
-TeamManager.prototype.broadcastEntityDeath = function(gameContext, entity) {
-    for(let i = 0; i < this.activeTeams.length; i++) {
-        const teamID = this.activeTeams[i];
-        const team = this.getTeam(teamID);
-
-        team.onEntityDeath(entity);
-    }
-
-    this.updateStatus();
 }

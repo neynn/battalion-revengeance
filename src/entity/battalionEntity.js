@@ -124,6 +124,12 @@ BattalionEntity.prototype.getHealthFactor = function() {
     return this.health / this.maxHealth;
 }
 
+BattalionEntity.prototype.getTeam = function(gameContext) {
+    const { teamManager } = gameContext;
+    
+    return teamManager.getTeam(this.teamID);
+}
+
 BattalionEntity.prototype.getRangeType = function() {
     if(this.config.maxRange > 1) {
         if(this.config.minRange === 1 && BattalionEntity.HYBRID_ENABLED) {
@@ -1430,4 +1436,20 @@ BattalionEntity.prototype.removeFromMap = function(gameContext) {
             worldMap.removeJammer(nextX, nextY, this.teamID, jammerFlags);
         });
     }
+}
+
+BattalionEntity.prototype.getOreValue = function(gameContext) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+
+    return worldMap.getOreValue(this.tileX, this.tileY);
+}
+
+BattalionEntity.prototype.extractOre = function(gameContext) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+
+    worldMap.extractOre(this.tileX, this.tileY);
 }

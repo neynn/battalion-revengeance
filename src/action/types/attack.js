@@ -1,7 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
 import { hasFlag } from "../../../engine/util/flag.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
-import { ATTACK_TYPE, COMMAND_TYPE, TRAIT_TYPE } from "../../enums.js";
+import { ATTACK_TYPE, COMMAND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { playAttackEffect } from "../../systems/animation.js";
 import { createAttackRequest, createDeathIntent } from "../actionHelper.js";
 import { InteractionResolver } from "../interactionResolver.js";
@@ -56,8 +56,8 @@ AttackAction.prototype.constructor = AttackAction;
 AttackAction.prototype.onStart = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID, targetID, resolutions, flags } = data;
-    const entity = entityManager.getEntity(entityID);
+    const { attackerID, targetID, resolutions, flags } = data;
+    const entity = entityManager.getEntity(attackerID);
     const target = entityManager.getEntity(targetID);
 
     entity.lookAt(target);
@@ -91,8 +91,8 @@ AttackAction.prototype.isFinished = function(gameContext, executionPlan) {
 AttackAction.prototype.onEnd = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID } = data;
-    const entity = entityManager.getEntity(entityID);
+    const { attackerID } = data;
+    const entity = entityManager.getEntity(attackerID);
 
     entity.playIdle(gameContext);
 
@@ -104,15 +104,20 @@ AttackAction.prototype.onEnd = function(gameContext, data) {
 AttackAction.prototype.execute = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID, targetID, resolutions, flags } = data;
-    const entity = entityManager.getEntity(entityID);
+    const { attackerID, targetID, resolutions, flags } = data;
+    const entity = entityManager.getEntity(attackerID);
     const target = entityManager.getEntity(targetID);
+    let killedUnits = 0;
 
     for(let i = 0; i < resolutions.length; i++) {
         const { entityID, health } = resolutions[i];
         const targetObject = entityManager.getEntity(entityID);
 
         targetObject.setHealth(health);
+
+        if(health <= 0 && entityID !== attackerID) {
+            killedUnits++;
+        }
     }
 
     if(hasFlag(flags, AttackAction.FLAG.UNCLOAK)) {
@@ -122,13 +127,19 @@ AttackAction.prototype.execute = function(gameContext, data) {
     if(hasFlag(flags, AttackAction.FLAG.COUNTER)) {
         entity.clearLastAttacker();
     } else {
-        target.setLastAttacker(entityID);
+        target.setLastAttacker(attackerID);
 
         entity.setFlag(BattalionEntity.FLAG.HAS_FIRED);
 
         if(hasFlag(flags, AttackAction.FLAG.BEWEGUNGSKRIEG)) {
             entity.triggerBewegungskrieg();
         }
+    }
+
+    if(killedUnits !== 0) {
+        const team = entity.getTeam(gameContext);
+
+        team.addStatistic(TEAM_STAT.UNITS_KILLED, killedUnits);
     }
 }
 
@@ -191,7 +202,7 @@ AttackAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, 
         executionPlan.addNext(createAttackRequest(targetID, entityID, COMMAND_TYPE.COUNTER));
 
         executionPlan.setData({
-            "entityID": entityID,
+            "attackerID": entityID,
             "targetID": targetID,
             "resolutions": hitEntities,
             "flags": flags
