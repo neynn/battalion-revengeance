@@ -1,4 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
+import { TEAM_STAT } from "../../enums.js";
 
 export const StartTurnAction = function() {
     Action.call(this);
@@ -22,9 +23,18 @@ StartTurnAction.prototype.execute = function(gameContext, data) {
     const team = teamManager.getTeam(teamID);
     const { actor } = team;
 
+    team.startTurn(gameContext);
     turnManager.setCurrentActor(gameContext, actor);
     eventHandler.checkEventTriggers(gameContext);
-    teamManager.onNextTurn(gameContext);
+
+    const { activeTeams } = teamManager;
+
+    for(const teamID of activeTeams) {
+        const team = teamManager.getTeam(teamID);
+
+        team.addStatistic(TEAM_STAT.ROUNDS_TAKEN, 1);
+        team.generateBuildingCash(gameContext);
+    }
 
     //TODO: Get next turn, then check if any construction grows. Add that as next.
 }

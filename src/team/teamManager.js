@@ -1,4 +1,5 @@
 import { EventEmitter } from "../../engine/events/eventEmitter.js";
+import { TEAM_STAT } from "../enums.js";
 import { Team } from "./team.js";
 
 export const TeamManager = function() {
@@ -29,14 +30,6 @@ TeamManager.prototype.exit = function() {
     this.teams.clear();
     this.activeTeams.length = 0;
     this.isConcluded = false;
-}
-
-TeamManager.prototype.onNextTurn = function(gameContext) {
-    for(let i = 0; i < this.activeTeams.length; i++) {
-        const team = this.getTeam(this.activeTeams[i]);
-        
-        team.generateGlobalBuildingCash(gameContext);
-    }
 }
 
 TeamManager.prototype.createTeam = function(teamID) {

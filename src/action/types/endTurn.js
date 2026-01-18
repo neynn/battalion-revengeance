@@ -17,10 +17,14 @@ EndTurnAction.prototype.onEnd = function(gameContext, data) {
 }
 
 EndTurnAction.prototype.execute = function(gameContext, data) {
-    const { world } = gameContext;
+    const { world, teamManager } = gameContext;
     const { turnManager } = world;
+    const { currentActor } = turnManager;
+    const team = currentActor.getTeam(gameContext);
 
+    team.endTurn(gameContext);
     turnManager.clearCurrentActor(gameContext);
+    teamManager.updateStatus();
 }
 
 EndTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {

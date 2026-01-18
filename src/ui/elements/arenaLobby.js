@@ -2,7 +2,7 @@ import { Socket } from "../../../engine/network/socket.js";
 import { BattalionContext } from "../../battalionContext.js";
 import { GAME_EVENT } from "../../enums.js";
 import { GenericMenu } from "../genericMenu.js";
-import { createGenericButton, getNextX, placeButton } from "../uiHelper.js";
+import { createGenericButton, getBackgroundSource, getNextX, placeButton } from "../uiHelper.js";
 
 export const ArenaLobby = function() {
     GenericMenu.call(this, "ArenaLobby");
@@ -63,7 +63,7 @@ ArenaLobby.prototype.init = function(gameContext) {
     const connectButton = this.buttons[ArenaLobby.BUTTON.CONNECT];
     const startButton = this.buttons[ArenaLobby.BUTTON.START];
 
-    this.background.src = "assets/gui/background.png";
+    this.background.src = getBackgroundSource();
     this.background.style.position = "relative";
 
     this.background.onload = () => {

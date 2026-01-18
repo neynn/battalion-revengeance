@@ -12,6 +12,12 @@ export const BattalionActor = function(id) {
 BattalionActor.prototype = Object.create(TurnActor.prototype);
 BattalionActor.prototype.constructor = BattalionActor;
 
+BattalionActor.prototype.getTeam = function(gameContext) {
+    const { teamManager } = gameContext;
+
+    return teamManager.getTeam(this.teamID);
+}
+
 BattalionActor.prototype.setName = function(name) {
     this.name = name;
 }
@@ -35,26 +41,6 @@ BattalionActor.prototype.surrender = function(gameContext) {
 BattalionActor.prototype.setTeam = function(teamID) {
     this.teamID = teamID;
 }
-
-BattalionActor.prototype.onTurnStart = function(gameContext) {
-    const { teamManager } = gameContext;
-    const team = teamManager.getTeam(this.teamID);
-
-    if(team) {
-        team.onTurnStart(gameContext, this.turn);
-    }
-}
-
-BattalionActor.prototype.onTurnEnd = function(gameContext) {
-    const { teamManager } = gameContext;
-    const team = teamManager.getTeam(this.teamID);
-
-    if(team) {
-        team.onTurnEnd(gameContext, this.turn);
-    }
-}
-
-BattalionActor.prototype.activeUpdate = function(gameContext) {}
 
 BattalionActor.prototype.loadCommander = function(gameContext, typeID) {
     const { typeRegistry } = gameContext;

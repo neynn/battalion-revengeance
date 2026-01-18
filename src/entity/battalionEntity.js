@@ -934,7 +934,7 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
             damageAmplifier *= TRAIT_CONFIG.STEALTH_MULTIPLIER;
         }
 
-        const isExecutable = target.getHealthFactor() < 0.5;
+        const isExecutable = target.getHealthFactor() < TRAIT_CONFIG.EXECUTIONER_THRESHOLD;
 
         if(isExecutable && this.hasTrait(TRAIT_TYPE.EXECUTIONER)) {
             damageAmplifier *= TRAIT_CONFIG.EXECUTIONER_DAMAGE;

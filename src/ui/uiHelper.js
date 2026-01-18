@@ -1,4 +1,12 @@
+import { PathHandler } from "../../engine/resources/pathHandler.js";
 import { GenericButton } from "./genericButton.js";
+
+export const getBackgroundSource = function() {
+    const BACKGROUND_DIRECTORY = ["assets", "gui", "background"];
+    const images = ["background.png", "colored_tanks.jpg"];
+
+    return PathHandler.getPath(BACKGROUND_DIRECTORY, images[1]);
+}
 
 export const createGenericButton = () => {
     const button = new GenericButton(document.createElement("div"), 126, 71);

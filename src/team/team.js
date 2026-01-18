@@ -2,8 +2,9 @@ import { createDeathIntent, createUncloakIntent } from "../action/actionHelper.j
 import { Objective } from "./objective/objective.js";
 import { UnitSurviveObjective } from "./objective/types/unitSurvive.js";
 import { LynchpinObjective } from "./objective/types/lynchpin.js";
-import { getGeneratedCash, getGlobalGeneratedCash } from "../systems/cash.js";
-import { SCHEMA_TYPE, TRAIT_TYPE } from "../enums.js";
+import { getGlobalGeneratedCash } from "../systems/cash.js";
+import { SCHEMA_TYPE, TEAM_STAT, TRAIT_TYPE } from "../enums.js";
+import { SCORE_BONUS, VICTORY_BONUS } from "../constants.js";
 
 export const Team = function(id) {
     this.id = id;
@@ -19,10 +20,15 @@ export const Team = function(id) {
     this.name = "MISSING_NAME_TEAM";
     this.desc = "MISSING_DESC_TEAM";
     this.flags = Team.FLAG.NONE;
+    this.stats = [];
     this.objectives = [
         new UnitSurviveObjective(),
         new LynchpinObjective()
     ];
+
+    for(let i = 0; i < TEAM_STAT.COUNT; i++) {
+        this.stats[i] = 0;
+    }
 }
 
 Team.FLAG = {
@@ -40,6 +46,42 @@ Team.STATUS = {
     WINNER: 1,
     LOSER: 2
 };
+
+Team.prototype.addStatistic = function(statID, value) {
+    if(statID < 0 || statID >= this.stats.length) {
+        return;
+    }
+
+    this.stats[statID] = value;
+}
+
+Team.prototype.calculateFinalScore = function() {
+    let score = 0;
+
+    score += this.stats[TEAM_STAT.UNITS_BUILT] * SCORE_BONUS[TEAM_STAT.UNITS_BUILT];
+    score += this.stats[TEAM_STAT.UNITS_KILLED] * SCORE_BONUS[TEAM_STAT.UNITS_KILLED];
+    score += this.stats[TEAM_STAT.UNITS_LOST] * SCORE_BONUS[TEAM_STAT.UNITS_LOST];
+    score += this.stats[TEAM_STAT.STRUCTURES_CAPTURED] * SCORE_BONUS[TEAM_STAT.STRUCTURES_CAPTURED];
+    score += this.stats[TEAM_STAT.STRUCTURES_LOST] * SCORE_BONUS[TEAM_STAT.STRUCTURES_LOST];
+    score += this.stats[TEAM_STAT.RESOURCES_COLLECTED] * SCORE_BONUS[TEAM_STAT.RESOURCES_COLLECTED];
+
+    if(this.status === Team.STATUS.WINNER) {
+        score += VICTORY_BONUS;
+    }
+
+    score /= this.stats[TEAM_STAT.ROUNDS_TAKEN];
+
+    //ROUNDS_TAKEN gets +1 for EVERY team.
+    //Difficulty modifier: 0.5 for easy, 2 for hard.
+
+    if(score < 0) {
+        score = 0;
+    }
+
+    this.stats[TEAM_STAT.FINAL_SCORE] = score;
+
+    return score;
+}
 
 Team.prototype.reduceCash = function(cash) {
     this.cash -= cash;
@@ -236,9 +278,10 @@ Team.prototype.addObjective = function(objective) {
     this.objectives.push(objective);
 }
 
-Team.prototype.onTurnEnd = function(gameContext, turn) {
-    const { world, teamManager } = gameContext;
+Team.prototype.endTurn = function(gameContext) {
+    const { world } = gameContext;
     const { entityManager } = world;
+    const turn = this.stats[TEAM_STAT.ROUNDS_TAKEN];
 
     for(const entityID of this.entities) {
         const entity = entityManager.getEntity(entityID);
@@ -251,25 +294,9 @@ Team.prototype.onTurnEnd = function(gameContext, turn) {
     for(const objective of this.objectives) {
         objective.onTurnEnd(turn);
     }
-
-    teamManager.updateStatus();
 }
 
 Team.prototype.generateBuildingCash = function(gameContext) {
-    let totalCash = 0;
-
-    for(const building of this.buildings) {
-        const cash = getGeneratedCash(gameContext, building.config.traits);
-
-        totalCash += cash;
-    }
-
-    this.funds += totalCash;
-
-    return totalCash;
-}
-
-Team.prototype.generateGlobalBuildingCash = function(gameContext) {
     let totalCash = 0;
 
     for(const building of this.buildings) {
@@ -279,11 +306,12 @@ Team.prototype.generateGlobalBuildingCash = function(gameContext) {
     }
 
     this.funds += totalCash;
+    this.addStatistic(TEAM_STAT.RESOURCES_COLLECTED, totalCash);
 
     return totalCash;
 }
 
-Team.prototype.onTurnStart = function(gameContext, turn) {
+Team.prototype.startTurn = function(gameContext) {
     const { world, actionRouter } = gameContext;
     const { entityManager } = world;
     const deadEntities = [];
@@ -324,11 +352,6 @@ Team.prototype.onTurnStart = function(gameContext, turn) {
 
     if(uncloakedEntities.length !== 0) {
         actionRouter.forceEnqueue(gameContext, createUncloakIntent(uncloakedEntities));
-    }
-
-    //Do not generate cash on the first turn.
-    if(turn > 1) {
-        this.generateBuildingCash(gameContext);
     }
 }
 
