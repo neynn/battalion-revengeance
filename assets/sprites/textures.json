@@ -379,7 +379,7 @@
             "startY": 1,
             "frameWidth": 144,
             "frameHeight": 144, 
-            "rows": 8,
+            "rows": 14,
             "columns": 4
         }
     },

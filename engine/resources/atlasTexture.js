@@ -50,7 +50,7 @@ AtlasTexture.prototype.getFramesAuto = function(autoRegions) {
         if(region) {
             frames.push(region);
         } else {
-            //TODO: Log region error.
+            console.error(`Missing region error! ${regionID} in ${this.id}!`);
         }
     }
 
@@ -67,7 +67,7 @@ AtlasTexture.prototype.getFrames = function(regions) {
         if(region) {
             frames.push(region);
         } else {
-            //TODO: Log region error.
+            console.error(`Missing region error! ${regionID} in ${this.id}!`);
         }
     }
 
