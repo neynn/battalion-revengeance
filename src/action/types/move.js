@@ -98,6 +98,10 @@ MoveAction.prototype.onUpdate = function(gameContext, data) {
 }
 
 MoveAction.prototype.isFinished = function(gameContext, executionPlan) {
+    if(this.wasDiscovered && this.state !== MoveAction.STATE.NONE) {
+        return false;
+    }
+
     return this.pathIndex < 0;
 }
 

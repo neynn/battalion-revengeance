@@ -2,7 +2,6 @@ import { createDeathIntent, createUncloakIntent } from "../action/actionHelper.j
 import { Objective } from "./objective/objective.js";
 import { UnitSurviveObjective } from "./objective/types/unitSurvive.js";
 import { LynchpinObjective } from "./objective/types/lynchpin.js";
-import { getGlobalGeneratedCash } from "../systems/cash.js";
 import { SCHEMA_TYPE, TEAM_STAT, TRAIT_TYPE } from "../enums.js";
 import { SCORE_BONUS, VICTORY_BONUS } from "../constants.js";
 
@@ -91,10 +90,8 @@ Team.prototype.hasEnoughCash = function(cash) {
 }
 
 Team.prototype.addBuilding = function(building) {
-    const buildingID = building.getID();
-
     for(let i = 0; i < this.buildings.length; i++) {
-        if(this.buildings[i].getID() === buildingID) {
+        if(this.buildings[i] === building) {
             return;
         }
     }
@@ -103,10 +100,8 @@ Team.prototype.addBuilding = function(building) {
 }
 
 Team.prototype.removeBuilding = function(building) {
-    const buildingID = building.getID();
-
     for(let i = 0; i < this.buildings.length; i++) {
-        if(this.buildings[i].getID() === buildingID) {
+        if(this.buildings[i] === building) {
             this.buildings[i] = this.buildings[this.buildings.length - 1];
             this.buildings.pop();
             break;
@@ -291,7 +286,7 @@ Team.prototype.generateBuildingCash = function(gameContext) {
     let totalCash = 0;
 
     for(const building of this.buildings) {
-        const cash = getGlobalGeneratedCash(gameContext, building.config.traits);
+        const cash = building.getGeneratedCash(gameContext);
 
         totalCash += cash;
     }
@@ -299,6 +294,7 @@ Team.prototype.generateBuildingCash = function(gameContext) {
     this.funds += totalCash;
     this.addStatistic(TEAM_STAT.RESOURCES_COLLECTED, totalCash);
 
+    console.log(totalCash, this.funds)
     return totalCash;
 }
 

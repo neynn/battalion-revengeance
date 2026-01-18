@@ -7,20 +7,17 @@ import { JammerField } from "./jammerField.js";
 export const BattalionMap = function(id, width, height) {
     WorldMap.call(this, id, width, height);
 
-    this.buildingID = 0;
     this.globalClimate = CLIMATE_TYPE.NONE;
     this.climate = CLIMATE_TYPE.NONE;
     this.localization = [];
     this.buildings = [];
     this.edits = [];
     this.jammerFields = new Map();
-    this.layers = [
-        this.createLayer(Layer.TYPE.BIT_16),
-        this.createLayer(Layer.TYPE.BIT_16),
-        this.createLayer(Layer.TYPE.BIT_16),
-        this.createLayer(Layer.TYPE.BIT_8),
-        this.createLayer(Layer.TYPE.BIT_8)
-    ];
+    this.createLayer(Layer.TYPE.BIT_16);
+    this.createLayer(Layer.TYPE.BIT_16);
+    this.createLayer(Layer.TYPE.BIT_16);
+    this.createLayer(Layer.TYPE.BIT_8);
+    this.createLayer(Layer.TYPE.BIT_8);
 }
 
 BattalionMap.LAYER_NAME = {
@@ -295,21 +292,22 @@ BattalionMap.prototype.loadLocalization = function(localization) {
     }
 }
 
-BattalionMap.prototype.createBuilding = function(tileX, tileY, onCreate) {
+BattalionMap.prototype.isBuildingPlaceable = function(tileX, tileY) {
     const index = this.getIndex(tileX, tileY);
 
-    if(index !== WorldMap.OUT_OF_BOUNDS) {
-        if(!this.getBuilding(tileX, tileY)) {
-            const nextID = this.buildingID++;
-            const building = onCreate(nextID);
-
-            this.buildings.push(building);
-
-            return building;
-        }
+    if(index === WorldMap.OUT_OF_BOUNDS) {
+        return false;
     }
 
-    return null;
+    if(this.getBuilding(tileX, tileY) !== null) {
+        return false;
+    }
+
+    return true;
+}
+
+BattalionMap.prototype.addBuilding = function(building) {
+    this.buildings.push(building);
 }
 
 BattalionMap.prototype.getBuilding = function(tileX, tileY) {

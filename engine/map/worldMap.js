@@ -291,7 +291,7 @@ WorldMap.prototype.createLayer = function(type) {
     const bufferSize = this.width * this.height;
     const layer = Layer.create(bufferSize, type); 
 
-    return layer;
+    this.layers.push(layer);
 }
 
 WorldMap.prototype.fill2DGraph = function(tileX, tileY, range, onFill) {

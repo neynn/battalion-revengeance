@@ -183,17 +183,18 @@ export const spawnServerBuilding = function(gameContext, worldMap, config) {
     const teamObject = teamManager.getTeam(team);
 
     if(teamObject) {
-        const buildingType = typeRegistry.getBuildingType(type);
+        const isPlaceable = worldMap.isBuildingPlaceable(x, y);
 
-        worldMap.createBuilding(x, y, (buildingID) => {
-            const buildingObject = new Building(buildingID, buildingType);
+        if(isPlaceable) {
+            const buildingType = typeRegistry.getBuildingType(type);
+            const building = new Building(buildingType);
 
-            buildingObject.setCustomInfo(id, name, desc);
-            buildingObject.setTile(gameContext, x, y);
-            buildingObject.updateTeam(gameContext, team);
+            building.setCustomInfo(id, name, desc);
+            building.setTile(gameContext, x, y);
+            building.updateTeam(gameContext, team);
 
-            return buildingObject;
-        });
+            worldMap.addBuilding(building);
+        }
     }
 }
 
@@ -212,20 +213,21 @@ export const spawnClientBuilding = function(gameContext, worldMap, config) {
     const teamObject = teamManager.getTeam(team);
 
     if(teamObject) {
-        const buildingType = typeRegistry.getBuildingType(type);
-        const { colorID, color } = teamObject;
-        const { sprite } = buildingType;
+        const isPlaceable = worldMap.isBuildingPlaceable(x, y);
 
-        worldMap.createBuilding(x, y, (buildingID) => {
+        if(isPlaceable) {
+            const buildingType = typeRegistry.getBuildingType(type);
+            const { colorID, color } = teamObject;
+            const { sprite } = buildingType;
             const visualSprite = createSchemaViewSprite(gameContext, sprite, colorID, color, LAYER_TYPE.BUILDING);
             const buildingView = new BuildingView(visualSprite, sprite, colorID, color);
-            const buildingObject = new ClientBuilding(buildingID, buildingType, buildingView);
+            const building = new ClientBuilding(buildingType, buildingView);
 
-            buildingObject.setCustomInfo(id, name, desc);
-            buildingObject.setTile(gameContext, x, y);
-            buildingObject.updateTeam(gameContext, team);
-
-            return buildingObject;
-        });
+            building.setCustomInfo(id, name, desc);
+            building.setTile(gameContext, x, y);
+            building.updateTeam(gameContext, team);
+            
+            worldMap.addBuilding(building);
+        }
     }
 }

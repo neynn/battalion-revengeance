@@ -1,7 +1,7 @@
 import { Building } from "./building.js";
 
-export const ClientBuilding = function(id, config, view) {
-    Building.call(this, id, config);
+export const ClientBuilding = function(config, view) {
+    Building.call(this, config);
 
     this.view = view;
 }

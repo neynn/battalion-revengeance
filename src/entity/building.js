@@ -1,5 +1,4 @@
-export const Building = function(id, config) {
-    this.id = id;
+export const Building = function(config) {
     this.config = config;
     this.tileX = -1;
     this.tileY = -1;
@@ -12,8 +11,27 @@ export const Building = function(id, config) {
 Building.prototype.onTileUpdate = function(gameContext, previousX, previousY) {}
 Building.prototype.onTeamUpdate = function(gameContext, team) {}
 
+Building.prototype.getGeneratedCash = function(gameContext) {
+    const { typeRegistry } = gameContext;
+    let generatedCash = 0;
+
+    for(const traitID of this.config.traits) {
+        const { cashPerTurn } = typeRegistry.getTraitType(traitID);
+
+        generatedCash += cashPerTurn;
+    }
+
+    return generatedCash;
+}
+
 Building.prototype.isOwnedBy = function(teamID) {
     return this.teamID === teamID;
+}
+
+Building.prototype.isBlocking = function(building) {
+    const { tileX, tileY } = building;
+
+    return this.isPlacedOn(tileX, tileY);
 }
 
 Building.prototype.hasTrait = function(traitID) {
@@ -59,10 +77,6 @@ Building.prototype.updateTeam = function(gameContext, teamID) {
             this.onTeamUpdate(gameContext, nextTeam);
         }
     }
-}
-
-Building.prototype.getID = function() {
-    return this.id;
 }
 
 Building.prototype.isPlacedOn = function(tileX, tileY) {
