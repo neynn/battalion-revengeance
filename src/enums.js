@@ -45,6 +45,12 @@ export const TEAM_STAT = {
     COUNT: 17
 };
 
+export const ENTITY_CATEGORY = {
+    LAND: 0,
+    SEA: 1,
+    AIR: 2
+};
+
 export const GAME_EVENT = {
     MP_CLIENT_SELECT_MAP: 8,
     MP_CLIENT_START_MATCH: 9,

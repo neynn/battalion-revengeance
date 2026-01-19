@@ -61,6 +61,10 @@ ClientBattalionEntity.DEFAULT_SOUNDS = {
 ClientBattalionEntity.prototype = Object.create(BattalionEntity.prototype);
 ClientBattalionEntity.prototype.constructor = ClientBattalionEntity;
 
+ClientBattalionEntity.prototype.onDestroy = function() {
+    this.view.destroy();
+}
+
 ClientBattalionEntity.prototype.onHealthUpdate = function() {
     this.view.onHealthUpdate(this.health, this.maxHealth);
 }
@@ -143,10 +147,6 @@ ClientBattalionEntity.prototype.playHeal = function(gameContext) {
 
 ClientBattalionEntity.prototype.playCounter = function(gameContext, target) {
     this.playAttack(gameContext, target);
-}
-
-ClientBattalionEntity.prototype.destroy = function() {
-    this.view.destroy();
 }
 
 ClientBattalionEntity.prototype.updatePosition = function(deltaX, deltaY) {

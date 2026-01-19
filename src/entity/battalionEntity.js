@@ -7,7 +7,7 @@ import { JammerField } from "../map/jammerField.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { createNode, mGetLowestCostNode } from "../systems/pathfinding.js";
 import { getDirectionByDelta } from "../systems/direction.js";
-import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE } from "../enums.js";
+import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY } from "../enums.js";
 import { transportTypeToEntityType } from "../systems/transport.js";
 import { getAreaEntities, getLineEntities } from "../systems/targeting.js";
 
@@ -35,8 +35,6 @@ export const BattalionEntity = function(id) {
     this.localCash = 0;
 }
 
-BattalionEntity.HYBRID_ENABLED = false;
-
 BattalionEntity.FLAG = {
     NONE: 0,
     IS_CLOAKED: 1 << 0,
@@ -58,7 +56,7 @@ BattalionEntity.STATE = {
 BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
 
-BattalionEntity.prototype.destroy = function() {}
+BattalionEntity.prototype.onDestroy = function() {}
 BattalionEntity.prototype.onHealthUpdate = function() {}
 BattalionEntity.prototype.onLoad = function(gameContext, data) {}
 
@@ -131,19 +129,7 @@ BattalionEntity.prototype.getTeam = function(gameContext) {
 }
 
 BattalionEntity.prototype.getRangeType = function() {
-    if(this.config.maxRange > 1) {
-        if(this.config.minRange === 1 && BattalionEntity.HYBRID_ENABLED) {
-            return RANGE_TYPE.HYBRID;
-        }
-
-        return RANGE_TYPE.RANGE;
-    }
-
-    if(this.config.minRange === 1) {
-        return RANGE_TYPE.MELEE;
-    }
-
-    return RANGE_TYPE.NONE;
+    return this.config.rangeType;
 }
 
 BattalionEntity.prototype.getAttackType = function() {
@@ -348,7 +334,7 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
         return EntityType.MAX_MOVE_COST;
     }
 
-    if(this.config.movementType === MOVEMENT_TYPE.FLIGHT && !this.hasTrait(TRAIT_TYPE.HIGH_ALTITUDE)) {
+    if(this.config.category === ENTITY_CATEGORY.AIR && !this.hasTrait(TRAIT_TYPE.HIGH_ALTITUDE)) {
         const jammer = worldMap.getJammer(tileX, tileY);
 
         if(jammer.isJammed(gameContext, this.teamID, JammerField.FLAG.AIRSPACE_BLOCKED)) {
@@ -596,7 +582,7 @@ BattalionEntity.prototype.isAttackPositionValid = function(gameContext, target) 
     }
 
     //Special ranged interaction for RANGE & HYBRID.
-    switch(this.getRangeType()) {
+    switch(this.config.rangeType) {
         case RANGE_TYPE.RANGE: {
             //Protected targets cannot be shot.
             if(target.isProtectedFromRange(gameContext)) {
@@ -652,18 +638,14 @@ BattalionEntity.prototype.isAttackValid = function(gameContext, target) {
         return false;
     }
 
-    const targetMove = target.config.movementType;
-
-    //Flight units can only be attacked with skysweeper.
-    if(targetMove === MOVEMENT_TYPE.FLIGHT && !this.hasTrait(TRAIT_TYPE.SKYSWEEPER)) {
+    //Air units can only be attacked with skysweeper.
+    if(target.config.category === ENTITY_CATEGORY.AIR && !this.hasTrait(TRAIT_TYPE.SKYSWEEPER)) {
         return false;
     }
 
-    //Seabound entities can only attack RUDDER/HEAVY_RUDDER.
-    if(this.hasTrait(TRAIT_TYPE.SEABOUND)) {
-        if(targetMove !== MOVEMENT_TYPE.RUDDER && targetMove !== MOVEMENT_TYPE.HEAVY_RUDDER) {
-            return false;
-        }
+    //Seabound entities can only attack SEA units.
+    if(target.config.category !== ENTITY_CATEGORY.SEA && this.hasTrait(TRAIT_TYPE.SEABOUND)) {
+        return false;
     }
 
     //Special submarine case. Submarines can only be targeted by DEPTH_CHARGE.
@@ -709,8 +691,8 @@ BattalionEntity.prototype.isHealValid = function(gameContext, target) {
 }
 
 BattalionEntity.prototype.isProtectedFromRange = function(gameContext) {
-    //Flying units are never protected by tiles/canyons!
-    if(this.config.movementType === MOVEMENT_TYPE.FLIGHT) {
+    //Air units are never protected by tiles/canyons!
+    if(this.config.category === ENTITY_CATEGORY.AIR) {
         return false;
     }
 
@@ -768,7 +750,7 @@ BattalionEntity.prototype.isCounterValid = function(target) {
         return false;
     }
 
-    switch(target.getRangeType()) {
+    switch(target.config.rangeType) {
         case RANGE_TYPE.RANGE: {
             if(!this.hasTrait(TRAIT_TYPE.COUNTER_BATTERY)) {
                 return false;
@@ -903,18 +885,16 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
     }
 
     //Steer trait. Reduces damage received by STEER for each tile the target can travel further. Up to STEER_MAX_REDUCTION.
-    if(target.hasTrait(TRAIT_TYPE.STEER)) {
-        if(this.config.movementType === MOVEMENT_TYPE.RUDDER || this.config.movementType === MOVEMENT_TYPE.HEAVY_RUDDER) {
-            const deltaRange = target.config.movementRange - this.config.movementRange;
+    if(this.config.category === ENTITY_CATEGORY.SEA && target.hasTrait(TRAIT_TYPE.STEER)) {
+        const deltaRange = target.config.movementRange - this.config.movementRange;
 
-            if(deltaRange > 0) {
-                const steerAmplifier = 1 - (deltaRange * TRAIT_CONFIG.STEER_REDUCTION);
+        if(deltaRange > 0) {
+            const steerAmplifier = 1 - (deltaRange * TRAIT_CONFIG.STEER_REDUCTION);
 
-                if(steerAmplifier < TRAIT_CONFIG.STEER_MAX_REDUCTION) {
-                    damageAmplifier *= TRAIT_CONFIG.STEER_MAX_REDUCTION;
-                } else {
-                    damageAmplifier *= steerAmplifier;
-                }
+            if(steerAmplifier < TRAIT_CONFIG.STEER_MAX_REDUCTION) {
+                damageAmplifier *= TRAIT_CONFIG.STEER_MAX_REDUCTION;
+            } else {
+                damageAmplifier *= steerAmplifier;
             }
         }
     }
@@ -963,7 +943,6 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
 
 BattalionEntity.prototype.getAttackDamage = function(gameContext, target, damageFlags) {
     const damageAmplifier = this.getAttackAmplifier(gameContext, target, damageFlags);
-    const targetMove = target.config.movementType;
     let damage = this.damage * damageAmplifier;
 
 	if(target.hasTrait(TRAIT_TYPE.CEMENTED_STEEL_ARMOR) && !this.hasTrait(TRAIT_TYPE.CAVITATION_EXPLOSION)) {
@@ -977,7 +956,7 @@ BattalionEntity.prototype.getAttackDamage = function(gameContext, target, damage
     //Unknown calculation.
 	if(
         damage > 25 &&
-        targetMove === MOVEMENT_TYPE.FLIGHT &&
+        target.config.category === ENTITY_CATEGORY.AIR &&
         !this.hasTrait(TRAIT_TYPE.ANTI_AIR)
     ) {
 		damage = 25;

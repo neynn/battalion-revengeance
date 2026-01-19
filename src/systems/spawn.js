@@ -18,7 +18,7 @@ export const despawnEntity = function(gameContext, entity) {
 
     entity.removeFromMap(gameContext);
     entity.isMarkedForDestroy = true;
-    entity.destroy();
+    entity.onDestroy();
     
     team.addStatistic(TEAM_STAT.UNITS_LOST, 1);
 

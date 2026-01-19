@@ -1,4 +1,31 @@
-import { ARMOR_TYPE, MOVEMENT_TYPE, WEAPON_TYPE } from "../../enums.js";
+import { ARMOR_TYPE, ENTITY_CATEGORY, MOVEMENT_TYPE, RANGE_TYPE, WEAPON_TYPE } from "../../enums.js";
+
+const ENABLE_HYBRID = false;
+
+const getRangeType = function(minRange, maxRange) {
+    if(maxRange > 1) {
+        if(minRange === 1 && ENABLE_HYBRID) {
+            return RANGE_TYPE.HYBRID;
+        }
+
+        return RANGE_TYPE.RANGE;
+    }
+
+    if(minRange === 1) {
+        return RANGE_TYPE.MELEE;
+    }
+
+    return RANGE_TYPE.NONE;
+}
+
+const getCategory = function(movementType) {
+    switch(movementType) {
+        case MOVEMENT_TYPE.FLIGHT: return ENTITY_CATEGORY.AIR;
+        case MOVEMENT_TYPE.RUDDER: return ENTITY_CATEGORY.SEA;
+        case MOVEMENT_TYPE.HEAVY_RUDDER: return ENTITY_CATEGORY.SEA;
+        default: return ENTITY_CATEGORY.LAND;
+    }
+}
 
 export const EntityType = function(id, config) {
     const MAX_TRAITS = 4;
@@ -48,6 +75,8 @@ export const EntityType = function(id, config) {
     this.sprites = sprites;
     this.effects = effects;
     this.traits = traits;
+    this.category = getCategory(movementType);
+    this.rangeType = getRangeType(minRange, maxRange);
 
     if(this.maxRange < this.minRange) {
         this.maxRange = this.minRange;
