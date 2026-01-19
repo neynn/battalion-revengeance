@@ -103,9 +103,10 @@ AttackAction.prototype.onEnd = function(gameContext, data) {
 AttackAction.prototype.execute = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { attackerID, targetID, resolutions, flags } = data;
+    const { attackerID, targetID, resolutions, flags, resourceDamage } = data;
     const entity = entityManager.getEntity(attackerID);
     const target = entityManager.getEntity(targetID);
+    const team = entity.getTeam(gameContext);
     let killedUnits = 0;
 
     for(let i = 0; i < resolutions.length; i++) {
@@ -135,11 +136,8 @@ AttackAction.prototype.execute = function(gameContext, data) {
         }
     }
 
-    if(killedUnits !== 0) {
-        const team = entity.getTeam(gameContext);
-
-        team.addStatistic(TEAM_STAT.UNITS_KILLED, killedUnits);
-    }
+    team.addStatistic(TEAM_STAT.UNITS_KILLED, killedUnits);
+    team.addStatistic(TEAM_STAT.RESOURCE_DAMAGE, resourceDamage);
 }
 
 AttackAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
@@ -201,6 +199,7 @@ AttackAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, 
             "attackerID": entityID,
             "targetID": targetID,
             "resolutions": hitEntities,
+            "resourceDamage": Math.floor(resolver.resourceDamage),
             "flags": flags
         });
     }

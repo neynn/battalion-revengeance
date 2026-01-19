@@ -3,21 +3,24 @@ export const InteractionResolver = function() {
     this.deadEntities = [];
     this.totalDamage = 0;
     this.totalHeal = 0;
+    this.resourceDamage = 0;
 }
 
 InteractionResolver.prototype.addHeal = function(entity, heal) {
-    this.add(entity.getID(), entity.getHealthAfterHeal(heal));
+    this.add(entity.getID(), heal, entity.getHealthAfterHeal(heal));
     this.totalHeal += heal;
 }
 
 InteractionResolver.prototype.addAttack = function(entity, damage) {
-    this.add(entity.getID(), entity.getHealthAfterDamage(damage));
+    this.add(entity.getID(), damage, entity.getHealthAfterDamage(damage));
     this.totalDamage += damage;
+    this.resourceDamage += Math.floor(entity.getDamageAsResources(damage));
 }
 
-InteractionResolver.prototype.add = function(entityID, health) {
+InteractionResolver.prototype.add = function(entityID, delta, health) {
     this.hitEntities.push({
         "entityID": entityID,
+        "delta": delta,
         "health": health
     });
 }

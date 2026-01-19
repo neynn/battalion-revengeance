@@ -962,8 +962,8 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
 }
 
 BattalionEntity.prototype.getAttackDamage = function(gameContext, target, damageFlags) {
-    const targetMove = target.config.movementType;
     const damageAmplifier = this.getAttackAmplifier(gameContext, target, damageFlags);
+    const targetMove = target.config.movementType;
     let damage = this.damage * damageAmplifier;
 
 	if(target.hasTrait(TRAIT_TYPE.CEMENTED_STEEL_ARMOR) && !this.hasTrait(TRAIT_TYPE.CAVITATION_EXPLOSION)) {
@@ -987,7 +987,7 @@ BattalionEntity.prototype.getAttackDamage = function(gameContext, target, damage
         damage = TRAIT_CONFIG.JUDGEMENT_DAMAGE;
     }
 
-    return damage;
+    return Math.floor(damage);
 }
 
 BattalionEntity.prototype.isAxisMeeting = function(target) {
@@ -1289,31 +1289,29 @@ BattalionEntity.prototype.getOverheatDamage = function() {
     return this.maxHealth * TRAIT_CONFIG.OVERHEAT_DAMAGE;
 }
 
-BattalionEntity.prototype.getAbsorberHealth = function(damage) {
-    const health = this.health + damage * TRAIT_CONFIG.ABSORBER_RATE;
+BattalionEntity.prototype.getAbsorberHeal = function(damage) {
+    return damage * TRAIT_CONFIG.ABSORBER_RATE;
+}
 
-    if(health > this.maxHealth) {
-        return this.maxHealth;
-    }
-
-    return health;
+BattalionEntity.prototype.getDamageAsResources = function(damage) {
+    return damage / this.maxHealth * this.config.cost;
 }
 
 BattalionEntity.prototype.mResolveAttackTraits = function(resolver) {
     if(this.hasTrait(TRAIT_TYPE.SELF_DESTRUCT)) {
-        resolver.add(this.id, 0);
+        resolver.add(this.id, this.health, 0);
 
     } else if(this.hasTrait(TRAIT_TYPE.OVERHEAT)) {
         const overheatDamage = this.getOverheatDamage();
         const overheatHealth = this.getHealthAfterDamage(overheatDamage);
 
-        resolver.add(this.id, overheatHealth);
+        resolver.add(this.id, overheatDamage, overheatHealth);
 
     } else if(this.hasTrait(TRAIT_TYPE.ABSORBER)) {
         const { totalDamage } = resolver;
-        const absorberHealth = this.getAbsorberHealth(totalDamage);
+        const absorberHeal = this.getAbsorberHeal(totalDamage);
 
-        resolver.add(this.id, absorberHealth);
+        resolver.addHeal(this, Math.floor(absorberHeal));
     }
 }
 
@@ -1337,7 +1335,7 @@ BattalionEntity.prototype.mResolveStreamblastAttack = function(gameContext, targ
 
     for(let i = 0; i < targets.length; i++) {
         const target = targets[i];
-        const damage = this.getAttackDamage(gameContext, target, ATTACK_FLAG.LINE);
+        const damage = this.getAttackDamage(gameContext, target, ATTACK_FLAG.STREAMBLAST);
 
         resolver.addAttack(target, damage);
     }
@@ -1391,7 +1389,7 @@ BattalionEntity.prototype.mResolveRegularAttack = function(gameContext, target, 
 
 BattalionEntity.prototype.mResolveHeal = function(gameContext, target, resolver) {
     const amplifier = this.getHealAmplifier(gameContext);
-    const heal = this.damage * amplifier;
+    const heal = Math.floor(this.damage * amplifier);
 
     resolver.addHeal(target, heal);
 }

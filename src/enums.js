@@ -41,7 +41,8 @@ export const TEAM_STAT = {
     RESOUCES_SPENT: 13,
     ROUNDS_TAKEN: 14,
     UNITS_MOVED: 15,
-    COUNT: 16
+    RESOURCE_DAMAGE: 16,
+    COUNT: 17
 };
 
 export const GAME_EVENT = {
@@ -426,7 +427,7 @@ export const ATTACK_FLAG = {
     COUNTER: 1 << 0,
     SHRAPNEL: 1 << 1,
     AREA: 1 << 2,
-    LINE: 1 << 3
+    STREAMBLAST: 1 << 3
 };
 
 export const PATH_FLAG = {
