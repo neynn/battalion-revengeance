@@ -32,19 +32,19 @@ export const EntityType = function(id, config) {
     const MIN_JAMMER_RANGE = 1;
 
     const {
-        dimX = EntityType.DEFAULT.SIZE_X,
-        dimY = EntityType.DEFAULT.SIZE_Y,
-        health = EntityType.DEFAULT.HEALTH,
-        damage = EntityType.DEFAULT.DAMAGE,
+        dimX = 1,
+        dimY = 1,
+        health = 1,
+        damage = 0,
         weaponType = WEAPON_TYPE.NONE,
         armorType = ARMOR_TYPE.NONE,
-        movementRange = EntityType.DEFAULT.MOVEMENT_RANGE,
+        movementRange = 0,
         movementType = MOVEMENT_TYPE.STATIONARY,
-        movementSpeed = EntityType.DEFAULT.MOVEMENT_SPEED,
-        jammerRange = EntityType.DEFAULT.JAMMER_RANGE,
-        minRange = EntityType.DEFAULT.MIN_RANGE,
-        maxRange = EntityType.DEFAULT.MAX_RANGE,
-        streamRange = EntityType.DEFAULT.STREAM_RANGE,
+        movementSpeed = 224,
+        jammerRange = 1,
+        minRange = 1,
+        maxRange = 1,
+        streamRange = 1,
         cost = 0,
         desc = "MISSING_DESC_ENTITY",
         name = "MISSING_NAME_ENTITY",
@@ -115,16 +115,3 @@ export const EntityType = function(id, config) {
 
 EntityType.MIN_MOVE_COST = 1;
 EntityType.MAX_MOVE_COST = 99;
-
-EntityType.DEFAULT = {
-    MOVEMENT_SPEED: 224,
-    SIZE_X: 1,
-    SIZE_Y: 1,
-    MIN_RANGE: 1,
-    MAX_RANGE: 1,
-    DAMAGE: 0,
-    MOVEMENT_RANGE: 0,
-    STREAM_RANGE: 1,
-    JAMMER_RANGE: 1,
-    HEALTH: 1
-};
