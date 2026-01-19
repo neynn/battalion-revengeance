@@ -996,7 +996,7 @@
         "movementType": "RUDDER",
         "name": "ENTITY_NAME_HUNTER_SUPPORT",
         "desc": "ENTITY_DESC_HUNTER_SUPPORT",
-        "traits": ["SKYSWEEPER", "DEPTH_CHARGE", "TRACKING", "STUN"],
+        "traits": ["SKYSWEEPER", "DEPTH_CHARGE", "TRACKING"],
         "sprites": {
             "idle_right": "hunter_support_idle_right",
             "idle_left": "hunter_support_idle_left",

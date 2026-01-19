@@ -1,7 +1,33 @@
+const precomputeOffsets = function(range) {
+    const size = range * 2 + 1;
+    const offsets = [];
+
+    for(let i = 0; i < size; i++) {
+        for(let j = 0; j < size; j++) {
+            const deltaX = j - range;
+            const deltaY = i - range;
+            const distance = Math.abs(deltaX) + Math.abs(deltaY);
+
+            if(distance <= range) {
+                offsets.push(deltaX, deltaY, distance);
+            }
+        }
+    }
+
+    return offsets;
+};
+
 export const FloodFill = function(straightCost, crossCost) {
     this.straightCost = straightCost;
     this.crossCost = crossCost;
 }
+
+FloodFill.LISTS = {
+    1: precomputeOffsets(1),
+    2: precomputeOffsets(2),
+    3: precomputeOffsets(3),
+    4: precomputeOffsets(4)
+};
 
 FloodFill.RESPONSE = {
     IGNORE_NEXT: 0,
@@ -79,42 +105,6 @@ FloodFill.flattenTree = function(startNode) {
     }
 
     return walkedNodes;
-}
-
-FloodFill.fill2D = function(startX, startY, mapWidth, mapHeight, range, onFill) {
-    const queue = [];
-    const visited = new Set();
-    const startID = startY * mapWidth + startX;
-    let index = 0;
-
-    visited.add(startID);
-    queue.push({ "x": startX, "y": startY, "cost": 0 });
-
-    if(FloodFill.isNodeInBounds(startX, startY, mapWidth, mapHeight)) {
-        onFill(startX, startY, 0, startID);
-    }
-
-    while(index < queue.length) {
-        const { x, y, cost } = queue[index++];
-        const neighborCost = cost + 1;
-
-        if(neighborCost > range) {
-            continue;
-        }
-
-        for(let i = 0; i < FloodFill.NEIGHBORS.length; i++) {
-            const [deltaX, deltaY] = FloodFill.NEIGHBORS[i];
-            const neighborX = x + deltaX;
-            const neighborY = y + deltaY;
-            const neighborID = neighborY * mapWidth + neighborX;
-
-            if(!visited.has(neighborID) && FloodFill.isNodeInBounds(neighborX, neighborY, mapWidth, mapHeight)) {
-                onFill(neighborX, neighborY, neighborCost, neighborID);
-                visited.add(neighborID);
-                queue.push({ "x": neighborX, "y": neighborY, "cost": neighborCost });
-            } 
-        }
-    }
 }
 
 FloodFill.prototype.search = function(startX, startY, gLimit, mapWidth, mapHeight, onCheck) {

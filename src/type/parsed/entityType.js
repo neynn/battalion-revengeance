@@ -30,6 +30,7 @@ const getCategory = function(movementType) {
 export const EntityType = function(id, config) {
     const MAX_TRAITS = 4;
     const MIN_JAMMER_RANGE = 1;
+    const MAX_JAMMER_RANGE = 4;
 
     const {
         dimX = 1,
@@ -84,6 +85,8 @@ export const EntityType = function(id, config) {
 
     if(this.jammerRange < MIN_JAMMER_RANGE) {
         this.jammerRange = MIN_JAMMER_RANGE;
+    } else if(this.jammerRange > MAX_JAMMER_RANGE) {
+        this.jammerRange = MAX_JAMMER_RANGE;
     }
 
     if(this.traits.length > MAX_TRAITS) {

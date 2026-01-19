@@ -313,19 +313,19 @@ Team.prototype.startTurn = function(gameContext) {
             //Entities are immune to taking damage/proccing on their first turn.
             if(entity.turns > 1) {
                 entity.takeTerrainDamage(gameContext);
+            }
 
-                if(entity.isDead()) {
-                    deadEntities.push(entityID);
-                } else {
-                    if(entity.hasTrait(TRAIT_TYPE.RADAR)) {
-                        const uncloaked = entity.getUncloakedEntitiesAtSelf(gameContext);
+            if(entity.isDead()) {
+                deadEntities.push(entityID);
+            } else {
+                if(entity.hasTrait(TRAIT_TYPE.RADAR)) {
+                    const uncloaked = entity.getUncloakedEntitiesAtSelf(gameContext);
 
-                        for(const uEntity of uncloaked) {
-                            const uEntityID = uEntity.getID();
+                    for(const uEntity of uncloaked) {
+                        const uEntityID = uEntity.getID();
 
-                            if(!uncloakedEntities.includes(uEntityID)) {
-                                uncloakedEntities.push(uEntityID);
-                            }
+                        if(!uncloakedEntities.includes(uEntityID)) {
+                            uncloakedEntities.push(uEntityID);
                         }
                     }
                 }

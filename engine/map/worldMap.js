@@ -294,8 +294,60 @@ WorldMap.prototype.createLayer = function(type) {
     this.layers.push(layer);
 }
 
-WorldMap.prototype.fill2DGraph = function(tileX, tileY, range, onFill) {
-    FloodFill.fill2D(tileX, tileY, this.width, this.height, range, onFill);
+WorldMap.prototype.fill2DGraph = function(startX, startY, range, onFill) {
+    const list = FloodFill.LISTS[range];
+
+    if(list !== undefined) {
+        for(let i = 0; i < list.length; i += 3) {
+            const deltaX = list[i];
+            const deltaY = list[i + 1];
+            const distance = list[i + 2];
+            const tileX = startX + deltaX;
+            const tileY = startY + deltaY;
+
+            if(!this.isTileOutOfBounds(tileX, tileY)) {
+                const index = tileY * this.width + tileX;
+
+                onFill(tileX, tileY, distance, index);
+            }
+        }
+
+        return;
+    }
+
+    const queue = [];
+    const visited = new Set();
+    const startID = startY * this.width + startX;
+    let index = 0;
+
+    visited.add(startID);
+    queue.push({ "x": startX, "y": startY, "cost": 0 });
+
+    if(!this.isTileOutOfBounds(startX, startY)) {
+        onFill(startX, startY, 0, startID);
+    }
+
+    while(index < queue.length) {
+        const { x, y, cost } = queue[index++];
+        const neighborCost = cost + 1;
+
+        if(neighborCost > range) {
+            continue;
+        }
+
+        for(let i = 0; i < FloodFill.NEIGHBORS.length; i++) {
+            const [deltaX, deltaY] = FloodFill.NEIGHBORS[i];
+            const neighborX = x + deltaX;
+            const neighborY = y + deltaY;
+            const neighborID = neighborY * this.width + neighborX;
+
+            if(!visited.has(neighborID) && !this.isTileOutOfBounds(neighborX, neighborY)) {
+                onFill(neighborX, neighborY, neighborCost, neighborID);
+                visited.add(neighborID);
+                queue.push({ "x": neighborX, "y": neighborY, "cost": neighborCost });
+            } 
+        }
+    }
 }
 
 WorldMap.prototype.fill2DArea = function(tileX, tileY, width, height, onFill) {
