@@ -192,9 +192,9 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
 
     if(targetEntity && targetEntity.isNextToTile(targetX, targetY)) {
         if(entity.isHealValid(gameContext, targetEntity)) {
-            executionPlan.addNext(createHealRequest(entityID, targetID, COMMAND_TYPE.CHAIN_AFTER_MOVE));
+            executionPlan.addNext(createHealRequest(entityID, targetID, COMMAND_TYPE.ATTACK));
         } else if(entity.isAttackValid(gameContext, targetEntity)) {
-            executionPlan.addNext(createAttackRequest(entityID, targetID, COMMAND_TYPE.CHAIN_AFTER_MOVE));
+            executionPlan.addNext(createAttackRequest(entityID, targetID, COMMAND_TYPE.ATTACK));
         } else {
             console.error("Heal and attack are both invalid!");
         }

@@ -62,7 +62,7 @@ export const createTrackingIntent = function(entity, potentialTargets) {
     return new ActionIntent(ACTION_TYPE.ATTACK, {
         "entityID": entityID,
         "targetID": targetID,
-        "command": COMMAND_TYPE.CHAIN_AFTER_MOVE
+        "command": COMMAND_TYPE.ATTACK
     });
 }
 

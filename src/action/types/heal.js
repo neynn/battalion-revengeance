@@ -90,18 +90,15 @@ HealAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
     const resolver = new InteractionResolver();
 
     switch(command) {
-        case COMMAND_TYPE.CHAIN_AFTER_MOVE: {
-            if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && !entity.hasFlag(BattalionEntity.FLAG.HAS_FIRED) && entity.isNextToEntity(target)) {
-                resolveHeal(gameContext, entity, target, resolver);
-            }
-
-            break;
-        }
-        case COMMAND_TYPE.INITIATE: {
+        case COMMAND_TYPE.ATTACK: {
             if(entity.canAct()) {
                resolveHeal(gameContext, entity, target, resolver);
+            } else {
+                if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && !entity.hasFlag(BattalionEntity.FLAG.HAS_FIRED) && entity.isNextToEntity(target)) {
+                    resolveHeal(gameContext, entity, target, resolver);
+                } 
             }
-    
+
             break;
         }
     }

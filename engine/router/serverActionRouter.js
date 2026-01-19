@@ -1,3 +1,4 @@
+import { GAME_EVENT } from "../../src/enums.js";
 import { ActionIntent } from "../action/actionIntent.js";
 import { ActionRouter } from "./actionRouter.js";
 
@@ -18,16 +19,27 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
 
     const { world } = gameContext;
     const { actionQueue } = world;
+    const executedPlans = [];
     let count = 0;
 
     this.isUpdating = true;
 
     while(count < this.maxActionsPerTick && actionQueue.isRunning()) {
-        actionQueue.update(gameContext);
+        const plan = actionQueue.mpFlushPlan(gameContext);
+
+        if(plan === null) {
+            break;
+        }
+
+        executedPlans.push(plan.toJSONServer());
         count++;
     }
 
     this.isUpdating = false;
+
+    gameContext.broadcastMessage(GAME_EVENT.MP_SERVER_EXECUTE_PLAN, {
+        "plans": executedPlans
+    });
 }
 
 ServerActionRouter.prototype.dispatch = function(gameContext, executionPlan) {

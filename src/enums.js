@@ -20,7 +20,8 @@ export const TRAIT_CONFIG = {
     SCHWERPUNKT_MULTIPLIER: 1.4,
     STEALTH_MULTIPLIER: 2,
     EXECUTIONER_THRESHOLD: 0.5,
-    EXECUTIONER_DAMAGE: 1.5
+    EXECUTIONER_DAMAGE: 1.5,
+    JUDGEMENT_DAMAGE: 10000
 };
 
 export const TEAM_STAT = {
@@ -308,9 +309,8 @@ export const OBJECTIVE_TYPE = {
 };
 
 export const COMMAND_TYPE = {
-    INITIATE: 0,
+    ATTACK: 0,
     COUNTER: 1,
-    CHAIN_AFTER_MOVE: 2
 };
 
 export const EFFECT_TYPE = {

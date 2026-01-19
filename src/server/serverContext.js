@@ -47,8 +47,6 @@ export const ServerGameContext = function(serverApplication, id) {
     this.state = ServerGameContext.STATE.NONE;
     this.readyClients = 0;
 
-    this.world.actionQueue.toFlush();
-    this.world.actionQueue.events.on(ActionQueue.EVENT.PLAN_FINISHED, ({ plan }) => this.sendExecutionPlan(plan), { permanent: true });
     this.world.entityManager.nextID = 1000;
 }
 
@@ -74,12 +72,6 @@ ServerGameContext.prototype.onClientLeave = function(clientID) {
 ServerGameContext.prototype.sendEventTrigger = function(eventID) {
     this.broadcastMessage(GAME_EVENT.MP_SERVER_TRIGGER_EVENT, {
         "eventID": eventID
-    });
-}
-
-ServerGameContext.prototype.sendExecutionPlan = function(plan) {
-    this.broadcastMessage(GAME_EVENT.MP_SERVER_EXECUTE_PLAN, {
-        "plan": plan.toJSONServer()
     });
 }
 

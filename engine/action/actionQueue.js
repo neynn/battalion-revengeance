@@ -1,4 +1,3 @@
-import { EventEmitter } from "../events/eventEmitter.js";
 import { ExecutionPlan } from "./executionPlan.js";
 import { Queue } from "../util/queue.js";
 import { Action } from "./action.js";
@@ -11,10 +10,6 @@ export const ActionQueue = function() {
     this.current = null;
     this.isSkipping = false;
     this.state = ActionQueue.STATE.ACTIVE;
-
-    this.events = new EventEmitter();
-    this.events.register(ActionQueue.EVENT.INVALID_PLAN);
-    this.events.register(ActionQueue.EVENT.PLAN_FINISHED);
 }
 
 ActionQueue.MAX_ACTIONS = 100;
@@ -22,14 +17,28 @@ ActionQueue.MAX_ACTIONS = 100;
 ActionQueue.STATE = {
     NONE: 0,
     ACTIVE: 1,
-    PROCESSING: 2,
-    FLUSH: 3
+    PROCESSING: 2
 };
 
-ActionQueue.EVENT = {
-    INVALID_PLAN: "INVALID_PLAN",
-    PLAN_FINISHED: "PLAN_FINISHED"
-};
+ActionQueue.prototype.mpFlushPlan = function(gameContext) {
+    if(!this.current) {
+        this.current = this.getNextPlan(gameContext);
+
+        if(!this.current) {
+            return null;
+        }
+    }
+
+    const currentPlan = this.current;
+    const { type, data } = this.current;
+    const actionType = this.actionTypes.get(type);
+
+    this.current.setState(ExecutionPlan.STATE.RUNNING);
+    actionType.execute(gameContext, data);
+    this.endExecutionPlan();
+
+    return currentPlan;
+}
 
 ActionQueue.prototype.update = function(gameContext) {
     if(!this.current) {
@@ -61,12 +70,6 @@ ActionQueue.prototype.update = function(gameContext) {
 
             break;
         }
-        case ActionQueue.STATE.FLUSH: {
-            this.current.setState(ExecutionPlan.STATE.RUNNING);
-            actionType.execute(gameContext, data);
-            this.endExecutionPlan();
-            break;
-        }
     }
 }
 
@@ -92,11 +95,6 @@ ActionQueue.prototype.endExecutionPlan = function() {
     }
 
     this.current.setState(ExecutionPlan.STATE.FINISHED);
-
-    this.events.emit(ActionQueue.EVENT.PLAN_FINISHED, {
-        "plan": this.current
-    });
-
     this.isSkipping = false;
     this.current = null;
 }
@@ -114,11 +112,7 @@ ActionQueue.prototype.createExecutionPlan = function(gameContext, actionIntent) 
     actionType.fillExecutionPlan(gameContext, executionPlan, data);
 
     if(!executionPlan.isValid()) {
-        this.events.emit(ActionQueue.EVENT.INVALID_PLAN, {
-            "intent": actionIntent,
-            "plan": executionPlan
-        });
-
+        console.error("Invalid plan!");
         return null;
     }
 
@@ -136,7 +130,6 @@ ActionQueue.prototype.registerAction = function(typeID, handler) {
 
 ActionQueue.prototype.exit = function() {
     this.intentQueue.length = 0;
-    this.events.muteAll();
     this.executionQueue.clear();
     this.isSkipping = false;
     this.current = null;
@@ -192,10 +185,6 @@ ActionQueue.prototype.isEmpty = function() {
 
 ActionQueue.prototype.isRunning = function() {
     return this.executionQueue.getSize() !== 0 || this.current !== null || this.intentQueue.length !== 0;
-}
-
-ActionQueue.prototype.toFlush = function() {
-    this.state = ActionQueue.STATE.FLUSH;
 }
 
 ActionQueue.prototype.skip = function() {

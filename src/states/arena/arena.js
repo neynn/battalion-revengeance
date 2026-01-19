@@ -46,9 +46,12 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
                 break;
             }
             case GAME_EVENT.MP_SERVER_EXECUTE_PLAN: {
-                const { plan } = payload;
+                const { plans } = payload;
+                console.log(plans)
+                for(const plan of plans) {
+                    actionRouter.onServerPlan(gameContext, plan);
+                }
 
-                actionRouter.onServerPlan(gameContext, plan);
                 break;
             }
             case GAME_EVENT.MP_SERVER_TRIGGER_EVENT: {

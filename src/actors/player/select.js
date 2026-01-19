@@ -232,13 +232,13 @@ SelectState.prototype.getAttackRequest = function(entity) {
 
     switch(rangeType) {
         case RANGE_TYPE.RANGE: {
-            request = createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
+            request = createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.ATTACK);
             break;
         }
         case RANGE_TYPE.MELEE:
         case RANGE_TYPE.HYBRID: {
             if(this.path.length === 0) {
-                request = createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
+                request = createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.ATTACK);
             } else {
                 request = createMoveRequest(this.entity.getID(), this.path, entity.getID());
             }
@@ -256,7 +256,7 @@ SelectState.prototype.getHealRequest = function(entity) {
 
     switch(rangeType) {
         case RANGE_TYPE.RANGE: {
-            request = createHealRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
+            request = createHealRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.ATTACK);
             break;
         }
         case RANGE_TYPE.MELEE:
@@ -268,7 +268,7 @@ SelectState.prototype.getHealRequest = function(entity) {
                 }
                 case 1: {
                     //The ally is next to the healer, as the path is 1 longer than it should be. It's treated as melee.
-                    request = createHealRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.INITIATE);
+                    request = createHealRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.ATTACK);
                     break;
                 }
                 default: {

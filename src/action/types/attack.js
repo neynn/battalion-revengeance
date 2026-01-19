@@ -1,5 +1,4 @@
 import { Action } from "../../../engine/action/action.js";
-import { hasFlag } from "../../../engine/util/flag.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ATTACK_TYPE, COMMAND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { playAttackEffect } from "../../systems/animation.js";
@@ -62,13 +61,13 @@ AttackAction.prototype.onStart = function(gameContext, data) {
 
     entity.lookAt(target);
 
-    if(hasFlag(flags, AttackAction.FLAG.COUNTER)) {
+    if(flags & AttackAction.FLAG.COUNTER) {
         entity.playCounter(gameContext, target);
     } else {
         entity.playAttack(gameContext, target);
     }
 
-    if(hasFlag(flags, AttackAction.FLAG.UNCLOAK)) {
+    if(flags & AttackAction.FLAG.UNCLOAK) {
         entity.setOpacity(1);
     }
 
@@ -120,18 +119,18 @@ AttackAction.prototype.execute = function(gameContext, data) {
         }
     }
 
-    if(hasFlag(flags, AttackAction.FLAG.UNCLOAK)) {
+    if(flags & AttackAction.FLAG.UNCLOAK) {
         entity.clearFlag(BattalionEntity.FLAG.IS_CLOAKED);
     }
 
-    if(hasFlag(flags, AttackAction.FLAG.COUNTER)) {
+    if(flags & AttackAction.FLAG.COUNTER) {
         entity.clearLastAttacker();
     } else {
         target.setLastAttacker(attackerID);
 
         entity.setFlag(BattalionEntity.FLAG.HAS_FIRED);
 
-        if(hasFlag(flags, AttackAction.FLAG.BEWEGUNGSKRIEG)) {
+        if(flags & AttackAction.FLAG.BEWEGUNGSKRIEG) {
             entity.triggerBewegungskrieg();
         }
     }
@@ -158,18 +157,15 @@ AttackAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, 
     let flags = AttackAction.FLAG.NONE;
 
     switch(command) {
-        case COMMAND_TYPE.CHAIN_AFTER_MOVE: {
-            if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && !entity.hasFlag(BattalionEntity.FLAG.HAS_FIRED) && entity.isNextToEntity(target)) {
-                resolveFirstAttack(gameContext, entity, target, resolver);
-            }
-
-            break;
-        }
-        case COMMAND_TYPE.INITIATE: {
+        case COMMAND_TYPE.ATTACK: {
             if(entity.canAct()) {
                resolveFirstAttack(gameContext, entity, target, resolver);
+            } else {
+                if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && !entity.hasFlag(BattalionEntity.FLAG.HAS_FIRED) && entity.isNextToEntity(target)) {
+                    resolveFirstAttack(gameContext, entity, target, resolver);
+                }
             }
-    
+
             break;
         }
         case COMMAND_TYPE.COUNTER: {

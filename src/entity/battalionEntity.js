@@ -984,7 +984,7 @@ BattalionEntity.prototype.getAttackDamage = function(gameContext, target, damage
 	}
 
     if(this.hasTrait(TRAIT_TYPE.JUDGEMENT)) {
-        damage = 10000;
+        damage = TRAIT_CONFIG.JUDGEMENT_DAMAGE;
     }
 
     return damage;
