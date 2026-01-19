@@ -1,7 +1,6 @@
-export const ExecutionPlan = function(id, type, intent) {
+export const ExecutionPlan = function(id, type) {
     this.id = id;
     this.type = type;
-    this.intent = intent;
     this.data = null;
     this.state = ExecutionPlan.STATE.NONE;
     this.next = [];
@@ -37,8 +36,7 @@ ExecutionPlan.prototype.toJSONServer = function() {
     return {
         "id": this.id,
         "type": this.type,
-        "data": this.data,
-        "intent": this.intent
+        "data": this.data
     }
 }
 
@@ -53,7 +51,6 @@ ExecutionPlan.prototype.toJSON = function() {
         "id": this.id,
         "type": this.type,
         "data": this.data,
-        "intent": this.intent,
         "next": next
     }
 }

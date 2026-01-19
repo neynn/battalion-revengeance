@@ -51,10 +51,11 @@ TurnActor.prototype.tryEnqueueAction = function(gameContext) {
     }
 
     for(let i = 0; i < this.actionIntents.length; i++) {
-        const executionPlan = actionQueue.createExecutionPlan(gameContext, this.actionIntents[i]);
+        const actionIntent = this.actionIntents[i];
+        const executionPlan = actionQueue.createExecutionPlan(gameContext, actionIntent);
 
         if(executionPlan) {
-            actionRouter.dispatch(gameContext, executionPlan);
+            actionRouter.dispatch(gameContext, executionPlan, actionIntent);
             this.actionIntents.splice(0, i + 1);
             return;
         }

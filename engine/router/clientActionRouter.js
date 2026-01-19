@@ -1,5 +1,4 @@
 import { ACTION_TYPE, GAME_EVENT } from "../../src/enums.js";
-import { ActionIntent } from "../action/actionIntent.js";
 import { ExecutionPlan } from "../action/executionPlan.js";
 import { ActionRouter } from "./actionRouter.js";
 
@@ -30,7 +29,7 @@ ClientActionRouter.prototype.toServer = function() {
     this.target = ClientActionRouter.TARGET.SERVER;
 }
 
-ClientActionRouter.prototype.dispatch = function(gameContext, executionPlan) {
+ClientActionRouter.prototype.dispatch = function(gameContext, executionPlan, actionIntent) {
     const { world, client } = gameContext;
     const { actionQueue } = world;
     const { socket } = client;
@@ -41,11 +40,11 @@ ClientActionRouter.prototype.dispatch = function(gameContext, executionPlan) {
             break;
         }
         case ClientActionRouter.TARGET.SERVER: {
-            const { type, intent } = executionPlan;
+            const { type } = executionPlan;
 
             if(this.sendable.has(type)) {
                 socket.messageRoom(GAME_EVENT.MP_CLIENT_ACTION_INTENT, {
-                    "intent": intent.toJSON()
+                    "intent": actionIntent.toJSON()
                 });
             }
 
@@ -67,26 +66,17 @@ ClientActionRouter.prototype.forceEnqueue = function(gameContext, actionIntent) 
         return;
     }
 
-    switch(this.target) {
-        case ClientActionRouter.TARGET.CLIENT: {
-            actionQueue.enqueue(executionPlan);
-            break;
-        }
-        case ClientActionRouter.TARGET.SERVER: {
-            //IGNORE SELF ENQUEUES.
-            break;
-        }
+    if(this.target === ClientActionRouter.TARGET.CLIENT) {
+        actionQueue.enqueue(executionPlan);
     }
 }
 
 ClientActionRouter.prototype.onServerPlan = function(gameContext, plan) {
     const { world } = gameContext;
     const { actionQueue } = world;
-    const { intent } = plan;
-    const { type, data } = intent;
-    const actionIntent = new ActionIntent(type, data);
-    const executionPlan = new ExecutionPlan(-1, type, actionIntent);
+    const { id, type, data } = plan;
+    const executionPlan = new ExecutionPlan(id, type);
 
-    executionPlan.setData(plan.data);
+    executionPlan.setData(data);
     actionQueue.enqueue(executionPlan);
 }

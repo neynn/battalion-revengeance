@@ -42,13 +42,6 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
     });
 }
 
-ServerActionRouter.prototype.dispatch = function(gameContext, executionPlan) {
-    const { world } = gameContext;
-    const { actionQueue } = world;
-
-    //Keep dispatch for now. Gets called in TurnActor.
-}
-
 ServerActionRouter.prototype.forceEnqueue = function(gameContext, actionIntent) {
     const { world } = gameContext;
     const { actionQueue } = world;

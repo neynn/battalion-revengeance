@@ -21,12 +21,10 @@ ActionQueue.STATE = {
 };
 
 ActionQueue.prototype.mpFlushPlan = function(gameContext) {
-    if(!this.current) {
-        this.current = this.getNextPlan(gameContext);
+    this.getNextAction(gameContext);
 
-        if(!this.current) {
-            return null;
-        }
+    if(!this.current) {
+        return null;
     }
 
     const currentPlan = this.current;
@@ -41,12 +39,10 @@ ActionQueue.prototype.mpFlushPlan = function(gameContext) {
 }
 
 ActionQueue.prototype.update = function(gameContext) {
-    if(!this.current) {
-        this.current = this.getNextPlan(gameContext);
+    this.getNextAction(gameContext);
 
-        if(!this.current) {
-            return;
-        }
+    if(!this.current) {
+        return;
     }
 
     const { type, data } = this.current;
@@ -73,18 +69,22 @@ ActionQueue.prototype.update = function(gameContext) {
     }
 }
 
-ActionQueue.prototype.getNextPlan = function(gameContext) {
-    while(this.intentQueue.length !== 0) {
-        const actionIntent = this.intentQueue.pop();
-        const executionPlan = this.createExecutionPlan(gameContext, actionIntent);
+ActionQueue.prototype.getNextAction = function(gameContext) {
+    if(!this.current) {
+        while(this.intentQueue.length !== 0) {
+            const actionIntent = this.intentQueue.pop();
+            const executionPlan = this.createExecutionPlan(gameContext, actionIntent);
 
-        if(executionPlan) {
-            this.enqueue(executionPlan, Action.PRIORITY.HIGH);
-            break;
+            if(executionPlan) {
+                this.enqueue(executionPlan, Action.PRIORITY.HIGH);
+                break;
+            }
         }
+
+        this.current = this.executionQueue.getNext();
     }
 
-    return this.executionQueue.getNext();
+    return this.current;
 }
 
 ActionQueue.prototype.endExecutionPlan = function() {
@@ -107,7 +107,7 @@ ActionQueue.prototype.createExecutionPlan = function(gameContext, actionIntent) 
         return null;
     }
 
-    const executionPlan = new ExecutionPlan(this.nextID++, type, actionIntent);
+    const executionPlan = new ExecutionPlan(this.nextID++, type);
 
     actionType.fillExecutionPlan(gameContext, executionPlan, data);
 
