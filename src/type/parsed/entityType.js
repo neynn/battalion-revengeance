@@ -1,4 +1,4 @@
-import { ARMOR_TYPE, ENTITY_CATEGORY, MOVEMENT_TYPE, RANGE_TYPE, WEAPON_TYPE } from "../../enums.js";
+import { ARMOR_TYPE, ENTITY_CATEGORY, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, WEAPON_TYPE } from "../../enums.js";
 
 const ENABLE_HYBRID = false;
 
@@ -47,6 +47,7 @@ export const EntityType = function(id, config) {
         maxRange = 1,
         streamRange = 1,
         cost = 0,
+        shop = SHOP_TYPE.NONE,
         desc = "MISSING_DESC_ENTITY",
         name = "MISSING_NAME_ENTITY",
         traits = [],
@@ -78,6 +79,7 @@ export const EntityType = function(id, config) {
     this.traits = traits;
     this.category = getCategory(movementType);
     this.rangeType = getRangeType(minRange, maxRange);
+    this.shop = shop;
 
     if(this.maxRange < this.minRange) {
         this.maxRange = this.minRange;

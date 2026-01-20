@@ -15,6 +15,7 @@
         "name": "BUILDING_NAME_FACTORY",
         "desc": "BUILDING_DESC_FACTORY",
         "sprite": "factory",
+        "shop": "FACTORY",
         "traits": ["CAPTURABLE", "FISCAL_CENTER", "SPAWNER"]
     },
     "GROUND_CONTROL": {

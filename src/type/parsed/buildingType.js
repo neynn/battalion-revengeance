@@ -1,9 +1,12 @@
+import { SHOP_TYPE } from "../../enums.js";
+
 export const BuildingType = function(id, config) {
     const {
         name = "MISSING_NAME_BUILDING",
         desc = "MISSING_DESC_BUILDING",
         sprite = null,
-        traits = []
+        traits = [],
+        shop = SHOP_TYPE.NONE
     } = config;
 
     this.id = id;
@@ -11,4 +14,5 @@ export const BuildingType = function(id, config) {
     this.desc = desc;
     this.sprite = sprite;
     this.traits = traits;
+    this.shop = shop;
 }

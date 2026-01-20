@@ -53,6 +53,7 @@ export const ENTITY_CATEGORY = {
 };
 
 export const SHOP_TYPE = {
+    NONE: "NONE",
     ENGINEER: "ENGINEER",
     WARMACHINE: "WARMACHINE",
     FACTORY: "FACTORY"

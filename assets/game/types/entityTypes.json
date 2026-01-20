@@ -973,6 +973,7 @@
         "movementType": "TRACKED",
         "minRange": 2,
         "maxRange": 3,
+        "shop": "WARMACHINE",
         "name": "ENTITY_NAME_WARMACHINE",
         "desc": "ENTITY_DESC_WARMACHINE",
         "traits": ["TANK_POOPER", "EXTRACTOR", "LYNCHPIN", "SKYSWEEPER"],
