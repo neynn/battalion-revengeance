@@ -48,7 +48,14 @@ export const TEAM_STAT = {
 export const ENTITY_CATEGORY = {
     LAND: 0,
     SEA: 1,
-    AIR: 2
+    AIR: 2,
+    COUNT: 3
+};
+
+export const SHOP_TYPE = {
+    ENGINEER: "ENGINEER",
+    WARMACHINE: "WARMACHINE",
+    FACTORY: "FACTORY"
 };
 
 export const GAME_EVENT = {

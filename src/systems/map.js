@@ -4,6 +4,7 @@ import { ClientBattalionEvent } from "../event/clientBattalionEvent.js";
 import { ServerBattalionEvent } from "../event/serverBattalionEvent.js";
 import { createActor, createPlayer, createSpectator, createTeam } from "../map/generic.js";
 import { MapSettings } from "../map/settings.js";
+import { SHOP_TYPE } from "../enums.js";
 
 export const ClientMapFactory = {
     mpClientCreateStaticMap: async function(gameContext, payload) {
@@ -118,7 +119,7 @@ export const ClientMapFactory = {
     },
     loadMap: function(gameContext, worldMap, mapData, clientTeam, settings) {
         const { world, teamManager, dialogueHandler, client } = gameContext;
-        const { eventHandler, turnManager } = world;
+        const { eventHandler } = world;
         const { musicPlayer } = client;
         const { 
             music,
@@ -266,14 +267,12 @@ export const ServerMapFactory = {
         createActor(gameContext, commander, teamName);
     },
     loadMap: function(gameContext, worldMap, mapData, settings) {
-        const { world, teamManager } = gameContext;
-        const { turnManager } = world;
+        const { teamManager } = gameContext;
         const { 
             teams = {},
             entities = [],
             objectives = {},
-            events = {},
-            buildings = []
+            events = {}
         } = mapData;
 
         for(const teamName in teams) {

@@ -12,6 +12,7 @@ import { ArmorType } from "./parsed/armorType.js";
 import { BuildingType } from "./parsed/buildingType.js";
 import { MoraleType } from "./parsed/moraleType.js";
 import { EntityType } from "./parsed/entityType.js";
+import { ShopType } from "./parsed/shopType.js";
 
 const SCHEMA_TYPES = {
     "RED": {
@@ -137,7 +138,8 @@ export const TypeRegistry = function() {
         [TypeRegistry.CATEGORY.FACTION]: "FACTION",
         [TypeRegistry.CATEGORY.BUILDING]: "BUILDING",
         [TypeRegistry.CATEGORY.MORALE]: "MORALE",
-        [TypeRegistry.CATEGORY.COMMANDER]: "COMMANDER"
+        [TypeRegistry.CATEGORY.COMMANDER]: "COMMANDER",
+        [TypeRegistry.CATEGORY.SHOP]: "SHOP"
     };
 
     const STUB = {
@@ -154,7 +156,8 @@ export const TypeRegistry = function() {
         [TypeRegistry.CATEGORY.WEAPON]: new WeaponType("ERROR_WEAPON", {}),
         [TypeRegistry.CATEGORY.TRAIT]: new TraitType("ERROR_TRAIT", {}),
         [TypeRegistry.CATEGORY.TILE]: new TileType("ERROR_TILE", {}),
-        [TypeRegistry.CATEGORY.TERRAIN]: new TerrainType("ERROR_TERRAIN", {})
+        [TypeRegistry.CATEGORY.TERRAIN]: new TerrainType("ERROR_TERRAIN", {}),
+        [TypeRegistry.CATEGORY.SHOP]: new ShopType("ERROR_SHOP", {}),
     };
 
     const count = Object.keys(TypeRegistry.CATEGORY).length;
@@ -183,7 +186,8 @@ TypeRegistry.CATEGORY = {
     FACTION: 12,
     BUILDING: 13,
     MORALE: 14,
-    COMMANDER: 15
+    COMMANDER: 15,
+    SHOP: 16
 };
 
 TypeRegistry.prototype.load = function(resources) {
@@ -204,6 +208,7 @@ TypeRegistry.prototype.load = function(resources) {
     this.categories[TypeRegistry.CATEGORY.FACTION].loadTypes(resources.factionTypes, FactionType);
     this.categories[TypeRegistry.CATEGORY.COMMANDER].loadTypes(resources.commanderTypes, CommanderType);
     this.categories[TypeRegistry.CATEGORY.BUILDING].loadTypes(resources.buildingTypes, BuildingType);
+    this.categories[TypeRegistry.CATEGORY.SHOP].loadTypes(resources.shopTypes, ShopType);
 }
 
 TypeRegistry.prototype.getTerrainType = function(typeID) {
@@ -264,4 +269,8 @@ TypeRegistry.prototype.getSchemaType = function(typeID) {
 
 TypeRegistry.prototype.getCurrencyType = function(typeID) {
     return this.categories[TypeRegistry.CATEGORY.CURRENCY].getType(typeID);
+}
+
+TypeRegistry.prototype.getShopType = function(typeID) {
+    return this.categories[TypeRegistry.CATEGORY.SHOP].getType(typeID);
 }
