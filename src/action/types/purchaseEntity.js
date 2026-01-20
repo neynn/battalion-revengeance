@@ -2,6 +2,7 @@ import { Action } from "../../../engine/action/action.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { createClientEntityObject, createServerEntityObject } from "../../systems/spawn.js";
+import { createUncloakIntent } from "../actionHelper.js";
 
 export const PurchaseEntityAction = function(isServer) {
     Action.call(this);
@@ -87,6 +88,18 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
     }
 
     //TODO: Add morale calculation.
+    const uncloaked = [];
+    const entities = world.getEntitiesAround(tileX, tileY);
+
+    for(const entity of entities) {
+        if(!entity.isVisibleTo(gameContext, teamID)) {
+            uncloaked.push(entity.getID());
+        }
+    }
+
+    if(uncloaked.length !== 0) {
+        executionPlan.addNext(createUncloakIntent(uncloaked));
+    }
 
     const entityID = entityManager.getNextID();
 
