@@ -5,9 +5,4 @@ repairAction -> start repair and finish repair on the next active turn. onHit ->
 TweenManager for effects.
 
 air and submerged do not get hit by pierce
-engineer unit. needs table with units it can create.
-that table is based on map & availability.
-
-engineerUnits -> CATEGORY -> type[]
-
-shopDataSheet: shop only has 1 array of entity types. i get the category via inference
+do check if entity.canSpawnThere before commiting

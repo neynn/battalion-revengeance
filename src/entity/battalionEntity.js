@@ -10,6 +10,7 @@ import { getDirectionByDelta } from "../systems/direction.js";
 import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY } from "../enums.js";
 import { transportTypeToEntityType } from "../systems/transport.js";
 import { getAreaEntities, getLineEntities } from "../systems/targeting.js";
+import { mGetUncloakedEntities } from "../systems/cloak.js";
 
 export const BattalionEntity = function(id) {
     Entity.call(this, id, "");
@@ -133,15 +134,7 @@ BattalionEntity.prototype.getRangeType = function() {
 }
 
 BattalionEntity.prototype.getAttackType = function() {
-    if(this.hasTrait(TRAIT_TYPE.DISPERSION) || this.hasTrait(TRAIT_TYPE.JUDGEMENT)) {
-        return ATTACK_TYPE.DISPERSION;
-    }
-
-    if(this.hasTrait(TRAIT_TYPE.STREAMBLAST)) {
-        return ATTACK_TYPE.STREAMBLAST;
-    }
-
-    return ATTACK_TYPE.REGULAR;
+    return this.config.getAttackType();
 }
 
 BattalionEntity.prototype.isRangeValid = function(gameContext, entity) {
@@ -201,13 +194,7 @@ BattalionEntity.prototype.setHealth = function(health) {
 }
 
 BattalionEntity.prototype.hasTrait = function(traitID) {
-    for(let i = 0; i < this.config.traits.length; i++) {
-        if(this.config.traits[i] === traitID) {
-            return true;
-        }
-    }
-
-    return false;
+    return this.config.hasTrait(traitID);
 }
 
 BattalionEntity.prototype.setTile = function(tileX, tileY) {
@@ -1094,42 +1081,10 @@ BattalionEntity.prototype.isDiscoveredAt = function(gameContext, tileX, tileY) {
 
 BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, targetY) {
     const { world } = gameContext;
-    const { mapManager, entityManager } = world;
+    const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
-    const jammerFlags = this.getJammerFlags();
-    const searchRange = jammerFlags !== JammerField.FLAG.NONE ? this.config.jammerRange : 1;
     const uncloakedEntities = [];
-    let shouldSelfUncloak = false;
-
-    worldMap.fill2DGraph(targetX, targetY, searchRange, (tileX, tileY, tileD) => {
-        const entityID = worldMap.getTopEntity(tileX, tileY);
-        const entity = entityManager.getEntity(entityID);
-
-        if(entity) {
-            const distance = entity.getDistanceToTile(targetX, targetY);
-
-            //ALWAYS uncloak neighbors.
-            if(distance === 1) {
-                //isVisibleTo check, but split up.
-                if(!this.isAllyWith(gameContext, entity)) {
-                    if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-                        uncloakedEntities.push(entity);
-                    }
-
-                    //Always uncloak next to an enemy.
-                    shouldSelfUncloak = true;
-                }
-            } else {
-                const cloakFlag = entity.getCloakFlag();
-
-                if(jammerFlags & cloakFlag) {
-                    if(!entity.hasTrait(TRAIT_TYPE.UNFAIR) && !entity.isVisibleTo(gameContext, this.teamID)) {
-                        uncloakedEntities.push(entity);
-                    }
-                }
-            }
-        }
-    });
+    const shouldSelfUncloak = mGetUncloakedEntities(gameContext, targetX, targetY, this.teamID, this.config, uncloakedEntities);
 
     //Self uncloaking logic.
     if(this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
@@ -1207,23 +1162,7 @@ BattalionEntity.prototype.toTransport = function(gameContext, transportType) {
 }
 
 BattalionEntity.prototype.isJammer = function() {
-    return this.config.jammerRange > 0 && this.getJammerFlags() !== JammerField.FLAG.NONE;
-}
-
-BattalionEntity.prototype.getJammerFlags = function() {
-    let flags = JammerField.FLAG.NONE;
-
-    //JAMMER also blocks airspace traffic.
-    if(this.hasTrait(TRAIT_TYPE.JAMMER)) {
-        flags |= JammerField.FLAG.RADAR;
-        flags |= JammerField.FLAG.AIRSPACE_BLOCKED;
-    }
-
-    if(this.hasTrait(TRAIT_TYPE.SONAR)) {
-        flags |= JammerField.FLAG.SONAR;
-    }
-
-    return flags;
+    return this.config.jammerRange > 0 && this.config.getJammerFlags() !== JammerField.FLAG.NONE;
 }
 
 BattalionEntity.prototype.clearLastAttacker = function() {
@@ -1383,7 +1322,7 @@ BattalionEntity.prototype.placeOnMap = function(gameContext) {
     }
 
     const { dimX, dimY, jammerRange } = this.config;
-    const jammerFlags = this.getJammerFlags();
+    const jammerFlags = this.config.getJammerFlags();
 
     worldMap.addEntity(this.tileX, this.tileY, dimX, dimY, this.id);
 
@@ -1404,7 +1343,7 @@ BattalionEntity.prototype.removeFromMap = function(gameContext) {
     }
 
     const { dimX, dimY, jammerRange } = this.config;
-    const jammerFlags = this.getJammerFlags();
+    const jammerFlags = this.config.getJammerFlags();
 
     worldMap.removeEntity(this.tileX, this.tileY, dimX, dimY, this.id);
 

@@ -56,7 +56,7 @@
         { "x": 3, "y": 3, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "HUNTER_SUPPORT", "team": "SOMERTIN" },
         { "x": 3, "y": 4, "direction":"SOUTH", "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "SUPER_BATTLESHIP", "team": "SOMERTIN" },
         { "x": 4, "y": 2, "stealth": false, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "STEALTH_TANK", "team": "TRANSKAL" },
-        { "x": 5, "y": 6, "stealth": true, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "STEALTH_TANK", "team": "TRANSKAL" },
+        { "x": 4, "y": 6, "stealth": true, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "STEALTH_TANK", "team": "TRANSKAL" },
         { "x": 5, "y": 2, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "TANK_HUNTER", "team": "TRANSKAL", "direction": "WEST" },
         { "x": 6, "y": 5, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "JAMMER_TRUCK", "team": "SOMERTIN", "direction": "WEST" },
         { "x": 7, "y": 2, "health": 100, "name": "ENTITY_NAME_1", "desc": "ENTITY_DESC_1", "type": "JAMMER_TRUCK", "team": "TRANSKAL", "direction": "WEST" },

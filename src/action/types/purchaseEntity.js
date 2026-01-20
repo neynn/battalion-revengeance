@@ -1,6 +1,8 @@
 import { Action } from "../../../engine/action/action.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
+import { mapCategoryToStat } from "../../enumHelpers.js";
 import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { mGetUncloakedEntities } from "../../systems/cloak.js";
 import { createClientEntityObject, createServerEntityObject } from "../../systems/spawn.js";
 import { createUncloakIntent } from "../actionHelper.js";
 
@@ -37,14 +39,19 @@ PurchaseEntityAction.prototype.execute = function(gameContext, data) {
         }
     }
 
-    if(entity) {
-        //TODO: Apply morale.
-        entity.setFlag(BattalionEntity.FLAG.HAS_FIRED);
+    if(!entity) {
+        console.error("Critical Error: Entity could not be spawned!");
+        return;
     }
+
+    //TODO: Apply morale
+    entity.setFlag(BattalionEntity.FLAG.HAS_FIRED);
+    entity.turn++
 
     team.reduceCash(cost);
     team.addStatistic(TEAM_STAT.UNITS_BUILT, 1);
     team.addStatistic(TEAM_STAT.RESOURCES_SPENT, cost);
+    team.addStatistic(mapCategoryToStat(entity.config.category), 1);
 } 
 
 PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
@@ -87,20 +94,18 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
         return;
     }
 
-    //TODO: Add morale calculation.
     const uncloaked = [];
-    const entities = world.getEntitiesAround(tileX, tileY);
 
-    for(const entity of entities) {
-        if(!entity.isVisibleTo(gameContext, teamID)) {
-            uncloaked.push(entity.getID());
-        }
-    }
+    mGetUncloakedEntities(gameContext, tileX, tileY, teamID, entityType, uncloaked);
 
     if(uncloaked.length !== 0) {
-        executionPlan.addNext(createUncloakIntent(uncloaked));
+        const uncloakedIDs = uncloaked.map(entity => entity.getID());
+        const intent = createUncloakIntent(uncloakedIDs);
+
+        executionPlan.addNext(intent);
     }
 
+    //TODO: Add morale calculation.
     const entityID = entityManager.getNextID();
 
     executionPlan.setData({

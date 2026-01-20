@@ -1,4 +1,6 @@
-import { ARMOR_TYPE, ENTITY_CATEGORY, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, WEAPON_TYPE } from "../../enums.js";
+import { mapMovementToCategory } from "../../enumHelpers.js";
+import { ARMOR_TYPE, ATTACK_TYPE, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../../enums.js";
+import { JammerField } from "../../map/jammerField.js";
 
 const ENABLE_HYBRID = false;
 
@@ -16,15 +18,6 @@ const getRangeType = function(minRange, maxRange) {
     }
 
     return RANGE_TYPE.NONE;
-}
-
-const getCategory = function(movementType) {
-    switch(movementType) {
-        case MOVEMENT_TYPE.FLIGHT: return ENTITY_CATEGORY.AIR;
-        case MOVEMENT_TYPE.RUDDER: return ENTITY_CATEGORY.SEA;
-        case MOVEMENT_TYPE.HEAVY_RUDDER: return ENTITY_CATEGORY.SEA;
-        default: return ENTITY_CATEGORY.LAND;
-    }
 }
 
 export const EntityType = function(id, config) {
@@ -77,7 +70,7 @@ export const EntityType = function(id, config) {
     this.sprites = sprites;
     this.effects = effects;
     this.traits = traits;
-    this.category = getCategory(movementType);
+    this.category = mapMovementToCategory(movementType);
     this.rangeType = getRangeType(minRange, maxRange);
     this.shop = shop;
 
@@ -120,3 +113,41 @@ export const EntityType = function(id, config) {
 
 EntityType.MIN_MOVE_COST = 1;
 EntityType.MAX_MOVE_COST = 99;
+
+EntityType.prototype.hasTrait = function(traitID) {
+    for(let i = 0; i < this.traits.length; i++) {
+        if(this.traits[i] === traitID) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+EntityType.prototype.getJammerFlags = function() {
+    let flags = JammerField.FLAG.NONE;
+
+    //JAMMER also blocks airspace traffic.
+    if(this.hasTrait(TRAIT_TYPE.JAMMER)) {
+        flags |= JammerField.FLAG.RADAR;
+        flags |= JammerField.FLAG.AIRSPACE_BLOCKED;
+    }
+
+    if(this.hasTrait(TRAIT_TYPE.SONAR)) {
+        flags |= JammerField.FLAG.SONAR;
+    }
+
+    return flags;
+}
+
+EntityType.prototype.getAttackType = function() {
+    if(this.hasTrait(TRAIT_TYPE.DISPERSION) || this.hasTrait(TRAIT_TYPE.JUDGEMENT)) {
+        return ATTACK_TYPE.DISPERSION;
+    }
+
+    if(this.hasTrait(TRAIT_TYPE.STREAMBLAST)) {
+        return ATTACK_TYPE.STREAMBLAST;
+    }
+
+    return ATTACK_TYPE.REGULAR;
+}
