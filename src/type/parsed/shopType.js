@@ -1,20 +1,18 @@
-import { ENTITY_CATEGORY } from "../../enums.js";
-
 export const ShopType = function(id, config) {
     const { 
-        land = [],
-        sea = [],
-        air = []
+        entities = []
     } = config;
 
     this.id = id;
-    this.categories = [];
+    this.entities = entities;
+}
 
-    for(let i = 0; i < ENTITY_CATEGORY.COUNT; i++) {
-        this.categories[i] = [];
+ShopType.prototype.hasEntity = function(entityID) {
+    for(let i = 0; i < this.entities.length; i++) {
+        if(this.entities[i] === entityID) {
+            return true;
+        }
     }
 
-    this.categories[ENTITY_CATEGORY.LAND] = land;
-    this.categories[ENTITY_CATEGORY.SEA] = sea;
-    this.categories[ENTITY_CATEGORY.AIR] = air;
+    return false;
 }

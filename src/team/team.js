@@ -14,7 +14,7 @@ export const Team = function(id) {
     this.color = null;
     this.status = Team.STATUS.IDLE;
     this.exchangeRate = 1;
-    this.funds = 0;
+    this.cash = 0;
     this.name = "MISSING_NAME_TEAM";
     this.desc = "MISSING_DESC_TEAM";
     this.flags = Team.FLAG.NONE;
@@ -291,10 +291,9 @@ Team.prototype.generateBuildingCash = function(gameContext) {
         totalCash += cash;
     }
 
-    this.funds += totalCash;
+    this.cash += totalCash;
     this.addStatistic(TEAM_STAT.RESOURCES_COLLECTED, totalCash);
 
-    console.log(totalCash, this.funds)
     return totalCash;
 }
 

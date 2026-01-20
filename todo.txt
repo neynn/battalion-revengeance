@@ -9,3 +9,5 @@ engineer unit. needs table with units it can create.
 that table is based on map & availability.
 
 engineerUnits -> CATEGORY -> type[]
+
+shopDataSheet: shop only has 1 array of entity types. i get the category via inference

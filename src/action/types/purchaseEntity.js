@@ -1,5 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
-import { TRAIT_TYPE } from "../../enums.js";
+import { BattalionEntity } from "../../entity/battalionEntity.js";
+import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { createClientEntityObject, createServerEntityObject } from "../../systems/spawn.js";
 
 export const PurchaseEntityAction = function(isServer) {
@@ -22,6 +23,7 @@ PurchaseEntityAction.prototype.onEnd = function(gameContext, data) {
 PurchaseEntityAction.prototype.execute = function(gameContext, data) {
     const { teamManager } = gameContext;
     const { id, tileX, tileY, teamID, typeID, cost, morale } = data;
+    const team = teamManager.getTeam(teamID);
     let entity = null;
 
     if(this.isServer) {
@@ -35,16 +37,17 @@ PurchaseEntityAction.prototype.execute = function(gameContext, data) {
     }
 
     if(entity) {
-        //Apply morale.
+        //TODO: Apply morale.
+        entity.setFlag(BattalionEntity.FLAG.HAS_FIRED);
     }
 
-    const team = teamManager.getTeam(teamID);
-
     team.reduceCash(cost);
+    team.addStatistic(TEAM_STAT.UNITS_BUILT, 1);
+    team.addStatistic(TEAM_STAT.RESOURCES_SPENT, cost);
 } 
 
 PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    const { world, teamManager } = gameContext;
+    const { world, teamManager, typeRegistry } = gameContext;
     const { turnManager, mapManager, entityManager } = world;
     const { tileX, tileY, typeID } = actionIntent;
     const worldMap = mapManager.getActiveMap();
@@ -68,10 +71,22 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
         return;
     }
 
-    //TODO: Get the spawn sheet and check for typeID
-    //Get the cash from the sheet.
-    //check if team.hasEnoughCash(cash)
-    //Morale? Calculate and give to plan.
+    const shopType = typeRegistry.getShopType(building.config.shop);
+    const hasEntity = shopType.hasEntity(typeID);
+
+    if(!hasEntity) {
+        return;
+    }
+
+    const entityType = typeRegistry.getEntityType(typeID);
+    const { cost } = entityType;
+
+    //TODO: Cost amplifiers.
+    if(!team.hasEnoughCash(cost)) {
+        return;
+    }
+
+    //TODO: Add morale calculation.
 
     const entityID = entityManager.getNextID();
 
@@ -81,7 +96,7 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
         "tileX": tileX,
         "tileY": tileY,
         "typeID": typeID,
-        "cost": 0,
+        "cost": cost,
         "morale": 0
     });
 }

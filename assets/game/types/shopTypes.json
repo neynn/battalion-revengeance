@@ -1,11 +1,11 @@
 {
     "ENGINEER": {
-
+        "entities": ["TURRET"]
     },
     "WARMACHINE": {
-
+        "entities": ["TURRET"]
     },
     "FACTORY": {
-
+        "entities": ["TURRET"]
     }
 }
