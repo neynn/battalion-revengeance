@@ -307,12 +307,7 @@ Team.prototype.startTurn = function(gameContext) {
         const entity = entityManager.getEntity(entityID);
 
         if(entity) {
-            entity.onTurnStart();  
-
-            //Entities are immune to taking damage/proccing on their first turn.
-            if(entity.turns > 1) {
-                entity.takeTerrainDamage(gameContext);
-            }
+            entity.onTurnStart(gameContext);  
 
             if(entity.isDead()) {
                 deadEntities.push(entityID);

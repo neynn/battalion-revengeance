@@ -45,9 +45,8 @@ PurchaseEntityAction.prototype.execute = function(gameContext, data) {
     }
 
     //TODO: Apply morale
-    entity.setFlag(BattalionEntity.FLAG.HAS_FIRED);
-    entity.turn++
 
+    entity.setPurchased();
     team.reduceCash(cost);
     team.addStatistic(TEAM_STAT.UNITS_BUILT, 1);
     team.addStatistic(TEAM_STAT.RESOURCES_SPENT, cost);

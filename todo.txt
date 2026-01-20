@@ -6,3 +6,4 @@ TweenManager for effects.
 
 air and submerged do not get hit by pierce
 do check if entity.canSpawnThere before commiting
+also check if the TEAM can produce the entity category

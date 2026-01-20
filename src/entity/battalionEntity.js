@@ -285,6 +285,11 @@ BattalionEntity.prototype.takeTerrainDamage = function(gameContext) {
 }
 
 BattalionEntity.prototype.getTerrainDamage = function(gameContext, tileX, tileY) {
+    //Commandos take NO damage from terrains.
+    if(this.hasTrait(TRAIT_TYPE.COMMANDO)) {
+        return 0;
+    }
+
     const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
@@ -1006,7 +1011,7 @@ BattalionEntity.prototype.canCloakAt = function(gameContext, tileX, tileY) {
     if(!this.hasTrait(TRAIT_TYPE.UNFAIR)) {
         const worldMap = mapManager.getActiveMap();
         const jammer = worldMap.getJammer(tileX, tileY);
-        const cloakFlag = this.getCloakFlag();
+        const cloakFlag = this.config.getCloakFlag();
 
         if(jammer.isJammed(gameContext, this.teamID, cloakFlag)) {
             return false;
@@ -1044,19 +1049,6 @@ BattalionEntity.prototype.canExtract = function() {
     return this.hasTrait(TRAIT_TYPE.EXTRACTOR);
 }
 
-BattalionEntity.prototype.getCloakFlag = function() {
-    //The returned flags need to be unset in a jammer field, otherwise cloaking will not work.
-    if(this.hasTrait(TRAIT_TYPE.STEALTH)) {
-        if(this.hasTrait(TRAIT_TYPE.SUBMERGED)) {
-            return JammerField.FLAG.SONAR;
-        }
-
-        return JammerField.FLAG.RADAR;
-    }
-
-    return JammerField.FLAG.NONE;
-}
-
 BattalionEntity.prototype.getUncloakedEntitiesAtSelf = function(gameContext) {
     return this.getUncloakedEntities(gameContext, this.tileX, this.tileY);
 }
@@ -1070,7 +1062,7 @@ BattalionEntity.prototype.isDiscoveredAt = function(gameContext, tileX, tileY) {
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
     const jammer = worldMap.getJammer(tileX, tileY);
-    const cloakFlag = this.getCloakFlag();
+    const cloakFlag = this.config.getCloakFlag();
 
     if(this.hasTrait(TRAIT_TYPE.UNFAIR)) {
         return false;
@@ -1093,7 +1085,7 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, 
         } else {
             //Jammer check for self.
             const jammer = worldMap.getJammer(targetX, targetY);
-            const cloakFlag = this.getCloakFlag();
+            const cloakFlag = this.config.getCloakFlag();
 
             if(jammer.isJammed(gameContext, this.teamID, cloakFlag)) {
                 uncloakedEntities.push(this);
@@ -1165,6 +1157,22 @@ BattalionEntity.prototype.isJammer = function() {
     return this.config.jammerRange > 0 && this.config.getJammerFlags() !== JammerField.FLAG.NONE;
 }
 
+BattalionEntity.prototype.setUncloaked = function() {
+    this.clearFlag(BattalionEntity.FLAG.IS_CLOAKED);
+
+    if(this.hasTrait(TRAIT_TYPE.SUBMERGED)) {
+        this.clearFlag(BattalionEntity.FLAG.IS_SUBMERGED);
+    }
+}
+
+BattalionEntity.prototype.setCloaked = function() {
+    this.setFlag(BattalionEntity.FLAG.IS_CLOAKED);
+
+    if(this.hasTrait(TRAIT_TYPE.SUBMERGED)) {
+        this.setFlag(BattalionEntity.FLAG.IS_SUBMERGED);
+    }
+}
+
 BattalionEntity.prototype.clearLastAttacker = function() {
     this.lastAttacker = EntityManager.ID.INVALID;
 }
@@ -1175,18 +1183,23 @@ BattalionEntity.prototype.setLastAttacker = function(entityID) {
     }
 }
 
-BattalionEntity.prototype.onTurnStart = function() {
+BattalionEntity.prototype.onTurnStart = function(gameContext) {
     this.clearFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_FIRED);
     this.clearFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
     this.setFlag(BattalionEntity.FLAG.CAN_MOVE);
     this.clearLastAttacker();
-    this.turns++;
+
+    //Entities are immune to taking damage/proccing on their first turn.
+    if(this.turns > 0) {
+        this.takeTerrainDamage(gameContext);
+    }
 } 
 
 BattalionEntity.prototype.onTurnEnd = function() {
     this.setFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_FIRED);
     this.clearFlag(BattalionEntity.FLAG.CAN_MOVE);
     this.clearLastAttacker();
+    this.turns++;
 }
 
 BattalionEntity.prototype.triggerBewegungskrieg = function() {
@@ -1368,4 +1381,11 @@ BattalionEntity.prototype.extractOre = function(gameContext) {
     const worldMap = mapManager.getActiveMap();
 
     worldMap.extractOre(this.tileX, this.tileY);
+}
+
+BattalionEntity.prototype.setPurchased = function() {
+    //Set this.turns to 0, because it is the entities first turn.
+    //It will be set to 1 when onTurnEnd is called from the EndTurnAction!
+    this.onTurnEnd();
+    this.turns = 0;
 }

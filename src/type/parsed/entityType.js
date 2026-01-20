@@ -140,6 +140,19 @@ EntityType.prototype.getJammerFlags = function() {
     return flags;
 }
 
+EntityType.prototype.getCloakFlag = function() {
+    //The returned flags need to be unset in a jammer field, otherwise cloaking will not work.
+    if(this.hasTrait(TRAIT_TYPE.STEALTH)) {
+        if(this.hasTrait(TRAIT_TYPE.SUBMERGED)) {
+            return JammerField.FLAG.SONAR;
+        }
+
+        return JammerField.FLAG.RADAR;
+    }
+
+    return JammerField.FLAG.NONE;
+}
+
 EntityType.prototype.getAttackType = function() {
     if(this.hasTrait(TRAIT_TYPE.DISPERSION) || this.hasTrait(TRAIT_TYPE.JUDGEMENT)) {
         return ATTACK_TYPE.DISPERSION;

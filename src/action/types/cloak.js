@@ -1,6 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
 import { FADE_RATE } from "../../constants.js";
-import { BattalionEntity } from "../../entity/battalionEntity.js";
 
 export const CloakAction = function() {
     Action.call(this);
@@ -52,7 +51,7 @@ CloakAction.prototype.execute = function(gameContext, data) {
     const { entityID  } = data;
     const entity = entityManager.getEntity(entityID);
 
-    entity.setFlag(BattalionEntity.FLAG.IS_CLOAKED);
+    entity.setCloaked();
 }
 
 CloakAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {

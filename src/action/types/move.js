@@ -142,7 +142,7 @@ MoveAction.prototype.execute = function(gameContext, data) {
         entity.setTile(tileX, tileY);
 
         if(entity.isDiscoveredAt(gameContext, tileX, tileY)) {
-            entity.clearFlag(BattalionEntity.FLAG.IS_CLOAKED);
+            entity.setUncloaked();
         }
     }
 

@@ -29,7 +29,7 @@ export const mGetUncloakedEntities = function(gameContext, targetX, targetY, tea
                     shouldSelfUncloak = true;
                 }
             } else {
-                const cloakFlag = entity.getCloakFlag();
+                const cloakFlag = entity.config.getCloakFlag();
 
                 if(jammerFlags & cloakFlag) {
                     if(!entity.hasTrait(TRAIT_TYPE.UNFAIR) && !entity.isVisibleTo(gameContext, teamID)) {

@@ -121,7 +121,7 @@ AttackAction.prototype.execute = function(gameContext, data) {
     }
 
     if(flags & AttackAction.FLAG.UNCLOAK) {
-        entity.clearFlag(BattalionEntity.FLAG.IS_CLOAKED);
+        entity.setUncloaked();
     }
 
     if(flags & AttackAction.FLAG.COUNTER) {

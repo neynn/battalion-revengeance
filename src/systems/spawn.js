@@ -114,7 +114,7 @@ export const spawnServerEntity = function(gameContext, config, entityID) {
     }
 
     if(stealth && entity.canCloak()) {
-        entity.setFlag(BattalionEntity.FLAG.IS_CLOAKED);
+        entity.setCloaked();
     }
 }
 
@@ -159,7 +159,7 @@ export const spawnClientEntity = function(gameContext, config, externalID = Enti
     }
 
     if(stealth && entity.canCloak()) {
-        entity.setFlag(BattalionEntity.FLAG.IS_CLOAKED);
+        entity.setCloaked();
         entity.setOpacity(0);
     }
 
