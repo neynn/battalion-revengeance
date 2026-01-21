@@ -1,4 +1,4 @@
-import { ENTITY_CATEGORY, MOVEMENT_TYPE, TEAM_STAT } from "./enums.js";
+import { ENTITY_CATEGORY, ENTITY_TYPE, MOVEMENT_TYPE, TEAM_STAT, TRANSPORT_TYPE } from "./enums.js";
 
 export const mapCategoryToStat = function(category) {
     switch(category) {
@@ -15,5 +15,14 @@ export const mapMovementToCategory = function(movementType) {
         case MOVEMENT_TYPE.RUDDER: return ENTITY_CATEGORY.SEA;
         case MOVEMENT_TYPE.HEAVY_RUDDER: return ENTITY_CATEGORY.SEA;
         default: return ENTITY_CATEGORY.LAND;
+    }
+}
+
+export const mapTransportToEntity = function(transportType) {
+    switch(transportType) {
+        case TRANSPORT_TYPE.BARGE: return ENTITY_TYPE.LEVIATHAN_BARGE;
+        case TRANSPORT_TYPE.PELICAN: return ENTITY_TYPE.PELICAN_TRANSPORT;
+        case TRANSPORT_TYPE.STORK: return ENTITY_TYPE.STORK_TRANSPORT;
+        default: return ENTITY_TYPE.LEVIATHAN_BARGE;
     }
 }

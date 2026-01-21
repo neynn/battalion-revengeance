@@ -271,7 +271,7 @@ WorldMap.prototype.getAllEntitiesInArea = function(startX, startY, endX, endY) {
     return entities;
 }
 
-WorldMap.prototype.getUniqueEntitiesInArea = function(startX, startY, endX, endY) {
+WorldMap.prototype.getEntitiesInAreaUnique = function(startX, startY, endX, endY) {
     const entities = [];
 
     for(let i = startY; i < endY; i++) {
@@ -346,19 +346,6 @@ WorldMap.prototype.fill2DGraph = function(startX, startY, range, onFill) {
                 visited.add(neighborID);
                 queue.push({ "x": neighborX, "y": neighborY, "cost": neighborCost });
             } 
-        }
-    }
-}
-
-WorldMap.prototype.fill2DArea = function(tileX, tileY, width, height, onFill) {
-    const startX = tileX - width;
-    const startY = tileY - height;
-    const endX = tileX + width;
-    const endY = tileY + height;
-
-    for(let i = startY; i <= endY; i++) {
-        for(let j = startX; j <= endX; j++) {
-            onFill(j, i);
         }
     }
 }

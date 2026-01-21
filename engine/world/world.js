@@ -41,6 +41,33 @@ World.prototype.getEntityAt = function(tileX, tileY) {
     return entity;
 }
 
+World.prototype.getEntitiesInRange = function(tileX, tileY, width, height) {
+    const worldMap = this.mapManager.getActiveMap();
+    const entities = [];
+
+    if(!worldMap) {
+        return entities;
+    }
+
+    const startX = tileX - width;
+    const startY = tileY - height;
+    const endX = tileX + width;
+    const endY = tileY + height;
+
+    for(let i = startY; i <= endY; i++) {
+        for(let j = startX; j <= endX; j++) {
+            const entityID = worldMap.getTopEntity(j, i);
+            const entity = this.entityManager.getEntity(entityID);
+
+            if(entity) {
+                entities.push(entity);
+            }
+        }
+    }
+
+    return entities;
+}
+
 World.prototype.getEntitiesInArea = function(startX, startY, endX, endY) {
     const worldMap = this.mapManager.getActiveMap();
     const entities = [];
@@ -63,7 +90,7 @@ World.prototype.getEntitiesInArea = function(startX, startY, endX, endY) {
     return entities;
 }
 
-World.prototype.getUniqueEntitiesInArea = function(startX, startY, endX, endY) {
+World.prototype.getEntitiesInAreaUnique = function(startX, startY, endX, endY) {
     const worldMap = this.mapManager.getActiveMap();
     const entities = [];
 
@@ -111,5 +138,52 @@ World.prototype.getEntitiesAround = function(tileX, tileY) {
         }
     }
     
+    return entities;
+}
+
+World.prototype.getEntitiesAroundFull = function(tileX, tileY) {
+    const worldMap = this.mapManager.getActiveMap();
+    const entities = [];
+
+    if(!worldMap) {
+        return entities;
+    }
+
+    for(let i = 0; i < FloodFill.ALL_NEIGHBORS.length; i++) {
+        const [deltaX, deltaY, type] = FloodFill.ALL_NEIGHBORS[i];
+        const neighborX = deltaX + tileX;
+        const neighborY = deltaY + tileY;
+        const entityID = worldMap.getTopEntity(neighborX, neighborY);
+        const entity = this.entityManager.getEntity(entityID);
+
+        if(entity) {
+            entities.push(entity);
+        }
+    }
+    
+    return entities;
+}
+
+World.prototype.getEntitiesInLine = function(tileX, tileY, deltaX, deltaY, maxSteps) {
+    const worldMap = this.mapManager.getActiveMap();
+    const entities = [];
+
+    let currentX = tileX + deltaX;
+    let currentY = tileY + deltaY;
+    let step = 0;
+
+    while(step < maxSteps && !worldMap.isTileOutOfBounds(currentX, currentY)) {
+        const entityID = worldMap.getTopEntity(currentX, currentY);
+        const entity = this.entityManager.getEntity(entityID);
+
+        if(entity) {
+            entities.push(entity);
+        }
+
+        currentX += deltaX;
+        currentY += deltaY;
+        step++;
+    }
+
     return entities;
 }

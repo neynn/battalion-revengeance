@@ -8,8 +8,8 @@ import { EntityType } from "../type/parsed/entityType.js";
 import { createNode, mGetLowestCostNode } from "../systems/pathfinding.js";
 import { getDirectionByDelta } from "../systems/direction.js";
 import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY } from "../enums.js";
-import { transportTypeToEntityType } from "../systems/transport.js";
-import { getAreaEntities, getLineEntities } from "../systems/targeting.js";
+import { mapTransportToEntity } from "../enumHelpers.js";
+import { getLineEntities } from "../systems/targeting.js";
 import { mGetUncloakedEntities } from "../systems/cloak.js";
 
 export const BattalionEntity = function(id) {
@@ -1053,8 +1053,8 @@ BattalionEntity.prototype.getUncloakedEntitiesAtSelf = function(gameContext) {
     return this.getUncloakedEntities(gameContext, this.tileX, this.tileY);
 }
 
-BattalionEntity.prototype.isDiscoveredAt = function(gameContext, tileX, tileY) {
-    if(!this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+BattalionEntity.prototype.isDiscoveredByJammerAt = function(gameContext, tileX, tileY) {
+    if(!this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) || this.hasTrait(TRAIT_TYPE.UNFAIR)) {
         return false;
     }
 
@@ -1063,10 +1063,6 @@ BattalionEntity.prototype.isDiscoveredAt = function(gameContext, tileX, tileY) {
     const worldMap = mapManager.getActiveMap();
     const jammer = worldMap.getJammer(tileX, tileY);
     const cloakFlag = this.config.getCloakFlag();
-
-    if(this.hasTrait(TRAIT_TYPE.UNFAIR)) {
-        return false;
-    }
 
     return jammer.isJammed(gameContext, this.teamID, cloakFlag);
 }
@@ -1143,7 +1139,7 @@ BattalionEntity.prototype.toTransport = function(gameContext, transportType) {
     if(this.transportID === null) {
         const { typeRegistry } = gameContext;
         const previousHealthFactor = this.health / this.maxHealth;
-        const entityTypeID = transportTypeToEntityType(transportType);
+        const entityTypeID = mapTransportToEntity(transportType);
         const transportConfig = typeRegistry.getEntityType(entityTypeID);
 
         this.transportID = this.config.id;
@@ -1275,9 +1271,10 @@ BattalionEntity.prototype.mResolveStreamblastAttack = function(gameContext, targ
 }
 
 BattalionEntity.prototype.mResolveDispersionAttack = function(gameContext, target, resolver) {
+    const { world } = gameContext;
     const { tileX, tileY } = target;
     const range = this.hasTrait(TRAIT_TYPE.JUDGEMENT) ? TRAIT_CONFIG.JUDGEMENT_RANGE : TRAIT_CONFIG.DISPERSION_RANGE;
-    const targets = getAreaEntities(gameContext, tileX, tileY, range);
+    const targets = world.getEntitiesInRange(tileX, tileY, range, range);
 
     for(let i = 0; i < targets.length; i++) {
         const target = targets[i];

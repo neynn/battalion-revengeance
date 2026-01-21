@@ -1,5 +1,4 @@
 import { Action } from "../../../engine/action/action.js";
-import { hasFlag } from "../../../engine/util/flag.js";
 import { FADE_RATE, TILE_WIDTH } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { COMMAND_TYPE, PATH_INTERCEPT, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
@@ -72,7 +71,7 @@ MoveAction.prototype.onUpdate = function(gameContext, data) {
                 this.distanceMoved -= TILE_WIDTH;
                 this.pathIndex--;
 
-                if(!this.wasDiscovered && this.entity.isDiscoveredAt(gameContext, tileX, tileY)) {
+                if(!this.wasDiscovered && this.entity.isDiscoveredByJammerAt(gameContext, tileX, tileY)) {
                     this.state = MoveAction.STATE.DISCOVERED;
                     this.wasDiscovered = true;
 
@@ -141,12 +140,12 @@ MoveAction.prototype.execute = function(gameContext, data) {
 
         entity.setTile(tileX, tileY);
 
-        if(entity.isDiscoveredAt(gameContext, tileX, tileY)) {
+        if(entity.isDiscoveredByJammerAt(gameContext, tileX, tileY)) {
             entity.setUncloaked();
         }
     }
 
-    if(hasFlag(flags, MoveAction.FLAG.ELUSIVE)) {
+    if(flags & MoveAction.FLAG.ELUSIVE) {
         entity.triggerElusive();
     }
 
@@ -177,7 +176,7 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
     }
 
     const { teamID } = entity;
-    const intercept = mInterceptPath(gameContext, path, teamID);
+    const intercept = mInterceptPath(gameContext, teamID, path);
 
     if(path.length === 0 || intercept === PATH_INTERCEPT.ILLEGAL) {
         console.error("EDGE CASE: Stealth unit was too close!");

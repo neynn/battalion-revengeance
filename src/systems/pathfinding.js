@@ -1,19 +1,18 @@
-import { hasFlag } from "../../engine/util/flag.js";
 import { PATH_FLAG, PATH_INTERCEPT } from "../enums.js";
 import { EntityType } from "../type/parsed/entityType.js";
 
-export const mInterceptPath = function(gameContext, path, teamID) {
+export const mInterceptPath = function(gameContext, teamID, mPath) {
     const { world } = gameContext;
-    let elementsToDelete = path.length;
+    let elementsToDelete = mPath.length;
 
-    for(let i = path.length - 1; i >= 0; i--) {
-        const { tileX, tileY } = path[i];
+    for(let i = mPath.length - 1; i >= 0; i--) {
+        const { tileX, tileY } = mPath[i];
         const entity = world.getEntityAt(tileX, tileY);
 
         if(!entity) {
             elementsToDelete = i;
         } else if(!entity.isVisibleTo(gameContext, teamID)) {
-            path.splice(0, elementsToDelete);
+            mPath.splice(0, elementsToDelete);
 
             if(elementsToDelete !== i + 1) {
                 return PATH_INTERCEPT.ILLEGAL;
@@ -67,7 +66,7 @@ export const createStep = function(deltaX, deltaY, tileX, tileY) {
 export const isNodeReachable = function(node) {
     const { flags } = node;
 
-    if(hasFlag(flags, PATH_FLAG.UNREACHABLE)) {
+    if(flags & PATH_FLAG.UNREACHABLE) {
         return false;
     }
 
