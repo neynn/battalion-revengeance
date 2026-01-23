@@ -191,7 +191,7 @@ export const spawnServerBuilding = function(gameContext, worldMap, config) {
 
             building.setCustomInfo(id, name, desc);
             building.setTile(x, y);
-            building.updateTeam(gameContext, team);
+            building.setTeam(team);
 
             worldMap.addBuilding(building);
         }
@@ -226,7 +226,7 @@ export const spawnClientBuilding = function(gameContext, worldMap, config) {
 
             building.setCustomInfo(id, name, desc);
             building.setTile(x, y);
-            building.updateTeam(gameContext, team);
+            building.setTeam(team);
             buildingView.setPositionVec(position);
             worldMap.addBuilding(building);
         }

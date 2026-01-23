@@ -1,5 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
+import { TEAM_STAT } from "../../enums.js";
 
 export const CaptureAction = function() {
     Action.call(this);
@@ -23,9 +24,19 @@ CaptureAction.prototype.execute = function(gameContext, data) {
     const worldMap = mapManager.getActiveMap();
     const entity = entityManager.getEntity(entityID);
     const building = worldMap.getBuilding(targetX, targetY);
+    const nextTeam = entity.getTeam(gameContext);
+    const previousTeam = building.getTeam(gameContext);
 
-    building.updateTeam(gameContext, entity.teamID);
-    //Broadcast capture update to team.
+    if(previousTeam) {
+        previousTeam.addStatistic(TEAM_STAT.STRUCTURES_LOST, 1);
+        previousTeam.removeBuilding(building);
+    }
+
+    nextTeam.addStatistic(TEAM_STAT.STRUCTURES_CAPTURED, 1);
+    nextTeam.addBuilding(building);
+
+    building.setTeam(entity.teamID);
+    building.onTeamUpdate(gameContext, nextTeam);
 }
 
 CaptureAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {

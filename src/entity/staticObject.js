@@ -5,6 +5,16 @@ export const StaticObject = function(config) {
     this.teamID = null;
 }
 
+StaticObject.prototype.setTeam = function(teamID) {
+    this.teamID = teamID;
+}
+
+StaticObject.prototype.getTeam = function(gameContext) {
+    const { teamManager } = gameContext;
+
+    return teamManager.getTeam(this.teamID);
+}
+
 StaticObject.prototype.isOwnedBy = function(teamID) {
     return this.teamID === teamID;
 }

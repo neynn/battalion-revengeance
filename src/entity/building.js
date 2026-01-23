@@ -26,27 +26,6 @@ Building.prototype.getGeneratedCash = function(gameContext) {
     return generatedCash;
 }
 
-Building.prototype.updateTeam = function(gameContext, teamID) {
-    const { teamManager } = gameContext;
-
-    if(this.teamID !== teamID) {
-        const nextTeam = teamManager.getTeam(teamID);
-
-        if(nextTeam) {
-            const previousTeam = teamManager.getTeam(this.teamID);
-
-            if(previousTeam) {
-                previousTeam.removeBuilding(this);
-            }
-
-            nextTeam.addBuilding(this);
-    
-            this.teamID = teamID;
-            this.onTeamUpdate(gameContext, nextTeam);
-        }
-    }
-}
-
 Building.prototype.setCustomInfo = function(id, name, desc) {
     this.customID = id;
 
