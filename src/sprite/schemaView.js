@@ -104,8 +104,4 @@ SchemaView.prototype.isVisible = function(x, y, w, h) {
 SchemaView.prototype.draw = function(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime) {
     this.visual.update(realTime, deltaTime);
     this.visual.draw(display, viewportLeftEdge, viewportTopEdge);
-
-    if(Renderer.DEBUG.SPRITES) {
-        this.visual.debug(display, viewportLeftEdge, viewportTopEdge);
-    }
 }

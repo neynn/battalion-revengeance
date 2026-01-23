@@ -4,7 +4,6 @@ import { Autotiler } from "../../engine/tile/autotiler.js";
 import { BattalionActor } from "./battalionActor.js";
 import { IdleState } from "./player/idle.js";
 import { SelectState } from "./player/select.js";
-import { isNodeReachable } from "../systems/pathfinding.js";
 import { PATH_FLAG, RANGE_TYPE, TILE_ID } from "../enums.js";
 import { saveStoryMap } from "../systems/save.js";
 import { createEndTurnIntent, createExtractIntent, createPurchseEntityIntent } from "../action/actionHelper.js";

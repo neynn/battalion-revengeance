@@ -1,4 +1,3 @@
-import { Renderer } from "../../engine/renderer/renderer.js";
 import { TILE_HEIGHT, TILE_WIDTH } from "../constants.js";
 import { PLAYER_PREFERENCE } from "../enums.js";
 import { SchemaView } from "./schemaView.js";
@@ -10,12 +9,25 @@ const OFFSET_X = TILE_WIDTH - 5 - WIDTH;
 const OFFSET_Y = TILE_HEIGHT - 5 - HEIGHT;
 const BACKGROUND_COLOR = "#000000";
 const DEFAULT_HEALTH_COLOR = "#ffffff";
-const HEALTH_THRESHOLDS = [
-    { "above": 0.75, "color": "#00ff00" },
-    { "above": 0.5, "color": "#ffff00"},
-    { "above": 0.25, "color": "#ff8800"},
-    { "above": 0, "color": "#ff0000" }
-];
+
+const getHealthColor = function(healthFactor) {
+    const HEALTH_THRESHOLDS = [
+        { "above": 0.75, "color": "#00ff00" },
+        { "above": 0.5, "color": "#ffff00"},
+        { "above": 0.25, "color": "#ff8800"},
+        { "above": 0, "color": "#ff0000" }
+    ];
+
+    for(let i = 0; i < HEALTH_THRESHOLDS.length; i++) {
+        const { above, color } = HEALTH_THRESHOLDS[i];
+
+        if(healthFactor >= above) {
+            return color;
+        }
+    }
+
+    return DEFAULT_HEALTH_COLOR;
+}
 
 export const EntityView = function(visual, spriteID, schemaID, schema) {
     SchemaView.call(this, visual, spriteID, schemaID, schema);
@@ -35,21 +47,7 @@ EntityView.prototype.onHealthUpdate = function(currentHealth, maxHealth) {
         this.healthFactor = 1;
     }
 
-    let colorFound = false;
-
-    for(let i = 0; i < HEALTH_THRESHOLDS.length; i++) {
-        const { above, color } = HEALTH_THRESHOLDS[i];
-
-        if(this.healthFactor >= above) {
-            this.healthColor = color;
-            colorFound = true;
-            break;
-        }
-    }
-
-    if(!colorFound) {
-        this.healthColor = DEFAULT_HEALTH_COLOR;
-    }
+    this.healthColor = getHealthColor(this.healthFactor);
 }
 
 EntityView.prototype.drawHealth = function(display, viewportLeftEdge, viewportTopEdge) {
@@ -77,19 +75,7 @@ EntityView.prototype.drawHealth = function(display, viewportLeftEdge, viewportTo
     }
 }
 
-EntityView.prototype.drawCloaked = function(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime) {
-    const opacity = this.visual.getOpacity();
-
-    if(opacity < 0.5) {
-        this.visual.setOpacity(0.5);
-        this.drawNormal(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
-        this.visual.setOpacity(opacity);
-    } else {
-        this.drawNormal(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
-    }
-}
-
-EntityView.prototype.drawNormal = function(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime) {
+EntityView.prototype.draw = function(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime) {
     this.visual.update(realTime, deltaTime);
     this.visual.draw(display, viewportLeftEdge, viewportTopEdge);
 
@@ -97,10 +83,6 @@ EntityView.prototype.drawNormal = function(display, viewportLeftEdge, viewportTo
         this.drawHealth(display, viewportLeftEdge, viewportTopEdge)
     } else if(this.healthFactor > 0 && this.healthFactor < 1) {
         this.drawHealth(display, viewportLeftEdge, viewportTopEdge);
-    }
-    
-    if(Renderer.DEBUG.SPRITES) {
-        this.visual.debug(display, viewportLeftEdge, viewportTopEdge);
     }
 }
 

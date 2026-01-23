@@ -2,7 +2,6 @@ import { Camera2D } from "../../engine/camera/camera2D.js";
 import { Overlay } from "../../engine/camera/overlay.js";
 import { SHAPE } from "../../engine/math/constants.js";
 import { Renderer } from "../../engine/renderer/renderer.js";
-import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { drawShape, shadeScreen } from "../../engine/util/drawHelper.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { LAYER_TYPE, TILE_ID } from "../enums.js";
@@ -14,28 +13,47 @@ export const BattalionCamera = function() {
     this.pathOverlay = new Overlay();
     this.selectOverlay = new Overlay();
     this.jammerOverlay = new Overlay();
-    this.perspectives = new Set();
-    this.mainPerspective = null;
-    this.markerSprite = SpriteManager.EMPTY_SPRITE;
-    this.weakMarkerSprite = SpriteManager.EMPTY_SPRITE;
     this.showAllJammers = false;
 }
 
 BattalionCamera.prototype = Object.create(Camera2D.prototype);
 BattalionCamera.prototype.constructor = BattalionCamera;
 
-BattalionCamera.prototype.loadSprites = function(gameContext) {
-    const { spriteManager } = gameContext;
+BattalionCamera.prototype.drawEntity = function(entity, display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime) {
+    const { view, flags } = entity;
+    const { visual } = view;
+    const opacity = visual.getOpacity();
 
-    this.markerSprite = spriteManager.createSprite("marker");
+    if(flags & BattalionEntity.FLAG.IS_CLOAKED && opacity < 0.5) {
+        visual.setOpacity(0.5);
+        view.draw(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+        visual.setOpacity(opacity);
+    } else {
+        view.draw(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+    }
 }
 
-BattalionCamera.prototype.addPerspective = function(teamID) {
-    this.perspectives.add(teamID);
-}
+BattalionCamera.prototype.debugEntities = function(gameContext, display) {
+    const { world } = gameContext;
+    const { entityManager } = world;
+    const { entities } = entityManager;
+    const viewportLeftEdge = this.fViewportX;
+    const viewportTopEdge = this.fViewportY;
+    const viewportRightEdge = viewportLeftEdge + this.wViewportWidth;
+    const viewportBottomEdge = viewportTopEdge + this.wViewportHeight;
 
-BattalionCamera.prototype.setMainPerspective = function(teamID) {
-    this.mainPerspective = teamID;
+    display.setAlpha(1);
+
+    for(let i = 0; i < entities.length; i++) {
+        const entity = entities[i];
+        const { view } = entity;
+        const { visual } = view;
+        const isVisible = view.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
+
+        if(isVisible) {
+            visual.debug(display, viewportLeftEdge, viewportTopEdge);
+        }
+    }
 }
 
 BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime, deltaTime) {
@@ -50,49 +68,26 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
 
     for(let i = 0; i < entities.length; i++) {
         const entity = entities[i];
-        const { view, teamID, state } = entity;
+        const { view, state } = entity;
         const isVisible = view.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
 
-        if(!isVisible) {
-            continue;
-        }
-
-        if(state !== BattalionEntity.STATE.IDLE) {
-            priorityEntities.push(entities[i]);
-            continue;
-        }
-
-        if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.perspectives.has(teamID)) {
-            view.drawCloaked(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
-        } else {
-            //view.drawCloaked(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
-            view.drawNormal(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
-        }
-
-        const { positionX, positionY } = view;
-        const markerX = positionX - viewportLeftEdge;
-        const markerY = positionY - viewportTopEdge;
-
-        if(teamID === this.mainPerspective) {
-            if(entity.canAct()) {
-                display.setAlpha(1);
-                this.markerSprite.onDraw(display, markerX, markerY);
+        if(isVisible) {
+            if(state === BattalionEntity.STATE.IDLE) {
+                this.drawEntity(entity, display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+            } else {
+                priorityEntities.push(entity);
             }
-        } else {
-            display.setAlpha(1);
-            this.weakMarkerSprite.onDraw(display, markerX, markerY);
         }
     }
 
     for(let i = 0; i < priorityEntities.length; i++) {
         const entity = priorityEntities[i];
-        const { view, teamID } = entity;
 
-        if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.perspectives.has(teamID)) {
-            view.drawCloaked(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
-        } else {
-            view.drawNormal(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
-        }
+        this.drawEntity(entity, display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+    }
+
+    if(Renderer.DEBUG.SPRITES) {
+        this.debugEntities(gameContext, display);
     }
 }
 
@@ -108,6 +103,24 @@ BattalionCamera.prototype.drawJammers = function(tileManager, display, worldMap)
             const renderY = this.tileHeight * tileY;
 
             this.drawTile(tileManager, TILE_ID.JAMMER, context, renderX, renderY);
+        }
+    }
+}
+
+BattalionCamera.prototype.drawBuildings = function(display, worldMap, realTime, deltaTime) {
+    const { buildings } = worldMap;
+    const length = buildings.length;
+    const viewportLeftEdge = this.fViewportX;
+    const viewportTopEdge = this.fViewportY;
+    const viewportRightEdge = viewportLeftEdge + this.wViewportWidth;
+    const viewportBottomEdge = viewportTopEdge + this.wViewportHeight
+
+    for(let i = 0; i < length; i++) {
+        const { view } = buildings[i];
+        const isVisible = view.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
+
+        if(isVisible) {
+            view.draw(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
         }
     }
 }
@@ -176,24 +189,6 @@ BattalionCamera.prototype.drawInfo = function(gameContext, display) {
 
     context.fillStyle = "#ff0000";
     context.fillText(`Turn ${currentTurn} | Round ${currentRound}`, 0, 10);
-}
-
-BattalionCamera.prototype.drawBuildings = function(display, worldMap, realTime, deltaTime) {
-    const { buildings } = worldMap;
-    const length = buildings.length;
-    const viewportLeftEdge = this.fViewportX;
-    const viewportTopEdge = this.fViewportY;
-    const viewportRightEdge = viewportLeftEdge + this.wViewportWidth;
-    const viewportBottomEdge = viewportTopEdge + this.wViewportHeight
-
-    for(let i = 0; i < length; i++) {
-        const { view } = buildings[i];
-        const isVisible = view.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
-
-        if(isVisible) {
-            view.draw(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
-        }
-    }
 }
 
 BattalionCamera.prototype.debugMap = function(display, worldMap) {

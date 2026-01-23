@@ -14,12 +14,13 @@ CloakAction.prototype.constructor = CloakAction;
 CloakAction.prototype.onStart = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID  } = data;
+    const { entityID } = data;
     const entity = entityManager.getEntity(entityID);
 
     entity.playCloak(gameContext);
 
     this.entity = entity;
+    this.execute(gameContext, data);
 }
 
 CloakAction.prototype.onUpdate = function(gameContext, data) {
@@ -40,7 +41,6 @@ CloakAction.prototype.isFinished = function(gameContext, executionPlan) {
 }
 
 CloakAction.prototype.onEnd = function(gameContext, data) {
-    this.execute(gameContext, data);
     this.entity = null;
     this.opacity = 1;
 }

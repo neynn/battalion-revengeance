@@ -32,10 +32,14 @@ EditCamera.prototype.update = function(gameContext, display) {
     this.updateWorldBounds();
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.GROUND));
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
-    this.drawSpriteBatch(display, spriteManager.getLayer(LAYER_TYPE.BUILDING), realTime, deltaTime);
-    this.drawSpriteBatch(display, spriteManager.getLayer(LAYER_TYPE.SEA), realTime, deltaTime);
-    this.drawSpriteBatch(display, spriteManager.getLayer(LAYER_TYPE.LAND), realTime, deltaTime);
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.CLOUD));
+
+    if(this.showAllJammers) {
+        this.drawJammers(tileManager, display, worldMap);
+    }
+
+    this.drawEntities(gameContext, display, realTime, deltaTime);
+    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(LAYER_TYPE.BUILDING), realTime, deltaTime);
     this.drawHoverTile(gameContext, context);
 
     if(Renderer.DEBUG.MAP) {

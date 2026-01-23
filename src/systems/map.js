@@ -272,7 +272,8 @@ export const ServerMapFactory = {
             teams = {},
             entities = [],
             objectives = {},
-            events = {}
+            events = {},
+            buildings = []
         } = mapData;
 
         for(const teamName in teams) {

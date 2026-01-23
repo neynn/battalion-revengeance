@@ -1,5 +1,4 @@
 import { getCursorTile } from "../../engine/camera/contextHelper.js";
-import { Autotiler } from "../../engine/tile/autotiler.js";
 import { BattalionActor } from "./battalionActor.js";
 import { isNodeReachable } from "../systems/pathfinding.js";
 import { TILE_ID } from "../enums.js";
@@ -134,7 +133,6 @@ Spectator.prototype.update = function(gameContext) {
 
 Spectator.prototype.clearOverlays = function() {
     this.camera.selectOverlay.clear();
-    this.camera.pathOverlay.clear();
     this.camera.jammerOverlay.clear();
 }
 
@@ -147,64 +145,4 @@ Spectator.prototype.showNodeMap = function(nodeMap) {
 
         this.camera.selectOverlay.add(id, x, y);
     }
-}
-
-Spectator.prototype.showPath = function(autotiler, oPath, entityX, entityY) { 
-    const path = oPath.toReversed();
-
-    let previousX = entityX;
-    let previousY = entityY;
-    let nextX = -2;
-    let nextY = -2;
-    let tileID = 0;
-
-    this.camera.pathOverlay.clear();
-
-    for(let i = 0; i < path.length; i++) {
-        const { tileX, tileY } = path[i];
-
-        if(i < path.length - 1) {
-            nextX = path[i + 1].tileX;
-            nextY = path[i + 1].tileY;
-        } else {
-            nextX = -2;
-            nextY = -2;
-        }
-
-        tileID = autotiler.run(tileX, tileY, (currentX, currentY) => {
-            if(previousX === currentX && previousY === currentY) {
-                return Autotiler.RESPONSE.VALID;
-            }
-
-            if(nextX === currentX && nextY === currentY) {
-                return Autotiler.RESPONSE.VALID;
-            }
-
-            return Autotiler.RESPONSE.INVALID;
-        });
-
-        previousX = tileX;
-        previousY = tileY;
-
-        this.camera.pathOverlay.add(tileID, tileX, tileY);
-    }
-
-    //Put the starting node.
-    if(path.length !== 0) {
-        const { deltaX, deltaY } = path[0];
-
-        if(deltaX === 1) {
-            tileID = TILE_ID.PATH_RIGHT;
-        } else if(deltaX === -1) {
-            tileID = TILE_ID.PATH_LEFT;
-        } else if(deltaY === 1) {
-            tileID = TILE_ID.PATH_DOWN;
-        } else if(deltaY === -1) {
-            tileID = TILE_ID.PATH_UP;
-        }
-    } else {
-        tileID = TILE_ID.PATH_CENTER;
-    }
-
-    this.camera.pathOverlay.add(tileID, entityX, entityY);
 }

@@ -999,6 +999,20 @@ BattalionEntity.prototype.canCloak = function() {
     return !this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.hasTrait(TRAIT_TYPE.STEALTH);
 }
 
+BattalionEntity.prototype.isSpottedBySpawner = function(gameContext, tileX, tileY) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const building = worldMap.getBuilding(tileX, tileY);
+
+    //Enemy stealth units must uncloak on a spawner as they'd leak information otherwise (spawning wouldn't work)
+    if(building && building.hasTrait(TRAIT_TYPE.SPAWNER) && building.isEnemy(gameContext, this.teamID)) {
+        return true;
+    }
+
+    return false;
+}
+
 BattalionEntity.prototype.canCloakAt = function(gameContext, tileX, tileY) {
     const { world } = gameContext;
     const { mapManager } = world;
@@ -1024,6 +1038,10 @@ BattalionEntity.prototype.canCloakAt = function(gameContext, tileX, tileY) {
         if(!this.isAllyWith(gameContext, nearbyEntities[i])) {
             return false;
         }
+    }
+
+    if(this.isSpottedBySpawner(gameContext, tileX, tileY)) {
+        return false;
     }
 
     return true;
@@ -1085,13 +1103,8 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, 
 
             if(jammer.isJammed(gameContext, this.teamID, cloakFlag)) {
                 uncloakedEntities.push(this);
-            } else {
-                const building = worldMap.getBuilding(targetX, targetY);
-
-                //Enemy stealth units must uncloak on a spawner as they'd leak information otherwise (spawning wouldn't work)
-                if(building && building.hasTrait(TRAIT_TYPE.SPAWNER) && building.isEnemy(gameContext, this.teamID)) {
-                    uncloakedEntities.push(this);
-                }
+            } else if(this.isSpottedBySpawner(gameContext, targetX, targetY)) {
+                uncloakedEntities.push(this);
             }
         }
     }

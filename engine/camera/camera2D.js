@@ -85,6 +85,12 @@ Camera2D.prototype.drawFrame = function(context, bitmap, frame, renderX, renderY
 }
 
 Camera2D.prototype.drawOverlay = function(tileManager, display, overlay) {
+    const { elements, count, alpha } = overlay;
+
+    if(count === 0) {
+        return;
+    }
+
     const startX = this.startX;
     const startY = this.startY;
     const endX = this.endX;
@@ -95,7 +101,6 @@ Camera2D.prototype.drawOverlay = function(tileManager, display, overlay) {
     const viewportY = this.fViewportY;
 
     const { context } = display;
-    const { elements, count, alpha } = overlay;
     const previousAlpha = context.globalAlpha;
 
     display.setAlpha(alpha);
@@ -306,4 +311,17 @@ Camera2D.prototype.updateWorldBounds = function() {
     this.startY = clampValue(startY, this.mapHeight - 1, 0);
     this.endX = clampValue(endX, this.mapWidth - 1, 0);
     this.endY = clampValue(endY, this.mapHeight - 1, 0);
+}
+
+Camera2D.prototype.tryLoadingWorldSize = function(gameContext) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const activeMap = mapManager.getActiveMap();
+
+    if(activeMap) {
+        const { width, height } = activeMap;
+
+        this.setWorldSize(width, height);
+        this.setMapSize(width, height);
+    }
 }

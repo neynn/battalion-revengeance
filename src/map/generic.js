@@ -6,7 +6,7 @@ import { DefendObjective } from "../team/objective/types/defend.js";
 import { ProtectObjective } from "../team/objective/types/protect.js";
 import { SurviveObjective } from "../team/objective/types/survive.js";
 import { TimeLimitObjective } from "../team/objective/types/timeLimit.js";
-import { createPlayCamera } from "../systems/camera.js";
+import { createPlayCamera, createSpectatorCamera } from "../systems/camera.js";
 import { OBJECTIVE_TYPE } from "../enums.js";
 import { Spectator } from "../actors/spectator.js";
 
@@ -114,17 +114,12 @@ export const createPlayer = function(gameContext, commanderType, teamName) {
 }
 
 export const createSpectator = function(gameContext) {
-    const { world, teamManager } = gameContext;
-    const { activeTeams } = teamManager;
+    const { world } = gameContext;
     const { turnManager } = world;
-    const context = createPlayCamera(gameContext);
+    const context = createSpectatorCamera(gameContext);
     const camera = context.getCamera();
     const actorID = turnManager.getNextID();
     const actor = new Spectator(actorID, camera);
-
-    for(const teamID of activeTeams) {
-        camera.addPerspective(teamID);
-    }
 
     turnManager.addActor(actor);
     actor.loadKeybinds(gameContext);
