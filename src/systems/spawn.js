@@ -190,7 +190,7 @@ export const spawnServerBuilding = function(gameContext, worldMap, config) {
             const building = new Building(buildingType);
 
             building.setCustomInfo(id, name, desc);
-            building.setTile(gameContext, x, y);
+            building.setTile(x, y);
             building.updateTeam(gameContext, team);
 
             worldMap.addBuilding(building);
@@ -199,7 +199,7 @@ export const spawnServerBuilding = function(gameContext, worldMap, config) {
 }
 
 export const spawnClientBuilding = function(gameContext, worldMap, config) {
-    const { typeRegistry, teamManager } = gameContext;
+    const { typeRegistry, teamManager, transform2D } = gameContext;
     const {
         id = null,
         name = null,
@@ -219,14 +219,15 @@ export const spawnClientBuilding = function(gameContext, worldMap, config) {
             const buildingType = typeRegistry.getBuildingType(type);
             const { colorID, color } = teamObject;
             const { sprite } = buildingType;
+            const position = transform2D.transformTileToWorld(x, y);
             const visualSprite = createSchemaViewSprite(gameContext, sprite, colorID, color, LAYER_TYPE.BUILDING);
             const buildingView = new BuildingView(visualSprite, sprite, colorID, color);
             const building = new ClientBuilding(buildingType, buildingView);
 
             building.setCustomInfo(id, name, desc);
-            building.setTile(gameContext, x, y);
+            building.setTile(x, y);
             building.updateTeam(gameContext, team);
-            
+            buildingView.setPositionVec(position);
             worldMap.addBuilding(building);
         }
     }

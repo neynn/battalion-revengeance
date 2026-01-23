@@ -8,7 +8,8 @@ export const TileType = function(id, config) {
         desc = "MISSING_DESC_TILE",
         climate = CLIMATE_TYPE.NONE,
         terrain = [],
-        passability = {}
+        passability = {},
+        allowLandmine = false
     } = config;
 
     this.id = id;
@@ -17,6 +18,7 @@ export const TileType = function(id, config) {
     this.climate = climate;
     this.terrain = terrain;
     this.passability = passability;
+    this.allowLandmine = allowLandmine;
 
     if(this.terrain.length > MAX_TERRAIN) {
         this.terrain.length = MAX_TERRAIN;

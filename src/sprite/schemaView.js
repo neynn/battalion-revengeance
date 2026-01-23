@@ -58,6 +58,14 @@ SchemaView.prototype.updatePosition = function(deltaX, deltaY) {
     this.visual.setPosition(this.positionX, this.positionY);
 }
 
+SchemaView.prototype.setPositionVec = function(position) {
+    const { x, y } = position;
+
+    this.positionX = x;
+    this.positionY = y;
+    this.visual.setPosition(x, y);
+}
+
 SchemaView.prototype.setPosition = function(positionX, positionY) {
     this.positionX = positionX;
     this.positionY = positionY;

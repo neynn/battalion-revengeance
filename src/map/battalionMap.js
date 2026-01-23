@@ -11,6 +11,7 @@ export const BattalionMap = function(id, width, height) {
     this.climate = CLIMATE_TYPE.NONE;
     this.localization = [];
     this.buildings = [];
+    this.landmines = [];
     this.edits = [];
     this.jammerFields = new Map();
     this.createLayer(Layer.TYPE.BIT_16);
@@ -131,32 +132,6 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
     return typeRegistry.getClimateType(CLIMATE_TYPE.TEMPERATE);
 }
 
-BattalionMap.prototype.getTerrainTypes = function(gameContext, tileX, tileY) {
-    const { tileManager, typeRegistry } = gameContext;
-    const types = [];
-
-    if(this.isTileOutOfBounds(tileX, tileY)) {
-        return types;
-    }
-
-    for(const layerID of BattalionMap.SEARCH_ORDER) {
-        const typeID = this.getTile(layerID, tileX, tileY);
-        const { type } = tileManager.getTile(typeID);
-
-        if(type !== null && type !== TILE_TYPE.NONE) {
-            const { terrain } = typeRegistry.getTileType(type);
-
-            for(let i = 0; i < terrain.length; i++) {
-                types.push(typeRegistry.getTerrainType(terrain[i]));
-            }
-
-            return types;
-        }
-    }
-
-    return types;
-}
-
 BattalionMap.prototype.getOreValue = function(tileX, tileY) {
     for(const layerID of BattalionMap.SEARCH_ORDER) {
         const typeID = this.getTile(layerID, tileX, tileY);
@@ -214,6 +189,18 @@ BattalionMap.prototype.getTileType = function(gameContext, tileX, tileY) {
     }
 
     return typeRegistry.getTileType(TILE_TYPE.NONE);
+}
+
+BattalionMap.prototype.getTerrainTypes = function(gameContext, tileX, tileY) {
+    const { typeRegistry } = gameContext;
+    const { terrain } = this.getTileType(gameContext, tileX, tileY);
+    const types = [];
+
+    for(let i = 0; i < terrain.length; i++) {
+        types.push(typeRegistry.getTerrainType(terrain[i]));
+    }
+
+    return types;
 }
 
 BattalionMap.prototype.getTileName = function(gameContext, tileX, tileY) {
@@ -290,6 +277,48 @@ BattalionMap.prototype.loadLocalization = function(localization) {
             }
         }
     }
+}
+
+BattalionMap.prototype.isLandminePlaceable = function(gameContext, tileX, tileY) {
+    const { allowLandmine } = this.getTileType(gameContext, tileX, tileY);
+
+    if(!allowLandmine) {
+        return false;
+    }
+
+    const index = this.getIndex(tileX, tileY);
+
+    if(index === WorldMap.OUT_OF_BOUNDS) {
+        return false;
+    }
+
+    if(this.getLandmine(tileX, tileY) !== null) {
+        return false;
+    } 
+
+    return true;
+}
+
+BattalionMap.prototype.addLandmine = function(landmine) {
+    this.landmines.push(landmine);
+}
+
+BattalionMap.prototype.getLandmine = function(tileX, tileY) {
+    const index = this.getIndex(tileX, tileY);
+
+    if(index === WorldMap.OUT_OF_BOUNDS) {
+        return null;
+    }
+
+    for(let i = 0; i < this.landmines.length; i++) {
+        const landmine = this.landmines[i];
+
+        if(landmine.isPlacedOn(tileX, tileY)) {
+            return landmine;
+        }
+    }
+
+    return null;
 }
 
 BattalionMap.prototype.isBuildingPlaceable = function(tileX, tileY) {
