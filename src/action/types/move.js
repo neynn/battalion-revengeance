@@ -26,7 +26,7 @@ MoveAction.STATE = {
 MoveAction.FLAG = {
     NONE: 0,
     ELUSIVE: 1 << 0,
-    MINE_TRIGGERED: 1 << 1
+    MINE_DISCOVERED: 1 << 1
 };
 
 MoveAction.prototype = Object.create(Action.prototype);
@@ -126,7 +126,7 @@ MoveAction.prototype.onEnd = function(gameContext, data) {
 
 MoveAction.prototype.execute = function(gameContext, data) {
     const { world, teamManager } = gameContext;
-    const { entityManager } = world;
+    const { entityManager, mapManager } = world;
     const { entityID, path, flags } = data;
     const { activeTeams } = teamManager;
     const entity = entityManager.getEntity(entityID);
@@ -160,6 +160,15 @@ MoveAction.prototype.execute = function(gameContext, data) {
     }
 
     teamManager.updateStatus();
+
+    if(flags & MoveAction.FLAG.MINE_DISCOVERED) {
+        const { tileX, tileY } = entity;
+        const worldMap = mapManager.getActiveMap();
+        const mine = worldMap.getMine(tileX, tileY);
+
+        mine.isHidden = false;
+        team.addStatistic(TEAM_STAT.MINES_DISCOVERED, 1);
+    }
 }
 
 MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
@@ -197,12 +206,8 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
     const mine = worldMap.getMine(targetX, targetY);
     let flags = MoveAction.FLAG.NONE;
 
-    if(mine && mine.isEnemy(gameContext, teamID)) {
-        flags |= MoveAction.FLAG.MINE_TRIGGERED;
-
-        //At the end of move, emit that the mine was discovered.
-        //This can happen regardless of mineTrigger, because mineTrigger and target land on the same tile.
-        //Assume this is always true.
+    if(mine && mine.isHidden && mine.isEnemy(gameContext, teamID)) {
+        flags |= MoveAction.FLAG.MINE_DISCOVERED;
     }
 
     if(targetEntity && targetEntity.isNextToTile(targetX, targetY)) {

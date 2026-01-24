@@ -354,6 +354,14 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
         if(!this.isAllyWith(gameContext, entity) && !entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
             tileCost += EntityType.MAX_MOVE_COST;
         }
+
+        const mine = worldMap.getMine(tileX, tileY);
+
+        //We could always assume that an enemy mine is visible if an entity is on it, but safety first.
+        //Ally on tile but !isHidden && mine is an impossible state.
+        if(mine && !mine.isHidden && this.triggersMine(mine) && mine.isEnemy(gameContext, this.teamID)) {
+            tileCost += EntityType.MAX_MOVE_COST;
+        }
     }
 
     if(tileCost < EntityType.MIN_MOVE_COST) {

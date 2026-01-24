@@ -1,5 +1,6 @@
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
+import { TILE_ID } from "../enums.js";
 import { BattalionCamera } from "./battalionCamera.js";
 
 export const PlayerCamera = function() {
@@ -27,6 +28,25 @@ PlayerCamera.prototype.addPerspective = function(teamID) {
 
 PlayerCamera.prototype.setMainPerspective = function(teamID) {
     this.mainPerspective = teamID;
+}
+
+PlayerCamera.prototype.drawMines = function(tileManager, display, worldMap) {
+    const { context } = display;
+    const { mines } = worldMap;
+    const length = mines.length;
+
+    for(let i = 0; i < length; i++) {
+        const { tileX, tileY, isHidden, teamID } = mines[i];
+
+        if(tileX >= this.startX && tileX <= this.endX && tileY >= this.startY && tileY <= this.endY) {
+            if(!isHidden || this.perspectives.has(teamID)) {
+                const renderX = this.tileWidth * tileX;
+                const renderY = this.tileHeight * tileY;
+
+                this.drawTile(tileManager, TILE_ID.VOLANO, context, renderX, renderY);
+            }
+        }
+    }
 }
 
 PlayerCamera.prototype.drawEntity = function(entity, display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime) {

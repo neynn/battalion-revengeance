@@ -1,5 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
 import { playExplosion } from "../../systems/animation.js";
+import { despawnEntity } from "../../systems/spawn.js";
 
 export const MineTriggerAction = function() {
     Action.call(this);

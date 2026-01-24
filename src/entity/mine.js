@@ -10,3 +10,7 @@ export const Mine = function(config) {
 
 Mine.prototype = Object.create(StaticObject.prototype);
 Mine.prototype.constructor = Mine;
+
+Mine.prototype.isVisibleTo = function(gameContext, teamID) {
+    return !this.isHidden || !this.isEnemy(gameContext, teamID)
+}

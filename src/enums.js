@@ -42,7 +42,8 @@ export const TEAM_STAT = {
     ROUNDS_TAKEN: 14,
     UNITS_MOVED: 15,
     RESOURCE_DAMAGE: 16,
-    COUNT: 17
+    MINES_DISCOVERED: 17,
+    COUNT: 18
 };
 
 export const ENTITY_CATEGORY = {
