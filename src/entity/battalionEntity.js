@@ -991,10 +991,6 @@ BattalionEntity.prototype.isNextToEntity = function(entity) {
     return this.getDistanceToEntity(entity) === 1;
 }
 
-BattalionEntity.prototype.canUncloak = function() {
-    return this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED);
-}
-
 BattalionEntity.prototype.canCloak = function() {
     return !this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.hasTrait(TRAIT_TYPE.STEALTH);
 }

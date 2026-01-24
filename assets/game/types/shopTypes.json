@@ -6,6 +6,6 @@
         "entities": ["TURRET"]
     },
     "FACTORY": {
-        "entities": ["TURRET", "JAMMER_TRUCK"]
+        "entities": ["TURRET", "JAMMER_TRUCK", "HEAVY_COMMANDO"]
     }
 }

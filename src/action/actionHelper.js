@@ -102,9 +102,9 @@ export const createCloakIntent = function(entityID) {
     });
 }
 
-export const createUncloakIntent = function(entities) {
+export const createUncloakIntent = function(entityID) {
     return new ActionIntent(ACTION_TYPE.UNCLOAK, {
-        "entities": entities
+        "entityID": entityID
     });
 }
 

@@ -1,7 +1,8 @@
 import { Action } from "../../../engine/action/action.js";
 import { FADE_RATE } from "../../constants.js";
-import { BattalionEntity } from "../../entity/battalionEntity.js";
+import { TRAIT_TYPE } from "../../enums.js";
 import { playUncloakSound } from "../../systems/sound.js";
+import { createTrackingIntent } from "../actionHelper.js";
 
 export const UncloakAction = function() {
     Action.call(this);
@@ -72,21 +73,28 @@ UncloakAction.prototype.execute = function(gameContext, data) {
 UncloakAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entities } = actionIntent;
-    const uncloakedEntities = [];
+    const { entityID } = actionIntent;
+    const entity = entityManager.getEntity(entityID);
 
-    for(let i = 0; i < entities.length; i++) {
-        const entityID = entities[i];
-        const entity = entityManager.getEntity(entityID);
-
-        if(entity && entity.canUncloak()) {
-            uncloakedEntities.push(entityID);
-        }
+    if(!entity || entity.isDead()) {
+        return;
     }
 
+    const uncloakedEntities = entity.getUncloakedEntitiesAtSelf(gameContext);
+
+    if(uncloakedEntities.length === 0) {
+        return;
+    }
+
+    if(entity.hasTrait(TRAIT_TYPE.TRACKING)) {
+        executionPlan.addNext(createTrackingIntent(entity, uncloakedEntities));
+    }
+
+    const ids = uncloakedEntities.map(e => e.getID());
+    
     if(uncloakedEntities.length !== 0) {
         executionPlan.setData({
-            "entities": uncloakedEntities
+            "entities": ids
         });
     }
 }

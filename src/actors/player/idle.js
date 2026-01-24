@@ -25,7 +25,7 @@ IdleState.prototype.onEntityClick = function(gameContext, stateMachine, entity, 
 IdleState.prototype.onBuildingClick = function(gameContext, stateMachine, building) {
     if(building.hasTrait(TRAIT_TYPE.SPAWNER)) {
         //TODO: Open and create SELECT menu.
-        const ENTITY_ID = "JAMMER_TRUCK";
+        const ENTITY_ID = "HEAVY_COMMANDO";
         const { tileX, tileY } = building;
         const player = stateMachine.getContext();
         const request = createPurchseEntityIntent(tileX, tileY, ENTITY_ID);

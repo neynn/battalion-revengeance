@@ -35,7 +35,7 @@ export const mInterceptMine = function(gameContext, entity, mPath) {
         const { tileX, tileY } = mPath[i];
         const mine = worldMap.getMine(tileX, tileY);
 
-        if(mine && entity.triggersMine(mine)) {
+        if(mine && entity.triggersMine(mine) && mine.isEnemy(gameContext, entity.teamID)) {
             mPath.splice(0, i);
 
             return PATH_INTERCEPT.MINE;

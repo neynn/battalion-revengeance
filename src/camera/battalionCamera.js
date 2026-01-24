@@ -109,6 +109,23 @@ BattalionCamera.prototype.drawJammers = function(tileManager, display, worldMap)
     }
 }
 
+BattalionCamera.prototype.drawMines = function(tileManager, display, worldMap) {
+    const { context } = display;
+    const { mines } = worldMap;
+    const length = mines.length;
+
+    for(let i = 0; i < length; i++) {
+        const { tileX, tileY } = mines[i];
+
+        if(tileX >= this.startX && tileX <= this.endX && tileY >= this.startY && tileY <= this.endY) {
+            const renderX = this.tileWidth * tileX;
+            const renderY = this.tileHeight * tileY;
+
+            this.drawTile(tileManager, TILE_ID.VOLANO, context, renderX, renderY);
+        }
+    }
+}
+
 BattalionCamera.prototype.drawBuildings = function(display, worldMap, realTime, deltaTime) {
     const { buildings } = worldMap;
     const length = buildings.length;
@@ -145,6 +162,7 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.CLOUD));
     this.drawOverlay(tileManager, display, this.selectOverlay);
     this.drawSpriteBatchYSorted(display, spriteManager.getLayer(LAYER_TYPE.BUILDING), realTime, deltaTime);
+    this.drawMines(tileManager, display, worldMap);
 
     if(this.showAllJammers) {
         this.drawJammers(tileManager, display, worldMap);

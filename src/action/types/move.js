@@ -25,7 +25,8 @@ MoveAction.STATE = {
 
 MoveAction.FLAG = {
     NONE: 0,
-    ELUSIVE: 1 << 0
+    ELUSIVE: 1 << 0,
+    MINE_TRIGGERED: 1 << 1
 };
 
 MoveAction.prototype = Object.create(Action.prototype);
@@ -163,7 +164,7 @@ MoveAction.prototype.execute = function(gameContext, data) {
 
 MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
-    const { entityManager } = world;
+    const { entityManager, mapManager } = world;
     const { entityID, path, targetID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
 
@@ -187,13 +188,22 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
 
     if(mineIntercept === PATH_INTERCEPT.MINE) {
         executionPlan.addNext(createMineTriggerIntent(entityID));
-    }
+    } 
 
     const targetX = path[0].tileX;
     const targetY = path[0].tileY;
     const targetEntity = entityManager.getEntity(targetID);
-    const uncloakedEntities = entity.getUncloakedEntities(gameContext, targetX, targetY);
+    const worldMap = mapManager.getActiveMap();
+    const mine = worldMap.getMine(targetX, targetY);
     let flags = MoveAction.FLAG.NONE;
+
+    if(mine && mine.isEnemy(gameContext, teamID)) {
+        flags |= MoveAction.FLAG.MINE_TRIGGERED;
+
+        //At the end of move, emit that the mine was discovered.
+        //This can happen regardless of mineTrigger, because mineTrigger and target land on the same tile.
+        //Assume this is always true.
+    }
 
     if(targetEntity && targetEntity.isNextToTile(targetX, targetY)) {
         if(entity.isHealValid(gameContext, targetEntity)) {
@@ -205,15 +215,7 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
         }
     }
 
-    if(uncloakedEntities.length !== 0) {
-        const uncloakedIDs = uncloakedEntities.map(e => e.getID());
-
-        executionPlan.addNext(createUncloakIntent(uncloakedIDs));
-
-        if(entity.hasTrait(TRAIT_TYPE.TRACKING)) {
-            executionPlan.addNext(createTrackingIntent(entity, uncloakedEntities));
-        }
-    }
+    executionPlan.addNext(createUncloakIntent(entityID));
 
     if(entity.canCapture(gameContext, targetX, targetY)) {
         executionPlan.addNext(createCaptureIntent(entityID, targetX, targetY));

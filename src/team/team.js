@@ -301,7 +301,6 @@ Team.prototype.startTurn = function(gameContext) {
     const { world, actionRouter } = gameContext;
     const { entityManager } = world;
     const deadEntities = [];
-    const uncloakedEntities = [];
 
     for(const entityID of this.entities) {
         const entity = entityManager.getEntity(entityID);
@@ -313,15 +312,7 @@ Team.prototype.startTurn = function(gameContext) {
                 deadEntities.push(entityID);
             } else {
                 if(entity.hasTrait(TRAIT_TYPE.RADAR)) {
-                    const uncloaked = entity.getUncloakedEntitiesAtSelf(gameContext);
-
-                    for(const uEntity of uncloaked) {
-                        const uEntityID = uEntity.getID();
-
-                        if(!uncloakedEntities.includes(uEntityID)) {
-                            uncloakedEntities.push(uEntityID);
-                        }
-                    }
+                    actionRouter.forceEnqueue(gameContext, createUncloakIntent(entityID));
                 }
             }
         }
@@ -329,10 +320,6 @@ Team.prototype.startTurn = function(gameContext) {
 
     if(deadEntities.length !== 0) {
         actionRouter.forceEnqueue(gameContext, createDeathIntent(deadEntities));
-    }
-
-    if(uncloakedEntities.length !== 0) {
-        actionRouter.forceEnqueue(gameContext, createUncloakIntent(uncloakedEntities));
     }
 }
 

@@ -5,6 +5,7 @@ export const Mine = function(config) {
     StaticObject.call(this, config);
 
     this.target = ENTITY_CATEGORY.LAND;
+    this.isHidden = true;
 }
 
 Mine.prototype = Object.create(StaticObject.prototype);

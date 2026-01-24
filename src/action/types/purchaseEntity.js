@@ -1,8 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
-import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { mapCategoryToStat } from "../../enumHelpers.js";
 import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
-import { mGetUncloakedEntities } from "../../systems/cloak.js";
 import { createClientEntityObject, createServerEntityObject } from "../../systems/spawn.js";
 import { createUncloakIntent } from "../actionHelper.js";
 
@@ -93,19 +91,10 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
         return;
     }
 
-    const uncloaked = [];
-
-    mGetUncloakedEntities(gameContext, tileX, tileY, teamID, entityType, uncloaked);
-
-    if(uncloaked.length !== 0) {
-        const uncloakedIDs = uncloaked.map(entity => entity.getID());
-        const intent = createUncloakIntent(uncloakedIDs);
-
-        executionPlan.addNext(intent);
-    }
-
     //TODO: Add morale calculation.
     const entityID = entityManager.getNextID();
+
+    executionPlan.addNext(createUncloakIntent(entityID));
 
     executionPlan.setData({
         "id": entityID,
