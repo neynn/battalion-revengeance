@@ -294,6 +294,7 @@ export const ENTITY_TYPE = {
 };
 
 export const ACTION_TYPE = {
+    MINE_TRIGGER: "MINE_TRIGGER",
     PURCHASE_ENTITY: "PURCHASE_ENTITY",
     PRODUCE_ENTITY: "PRODUCE_ENTITY",
     EXTRACT: "EXTRACT",
@@ -453,7 +454,8 @@ export const PATH_FLAG = {
 export const PATH_INTERCEPT = {
     NONE: 0,
     VALID: 1,
-    ILLEGAL: 2
+    ILLEGAL: 2,
+    MINE: 3
 };
 
 export const ATTACK_TYPE = {

@@ -1,6 +1,12 @@
 import { ActionIntent } from "../../engine/action/actionIntent.js";
 import { ACTION_TYPE, COMMAND_TYPE } from "../enums.js";
 
+export const createMineTriggerIntent = function(entityID) {
+    return new ActionIntent(ACTION_TYPE.MINE_TRIGGER, {
+        "entityID": entityID
+    });
+}
+
 export const createProduceEntityIntent = function(entityID, typeID, direction) {
     return new ActionIntent(ACTION_TYPE.PRODUCE_ENTITY, {
         "entityID": entityID,

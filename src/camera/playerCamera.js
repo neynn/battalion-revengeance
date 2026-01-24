@@ -12,8 +12,6 @@ export const PlayerCamera = function() {
     this.mainPerspective = null;
 }
 
-PlayerCamera.STEALTH_THRESHOLD = 0.5;
-
 PlayerCamera.prototype = Object.create(BattalionCamera.prototype);
 PlayerCamera.prototype.constructor = PlayerCamera;
 
@@ -38,9 +36,9 @@ PlayerCamera.prototype.drawEntity = function(entity, display, viewportLeftEdge, 
     const markerY = positionY - viewportTopEdge;
     const opacity = visual.getOpacity();
 
-    if(opacity < PlayerCamera.STEALTH_THRESHOLD) {
+    if(opacity < BattalionCamera.STEALTH_THRESHOLD) {
         if((flags & BattalionEntity.FLAG.IS_CLOAKED) && this.perspectives.has(teamID)) {
-            visual.setOpacity(PlayerCamera.STEALTH_THRESHOLD);
+            visual.setOpacity(BattalionCamera.STEALTH_THRESHOLD);
             view.draw(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
             visual.setOpacity(opacity);
         } else {

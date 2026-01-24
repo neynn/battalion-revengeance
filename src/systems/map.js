@@ -5,6 +5,7 @@ import { ServerBattalionEvent } from "../event/serverBattalionEvent.js";
 import { createActor, createPlayer, createSpectator, createTeam } from "../map/generic.js";
 import { MapSettings } from "../map/settings.js";
 import { SHOP_TYPE } from "../enums.js";
+import { Mine } from "../entity/mine.js";
 
 export const ClientMapFactory = {
     mpClientCreateStaticMap: async function(gameContext, payload) {
@@ -49,6 +50,10 @@ export const ClientMapFactory = {
             const worldMap = new BattalionMap(mapID, width, height);
 
             worldMap.decodeLayers(data);
+
+            const testmine = new Mine({});
+            testmine.setTile(6, 3);
+            worldMap.addMine(testmine);
 
             if(translations !== null) {
                 language.registerMapTranslations(translations);

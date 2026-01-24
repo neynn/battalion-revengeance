@@ -1399,3 +1399,13 @@ BattalionEntity.prototype.setPurchased = function() {
     this.onTurnEnd();
     this.turns = 0;
 }
+
+BattalionEntity.prototype.triggersMine = function(mine) {
+    const { target } = mine;
+
+    switch(target) {
+        case ENTITY_CATEGORY.LAND: return this.config.category === ENTITY_CATEGORY.LAND && !this.hasTrait(TRAIT_TYPE.ELUSIVE);
+        case ENTITY_CATEGORY.SEA: return this.config.category === ENTITY_CATEGORY.SEA && !this.hasTrait(TRAIT_TYPE.STEER);
+        default: return false;
+    }
+}

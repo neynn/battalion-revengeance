@@ -1,6 +1,7 @@
 import { PATH_FLAG, PATH_INTERCEPT } from "../enums.js";
 import { EntityType } from "../type/parsed/entityType.js";
 
+//TODO: Merge intercept functions
 export const mInterceptPath = function(gameContext, teamID, mPath) {
     const { world } = gameContext;
     let elementsToDelete = mPath.length;
@@ -19,6 +20,25 @@ export const mInterceptPath = function(gameContext, teamID, mPath) {
             }
 
             return PATH_INTERCEPT.VALID;
+        }
+    }
+
+    return PATH_INTERCEPT.NONE;
+}
+
+export const mInterceptMine = function(gameContext, entity, mPath) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+
+    for(let i = mPath.length - 1; i >= 0; i--) {
+        const { tileX, tileY } = mPath[i];
+        const mine = worldMap.getMine(tileX, tileY);
+
+        if(mine && entity.triggersMine(mine)) {
+            mPath.splice(0, i);
+
+            return PATH_INTERCEPT.MINE;
         }
     }
 

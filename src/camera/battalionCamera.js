@@ -16,6 +16,8 @@ export const BattalionCamera = function() {
     this.showAllJammers = false;
 }
 
+BattalionCamera.STEALTH_THRESHOLD = 0.5;
+
 BattalionCamera.prototype = Object.create(Camera2D.prototype);
 BattalionCamera.prototype.constructor = BattalionCamera;
 
@@ -24,8 +26,8 @@ BattalionCamera.prototype.drawEntity = function(entity, display, viewportLeftEdg
     const { visual } = view;
     const opacity = visual.getOpacity();
 
-    if(flags & BattalionEntity.FLAG.IS_CLOAKED && opacity < 0.5) {
-        visual.setOpacity(0.5);
+    if((flags & BattalionEntity.FLAG.IS_CLOAKED) && opacity < BattalionCamera.STEALTH_THRESHOLD) {
+        visual.setOpacity(BattalionCamera.STEALTH_THRESHOLD);
         view.draw(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
         visual.setOpacity(opacity);
     } else {

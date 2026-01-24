@@ -9,3 +9,11 @@ do check if entity.canSpawnThere before commiting
 also check if the TEAM can produce the entity category
 
 View should own the entity, not the other way around!
+
+If an entities target is ON a landmine - trigger it anyway? Otherwise entities may stack on one tile.
+What if it cant be triggered? Then entities WILL stack -> problem
+If there already is an entity on the tile -> allow safe passage? Uncloak the landmine?
+
+Uncloaking the landmine is a good idea because then i can just disable the pathing SAFELY without leaking information.
+
+So landmine spotted -> movement cost is MAX

@@ -1,4 +1,3 @@
-import { Renderer } from "../../engine/renderer/renderer.js";
 import { SCHEMA_TYPE } from "../enums.js";
 
 export const createSchemaViewSprite = function(gameContext, spriteID, schemaID, schema, layerID) {

@@ -11,7 +11,7 @@ export const BattalionMap = function(id, width, height) {
     this.climate = CLIMATE_TYPE.NONE;
     this.localization = [];
     this.buildings = [];
-    this.landmines = [];
+    this.mines = [];
     this.edits = [];
     this.jammerFields = new Map();
     this.createLayer(Layer.TYPE.BIT_16);
@@ -279,10 +279,10 @@ BattalionMap.prototype.loadLocalization = function(localization) {
     }
 }
 
-BattalionMap.prototype.isLandminePlaceable = function(gameContext, tileX, tileY) {
-    const { allowLandmine } = this.getTileType(gameContext, tileX, tileY);
+BattalionMap.prototype.isMinePlaceable = function(gameContext, tileX, tileY) {
+    const { allowMine } = this.getTileType(gameContext, tileX, tileY);
 
-    if(!allowLandmine) {
+    if(!allowMine) {
         return false;
     }
 
@@ -292,29 +292,45 @@ BattalionMap.prototype.isLandminePlaceable = function(gameContext, tileX, tileY)
         return false;
     }
 
-    if(this.getLandmine(tileX, tileY) !== null) {
+    if(this.getMine(tileX, tileY) !== null) {
         return false;
     } 
 
     return true;
 }
 
-BattalionMap.prototype.addLandmine = function(landmine) {
-    this.landmines.push(landmine);
+BattalionMap.prototype.removeMine = function(tileX, tileY) {
+    const index = this.getIndex(tileX, tileY);
+
+    if(index === WorldMap.OUT_OF_BOUNDS) {
+        return;
+    }
+
+    for(let i = 0; i < this.mines.length; i++) {
+        if(this.mines[i].isPlacedOn(tileX, tileY)) {
+            this.mines[i] = this.mines[this.mines.length - 1];
+            this.mines.pop();
+            break;
+        }
+    }
 }
 
-BattalionMap.prototype.getLandmine = function(tileX, tileY) {
+BattalionMap.prototype.addMine = function(mine) {
+    this.mines.push(mine);
+}
+
+BattalionMap.prototype.getMine = function(tileX, tileY) {
     const index = this.getIndex(tileX, tileY);
 
     if(index === WorldMap.OUT_OF_BOUNDS) {
         return null;
     }
 
-    for(let i = 0; i < this.landmines.length; i++) {
-        const landmine = this.landmines[i];
+    for(let i = 0; i < this.mines.length; i++) {
+        const mine = this.mines[i];
 
-        if(landmine.isPlacedOn(tileX, tileY)) {
-            return landmine;
+        if(mine.isPlacedOn(tileX, tileY)) {
+            return mine;
         }
     }
 

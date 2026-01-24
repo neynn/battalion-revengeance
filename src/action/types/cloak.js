@@ -48,7 +48,7 @@ CloakAction.prototype.onEnd = function(gameContext, data) {
 CloakAction.prototype.execute = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID  } = data;
+    const { entityID } = data;
     const entity = entityManager.getEntity(entityID);
 
     entity.setCloaked();

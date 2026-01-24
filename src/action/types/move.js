@@ -2,9 +2,9 @@ import { Action } from "../../../engine/action/action.js";
 import { FADE_RATE, TILE_WIDTH } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { COMMAND_TYPE, PATH_INTERCEPT, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
-import { mInterceptPath } from "../../systems/pathfinding.js";
+import { mInterceptMine, mInterceptPath } from "../../systems/pathfinding.js";
 import { playUncloakSound } from "../../systems/sound.js";
-import { createAttackRequest, createCaptureIntent, createCloakIntent, createHealRequest, createTrackingIntent, createUncloakIntent } from "../actionHelper.js";
+import { createAttackRequest, createCaptureIntent, createCloakIntent, createDeathIntent, createHealRequest, createMineTriggerIntent, createTrackingIntent, createUncloakIntent } from "../actionHelper.js";
 
 export const MoveAction = function() {
     Action.call(this);
@@ -181,6 +181,12 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
     if(path.length === 0 || intercept === PATH_INTERCEPT.ILLEGAL) {
         console.error("EDGE CASE: Stealth unit was too close!");
         return;
+    }
+
+    const mineIntercept = mInterceptMine(gameContext, entity, path);
+
+    if(mineIntercept === PATH_INTERCEPT.MINE) {
+        executionPlan.addNext(createMineTriggerIntent(entityID));
     }
 
     const targetX = path[0].tileX;

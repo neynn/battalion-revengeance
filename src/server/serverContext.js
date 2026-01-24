@@ -22,6 +22,7 @@ import { ExtractAction } from "../action/types/extract.js";
 import { PurchaseEntityAction } from "../action/types/purchaseEntity.js";
 import { ProduceEntityAction } from "../action/types/produceEntity.js";
 import { MapSettings } from "../map/settings.js";
+import { MineTriggerAction } from "../action/types/mineTrigger.js";
 
 export const ServerGameContext = function(serverApplication, id) {
     Room.call(this, id);
@@ -167,6 +168,7 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
 }
 
 ServerGameContext.prototype.init = function() {
+    this.world.actionQueue.registerAction(ACTION_TYPE.MINE_TRIGGER, new MineTriggerAction());
     this.world.actionQueue.registerAction(ACTION_TYPE.PRODUCE_ENTITY, new ProduceEntityAction(true));
     this.world.actionQueue.registerAction(ACTION_TYPE.PURCHASE_ENTITY, new PurchaseEntityAction(true));
     this.world.actionQueue.registerAction(ACTION_TYPE.EXTRACT, new ExtractAction());

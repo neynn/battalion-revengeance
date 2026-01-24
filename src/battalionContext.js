@@ -25,6 +25,7 @@ import { ExtractAction } from "./action/types/extract.js";
 import { PurchaseEntityAction } from "./action/types/purchaseEntity.js";
 import { ProduceEntityAction } from "./action/types/produceEntity.js";
 import { UICore } from "./ui/uiCore.js";
+import { MineTriggerAction } from "./action/types/mineTrigger.js";
 
 export const BattalionContext = function() {
     ClientGameContext.call(this);
@@ -72,6 +73,7 @@ BattalionContext.prototype.init = function(resources) {
 
     this.typeRegistry.load(resources);
 
+    this.world.actionQueue.registerAction(ACTION_TYPE.MINE_TRIGGER, new MineTriggerAction());
     this.world.actionQueue.registerAction(ACTION_TYPE.PRODUCE_ENTITY, new ProduceEntityAction(false));
     this.world.actionQueue.registerAction(ACTION_TYPE.PURCHASE_ENTITY, new PurchaseEntityAction(false));
     this.world.actionQueue.registerAction(ACTION_TYPE.EXTRACT, new ExtractAction());
