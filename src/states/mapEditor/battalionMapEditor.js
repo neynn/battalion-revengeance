@@ -1,3 +1,4 @@
+import { BrushSet } from "../../../engine/map/editor/brushSet.js";
 import { MapEditor } from "../../../engine/map/editor/mapEditor.js";
 import { TileManager } from "../../../engine/tile/tileManager.js";
 import { TILE_ID } from "../../enums.js";
@@ -7,13 +8,9 @@ export const BattalionMapEditor = function() {
     MapEditor.call(this);
 
     const PERMUTATIONS = [
-        { "origin": TILE_ID.ISLAND_1, "variants": [TILE_ID.ISLAND_2, TILE_ID.ISLAND_3, TILE_ID.ISLAND_4] }
-    ];
-
-    const SETS = [
-        { "name": "BASE", "values": [TILE_ID.GRASS, TILE_ID.BOREAL, TILE_ID.ARCTIC, TILE_ID.CANYON_0] },
-        { "name": "LAND", "values": [TILE_ID.ROAD_0, TILE_ID.VOLANO, TILE_ID.ORE_LEFT, TILE_ID.ORE_LEFT_USED, TILE_ID.ORE_LEFT_DEPLETED, TILE_ID.ORE_RIGHT, TILE_ID.ORE_RIGHT_USED, TILE_ID.ORE_RIGHT_DEPLETED] },
-        { "name": "WATER", "values": [TILE_ID.RIVER_0, TILE_ID.ROCKS_1, TILE_ID.ROCKS_2, TILE_ID.ROCKS_3, TILE_ID.ROCKS_4, TILE_ID.ISLAND_1, TILE_ID.ISLAND_2, TILE_ID.ISLAND_3, TILE_ID.ISLAND_4, TILE_ID.SWIRL_1, TILE_ID.SWIRL_2, TILE_ID.SWIRL_3, TILE_ID.SWIRL_4, TILE_ID.SHORE_0, TILE_ID.SHORE_1, TILE_ID.SHORE_2, TILE_ID.SHORE_3, TILE_ID.SHORE_4, TILE_ID.SHORE_5, TILE_ID.SHORE_6, TILE_ID.SHORE_7, TILE_ID.SHORE_8, TILE_ID.SHORE_9, TILE_ID.SHORE_10, TILE_ID.SHORE_11] }
+        { "origin": TILE_ID.ISLAND_1, "variants": [TILE_ID.ISLAND_2, TILE_ID.ISLAND_3, TILE_ID.ISLAND_4] },
+        { "origin": TILE_ID.ROCKS_1, "variants": [TILE_ID.ROCKS_2, TILE_ID.ROCKS_3, TILE_ID.ROCKS_4] },
+        { "origin": TILE_ID.SWIRL_1, "variants": [TILE_ID.SWIRL_2, TILE_ID.SWIRL_3, TILE_ID.SWIRL_4] },
     ];
 
     const BRUSH_SIZES = [
@@ -25,13 +22,65 @@ export const BattalionMapEditor = function() {
     ];
 
     this.registerPermutations(PERMUTATIONS);
-    this.registerBrushSets(SETS);
     this.registerBrushSizes(BRUSH_SIZES);
     this.registerFill(BattalionMap.LAYER.GROUND, TILE_ID.GRASS);
+    this.generateSets();
 }
 
 BattalionMapEditor.prototype = Object.create(MapEditor.prototype);
 BattalionMapEditor.prototype.constructor = BattalionMapEditor;
+
+BattalionMapEditor.prototype.generateSets = function() {
+    const allSet = new BrushSet("ALL");
+    const canyonSet = new BrushSet("CANYON");
+    const roadSet = new BrushSet("ROAD");
+    const groundSet = new BrushSet("GROUND");
+    const shoreSet = new BrushSet("SHORE");
+    const riverSet = new BrushSet("RIVER");
+    const seaSet = new BrushSet("SEA");
+
+    for(let i = TILE_ID.GRASS; i < TILE_ID.COUNT; i++) {
+        allSet.addValue(i);
+    }
+
+    for(let i = TILE_ID.CANYON_0; i <= TILE_ID.CANYON_47; i++) {
+        canyonSet.addValue(i);
+    }
+
+    groundSet.values = [
+        TILE_ID.VOLANO,
+        TILE_ID.ORE_LEFT,
+        TILE_ID.ORE_LEFT_USED,
+        TILE_ID.ORE_LEFT_DEPLETED,
+        TILE_ID.ORE_RIGHT,
+        TILE_ID.ORE_RIGHT_USED,
+        TILE_ID.ORE_RIGHT_DEPLETED
+    ];
+
+    for(let i = TILE_ID.SHORE_0; i <= TILE_ID.SHORE_11; i++) {
+        shoreSet.addValue(i);
+    }
+
+    for(let i = TILE_ID.ROAD_0; i <= TILE_ID.ROAD_15; i++) {
+        roadSet.addValue(i);
+    }
+
+    for(let i = TILE_ID.RIVER_0; i <= TILE_ID.RIVER_47; i++) {
+        riverSet.addValue(i);
+    }
+
+    for(let i = TILE_ID.ISLAND_1; i <= TILE_ID.ROCKS_4; i++) {
+        seaSet.addValue(i);
+    }
+
+    this.brushSets.addValue(allSet);
+    this.brushSets.addValue(roadSet);
+    this.brushSets.addValue(canyonSet);
+    this.brushSets.addValue(groundSet);
+    this.brushSets.addValue(shoreSet);
+    this.brushSets.addValue(riverSet);
+    this.brushSets.addValue(seaSet);
+}
 
 BattalionMapEditor.prototype.onTilePaint = function(gameContext, tileX, tileY) {
     const { tileManager } = gameContext;

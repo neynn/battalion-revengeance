@@ -360,6 +360,7 @@ export const TILE_ID = {
     GRASS: 1,
     BOREAL: 2,
     ARCTIC: 3,
+
     ROAD_0: 4,
     ROAD_1: 5,
     ROAD_2: 6,
@@ -376,9 +377,13 @@ export const TILE_ID = {
     ROAD_13: 17,
     ROAD_14: 18,
     ROAD_15: 19,
+
     VOLANO: 20,
+
     RIVER_0: 21,
     //21-68: RIVER
+    RIVER_47: 68,
+
     SHORE_0: 69,
     SHORE_1: 70,
     SHORE_2: 71,
@@ -391,6 +396,7 @@ export const TILE_ID = {
     SHORE_9: 78,
     SHORE_10: 79,
     SHORE_11: 80,
+
     ISLAND_1: 81,
     ISLAND_2: 82,
     ISLAND_3: 83,
@@ -403,16 +409,19 @@ export const TILE_ID = {
     ROCKS_2: 90,
     ROCKS_3: 91,
     ROCKS_4: 92,
+
     OVERLAY_MOVE: 93,
     OVERLAY_MOVE_ATTACK: 94,
     OVERLAY_ATTACK_LIGHT: 95,
     OVERLAY_ATTACK: 96,
 
+    PATH_0: 97,
     PATH_UP: 101,
     PATH_RIGHT: 102,
     PATH_DOWN: 103,
     PATH_LEFT: 104,
     PATH_CENTER: 105,
+    PATH_15: 112,
 
     JAMMER: 113,
 
@@ -425,6 +434,7 @@ export const TILE_ID = {
     
     CANYON_0: 120,
     CANYON_47: 167,
+
     COUNT: 168
 };
 
