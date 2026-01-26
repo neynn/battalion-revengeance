@@ -95,10 +95,23 @@ TileManager.prototype.load = function(resourceLoader, tileAtlases, tileMeta, aut
 }
 
 TileManager.prototype.createAutotiler = function(config) {
-    const { type = Autotiler.TYPE.NONE, values = {}, members = [] } = config;
+    const { type = Autotiler.TYPE.NONE, values = {}, members = [], autoMembers = [], useAutoValues = null } = config;
     const autotiler = new Autotiler(TileManager.TILE_ID.EMPTY);
 
     autotiler.setType(type);
+
+    for(const { prefix, first, last } of autoMembers) {
+        for(let i = first; i <= last; i++) {
+            const cID = `${prefix}${i}`;
+            const tileID = this.metaInversion[cID];
+
+            if(tileID !== undefined) {
+                autotiler.addMember(tileID);
+            } else {
+                console.error("cID does not exist!", cID);
+            }  
+        }
+    }
 
     for(const cID of members) {
         const tileID = this.metaInversion[cID];
@@ -107,6 +120,19 @@ TileManager.prototype.createAutotiler = function(config) {
             autotiler.addMember(tileID);
         } else {
             console.error("cID does not exist!", cID);
+        }
+    }
+
+    if(useAutoValues !== null) {
+        for(let i = 0; i < autotiler.values.length; i++) {
+            const cID = `${useAutoValues}${i}`;
+            const tileID = this.metaInversion[cID];
+
+            if(tileID !== undefined) {
+                autotiler.setValue(i, tileID);
+            } else {
+                console.error("cID does not exist!", cID);
+            }  
         }
     }
 
