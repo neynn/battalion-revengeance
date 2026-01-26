@@ -1,10 +1,10 @@
 import { createBitmapData, mapBitmapPartial } from "../graphics/colorHelper.js";
 import { Texture } from "./texture.js";
 
-export const AtlasTexture = function(id, path, regions) {
+export const AtlasTexture = function(id, path) {
     Texture.call(this, id, path);
 
-    this.regions = regions;
+    this.regions = {};
 }
 
 AtlasTexture.prototype = Object.create(Texture.prototype);
@@ -23,8 +23,20 @@ AtlasTexture.prototype.loadColoredRegions = function(copyBitmap, schema) {
     }
 }
 
+AtlasTexture.prototype.initRegions = function(regions) {
+    for(const regionID in regions) {
+        const { x = 0, y = 0, w = 0, h = 0 } = regions[regionID];
+
+        this.regions[regionID] = {
+            "x": x,
+            "y": y,
+            "w": w,
+            "h": h
+        };
+    }
+}
+
 AtlasTexture.prototype.autoCalcRegions = function(startX, startY, frameWidth, frameHeight, rows, columns) {
-    this.regions = {};
     let id = 1;
 
     for(let i = 0; i < rows; i++) {

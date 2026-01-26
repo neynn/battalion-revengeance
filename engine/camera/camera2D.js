@@ -71,6 +71,7 @@ Camera2D.prototype.drawFrame = function(context, bitmap, frame, renderX, renderY
     for(let i = 0; i < frameLength; i++) {
         const component = frame[i];
         const { frameX, frameY, frameW, frameH, shiftX, shiftY } = component;
+        //-pivot * scale
         const drawX = Math.floor(renderX + shiftX * scale);
         const drawY = Math.floor(renderY + shiftY * scale);
         const drawWidth = Math.floor(frameW * scale);

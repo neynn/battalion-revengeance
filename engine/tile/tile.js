@@ -1,7 +1,8 @@
 import { TextureRegistry } from "../resources/textureRegistry.js";
 
-export const Tile = function(id, type, autotiler) {
+export const Tile = function(id, cID, type, autotiler) {
     this.id = id;
+    this.cID = cID;
     this.type = type;
     this.autotiler = autotiler;
     this.texture = TextureRegistry.EMPTY_ATLAS_TEXTURE;
@@ -124,6 +125,7 @@ Tile.prototype.updateTotalFrameTime = function() {
     }
 }
 
+//TODO: get frames from texture.
 Tile.prototype.init = function(texture, regionID) {
     const { regions = {}, patterns = {}, animations = {} } = texture;
     const frameData = regions[regionID];

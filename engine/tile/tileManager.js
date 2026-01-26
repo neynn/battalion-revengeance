@@ -26,17 +26,15 @@ TileManager.prototype.update = function(gameContext) {
 
 TileManager.prototype.createTiles = function(tileMeta) {
     for(let i = 0; i < tileMeta.length; i++) {
-        const { type = null, autotiler = null, texture, tile } = tileMeta[i];
+        const { id = null, type = null, autotiler = null, texture, tile } = tileMeta[i];
         const tileID = i + 1;
-        const tileObject = new Tile(tileID, type, autotiler);
+        const tileObject = new Tile(tileID, id, type, autotiler);
 
         this.tiles.push(tileObject);
 
-        if(!this.metaInversion[texture]) {
-            this.metaInversion[texture] = {};
+        if(!this.metaInversion[id]) {
+            this.metaInversion[id] = tileID;
         }
-
-        this.metaInversion[texture][tile] = tileID;
     }
 }
 
@@ -102,24 +100,26 @@ TileManager.prototype.createAutotiler = function(config) {
 
     autotiler.setType(type);
 
-    for(let i = 0; i < members.length; i++) {
-        const [atlas, texture] = members[i];
-        const tileID = this.getTileID(atlas, texture);
+    for(const cID of members) {
+        const tileID = this.metaInversion[cID];
 
-        if(tileID !== TileManager.TILE_ID.EMPTY) {
+        if(tileID !== undefined) {
             autotiler.addMember(tileID);
+        } else {
+            console.error("cID does not exist!", cID);
         }
     }
 
     for(const indexID in values) {
-        const graphics = values[indexID];
+        const cID = values[indexID];
+        const tileID = this.metaInversion[cID];
 
-        if(graphics) {
-            const [atlas, texture] = graphics;
-            const tileID = this.getTileID(atlas, texture);
+        if(tileID !== undefined) {
             const index = Number(indexID);
 
             autotiler.setValue(index, tileID);
+        } else {
+            console.error("cID does not exist!", cID);
         }
     }
 
@@ -182,23 +182,6 @@ TileManager.prototype.getTile = function(tileID) {
 TileManager.prototype.getTileCount = function() {
     //+1 because 0 is treated as an empty tile -> counting begins at 1.
     return this.tiles.length + 1;
-}
-
-//@Deprecated
-TileManager.prototype.getTileID = function(atlasID, textureID) {
-    const atlas = this.metaInversion[atlasID];
-
-    if(!atlas) {
-        return TileManager.TILE_ID.EMPTY;
-    }
-
-    const tileID = atlas[textureID];
-
-    if(tileID === undefined) {
-        return TileManager.TILE_ID.EMPTY;
-    }
-
-    return tileID;
 }
 
 TileManager.prototype.hasTile = function(tileID) {

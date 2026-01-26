@@ -15,6 +15,4 @@ What if it cant be triggered? Then entities WILL stack -> problem
 If there already is an entity on the tile -> allow safe passage? Uncloak the landmine?
 
 Uncloaking the landmine is a good idea because then i can just disable the pathing SAFELY without leaking information.
-
-So landmine spotted -> movement cost is MAX. No, i still need to be able to move on top of them.
-Landmine spotted + FRIENDLY entity on top of it = NO PASSAGE UNLESS THE ENTITY DOES   NOT   TRIGGER THE MINE.
+Landmine alpha?

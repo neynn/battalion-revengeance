@@ -10,7 +10,7 @@ export const TextureRegistry = function() {
 
 TextureRegistry.EMPTY_ID = -1;
 TextureRegistry.DEFAULT_TEXTURE_TYPE = ".png";
-TextureRegistry.EMPTY_ATLAS_TEXTURE = new AtlasTexture(TextureRegistry.EMPTY_ID, "", {});
+TextureRegistry.EMPTY_ATLAS_TEXTURE = new AtlasTexture(TextureRegistry.EMPTY_ID, "");
 TextureRegistry.EMPTY_TEXTURE = new Texture(TextureRegistry.EMPTY_ID, "");
 
 TextureRegistry.prototype.getSizeBytes = function() {
@@ -57,8 +57,9 @@ TextureRegistry.prototype.createCopyAtlasTexture = function(textureName, atlasTe
         return copyTexture;
     }
 
-    const { regions } = atlasTexture;
-    const newTexture = new AtlasTexture(TextureRegistry.EMPTY_ID, textureName, regions);
+    const newTexture = new AtlasTexture(TextureRegistry.EMPTY_ID, textureName);
+
+    newTexture.regions = atlasTexture.regions;
 
     this.copyTextures.set(textureName, newTexture);
 
@@ -101,16 +102,20 @@ TextureRegistry.prototype.createAtlasTextures = function(textures) {
     const textureMap = {};
 
     for(const textureName in textures) {
-        const { directory, source, autoRegions, regions = {} } = textures[textureName];
+        const { directory, source, autoRegions, regions } = textures[textureName];
         const fileName = source ? source : `${textureName}${TextureRegistry.DEFAULT_TEXTURE_TYPE}`;
         const filePath = PathHandler.getPath(directory, fileName);
         const textureID = this.nextID++;
-        const texture = new AtlasTexture(textureID, filePath, regions);
+        const texture = new AtlasTexture(textureID, filePath);
 
         if(autoRegions) {
             const { startX, startY, frameWidth, frameHeight, rows, columns } = autoRegions;
 
             texture.autoCalcRegions(startX, startY, frameWidth, frameHeight, rows, columns);
+        }
+        
+        if(regions) {
+            texture.initRegions(regions);
         }
 
         this.textures.push(texture);
