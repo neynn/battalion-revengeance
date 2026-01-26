@@ -1,3 +1,10 @@
 {
-    "EDITOR_LOAD_MAP": "Which map would you like to load?"
+    "EDITOR_LOAD_MAP": "Which map would you like to load?",
+    "MAP_EDITOR_SET_NAME_ALL": "All",
+    "MAP_EDITOR_SET_NAME_CANYON": "Canyon",
+    "MAP_EDITOR_SET_NAME_ROAD": "Road",
+    "MAP_EDITOR_SET_NAME_GROUND": "Ground",
+    "MAP_EDITOR_SET_NAME_SHORE": "Shore",
+    "MAP_EDITOR_SET_NAME_RIVER": "River",
+    "MAP_EDITOR_SET_NAME_SEA": "Sea Decoration"
 }

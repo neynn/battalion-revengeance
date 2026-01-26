@@ -1,5 +1,5 @@
 import { State } from "../../../engine/state/state.js";;
-import { BattalionEditorController } from "./battalionEditorController.js";
+import { EditorController } from "./editorController.js";
 import { createEditCamera } from "../../systems/camera.js";
 import { BattalionMapEditor } from "./battalionMapEditor.js"
 import { MapEditorInterface } from "./mapEditorInterface.js";
@@ -17,7 +17,7 @@ MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
     const userInterface = new MapEditorInterface();
     const context = createEditCamera(gameContext, mapEditor.brush);
     const camera = context.getCamera();
-    const controller = new BattalionEditorController(mapEditor, userInterface, camera);
+    const controller = new EditorController(mapEditor, userInterface, camera);
 
     userInterface.load(gameContext);
 
@@ -27,7 +27,7 @@ MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
     controller.initCursorEvents(gameContext);
     controller.initUIEvents(gameContext);
     controller.initCommands(gameContext);
-    controller.updateMenuText();
+    controller.updateMenuText(gameContext);
 
     this.controller = controller;
     this.contextID = context.getID();

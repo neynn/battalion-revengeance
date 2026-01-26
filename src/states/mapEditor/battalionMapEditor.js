@@ -31,13 +31,13 @@ BattalionMapEditor.prototype = Object.create(MapEditor.prototype);
 BattalionMapEditor.prototype.constructor = BattalionMapEditor;
 
 BattalionMapEditor.prototype.generateSets = function() {
-    const allSet = new BrushSet("ALL");
-    const canyonSet = new BrushSet("CANYON");
-    const roadSet = new BrushSet("ROAD");
-    const groundSet = new BrushSet("GROUND");
-    const shoreSet = new BrushSet("SHORE");
-    const riverSet = new BrushSet("RIVER");
-    const seaSet = new BrushSet("SEA");
+    const allSet = new BrushSet("MAP_EDITOR_SET_NAME_ALL");
+    const canyonSet = new BrushSet("MAP_EDITOR_SET_NAME_CANYON");
+    const roadSet = new BrushSet("MAP_EDITOR_SET_NAME_ROAD");
+    const groundSet = new BrushSet("MAP_EDITOR_SET_NAME_GROUND");
+    const shoreSet = new BrushSet("MAP_EDITOR_SET_NAME_SHORE");
+    const riverSet = new BrushSet("MAP_EDITOR_SET_NAME_RIVER");
+    const seaSet = new BrushSet("MAP_EDITOR_SET_NAME_SEA");
 
     for(let i = TILE_ID.GRASS; i < TILE_ID.COUNT; i++) {
         allSet.addValue(i);
