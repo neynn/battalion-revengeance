@@ -32,7 +32,7 @@ TileManager.prototype.createTiles = function(tileMeta) {
 
         this.tiles.push(tileObject);
 
-        if(!this.metaInversion[id]) {
+        if(id !== null && !this.metaInversion[id]) {
             this.metaInversion[id] = tileID;
         }
     }

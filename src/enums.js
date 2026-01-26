@@ -421,7 +421,11 @@ export const TILE_ID = {
     ORE_LEFT_USED: 116,
     ORE_RIGHT_USED: 117,
     ORE_LEFT_DEPLETED: 118,
-    ORE_RIGHT_DEPLETED: 119
+    ORE_RIGHT_DEPLETED: 119,
+    
+    CANYON_0: 120,
+    CANYON_47: 167,
+    COUNT: 168
 };
 
 export const DIRECTION = {
