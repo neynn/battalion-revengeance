@@ -16,3 +16,6 @@ If there already is an entity on the tile -> allow safe passage? Uncloak the lan
 
 Uncloaking the landmine is a good idea because then i can just disable the pathing SAFELY without leaking information.
 Landmine alpha?
+add tile variants.
+also decouple TileAppearance from the logical tile. LogicalTile holds appearance[] and currentAppearance.
+The tileManager does not update LogicalTiles but TileAppearance[]

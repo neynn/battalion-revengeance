@@ -55,7 +55,8 @@ Camera2D.prototype.drawEmptyTile = function(context, renderX, renderY, scale) {
 }
 
 Camera2D.prototype.drawTile = function(tileManager, tileID, context, renderX, renderY, scale = 1) {
-    const { texture, frames, frameIndex } = tileManager.getTile(tileID);
+    const { visual } = tileManager.getTile(tileID);
+    const { texture, frames, frameIndex } = visual;
     const { bitmap } = texture;
 
     if(bitmap === null) {

@@ -1,14 +1,17 @@
+import { TileVisual } from "./visual.js";
 import { Autotiler } from "./autotiler.js";
 import { Tile } from "./tile.js";
 
 export const TileManager = function() {
     this.autotilers = new Map();
     this.metaInversion = {};
-    this.activeTiles = [];
     this.tiles = [];
+    this.visuals = [];
+    this.activeVisuals = [];
 }
 
-TileManager.EMPTY_TILE = new Tile(-1, null, null);
+TileManager.EMPTY_VISUAL = new TileVisual(-1);
+TileManager.EMPTY_TILE = new Tile(-1, null, null, TileManager.EMPTY_VISUAL);
 
 TileManager.TILE_ID = {
     EMPTY: 0,
@@ -19,8 +22,8 @@ TileManager.prototype.update = function(gameContext) {
     const { timer } = gameContext;
     const realTime = timer.getRealTime();
 
-    for(let i = 0; i < this.activeTiles.length; i++) {
-        this.activeTiles[i].updateFrameIndex(realTime);
+    for(let i = 0; i < this.activeVisuals.length; i++) {
+        this.activeVisuals[i].updateFrameIndex(realTime);
     }
 }
 
@@ -28,7 +31,7 @@ TileManager.prototype.createTiles = function(tileMeta) {
     for(let i = 0; i < tileMeta.length; i++) {
         const { id = null, type = null, autotiler = null, texture, tile } = tileMeta[i];
         const tileID = i + 1;
-        const tileObject = new Tile(tileID, id, type, autotiler);
+        const tileObject = new Tile(tileID, id, type, autotiler, TileManager.EMPTY_VISUAL);
 
         this.tiles.push(tileObject);
 
@@ -46,29 +49,47 @@ TileManager.prototype.createAutotilers = function(autotilers) {
     }
 }
 
-TileManager.prototype.createTileTextures = function(resourceLoader, tileAtlases, tileMeta) {
+TileManager.prototype.createTileVisuals = function(resourceLoader, tileAtlases, tileMeta) {
     const textureMap = resourceLoader.createTextures(tileAtlases);
+    const generatedVisuals = new Map();
+    let id = 0;
 
     for(let i = 0; i < tileMeta.length; i++) {
         const { texture, tile } = tileMeta[i];
-        const textureConfig = tileAtlases[texture];
+        const visualID = texture + "::" + tile;
         const tileObject = this.tiles[i];
+        let fVisual = TileManager.EMPTY_VISUAL;
 
-        if(textureConfig) {
-            tileObject.init(textureConfig, tile);
+        if(generatedVisuals.has(visualID)) {
+            fVisual = generatedVisuals.get(visualID);
+        } else {
+            const visual = new TileVisual(id++);
+            const textureConfig = tileAtlases[texture];
+
+            if(textureConfig) {
+                visual.init(textureConfig, tile);
+            }
+
+            const textureID = textureMap[texture];
+            const frameCount = visual.getFrameCount();
+
+            if(frameCount > 0 && textureID !== undefined) {
+                const textureObject = resourceLoader.getTextureByID(textureID);
+
+                visual.setTexture(textureObject);
+                textureObject.addReference();
+
+                resourceLoader.loadTexture(textureID);
+            }
+
+            this.visuals.push(visual);
+
+            generatedVisuals.set(visualID, visual);
+
+            fVisual = visual;
         }
 
-        const textureID = textureMap[texture];
-        const frameCount = tileObject.getFrameCount();
-
-        if(frameCount > 0 && textureID !== undefined) {
-            const textureObject = resourceLoader.getTextureByID(textureID);
-
-            tileObject.setTexture(textureObject);
-            textureObject.addReference();
-
-            resourceLoader.loadTexture(textureID);
-        }
+        tileObject.visual = fVisual;
     }
 }
 
@@ -90,8 +111,8 @@ TileManager.prototype.load = function(resourceLoader, tileAtlases, tileMeta, aut
 
     this.createTiles(tileMeta);
     this.createAutotilers(autotilers);
-    this.createTileTextures(resourceLoader, tileAtlases, tileMeta);
-    this.enableAllTiles();
+    this.createTileVisuals(resourceLoader, tileAtlases, tileMeta);
+    this.enableAllVisuals();
 }
 
 TileManager.prototype.createAutotiler = function(config) {
@@ -152,47 +173,57 @@ TileManager.prototype.createAutotiler = function(config) {
     return autotiler;
 }
 
-TileManager.prototype.disableTile = function(tileID) {
-    for(let i = 0; i < this.activeTiles.length; i++) {
-        if(this.activeTiles[i].id === tileID) {
-            this.activeTiles[i].reset();
-            this.activeTiles[i] = this.activeTiles[this.activeTiles.length - 1];
-            this.activeTiles.pop();
+TileManager.prototype.getVisual = function(visualID) {
+    for(let i = 0; i < this.visuals.length; i++) {
+        if(this.visuals[i].id === visualID) {
+            return this.visuals[i];
+        }
+    }
+
+    return TileManager.EMPTY_VISUAL;
+}
+
+TileManager.prototype.disableVisual = function(visualID) {
+    for(let i = 0; i < this.activeVisuals.length; i++) {
+        if(this.activeVisuals[i].id === visualID) {
+            this.activeVisuals[i].reset();
+            this.activeVisuals[i] = this.activeVisuals[this.activeVisuals.length - 1];
+            this.activeVisuals.pop();
             break;
         }
     }
 }
 
-TileManager.prototype.enableTile = function(tileID) {
-    const tile = this.getTile(tileID);
-
-    if(tile !== TileManager.EMPTY_TILE) {
-        for(let i = 0; i < this.activeTiles.length; i++) {
-            if(this.activeTiles[i].id === tileID) {
-                return;
-            }
+TileManager.prototype.enableVisual = function(visualID) {
+    for(let i = 0; i < this.activeVisuals.length; i++) {
+        if(this.activeVisuals[i].id === visualID) {
+            return;
         }
+    }
 
-        this.activeTiles.push(tile);
+    const visual = this.getVisual(visualID);
+
+    if(visual !== TileManager.EMPTY_VISUAL) {
+        this.activeVisuals.push(visual);
     }
 }
 
-TileManager.prototype.enableAllTiles = function() {
-    this.activeTiles.length = 0;
+TileManager.prototype.enableAllVisuals = function() {
+    this.activeVisuals.length = 0;
 
-    for(let i = 0; i < this.tiles.length; i++) {
-        if(this.tiles[i].frameCount > 1) {
-            this.activeTiles.push(this.tiles[i]);
+    for(let i = 0; i < this.visuals.length; i++) {
+        if(this.visuals[i].frameCount > 1) {
+            this.activeVisuals.push(this.visuals[i]);
         }
     }
 }
 
-TileManager.prototype.disableAllTiles = function() {
-    for(let i = 0; i < this.activeTiles.length; i++) {
-        this.activeTiles[i].reset();
+TileManager.prototype.disableAllVisuals = function() {
+    for(let i = 0; i < this.activeVisuals.length; i++) {
+        this.activeVisuals[i].reset();
     }
 
-    this.activeTiles.length = 0;
+    this.activeVisuals.length = 0;
 }
 
 TileManager.prototype.getTile = function(tileID) {

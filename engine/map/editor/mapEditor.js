@@ -210,7 +210,7 @@ MapEditor.prototype.registerPermutation = function(originID, mutationID) {
     const permutations = this.permutations[originID];
 
     if(permutations === undefined) {
-        this.permutations[originID] = [originID, mutationID];
+        this.permutations[originID] = [mutationID];
     } else if(!permutations.includes(mutationID)) {
         permutations.push(mutationID);
     }
