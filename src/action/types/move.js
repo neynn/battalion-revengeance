@@ -162,11 +162,6 @@ MoveAction.prototype.execute = function(gameContext, data) {
     teamManager.updateStatus();
 
     if(flags & MoveAction.FLAG.MINE_DISCOVERED) {
-        const { tileX, tileY } = entity;
-        const worldMap = mapManager.getActiveMap();
-        const mine = worldMap.getMine(tileX, tileY);
-
-        mine.show();
         team.addStatistic(TEAM_STAT.MINES_DISCOVERED, 1);
     }
 }

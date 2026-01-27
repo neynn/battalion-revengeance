@@ -1,4 +1,4 @@
-import { ENTITY_CATEGORY, ENTITY_TYPE, MINE_TYPE, MOVEMENT_TYPE, TEAM_STAT, TILE_ID, TRANSPORT_TYPE } from "./enums.js";
+import { ENTITY_CATEGORY, ENTITY_TYPE, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, TEAM_STAT, TILE_ID, TRANSPORT_TYPE } from "./enums.js";
 
 export const mapCategoryToStat = function(category) {
     switch(category) {
@@ -32,5 +32,13 @@ export const mineTypeToTile = function(mineType) {
         case MINE_TYPE.LAND: return TILE_ID.VOLANO;
         case MINE_TYPE.SEA: return TILE_ID.VOLANO;
         default: return TILE_ID.VOLANO;
+    }
+}
+
+export const mineTypeToJammer = function(mineType) {
+    switch(mineType) {
+        case MINE_TYPE.LAND: return JAMMER_FLAG.RADAR;
+        case MINE_TYPE.SEA: return JAMMER_FLAG.SONAR;
+        default: return JAMMER_FLAG.NONE;
     }
 }

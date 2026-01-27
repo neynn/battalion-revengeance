@@ -23,6 +23,7 @@ export const FloodFill = function(straightCost, crossCost) {
 }
 
 FloodFill.LISTS = {
+    0: precomputeOffsets(0),
     1: precomputeOffsets(1),
     2: precomputeOffsets(2),
     3: precomputeOffsets(3),

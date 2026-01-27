@@ -3,14 +3,13 @@ import { EntityManager } from "../../engine/entity/entityManager.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { FloodFill } from "../../engine/pathfinders/floodFill.js";
-import { JammerField } from "../map/jammerField.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { createNode, mGetLowestCostNode } from "../systems/pathfinding.js";
 import { getDirectionByDelta } from "../systems/direction.js";
-import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, MINE_TYPE } from "../enums.js";
+import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, MINE_TYPE, JAMMER_FLAG } from "../enums.js";
 import { mapTransportToEntity } from "../enumHelpers.js";
 import { getLineEntities } from "../systems/targeting.js";
-import { mGetUncloakedEntities } from "../systems/cloak.js";
+import { mGetUncloakedEntities, mGetUncloakedMines } from "../systems/cloak.js";
 
 export const BattalionEntity = function(id) {
     Entity.call(this, id, "");
@@ -329,7 +328,7 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
     if(this.config.category === ENTITY_CATEGORY.AIR && !this.hasTrait(TRAIT_TYPE.HIGH_ALTITUDE)) {
         const jammer = worldMap.getJammer(tileX, tileY);
 
-        if(jammer.isJammed(gameContext, this.teamID, JammerField.FLAG.AIRSPACE_BLOCKED)) {
+        if(jammer.isJammed(gameContext, this.teamID, JAMMER_FLAG.AIRSPACE_BLOCKED)) {
             return EntityType.MAX_MOVE_COST;
         }
     }
@@ -1089,6 +1088,14 @@ BattalionEntity.prototype.isDiscoveredByJammerAt = function(gameContext, tileX, 
     return jammer.isJammed(gameContext, this.teamID, cloakFlag);
 }
 
+BattalionEntity.prototype.getUncloakedMines = function(gameContext) {
+    const uncloakedMines = [];
+    
+    mGetUncloakedMines(gameContext, this.tileX, this.tileY, this.teamID, this.config, uncloakedMines);
+
+    return uncloakedMines;
+}
+
 BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, targetY) {
     const { world } = gameContext;
     const { mapManager } = world;
@@ -1167,7 +1174,7 @@ BattalionEntity.prototype.toTransport = function(gameContext, transportType) {
 }
 
 BattalionEntity.prototype.isJammer = function() {
-    return this.config.jammerRange > 0 && this.config.getJammerFlags() !== JammerField.FLAG.NONE;
+    return this.config.jammerRange > 0 && this.config.getJammerFlags() !== JAMMER_FLAG.NONE;
 }
 
 BattalionEntity.prototype.setUncloaked = function() {
@@ -1353,7 +1360,7 @@ BattalionEntity.prototype.placeOnMap = function(gameContext) {
 
     worldMap.addEntity(this.tileX, this.tileY, dimX, dimY, this.id);
 
-    if(jammerFlags !== JammerField.FLAG.NONE) {
+    if(jammerFlags !== JAMMER_FLAG.NONE) {
         worldMap.fill2DGraph(this.tileX, this.tileY, jammerRange, (nextX, nextY) => {
             worldMap.addJammer(nextX, nextY, this.teamID, jammerFlags);
         });
@@ -1374,7 +1381,7 @@ BattalionEntity.prototype.removeFromMap = function(gameContext) {
 
     worldMap.removeEntity(this.tileX, this.tileY, dimX, dimY, this.id);
 
-    if(jammerFlags !== JammerField.FLAG.NONE) {
+    if(jammerFlags !== JAMMER_FLAG.NONE) {
         worldMap.fill2DGraph(this.tileX, this.tileY, jammerRange, (nextX, nextY) => {
             worldMap.removeJammer(nextX, nextY, this.teamID, jammerFlags);
         });

@@ -34,7 +34,8 @@ MineTriggerAction.prototype.execute = function(gameContext, data) {
     const worldMap = mapManager.getActiveMap();
 
     worldMap.removeMine(tileX, tileY);
-    //Take damage.
+    despawnEntity(gameContext, entity);
+    //Take damage instead of deleting.
 }
 
 MineTriggerAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {

@@ -1,6 +1,5 @@
 import { mapMovementToCategory } from "../../enumHelpers.js";
-import { ARMOR_TYPE, ATTACK_TYPE, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../../enums.js";
-import { JammerField } from "../../map/jammerField.js";
+import { ARMOR_TYPE, ATTACK_TYPE, JAMMER_FLAG, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../../enums.js";
 
 const ENABLE_HYBRID = false;
 
@@ -125,16 +124,16 @@ EntityType.prototype.hasTrait = function(traitID) {
 }
 
 EntityType.prototype.getJammerFlags = function() {
-    let flags = JammerField.FLAG.NONE;
+    let flags = JAMMER_FLAG.NONE;
 
     //JAMMER also blocks airspace traffic.
     if(this.hasTrait(TRAIT_TYPE.JAMMER)) {
-        flags |= JammerField.FLAG.RADAR;
-        flags |= JammerField.FLAG.AIRSPACE_BLOCKED;
+        flags |= JAMMER_FLAG.RADAR;
+        flags |= JAMMER_FLAG.AIRSPACE_BLOCKED;
     }
 
     if(this.hasTrait(TRAIT_TYPE.SONAR)) {
-        flags |= JammerField.FLAG.SONAR;
+        flags |= JAMMER_FLAG.SONAR;
     }
 
     return flags;
@@ -144,13 +143,13 @@ EntityType.prototype.getCloakFlag = function() {
     //The returned flags need to be unset in a jammer field, otherwise cloaking will not work.
     if(this.hasTrait(TRAIT_TYPE.STEALTH)) {
         if(this.hasTrait(TRAIT_TYPE.SUBMERGED)) {
-            return JammerField.FLAG.SONAR;
+            return JAMMER_FLAG.SONAR;
         }
 
-        return JammerField.FLAG.RADAR;
+        return JAMMER_FLAG.RADAR;
     }
 
-    return JammerField.FLAG.NONE;
+    return JAMMER_FLAG.NONE;
 }
 
 EntityType.prototype.getAttackType = function() {

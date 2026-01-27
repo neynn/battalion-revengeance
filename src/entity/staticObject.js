@@ -57,3 +57,10 @@ StaticObject.prototype.isEnemy = function(gameContext, teamID) {
 
     return true;
 }
+
+StaticObject.prototype.positionToJSON = function() {
+    return {
+        "x": this.tileX,
+        "y": this.tileY
+    }
+}

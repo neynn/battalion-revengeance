@@ -46,6 +46,13 @@ export const TEAM_STAT = {
     COUNT: 18
 };
 
+export const JAMMER_FLAG = {
+    NONE: 0,
+    RADAR: 1 << 0,
+    SONAR: 1 << 1,
+    AIRSPACE_BLOCKED: 1 << 2
+};
+
 export const MINE_TYPE = {
     LAND: 0,
     SEA: 1

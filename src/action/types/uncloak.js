@@ -1,6 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
 import { FADE_RATE } from "../../constants.js";
-import { TRAIT_TYPE } from "../../enums.js";
+import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { playUncloakSound } from "../../systems/sound.js";
 import { createTrackingIntent } from "../actionHelper.js";
 
@@ -59,15 +59,26 @@ UncloakAction.prototype.onEnd = function(gameContext, data) {
 }
 
 UncloakAction.prototype.execute = function(gameContext, data) {
-    const { world } = gameContext;
-    const { entityManager } = world;
-    const { entities } = data;
+    const { world, teamManager } = gameContext;
+    const { entityManager, mapManager } = world;
+    const { entities, mines, teamID } = data;
+    const worldMap = mapManager.getActiveMap();
+    const team = teamManager.getTeam(teamID);
 
     for(let i = 0; i < entities.length; i++) {
         const entity = entityManager.getEntity(entities[i]);
 
         entity.setUncloaked();
     }
+
+    for(let i = 0; i < mines.length; i++) {
+        const { x, y } = mines[i];
+        const mine = worldMap.getMine(x, y);
+
+        mine.show();
+    }
+
+    team.addStatistic(TEAM_STAT.MINES_DISCOVERED, mines.length);
 }
 
 UncloakAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
@@ -80,21 +91,21 @@ UncloakAction.prototype.fillExecutionPlan = function(gameContext, executionPlan,
         return;
     }
 
+    const { teamID } = entity;
+    const uncloakedMines = entity.getUncloakedMines(gameContext);
     const uncloakedEntities = entity.getUncloakedEntitiesAtSelf(gameContext);
 
-    if(uncloakedEntities.length === 0) {
-        return;
-    }
-
-    if(entity.hasTrait(TRAIT_TYPE.TRACKING)) {
+    if(uncloakedEntities.length !== 0 && entity.hasTrait(TRAIT_TYPE.TRACKING)) {
         executionPlan.addNext(createTrackingIntent(entity, uncloakedEntities));
     }
 
-    const ids = uncloakedEntities.map(e => e.getID());
-    
-    if(uncloakedEntities.length !== 0) {
-        executionPlan.setData({
-            "entities": ids
-        });
+    if(uncloakedEntities.length === 0 && uncloakedMines.length === 0) {
+        return;
     }
+
+    executionPlan.setData({
+        "teamID": teamID,
+        "entities": uncloakedEntities.map(e => e.getID()),
+        "mines": uncloakedMines.map(m => m.positionToJSON())
+    });
 }

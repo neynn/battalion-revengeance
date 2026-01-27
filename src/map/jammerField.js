@@ -1,15 +1,10 @@
+import { JAMMER_FLAG } from "../enums.js";
+
 export const JammerField = function(tileX, tileY) {
     this.tileX = tileX;
     this.tileY = tileY;
     this.blockers = [];
 }
-
-JammerField.FLAG = {
-    NONE: 0,
-    RADAR: 1 << 0,
-    SONAR: 1 << 1,
-    AIRSPACE_BLOCKED: 1 << 2
-};
 
 JammerField.prototype.isJammed = function(gameContext, teamID, flags) {
     const { teamManager } = gameContext;
@@ -36,7 +31,7 @@ JammerField.prototype.removeBlocker = function(teamID, flags) {
         if(blocker.teamID === teamID) {
             blocker.flags &= ~flags;
 
-            if(blocker.flags === JammerField.FLAG.NONE) {
+            if(blocker.flags === JAMMER_FLAG.NONE) {
                 this.blockers[i] = this.blockers[this.blockers.length - 1];
                 this.blockers.pop();
                 break;
