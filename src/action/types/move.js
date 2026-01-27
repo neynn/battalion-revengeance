@@ -166,7 +166,7 @@ MoveAction.prototype.execute = function(gameContext, data) {
         const worldMap = mapManager.getActiveMap();
         const mine = worldMap.getMine(tileX, tileY);
 
-        mine.isHidden = false;
+        mine.show();
         team.addStatistic(TEAM_STAT.MINES_DISCOVERED, 1);
     }
 }
@@ -206,7 +206,7 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
     const mine = worldMap.getMine(targetX, targetY);
     let flags = MoveAction.FLAG.NONE;
 
-    if(mine && mine.isHidden && mine.isEnemy(gameContext, teamID)) {
+    if(mine && mine.isHidden() && mine.isEnemy(gameContext, teamID)) {
         flags |= MoveAction.FLAG.MINE_DISCOVERED;
     }
 

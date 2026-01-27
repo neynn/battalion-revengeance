@@ -56,7 +56,7 @@ MineTriggerAction.prototype.fillExecutionPlan = function(gameContext, executionP
     const { tileX, tileY } = entity;
     const mine = worldMap.getMine(tileX, tileY);
 
-    if(!mine || !entity.triggersMine(mine)) {
+    if(!mine || !entity.triggersMine(gameContext, mine)) {
         return;
     }
 

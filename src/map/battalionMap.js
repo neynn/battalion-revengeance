@@ -279,7 +279,8 @@ BattalionMap.prototype.loadLocalization = function(localization) {
     }
 }
 
-BattalionMap.prototype.isMinePlaceable = function(gameContext, tileX, tileY) {
+//TODO: seperate sea/land/air? mines.
+BattalionMap.prototype.isMinePlaceable = function(gameContext, tileX, tileY, mineType) {
     const { allowMine } = this.getTileType(gameContext, tileX, tileY);
 
     if(!allowMine) {

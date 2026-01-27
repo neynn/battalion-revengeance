@@ -46,6 +46,11 @@ export const TEAM_STAT = {
     COUNT: 18
 };
 
+export const MINE_TYPE = {
+    LAND: 0,
+    SEA: 1
+};
+
 export const ENTITY_CATEGORY = {
     LAND: 0,
     SEA: 1,

@@ -4,6 +4,7 @@ import { SHAPE } from "../../engine/math/constants.js";
 import { Renderer } from "../../engine/renderer/renderer.js";
 import { drawShape, shadeScreen } from "../../engine/util/drawHelper.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
+import { mineTypeToTile } from "../enumHelpers.js";
 import { LAYER_TYPE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 
@@ -115,13 +116,14 @@ BattalionCamera.prototype.drawMines = function(tileManager, display, worldMap) {
     const length = mines.length;
 
     for(let i = 0; i < length; i++) {
-        const { tileX, tileY } = mines[i];
+        const { tileX, tileY, type } = mines[i];
 
         if(tileX >= this.startX && tileX <= this.endX && tileY >= this.startY && tileY <= this.endY) {
             const renderX = this.tileWidth * tileX;
             const renderY = this.tileHeight * tileY;
+            const tileID = mineTypeToTile(type);
 
-            this.drawTile(tileManager, TILE_ID.VOLANO, context, renderX, renderY);
+            this.drawTile(tileManager, tileID, context, renderX, renderY);
         }
     }
 }

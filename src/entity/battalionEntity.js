@@ -7,7 +7,7 @@ import { JammerField } from "../map/jammerField.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { createNode, mGetLowestCostNode } from "../systems/pathfinding.js";
 import { getDirectionByDelta } from "../systems/direction.js";
-import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY } from "../enums.js";
+import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, MINE_TYPE } from "../enums.js";
 import { mapTransportToEntity } from "../enumHelpers.js";
 import { getLineEntities } from "../systems/targeting.js";
 import { mGetUncloakedEntities } from "../systems/cloak.js";
@@ -359,7 +359,7 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
 
         //We could always assume that an enemy mine is visible if an entity is on it, but safety first.
         //Ally on tile but !isHidden && mine is an impossible state.
-        if(mine && !mine.isHidden && this.triggersMine(mine) && mine.isEnemy(gameContext, this.teamID)) {
+        if(mine && !mine.isHidden() && this.triggersMine(gameContext, mine)) {
             tileCost += EntityType.MAX_MOVE_COST;
         }
     }
@@ -1404,12 +1404,16 @@ BattalionEntity.prototype.setPurchased = function() {
     this.turns = 0;
 }
 
-BattalionEntity.prototype.triggersMine = function(mine) {
-    const { target } = mine;
+BattalionEntity.prototype.triggersMine = function(gameContext, mine) {
+    if(!mine.isEnemy(gameContext, this.teamID)) {
+        return false;
+    }
 
-    switch(target) {
-        case ENTITY_CATEGORY.LAND: return this.config.category === ENTITY_CATEGORY.LAND && !this.hasTrait(TRAIT_TYPE.ELUSIVE);
-        case ENTITY_CATEGORY.SEA: return this.config.category === ENTITY_CATEGORY.SEA && !this.hasTrait(TRAIT_TYPE.STEER);
+    const { type } = mine;
+
+    switch(type) {
+        case MINE_TYPE.LAND: return this.config.category === ENTITY_CATEGORY.LAND && !this.hasTrait(TRAIT_TYPE.ELUSIVE);
+        case MINE_TYPE.SEA: return this.config.category === ENTITY_CATEGORY.SEA && !this.hasTrait(TRAIT_TYPE.STEER);
         default: return false;
     }
 }

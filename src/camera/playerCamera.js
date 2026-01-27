@@ -1,6 +1,7 @@
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { TILE_ID } from "../enums.js";
+import { Mine } from "../entity/mine.js";
+import { mineTypeToTile } from "../enumHelpers.js";
 import { BattalionCamera } from "./battalionCamera.js";
 
 export const PlayerCamera = function() {
@@ -36,14 +37,15 @@ PlayerCamera.prototype.drawMines = function(tileManager, display, worldMap) {
     const length = mines.length;
 
     for(let i = 0; i < length; i++) {
-        const { tileX, tileY, isHidden, teamID } = mines[i];
+        const { tileX, tileY, state, teamID, type } = mines[i];
 
         if(tileX >= this.startX && tileX <= this.endX && tileY >= this.startY && tileY <= this.endY) {
-            if(!isHidden || this.perspectives.has(teamID)) {
+            if(state === Mine.STATE.VISIBLE || this.perspectives.has(teamID)) {
                 const renderX = this.tileWidth * tileX;
                 const renderY = this.tileHeight * tileY;
+                const tileID = mineTypeToTile(type);
 
-                this.drawTile(tileManager, TILE_ID.VOLANO, context, renderX, renderY);
+                this.drawTile(tileManager, tileID, context, renderX, renderY);
             }
         }
     }
