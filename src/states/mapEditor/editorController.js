@@ -8,11 +8,15 @@ import { getCursorTile } from "../../../engine/camera/contextHelper.js";
 import { TileManager } from "../../../engine/tile/tileManager.js";
 import { Cursor } from "../../../engine/client/cursor.js";
 import { TILE_WIDTH } from "../../constants.js";
+import { BrushSet } from "../../../engine/map/editor/brushSet.js";
+import { TILE_ID } from "../../enums.js";
+import { EditorConfigurator } from "../../../engine/map/editor/configurator.js";
 
 export const EditorController = function(mapEditor, userInterface, camera2D) {
     this.editor = mapEditor;
     this.userInterface = userInterface;
     this.camera2D = camera2D;
+    this.configurator = new EditorConfigurator(mapEditor);
     this.maxWidth = 100;
     this.maxHeight = 100;
     this.buttonHandler = new ButtonHandler();
@@ -20,6 +24,7 @@ export const EditorController = function(mapEditor, userInterface, camera2D) {
     this.pageIndex = 0;
     this.defaultWidth = 20;
     this.defaultHeight = 20;
+    this.initConfigurator();
 
     this.buttonHandler.createButton(EditorController.LAYER_BUTTON.L1, BattalionMap.LAYER.GROUND, "TEXT_L1");
     this.buttonHandler.createButton(EditorController.LAYER_BUTTON.L2, BattalionMap.LAYER.DECORATION, "TEXT_L2");
@@ -31,6 +36,64 @@ EditorController.LAYER_BUTTON = {
     L2: "L2",
     L3: "L3"
 };
+
+EditorController.prototype.initConfigurator = function() {
+    const allSet = new BrushSet("MAP_EDITOR_SET_NAME_ALL");
+    const canyonSet = new BrushSet("MAP_EDITOR_SET_NAME_CANYON");
+    const roadSet = new BrushSet("MAP_EDITOR_SET_NAME_ROAD");
+    const groundSet = new BrushSet("MAP_EDITOR_SET_NAME_GROUND");
+    const shoreSet = new BrushSet("MAP_EDITOR_SET_NAME_SHORE");
+    const riverSet = new BrushSet("MAP_EDITOR_SET_NAME_RIVER");
+    const seaSet = new BrushSet("MAP_EDITOR_SET_NAME_SEA");
+
+    for(let i = TILE_ID.GRASS; i < TILE_ID.COUNT; i++) {
+        allSet.addValue(i);
+    }
+
+    for(let i = TILE_ID.CANYON_0; i <= TILE_ID.CANYON_47; i++) {
+        canyonSet.addValue(i);
+    }
+
+    groundSet.values = [
+        TILE_ID.VOLANO,
+        TILE_ID.ORE_LEFT,
+        TILE_ID.ORE_LEFT_USED,
+        TILE_ID.ORE_LEFT_DEPLETED,
+        TILE_ID.ORE_RIGHT,
+        TILE_ID.ORE_RIGHT_USED,
+        TILE_ID.ORE_RIGHT_DEPLETED
+    ];
+
+    for(let i = TILE_ID.SHORE_0; i <= TILE_ID.SHORE_11; i++) {
+        shoreSet.addValue(i);
+    }
+
+    for(let i = TILE_ID.ROAD_0; i <= TILE_ID.ROAD_15; i++) {
+        roadSet.addValue(i);
+    }
+
+    for(let i = TILE_ID.RIVER_0; i <= TILE_ID.RIVER_47; i++) {
+        riverSet.addValue(i);
+    }
+
+    for(let i = TILE_ID.ISLAND_1; i <= TILE_ID.ROCKS_4; i++) {
+        seaSet.addValue(i);
+    }
+
+    this.configurator.addBrushSet(allSet);
+    this.configurator.addBrushSet(roadSet);
+    this.configurator.addBrushSet(canyonSet);
+    this.configurator.addBrushSet(groundSet);
+    this.configurator.addBrushSet(shoreSet);
+    this.configurator.addBrushSet(riverSet);
+    this.configurator.addBrushSet(seaSet);
+
+    this.configurator.addBrushSize(0, 0);
+    this.configurator.addBrushSize(1, 1);
+    this.configurator.addBrushSize(2, 2);
+    this.configurator.addBrushSize(3, 3);
+    this.configurator.addBrushSize(4, 4);
+}
 
 EditorController.prototype.initCursorEvents = function(gameContext) {
     const { client } = gameContext;
@@ -75,11 +138,11 @@ EditorController.prototype.initPalletButtons = function(gameContext, buttons, ca
 
         button.setClick((event) => {
             const palletIndex = this.getPalletIndex(palletID);
-            const tileID = this.editor.getPalletID(palletIndex);
+            const tileID = this.configurator.getCurrentSet().getTileID(palletIndex);
 
             if(tileID !== TileManager.TILE_ID.INVALID) {
                 this.resetBrush();
-                this.editor.selectBrush(palletIndex);
+                this.editor.setBrush(tileID, `${tileID}`);
             } else {
                 this.resetBrush();
             }
@@ -87,7 +150,7 @@ EditorController.prototype.initPalletButtons = function(gameContext, buttons, ca
 
         button.setCustom((display, localX, localY) => {
             const palletIndex = this.getPalletIndex(palletID);
-            const tileID = this.editor.getPalletID(palletIndex);
+            const tileID = this.configurator.getCurrentSet().getTileID(palletIndex);
 
             if(tileID !== TileManager.TILE_ID.INVALID) {
                 const scale = slotButtonSize / TILE_WIDTH;
@@ -105,7 +168,8 @@ EditorController.prototype.initPalletButtons = function(gameContext, buttons, ca
 }
 
 EditorController.prototype.updatePage = function(gameContext, delta) {
-    const maxPagesNeeded = Math.ceil(this.editor.getPalletSize() / this.buttonCount);
+    const palletSize = this.configurator.getCurrentSet().getSize();
+    const maxPagesNeeded = Math.ceil(palletSize / this.buttonCount);
 
     if(maxPagesNeeded <= 0) {
         this.pageIndex = 0;
@@ -117,7 +181,7 @@ EditorController.prototype.updatePage = function(gameContext, delta) {
 }
 
 EditorController.prototype.updateBrushSize = function(gameContext, delta) {
-    this.editor.scrollBrushSize(delta);
+    this.configurator.scrollBrushSize(delta);
     this.updateMenuText(gameContext);
 }
 
@@ -210,27 +274,22 @@ EditorController.prototype.resizeCurrentMap = function(gameContext) {
 }
 
 EditorController.prototype.getPageText = function() {
-    const maxPagesNeeded = Math.ceil(this.editor.getPalletSize() / this.buttonCount);
+    const palletSize = this.configurator.getCurrentSet().getSize();
+    const maxPagesNeeded = Math.ceil(palletSize / this.buttonCount);
     const showMaxPagesNeeded = maxPagesNeeded === 0 ? 1 : maxPagesNeeded;
     const showCurrentPage = this.pageIndex + 1;
 
     return `${showCurrentPage} / ${showMaxPagesNeeded}`;
 }
 
-EditorController.prototype.getSizeText = function() {
-    const info = this.editor.brushSizes.getInfo();
-    const areaString = this.editor.getBrushArea();
-
-    return `SIZE: ${areaString} (${info})`;
-}
-
 EditorController.prototype.updateMenuText = function(gameContext) {
     const { language } = gameContext;
-    const tilesetName = language.getSystemTranslation(this.editor.getPalletName());
+    const nameID = this.configurator.getCurrentSet().name;
+    const tilesetName = language.getSystemTranslation(nameID);
 
     this.userInterface.getElement("TEXT_TILESET_MODE").setText("MODE: " + this.editor.getModeName());
     this.userInterface.getElement("TEXT_PAGE").setText(this.getPageText());
-    this.userInterface.getElement("TEXT_SIZE").setText( this.getSizeText());
+    this.userInterface.getElement("TEXT_SIZE").setText(this.configurator.getSizeInfo());
     this.userInterface.getElement("TEXT_TILESET").setText(tilesetName);
 }
 
@@ -315,13 +374,13 @@ EditorController.prototype.initUIEvents = function(gameContext) {
     });
 
     this.userInterface.getElement("BUTTON_TILESET_LEFT").setClick(() => {
-        this.editor.scrollBrushSet(-1);
+        this.configurator.scrollBrushSet(-1);
         this.pageIndex = 0;
         this.updateMenuText(gameContext);
     });
 
     this.userInterface.getElement("BUTTON_TILESET_RIGHT").setClick(() => {
-        this.editor.scrollBrushSet(1);
+        this.configurator.scrollBrushSet(1);
         this.pageIndex = 0;
         this.updateMenuText(gameContext);
     });

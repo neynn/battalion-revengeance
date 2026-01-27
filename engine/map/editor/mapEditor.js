@@ -2,12 +2,9 @@ import { getRandomElement } from "../../math/math.js";
 import { Scroller } from "../../util/scroller.js";
 import { WorldMap } from "../worldMap.js";
 import { Brush } from "./brush.js";
-import { BrushSet } from "./brushSet.js";
 
 export const MapEditor = function() {
     this.brush = new Brush();
-    this.brushSets = new Scroller(new BrushSet("INVALID", []));
-    this.brushSizes = new Scroller({ "width": 0, "height": 0 });
     this.modes = new Scroller(MapEditor.MODE.TILE);
     this.activityStack = [];
     this.permutations = {};
@@ -31,7 +28,6 @@ MapEditor.MODE = {
 };
 
 MapEditor.prototype.onEntityPaint = function(gameContext, tileX, tileY) {}
-
 MapEditor.prototype.onTilePaint = function(gameContext, tileX, tileY) {}
 
 MapEditor.prototype.paint = function(gameContext, tileX, tileY) {
@@ -119,18 +115,6 @@ MapEditor.prototype.getModeName = function() {
     }
 }
 
-MapEditor.prototype.getPalletName = function() {
-    return this.brushSets.getValue().name;
-}
-
-MapEditor.prototype.getPalletID = function(index) {
-    return this.brushSets.getValue().getTileID(index);
-}
-
-MapEditor.prototype.getPalletSize = function() {
-    return this.brushSets.getValue().getSize();
-}
-
 MapEditor.prototype.getBrushTile = function() {
     if((this.flags & MapEditor.FLAG.USE_PERMUTATION)) {
         return this.getPermutation(this.brush.id);
@@ -149,19 +133,8 @@ MapEditor.prototype.getPermutation = function(originID) {
     return getRandomElement(permutations);
 }
 
-MapEditor.prototype.scrollBrushSize = function(delta = 0) {
-    const brushSize = this.brushSizes.scroll(delta);
-    const { width, height } = brushSize;
-    
-    this.brush.setSize(width, height);
-}
-
 MapEditor.prototype.scrollMode = function(delta = 0) {
     this.modes.loop(delta);
-}
-
-MapEditor.prototype.scrollBrushSet = function(delta = 0) {
-    this.brushSets.loop(delta);
 }
 
 MapEditor.prototype.togglePermutation = function() {
@@ -196,11 +169,8 @@ MapEditor.prototype.toggleEraser = function() {
     return isErasing;
 }
 
-MapEditor.prototype.selectBrush = function(index) {
-    const brushSet = this.brushSets.getValue();
-    const tileID = brushSet.getTileID(index);
-
-    this.brush.setBrush(tileID, `${tileID}`);
+MapEditor.prototype.setBrush = function(id, name) {
+    this.brush.setBrush(id, name);
 }
 
 MapEditor.prototype.resetBrush = function() {
@@ -236,10 +206,6 @@ MapEditor.prototype.registerFill = function(layerID, value) {
     });
 }
 
-MapEditor.prototype.registerBrushSizes = function(sizes) {
-    this.brushSizes.setValues(sizes);
-}
-
 MapEditor.prototype.registerPermutation = function(originID, mutationID) {
     const permutations = this.permutations[originID];
 
@@ -256,16 +222,4 @@ MapEditor.prototype.registerPermutations = function(permutations) {
             this.registerPermutation(origin, variant);
         }
     }
-}
-
-MapEditor.prototype.registerBrushSets = function(brushSets) {
-    const sets = [];
-
-    for(const { name, values } of brushSets) {
-        const brushSet = new BrushSet(name, values);
-
-        sets.push(brushSet);
-    }
-
-    this.brushSets.setValues(sets);
 }
