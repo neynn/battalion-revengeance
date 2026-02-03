@@ -7,6 +7,8 @@ export const AtlasTexture = function(id, path) {
     this.regions = {};
 }
 
+AtlasTexture.EMPTY_FRAME = { "x": 0, "y": 0, "w": 0, "h": 0 };
+
 AtlasTexture.prototype = Object.create(Texture.prototype);
 AtlasTexture.prototype.constructor = AtlasTexture;
 

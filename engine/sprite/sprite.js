@@ -14,10 +14,6 @@ export const Sprite = function(index, DEBUG_NAME) {
     this.currentFrame = 0;
     this.loopCount = 0;
     this.loopLimit = 0;
-    this.boundsX = 0;
-    this.boundsY = 0;
-    this.boundsW = 0;
-    this.boundsH = 0;
     this.shiftX = 0;
     this.shiftY = 0;
     this.flags = Sprite.FLAG.NONE;
@@ -25,6 +21,7 @@ export const Sprite = function(index, DEBUG_NAME) {
 
 Sprite.DEBUG = {
     COLOR: "#ff00ff",
+    COLOR_PIVOT: "#00ff00",
     PLACEHOLDER: "#222222",
     LINE_SIZE: 2,
     DOT_SIZE: 8,
@@ -52,12 +49,12 @@ Sprite.prototype.onDraw = function(display, localX, localY) {
     let renderY = 0;
 
     if(isFlipped) {
-        renderX = Math.floor(this.shiftX - localX);
-        renderY = Math.floor(localY + this.shiftY);
+        renderX = this.shiftX - localX;
+        renderY = this.shiftY + localY;
         display.flip();
     } else {
-        renderX = Math.floor(localX + this.shiftX);
-        renderY = Math.floor(localY + this.shiftY);
+        renderX = this.shiftX + localX;
+        renderY = this.shiftY + localY;
         display.unflip();
     }
 
@@ -71,7 +68,7 @@ Sprite.prototype.onDraw = function(display, localX, localY) {
         );
     } else if(Sprite.DEBUG.RENDER_PLACEHOLDER) {
         context.fillStyle = Sprite.DEBUG.PLACEHOLDER;
-        context.fillRect(renderX, renderY, this.boundsW, this.boundsH);
+        context.fillRect(renderX, renderY, this.width, this.height);
     }
 }
 
@@ -95,13 +92,13 @@ Sprite.prototype.onDebug = function(display, localX, localY) {
     let pivotX = 0;
 
     if(isFlipped) {
-        renderX = this.boundsX - localX;
-        renderY = localY + this.boundsY;
+        renderX = this.shiftX - localX;
+        renderY = this.shiftY + localY;
         pivotX = 0 - localX;
         display.flip();
     } else {
-        renderX = localX + this.boundsX;
-        renderY = localY + this.boundsY;
+        renderX = this.shiftX + localX;
+        renderY = this.shiftY + localY;
         pivotX = localX;
         display.unflip();
     }
@@ -109,8 +106,9 @@ Sprite.prototype.onDebug = function(display, localX, localY) {
     context.strokeStyle = Sprite.DEBUG.COLOR;
     context.fillStyle = Sprite.DEBUG.COLOR;
     context.lineWidth = Sprite.DEBUG.LINE_SIZE;
-    context.strokeRect(renderX, renderY, this.boundsW, this.boundsH);
+    context.strokeRect(renderX, renderY, this.width, this.height);
     context.fillRect(renderX - Sprite.DEBUG.DOT_SIZE_HALF, renderY - Sprite.DEBUG.DOT_SIZE_HALF, Sprite.DEBUG.DOT_SIZE, Sprite.DEBUG.DOT_SIZE);
+    context.fillStyle = Sprite.DEBUG.COLOR_PIVOT;
     context.fillRect(pivotX - Sprite.DEBUG.DOT_SIZE_HALF, localY - Sprite.DEBUG.DOT_SIZE_HALF, Sprite.DEBUG.DOT_SIZE, Sprite.DEBUG.DOT_SIZE);
 }
 
@@ -128,12 +126,10 @@ Sprite.prototype.reset = function() {
     this.currentFrame = 0;
     this.loopCount = 0;
     this.loopLimit = 0;
-    this.boundsX = 0;
-    this.boundsY = 0;
-    this.boundsW = 0;
-    this.boundsH = 0;
     this.shiftX = 0;
     this.shiftY = 0;
+    this.width = 0;
+    this.height = 0;
     this.flags = Sprite.FLAG.NONE;
     this.opacity = 1;
     this.setPosition(0, 0);
@@ -148,7 +144,7 @@ Sprite.prototype.setTexture = function(texture) {
 
 Sprite.prototype.init = function(container, lastCallTime, DEBUG_NAME) {
     if(this.container !== container) {
-        const { frameTime, frameCount, boundsX, boundsY, boundsW, boundsH, shiftX, shiftY } = container;
+        const { frameTime, frameCount, boundsW, boundsH, shiftX, shiftY } = container;
 
         this.container = container;
         this.lastCallTime = lastCallTime;
@@ -159,25 +155,19 @@ Sprite.prototype.init = function(container, lastCallTime, DEBUG_NAME) {
         this.loopCount = 0;
         this.shiftX = shiftX;
         this.shiftY = shiftY;
+        this.width = boundsW;
+        this.height = boundsH;
         this.DEBUG_NAME = DEBUG_NAME;
-        this.setBounds(boundsX, boundsY, boundsW, boundsH);
     }
-}
-
-Sprite.prototype.setBounds = function(x, y, w, h) {
-    this.boundsX = x;
-    this.boundsY = y;
-    this.boundsW = w;
-    this.boundsH = h;
 }
 
 Sprite.prototype.isVisibleStatic = function(positionX, positionY, viewportRight, viewportLeft, viewportBottom, viewportTop) {
     const isFlipped = (this.flags & Sprite.FLAG.FLIP) !== 0;
-    const adjustedX = isFlipped ? 0 - this.boundsX - this.boundsW : this.boundsX;
+    const adjustedX = isFlipped ? 0 - this.shiftX - this.width : this.shiftX;
     const leftEdge = positionX + adjustedX;
-    const topEdge = positionY + this.boundsY;
-    const rightEdge = leftEdge + this.boundsW;
-    const bottomEdge = topEdge + this.boundsH;
+    const topEdge = positionY + this.shiftY;
+    const rightEdge = leftEdge + this.width;
+    const bottomEdge = topEdge + this.height;
     const isVisible = leftEdge < viewportRight && rightEdge > viewportLeft && topEdge < viewportBottom && bottomEdge > viewportTop;
 
     return isVisible;
@@ -185,11 +175,11 @@ Sprite.prototype.isVisibleStatic = function(positionX, positionY, viewportRight,
 
 Sprite.prototype.isVisible = function(viewportRight, viewportLeft, viewportBottom, viewportTop) {
     const isFlipped = (this.flags & Sprite.FLAG.FLIP) !== 0;
-    const adjustedX = isFlipped ? 0 - this.boundsX - this.boundsW : this.boundsX;
+    const adjustedX = isFlipped ? 0 - this.shiftX - this.width : this.shiftX;
     const leftEdge = this.positionX + adjustedX;
-    const topEdge = this.positionY + this.boundsY;
-    const rightEdge = leftEdge + this.boundsW;
-    const bottomEdge = topEdge + this.boundsH;
+    const topEdge = this.positionY + this.shiftY;
+    const rightEdge = leftEdge + this.width;
+    const bottomEdge = topEdge + this.height;
     const isVisible = leftEdge < viewportRight && rightEdge > viewportLeft && topEdge < viewportBottom && bottomEdge > viewportTop;
 
     return isVisible;
@@ -197,9 +187,9 @@ Sprite.prototype.isVisible = function(viewportRight, viewportLeft, viewportBotto
 
 Sprite.prototype.isCollidingStatic = function(positionX, positionY, x, y, w, h) {
     const isFlipped = (this.flags & Sprite.FLAG.FLIP) !== 0;
-    const adjustedX = isFlipped ? -this.boundsX - this.boundsW : this.boundsX;
+    const adjustedX = isFlipped ? -this.shiftX - this.width : this.shiftX;
     const isColliding = isRectangleRectangleIntersect(
-        positionX + adjustedX, positionY + this.boundsY, this.boundsW, this.boundsH,
+        positionX + adjustedX, positionY + this.shiftY, this.width, this.height,
         x, y, w, h
     );
 
@@ -208,9 +198,9 @@ Sprite.prototype.isCollidingStatic = function(positionX, positionY, x, y, w, h) 
 
 Sprite.prototype.isColliding = function(x, y, w, h) {
     const isFlipped = (this.flags & Sprite.FLAG.FLIP) !== 0;
-    const adjustedX = isFlipped ? -this.boundsX - this.boundsW : this.boundsX;
+    const adjustedX = isFlipped ? -this.shiftX - this.width : this.shiftX;
     const isColliding = isRectangleRectangleIntersect(
-        this.positionX + adjustedX, this.positionY + this.boundsY, this.boundsW, this.boundsH,
+        this.positionX + adjustedX, this.positionY + this.shiftY, this.width, this.height,
         x, y, w, h
     );
 

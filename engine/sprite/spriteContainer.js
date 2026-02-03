@@ -4,8 +4,6 @@ export const SpriteContainer = function(id, frames) {
     this.frameCount = frames.length;
     this.totalFrameTime = frames.length;
     this.frameTime = 1;
-    this.boundsX = 0;
-    this.boundsY = 0;
     this.boundsW = 0;
     this.boundsH = 0;
     this.shiftX = 0;
@@ -23,19 +21,27 @@ SpriteContainer.prototype.setFrameTime = function(frameTime) {
 } 
 
 SpriteContainer.prototype.loadDefaultBounds = function() {
-    this.boundsX = this.shiftX;
-    this.boundsY = this.shiftY;
     this.boundsW = this.frames[0].w;
     this.boundsH = this.frames[0].h;
 }
 
 SpriteContainer.prototype.loadBounds = function(bounds) {
-    const { x, y, w, h } = bounds;
+    const { w, h } = bounds;
 
-    this.boundsX = x ?? this.shiftX;
-    this.boundsY = y ?? this.shiftY;
     this.boundsW = w ?? this.frames[0].w;
     this.boundsH = h ?? this.frames[0].h;
+}
+
+SpriteContainer.prototype.loadPivot = function(pivot) {
+    const { x = 0, y = 0 } = pivot;
+
+    if(x !== 0) {
+        this.shiftX = Math.floor((this.boundsW / 2)) - x;
+    }
+
+    if(y !== 0) {
+        this.shiftY = Math.floor((this.boundsH / 2)) - y;
+    }
 }
 
 SpriteContainer.prototype.loadShift = function(shift) {

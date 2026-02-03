@@ -52,14 +52,14 @@ SpriteManager.prototype.load = function(textures, sprites) {
                 spriteContainer.setFrameTime(frameTime);
             }
 
-            if(shift) {
-                spriteContainer.loadShift(shift);
-            }
-
             if(bounds) {
                 spriteContainer.loadBounds(bounds);
             } else {
                 spriteContainer.loadDefaultBounds();
+            }
+
+            if(shift) {
+                spriteContainer.loadShift(shift);
             }
 
             this.containers.push(spriteContainer);

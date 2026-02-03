@@ -9,6 +9,7 @@ export const UncloakAction = function() {
 
     this.opacity = 0;
     this.entities = [];
+    this.mines = [];
 }
 
 UncloakAction.prototype = Object.create(Action.prototype);
@@ -16,8 +17,9 @@ UncloakAction.prototype.constructor = UncloakAction;
 
 UncloakAction.prototype.onStart = function(gameContext, data) {
     const { world } = gameContext;
-    const { entityManager } = world;
-    const { entities } = data;
+    const { entityManager, mapManager } = world;
+    const { entities, mines } = data;
+    const worldMap = mapManager.getActiveMap();
 
     playUncloakSound(gameContext);
 
@@ -25,6 +27,13 @@ UncloakAction.prototype.onStart = function(gameContext, data) {
         const entity = entityManager.getEntity(entities[i]);
 
         this.entities.push(entity);
+    }
+
+    for(let i = 0; i < mines.length; i++) {
+        const { x, y } = mines[i];
+        const mine = worldMap.getMine(x, y);
+
+        this.mines.push(mine);
     }
 }
 
@@ -41,6 +50,10 @@ UncloakAction.prototype.onUpdate = function(gameContext, data) {
     for(const entity of this.entities) {
         entity.setOpacity(this.opacity);
     }
+
+    for(const mine of this.mines) {
+        mine.opacity = this.opacity;
+    }
 }
 
 UncloakAction.prototype.isFinished = function(gameContext, executionPlan) {
@@ -54,7 +67,12 @@ UncloakAction.prototype.onEnd = function(gameContext, data) {
         entity.setOpacity(1);
     }
 
+    for(const mine of this.mines) {
+        mine.opacity = 1;
+    }
+
     this.entities.length = 0;
+    this.mines.length = 0;
     this.opacity = 0;
 }
 
