@@ -1,14 +1,18 @@
-export const WorldEvent = function(id, actions) {
+export const WorldEvent = function(id, components) {
     this.id = id;
     this.turn = WorldEvent.INVALID_TIME;
     this.round = WorldEvent.INVALID_TIME;
     this.next = null;
-    this.actions = actions;
+    this.components = components;
 }
 
 WorldEvent.INVALID_TIME = -1;
 
-WorldEvent.prototype.execute = function(gameContext) {}
+WorldEvent.prototype.execute = function(gameContext) {
+    for(let i = 0; i < this.components.length; i++) {
+        this.components[i].execute(gameContext);
+    }
+}
 
 WorldEvent.prototype.setNext = function(next) {
     if(next !== undefined && next !== this.id) {
