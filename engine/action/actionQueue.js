@@ -14,6 +14,11 @@ export const ActionQueue = function() {
 
 ActionQueue.MAX_ACTIONS = 100;
 
+ActionQueue.PRIORITY = {
+    LOW: 0,
+    HIGH: 1
+};
+
 ActionQueue.STATE = {
     NONE: 0,
     ACTIVE: 1,
@@ -76,7 +81,7 @@ ActionQueue.prototype.getNextAction = function(gameContext) {
             const executionPlan = this.createExecutionPlan(gameContext, actionIntent);
 
             if(executionPlan) {
-                this.enqueue(executionPlan, Action.PRIORITY.HIGH);
+                this.enqueue(executionPlan, ActionQueue.PRIORITY.HIGH);
                 break;
             }
         }
@@ -140,42 +145,27 @@ ActionQueue.prototype.exit = function() {
     }
 }
 
-ActionQueue.prototype.enqueue = function(execution, forcedPriority = Action.PRIORITY.NONE) {
+ActionQueue.prototype.enqueue = function(execution, priority = ActionQueue.PRIORITY.LOW) {
     if(!this.executionQueue.isFull()) {
-        if(forcedPriority !== Action.PRIORITY.NONE) {
-            this.enqueueByPriority(execution, forcedPriority);
-        } else {
-            const { type } = execution;
-            const priority = this.getPriority(type);
-
-            this.enqueueByPriority(execution, priority);
+        switch(priority) {
+            case ActionQueue.PRIORITY.HIGH: {
+                this.executionQueue.enqueueFirst(execution);
+                break;
+            }
+            case ActionQueue.PRIORITY.LOW: {
+                this.executionQueue.enqueueLast(execution);
+                break;
+            }
+            default: {
+                console.warn(`Unknown priority! ${priority}`);
+                break;
+            }
         }
     } else {
         console.error({
             "error": "The execution queue is full. Item has been discarded!",
             "item": execution
         });
-    }
-}
-
-ActionQueue.prototype.enqueueByPriority = function(execution, priority) {
-    switch(priority) {
-        case Action.PRIORITY.HIGH: {
-            this.executionQueue.enqueueFirst(execution);
-            break;
-        }
-        case Action.PRIORITY.NORMAL: {
-            this.executionQueue.enqueueLast(execution);
-            break;
-        }
-        case Action.PRIORITY.LOW: {
-            this.executionQueue.enqueueLast(execution);
-            break;
-        }
-        default: {
-            console.warn(`Unknown priority! ${priority}`);
-            break;
-        }
     }
 }
 
@@ -191,16 +181,4 @@ ActionQueue.prototype.skip = function() {
     if(this.isRunning()) {
         this.isSkipping = true;
     }
-}
-
-ActionQueue.prototype.getPriority = function(typeID) {
-    const actionType = this.actionTypes.get(typeID);
-
-    if(!actionType) {
-        return Action.PRIORITY.NONE;
-    }
-
-    const { priority } = actionType;
-
-    return priority;
 }

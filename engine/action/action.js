@@ -1,13 +1,4 @@
-export const Action = function() {
-    this.priority = Action.PRIORITY.LOW;
-}
-
-Action.PRIORITY = {
-    NONE: 0,
-    LOW: 1,
-    NORMAL: 2,
-    HIGH: 3
-};
+export const Action = function() {}
 
 Action.prototype.execute = function(gameContext, data) {}
 Action.prototype.onStart = function(gameContext, executionData) {}
