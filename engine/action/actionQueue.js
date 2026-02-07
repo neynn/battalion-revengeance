@@ -1,6 +1,5 @@
 import { ExecutionPlan } from "./executionPlan.js";
 import { Queue } from "../util/queue.js";
-import { Action } from "./action.js";
 
 export const ActionQueue = function() {
     this.nextID = 0;

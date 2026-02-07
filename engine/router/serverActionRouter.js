@@ -31,7 +31,7 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
             break;
         }
 
-        executedPlans.push(plan.toJSONServer());
+        executedPlans.push(plan.toJSON());
         count++;
     }
 
