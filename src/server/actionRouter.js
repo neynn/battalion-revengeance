@@ -1,6 +1,5 @@
-import { GAME_EVENT } from "../../src/enums.js";
-import { ActionIntent } from "../action/actionIntent.js";
-import { ActionRouter } from "./actionRouter.js";
+import { ActionRouter } from "../../engine/action/actionRouter.js";
+import { GAME_EVENT } from "../enums.js";
 
 export const ServerActionRouter = function() {
     ActionRouter.call(this);
@@ -48,27 +47,11 @@ ServerActionRouter.prototype.forceEnqueue = function(gameContext, actionIntent) 
     const executionPlan = actionQueue.createExecutionPlan(gameContext, actionIntent);
 
     if(!executionPlan) {
-        return;
-    }
-
-    actionQueue.enqueue(executionPlan);
-
-    this.updateActionQueue(gameContext);
-}
-
-ServerActionRouter.prototype.onPlayerIntent = function(gameContext, intent) {
-    const { world } = gameContext;
-    const { actionQueue } = world;
-    const { type, data } = intent;
-    const actionIntent = new ActionIntent(type, data);
-    const executionPlan = actionQueue.createExecutionPlan(gameContext, actionIntent);
-
-    if(!executionPlan) {
         console.error("Invalid execution plan created!");
         return;
     }
 
     actionQueue.enqueue(executionPlan);
-    
+
     this.updateActionQueue(gameContext);
 }

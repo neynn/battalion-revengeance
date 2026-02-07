@@ -14,7 +14,6 @@ import { MapManager } from "./map/mapManager.js";
 import { ResourceLoader } from "./resources/resourceLoader.js";
 import { ApplicationWindow } from "./applicationWindow.js";
 import { ClientPathHandler } from "./resources/pathHandler.js";
-import { ClientActionRouter } from "./router/clientActionRouter.js";
 import { MapRegistry } from "../src/map/mapRegistry.js";
 
 export const ClientGameContext = function() {
@@ -32,7 +31,6 @@ export const ClientGameContext = function() {
     this.states = new StateMachine(this);
     this.transform2D = new Transform2D();
     this.timer = new Timer();
-    this.actionRouter = new ClientActionRouter();
     this.mapRegistry = new MapRegistry();
 
     this.client.cursor.events.on(Cursor.EVENT.BUTTON_CLICK, (event) => {

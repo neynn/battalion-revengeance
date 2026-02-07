@@ -26,6 +26,7 @@ import { PurchaseEntityAction } from "./action/types/purchaseEntity.js";
 import { ProduceEntityAction } from "./action/types/produceEntity.js";
 import { UICore } from "./ui/uiCore.js";
 import { MineTriggerAction } from "./action/types/mineTrigger.js";
+import { ClientActionRouter } from "./client/actionRouter.js";
 
 export const BattalionContext = function() {
     ClientGameContext.call(this);
@@ -36,6 +37,7 @@ export const BattalionContext = function() {
     this.portraitHandler = new PortraitHandler();
     this.dialogueHandler = new DialogueHandler();
     this.uiCore = new UICore();
+    this.actionRouter = new ClientActionRouter();
 
     this.timer.input = (deltaTime) => {
         this.client.update();

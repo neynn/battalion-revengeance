@@ -17,7 +17,7 @@ PlayState.prototype.onEnter = async function(gameContext, stateMachine, transiti
     const settings = new MapSettings();
 
     eventHandler.allowEvents();
-    actionRouter.toClient();
+    actionRouter.toSelf();
 
     settings.mapID = "presus";
     settings.mode = MapSettings.MODE.STORY;

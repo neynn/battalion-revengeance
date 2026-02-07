@@ -10,7 +10,6 @@ import { HealAction } from "../action/types/heal.js";
 import { MoveAction } from "../action/types/move.js";
 import { UncloakAction } from "../action/types/uncloak.js";
 import { TeamManager } from "../team/teamManager.js";
-import { ServerActionRouter } from "../../engine/router/serverActionRouter.js";
 import { ACTION_TYPE, GAME_EVENT, SCHEMA_TYPE } from "../enums.js";
 import { ServerMapFactory } from "../systems/map.js";
 import { ExplodeTileAction } from "../action/types/explodeTile.js";
@@ -23,6 +22,8 @@ import { PurchaseEntityAction } from "../action/types/purchaseEntity.js";
 import { ProduceEntityAction } from "../action/types/produceEntity.js";
 import { MapSettings } from "../map/settings.js";
 import { MineTriggerAction } from "../action/types/mineTrigger.js";
+import { ServerActionRouter } from "./actionRouter.js";
+import { ActionIntent } from "../../engine/action/actionIntent.js";
 
 export const ServerGameContext = function(serverApplication, id) {
     Room.call(this, id);
@@ -150,11 +151,13 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
             break;
         }
         case GAME_EVENT.MP_CLIENT_ACTION_INTENT: {
-            const { intent } = payload;
+            const { type, data } = payload;
 
             if(this.state === ServerGameContext.STATE.STARTED) {
-                if(mpIsPlayerIntentValid(this, intent, messengerID)) {
-                    this.actionRouter.onPlayerIntent(this, intent);
+                if(mpIsPlayerIntentValid(this, type, data, messengerID)) {
+                    const intent = new ActionIntent(type, data);
+
+                    this.actionRouter.forceEnqueue(this, intent);
                 }
             }
 
