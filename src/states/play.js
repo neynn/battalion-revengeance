@@ -16,7 +16,7 @@ PlayState.prototype.onEnter = async function(gameContext, stateMachine, transiti
     const { router } = client;
     const settings = new MapSettings();
 
-    eventHandler.allowEvents();
+    eventHandler.toAuthority();
     actionRouter.toSelf();
 
     settings.mapID = "presus";

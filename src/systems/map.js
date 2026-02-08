@@ -2,13 +2,66 @@ import { BattalionMap } from "../map/battalionMap.js";
 import { spawnClientBuilding, spawnClientEntity, spawnServerBuilding, spawnServerEntity } from "./spawn.js";
 import { createActor, createPlayer, createSpectator, createTeam } from "../map/generic.js";
 import { MapSettings } from "../map/settings.js";
-import { EVENT_TYPE } from "../enums.js";
+import { COMPONENT_TYPE } from "../enums.js";
 import { Mine } from "../entity/mine.js";
-import { ClientDialogueComponent } from "../event/components/clientDialogue.js";
+import { DialogueComponent } from "../event/components/dialogue.js";
 import { ExplodeTileComponent } from "../event/components/explodeTile.js";
-import { ClientPlayEffectComponent } from "../event/components/clientPlayEffect.js";
+import { PlayEffectComponent } from "../event/components/playEffect.js";
 import { SpawnComponent } from "../event/components/spawn.js";
 import { WorldEvent } from "../../engine/world/event/worldEvent.js";
+
+const MP_SERVER_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.EXPLODE_TILE, COMPONENT_TYPE.SPAWN_ENTITY]);
+const MP_CLIENT_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.DIALOGUE, COMPONENT_TYPE.PLAY_EFFECT]);
+const CLIENT_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.DIALOGUE, COMPONENT_TYPE.PLAY_EFFECT, COMPONENT_TYPE.SPAWN_ENTITY, COMPONENT_TYPE.EXPLODE_TILE]);
+
+const createComponents = function(components, allowedComponents) {
+    const componentObjects = [];
+
+    for(let i = 0; i < components.length; i++) {
+        const { type } = components[i];
+
+        if(!allowedComponents.has(type)) {
+            continue;
+        }
+
+        switch(type) {
+            case COMPONENT_TYPE.DIALOGUE: {
+                const { dialogue, target = null } = components[i];
+                const component = new DialogueComponent(dialogue, target);
+
+                componentObjects.push(component);
+                break;
+            }
+            case COMPONENT_TYPE.EXPLODE_TILE: {
+                const { layer, x, y } = components[i];
+                const component = new ExplodeTileComponent(layer, x, y);
+
+                componentObjects.push(component);
+                break;
+            }
+            case COMPONENT_TYPE.PLAY_EFFECT: {
+                const { effects } = components[i];
+                const component = new PlayEffectComponent(effects);
+
+                componentObjects.push(component);
+                break;
+            }
+            case COMPONENT_TYPE.SPAWN_ENTITY: {
+                const { entities } = components[i];
+                const component = new SpawnComponent(entities);
+
+                componentObjects.push(component);
+                break;
+            }
+            default: {
+                console.error("Unsupported event component!", config[i]);
+                break;
+            }
+        }
+    }
+
+    return componentObjects;
+}
 
 export const ClientMapFactory = {
     mpClientCreateStaticMap: async function(gameContext, payload) {
@@ -33,7 +86,7 @@ export const ClientMapFactory = {
             mapManager.addMap(worldMap);
             mapManager.enableMap(mapID);
 
-            ClientMapFactory.loadMap(gameContext, worldMap, file, client, settings);
+            ClientMapFactory.loadMap(gameContext, worldMap, file, client, settings, MP_CLIENT_EVENT_COMPONENTS);
             
             if(isSpectator) {
                 createSpectator(gameContext);
@@ -65,7 +118,7 @@ export const ClientMapFactory = {
             mapManager.addMap(worldMap);
             mapManager.enableMap(mapID);
 
-            ClientMapFactory.loadMap(gameContext, worldMap, file, client, settings);
+            ClientMapFactory.loadMap(gameContext, worldMap, file, client, settings, CLIENT_EVENT_COMPONENTS);
         }
     },
     createEditorMap: async function(gameContext, sourceID) {
@@ -125,7 +178,7 @@ export const ClientMapFactory = {
             createActor(gameContext, commander, teamName);
         }
     },
-    loadMap: function(gameContext, worldMap, mapData, clientTeam, settings) {
+    loadMap: function(gameContext, worldMap, mapData, clientTeam, settings, allowedComponents) {
         const { world, teamManager, dialogueHandler, client } = gameContext;
         const { eventHandler } = world;
         const { musicPlayer } = client;
@@ -195,7 +248,7 @@ export const ClientMapFactory = {
 
         for(const eventName in events) {
             const { turn, round, next = null, actions = [] } = events[eventName];
-            const components = ClientMapFactory.createComponents(actions);
+            const components = createComponents(actions, allowedComponents);
             const event = new WorldEvent(eventName, components);
 
             event.setTriggerTime(turn, round);
@@ -205,47 +258,6 @@ export const ClientMapFactory = {
         
         teamManager.updateStatus();
         teamManager.setTurnOrder(gameContext);
-    },
-    createComponents: function(config) {
-        const components = [];
-
-        for(let i = 0; i < config.length; i++) {
-            const { type } = config[i];
-            let component = null;
-
-            switch(type) {
-                case EVENT_TYPE.DIALOGUE: {
-                    const { dialogue, target } = config[i];
-                    component = new ClientDialogueComponent(dialogue, target);
-                    break;
-                }
-                case EVENT_TYPE.EXPLODE_TILE: {
-                    const { layer, x, y } = config[i];
-                    component = new ExplodeTileComponent(layer, x, y);
-                    break;
-                }
-                case EVENT_TYPE.PLAY_EFFECT: {
-                    const { effects } = config[i];
-                    component = new ClientPlayEffectComponent(effects);
-                    break;
-                }
-                case EVENT_TYPE.SPAWN_ENTITY: {
-                    const { entities } = config[i];
-                    component = new SpawnComponent(entities);
-                    break;
-                }
-                default: {
-                    console.error("Unsupported event component!", config[i]);
-                    break;
-                }
-            }
-
-            if(component) {
-                components.push(component);
-            }
-        }
-
-        return components;
     }
 };
 
@@ -275,7 +287,7 @@ export const ServerMapFactory = {
 
         for(const eventName in events) {
             const { turn, round, next = null, actions = [] } = events[eventName];
-            const components = ServerMapFactory.createComponents(actions);
+            const components = createComponents(actions, MP_SERVER_EVENT_COMPONENTS);
             const event = new WorldEvent(eventName, components);
 
             event.setTriggerTime(turn, round);
@@ -349,36 +361,5 @@ export const ServerMapFactory = {
 
         teamManager.updateStatus();
         teamManager.setTurnOrder(gameContext);
-    },
-    createComponents: function(config) {
-        const components = [];
-
-        for(let i = 0; i < config.length; i++) {
-            const { type } = config[i];
-            let component = null;
-
-            switch(type) {
-                case EVENT_TYPE.EXPLODE_TILE: {
-                    const { layer, x, y } = config[i];
-                    component = new ExplodeTileComponent(layer, x, y);
-                    break;
-                }
-                case EVENT_TYPE.SPAWN_ENTITY: {
-                    const { entities } = config[i];
-                    component = new SpawnComponent(entities);
-                    break;
-                }
-                default: {
-                    console.error("Unsupported event component!", config[i]);
-                    break;
-                }
-            }
-
-            if(component) {
-                components.push(component);
-            }
-        }
-
-        return components;
     }
 };

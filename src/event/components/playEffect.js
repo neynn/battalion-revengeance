@@ -3,16 +3,16 @@ import { EFFECT_TYPE } from "../../enums.js";
 import { playExplosion, playGFX } from "../../systems/animation.js";
 import { playSFX } from "../../systems/sound.js";
 
-export const ClientPlayEffectComponent = function(effects) {
+export const PlayEffectComponent = function(effects) {
     EventComponent.call(this);
 
     this.effects = effects;
 }
 
-ClientPlayEffectComponent.prototype = Object.create(EventComponent.prototype);
-ClientPlayEffectComponent.prototype.constructor = ClientPlayEffectComponent;
+PlayEffectComponent.prototype = Object.create(EventComponent.prototype);
+PlayEffectComponent.prototype.constructor = PlayEffectComponent;
 
-ClientPlayEffectComponent.prototype.execute = function(gameContext) {
+PlayEffectComponent.prototype.execute = function(gameContext) {
     for(const effect of this.effects) {
         switch(effect.type) {
             case EFFECT_TYPE.EXPLOSION: {

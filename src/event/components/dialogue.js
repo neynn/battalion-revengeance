@@ -1,16 +1,16 @@
 import { EventComponent } from "../../../engine/world/event/eventComponent.js";
 
-export const ClientDialogueComponent = function(dialogue, target) {
+export const DialogueComponent = function(dialogue, target) {
     EventComponent.call(this);
 
     this.dialogue = dialogue;
     this.target = target;
 }
 
-ClientDialogueComponent.prototype = Object.create(EventComponent.prototype);
-ClientDialogueComponent.prototype.constructor = ClientDialogueComponent;
+DialogueComponent.prototype = Object.create(EventComponent.prototype);
+DialogueComponent.prototype.constructor = DialogueComponent;
 
-ClientDialogueComponent.prototype.execute = function(gameContext) {
+DialogueComponent.prototype.execute = function(gameContext) {
     const { dialogueHandler } = gameContext;
 
     if(this.target) {

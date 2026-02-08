@@ -16,7 +16,7 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
     const { eventHandler } = world;
     const { socket } = client;
 
-    eventHandler.blockEvents();
+    eventHandler.toReceiver();
     actionRouter.toOther();
 
     socket.events.on(Socket.EVENT.CONNECTED_TO_SERVER, ({ id }) => {

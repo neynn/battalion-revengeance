@@ -348,7 +348,7 @@ export const EFFECT_TYPE = {
     EXPLOSION: "EXPLOSION"
 };
 
-export const EVENT_TYPE = {
+export const COMPONENT_TYPE = {
     PLAY_EFFECT: "PLAY_EFFECT",
     DIALOGUE: "DIALOGUE",
     EXPLODE_TILE: "EXPLODE_TILE",

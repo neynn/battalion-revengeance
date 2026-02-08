@@ -1,21 +1,21 @@
 export const WorldEventHandler = function() {
     this.worldEvents = [];
     this.triggeredEvents = new Set();
-    this.blockAllEvents = false;
+    this.isAuthority = true;
 }
 
-WorldEventHandler.prototype.allowEvents = function() {
-    this.blockAllEvents = false;
+WorldEventHandler.prototype.toAuthority = function() {
+    this.isAuthority = true;
 }
 
-WorldEventHandler.prototype.blockEvents = function() {
-    this.blockAllEvents = true;
+WorldEventHandler.prototype.toReceiver = function() {
+    this.isAuthority = false;
 }
 
 WorldEventHandler.prototype.exit = function() {
     this.worldEvents.length = 0;
     this.triggeredEvents.clear();
-    this.blockAllEvents = false;
+    this.isAuthority = true;
 }
 
 WorldEventHandler.prototype.addEvent = function(event) {
@@ -23,7 +23,7 @@ WorldEventHandler.prototype.addEvent = function(event) {
 }
 
 WorldEventHandler.prototype.checkEventTriggers = function(gameContext) {
-    if(this.blockAllEvents) {
+    if(!this.isAuthority) {
         return;
     }
 
