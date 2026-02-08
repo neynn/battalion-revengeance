@@ -17,7 +17,7 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
     }
 
     const { world } = gameContext;
-    const { actionQueue } = world;
+    const { actionQueue, eventHandler } = world;
     const executedPlans = [];
     let count = 0;
 
@@ -36,9 +36,12 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
 
     this.isUpdating = false;
 
-    gameContext.broadcastMessage(GAME_EVENT.MP_SERVER_EXECUTE_PLAN, {
-        "plans": executedPlans
+    gameContext.broadcastMessage(GAME_EVENT.MP_SERVER_STATE_UPDATE, {
+        "plans": executedPlans,
+        "events": eventHandler.lastRecentlyTriggered
     });
+
+    eventHandler.clearRecentTriggers();
 }
 
 ServerActionRouter.prototype.forceEnqueue = function(gameContext, actionIntent) {

@@ -70,12 +70,6 @@ ServerGameContext.prototype.onClientLeave = function(clientID) {
     this.mapSettings.removePlayer(clientID);
 }
 
-ServerGameContext.prototype.sendEventTrigger = function(eventID) {
-    this.broadcastMessage(GAME_EVENT.MP_SERVER_TRIGGER_EVENT, {
-        "eventID": eventID
-    });
-}
-
 ServerGameContext.prototype.mpSelectMap = function(mapID) {
     const preview = this.mapRegistry.getMapPreview(mapID);
     const { maxPlayers, teams } = preview;

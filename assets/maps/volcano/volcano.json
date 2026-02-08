@@ -26,7 +26,26 @@
     "postlogue": [],
     "defeat": [],
     "localization": [],
-    "events": {},
+    "events": {
+        "BOOM": {
+            "turn": 2,
+            "components": [
+                {
+                    "type": "SPAWN_ENTITY",
+                    "entities": [
+                        { "x": 4, "y": 3, "type": "BOLT_TANK", "team": "TEST2" }
+                    ]
+                },
+                {
+                    "type": "PLAY_EFFECT",
+                    "effects": [
+                        { "type": "GFX", "gfx": "explosion", "x": 4, "y": 4 },
+                        { "type": "SFX", "sfx": "explosion" }
+                    ]
+                }
+            ]
+        }
+    },
     "flags": [],
     "data": {
         "GROUND": [1,81],

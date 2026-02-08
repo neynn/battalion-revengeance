@@ -1,6 +1,7 @@
 export const WorldEventHandler = function() {
     this.worldEvents = [];
     this.triggeredEvents = new Set();
+    this.lastRecentlyTriggered = [];
     this.isAuthority = true;
 }
 
@@ -20,6 +21,10 @@ WorldEventHandler.prototype.exit = function() {
 
 WorldEventHandler.prototype.addEvent = function(event) {
     this.worldEvents.push(event);
+}
+
+WorldEventHandler.prototype.clearRecentTriggers = function() {
+    this.lastRecentlyTriggered.length = 0;
 }
 
 WorldEventHandler.prototype.checkEventTriggers = function(gameContext) {
@@ -73,6 +78,7 @@ WorldEventHandler.prototype.triggerEvent = function(gameContext, event) {
         }
 
         this.triggeredEvents.add(id);
+        this.lastRecentlyTriggered.push(id);
 
         currentEvent.execute(gameContext);
 

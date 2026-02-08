@@ -63,6 +63,21 @@ const createComponents = function(components, allowedComponents) {
     return componentObjects;
 }
 
+const createWorldEvents = function(gameContext, events, allowedComponents) {
+    const { world } = gameContext;
+    const { eventHandler } = world;
+
+    for(const eventName in events) {
+        const { turn, round, next = null, components = [] } = events[eventName];
+        const componentObjects = createComponents(components, allowedComponents);
+        const event = new WorldEvent(eventName, componentObjects);
+
+        event.setTriggerTime(turn, round);
+        event.setNext(next);
+        eventHandler.addEvent(event);
+    }
+}
+
 export const ClientMapFactory = {
     mpClientCreateStaticMap: async function(gameContext, payload) {
         const { pathHandler, mapRegistry, world, language } = gameContext;
@@ -179,8 +194,7 @@ export const ClientMapFactory = {
         }
     },
     loadMap: function(gameContext, worldMap, mapData, clientTeam, settings, allowedComponents) {
-        const { world, teamManager, dialogueHandler, client } = gameContext;
-        const { eventHandler } = world;
+        const { teamManager, dialogueHandler, client } = gameContext;
         const { musicPlayer } = client;
         const { 
             music,
@@ -244,18 +258,8 @@ export const ClientMapFactory = {
         }
 
         worldMap.loadLocalization(localization);
-        dialogueHandler.loadMapDialogue(prelogue, postlogue, defeat);
-
-        for(const eventName in events) {
-            const { turn, round, next = null, actions = [] } = events[eventName];
-            const components = createComponents(actions, allowedComponents);
-            const event = new WorldEvent(eventName, components);
-
-            event.setTriggerTime(turn, round);
-            event.setNext(next);
-            eventHandler.addEvent(event);
-        }
-        
+        createWorldEvents(gameContext, events, allowedComponents);
+        dialogueHandler.loadMapDialogue(prelogue, postlogue, defeat);        
         teamManager.updateStatus();
         teamManager.setTurnOrder(gameContext);
     }
@@ -280,20 +284,6 @@ export const ServerMapFactory = {
 
             ServerMapFactory.loadMap(gameContext, worldMap, file, settings);
         } 
-    },
-    createEvents: function(gameContext, events) {
-        const { world } = gameContext;
-        const { eventHandler } = world;
-
-        for(const eventName in events) {
-            const { turn, round, next = null, actions = [] } = events[eventName];
-            const components = createComponents(actions, MP_SERVER_EVENT_COMPONENTS);
-            const event = new WorldEvent(eventName, components);
-
-            event.setTriggerTime(turn, round);
-            event.setNext(next);
-            eventHandler.addEvent(event);
-        }
     },
     spawnEntities: function(gameContext, entities, settings) {
         const { world } = gameContext;
@@ -357,7 +347,7 @@ export const ServerMapFactory = {
             spawnServerBuilding(gameContext, worldMap, buildings[i]);
         }
         
-        ServerMapFactory.createEvents(gameContext, events);
+        createWorldEvents(gameContext, events, MP_SERVER_EVENT_COMPONENTS);
 
         teamManager.updateStatus();
         teamManager.setTurnOrder(gameContext);

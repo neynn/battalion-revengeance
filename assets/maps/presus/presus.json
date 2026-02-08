@@ -98,13 +98,13 @@
         "DESTROY_BRIDGE": {
             "turn": 2,
             "next": "DESTROY_BRIDGE_DIALOGUE",
-            "actions": [
+            "components": [
                 { "type": "EXPLODE_TILE", "layer": "CLOUD", "x": 2, "y": 2 },
                 { "type": "EXPLODE_TILE", "layer": "CLOUD", "x": 3, "y": 7 }
             ]
         },
         "DESTROY_BRIDGE_DIALOGUE": { 
-            "actions": [
+            "components": [
                 {
                     "type": "DIALOGUE",
                     "dialogue": [
@@ -116,7 +116,7 @@
         },
         "SPAWN_TANK": {
             "turn": 2,
-            "actions": [
+            "components": [
                 {
                     "type": "SPAWN_ENTITY",
                     "entities": [

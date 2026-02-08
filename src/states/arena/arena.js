@@ -45,19 +45,17 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
                 uiCore.arena.hide();
                 break;
             }
-            case GAME_EVENT.MP_SERVER_EXECUTE_PLAN: {
-                const { plans } = payload;
+            case GAME_EVENT.MP_SERVER_STATE_UPDATE: {
+                const { plans, events } = payload;
 
                 for(const plan of plans) {
                     actionRouter.onServerPlan(gameContext, plan);
                 }
 
-                break;
-            }
-            case GAME_EVENT.MP_SERVER_TRIGGER_EVENT: {
-                const { eventID } = payload;
+                for(const eventID of events) {
+                    eventHandler.forceTrigger(gameContext, eventID);
+                }
 
-                eventHandler.forceTrigger(gameContext, eventID);
                 break;
             }
             default: {
