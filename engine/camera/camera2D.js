@@ -152,23 +152,27 @@ Camera2D.prototype.drawTileBuffer = function(tileManager, context, buffer) {
     const tileHeight = this.tileHeight;
     const viewportX = this.fViewportX;
     const viewportY = this.fViewportY;
+
     let count = 0;
+    let renderY = startY * tileHeight - viewportY;
 
     for(let i = startY; i <= endY; i++) {
-        const tileRow = i * mapWidth;
-        const renderY = i * tileHeight - viewportY;
+        let index = i * mapWidth + startX;
+        let renderX = startX * tileWidth - viewportX;
 
         for(let j = startX; j <= endX; j++) {
-            const index = tileRow + j;
             const tileID = buffer[index];
 
             if(tileID !== 0) {
-                const renderX = j * tileWidth - viewportX;
-
                 this.drawTile(tileManager, tileID, context, renderX, renderY);
                 count++;
             }
+
+            index++;
+            renderX += tileWidth;
         }
+
+        renderY += tileHeight;
     }
 
     return count;
