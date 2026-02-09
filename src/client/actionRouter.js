@@ -42,10 +42,11 @@ ClientActionRouter.prototype.dispatch = function(gameContext, executionPlan, act
 }
 
 ClientActionRouter.prototype.forceEnqueue = function(gameContext, actionIntent) {
+    const { world } = gameContext;
+    const { actionQueue } = world;
+
     switch(this.target) {
         case ActionRouter.TARGET.SELF: {
-            const { world } = gameContext;
-            const { actionQueue } = world;
             const executionPlan = actionQueue.createExecutionPlan(gameContext, actionIntent);
 
             if(executionPlan) {

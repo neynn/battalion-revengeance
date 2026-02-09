@@ -68,6 +68,7 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
     const viewportRightEdge = viewportLeftEdge + this.wViewportWidth;
     const viewportBottomEdge = viewportTopEdge + this.wViewportHeight;
     const priorityEntities = [];
+    let count = 0;
 
     for(let i = 0; i < entities.length; i++) {
         const entity = entities[i];
@@ -80,6 +81,8 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
             } else {
                 priorityEntities.push(entity);
             }
+
+            count++;
         }
     }
 
@@ -92,40 +95,38 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
     if(Renderer.DEBUG.SPRITES) {
         this.debugEntities(gameContext, display);
     }
+
+    return count;
 }
 
 BattalionCamera.prototype.drawJammers = function(tileManager, display, worldMap) {
     const { jammerFields } = worldMap;
     const { context } = display;
+    let count = 0;
 
     for(const [index, field] of jammerFields) {
         const { tileX, tileY } = field;
 
-        if(tileX >= this.startX && tileX <= this.endX && tileY >= this.startY && tileY <= this.endY) {
-            const renderX = this.tileWidth * tileX;
-            const renderY = this.tileHeight * tileY;
-
-            this.drawTile(tileManager, TILE_ID.JAMMER, context, renderX, renderY);
-        }
+        count += this.drawTileClipped(tileManager, TILE_ID.JAMMER, context, tileX, tileY);
     }
+
+    return count;
 }
 
 BattalionCamera.prototype.drawMines = function(tileManager, display, worldMap) {
     const { context } = display;
     const { mines } = worldMap;
     const length = mines.length;
+    let count = 0;
 
     for(let i = 0; i < length; i++) {
         const { tileX, tileY, type } = mines[i];
+        const tileID = mineTypeToTile(type);
 
-        if(tileX >= this.startX && tileX <= this.endX && tileY >= this.startY && tileY <= this.endY) {
-            const renderX = this.tileWidth * tileX;
-            const renderY = this.tileHeight * tileY;
-            const tileID = mineTypeToTile(type);
-
-            this.drawTile(tileManager, tileID, context, renderX, renderY);
-        }
+        count += this.drawTileClipped(tileManager, tileID, context, tileX, tileY);
     }
+
+    return count;
 }
 
 BattalionCamera.prototype.drawBuildings = function(display, worldMap, realTime, deltaTime) {
@@ -135,6 +136,7 @@ BattalionCamera.prototype.drawBuildings = function(display, worldMap, realTime, 
     const viewportTopEdge = this.fViewportY;
     const viewportRightEdge = viewportLeftEdge + this.wViewportWidth;
     const viewportBottomEdge = viewportTopEdge + this.wViewportHeight
+    let count = 0;
 
     for(let i = 0; i < length; i++) {
         const { view } = buildings[i];
@@ -142,8 +144,11 @@ BattalionCamera.prototype.drawBuildings = function(display, worldMap, realTime, 
 
         if(isVisible) {
             view.draw(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+            count++;
         }
     }
+
+    return count;
 }
 
 BattalionCamera.prototype.update = function(gameContext, display) {

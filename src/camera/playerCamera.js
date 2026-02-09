@@ -35,20 +35,19 @@ PlayerCamera.prototype.drawMines = function(tileManager, display, worldMap) {
     const { context } = display;
     const { mines } = worldMap;
     const length = mines.length;
+    let count = 0;
 
     for(let i = 0; i < length; i++) {
         const { tileX, tileY, state, teamID, type } = mines[i];
 
-        if(tileX >= this.startX && tileX <= this.endX && tileY >= this.startY && tileY <= this.endY) {
-            if(state === Mine.STATE.VISIBLE || this.perspectives.has(teamID)) {
-                const renderX = this.tileWidth * tileX;
-                const renderY = this.tileHeight * tileY;
-                const tileID = mineTypeToTile(type);
-
-                this.drawTile(tileManager, tileID, context, renderX, renderY);
-            }
+        if(state === Mine.STATE.VISIBLE || this.perspectives.has(teamID)) {
+            const tileID = mineTypeToTile(type);
+            
+            count += this.drawTileClipped(tileManager, tileID, context, tileX, tileY);
         }
     }
+
+    return count;
 }
 
 PlayerCamera.prototype.drawEntity = function(entity, display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime) {
