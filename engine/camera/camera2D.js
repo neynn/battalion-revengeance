@@ -5,8 +5,8 @@ import { Camera } from "./camera.js";
 export const Camera2D = function() {
     Camera.call(this);
 
-    this.startX = -1;
-    this.startY = -1;
+    this.startX = 0;
+    this.startY = 0;
     this.endX = -1;
     this.endY = -1;
     this.mapWidth = 0;
@@ -30,7 +30,7 @@ Camera2D.MAP_OUTLINE = {
 Camera2D.prototype = Object.create(Camera.prototype);
 Camera2D.prototype.constructor = Camera2D;
 
-Camera2D.prototype.onMapSizeUpdate = function(oldwidth, oldHeight) {}
+Camera2D.prototype.onMapSizeUpdate = function(oldWidth, oldHeight) {}
 
 Camera2D.prototype.jumpToTile = function(tileX, tileY) {
     const positionX = this.tileWidth * tileX;
@@ -103,7 +103,7 @@ Camera2D.prototype.drawTileClipped = function(tileManager, tileID, context, tile
 Camera2D.prototype.drawOverlay = function(tileManager, display, overlay) {
     const { elements, count, alpha } = overlay;
 
-    if(count === 0) {
+    if(count === 0 || alpha === 0) {
         return 0;
     }
 
@@ -118,12 +118,13 @@ Camera2D.prototype.drawOverlay = function(tileManager, display, overlay) {
 
     const { context } = display;
     const previousAlpha = context.globalAlpha;
+
+    let index = 0;
     let drawCount = 0;
 
     display.setAlpha(alpha);
 
     for(let i = 0; i < count; i++) {
-        const index = i * 3;
         const tileID = elements[index];
         const tileX = elements[index + 1];
         const tileY = elements[index + 2];
@@ -135,6 +136,8 @@ Camera2D.prototype.drawOverlay = function(tileManager, display, overlay) {
             this.drawTile(tileManager, tileID, context, renderX, renderY);
             drawCount++;
         }
+
+        index += 3;
     }
 
     display.setAlpha(previousAlpha);

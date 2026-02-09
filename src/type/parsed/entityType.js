@@ -21,8 +21,7 @@ const getRangeType = function(minRange, maxRange) {
 
 export const EntityType = function(id, config) {
     const MAX_TRAITS = 4;
-    const MIN_JAMMER_RANGE = 1;
-    const MAX_JAMMER_RANGE = 4;
+
 
     const {
         dimX = 1,
@@ -77,10 +76,10 @@ export const EntityType = function(id, config) {
         this.maxRange = this.minRange;
     }
 
-    if(this.jammerRange < MIN_JAMMER_RANGE) {
-        this.jammerRange = MIN_JAMMER_RANGE;
-    } else if(this.jammerRange > MAX_JAMMER_RANGE) {
-        this.jammerRange = MAX_JAMMER_RANGE;
+    if(this.jammerRange < EntityType.MIN_JAMMER_RANGE) {
+        this.jammerRange = EntityType.MIN_JAMMER_RANGE;
+    } else if(this.jammerRange > EntityType.MAX_JAMMER_RANGE) {
+        this.jammerRange = EntityType.MAX_JAMMER_RANGE;
     }
 
     if(this.traits.length > MAX_TRAITS) {
@@ -112,6 +111,8 @@ export const EntityType = function(id, config) {
 
 EntityType.MIN_MOVE_COST = 1;
 EntityType.MAX_MOVE_COST = 99;
+EntityType.MIN_JAMMER_RANGE = 1;
+EntityType.MAX_JAMMER_RANGE = 4;
 
 EntityType.prototype.hasTrait = function(traitID) {
     for(let i = 0; i < this.traits.length; i++) {

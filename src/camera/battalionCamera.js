@@ -1,5 +1,5 @@
 import { Camera2D } from "../../engine/camera/camera2D.js";
-import { Overlay } from "../../engine/camera/overlay.js";
+import { TileOverlay } from "../../engine/camera/tileOverlay.js";
 import { SHAPE } from "../../engine/math/constants.js";
 import { Renderer } from "../../engine/renderer/renderer.js";
 import { drawShape, shadeScreen } from "../../engine/util/drawHelper.js";
@@ -7,13 +7,18 @@ import { BattalionEntity } from "../entity/battalionEntity.js";
 import { mineTypeToTile } from "../enumHelpers.js";
 import { LAYER_TYPE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
+import { EntityType } from "../type/parsed/entityType.js";
 
 export const BattalionCamera = function() {
     Camera2D.call(this);
 
-    this.pathOverlay = new Overlay();
-    this.selectOverlay = new Overlay();
-    this.jammerOverlay = new Overlay();
+    //Maximum number of tiles a jammer can cover, using the Manhattan distance.
+    const JAMMER_MAX_USED_TILES = 1 + 2 * EntityType.MAX_JAMMER_RANGE * (EntityType.MAX_JAMMER_RANGE + 1);
+
+    //Each tile has a minCost of 1, which means there will NEVER be more than MAX_MOVE_COST tiles.
+    this.pathOverlay = new TileOverlay(EntityType.MAX_MOVE_COST);
+    this.jammerOverlay = new TileOverlay(JAMMER_MAX_USED_TILES);
+    this.selectOverlay = new TileOverlay(1000);
     this.showAllJammers = false;
 }
 
