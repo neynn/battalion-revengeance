@@ -1011,34 +1011,22 @@ BattalionEntity.prototype.isSpottedBySpawner = function(gameContext, tileX, tile
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
     const building = worldMap.getBuilding(tileX, tileY);
+    const isSpotted = building && building.hasTrait(TRAIT_TYPE.SPAWNER) && building.isEnemy(gameContext, this.teamID);
 
-    //Enemy stealth units must uncloak on a spawner as they'd leak information otherwise (spawning wouldn't work)
-    if(building && building.hasTrait(TRAIT_TYPE.SPAWNER) && building.isEnemy(gameContext, this.teamID)) {
-        return true;
-    }
-
-    return false;
+    //Enemy stealth units must uncloak on a spawner as they'd leak information otherwise (spawning wouldn't work).
+    return isSpotted;
 }
 
 BattalionEntity.prototype.canCloakAt = function(gameContext, tileX, tileY) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-
     if(!this.canCloak()) {
         return false;
     }
 
-    //UNFAIR entities ignore jammers.
-    if(!this.hasTrait(TRAIT_TYPE.UNFAIR)) {
-        const worldMap = mapManager.getActiveMap();
-        const jammer = worldMap.getJammer(tileX, tileY);
-        const cloakFlag = this.config.getCloakFlag();
-
-        if(jammer.isJammed(gameContext, this.teamID, cloakFlag)) {
-            return false;
-        }
+    if(this.isDiscoveredByJammerAt(gameContext, tileX, tileY)) {
+        return false;
     }
 
+    const { world } = gameContext;
     const nearbyEntities = world.getEntitiesAround(tileX, tileY);
 
     for(let i = 0; i < nearbyEntities.length; i++) {
@@ -1079,7 +1067,8 @@ BattalionEntity.prototype.getUncloakedEntitiesAtSelf = function(gameContext) {
 }
 
 BattalionEntity.prototype.isDiscoveredByJammerAt = function(gameContext, tileX, tileY) {
-    if(!this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) || this.hasTrait(TRAIT_TYPE.UNFAIR)) {
+    //UNFAIR entities ignore jammers.
+    if(this.hasTrait(TRAIT_TYPE.UNFAIR)) {
         return false;
     }
 
@@ -1101,26 +1090,13 @@ BattalionEntity.prototype.getUncloakedMines = function(gameContext) {
 }
 
 BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, targetY) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
     const uncloakedEntities = [];
     const shouldSelfUncloak = mGetUncloakedEntities(gameContext, targetX, targetY, this.teamID, this.config, uncloakedEntities);
 
     //Self uncloaking logic.
     if(this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-        if(shouldSelfUncloak) {
+        if(shouldSelfUncloak || this.isDiscoveredByJammerAt(gameContext, targetX, targetY) || this.isSpottedBySpawner(gameContext, targetX, targetY)) {
             uncloakedEntities.push(this);
-        } else {
-            //Jammer check for self.
-            const jammer = worldMap.getJammer(targetX, targetY);
-            const cloakFlag = this.config.getCloakFlag();
-
-            if(jammer.isJammed(gameContext, this.teamID, cloakFlag)) {
-                uncloakedEntities.push(this);
-            } else if(this.isSpottedBySpawner(gameContext, targetX, targetY)) {
-                uncloakedEntities.push(this);
-            }
         }
     }
 

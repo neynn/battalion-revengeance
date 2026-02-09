@@ -72,7 +72,7 @@ MoveAction.prototype.onUpdate = function(gameContext, data) {
                 this.distanceMoved -= TILE_WIDTH;
                 this.pathIndex--;
 
-                if(!this.wasDiscovered && this.entity.isDiscoveredByJammerAt(gameContext, tileX, tileY)) {
+                if(!this.wasDiscovered && this.entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.entity.isDiscoveredByJammerAt(gameContext, tileX, tileY)) {
                     this.state = MoveAction.STATE.DISCOVERED;
                     this.wasDiscovered = true;
 
@@ -141,7 +141,7 @@ MoveAction.prototype.execute = function(gameContext, data) {
 
         entity.setTile(tileX, tileY);
 
-        if(entity.isDiscoveredByJammerAt(gameContext, tileX, tileY)) {
+        if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && entity.isDiscoveredByJammerAt(gameContext, tileX, tileY)) {
             entity.setUncloaked();
         }
     }
