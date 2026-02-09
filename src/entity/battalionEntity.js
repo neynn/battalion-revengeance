@@ -289,7 +289,7 @@ BattalionEntity.prototype.getTerrainDamage = function(gameContext, tileX, tileY)
         return 0;
     }
 
-    const { world } = gameContext;
+    const { world, typeRegistry } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
 
@@ -301,10 +301,10 @@ BattalionEntity.prototype.getTerrainDamage = function(gameContext, tileX, tileY)
 
     for(let i = startY; i < endY; i++) {
         for(let j = startX; j < endX; j++) {
-            const terrainTypes = worldMap.getTerrainTypes(gameContext, j, i);
+            const { terrain } = worldMap.getTileType(gameContext, j, i);
 
-            for(let i = 0; i < terrainTypes.length; i++) {
-                const { damage } = terrainTypes[i];
+            for(const terrainID of terrain) {
+                const { damage } = typeRegistry.getTerrainType(terrainID);
 
                 totalDamage += damage[this.config.movementType] ?? damage['*'] ?? 0;
             }
@@ -541,7 +541,7 @@ BattalionEntity.prototype.isPathValid = function(gameContext, path) {
 }
 
 BattalionEntity.prototype.getTerrainTypes = function(gameContext) {
-    const { world } = gameContext;
+    const { world, typeRegistry } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
     const types = [];
@@ -558,14 +558,14 @@ BattalionEntity.prototype.getTerrainTypes = function(gameContext) {
 
     for(let i = startY; i < endY; i++) {
         for(let j = startX; j < endX; j++) {
-            const terrainTypes = worldMap.getTerrainTypes(gameContext, j, i);
+            const { terrain } = worldMap.getTileType(gameContext, j, i);
 
-            for(let i = 0; i < terrainTypes.length; i++) {
-                const type = terrainTypes[i];
-                const { id } = type;
+            for(const terrainID of terrain) {
+                const terrainType = typeRegistry.getTerrainType(terrainID);
+                const { id } = terrainType;
 
                 if(!tags.has(id)) {
-                    types.push(type);
+                    types.push(terrainType);
                     tags.add(id);
                 }
             }
@@ -695,7 +695,7 @@ BattalionEntity.prototype.isProtectedFromRange = function(gameContext) {
         return false;
     }
 
-    const { world } = gameContext;
+    const { world, typeRegistry } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
 
@@ -706,10 +706,10 @@ BattalionEntity.prototype.isProtectedFromRange = function(gameContext) {
 
     for(let i = startY; i < endY; i++) {
         for(let j = startX; j < endX; j++) {
-            const terrainTypes = worldMap.getTerrainTypes(gameContext, j, i);
+            const { terrain } = worldMap.getTileType(gameContext, j, i);
 
-            for(let i = 0; i < terrainTypes.length; i++) {
-                const { rangeGuard } = terrainTypes[i];
+            for(const terrainID of terrain) {
+                const { rangeGuard } = typeRegistry.getTerrainType(terrainID);
 
                 if(rangeGuard) {
                     return true;
@@ -788,7 +788,9 @@ BattalionEntity.prototype.getHealAmplifier = function(gameContext) {
     }
 
     if(!this.hasTrait(TRAIT_TYPE.COMMANDO)) {
-        logisticFactor = worldMap.getLogisticFactor(gameContext, this.tileX, this.tileY);
+        const climateType = worldMap.getClimateType(gameContext, this.tileX, this.tileY);
+
+        logisticFactor = climateType.logisticFactor;
     }
 
     damageAmplifier *= this.moraleAmplifier;
@@ -832,7 +834,9 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
 
     //Logistic factor. Applies only to non-commandos.
     if(!this.hasTrait(TRAIT_TYPE.COMMANDO)) {
-        logisticFactor = worldMap.getLogisticFactor(gameContext, this.tileX, this.tileY);
+        const climateType = worldMap.getClimateType(gameContext, this.tileX, this.tileY);
+
+        logisticFactor = climateType.logisticFactor;
     }
 
     //Armor factor.

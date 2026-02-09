@@ -42,3 +42,13 @@ export const mineTypeToJammer = function(mineType) {
         default: return JAMMER_FLAG.NONE;
     }
 }
+
+export const downgradeOre = function(tileID) {
+    switch(tileID) {
+        case TILE_ID.ORE_LEFT: return TILE_ID.ORE_LEFT_USED;
+        case TILE_ID.ORE_RIGHT: return TILE_ID.ORE_RIGHT_USED;
+        case TILE_ID.ORE_LEFT_USED: return TILE_ID.ORE_LEFT_DEPLETED;
+        case TILE_ID.ORE_RIGHT_USED: return TILE_ID.ORE_RIGHT_DEPLETED;
+        default: return tileID;
+    }
+}

@@ -54,7 +54,6 @@ Player.prototype.inspectTile = function(gameContext, tileX, tileY) {
     const worldMap = mapManager.getActiveMap();
     const name = worldMap.getTileName(gameContext, tileX, tileY);
     const desc = worldMap.getTileDesc(gameContext, tileX, tileY);
-    const terrainTypes = worldMap.getTerrainTypes(gameContext, tileX, tileY);
     const climateType = worldMap.getClimateType(gameContext, tileX, tileY);
     const tileType = worldMap.getTileType(gameContext, tileX, tileY);
 
@@ -66,7 +65,6 @@ Player.prototype.inspectTile = function(gameContext, tileX, tileY) {
         "y": tileY,
         "name": name,
         "desc": desc,
-        "terrain": terrainTypes,
         "climate": climateType,
         "type": tileType
     });
@@ -126,12 +124,10 @@ Player.prototype.loadKeybinds = function(gameContext) {
         this.addIntent(createEndTurnIntent());
     });
 
-    //TODO:
     router.on("EXTRACT", () => {
-        //if(this.lastInspectedEntity) {
-        //    this.addIntent(createExtractIntent(this.lastInspectedEntity.id));
-        //}
-        this.addIntent(createPurchseEntityIntent(2, 6, "ANNIHILATOR_TANK"));
+        if(this.lastInspectedEntity) {
+            this.addIntent(createExtractIntent(this.lastInspectedEntity.id));
+        }
     });
 }
 

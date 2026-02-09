@@ -13,6 +13,7 @@
         "desc": "TILE_DESC_GRASS",
         "climate": "TEMPERATE",
         "terrain": ["UNEVEN", "__COVER"],
+        "allowedMines": ["LAND"],
         "passability": {
             "FOOT": 1,
             "WHEELED": 1,

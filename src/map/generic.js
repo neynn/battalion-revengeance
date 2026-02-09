@@ -9,49 +9,21 @@ import { TimeLimitObjective } from "../team/objective/types/timeLimit.js";
 import { createPlayCamera, createSpectatorCamera } from "../systems/camera.js";
 import { OBJECTIVE_TYPE } from "../enums.js";
 import { Spectator } from "../actors/spectator.js";
+import { ErrorObjective } from "../team/objective/types/error.js";
 
-const createObjectives = function(team, objectives, allObjectives) {
-    for(const objectiveID of objectives) {
-        const config = allObjectives[objectiveID];
-
-        if(!config) {
-            continue;
-        }
-
-        const { type } = config;
-
-        switch(type) {
-            case OBJECTIVE_TYPE.DEFEAT: {
-                team.addObjective(new DefeatObjective(config.target));
-                break;
-            }
-            case OBJECTIVE_TYPE.PROTECT: {
-                team.addObjective(new ProtectObjective(config.targets));
-                break;
-            }
-            case OBJECTIVE_TYPE.CAPTURE: {
-                team.addObjective(new CaptureObjective(config.tiles));
-                break;
-            }
-            case OBJECTIVE_TYPE.DEFEND: {
-                team.addObjective(new DefendObjective(config.tiles));
-                break;
-            }
-            case OBJECTIVE_TYPE.SURVIVE: {
-                team.addObjective(new SurviveObjective(config.turn));
-                break;
-            }
-            case OBJECTIVE_TYPE.TIME_LIMIT: {
-                team.addObjective(new TimeLimitObjective(config.turn));
-                break;
-            }
-            default: {
-                console.error("UNKNOWN OBJECTIVE TYPE!", type);
-                break;
-            }
+const ObjectiveFactory = {
+    createObjective: function(config) {
+        switch(config.type) {
+            case OBJECTIVE_TYPE.DEFEAT: return new DefeatObjective(config.target);
+            case OBJECTIVE_TYPE.PROTECT: return new ProtectObjective(config.targets);
+            case OBJECTIVE_TYPE.CAPTURE: return new CaptureObjective(config.tiles);
+            case OBJECTIVE_TYPE.DEFEND: return new DefendObjective(config.tiles);
+            case OBJECTIVE_TYPE.SURVIVE: return new SurviveObjective(config.turn);
+            case OBJECTIVE_TYPE.TIME_LIMIT: return new TimeLimitObjective(config.turn);
+            default: return new ErrorObjective();
         }
     }
-}
+};
 
 export const createTeam = function(gameContext, teamID, config, allObjectives) {
     const { teamManager } = gameContext;
@@ -80,7 +52,15 @@ export const createTeam = function(gameContext, teamID, config, allObjectives) {
         team.setColor(gameContext, color);
     }
 
-    createObjectives(team, objectives, allObjectives);
+    for(const objectiveID of objectives) {
+        const config = allObjectives[objectiveID];
+
+        if(config) {
+            const objective = ObjectiveFactory.createObjective(config);
+
+            team.addObjective(objective);
+        }
+    }
 }
 
 export const createActor = function(gameContext, commanderType, teamName) {

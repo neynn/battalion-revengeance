@@ -1,7 +1,8 @@
 import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
+import { TileManager } from "../../engine/tile/tileManager.js";
+import { downgradeOre } from "../enumHelpers.js";
 import { CLIMATE_TYPE, TILE_ID, TILE_TYPE } from "../enums.js";
-import { TileType } from "../type/parsed/tileType.js";
 import { JammerField } from "./jammerField.js";
 
 export const BattalionMap = function(id, width, height) {
@@ -93,12 +94,6 @@ BattalionMap.prototype.setClimate = function(local, global) {
     this.globalClimate = global ?? CLIMATE_TYPE.NONE;
 }
 
-BattalionMap.prototype.getLogisticFactor = function(gameContext, tileX, tileY) {
-    const { logisticFactor } = this.getClimateType(gameContext, tileX, tileY);
-
-    return logisticFactor;
-}
-
 BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
     const { tileManager, typeRegistry } = gameContext;
 
@@ -149,26 +144,10 @@ BattalionMap.prototype.getOreValue = function(tileX, tileY) {
 
 BattalionMap.prototype.extractOre = function(tileX, tileY) {
     for(const layerID of BattalionMap.SEARCH_ORDER) {
-        const typeID = this.getTile(layerID, tileX, tileY);
-        
-        switch(typeID) {
-            case TILE_ID.ORE_LEFT: {
-                this.placeTile(TILE_ID.ORE_LEFT_USED, layerID, tileX, tileY);
-                return;
-            }
-            case TILE_ID.ORE_RIGHT: {
-                this.placeTile(TILE_ID.ORE_RIGHT_USED, layerID, tileX, tileY);
-                return;
-            }
-            case TILE_ID.ORE_LEFT_USED: {
-                this.placeTile(TILE_ID.ORE_LEFT_DEPLETED, layerID, tileX, tileY);
-                return;
-            }
-            case TILE_ID.ORE_RIGHT_USED: {
-                this.placeTile(TILE_ID.ORE_RIGHT_DEPLETED, layerID, tileX, tileY);
-                return;
-            }
-        }
+        const tileID = this.getTile(layerID, tileX, tileY);
+        const oreID = downgradeOre(tileID);
+
+        this.placeTile(oreID, layerID, tileX, tileY);
     }
 }
 
@@ -191,29 +170,13 @@ BattalionMap.prototype.getTileType = function(gameContext, tileX, tileY) {
     return typeRegistry.getTileType(TILE_TYPE.NONE);
 }
 
-BattalionMap.prototype.getTerrainTypes = function(gameContext, tileX, tileY) {
-    const { typeRegistry } = gameContext;
-    const { terrain } = this.getTileType(gameContext, tileX, tileY);
-    const types = [];
-
-    for(let i = 0; i < terrain.length; i++) {
-        types.push(typeRegistry.getTerrainType(terrain[i]));
-    }
-
-    return types;
-}
-
 BattalionMap.prototype.getTileName = function(gameContext, tileX, tileY) {
     const { language } = gameContext;
 
-    if(this.isTileOutOfBounds(tileX, tileY)) {
-        return language.getSystemTranslation(TileType.MISSING_NAME);
-    }
-
     for(let i = 0; i < this.localization.length; i++) {
-        const { x = -1, y = -1, name } = this.localization[i];
+        const { x, y, name } = this.localization[i];
 
-        if(x === tileX && y === tileY && name) {
+        if(x === tileX && y === tileY) {
             return language.getMapTranslation(name);
         }
     }
@@ -226,14 +189,10 @@ BattalionMap.prototype.getTileName = function(gameContext, tileX, tileY) {
 BattalionMap.prototype.getTileDesc = function(gameContext, tileX, tileY) {
     const { language } = gameContext;
 
-    if(this.isTileOutOfBounds(tileX, tileY)) {
-        return language.getSystemTranslation(TileType.MISSING_DESC);
-    }
-
     for(let i = 0; i < this.localization.length; i++) {
-        const { x = -1, y = -1, desc } = this.localization[i];
+        const { x, y, desc } = this.localization[i];
 
-        if(x === tileX && y === tileY && desc) {
+        if(x === tileX && y === tileY) {
             return language.getMapTranslation(desc);
         }
     }
@@ -259,31 +218,34 @@ BattalionMap.prototype.loadLocalization = function(localization) {
     const indices = new Set();
 
     for(let i = 0; i < localization.length; i++) {
-        const { x = -1, y = -1, name = null, desc = null } = localization[i];
+        const {
+            x = -1,
+            y = -1,
+            name = "MISSING_LOCAL_NAME",
+            desc = "MISSING_LOCAL_DESC"
+        } = localization[i];
+
         const index = this.getIndex(x, y);
 
-        if(index !== WorldMap.OUT_OF_BOUNDS) {
-            if(!indices.has(index)) {
-                this.localization.push({
-                    "x": x,
-                    "y": y,
-                    "name": name,
-                    "desc": desc
-                });
-
-                indices.add(index);
-            } else {
-                //Localization already exists for this tile.
-            }
+        if(index === WorldMap.OUT_OF_BOUNDS || indices.has(index)) {
+            continue;
         }
+
+        this.localization.push({
+            "x": x,
+            "y": y,
+            "name": name,
+            "desc": desc
+        });
+
+        indices.add(index);
     }
 }
 
-//TODO: seperate sea/land/air? mines.
 BattalionMap.prototype.isMinePlaceable = function(gameContext, tileX, tileY, mineType) {
-    const { allowMine } = this.getTileType(gameContext, tileX, tileY);
+    const tileType = this.getTileType(gameContext, tileX, tileY);
 
-    if(!allowMine) {
+    if(!tileType.allowsMine(mineType)) {
         return false;
     }
 
