@@ -836,6 +836,7 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
     let logisticFactor = 1;
     let healthFactor = 1;
     let traitFactor = 1;
+    let otherFactor = 1;
     let damageAmplifier = 1;
 
     if(!this.hasTrait(TRAIT_TYPE.INDOMITABLE)) {
@@ -844,14 +845,6 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
         if(healthFactor >= 1) {
             healthFactor = 1;
         }
-    }
-    
-    if(healthFactor >= 1 && this.hasTrait(TRAIT_TYPE.ANNIHILATE)) {
-        damageAmplifier *= TRAIT_CONFIG.ANNIHILATE_DAMAGE;
-    }
-
-    if(target.isAtFullHealth() && this.hasTrait(TRAIT_TYPE.BULLDOZE)) {
-        damageAmplifier *= TRAIT_CONFIG.BULLDOZE_DAMAGE;
     }
 
     //Logistic factor. Applies only to non-commandos.
@@ -869,9 +862,10 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
     if(resistance > 1) {
         armorFactor = 0;
     } else {
-        armorFactor *= (1 - resistance);
+        armorFactor = (1 - resistance);
     }
 
+    //Ignore only damage reduction with ARMOR_PIERCE, keep the damage increase.
     if(armorFactor < 1 && this.hasTrait(TRAIT_TYPE.ARMOR_PIERCE)) {
         armorFactor = 1;
     }
@@ -901,9 +895,19 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
         traitFactor *= traitType.getArmorDamage(targetArmor);
     }
 
-    //Trait factor is supposed to be bonus damage.
+    //Trait factor is supposed to be bonus damage. It CANNOT invert the damage.
     if(traitFactor < 0) {
         traitFactor = 0;
+    }
+
+    //Bonus damage if at full health.
+    if(healthFactor >= 1 && this.hasTrait(TRAIT_TYPE.ANNIHILATE)) {
+        otherFactor *= TRAIT_CONFIG.ANNIHILATE_DAMAGE;
+    }
+
+    //Bonus damage if target at full health.
+    if(target.isAtFullHealth() && this.hasTrait(TRAIT_TYPE.BULLDOZE)) {
+        otherFactor *= TRAIT_CONFIG.BULLDOZE_DAMAGE;
     }
 
     //Steer trait. Reduces damage received by STEER for each tile the target can travel further. Up to STEER_MAX_REDUCTION.
@@ -914,9 +918,9 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
             const steerAmplifier = 1 - (deltaRange * TRAIT_CONFIG.STEER_REDUCTION);
 
             if(steerAmplifier < TRAIT_CONFIG.STEER_MAX_REDUCTION) {
-                damageAmplifier *= TRAIT_CONFIG.STEER_MAX_REDUCTION;
+                otherFactor *= TRAIT_CONFIG.STEER_MAX_REDUCTION;
             } else {
-                damageAmplifier *= steerAmplifier;
+                otherFactor *= steerAmplifier;
             }
         }
     }
@@ -929,28 +933,28 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
     } else {
         //Blitz factor.
         if(this.hasTrait(TRAIT_TYPE.BLITZ)) {
-            damageAmplifier *= TRAIT_CONFIG.BLITZ_MULTIPLIER;
+            otherFactor *= TRAIT_CONFIG.BLITZ_MULTIPLIER;
         }
 
         //Schwerpunkt factor.
         if(this.hasTrait(TRAIT_TYPE.SCHWERPUNKT) && targetMove === MOVEMENT_TYPE.FOOT) {
-            damageAmplifier *= TRAIT_CONFIG.SCHWERPUNKT_MULTIPLIER;
+            otherFactor *= TRAIT_CONFIG.SCHWERPUNKT_MULTIPLIER;
         }
 
         //Stealth factor.
         if(this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-            damageAmplifier *= TRAIT_CONFIG.STEALTH_MULTIPLIER;
+            otherFactor *= TRAIT_CONFIG.STEALTH_MULTIPLIER;
         }
 
         const isExecutable = target.getHealthFactor() < TRAIT_CONFIG.EXECUTIONER_THRESHOLD;
 
         if(isExecutable && this.hasTrait(TRAIT_TYPE.EXECUTIONER)) {
-            damageAmplifier *= TRAIT_CONFIG.EXECUTIONER_DAMAGE;
+            otherFactor *= TRAIT_CONFIG.EXECUTIONER_DAMAGE;
         }
     }
 
     if(damageFlags & ATTACK_FLAG.SHRAPNEL) {
-        damageAmplifier *= TRAIT_CONFIG.SHRAPNEL_DAMAGE;
+        otherFactor *= TRAIT_CONFIG.SHRAPNEL_DAMAGE;
     }
 
     damageAmplifier *= this.moraleAmplifier;
@@ -959,6 +963,7 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
     damageAmplifier *= logisticFactor;
     damageAmplifier *= healthFactor;
     damageAmplifier *= traitFactor;
+    damageAmplifier *= otherFactor;
 
     return damageAmplifier;
 }
