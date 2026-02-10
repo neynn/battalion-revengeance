@@ -69,10 +69,7 @@ BattalionContext.prototype = Object.create(ClientGameContext.prototype);
 BattalionContext.prototype.constructor = BattalionContext;
 
 BattalionContext.prototype.init = function(resources) {
-    for(let i = 0; i < LAYER_TYPE.COUNT; i++) {
-        this.spriteManager.addLayer();
-    }
-
+    this.spriteManager.initLayers(LAYER_TYPE.COUNT);
     this.typeRegistry.load(resources);
 
     this.world.actionQueue.registerAction(ACTION_TYPE.MINE_TRIGGER, new MineTriggerAction());

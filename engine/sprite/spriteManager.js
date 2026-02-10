@@ -226,8 +226,10 @@ SpriteManager.prototype.exit = function() {
     }
 }
 
-SpriteManager.prototype.addLayer = function() {
-    this.layers.push([]);
+SpriteManager.prototype.initLayers = function(count) {
+    for(let i = 0; i < count; i++) {
+        this.layers.push([]);
+    }
 }
 
 SpriteManager.prototype.getLayer = function(layerIndex) {
