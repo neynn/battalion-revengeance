@@ -3,7 +3,7 @@ import { StateMachine } from "../../engine/state/stateMachine.js";
 import { World } from "../../engine/world/world.js";
 import { TeamManager } from "../team/teamManager.js";
 import { GAME_EVENT, SCHEMA_TYPE } from "../enums.js";
-import { ServerMapFactory } from "../systems/map.js";
+import { ServerMapLoader } from "../systems/map.js";
 import { createStartTurnIntent } from "../action/actionHelper.js";
 import { mpIsPlayerIntentValid } from "../action/actionValidator.js";
 import { MapSettings } from "../map/settings.js";
@@ -100,7 +100,7 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
             this.mapSettings.selectColor(messengerID, SCHEMA_TYPE.CREAM);
             this.mapSettings.lockSlots();
 
-            ServerMapFactory.mpCreateMap(this, this.mapSettings)
+            ServerMapLoader.mpCreateMap(this, this.mapSettings)
             .then(() => {
                 const settings = this.mapSettings.toJSON();
 

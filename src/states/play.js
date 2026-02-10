@@ -2,7 +2,7 @@ import { State } from "../../engine/state/state.js";
 import { createStartTurnIntent } from "../action/actionHelper.js";
 import { BattalionContext } from "../battalionContext.js";
 import { MapSettings } from "../map/settings.js";
-import { ClientMapFactory } from "../systems/map.js";
+import { ClientMapLoader } from "../systems/map.js";
 import { loadStoryMap } from "../systems/save.js";
 
 export const PlayState = function() {}
@@ -22,7 +22,7 @@ PlayState.prototype.onEnter = async function(gameContext, stateMachine, transiti
     settings.mapID = "presus";
     settings.mode = MapSettings.MODE.STORY;
 
-    ClientMapFactory.createStoryMap(gameContext, settings)
+    ClientMapLoader.createStoryMap(gameContext, settings)
     .then(() => {
         loadStoryMap(gameContext, {
             "edits": [],

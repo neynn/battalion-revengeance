@@ -1,8 +1,7 @@
 import { BattalionMap } from "../map/battalionMap.js";
 import { spawnClientBuilding, spawnClientEntity, spawnServerBuilding, spawnServerEntity } from "./spawn.js";
-import { createActor, createPlayer, createSpectator, createTeam } from "../map/generic.js";
 import { MapSettings } from "../map/settings.js";
-import { COMPONENT_TYPE } from "../enums.js";
+import { COMPONENT_TYPE, OBJECTIVE_TYPE } from "../enums.js";
 import { Mine } from "../entity/mine.js";
 import { DialogueComponent } from "../event/components/dialogue.js";
 import { ExplodeTileComponent } from "../event/components/explodeTile.js";
@@ -10,6 +9,16 @@ import { PlayEffectComponent } from "../event/components/playEffect.js";
 import { SpawnComponent } from "../event/components/spawn.js";
 import { WorldEvent } from "../../engine/world/event/worldEvent.js";
 import { createPlayCamera } from "./camera.js";
+import { BattalionActor } from "../actors/battalionActor.js";
+import { Player } from "../actors/player.js";
+import { Spectator } from "../actors/spectator.js";
+import { DefeatObjective } from "../team/objective/types/defeat.js";
+import { ProtectObjective } from "../team/objective/types/protect.js";
+import { CaptureObjective } from "../team/objective/types/capture.js";
+import { DefendObjective } from "../team/objective/types/defend.js";
+import { SurviveObjective } from "../team/objective/types/survive.js";
+import { TimeLimitObjective } from "../team/objective/types/timeLimit.js";
+import { ErrorObjective } from "../team/objective/types/error.js";
 
 const MP_SERVER_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.EXPLODE_TILE, COMPONENT_TYPE.SPAWN_ENTITY]);
 const MP_CLIENT_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.DIALOGUE, COMPONENT_TYPE.PLAY_EFFECT]);
@@ -80,7 +89,98 @@ const EventFactory = {
     }
 };
 
-export const ClientMapFactory = {
+const ActorFactory = {
+    createActor: function(gameContext, commanderType, teamName) {
+        const { world } = gameContext;
+        const { turnManager } = world;
+        const actorID = turnManager.getNextID();
+        const actor = new BattalionActor(actorID);
+
+        turnManager.addActor(actor);
+        actor.setTeam(teamName);
+        actor.loadCommander(gameContext, commanderType);
+        actor.setName("NPC");
+    },
+    createPlayer: function(gameContext, commanderType, teamName, clientCamera) {
+        const { world } = gameContext;
+        const { turnManager } = world;
+        const actorID = turnManager.getNextID();
+        const actor = new Player(actorID, clientCamera);
+
+        turnManager.addActor(actor);
+        actor.setTeam(teamName);
+        actor.loadKeybinds(gameContext);
+        actor.loadCommander(gameContext, commanderType);
+        actor.states.setNextState(gameContext, Player.STATE.IDLE);
+        actor.setName("PLAYER");
+    },
+    createSpectator: function(gameContext, clientCamera) {
+        const { world } = gameContext;
+        const { turnManager } = world;
+        const actorID = turnManager.getNextID();
+        const actor = new Spectator(actorID, clientCamera);
+
+        turnManager.addActor(actor);
+        actor.loadKeybinds(gameContext);
+        actor.setName("SPECTATOR");
+    }
+};
+
+const ObjectiveFactory = {
+    createObjective: function(config) {
+        switch(config.type) {
+            case OBJECTIVE_TYPE.DEFEAT: return new DefeatObjective(config.target);
+            case OBJECTIVE_TYPE.PROTECT: return new ProtectObjective(config.targets);
+            case OBJECTIVE_TYPE.CAPTURE: return new CaptureObjective(config.tiles);
+            case OBJECTIVE_TYPE.DEFEND: return new DefendObjective(config.tiles);
+            case OBJECTIVE_TYPE.SURVIVE: return new SurviveObjective(config.turn);
+            case OBJECTIVE_TYPE.TIME_LIMIT: return new TimeLimitObjective(config.turn);
+            default: return new ErrorObjective();
+        }
+    }
+};
+
+const TeamFactory = {
+    createTeam: function(gameContext, teamID, config, allObjectives) {
+        const { teamManager } = gameContext;
+        const { 
+            nation = null,
+            faction = null,
+            color = null,
+            objectives = []
+        } = config;
+        const team = teamManager.createTeam(teamID);
+
+        if(!team) {
+            console.log("Team could not be created!");
+            return;
+        }
+
+        if(nation) {
+            team.loadAsNation(gameContext, nation);
+        }
+
+        if(faction) {
+            team.loadAsFaction(gameContext, faction);
+        }
+
+        if(color) {
+            team.setColor(gameContext, color);
+        }
+
+        for(const objectiveID of objectives) {
+            const config = allObjectives[objectiveID];
+
+            if(config) {
+                const objective = ObjectiveFactory.createObjective(config);
+
+                team.addObjective(objective);
+            }
+        }
+    }
+};
+
+export const ClientMapLoader = {
     mpClientCreateStaticMap: async function(gameContext, payload) {
         const { pathHandler, mapRegistry, world, language } = gameContext;
         const { mapManager } = world;
@@ -106,10 +206,10 @@ export const ClientMapFactory = {
             const cContext = createPlayCamera(gameContext);
             const camera = cContext.getCamera();
 
-            ClientMapFactory.loadMap(gameContext, worldMap, file, client, settings, MP_CLIENT_EVENT_COMPONENTS, camera);
+            ClientMapLoader.loadMap(gameContext, worldMap, file, client, settings, MP_CLIENT_EVENT_COMPONENTS, camera);
             
             if(isSpectator) {
-                createSpectator(gameContext, camera);
+                ActorFactory.createSpectator(gameContext, camera);
             }
         }
     },
@@ -141,7 +241,7 @@ export const ClientMapFactory = {
             const cContext = createPlayCamera(gameContext);
             const camera = cContext.getCamera();
 
-            ClientMapFactory.loadMap(gameContext, worldMap, file, client, settings, CLIENT_EVENT_COMPONENTS, camera);
+            ClientMapLoader.loadMap(gameContext, worldMap, file, client, settings, CLIENT_EVENT_COMPONENTS, camera);
         }
     },
     createEditorMap: async function(gameContext, sourceID) {
@@ -198,7 +298,7 @@ export const ClientMapFactory = {
         //Each client SHOULD have a team.
         //If not, the client camera renders with no perspective.
         if(clientTeam === teamName) {
-            createPlayer(gameContext, commander, teamName, clientCamera);
+            ActorFactory.createPlayer(gameContext, commander, teamName, clientCamera);
 
             clientCamera.addPerspective(teamName);
 
@@ -207,7 +307,7 @@ export const ClientMapFactory = {
                 clientCamera.addPerspective(team.allies[i]);
             }
         } else {
-            createActor(gameContext, commander, teamName);
+            ActorFactory.createActor(gameContext, commander, teamName);
         }
     },
     loadMap: function(gameContext, worldMap, mapData, clientTeam, settings, allowedComponents, camera) {
@@ -228,14 +328,14 @@ export const ClientMapFactory = {
         } = mapData;
     
         for(const teamName in teams) {
-            createTeam(gameContext, teamName, teams[teamName], objectives);
+            TeamFactory.createTeam(gameContext, teamName, teams[teamName], objectives);
         }
 
         for(const teamName in teams) {
             const team = teamManager.getTeam(teamName);
 
             if(team) {
-                ClientMapFactory.applyTeamConfig(gameContext, team, teams[teamName], settings, clientTeam, camera);
+                ClientMapLoader.applyTeamConfig(gameContext, team, teams[teamName], settings, clientTeam, camera);
             }
         }
 
@@ -284,7 +384,7 @@ export const ClientMapFactory = {
     }
 };
 
-export const ServerMapFactory = {
+export const ServerMapLoader = {
     mpCreateMap: async function(gameContext, settings) {
         const { pathHandler, mapRegistry, world } = gameContext;
         const { mapManager } = world;
@@ -301,7 +401,7 @@ export const ServerMapFactory = {
             mapManager.addMap(worldMap);
             mapManager.enableMap(mapID);
 
-            ServerMapFactory.loadMap(gameContext, worldMap, file, settings);
+            ServerMapLoader.loadMap(gameContext, worldMap, file, settings);
         } 
     },
     spawnEntities: function(gameContext, entities, settings) {
@@ -336,7 +436,7 @@ export const ServerMapFactory = {
             }
         }
 
-        createActor(gameContext, commander, teamName);
+        ActorFactory.createActor(gameContext, commander, teamName);
     },
     loadMap: function(gameContext, worldMap, mapData, settings) {
         const { teamManager } = gameContext;
@@ -349,18 +449,18 @@ export const ServerMapFactory = {
         } = mapData;
 
         for(const teamName in teams) {
-            createTeam(gameContext, teamName, teams[teamName], objectives);
+            TeamFactory.createTeam(gameContext, teamName, teams[teamName], objectives);
         }
 
         for(const teamName in teams) {
             const team = teamManager.getTeam(teamName);
 
             if(team) {
-                ServerMapFactory.applyTeamConfig(gameContext, team, teams[teamName], settings);
+                ServerMapLoader.applyTeamConfig(gameContext, team, teams[teamName], settings);
             }
         }
 
-        ServerMapFactory.spawnEntities(gameContext, entities, settings);
+        ServerMapLoader.spawnEntities(gameContext, entities, settings);
 
         for(let i = 0; i < buildings.length; i++) {
             spawnServerBuilding(gameContext, worldMap, buildings[i]);
