@@ -4,7 +4,7 @@ import { Mine } from "../entity/mine.js";
 import { mineTypeToTile } from "../enumHelpers.js";
 import { BattalionCamera } from "./battalionCamera.js";
 
-export const PlayerCamera = function() {
+export const PlayCamera = function() {
     BattalionCamera.call(this);
 
     this.markerSprite = SpriteManager.EMPTY_SPRITE;
@@ -13,24 +13,24 @@ export const PlayerCamera = function() {
     this.mainPerspective = null;
 }
 
-PlayerCamera.prototype = Object.create(BattalionCamera.prototype);
-PlayerCamera.prototype.constructor = PlayerCamera;
+PlayCamera.prototype = Object.create(BattalionCamera.prototype);
+PlayCamera.prototype.constructor = PlayCamera;
 
-PlayerCamera.prototype.loadSprites = function(gameContext) {
+PlayCamera.prototype.loadSprites = function(gameContext) {
     const { spriteManager } = gameContext;
 
     this.markerSprite = spriteManager.createSprite("marker");
 }
 
-PlayerCamera.prototype.addPerspective = function(teamID) {
+PlayCamera.prototype.addPerspective = function(teamID) {
     this.perspectives.add(teamID);
 }
 
-PlayerCamera.prototype.setMainPerspective = function(teamID) {
+PlayCamera.prototype.setMainPerspective = function(teamID) {
     this.mainPerspective = teamID;
 }
 
-PlayerCamera.prototype.drawMines = function(tileManager, display, worldMap) {
+PlayCamera.prototype.drawMines = function(tileManager, display, worldMap) {
     const { context } = display;
     const { mines } = worldMap;
     const length = mines.length;
@@ -49,7 +49,7 @@ PlayerCamera.prototype.drawMines = function(tileManager, display, worldMap) {
     return count;
 }
 
-PlayerCamera.prototype.drawEntity = function(entity, display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime) {
+PlayCamera.prototype.drawEntity = function(entity, display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime) {
     const { view, flags, state, teamID } = entity;
     const { positionX, positionY, visual } = view;
     const markerX = positionX - viewportLeftEdge;

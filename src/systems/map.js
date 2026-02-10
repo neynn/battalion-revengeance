@@ -15,69 +15,70 @@ const MP_SERVER_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.EXPLODE_TILE, COMPONE
 const MP_CLIENT_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.DIALOGUE, COMPONENT_TYPE.PLAY_EFFECT]);
 const CLIENT_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.DIALOGUE, COMPONENT_TYPE.PLAY_EFFECT, COMPONENT_TYPE.SPAWN_ENTITY, COMPONENT_TYPE.EXPLODE_TILE]);
 
-const createComponents = function(components, allowedComponents) {
-    const componentObjects = [];
+const EventFactory = {
+    createComponents: function(components, allowedComponents) {
+        const componentObjects = [];
 
-    for(let i = 0; i < components.length; i++) {
-        const { type } = components[i];
+        for(let i = 0; i < components.length; i++) {
+            const { type } = components[i];
 
-        if(!allowedComponents.has(type)) {
-            continue;
+            if(!allowedComponents.has(type)) {
+                continue;
+            }
+
+            switch(type) {
+                case COMPONENT_TYPE.DIALOGUE: {
+                    const { dialogue, target = null } = components[i];
+                    const component = new DialogueComponent(dialogue, target);
+
+                    componentObjects.push(component);
+                    break;
+                }
+                case COMPONENT_TYPE.EXPLODE_TILE: {
+                    const { layer, x, y } = components[i];
+                    const component = new ExplodeTileComponent(layer, x, y);
+
+                    componentObjects.push(component);
+                    break;
+                }
+                case COMPONENT_TYPE.PLAY_EFFECT: {
+                    const { effects } = components[i];
+                    const component = new PlayEffectComponent(effects);
+
+                    componentObjects.push(component);
+                    break;
+                }
+                case COMPONENT_TYPE.SPAWN_ENTITY: {
+                    const { entities } = components[i];
+                    const component = new SpawnComponent(entities);
+
+                    componentObjects.push(component);
+                    break;
+                }
+                default: {
+                    console.error("Unsupported event component!", config[i]);
+                    break;
+                }
+            }
         }
 
-        switch(type) {
-            case COMPONENT_TYPE.DIALOGUE: {
-                const { dialogue, target = null } = components[i];
-                const component = new DialogueComponent(dialogue, target);
+        return componentObjects;
+    },
+    createWorldEvents: function(gameContext, events, allowedComponents) {
+        const { world } = gameContext;
+        const { eventHandler } = world;
 
-                componentObjects.push(component);
-                break;
-            }
-            case COMPONENT_TYPE.EXPLODE_TILE: {
-                const { layer, x, y } = components[i];
-                const component = new ExplodeTileComponent(layer, x, y);
+        for(const eventName in events) {
+            const { turn, round, next = null, components = [] } = events[eventName];
+            const componentObjects = EventFactory.createComponents(components, allowedComponents);
+            const event = new WorldEvent(eventName, componentObjects);
 
-                componentObjects.push(component);
-                break;
-            }
-            case COMPONENT_TYPE.PLAY_EFFECT: {
-                const { effects } = components[i];
-                const component = new PlayEffectComponent(effects);
-
-                componentObjects.push(component);
-                break;
-            }
-            case COMPONENT_TYPE.SPAWN_ENTITY: {
-                const { entities } = components[i];
-                const component = new SpawnComponent(entities);
-
-                componentObjects.push(component);
-                break;
-            }
-            default: {
-                console.error("Unsupported event component!", config[i]);
-                break;
-            }
+            event.setTriggerTime(turn, round);
+            event.setNext(next);
+            eventHandler.addEvent(event);
         }
     }
-
-    return componentObjects;
-}
-
-const createWorldEvents = function(gameContext, events, allowedComponents) {
-    const { world } = gameContext;
-    const { eventHandler } = world;
-
-    for(const eventName in events) {
-        const { turn, round, next = null, components = [] } = events[eventName];
-        const componentObjects = createComponents(components, allowedComponents);
-        const event = new WorldEvent(eventName, componentObjects);
-
-        event.setTriggerTime(turn, round);
-        event.setNext(next);
-        eventHandler.addEvent(event);
-    }
-}
+};
 
 export const ClientMapFactory = {
     mpClientCreateStaticMap: async function(gameContext, payload) {
@@ -102,10 +103,13 @@ export const ClientMapFactory = {
             mapManager.addMap(worldMap);
             mapManager.enableMap(mapID);
 
-            ClientMapFactory.loadMap(gameContext, worldMap, file, client, settings, MP_CLIENT_EVENT_COMPONENTS);
+            const cContext = createPlayCamera(gameContext);
+            const camera = cContext.getCamera();
+
+            ClientMapFactory.loadMap(gameContext, worldMap, file, client, settings, MP_CLIENT_EVENT_COMPONENTS, camera);
             
             if(isSpectator) {
-                createSpectator(gameContext);
+                createSpectator(gameContext, camera);
             }
         }
     },
@@ -134,7 +138,10 @@ export const ClientMapFactory = {
             mapManager.addMap(worldMap);
             mapManager.enableMap(mapID);
 
-            ClientMapFactory.loadMap(gameContext, worldMap, file, client, settings, CLIENT_EVENT_COMPONENTS);
+            const cContext = createPlayCamera(gameContext);
+            const camera = cContext.getCamera();
+
+            ClientMapFactory.loadMap(gameContext, worldMap, file, client, settings, CLIENT_EVENT_COMPONENTS, camera);
         }
     },
     createEditorMap: async function(gameContext, sourceID) {
@@ -194,9 +201,8 @@ export const ClientMapFactory = {
             createPlayer(gameContext, commander, teamName, clientCamera);
 
             clientCamera.addPerspective(teamName);
-            clientCamera.setMainPerspective(teamName); //TODO [HOTSEAT]: Change perspective depending on the current actor.
 
-            //Add all allies as perspective. This allows the client to see allied stealth units.
+            //Adds all allies as perspective. This allows the client to see allied stealth units.
             for(let i = 0; i < team.allies.length; i++) {
                 clientCamera.addPerspective(team.allies[i]);
             }
@@ -204,7 +210,7 @@ export const ClientMapFactory = {
             createActor(gameContext, commander, teamName);
         }
     },
-    loadMap: function(gameContext, worldMap, mapData, clientTeam, settings, allowedComponents) {
+    loadMap: function(gameContext, worldMap, mapData, clientTeam, settings, allowedComponents, camera) {
         const { teamManager, dialogueHandler, client } = gameContext;
         const { musicPlayer } = client;
         const { 
@@ -220,9 +226,6 @@ export const ClientMapFactory = {
             postlogue = [],
             defeat = []
         } = mapData;
-
-        const cContext = createPlayCamera(gameContext);
-        const camera = cContext.getCamera();
     
         for(const teamName in teams) {
             createTeam(gameContext, teamName, teams[teamName], objectives);
@@ -272,8 +275,10 @@ export const ClientMapFactory = {
         }
 
         worldMap.loadLocalization(localization);
-        createWorldEvents(gameContext, events, allowedComponents);
-        dialogueHandler.loadMapDialogue(prelogue, postlogue, defeat);        
+        dialogueHandler.loadMapDialogue(prelogue, postlogue, defeat);   
+
+        EventFactory.createWorldEvents(gameContext, events, allowedComponents);
+     
         teamManager.updateStatus();
         teamManager.setTurnOrder(gameContext);
     }
@@ -361,7 +366,7 @@ export const ServerMapFactory = {
             spawnServerBuilding(gameContext, worldMap, buildings[i]);
         }
         
-        createWorldEvents(gameContext, events, MP_SERVER_EVENT_COMPONENTS);
+        EventFactory.createWorldEvents(gameContext, events, MP_SERVER_EVENT_COMPONENTS);
 
         teamManager.updateStatus();
         teamManager.setTurnOrder(gameContext);

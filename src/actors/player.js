@@ -37,6 +37,10 @@ Player.STATE = {
 Player.prototype = Object.create(BattalionActor.prototype);
 Player.prototype.constructor = Player;
 
+Player.prototype.onTurnStart = function(gameContext) {
+    this.camera.setMainPerspective(this.teamID);
+}
+
 Player.prototype.inspectEntity = function(gameContext, entity) {
     this.showEntity(gameContext, entity);
     this.lastInspectedEntity = entity;

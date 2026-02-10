@@ -2,7 +2,7 @@ import { Cursor } from "../../engine/client/cursor.js";
 import { Scroller } from "../../engine/util/scroller.js";
 import { BattalionCamera } from "../camera/battalionCamera.js";
 import { EditCamera } from "../camera/editCamera.js";
-import { PlayerCamera } from "../camera/playerCamera.js";
+import { PlayCamera } from "../camera/playCamera.js";
 
 export const addZoom = function(gameContext, cContext) {
     const { client } = gameContext;
@@ -50,38 +50,11 @@ export const createEditCamera = function(gameContext, brush) {
     return context;
 }
 
-export const createSpectatorCamera = function(gameContext) {
-    const { renderer, transform2D } = gameContext;
-    const { tileWidth, tileHeight } = transform2D;
-
-    const camera = new BattalionCamera();
-    const context = renderer.createContext(camera);
-
-    camera.bindViewport();
-    camera.setTileSize(tileWidth, tileHeight);
-    camera.tryLoadingWorldSize(gameContext);
-
-    context.setDragButton(Cursor.BUTTON.LEFT);
-    context.enableBuffer();
-    context.enableAutoCenter();
-
-    //context.fixBuffer();
-    //context.setResolution(560, 560);
-
-    context.setScale(1);
-    context.forceReload();
-    camera.reloadViewport();
-
-    addZoom(gameContext, context);
-
-    return context;
-}
-
 export const createPlayCamera = function(gameContext) {
     const { renderer, transform2D } = gameContext;
     const { tileWidth, tileHeight } = transform2D;
 
-    const camera = new PlayerCamera();
+    const camera = new PlayCamera();
     const context = renderer.createContext(camera);
 
     camera.bindViewport();
