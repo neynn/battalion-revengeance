@@ -1,7 +1,7 @@
 import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
-import { downgradeOre } from "../enumHelpers.js";
-import { CLIMATE_TYPE, TILE_ID, TILE_TYPE } from "../enums.js";
+import { downgradeOre, oreToValue } from "../enumHelpers.js";
+import { CLIMATE_TYPE, TILE_TYPE } from "../enums.js";
 import { JammerField } from "./jammerField.js";
 
 export const BattalionMap = function(id, width, height) {
@@ -129,12 +129,10 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
 BattalionMap.prototype.getOreValue = function(tileX, tileY) {
     for(const layerID of BattalionMap.SEARCH_ORDER) {
         const typeID = this.getTile(layerID, tileX, tileY);
+        const value = oreToValue(typeID);
 
-        switch(typeID) {
-            case TILE_ID.ORE_LEFT: return 500;
-            case TILE_ID.ORE_RIGHT: return 500;
-            case TILE_ID.ORE_LEFT_USED: return 300;
-            case TILE_ID.ORE_RIGHT_USED: return 300;
+        if(value !== 0) {
+            return value;
         }
     }
 

@@ -170,6 +170,7 @@ export const MOVEMENT_TYPE = {
     FOOT: "FOOT",
     WHEELED: "WHEELED",
     TRACKED: "TRACKED",
+    RAIL: "RAIL",
     FLIGHT: "FLIGHT",
     RUDDER: "RUDDER",
     HEAVY_RUDDER: "HEAVY_RUDDER",

@@ -52,3 +52,13 @@ export const downgradeOre = function(tileID) {
         default: return tileID;
     }
 }
+
+export const oreToValue = function(tileID) {
+    switch(tileID) {
+        case TILE_ID.ORE_LEFT: return 500;
+        case TILE_ID.ORE_RIGHT: return 500;
+        case TILE_ID.ORE_LEFT_USED: return 300;
+        case TILE_ID.ORE_RIGHT_USED: return 300;
+        default: return 0;
+    }
+}
