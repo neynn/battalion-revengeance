@@ -1,6 +1,5 @@
 import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
-import { TileManager } from "../../engine/tile/tileManager.js";
 import { downgradeOre } from "../enumHelpers.js";
 import { CLIMATE_TYPE, TILE_ID, TILE_TYPE } from "../enums.js";
 import { JammerField } from "./jammerField.js";

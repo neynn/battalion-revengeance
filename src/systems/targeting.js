@@ -1,33 +1,13 @@
-import { DIRECTION } from "../enums.js";
+import { getDirectionVector } from "./direction.js";
 
 export const getLineEntities = function(gameContext, direction, startX, startY, maxRange) {
     const { world } = gameContext;
-    let streamX = 0;
-    let streamY = 0;
+    const { x, y } = getDirectionVector(direction);
 
-    switch(direction) {
-        case DIRECTION.EAST: {
-            streamX = 1;
-            break;
-        }
-        case DIRECTION.NORTH: {
-            streamY = -1;
-            break;
-        }
-        case DIRECTION.SOUTH: {
-            streamY = 1;
-            break;
-        }
-        case DIRECTION.WEST: {
-            streamX = -1;
-            break;
-        }
-        default: {
-            console.error("Faulty direction! Using EAST.");
-            streamX = 1;
-            break;
-        }
+    if(x === 0 && y === 0) {
+        console.error("Faulty direction!");
+        return [];
     }
 
-    return world.getEntitiesInLine(startX, startY, streamX, streamY, maxRange);
+    return world.getEntitiesInLine(startX, startY, x, y, maxRange);
 }

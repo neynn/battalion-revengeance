@@ -46,6 +46,7 @@
         { "x": 1, "y": 5, "type": "SUPPLY_TRUCK", "team": "SOMERTIN" },
         { "x": 2, "y": 5, "stealth": true, "type": "SPEC_OPS", "team": "SOMERTIN" },
         { "x": 2, "y": 4, "type": "HEAVY_SNIPER", "team": "SOMERTIN" },
+        { "x": 2, "y": 3, "type": "WARMACHINE", "team": "SOMERTIN" },
 
         { "x": 3, "y": 6, "stealth": true, "type": "STEALTH_TANK", "team": "TRANSKAL" },
         { "x": 3, "y": 7, "type": "ANNIHILATOR_TANK", "team": "TRANSKAL" },

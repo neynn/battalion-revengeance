@@ -70,9 +70,7 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
         return;
     }
 
-    const entity = world.getEntityAt(tileX, tileY);
-
-    if(entity !== null) {
+    if(world.getEntityAt(tileX, tileY) !== null) {
         return;
     }
 
@@ -86,7 +84,6 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
     const entityType = typeRegistry.getEntityType(typeID);
     const { cost } = entityType;
 
-    //TODO: Cost amplifiers.
     if(!team.hasEnoughCash(cost)) {
         return;
     }

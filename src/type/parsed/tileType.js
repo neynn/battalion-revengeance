@@ -46,3 +46,7 @@ TileType.prototype.allowsMine = function(mineType) {
 
     return false;
 }
+
+TileType.prototype.getPassabilityCost = function(movementType) {
+    return this.passability[movementType] ?? this.passability['*'] ?? -1;
+}

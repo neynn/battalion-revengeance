@@ -5,7 +5,7 @@ import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { createNode, mGetLowestCostNode } from "../systems/pathfinding.js";
-import { getDirectionByDelta } from "../systems/direction.js";
+import { getDirectionByDelta, getDirectionVector } from "../systems/direction.js";
 import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, MINE_TYPE, JAMMER_FLAG } from "../enums.js";
 import { mapTransportToEntity } from "../enumHelpers.js";
 import { getLineEntities } from "../systems/targeting.js";
@@ -221,6 +221,19 @@ BattalionEntity.prototype.setDirectionByDelta = function(deltaX, deltaY) {
     return this.setDirection(direction);
 }
 
+BattalionEntity.prototype.getDirectionToTile = function(tileX, tileY) {
+    const deltaX = tileX - this.tileX;
+    const deltaY = tileY - this.tileY;
+    const distanceX = Math.abs(deltaX);
+    const distanceY = Math.abs(deltaY);
+
+    if(distanceX > distanceY) {
+        return getDirectionByDelta(deltaX, 0);
+    } else {
+        return getDirectionByDelta(0, deltaY);
+    }
+}
+
 BattalionEntity.prototype.getDirectionTo = function(entity) {
     const deltaX = entity.tileX - this.tileX;
     const deltaY = entity.tileY - this.tileY;
@@ -232,6 +245,15 @@ BattalionEntity.prototype.getDirectionTo = function(entity) {
     } else {
         return getDirectionByDelta(0, deltaY);
     }
+}
+
+BattalionEntity.prototype.getTileByDirection = function(direction) {
+    const vec = getDirectionVector(direction);
+
+    vec.x += this.tileX;
+    vec.y += this.tileY;
+
+    return vec;
 }
 
 BattalionEntity.prototype.addCash = function(value) {
@@ -317,8 +339,8 @@ BattalionEntity.prototype.getTerrainDamage = function(gameContext, tileX, tileY)
 BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType, tileX, tileY) {
     const { world, typeRegistry } = gameContext;
     const { entityManager } = world;
-    const { terrain, passability } = tileType;
-    let tileCost = passability[this.config.movementType] ?? passability['*'] ?? -1;
+    const { terrain } = tileType;
+    let tileCost = tileType.getPassabilityCost(this.config.movementType);
 
     //Prevents infinite/looping steps.
     if(tileCost <= 0) {
@@ -1403,4 +1425,20 @@ BattalionEntity.prototype.triggersMine = function(gameContext, mine) {
         case MINE_TYPE.SEA: return this.config.category === ENTITY_CATEGORY.SEA && !this.hasTrait(TRAIT_TYPE.STEER);
         default: return false;
     }
+}
+
+BattalionEntity.prototype.canPurchase = function(gameContext, typeID, cost) {
+    if(cost > this.localCash) {
+        return false;
+    }
+
+    const { typeRegistry } = gameContext;
+    const shopType = typeRegistry.getShopType(this.config.shop);
+    const hasEntity = shopType.hasEntity(typeID);
+
+    return hasEntity;
+}
+
+BattalionEntity.prototype.reduceCash = function(cash) {
+    this.localCash -= cash;
 }

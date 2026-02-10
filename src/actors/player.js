@@ -4,9 +4,9 @@ import { Autotiler } from "../../engine/tile/autotiler.js";
 import { BattalionActor } from "./battalionActor.js";
 import { IdleState } from "./player/idle.js";
 import { SelectState } from "./player/select.js";
-import { PATH_FLAG, RANGE_TYPE, TILE_ID } from "../enums.js";
+import { DIRECTION, PATH_FLAG, RANGE_TYPE, TILE_ID } from "../enums.js";
 import { saveStoryMap } from "../systems/save.js";
-import { createEndTurnIntent, createExtractIntent, createPurchseEntityIntent } from "../action/actionHelper.js";
+import { createEndTurnIntent, createExtractIntent, createProduceEntityIntent, createPurchseEntityIntent } from "../action/actionHelper.js";
 
 export const Player = function(id, camera) {
     BattalionActor.call(this, id);
@@ -126,7 +126,8 @@ Player.prototype.loadKeybinds = function(gameContext) {
 
     router.on("EXTRACT", () => {
         if(this.lastInspectedEntity) {
-            this.addIntent(createExtractIntent(this.lastInspectedEntity.id));
+            //this.addIntent(createExtractIntent(this.lastInspectedEntity.id));
+            this.addIntent(createProduceEntityIntent(this.lastInspectedEntity.id, "ANNIHILATOR_TANK", DIRECTION.WEST));
         }
     });
 }
