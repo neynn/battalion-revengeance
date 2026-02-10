@@ -7,7 +7,6 @@ import { BattalionCamera } from "./battalionCamera.js";
 export const PlayerCamera = function() {
     BattalionCamera.call(this);
 
-
     this.markerSprite = SpriteManager.EMPTY_SPRITE;
     this.weakMarkerSprite = SpriteManager.EMPTY_SPRITE;
     this.perspectives = new Set();

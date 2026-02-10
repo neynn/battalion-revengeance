@@ -1,6 +1,7 @@
 import { Display } from "./display.js";
 import { isRectangleRectangleIntersect } from "../math/math.js";
 import { Cursor } from "../client/cursor.js";
+import { EventEmitter } from "../events/eventEmitter.js";
 
 export const CameraContext = function(id, renderer, camera) {
     this.id = id;
@@ -13,7 +14,14 @@ export const CameraContext = function(id, renderer, camera) {
 
     this.display = new Display();
     this.display.init(1, 1, Display.TYPE.BUFFER);
+
+    this.events = new EventEmitter();
+    this.events.register(CameraContext.EVENT.POSITION_UPDATE);
 }
+
+CameraContext.EVENT = {
+    POSITION_UPDATE: 0
+};
 
 CameraContext.FLAG = {
     NONE: 0,
@@ -93,6 +101,10 @@ CameraContext.prototype.getWorldPosition = function(screenX, screenY) {
 CameraContext.prototype.setPosition = function(x, y) {
     this.positionX = Math.floor(x);
     this.positionY = Math.floor(y);
+    this.events.emit(CameraContext.EVENT.POSITION_UPDATE, {
+        "x": this.positionX,
+        "y": this.positionY
+    });
 }
 
 CameraContext.prototype.centerCameraOnScreen = function() {
@@ -263,6 +275,10 @@ CameraContext.prototype.debug = function(context) {
 }
 
 CameraContext.prototype.isColliding = function(mouseX, mouseY, mouseRange) {
+    if(this.flags & CameraContext.FLAG.HIDDEN) {
+        return false;
+    }
+    
     let width = 0;
     let height = 0;
 

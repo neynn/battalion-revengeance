@@ -9,6 +9,7 @@ import { ExplodeTileComponent } from "../event/components/explodeTile.js";
 import { PlayEffectComponent } from "../event/components/playEffect.js";
 import { SpawnComponent } from "../event/components/spawn.js";
 import { WorldEvent } from "../../engine/world/event/worldEvent.js";
+import { createPlayCamera } from "./camera.js";
 
 const MP_SERVER_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.EXPLODE_TILE, COMPONENT_TYPE.SPAWN_ENTITY]);
 const MP_CLIENT_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.DIALOGUE, COMPONENT_TYPE.PLAY_EFFECT]);
@@ -167,7 +168,7 @@ export const ClientMapFactory = {
 
         return worldMap;
     },
-    applyTeamConfig: function(gameContext, team, config, settings, clientTeam) {
+    applyTeamConfig: function(gameContext, team, config, settings, clientTeam, clientCamera) {
         const { teamManager } = gameContext;
         const { commander, allies = [] } = config;
         const { colors } = settings;
@@ -187,8 +188,18 @@ export const ClientMapFactory = {
             }
         }
 
+        //Each client SHOULD have a team.
+        //If not, the client camera renders with no perspective.
         if(clientTeam === teamName) {
-            createPlayer(gameContext, commander, teamName);
+            createPlayer(gameContext, commander, teamName, clientCamera);
+
+            clientCamera.addPerspective(teamName);
+            clientCamera.setMainPerspective(teamName); //TODO [HOTSEAT]: Change perspective depending on the current actor.
+
+            //Add all allies as perspective. This allows the client to see allied stealth units.
+            for(let i = 0; i < team.allies.length; i++) {
+                clientCamera.addPerspective(team.allies[i]);
+            }
         } else {
             createActor(gameContext, commander, teamName);
         }
@@ -210,6 +221,9 @@ export const ClientMapFactory = {
             defeat = []
         } = mapData;
 
+        const cContext = createPlayCamera(gameContext);
+        const camera = cContext.getCamera();
+    
         for(const teamName in teams) {
             createTeam(gameContext, teamName, teams[teamName], objectives);
         }
@@ -218,7 +232,7 @@ export const ClientMapFactory = {
             const team = teamManager.getTeam(teamName);
 
             if(team) {
-                ClientMapFactory.applyTeamConfig(gameContext, team, teams[teamName], settings, clientTeam);
+                ClientMapFactory.applyTeamConfig(gameContext, team, teams[teamName], settings, clientTeam, camera);
             }
         }
 
