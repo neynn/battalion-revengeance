@@ -20,3 +20,15 @@ export const TerrainType = function(id, config) {
     this.protection = protection;
     this.cost = cost;
 }
+
+TerrainType.prototype.getDamage = function(movementType) {
+    return this.damage[movementType] ?? this.damage['*'] ?? 0;
+}
+
+TerrainType.prototype.getCost = function(movementType) {
+    return this.cost[movementType] ?? this.cost['*'] ?? 0;
+}
+
+TerrainType.prototype.getProtection = function(movementType) {
+    return this.protection[movementType] ?? this.protection['*'] ?? 0;
+}

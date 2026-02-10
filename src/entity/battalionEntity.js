@@ -326,9 +326,9 @@ BattalionEntity.prototype.getTerrainDamage = function(gameContext, tileX, tileY)
             const { terrain } = worldMap.getTileType(gameContext, j, i);
 
             for(const terrainID of terrain) {
-                const { damage } = typeRegistry.getTerrainType(terrainID);
+                const terrainType = typeRegistry.getTerrainType(terrainID);
 
-                totalDamage += damage[this.config.movementType] ?? damage['*'] ?? 0;
+                totalDamage += terrainType.getDamage(this.config.movementType);
             }
         }
     }
@@ -356,15 +356,15 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
     }
     
     for(let i = 0; i < terrain.length; i++) {
-        const { cost } = typeRegistry.getTerrainType(terrain[i]);
-        const terrainModifier = cost[this.config.movementType] ?? cost['*'] ?? 0;
+        const terrainType = typeRegistry.getTerrainType(terrain[i]);
+        const cost = terrainType.getCost(this.config.movementType);
 
         //Some terrains may disable entities from walking over them.
         if(cost < 0) {
             return EntityType.MAX_MOVE_COST;
         }
 
-        tileCost += terrainModifier;
+        tileCost += cost;
     }
 
     const entityID = worldMap.getTopEntity(tileX, tileY);
@@ -863,14 +863,13 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
 
     //Armor factor.
     const armorType = typeRegistry.getArmorType(targetArmor);
-    const { resistance } = armorType;
-    const resistanceFactor = resistance[this.config.weaponType] ?? resistance['*'] ?? 0;
+    const resistance = armorType.getResistance(this.config.weaponType);
 
     //Maxes out at 100%
-    if(resistanceFactor > 1) {
+    if(resistance > 1) {
         armorFactor = 0;
     } else {
-        armorFactor *= (1 - resistanceFactor);
+        armorFactor *= (1 - resistance);
     }
 
     if(armorFactor < 1 && this.hasTrait(TRAIT_TYPE.ARMOR_PIERCE)) {
@@ -881,8 +880,8 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
     const { terrain } = worldMap.getTileType(gameContext, targetX, targetY);
 
     for(let i = 0; i < terrain.length; i++) {
-        const { protection } = typeRegistry.getTerrainType(terrain[i]);
-        const protectionFactor = protection[targetMove] ?? protection['*'] ?? 0;
+        const terrainType = typeRegistry.getTerrainType(terrain[i]);
+        const protectionFactor = terrainType.getProtection(targetMove);
 
         //Terrain protection factor. Maxes out at 100%
         if(protectionFactor > 1) {
@@ -895,13 +894,11 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
 
     //Attacker traits.
     for(let i = 0; i < this.config.traits.length; i++) {
-        const { moveDamage, armorDamage } = typeRegistry.getTraitType(this.config.traits[i]);
+        const traitType = typeRegistry.getTraitType(this.config.traits[i]);
         
-        //Move factor.
-        traitFactor *= (1 + (moveDamage[targetMove] ?? moveDamage['*'] ?? 0));
-
-        //Armor factor.
-        traitFactor *= (1 + (armorDamage[targetArmor] ?? armorDamage['*'] ?? 0));
+        //Move and armor factor.
+        traitFactor *= traitType.getMoveDamage(targetMove);
+        traitFactor *= traitType.getArmorDamage(targetArmor);
     }
 
     //Trait factor is supposed to be bonus damage.

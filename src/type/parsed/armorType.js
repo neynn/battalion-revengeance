@@ -12,3 +12,7 @@ export const ArmorType = function(id, config) {
     this.icon = icon;
     this.resistance = resistance;
 }
+
+ArmorType.prototype.getResistance = function(weaponType) {
+   return this.resistance[weaponType] ?? this.resistance['*'] ?? 0;
+}
