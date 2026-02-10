@@ -36,12 +36,14 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
 
     this.isUpdating = false;
 
-    gameContext.broadcastMessage(GAME_EVENT.MP_SERVER_STATE_UPDATE, {
-        "plans": executedPlans,
-        "events": eventHandler.lastRecentlyTriggered
-    });
+    if(executedPlans.length !== 0 || eventHandler.lastRecentlyTriggered.length !== 0) {
+        gameContext.broadcastMessage(GAME_EVENT.MP_SERVER_STATE_UPDATE, {
+            "plans": executedPlans,
+            "events": eventHandler.lastRecentlyTriggered
+        });
 
-    eventHandler.clearRecentTriggers();
+        eventHandler.clearRecentTriggers();
+    }
 }
 
 ServerActionRouter.prototype.forceEnqueue = function(gameContext, actionIntent) {

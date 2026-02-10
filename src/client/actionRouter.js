@@ -61,10 +61,10 @@ ClientActionRouter.prototype.forceEnqueue = function(gameContext, actionIntent) 
     }
 }
 
-ClientActionRouter.prototype.onServerPlan = function(gameContext, plan) {
+ClientActionRouter.prototype.onServerPlan = function(gameContext, planJSON) {
     const { world } = gameContext;
     const { actionQueue } = world;
-    const { id, type, data } = plan;
+    const { id, type, data } = planJSON;
     const executionPlan = new ExecutionPlan(id, type);
 
     executionPlan.setData(data);

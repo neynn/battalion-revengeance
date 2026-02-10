@@ -1,32 +1,18 @@
 import { ClientGameContext } from "../engine/clientGameContext.js";
 import { LanguageHandler } from "../engine/language/languageHandler.js";
-import { AttackAction } from "./action/types/attack.js";
-import { CloakAction } from "./action/types/cloak.js";
-import { DeathAction } from "./action/types/death.js";
-import { EndTurnAction } from "./action/types/endTurn.js";
-import { MoveAction } from "./action/types/move.js";
-import { UncloakAction } from "./action/types/uncloak.js";
 import { PortraitHandler } from "./client/portraitHandler.js";
 import { DialogueHandler } from "./client/dialogueHandler.js";
-import { ACTION_TYPE, LAYER_TYPE } from "./enums.js";
+import { LAYER_TYPE } from "./enums.js";
 import { MainMenuState } from "./states/mainMenu/mainMenu.js";
 import { MapEditorState } from "./states/mapEditor/mapEditorState.js";
 import { PlayState } from "./states/play.js";
 import { TeamManager } from "./team/teamManager.js";
 import { TypeRegistry } from "./type/typeRegistry.js";
-import { HealAction } from "./action/types/heal.js";
-import { CaptureAction } from "./action/types/capture.js";
 import { TILE_HEIGHT, TILE_WIDTH } from "./constants.js";
 import { ArenaState } from "./states/arena/arena.js";
-import { ExplodeTileAction } from "./action/types/explodeTile.js";
-import { StartTurnAction } from "./action/types/startTurn.js";
-import { EntitySpawnAction } from "./action/types/entitySpawn.js";
-import { ExtractAction } from "./action/types/extract.js";
-import { PurchaseEntityAction } from "./action/types/purchaseEntity.js";
-import { ProduceEntityAction } from "./action/types/produceEntity.js";
 import { UICore } from "./ui/uiCore.js";
-import { MineTriggerAction } from "./action/types/mineTrigger.js";
 import { ClientActionRouter } from "./client/actionRouter.js";
+import { registerActions } from "./systems/context.js";
 
 export const BattalionContext = function() {
     ClientGameContext.call(this);
@@ -72,21 +58,7 @@ BattalionContext.prototype.init = function(resources) {
     this.spriteManager.initLayers(LAYER_TYPE.COUNT);
     this.typeRegistry.load(resources);
 
-    this.world.actionQueue.registerAction(ACTION_TYPE.MINE_TRIGGER, new MineTriggerAction());
-    this.world.actionQueue.registerAction(ACTION_TYPE.PRODUCE_ENTITY, new ProduceEntityAction(false));
-    this.world.actionQueue.registerAction(ACTION_TYPE.PURCHASE_ENTITY, new PurchaseEntityAction(false));
-    this.world.actionQueue.registerAction(ACTION_TYPE.EXTRACT, new ExtractAction());
-    this.world.actionQueue.registerAction(ACTION_TYPE.ENTITY_SPAWN, new EntitySpawnAction(false));
-    this.world.actionQueue.registerAction(ACTION_TYPE.START_TURN, new StartTurnAction());
-    this.world.actionQueue.registerAction(ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction());
-    this.world.actionQueue.registerAction(ACTION_TYPE.CAPTURE, new CaptureAction());
-    this.world.actionQueue.registerAction(ACTION_TYPE.MOVE, new MoveAction());
-    this.world.actionQueue.registerAction(ACTION_TYPE.HEAL, new HealAction());
-    this.world.actionQueue.registerAction(ACTION_TYPE.ATTACK, new AttackAction());
-    this.world.actionQueue.registerAction(ACTION_TYPE.CLOAK, new CloakAction());
-    this.world.actionQueue.registerAction(ACTION_TYPE.DEATH, new DeathAction());
-    this.world.actionQueue.registerAction(ACTION_TYPE.UNCLOAK, new UncloakAction());
-    this.world.actionQueue.registerAction(ACTION_TYPE.END_TURN, new EndTurnAction());
+    registerActions(this, false);
 
     this.uiCore.init(this);
     this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);

@@ -4,6 +4,7 @@ import { TileManager } from "../../engine/tile/tileManager.js";
 import { ServerGameContext } from "./serverContext.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { MapRegistry } from "../map/mapRegistry.js";
+import { registerActions } from "../systems/context.js";
 
 export const ServerApplication = function(io) {
     SocketServer.call(this, io);
@@ -28,7 +29,8 @@ ServerApplication.prototype.createRoom = function(roomID, roomType) {
 
     //All rooms have a maximum of 8 players.
     gameContext.maxClients = 8;
-    gameContext.init();
+
+    registerActions(gameContext, true);
 
     return gameContext;
 }

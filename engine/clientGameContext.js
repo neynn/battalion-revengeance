@@ -15,6 +15,7 @@ import { ResourceLoader } from "./resources/resourceLoader.js";
 import { ApplicationWindow } from "./applicationWindow.js";
 import { ClientPathHandler } from "./resources/pathHandler.js";
 import { MapRegistry } from "../src/map/mapRegistry.js";
+import { addDebug } from "../src/systems/context.js";
 
 export const ClientGameContext = function() {
     this.client = new Client();
@@ -62,8 +63,6 @@ export const ClientGameContext = function() {
     this.client.cursor.events.on(Cursor.EVENT.BUTTON_UP, ({ button }) => {
         this.renderer.onDragEnd(button);
     }, { permanent: true });
-
-    this.addDebug();
 }
 
 ClientGameContext.prototype.onExit = function() {}
@@ -76,7 +75,7 @@ ClientGameContext.prototype.exit = function() {
     this.uiManager.exit();
     this.language.exit();
     this.onExit();
-    this.addDebug();
+    addDebug(this);
 }
 
 ClientGameContext.prototype.loadResources = function(resources) {
@@ -90,15 +89,4 @@ ClientGameContext.prototype.loadResources = function(resources) {
     this.client.router.load(resources.keybinds);
     this.mapRegistry.load(resources.maps);
     this.language.load(resources.languages);
-}
-
-ClientGameContext.prototype.addDebug = function() {
-    const { router } = this.client;
-
-    router.bind(this, "DEBUG");
-    router.on("DEBUG_MAP", () => Renderer.DEBUG.MAP = 1 - Renderer.DEBUG.MAP);
-    router.on("DEBUG_CONTEXT", () => Renderer.DEBUG.CONTEXT = 1 - Renderer.DEBUG.CONTEXT);
-    router.on("DEBUG_INTERFACE", () => Renderer.DEBUG.INTERFACE = 1 - Renderer.DEBUG.INTERFACE);
-    router.on("DEBUG_SPRITES", () => Renderer.DEBUG.SPRITES = 1 - Renderer.DEBUG.SPRITES);
-    router.on("DEBUG_INFO", () => Renderer.DEBUG.INFO = 1 - Renderer.DEBUG.INFO);
 }
