@@ -12,12 +12,11 @@ export const Team = function(id) {
     this.entities = [];
     this.colorID = SCHEMA_TYPE.RED;
     this.color = null;
+    this.currency = null;
     this.status = Team.STATUS.IDLE;
-    this.exchangeRate = 1;
     this.cash = 0;
     this.name = "MISSING_NAME_TEAM";
     this.desc = "MISSING_DESC_TEAM";
-    this.flags = Team.FLAG.NONE;
     this.stats = [];
     this.objectives = [
         new UnitSurviveObjective(),
@@ -28,11 +27,6 @@ export const Team = function(id) {
         this.stats[i] = 0;
     }
 }
-
-Team.FLAG = {
-    NONE: 0,
-    IS_NATION: 1 << 0
-};
 
 Team.OBJECTIVE = {
     UNIT_SURVIVE: 0,
@@ -109,37 +103,14 @@ Team.prototype.removeBuilding = function(building) {
     }
 }
 
-Team.prototype.loadAsNation = function(gameContext, nationID) {
+Team.prototype.loadAsFaction = function(gameContext, factionID) {
     const { typeRegistry } = gameContext;
-    const { name, desc, color, faction, currency } = typeRegistry.getNationType(nationID);
-    const factionType = typeRegistry.getFactionType(faction);
+    const { color, name, desc, currency } = typeRegistry.getFactionType(factionID);
     const currencyType = typeRegistry.getCurrencyType(currency);
-    const isColorSet = this.setColor(gameContext, color);
 
     this.name = name;
     this.desc = desc;
-    this.flags |= Team.FLAG.IS_NATION;
-
-    if(!isColorSet) {
-        this.setColor(gameContext, factionType.color);
-    }
-
-    if(currencyType) {
-        const { exchangeRate } = currencyType;
-
-        this.exchangeRate = exchangeRate;
-    }
-}
-
-Team.prototype.loadAsFaction = function(gameContext, factionID) {
-    const { typeRegistry } = gameContext;
-    const { color, name, desc }  = typeRegistry.getFactionType(factionID);
-
-    if((this.flags & Team.FLAG.IS_NATION) === 0) {
-        this.name = name;
-        this.desc = desc;
-    }
-
+    this.currency = currencyType;
     this.setColor(gameContext, color);
 }
 

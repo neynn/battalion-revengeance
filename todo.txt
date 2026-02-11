@@ -3,5 +3,3 @@ Redo streamlined: Reduced production cost. Further from base is not possible bec
 repairAction -> start repair and finish repair on the next active turn. onHit -> remove IS_REPAIRING flag.
 
 TweenManager for effects.
-
-Commandertype is irrelevant. Can be put on team as actor can resolve 1:1 to team.

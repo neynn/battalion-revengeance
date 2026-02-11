@@ -1,6 +1,10 @@
 {
-    "CONTINENTAL_SECURITY_LEAGUE": { "name": "FACTION_NAME_CONTINENTAL_SECURITY_LEAGUE", "desc": "FACTION_DESC_CONTINENTAL_SECURITY_LEAGUE", "color": "WHITE" },
-    "GLORIOUS_COALLITION": { "name": "FACTION_NAME_GLORIOUS_COALLITION", "desc": "FACTION_DESC_GLORIOUS_COALLITION", "color": "BLACK" },
+    "SOMERTIN": { "name": "FACTION_NAME_SOMERTIN", "desc": "FACTION_DESC_SOMERTIN", "currency": "ZLOT", "color": "WHITE" },
+    "KARGIT": { "name": "FACTION_NAME_KARGIT", "desc": "FACTION_DESC_KARGIT", "currency": "KARGIL", "color": "BLACK" },
+    "TRANSKAL": { "name": "FACTION_NAME_TRANSKAL", "desc": "FACTION_DESC_TRANSKAL", "currency": "KRONE", "color": "GRAY" },
+    "POLASIE": { "name": "FACTION_NAME_POLASIE", "desc": "FACTION_DESC_POLASIE", "currency": "PULA", "color": "DARK_BLUE" },
+    "ELAM": { "name": "FACTION_NAME_ELAM", "desc": "FACTION_DESC_ELAM", "currency": "RIAL", "color": "LIME" },
+
     "RED": { "name": "FACTION_NAME_RED", "desc": "FACTION_DESC_RED", "color": "RED" },
     "BLUE": { "name": "FACTION_NAME_BLUE", "desc": "FACTION_DESC_BLUE", "color": "BLUE" },
     "GREEN": { "name": "FACTION_NAME_GREEN", "desc": "FACTION_DESC_GREEN", "color": "GREEN" },
@@ -18,6 +22,7 @@
     "GRAY": { "name": "FACTION_NAME_GRAY", "desc": "FACTION_DESC_GRAY", "color": "GRAY" },
     "CREAM": { "name": "FACTION_NAME_CREAM", "desc": "FACTION_DESC_CREAM", "color": "CREAM" },
     "LIME": { "name": "FACTION_NAME_LIME", "desc": "FACTION_DESC_LIME", "color": "LIME" },
+
     "KANYE": { "name": "FACTION_NAME_KANYE", "desc": "FACTION_DESC_KANYE", "color": "BRONZE" },
     "NYPD": { "name": "FACTION_NAME_NYPD", "desc": "FACTION_DESC_NYPD", "color": "DARK_BLUE" }
 }

@@ -1,5 +1,3 @@
-import { COLOR_TYPE } from "../../enums.js";
-
 export const NationType = function(id, config) {
     const {
         name = "MISSING_NAME_NATION",
@@ -7,7 +5,6 @@ export const NationType = function(id, config) {
         prefix = "PREFIX",
         faction = "NONE",
         power = "NONE",
-        color = COLOR_TYPE.WHITE,
         currency = "NONE"
     } = config;
 
@@ -17,6 +14,5 @@ export const NationType = function(id, config) {
     this.prefix = prefix;
     this.faction = faction;
     this.power = power;
-    this.color = color;
     this.currency = currency;
 }

@@ -4,9 +4,9 @@
     "height": 10,
     "client": "SOMERTIN",
     "teams": {
-        "SOMERTIN": { "commander": "PLAYER", "nation": "SOMERTIN", "color": "BLACK", "allies": ["DRAGOON"], "objectives": ["DEFEAT_BOAT_1", "CAPTURE_0_0", "SURVIVE_TURN_2"] },
-        "TRANSKAL": { "commander": "KANYE", "nation": "TRANSKAL", "color": "DARK_BLUE", "objectives": ["PROTECT_BOAT_1"] },
-        "DRAGOON": { "commander": "KANYE", "nation": "ELAM", "color": "BRONZE" }
+        "SOMERTIN": { "commander": "PLAYER", "faction": "SOMERTIN", "allies": ["DRAGOON"], "objectives": ["DEFEAT_BOAT_1", "CAPTURE_0_0", "SURVIVE_TURN_2"] },
+        "TRANSKAL": { "commander": "KANYE", "faction": "TRANSKAL", "objectives": ["PROTECT_BOAT_1"] },
+        "DRAGOON": { "commander": "KANYE", "faction": "ELAM" }
     },
     "entities": [
         { "x": 0, "y": 0, "direction": "SOUTH", "type": "ALEPH", "team": "SOMERTIN" },

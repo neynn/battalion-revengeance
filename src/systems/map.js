@@ -1,7 +1,7 @@
 import { BattalionMap } from "../map/battalionMap.js";
 import { spawnClientBuilding, spawnClientEntity, spawnServerBuilding, spawnServerEntity } from "./spawn.js";
 import { MapSettings } from "../map/settings.js";
-import { COMPONENT_TYPE, OBJECTIVE_TYPE } from "../enums.js";
+import { COMPONENT_TYPE, CURRENCY_TYPE, FACTION_TYPE, OBJECTIVE_TYPE } from "../enums.js";
 import { Mine } from "../entity/mine.js";
 import { DialogueComponent } from "../event/components/dialogue.js";
 import { ExplodeTileComponent } from "../event/components/explodeTile.js";
@@ -142,9 +142,8 @@ const ObjectiveFactory = {
 
 const TeamFactory = {
     createTeam: function(gameContext, teamID, config, allObjectives) {
-        const { teamManager } = gameContext;
+        const { typeRegistry, teamManager } = gameContext;
         const { 
-            nation = null,
             faction = null,
             color = null,
             objectives = []
@@ -156,16 +155,16 @@ const TeamFactory = {
             return;
         }
 
-        if(nation) {
-            team.loadAsNation(gameContext, nation);
-        }
-
         if(faction) {
             team.loadAsFaction(gameContext, faction);
         }
 
         if(color) {
             team.setColor(gameContext, color);
+        }
+
+        if(!team.currency) {
+            team.currency = typeRegistry.getCurrencyType(CURRENCY_TYPE.NONE);
         }
 
         for(const objectiveID of objectives) {

@@ -1,4 +1,5 @@
 {
+    "NONE": { "name": "CURRENCY_NAME_NONE", "desc": "CURRENCY_DESC_NONE", "symbol": "$", "exchangeRate": 1 },
     "ZLOT": { "name": "CURRENCY_NAME_ZLOT", "desc": "CURRENCY_DESC_ZLOT", "symbol": "Ɬ", "exchangeRate": 0.8 },
     "KARGIL": { "name": "CURRENCY_NAME_KARGIL", "desc": "CURRENCY_DESC_KARGIL", "symbol": "Ꞣ", "exchangeRate": 1 },
     "KRONE": { "name": "CURRENCY_NAME_KRONE", "desc": "CURRENCY_DESC_KRONE", "symbol": "₭", "exchangeRate": 2 },

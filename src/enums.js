@@ -255,6 +255,7 @@ export const NATION_TYPE = {
 };
 
 export const CURRENCY_TYPE = {
+    NONE: "NONE",
     ZLOT: "ZLOT",
     KARGIL: "KARGIL",
     KRONE: "KRONE",
