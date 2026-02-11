@@ -1270,6 +1270,11 @@ BattalionEntity.prototype.mResolveAttackTraits = function(resolver) {
     }
 }
 
+BattalionEntity.prototype.isHurtByShrapnel = function() {
+    //Shrapnel does not hurt air and submerged units.
+    return this.config.category !== ENTITY_CATEGORY.AIR && !this.hasFlag(BattalionEntity.FLAG.IS_SUBMERGED);
+}
+
 BattalionEntity.prototype.mResolveShrapnel = function(gameContext, target, damageFlags, resolver) {
     const { tileX, tileY } = target;
     const direction = this.getDirectionTo(target);
@@ -1278,10 +1283,18 @@ BattalionEntity.prototype.mResolveShrapnel = function(gameContext, target, damag
 
     for(let i = 0; i < targets.length; i++) {
         const target = targets[i];
-        const damage = this.getAttackDamage(gameContext, target, flags);
 
-        resolver.addAttack(target, damage);
+        if(target.isHurtByShrapnel()) {
+            const damage = this.getAttackDamage(gameContext, target, flags);
+
+            resolver.addAttack(target, damage);
+        }
     }
+}
+
+BattalionEntity.prototype.isHurtByStreamblast = function() {
+    //Streamblast does not hurt air and submerged units.
+    return this.config.category !== ENTITY_CATEGORY.AIR && !this.hasFlag(BattalionEntity.FLAG.IS_SUBMERGED);
 }
 
 BattalionEntity.prototype.mResolveStreamblastAttack = function(gameContext, target, resolver) {
@@ -1290,12 +1303,21 @@ BattalionEntity.prototype.mResolveStreamblastAttack = function(gameContext, targ
 
     for(let i = 0; i < targets.length; i++) {
         const target = targets[i];
-        const damage = this.getAttackDamage(gameContext, target, ATTACK_FLAG.STREAMBLAST);
 
-        resolver.addAttack(target, damage);
+        if(target.isHurtByStreamblast()) {
+            const damage = this.getAttackDamage(gameContext, target, ATTACK_FLAG.STREAMBLAST);
+
+            resolver.addAttack(target, damage);
+        }
     }
 
     this.mResolveAttackTraits(resolver);
+}
+
+BattalionEntity.prototype.isHurtByDispersion = function(attackerID) {
+    //Dispersion does not hurt air units, but unlike SHRAPNEL and STREAMBLAST hurts IS_SUBMERGED units.
+    //Dispersion also does not hurt the attacker.
+    return this.config.category !== ENTITY_CATEGORY.AIR && attackerID !== this.id;
 }
 
 BattalionEntity.prototype.mResolveDispersionAttack = function(gameContext, target, resolver) {
@@ -1306,10 +1328,8 @@ BattalionEntity.prototype.mResolveDispersionAttack = function(gameContext, targe
 
     for(let i = 0; i < targets.length; i++) {
         const target = targets[i];
-        const targetID = target.getID();
 
-        //Exclude self from AOE attack.
-        if(targetID !== this.id) {
+        if(target.isHurtByDispersion(this.id)) {
             const damage = this.getAttackDamage(gameContext, target, ATTACK_FLAG.AREA);
 
             resolver.addAttack(target, damage);

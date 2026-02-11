@@ -4,6 +4,4 @@ repairAction -> start repair and finish repair on the next active turn. onHit ->
 
 TweenManager for effects.
 
-air and submerged do not get hit by pierce
-
 Commandertype is irrelevant. Can be put on team as actor can resolve 1:1 to team.
