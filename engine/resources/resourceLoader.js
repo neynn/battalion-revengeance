@@ -11,7 +11,7 @@ export const ResourceLoader = function() {
     this.events.register(ResourceLoader.EVENT.TEXTURE_ERROR);
 
     //this.events.on(ResourceLoader.EVENT.TEXTURE_ERROR, ({ texture, error }) => console.error("ERROR", texture, error));
-    //this.events.on(ResourceLoader.EVENT.TEXTURE_LOADED, ({ texture, bitmap }) => console.log("LOADED", texture, bitmap));
+    //this.events.on(ResourceLoader.EVENT.TEXTURE_LOADED, ({ texture, bitmap }) => console.log("LOADED", texture, bitmap, this.getTotalKBUsed()));
 }
 
 ResourceLoader.EVENT = {
@@ -19,8 +19,16 @@ ResourceLoader.EVENT = {
     TEXTURE_ERROR: "TEXTURE_ERROR"
 };
 
+ResourceLoader.prototype.clearTexture = function(index) {
+    const texture = this.textureRegistry.getTexture(index);
+
+    if(texture) {
+        texture.clear();
+    }
+}
+
 ResourceLoader.prototype.getTotalKBUsed = function() {
-    console.log(this.textureRegistry.getSizeBytes() / 1024);
+    return this.textureRegistry.getSizeBytes() / 1024;
 }
 
 ResourceLoader.prototype.getCopyTexture = function(textureName) {

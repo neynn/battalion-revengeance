@@ -192,6 +192,16 @@ SpriteManager.prototype.update = function(gameContext) {
     }
 }
 
+SpriteManager.prototype.clearTextureBitmaps = function() {
+    for(const [spriteID, entry] of this.spriteMap) {
+        const { index, textureID, copyAlias } = entry;
+
+        if(textureID !== TextureRegistry.COPY_ID) {
+            this.resources.clearTexture(textureID);
+        } 
+    }
+}
+
 SpriteManager.prototype.destroyCopyTextures = function() {
     const toDestroy = [];
 
@@ -217,6 +227,7 @@ SpriteManager.prototype.exit = function() {
     });
     this.pool.reset();
     this.destroyCopyTextures();
+    this.clearTextureBitmaps();
     this.sharedSprites.length = 0;
 
     for(let i = 0; i < this.layers.length; i++) {
@@ -253,14 +264,6 @@ SpriteManager.prototype.loadBitmap = function(spriteID) {
         const { textureID } = data;
 
         this.resources.loadTexture(textureID);
-    }
-}
-
-SpriteManager.prototype.removeReference = function(spriteID) {
-    const data = this.spriteMap.get(spriteID);
-
-    if(data) {
-        //TODO: Unload textures.
     }
 }
 
