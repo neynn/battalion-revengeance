@@ -111,7 +111,7 @@ MapSettings.prototype.createSlot = function(teamID) {
         "clientID": null,
         "teamID": teamID,
         "type": MapSettings.SLOT_TYPE.CLOSED,
-        "color": null,
+        "colorMap": null,
         "name": null
     });
 
@@ -139,11 +139,11 @@ MapSettings.prototype.getOverride = function(teamID) {
 
 MapSettings.prototype.updateOverrides = function() {
     for(let i = 0; i < this.slots.length; i++) {
-        const { colorID, name } = this.slots[i];
+        const { colorMap, name } = this.slots[i];
         const override = this.overrides[i];
 
-        if(colorID !== null) {
-            override.color = colorID;
+        if(colorMap !== null) {
+            override.color = colorMap;
         }
 
         if(name !== null) {
@@ -171,10 +171,10 @@ MapSettings.prototype.toJSON = function() {
     }
 }
 
-MapSettings.prototype.selectColor = function(clientID, colorID) {
+MapSettings.prototype.selectColor = function(clientID, colorMap) {
     for(let i = 0; i < this.slots.length; i++) {
         if(this.slots[i].clientID === clientID) {
-            this.slots[i].colorID = colorID;
+            this.slots[i].colorMap = colorMap;
             break;
         }
     }

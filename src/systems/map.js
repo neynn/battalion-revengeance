@@ -1,7 +1,7 @@
 import { BattalionMap } from "../map/battalionMap.js";
 import { spawnClientBuilding, spawnClientEntity, spawnServerBuilding, spawnServerEntity } from "./spawn.js";
 import { MapSettings } from "../map/settings.js";
-import { COMPONENT_TYPE, CURRENCY_TYPE, OBJECTIVE_TYPE } from "../enums.js";
+import { COMPONENT_TYPE, CURRENCY_TYPE, OBJECTIVE_TYPE, SCHEMA_TYPE } from "../enums.js";
 import { Mine } from "../entity/mine.js";
 import { DialogueComponent } from "../event/components/dialogue.js";
 import { ExplodeTileComponent } from "../event/components/explodeTile.js";
@@ -156,15 +156,28 @@ const TeamFactory = {
 
             const tFaction = teamConfig.faction ?? null;
             const tObjectives = teamConfig.objectives ?? [];
-            const tColor = override.color ?? teamConfig.color ?? null;
+            const tColor = teamConfig.color ?? null;
             const tName = override.name ?? null;
+            const oColor = override.color ?? null;
 
             if(tFaction !== null) {
                 team.loadAsFaction(gameContext, tFaction);
             }
 
-            if(tColor !== null) {
-                team.setColor(gameContext, tColor);
+            if(oColor !== null) {
+                team.createCustomSchema(oColor);
+            } else if(tColor !== null) {
+                const schemaType = typeRegistry.getSchemaType(tColor);
+
+                team.schema = schemaType;
+            }
+
+            //If NO faction, NO oColor and NO tColor was given, fall back to RED.
+            //Assume that schema is always not null after this point.
+            if(!team.schema) {
+                const schemaType = typeRegistry.getSchemaType(SCHEMA_TYPE.RED);
+
+                team.schema = schemaType;
             }
 
             if(!team.currency) {

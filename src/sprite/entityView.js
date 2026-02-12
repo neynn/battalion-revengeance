@@ -29,8 +29,8 @@ const getHealthColor = function(healthFactor) {
     return DEFAULT_HEALTH_COLOR;
 }
 
-export const EntityView = function(visual, spriteID, schemaID, schema) {
-    SchemaView.call(this, visual, spriteID, schemaID, schema);
+export const EntityView = function(visual, spriteID) {
+    SchemaView.call(this, visual, spriteID);
 
     this.healthFactor = 1;
     this.isFrozen = false;
@@ -79,10 +79,8 @@ EntityView.prototype.draw = function(display, viewportLeftEdge, viewportTopEdge,
     this.visual.update(realTime, deltaTime);
     this.visual.draw(display, viewportLeftEdge, viewportTopEdge);
 
-    if(PLAYER_PREFERENCE.FORCE_HEALTH_DRAW) {
+    if(PLAYER_PREFERENCE.FORCE_HEALTH_DRAW || this.healthFactor > 0 && this.healthFactor < 1) {
         this.drawHealth(display, viewportLeftEdge, viewportTopEdge)
-    } else if(this.healthFactor > 0 && this.healthFactor < 1) {
-        this.drawHealth(display, viewportLeftEdge, viewportTopEdge);
     }
 }
 

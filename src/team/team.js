@@ -2,16 +2,16 @@ import { createDeathIntent, createUncloakIntent } from "../action/actionHelper.j
 import { Objective } from "./objective/objective.js";
 import { UnitSurviveObjective } from "./objective/types/unitSurvive.js";
 import { LynchpinObjective } from "./objective/types/lynchpin.js";
-import { SCHEMA_TYPE, TEAM_STAT, TRAIT_TYPE } from "../enums.js";
+import { TEAM_STAT, TRAIT_TYPE } from "../enums.js";
 import { SCORE_BONUS, VICTORY_BONUS } from "../constants.js";
+import { SchemaType } from "../type/parsed/schemaType.js";
 
 export const Team = function(id) {
     this.id = id;
     this.allies = [];
     this.buildings = [];
     this.entities = [];
-    this.colorID = SCHEMA_TYPE.RED;
-    this.color = null;
+    this.schema = null;
     this.currency = null;
     this.status = Team.STATUS.IDLE;
     this.cash = 0;
@@ -118,11 +118,12 @@ Team.prototype.loadAsFaction = function(gameContext, factionID) {
     const { typeRegistry } = gameContext;
     const { color, name, desc, currency } = typeRegistry.getFactionType(factionID);
     const currencyType = typeRegistry.getCurrencyType(currency);
+    const schemaType = typeRegistry.getSchemaType(color);
 
     this.name = name;
     this.desc = desc;
     this.currency = currencyType;
-    this.setColor(gameContext, color);
+    this.schema = schemaType;
 }
 
 Team.prototype.getDisplayDesc = function(gameContext) {
@@ -161,23 +162,18 @@ Team.prototype.onEntityDeath = function(entity) {
     }
 }
 
-Team.prototype.setCustomColor = function(color) {
-    this.colorID = "CUSTOM_" + this.id;
-    this.color = color;
-}
+Team.prototype.createCustomSchema = function(colorMap) {
+    const config = {
+        "colors": colorMap,
+        "name": this.name,
+        "desc": "SCHEMA_DESC_CUSTOM"
+    };
 
-Team.prototype.setColor = function(gameContext, colorID) {
-    const { typeRegistry } = gameContext;
-    const color = typeRegistry.getSchemaType(colorID);
+    const schemaType = new SchemaType(this.id, config);
 
-    if(color) {
-        this.colorID = colorID;
-        this.color = color;
+    this.schema = schemaType;
 
-        return true;
-    }
-
-    return false;
+    return schemaType;
 }
 
 Team.prototype.isAlly = function(teamID) {

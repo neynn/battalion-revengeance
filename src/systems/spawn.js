@@ -63,12 +63,14 @@ export const createClientEntityObject = function(gameContext, entityID, teamID, 
         return null;
     }
 
-    const { colorID, color } = team;
+    const { schema } = team;
     const entityType = typeRegistry.getEntityType(typeID);
     const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
-    const entityView = new EntityView(visualSprite, null, colorID, color);
+    const entityView = new EntityView(visualSprite, null);
     const entityObject = new ClientBattalionEntity(entityID, entityView);
     const spawnPosition = transform2D.transformTileToWorld(tileX, tileY);
+
+    entityView.schema = schema;
 
     entityObject.loadConfig(entityType);
     entityObject.setPositionVec(spawnPosition);
@@ -217,17 +219,19 @@ export const spawnClientBuilding = function(gameContext, worldMap, config) {
 
         if(isPlaceable) {
             const buildingType = typeRegistry.getBuildingType(type);
-            const { colorID, color } = teamObject;
+            const { schema } = teamObject;
             const { sprite } = buildingType;
             const position = transform2D.transformTileToWorld(x, y);
-            const visualSprite = createSchemaViewSprite(gameContext, sprite, colorID, color, LAYER_TYPE.BUILDING);
-            const buildingView = new BuildingView(visualSprite, sprite, colorID, color);
+            const visualSprite = createSchemaViewSprite(gameContext, sprite, schema, LAYER_TYPE.BUILDING);
+            const buildingView = new BuildingView(visualSprite, sprite);
             const building = new ClientBuilding(buildingType, buildingView);
+
+            buildingView.schema = schema;
+            buildingView.setPositionVec(position);
 
             building.setCustomInfo(id, name, desc);
             building.setTile(x, y);
             building.setTeam(team);
-            buildingView.setPositionVec(position);
             worldMap.addBuilding(building);
         }
     }

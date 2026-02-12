@@ -180,10 +180,6 @@ ClientBattalionEntity.prototype.updateSprite = function(gameContext) {
     }
 }
 
-ClientBattalionEntity.prototype.updateSchema = function(gameContext, schemaID, schema) {
-    this.view.updateSchema(gameContext, schemaID, schema);
-}
-
 ClientBattalionEntity.prototype.bufferSounds = function(gameContext) {
     const { client } = gameContext;
     const { soundPlayer } = client;

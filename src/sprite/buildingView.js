@@ -1,7 +1,7 @@
 import { SchemaView } from "./schemaView.js";
 
-export const BuildingView = function(visual, spriteID, schemaID, schema) {
-    SchemaView.call(this, visual, spriteID, schemaID, schema);
+export const BuildingView = function(visual, spriteID) {
+    SchemaView.call(this, visual, spriteID);
 }
 
 BuildingView.prototype = Object.create(SchemaView.prototype);

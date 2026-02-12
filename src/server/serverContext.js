@@ -99,7 +99,13 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
             }
 
             this.state = ServerGameContext.STATE.STARTING;
-            this.mapSettings.selectColor(messengerID, SCHEMA_TYPE.CREAM);
+            this.mapSettings.selectColor(messengerID, {
+                "0x661A5E": [105, 125, 108],
+                "0xAA162C": [197, 171, 159],
+                "0xE9332E": [66, 65, 68],
+                "0xFF9085": [71, 75, 136]
+            });
+
             this.mapSettings.updateOverrides();
 
             ServerMapLoader.mpCreateMap(this, this.mapSettings)

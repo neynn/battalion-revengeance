@@ -31,6 +31,7 @@
     "movementTypes": { "directory": ["assets", "game", "types"], "source": "movementTypes.json" },
     "nationTypes": { "directory": ["assets", "game", "types"], "source": "nationTypes.json" },
     "powerTypes": { "directory": ["assets", "game", "types"], "source": "powerTypes.json" },
+    "schemaTypes": { "directory": ["assets", "game", "types"], "source": "schemaTypes.json" },
     "shopTypes": { "directory": ["assets", "game", "types"], "source": "shopTypes.json" },
     "terrainTypes": { "directory": ["assets", "game", "types"], "source": "terrainTypes.json" },
     "tileTypes": { "directory": ["assets", "game", "types"], "source": "tileTypes.json" },

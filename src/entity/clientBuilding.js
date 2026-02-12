@@ -10,7 +10,7 @@ ClientBuilding.prototype = Object.create(Building.prototype);
 ClientBuilding.prototype.constructor = ClientBuilding;
 
 ClientBuilding.prototype.onTeamUpdate = function(gameContext, team) {
-    const { colorID, color } = team;
+    const { schema } = team;
 
-    this.view.updateSchema(gameContext, colorID, color);
+    this.view.updateSchema(gameContext, schema);
 }
