@@ -1,8 +1,8 @@
 import { createBitmapData, mapBitmapPartial } from "../graphics/colorHelper.js";
 import { Texture } from "./texture.js";
 
-export const AtlasTexture = function(id, path) {
-    Texture.call(this, id, path);
+export const AtlasTexture = function(id, name, path) {
+    Texture.call(this, id, name, path);
 
     this.regions = {};
 }

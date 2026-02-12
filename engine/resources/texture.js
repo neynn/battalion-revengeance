@@ -1,7 +1,8 @@
 import { createBitmapData, mapBitmap } from "../graphics/colorHelper.js";
 
-export const Texture = function(id, path) {
+export const Texture = function(id, name, path) {
     this.id = id;
+    this.name = name;
     this.path = path;
     this.bitmap = null;
     this.references = 0;

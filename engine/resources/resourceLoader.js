@@ -19,6 +19,23 @@ ResourceLoader.EVENT = {
     TEXTURE_ERROR: "TEXTURE_ERROR"
 };
 
+ResourceLoader.prototype.getLoadedTextureInfo = function() {
+    const loadedTextures = [];
+
+    for(let i = 0; i < this.textureRegistry.textures.length; i++) {
+        const texture = this.textureRegistry.textures[i];
+
+        if(texture.state === Texture.STATE.LOADED) {
+            loadedTextures.push({
+                "name": texture.name,
+                "size(kb)": Math.floor(texture.getSizeBytes() / 1024)
+            });
+        }
+    }
+
+    return loadedTextures;
+}
+
 ResourceLoader.prototype.clearTexture = function(index) {
     const texture = this.textureRegistry.getTexture(index);
 
