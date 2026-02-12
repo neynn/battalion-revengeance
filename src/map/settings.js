@@ -106,23 +106,21 @@ MapSettings.prototype.addPlayer = function(index, clientID) {
     this.players++;
 }
 
-MapSettings.prototype.createSlots = function(teams) {
-    for(let i = 0; i < teams.length; i++) {
-        this.slots.push({
-            "clientID": null,
-            "teamID": teams[i],
-            "type": MapSettings.SLOT_TYPE.CLOSED,
-            "color": null,
-            "name": null
-        });
+MapSettings.prototype.createSlot = function(teamID) {
+    this.slots.push({
+        "clientID": null,
+        "teamID": teamID,
+        "type": MapSettings.SLOT_TYPE.CLOSED,
+        "color": null,
+        "name": null
+    });
 
-        this.overrides.push({
-            "teamID": teams[i],
-            "allies": [],
-            "color": null,
-            "name": null
-        });
-    }
+    this.overrides.push({
+        "teamID": teamID,
+        "allies": [],
+        "color": null,
+        "name": null
+    });
 }
 
 MapSettings.prototype.addEntity = function(entityID) {

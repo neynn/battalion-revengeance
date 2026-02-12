@@ -62,7 +62,10 @@ ServerGameContext.prototype.mpSelectMap = function(mapID) {
     this.mapSettings.clear();
     this.mapSettings.mapID = mapID;
     this.mapSettings.maxPlayers = maxPlayers;
-    this.mapSettings.createSlots(teams);
+
+    for(const teamID of teams) {
+        this.mapSettings.createSlot(teamID);
+    }
 
     for(let i = 0; i < this.members.length; i++) {
         const member = this.members[i];
@@ -86,7 +89,6 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
             if(!this.isLeader(messengerID) || this.state !== ServerGameContext.STATE.NONE) {
                 return;
             }
-
 
             //Done in MP_CLIENT_SELECT_MAP!!!
             this.mpSelectMap("volcano");
