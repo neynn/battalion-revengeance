@@ -1,14 +1,19 @@
 export const MapSettings = function() {
     this.mapID = null;
-    this.colors = {};
-    this.allies = {};
     this.entities = [];
-
+    this.overrides = [];
     this.slots = [];
     this.maxPlayers = 0;
     this.players = 0;
     this.mode = MapSettings.MODE.PVP;
 }
+
+MapSettings.MISSING_OVERRIDE = {
+    "teamID": null,
+    "color": null,
+    "name": null,
+    "allies": []
+};
 
 MapSettings.MODE = {
     COOP: 0,
@@ -50,7 +55,7 @@ MapSettings.prototype.removePlayer = function(clientID) {
     }
 }
 
-MapSettings.prototype.getFreePlayerSlotIndex = function() {
+MapSettings.prototype.getFreeSlotIndex = function() {
     if(this.players >= this.maxPlayers) {
         return -1;
     }
@@ -70,8 +75,7 @@ MapSettings.prototype.clear = function() {
     this.slots.length = 0;
     this.entities.length = 0;
     this.players = 0;
-    this.allies = {};
-    this.colors = {};
+    this.overrides.length = 0;
 }
 
 MapSettings.prototype.getTeamID = function(clientID) {
@@ -98,6 +102,7 @@ MapSettings.prototype.addPlayer = function(index, clientID) {
 
     this.slots[index].clientID = clientID;
     this.slots[index].type = MapSettings.SLOT_TYPE.PLAYER;
+    this.slots[index].name = "Player " + index; //TODO: Add real name.
     this.players++;
 }
 
@@ -106,8 +111,16 @@ MapSettings.prototype.createSlots = function(teams) {
         this.slots.push({
             "clientID": null,
             "teamID": teams[i],
+            "type": MapSettings.SLOT_TYPE.CLOSED,
             "color": null,
-            "type": MapSettings.SLOT_TYPE.CLOSED
+            "name": null
+        });
+
+        this.overrides.push({
+            "teamID": teams[i],
+            "allies": [],
+            "color": null,
+            "name": null
         });
     }
 }
@@ -116,28 +129,48 @@ MapSettings.prototype.addEntity = function(entityID) {
     this.entities.push(entityID);
 }
 
-MapSettings.prototype.lockSlots = function() {
+MapSettings.prototype.getOverride = function(teamID) {
+    for(let i = 0; i < this.overrides.length; i++) {
+        if(this.overrides[i].teamID === teamID) {
+            return this.overrides[i];
+        }
+    }
+
+    return MapSettings.MISSING_OVERRIDE;
+}
+
+MapSettings.prototype.updateOverrides = function() {
     for(let i = 0; i < this.slots.length; i++) {
-        const { teamID, colorID } = this.slots[i];
+        const { colorID, name } = this.slots[i];
+        const override = this.overrides[i];
 
         if(colorID !== null) {
-            this.colors[teamID] = colorID;
+            override.color = colorID;
+        }
+
+        if(name !== null) {
+            override.name = name;
         }
     } 
+}
+
+MapSettings.prototype.fromJSON = function(json) {
+    const { mapID, entities, mode, overrides } = json;
+
+    this.mapID = mapID;
+    this.entities = entities;
+    this.mode = mode;
+    this.overrides = overrides;
+
 }
 
 MapSettings.prototype.toJSON = function() {
     return {
         "mapID": this.mapID,
-        "colors": this.colors,
-        "allies": this.allies,
         "entities": this.entities,
-        "mode": this.mode
+        "mode": this.mode,
+        "overrides": this.overrides
     }
-}
-
-MapSettings.prototype.setAllies = function(teamID, allies) {
-    this.allies[teamID] = allies;
 }
 
 MapSettings.prototype.selectColor = function(clientID, colorID) {

@@ -1,7 +1,7 @@
 import { BattalionMap } from "../map/battalionMap.js";
 import { spawnClientBuilding, spawnClientEntity, spawnServerBuilding, spawnServerEntity } from "./spawn.js";
 import { MapSettings } from "../map/settings.js";
-import { COMPONENT_TYPE, CURRENCY_TYPE, FACTION_TYPE, OBJECTIVE_TYPE } from "../enums.js";
+import { COMPONENT_TYPE, CURRENCY_TYPE, OBJECTIVE_TYPE } from "../enums.js";
 import { Mine } from "../entity/mine.js";
 import { DialogueComponent } from "../event/components/dialogue.js";
 import { ExplodeTileComponent } from "../event/components/explodeTile.js";
@@ -141,49 +141,80 @@ const ObjectiveFactory = {
 };
 
 const TeamFactory = {
-    createTeam: function(gameContext, teamID, config, allObjectives) {
+    createTeams: function(gameContext, teams, settings, allObjectives, onActorCreate) {
         const { typeRegistry, teamManager } = gameContext;
-        const { 
-            faction = null,
-            color = null,
-            objectives = []
-        } = config;
-        const team = teamManager.createTeam(teamID);
 
-        if(!team) {
-            console.log("Team could not be created!");
-            return;
-        }
+        for(const teamName in teams) {
+            const team = teamManager.createTeam(teamName);
 
-        if(faction) {
-            team.loadAsFaction(gameContext, faction);
-        }
-
-        if(color) {
-            team.setColor(gameContext, color);
-        }
-
-        if(!team.currency) {
-            team.currency = typeRegistry.getCurrencyType(CURRENCY_TYPE.NONE);
-        }
-
-        for(const objectiveID of objectives) {
-            const config = allObjectives[objectiveID];
-
-            if(config) {
-                const objective = ObjectiveFactory.createObjective(config);
-
-                team.addObjective(objective);
+            if(!team) {
+                continue;
             }
+
+            const teamConfig = teams[teamName];
+            const override = settings.getOverride(teamName);
+
+            const tFaction = teamConfig.faction ?? null;
+            const tObjectives = teamConfig.objectives ?? [];
+            const tColor = override.color ?? teamConfig.color ?? null;
+            const tName = override.name ?? null;
+
+            if(tFaction !== null) {
+                team.loadAsFaction(gameContext, tFaction);
+            }
+
+            if(tColor !== null) {
+                team.setColor(gameContext, tColor);
+            }
+
+            if(!team.currency) {
+                team.currency = typeRegistry.getCurrencyType(CURRENCY_TYPE.NONE);
+            }
+
+            if(tName !== null) {
+                team.setCustomName(tName);
+            }
+
+            for(const objectiveID of tObjectives) {
+                const config = allObjectives[objectiveID];
+
+                if(config) {
+                    const objective = ObjectiveFactory.createObjective(config);
+
+                    team.addObjective(objective);
+                }
+            }
+        }
+
+        for(const teamName in teams) {
+            const team = teamManager.getTeam(teamName);
+
+            if(!team) {
+                continue;
+            }
+
+            const teamConfig = teams[teamName];
+            const tAllies = teamConfig.allies ?? [];
+            const tCommander = teamConfig.commander ?? null;
+
+            for(const teamID of tAllies) {
+                const allyTeam = teamManager.getTeam(teamID);
+
+                if(allyTeam) {
+                    team.addAlly(teamID);
+                    allyTeam.addAlly(teamName);
+                }
+            }
+
+            onActorCreate(team, tCommander);
         }
     }
 };
 
 export const ClientMapLoader = {
-    mpClientCreateStaticMap: async function(gameContext, payload) {
+    mpClientCreateStaticMap: async function(gameContext, settings, client, isSpectator) {
         const { pathHandler, mapRegistry, world, language } = gameContext;
         const { mapManager } = world;
-        const { settings, client, isSpectator } = payload;
         const { mapID } = settings;
         const mapSource = mapRegistry.getMapPreview(mapID);
         const [file, translations] = await Promise.all([mapSource.promiseFile(pathHandler), mapSource.promiseTranslations(pathHandler)]);
@@ -274,41 +305,6 @@ export const ClientMapLoader = {
 
         return worldMap;
     },
-    applyTeamConfig: function(gameContext, team, config, settings, clientTeam, clientCamera) {
-        const { teamManager } = gameContext;
-        const { commander, allies = [] } = config;
-        const { colors } = settings;
-        const teamName = team.getID();
-        const colorID = colors[teamName];
-
-        if(colorID !== undefined) {
-            team.setColor(gameContext, colorID);
-        }
-
-        for(const teamID of allies) {
-            const allyTeam = teamManager.getTeam(teamID);
-
-            if(allyTeam) {
-                team.addAlly(teamID);
-                allyTeam.addAlly(teamName);
-            }
-        }
-
-        //Each client SHOULD have a team.
-        //If not, the client camera renders with no perspective.
-        if(clientTeam === teamName) {
-            ActorFactory.createPlayer(gameContext, commander, teamName, clientCamera);
-
-            clientCamera.addPerspective(teamName);
-
-            //Adds all allies as perspective. This allows the client to see allied stealth units.
-            for(let i = 0; i < team.allies.length; i++) {
-                clientCamera.addPerspective(team.allies[i]);
-            }
-        } else {
-            ActorFactory.createActor(gameContext, commander, teamName);
-        }
-    },
     loadMap: function(gameContext, worldMap, mapData, clientTeam, settings, allowedComponents, camera) {
         const { teamManager, dialogueHandler, client } = gameContext;
         const { musicPlayer } = client;
@@ -325,18 +321,25 @@ export const ClientMapLoader = {
             postlogue = [],
             defeat = []
         } = mapData;
-    
-        for(const teamName in teams) {
-            TeamFactory.createTeam(gameContext, teamName, teams[teamName], objectives);
-        }
 
-        for(const teamName in teams) {
-            const team = teamManager.getTeam(teamName);
+        TeamFactory.createTeams(gameContext, teams, settings, objectives, (team, commanderType) => {
+            const { id, allies } = team;
 
-            if(team) {
-                ClientMapLoader.applyTeamConfig(gameContext, team, teams[teamName], settings, clientTeam, camera);
+            //Each client SHOULD have a team.
+            //If not, the client camera renders with no perspective.
+            if(clientTeam === id) {
+                ActorFactory.createPlayer(gameContext, commanderType, id, camera);
+
+                camera.addPerspective(id);
+
+                //Adds all allies as perspective. This allows the client to see allied stealth units.
+                for(let i = 0; i < allies.length; i++) {
+                    camera.addPerspective(allies[i]);
+                }
+            } else {
+                ActorFactory.createActor(gameContext, commanderType, id);
             }
-        }
+        });
 
         switch(settings.mode) {
             case MapSettings.MODE.STORY: {
@@ -349,6 +352,8 @@ export const ClientMapLoader = {
             case MapSettings.MODE.PVP: {
                 const externalIDs = settings.entities;
 
+                //Only spawn entities if all have been set by the server.
+                //This ensures a linked id.
                 if(externalIDs.length === entities.length) {
                     for(let i = 0; i < entities.length; i++) {
                         spawnClientEntity(gameContext, entities[i], externalIDs[i]);
@@ -415,16 +420,10 @@ export const ServerMapLoader = {
             settings.addEntity(entityID);
         }
     },
-    applyTeamConfig: function(gameContext, team, config, settings) {
+    applyTeamConfig: function(gameContext, team, config) {
         const { teamManager } = gameContext;
         const { commander, allies = [] } = config;
-        const { colors } = settings;
         const teamName = team.getID();
-        const colorID = colors[teamName];
-
-        if(colorID !== undefined) {
-            team.setColor(gameContext, colorID);
-        }
 
         for(const teamID of allies) {
             const allyTeam = teamManager.getTeam(teamID);
@@ -447,17 +446,11 @@ export const ServerMapLoader = {
             buildings = []
         } = mapData;
 
-        for(const teamName in teams) {
-            TeamFactory.createTeam(gameContext, teamName, teams[teamName], objectives);
-        }
+        TeamFactory.createTeams(gameContext, teams, settings, objectives, (team, commanderType) => {
+            const { id } = team;
 
-        for(const teamName in teams) {
-            const team = teamManager.getTeam(teamName);
-
-            if(team) {
-                ServerMapLoader.applyTeamConfig(gameContext, team, teams[teamName], settings);
-            }
-        }
+            ActorFactory.createActor(gameContext, commanderType, id);
+        });
 
         ServerMapLoader.spawnEntities(gameContext, entities, settings);
 

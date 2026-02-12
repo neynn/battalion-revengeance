@@ -18,6 +18,7 @@ export const Team = function(id) {
     this.name = "MISSING_NAME_TEAM";
     this.desc = "MISSING_DESC_TEAM";
     this.stats = [];
+    this.flags = Team.FLAG.NONE;
     this.objectives = [
         new UnitSurviveObjective(),
         new LynchpinObjective()
@@ -27,6 +28,11 @@ export const Team = function(id) {
         this.stats[i] = 0;
     }
 }
+
+Team.FLAG = {
+    NONE: 0,
+    CUSTOM_NAME: 1 << 0
+};
 
 Team.OBJECTIVE = {
     UNIT_SURVIVE: 0,
@@ -38,6 +44,11 @@ Team.STATUS = {
     WINNER: 1,
     LOSER: 2
 };
+
+Team.prototype.setCustomName = function(name) {
+    this.name = name;
+    this.flags |= Team.FLAG.CUSTOM_NAME;
+}
 
 Team.prototype.addStatistic = function(statID, value) {
     if(statID < 0 || statID >= this.stats.length) {
@@ -121,6 +132,10 @@ Team.prototype.getDisplayDesc = function(gameContext) {
 }
 
 Team.prototype.getDisplayName = function(gameContext) {
+    if(this.flags & Team.FLAG.CUSTOM_NAME) {
+        return this.name;
+    }
+
     const { language } = gameContext;
 
     return language.getSystemTranslation(this.name);

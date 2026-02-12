@@ -46,7 +46,7 @@ ServerGameContext.prototype = Object.create(Room.prototype);
 ServerGameContext.prototype.constructor = ServerGameContext;
 
 ServerGameContext.prototype.onClientJoin = function(clientID) {
-    const index = this.mapSettings.getFreePlayerSlotIndex();
+    const index = this.mapSettings.getFreeSlotIndex();
 
     this.mapSettings.addPlayer(index, clientID);
 }
@@ -98,7 +98,7 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
 
             this.state = ServerGameContext.STATE.STARTING;
             this.mapSettings.selectColor(messengerID, SCHEMA_TYPE.CREAM);
-            this.mapSettings.lockSlots();
+            this.mapSettings.updateOverrides();
 
             ServerMapLoader.mpCreateMap(this, this.mapSettings)
             .then(() => {
