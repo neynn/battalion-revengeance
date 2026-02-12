@@ -18,7 +18,7 @@ PortraitHandler.prototype.getPortraitTexture = function(portraitID) {
     const textureID = this.textureMap[portraitID];
 
     if(textureID !== undefined) {
-        const texture = this.registry.getTextureByID(textureID);
+        const texture = this.registry.getTexture(textureID);
 
         if(texture !== null) {
             if(texture.state === Texture.STATE.EMPTY) {

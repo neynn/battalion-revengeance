@@ -12,7 +12,7 @@ UIManager.prototype.getIconTexture = function(iconID) {
         this.resources.loadTexture(textureID);
     }
 
-    return this.resources.getTextureByID(textureID);
+    return this.resources.getTexture(textureID);
 }
 
 UIManager.prototype.load = function(interfaceTypes, iconTypes) {

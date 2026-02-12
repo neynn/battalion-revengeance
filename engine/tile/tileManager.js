@@ -74,7 +74,7 @@ TileManager.prototype.createTileVisuals = function(resourceLoader, tileAtlases, 
             const frameCount = visual.getFrameCount();
 
             if(frameCount > 0 && textureID !== undefined) {
-                const textureObject = resourceLoader.getTextureByID(textureID);
+                const textureObject = resourceLoader.getTexture(textureID);
 
                 visual.setTexture(textureObject);
                 textureObject.addReference();

@@ -169,7 +169,8 @@ Team.prototype.createCustomSchema = function(colorMap) {
         "desc": "SCHEMA_DESC_CUSTOM"
     };
 
-    const schemaType = new SchemaType(this.id, config);
+    const schemaID = "#" + this.id;
+    const schemaType = new SchemaType(schemaID, config);
 
     this.schema = schemaType;
 

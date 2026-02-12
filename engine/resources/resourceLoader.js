@@ -43,13 +43,9 @@ ResourceLoader.prototype.createTextures = function(textures) {
     return this.textureRegistry.createAtlasTextures(textures);
 }
 
-ResourceLoader.prototype.getTextureByID = function(id) {
-    return this.textureRegistry.getTextureByID(id);
+ResourceLoader.prototype.getTexture = function(index) {
+    return this.textureRegistry.getTexture(index);
 }
-
-ResourceLoader.prototype.destroyTexture = function(id) {
-    this.textureRegistry.destroyTexture(id);
-}   
 
 ResourceLoader.prototype.addLoadResolver = function(textureID, onLoad) {
     const toResolve = this.toResolve.get(textureID);
@@ -80,7 +76,7 @@ ResourceLoader.prototype.resolveError = function(textureID) {
 }
 
 ResourceLoader.prototype.loadTexture = function(id) {
-    const texture = this.getTextureByID(id);
+    const texture = this.getTexture(id);
 
     if(texture && texture.state === Texture.STATE.EMPTY) {
         texture.requestBitmap()

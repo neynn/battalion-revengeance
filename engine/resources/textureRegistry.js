@@ -3,12 +3,12 @@ import { PathHandler } from "./pathHandler.js";
 import { Texture } from "./texture.js";
 
 export const TextureRegistry = function() {
-    this.nextID = 0;
     this.textures = [];
     this.copyTextures = new Map();
 }
 
 TextureRegistry.EMPTY_ID = -1;
+TextureRegistry.COPY_ID = -2;
 TextureRegistry.DEFAULT_TEXTURE_TYPE = ".png";
 TextureRegistry.EMPTY_ATLAS_TEXTURE = new AtlasTexture(TextureRegistry.EMPTY_ID, "");
 TextureRegistry.EMPTY_TEXTURE = new Texture(TextureRegistry.EMPTY_ID, "");
@@ -57,7 +57,7 @@ TextureRegistry.prototype.createCopyAtlasTexture = function(textureName, atlasTe
         return copyTexture;
     }
 
-    const newTexture = new AtlasTexture(TextureRegistry.EMPTY_ID, textureName);
+    const newTexture = new AtlasTexture(TextureRegistry.COPY_ID, textureName);
 
     newTexture.regions = atlasTexture.regions;
 
@@ -73,7 +73,7 @@ TextureRegistry.prototype.createCopyTexture = function(textureName) {
         return copyTexture;
     }
 
-    const newTexture = new Texture(TextureRegistry.EMPTY_ID, textureName);
+    const newTexture = new Texture(TextureRegistry.COPY_ID, textureName);
 
     this.copyTextures.set(textureName, newTexture);
 
@@ -87,7 +87,7 @@ TextureRegistry.prototype.createTextures = function(textures) {
         const { directory, source } = textures[textureName];
         const fileName = source ? source : `${textureName}${TextureRegistry.DEFAULT_TEXTURE_TYPE}`;
         const filePath = PathHandler.getPath(directory, fileName);
-        const textureID = this.nextID++;
+        const textureID = this.textures.length;
         const texture = new Texture(textureID, filePath);
 
         this.textures.push(texture);
@@ -105,7 +105,7 @@ TextureRegistry.prototype.createAtlasTextures = function(textures) {
         const { directory, source, autoRegions, regions } = textures[textureName];
         const fileName = source ? source : `${textureName}${TextureRegistry.DEFAULT_TEXTURE_TYPE}`;
         const filePath = PathHandler.getPath(directory, fileName);
-        const textureID = this.nextID++;
+        const textureID = this.textures.length
         const texture = new AtlasTexture(textureID, filePath);
 
         if(autoRegions) {
@@ -126,29 +126,13 @@ TextureRegistry.prototype.createAtlasTextures = function(textures) {
     return textureMap;
 }
 
-TextureRegistry.prototype.getTextureByID = function(id) {
-    if(id !== TextureRegistry.EMPTY_ID) {
-        for(let i = 0; i < this.textures.length; i++) {
-            if(this.textures[i].id === id) {
-                return this.textures[i];
-            }
-        }
+TextureRegistry.prototype.getTexture = function(index) {
+    if(index < 0 || index >= this.textures.length) {
+        return null;
     }
 
-    return null;
+    return this.textures[index];
 }
-
-TextureRegistry.prototype.destroyTexture = function(id) {
-    if(id !== TextureRegistry.EMPTY_ID) {
-        for(let i = 0; i < this.textures.length; i++) {
-            if(this.textures[i].id === id) {
-                this.textures[i] = this.textures[this.textures.length -1];
-                this.textures.pop();
-                break;
-            }
-        }
-    }
-}   
 
 TextureRegistry.prototype.clear = function() {
     for(let i = 0; i < this.textures.length; i++) {
