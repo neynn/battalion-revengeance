@@ -875,14 +875,18 @@
             "move": ["massive_tank_move_1", "massive_tank_move_2", "massive_tank_move_3"]
         },
         "sprites": {
-            "idle_right": "annihilator_tank_idle_right",
-            "idle_left": "annihilator_tank_idle_left",
-            "idle_down": "annihilator_tank_idle_down",
-            "idle_up": "annihilator_tank_idle_up",
-            "fire_right": "annihilator_tank_fire_right",
-            "fire_left": "annihilator_tank_fire_left",
-            "fire_down": "annihilator_tank_fire_down",
-            "fire_up": "annihilator_tank_fire_up"
+            "idle_right": "imper_move_right",
+            "idle_left": "imper_move_left",
+            "idle_down": "imper_move_down",
+            "idle_up": "imper_move_up",
+            "move_right": "imper_move_right",
+            "move_left": "imper_move_left",
+            "move_down": "imper_move_down",
+            "move_up": "imper_move_up",
+            "fire_right": "imper_fire_right",
+            "fire_left": "imper_fire_left",
+            "fire_down": "imper_fire_down",
+            "fire_up": "imper_fire_up"
         }
     },
     "ROLAND": {
@@ -899,14 +903,18 @@
             "move": ["massive_tank_move_1", "massive_tank_move_2", "massive_tank_move_3"]
         },
         "sprites": {
-            "idle_right": "annihilator_tank_idle_right",
-            "idle_left": "annihilator_tank_idle_left",
-            "idle_down": "annihilator_tank_idle_down",
-            "idle_up": "annihilator_tank_idle_up",
-            "fire_right": "annihilator_tank_fire_right",
-            "fire_left": "annihilator_tank_fire_left",
-            "fire_down": "annihilator_tank_fire_down",
-            "fire_up": "annihilator_tank_fire_up"
+            "idle_right": "imper_move_right",
+            "idle_left": "imper_move_left",
+            "idle_down": "imper_move_down",
+            "idle_up": "imper_move_up",
+            "move_right": "imper_move_right",
+            "move_left": "imper_move_left",
+            "move_down": "imper_move_down",
+            "move_up": "imper_move_up",
+            "fire_right": "imper_fire_right",
+            "fire_left": "imper_fire_left",
+            "fire_down": "imper_fire_down",
+            "fire_up": "imper_fire_up"
         }
     },
     "STEALTH_TANK": {

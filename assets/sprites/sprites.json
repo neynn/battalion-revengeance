@@ -1925,5 +1925,47 @@
         "pivot": {"x":40,"y":28},
         "frameTime": 0.1,
         "autoFrames": {"start": 57,"jump": 1,"repeat": 8}
+    },
+    "imper_move_up": {
+        "texture": "imper_move",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "imper_move_right": {
+        "texture": "imper_move",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 5,"jump": 1,"repeat": 4}
+    },
+    "imper_move_down": {
+        "texture": "imper_move",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 9,"jump": 1,"repeat": 4}
+    },
+    "imper_move_left": {
+        "texture": "imper_move",
+        "frameTime": 0.2,
+        "autoFrames": {"start": 13,"jump": 1,"repeat": 4}
+    },
+    "imper_fire_up": {
+        "texture": "imper_fire",
+        "shift": {"x":0,"y":-56},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 8}
+    },
+    "imper_fire_right": {
+        "texture": "imper_fire",
+        "frameTime": 0.1,
+        "autoFrames": {"start": 9,"jump": 1,"repeat": 8}
+    },
+    "imper_fire_down": {
+        "texture": "imper_fire",
+        "frameTime": 0.1,
+        "autoFrames": {"start": 17,"jump": 1,"repeat": 8}
+    },
+    "imper_fire_left": {
+        "texture": "imper_fire",
+        "shift": {"x":-56,"y":0},
+        "frameTime": 0.1,
+        "autoFrames": {"start": 25,"jump": 1,"repeat": 8}
     }
 }

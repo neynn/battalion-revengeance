@@ -2,5 +2,5 @@ repairAction -> start repair and finish repair on the next active turn. onHit ->
 
 TweenManager for effects.
 
-Model for Imperterritus, Roland, Eagle Striker, Destroyer
+Model for Eagle Striker, Destroyer
 Data for Destroyer
