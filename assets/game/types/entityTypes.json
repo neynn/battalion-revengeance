@@ -635,7 +635,7 @@
     },
     "BOLT_TANK": {
         "health": 75,
-        "damage": 25,
+        "damage": 30,
         "weaponType": "LIGHT",
         "armorType": "LIGHT",
         "movementRange": 6,

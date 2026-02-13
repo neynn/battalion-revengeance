@@ -386,8 +386,7 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
         tileCost = EntityType.MIN_MOVE_COST;
     }
 
-    //Ceil the value so that only fully covered tiles are reached.
-    return Math.ceil(tileCost);
+    return tileCost;
 }
 
 BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {

@@ -30,7 +30,7 @@ SpriteManager.prototype.load = function(textures, sprites) {
     
     for(const spriteID in sprites) {
         const spriteConfig = sprites[spriteID];
-        const { texture, shift, bounds, frameTime, spriteTime, frames, autoFrames } = spriteConfig;
+        const { texture, shift, pivot, bounds, frameTime, spriteTime, frames, autoFrames } = spriteConfig;
         const textureID = textureMap[texture];
 
         if(textureID === undefined || (!frames && !autoFrames)) {
@@ -56,7 +56,9 @@ SpriteManager.prototype.load = function(textures, sprites) {
                 spriteContainer.loadDefaultBounds();
             }
 
-            if(shift) {
+            if(pivot) {
+                spriteContainer.loadPivot(pivot);
+            } else if(shift) {
                 spriteContainer.loadShift(shift);
             }
 
