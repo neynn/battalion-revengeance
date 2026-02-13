@@ -1084,6 +1084,10 @@
         "name": "ENTITY_NAME_HUNTER_SUPPORT",
         "desc": "ENTITY_DESC_HUNTER_SUPPORT",
         "traits": ["SKYSWEEPER", "DEPTH_CHARGE", "TRACKING"],
+        "sounds": {
+            "move": "rudder_move",
+            "fire": "hunter_support_fire"
+        },
         "sprites": {
             "idle_right": "hunter_support_idle_right",
             "idle_left": "hunter_support_idle_left",
