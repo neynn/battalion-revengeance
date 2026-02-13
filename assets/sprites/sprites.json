@@ -1935,7 +1935,7 @@
     "imper_move_right": {
         "texture": "imper_move",
         "frameTime": 0.2,
-        "shift": {"x":0,"y":-7},
+        "anchor": {"x":28,"y":51},
         "autoFrames": {"start": 5,"jump": 1,"repeat": 4}
     },
     "imper_move_down": {

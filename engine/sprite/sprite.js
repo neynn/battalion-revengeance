@@ -14,8 +14,8 @@ export const Sprite = function(index, DEBUG_NAME) {
     this.currentFrame = 0;
     this.loopCount = 0;
     this.loopLimit = 0;
-    this.shiftX = 0;
-    this.shiftY = 0;
+    this.offsetX = 0;
+    this.offsetY = 0;
     this.flags = Sprite.FLAG.NONE;
 }
 
@@ -49,12 +49,12 @@ Sprite.prototype.onDraw = function(display, localX, localY) {
     let renderY = 0;
 
     if(isFlipped) {
-        renderX = Math.floor(this.shiftX - localX);
-        renderY = Math.floor(this.shiftY + localY);
+        renderX = Math.floor(this.offsetX - localX);
+        renderY = Math.floor(this.offsetY + localY);
         display.flip();
     } else {
-        renderX = Math.floor(this.shiftX + localX);
-        renderY = Math.floor(this.shiftY + localY);
+        renderX = Math.floor(this.offsetX + localX);
+        renderY = Math.floor(this.offsetY + localY);
         display.unflip();
     }
 
@@ -92,13 +92,13 @@ Sprite.prototype.onDebug = function(display, localX, localY) {
     let pivotX = 0;
 
     if(isFlipped) {
-        renderX = this.shiftX - localX;
-        renderY = this.shiftY + localY;
+        renderX = this.offsetX - localX;
+        renderY = this.offsetY + localY;
         pivotX = 0 - localX;
         display.flip();
     } else {
-        renderX = this.shiftX + localX;
-        renderY = this.shiftY + localY;
+        renderX = this.offsetX + localX;
+        renderY = this.offsetY + localY;
         pivotX = localX;
         display.unflip();
     }
@@ -126,8 +126,8 @@ Sprite.prototype.reset = function() {
     this.currentFrame = 0;
     this.loopCount = 0;
     this.loopLimit = 0;
-    this.shiftX = 0;
-    this.shiftY = 0;
+    this.offsetX = 0;
+    this.offsetY = 0;
     this.width = 0;
     this.height = 0;
     this.flags = Sprite.FLAG.NONE;
@@ -144,7 +144,7 @@ Sprite.prototype.setTexture = function(texture) {
 
 Sprite.prototype.init = function(container, lastCallTime, DEBUG_NAME) {
     if(this.container !== container) {
-        const { frameTime, frameCount, boundsW, boundsH, shiftX, shiftY } = container;
+        const { frameTime, frameCount, boundsW, boundsH, offsetX, offsetY } = container;
 
         this.container = container;
         this.lastCallTime = lastCallTime;
@@ -153,8 +153,8 @@ Sprite.prototype.init = function(container, lastCallTime, DEBUG_NAME) {
         this.floatFrame = 0;
         this.currentFrame = 0;
         this.loopCount = 0;
-        this.shiftX = shiftX;
-        this.shiftY = shiftY;
+        this.offsetX = offsetX;
+        this.offsetY = offsetY;
         this.width = boundsW;
         this.height = boundsH;
         this.DEBUG_NAME = DEBUG_NAME;
@@ -163,9 +163,9 @@ Sprite.prototype.init = function(container, lastCallTime, DEBUG_NAME) {
 
 Sprite.prototype.isVisibleStatic = function(positionX, positionY, viewportRight, viewportLeft, viewportBottom, viewportTop) {
     const isFlipped = (this.flags & Sprite.FLAG.FLIP) !== 0;
-    const adjustedX = isFlipped ? 0 - this.shiftX - this.width : this.shiftX;
+    const adjustedX = isFlipped ? 0 - this.offsetX - this.width : this.offsetX;
     const leftEdge = positionX + adjustedX;
-    const topEdge = positionY + this.shiftY;
+    const topEdge = positionY + this.offsetY;
     const rightEdge = leftEdge + this.width;
     const bottomEdge = topEdge + this.height;
     const isVisible = leftEdge < viewportRight && rightEdge > viewportLeft && topEdge < viewportBottom && bottomEdge > viewportTop;
@@ -175,9 +175,9 @@ Sprite.prototype.isVisibleStatic = function(positionX, positionY, viewportRight,
 
 Sprite.prototype.isVisible = function(viewportRight, viewportLeft, viewportBottom, viewportTop) {
     const isFlipped = (this.flags & Sprite.FLAG.FLIP) !== 0;
-    const adjustedX = isFlipped ? 0 - this.shiftX - this.width : this.shiftX;
+    const adjustedX = isFlipped ? 0 - this.offsetX - this.width : this.offsetX;
     const leftEdge = this.positionX + adjustedX;
-    const topEdge = this.positionY + this.shiftY;
+    const topEdge = this.positionY + this.offsetY;
     const rightEdge = leftEdge + this.width;
     const bottomEdge = topEdge + this.height;
     const isVisible = leftEdge < viewportRight && rightEdge > viewportLeft && topEdge < viewportBottom && bottomEdge > viewportTop;
@@ -187,9 +187,9 @@ Sprite.prototype.isVisible = function(viewportRight, viewportLeft, viewportBotto
 
 Sprite.prototype.isCollidingStatic = function(positionX, positionY, x, y, w, h) {
     const isFlipped = (this.flags & Sprite.FLAG.FLIP) !== 0;
-    const adjustedX = isFlipped ? -this.shiftX - this.width : this.shiftX;
+    const adjustedX = isFlipped ? -this.offsetX - this.width : this.offsetX;
     const isColliding = isRectangleRectangleIntersect(
-        positionX + adjustedX, positionY + this.shiftY, this.width, this.height,
+        positionX + adjustedX, positionY + this.offsetY, this.width, this.height,
         x, y, w, h
     );
 
@@ -198,9 +198,9 @@ Sprite.prototype.isCollidingStatic = function(positionX, positionY, x, y, w, h) 
 
 Sprite.prototype.isColliding = function(x, y, w, h) {
     const isFlipped = (this.flags & Sprite.FLAG.FLIP) !== 0;
-    const adjustedX = isFlipped ? -this.shiftX - this.width : this.shiftX;
+    const adjustedX = isFlipped ? -this.offsetX - this.width : this.offsetX;
     const isColliding = isRectangleRectangleIntersect(
-        this.positionX + adjustedX, this.positionY + this.shiftY, this.width, this.height,
+        this.positionX + adjustedX, this.positionY + this.offsetY, this.width, this.height,
         x, y, w, h
     );
 

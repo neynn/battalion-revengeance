@@ -872,7 +872,8 @@
         "desc": "ENTITY_DESC_IMPERTERRITUS",
         "traits": ["CEMENTED_STEEL_ARMOR", "TERRIFYING"],
         "sounds": {
-            "move": ["massive_tank_move_1", "massive_tank_move_2", "massive_tank_move_3"]
+            "move": ["massive_tank_move_1", "massive_tank_move_2", "massive_tank_move_3"],
+            "fire": "imperterritus_fire"
         },
         "sprites": {
             "idle_right": "imper_move_right",
@@ -900,7 +901,8 @@
         "desc": "ENTITY_DESC_ROLAND",
         "traits": ["CEMENTED_STEEL_ARMOR", "TERRIFYING", "SCHWERPUNKT", "BEWEGUNGSKRIEG"],
         "sounds": {
-            "move": ["massive_tank_move_1", "massive_tank_move_2", "massive_tank_move_3"]
+            "move": ["massive_tank_move_1", "massive_tank_move_2", "massive_tank_move_3"],
+            "fire": "imperterritus_fire"
         },
         "sprites": {
             "idle_right": "imper_move_right",
@@ -953,7 +955,8 @@
         "desc": "ENTITY_DESC_ANNIHILATOR_TANK",
         "traits": [],
         "sounds": {
-            "move": ["massive_tank_move_1", "massive_tank_move_2", "massive_tank_move_3"]
+            "move": ["massive_tank_move_1", "massive_tank_move_2", "massive_tank_move_3"],
+            "fire": "imperterritus_fire"
         },
         "sprites": {
             "idle_right": "annihilator_tank_idle_right",

@@ -19,6 +19,7 @@
     "infantry_move": { "directory": ["assets", "sounds", "units", "move"], "source": "infantry_move.mp3", "allowStacking": true, "volume": 0.6 },
     "bomber_move": { "directory": ["assets", "sounds", "units", "move"], "source": "bomber_move.mp3", "allowStacking": true, "volume": 0.6 },
 
+    "imperterritus_fire": { "directory": ["assets", "sounds", "units", "fire"], "source": "imperterritus_fire.mp3", "allowStacking": true, "volume": 0.6 },
     "tank_fire": { "directory": ["assets", "sounds", "units", "fire"], "source": "tank_fire.mp3", "allowStacking": true, "volume": 0.6 },
     "turret_fire": { "directory": ["assets", "sounds", "units", "fire"], "source": "turret_fire.mp3", "allowStacking": true, "volume": 0.6 },
     "raptor_fire": { "directory": ["assets", "sounds", "units", "fire"], "source": "raptor_fire.mp3", "allowStacking": true, "volume": 0.6 },

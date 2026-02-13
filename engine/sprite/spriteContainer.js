@@ -6,8 +6,8 @@ export const SpriteContainer = function(id, frames) {
     this.frameTime = 1;
     this.boundsW = 0;
     this.boundsH = 0;
-    this.shiftX = 0;
-    this.shiftY = 0;
+    this.offsetX = 0;
+    this.offsetY = 0;
 }
 
 SpriteContainer.prototype.setSpriteTime = function(spriteTime) {
@@ -32,16 +32,16 @@ SpriteContainer.prototype.loadBounds = function(bounds) {
     this.boundsH = h ?? this.frames[0].h;
 }
 
-SpriteContainer.prototype.loadPivot = function(pivot) {
-    const { x = 0, y = 0 } = pivot;
-    
-    this.shiftX = Math.floor((this.boundsW / 2)) - x;
-    this.shiftY = Math.floor((this.boundsH / 2)) - y;
+SpriteContainer.prototype.loadAnchor = function(anchor, tileWidth, tileHeight) {
+    const { x = 0, y = 0 } = anchor;
+
+    this.offsetX = tileWidth / 2 - x;
+    this.offsetY = tileHeight * 0.75 - y;
 }
 
 SpriteContainer.prototype.loadShift = function(shift) {
     const { x = 0, y = 0 } = shift;
 
-    this.shiftX = x;
-    this.shiftY = y;
+    this.offsetX = x;
+    this.offsetY = y;
 }
