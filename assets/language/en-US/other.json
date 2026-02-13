@@ -1,0 +1,100 @@
+{
+    "ARMOR_NAME_NONE": "No Armor",
+    "ARMOR_DESC_NONE": "Receives 50% more damage from all weapons.",
+
+    "ARMOR_NAME_LIGHT": "Light Armor",
+    "ARMOR_DESC_LIGHT": "Receives 50% less damage from heavy weapons and 50% more from light weapons.",
+
+    "ARMOR_NAME_MEDIUM": "Medium Armor",
+    "ARMOR_DESC_MEDIUM": "Receives neutral damage from all weapons.",
+
+    "ARMOR_NAME_HEAVY": "Heavy Armor",
+    "ARMOR_DESC_HEAVY": "Receives 50% less damage from light weapons and 50% more from heavy weapons.",
+
+    "ARMOR_NAME_OMEGA": "Omega Armor",
+    "ARMOR_DESC_OMEGA": "Receives 50% less damage from all weapons.",
+
+    "WEAPON_NAME_NONE": "No Weapon",
+    "WEAPON_DESC_NONE": "This unit cannot attack.",
+
+    "WEAPON_NAME_LIGHT": "Light Weapon",
+    "WEAPON_DESC_LIGHT": "Deals 50% less damage to heavy armors and 50% more to light armors.",
+
+    "WEAPON_NAME_MEDIUM": "Medium Weapon",
+    "WEAPON_DESC_MEDIUM": "Deals neutral damage to all armors.",
+
+    "WEAPON_NAME_HEAVY": "Heavy Weapon",
+    "WEAPON_DESC_HEAVY": "Deals 50% less damage to light armors and 50% more to heavy armors.",
+
+    "CLIMATE_NAME_NONE": "None",
+    "CLIMATE_DESC_NONE": "This is a bug and should be reported!",
+
+    "CLIMATE_NAME_TEMPERATE": "Temperate",
+    "CLIMATE_DESC_TEMPERATE": "Temperate climate, mild precipitations, nothing abnormal",
+
+    "CLIMATE_NAME_ARID": "Arid",
+    "CLIMATE_DESC_ARID": "Hot and hostile, troops stationed here deal -25% damage",
+
+    "CLIMATE_NAME_BOREAL": "Boreal",
+    "CLIMATE_DESC_BOREAL": "Cold and hostile, troops stationed here deal -25% damage",
+
+    "CLIMATE_NAME_BARREN": "Barren",
+    "CLIMATE_DESC_BARREN": "Sweltering and unbearable, troops stationed here deal -50% damage",
+
+    "CLIMATE_NAME_ARCTIC": "Arctic",
+    "CLIMATE_DESC_ARCTIC": "Frigid and unbearable, troops stationed here deal -50% damage",
+
+    "CLIMATE_NAME_LUNAR": "Lunar",
+    "CLIMATE_DESC_LUNAR": "Uninhabitable, troops stationed here deal -75% damage",
+
+    "CLIMATE_NAME_MARTIAN": "Martian",
+    "CLIMATE_DESC_MARTIAN": "Uninhabitable, troops stationed here deal -75% damage",
+
+    "CLIMATE_NAME_HELLISH": "Hellish",
+    "CLIMATE_DESC_HELLISH": "Uninhabitable, troops stationed here deal -90% damage",
+
+    "CURRENCY_NAME_NONE": "None",
+    "CURRENCY_DESC_NONE": "This is a bug and should be reported!",
+
+    "CURRENCY_NAME_ZLOT": "Zlot",
+    "CURRENCY_DESC_ZLOT": "",
+
+    "CURRENCY_NAME_KARGIL": "Kargil",
+    "CURRENCY_DESC_KARGIL": "",
+
+    "CURRENCY_NAME_KRONE": "Krone",
+    "CURRENCY_DESC_KRONE": "",
+
+    "CURRENCY_NAME_PULA": "Pula",
+    "CURRENCY_DESC_PULA": "",
+
+    "CURRENCY_NAME_RIAL": "Rial",
+    "CURRENCY_DESC_RIAL": "",
+
+    "MOVEMENT_NAME_STATIONARY": "Stationary",
+    "MOVEMENT_DESC_STATIONARY": "This unit cannot move",
+
+    "MOVEMENT_NAME_FOOT": "Infantry",
+    "MOVEMENT_DESC_FOOT": "Very versatile, but generally slow",
+
+    "MOVEMENT_NAME_WHEELED": "Wheeled",
+    "MOVEMENT_DESC_WHEELED": "Very fast but does not do well in rugged terrain",
+
+    "MOVEMENT_NAME_TRACKED": "Tracked",
+    "MOVEMENT_DESC_TRACKED": "A good balance of speed and versatility",
+
+    "MOVEMENT_NAME_RAIL": "Rail",
+    "MOVEMENT_DESC_RAIL": "This unit is restricted to railways",
+
+    "MOVEMENT_NAME_FLIGHT": "Flight",
+    "MOVEMENT_DESC_FLIGHT": "Very fast and very versatile",
+
+    "MOVEMENT_NAME_RUDDER": "Rudder",
+    "MOVEMENT_DESC_RUDDER": "This unit is restricted to water",
+
+    "MOVEMENT_NAME_HEAVY_RUDDER": "Heavy Rudder",
+    "MOVEMENT_DESC_HEAVY_RUDDER": "This unit is restricted to the open sea",
+
+    "MOVEMENT_NAME_AMPHIBIOUS": "Amphibious",
+    "MOVEMENT_DESC_AMPHIBIOUS": "This unit can fight both on land and in shallow bodies of water"
+}

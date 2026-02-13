@@ -766,7 +766,7 @@
         "damage": 50,
         "weaponType": "HEAVY",
         "armorType": "HEAVY",
-        "movementRange": 40,
+        "movementRange": 4,
         "movementType": "TRACKED",
         "name": "ENTITY_NAME_GORLITZ_TANK",
         "desc": "ENTITY_DESC_GORLITZ_TANK",
@@ -820,7 +820,7 @@
         "movementType": "TRACKED",
         "name": "ENTITY_NAME_ENTWICKLUNG",
         "desc": "ENTITY_DESC_ENTWICKLUNG",
-        "traits": ["SCHWERPUNKT", "BEWEGUNGSKRIEG", "TERRIFYING", "OVERHEAT"],
+        "traits": ["SCHWERPUNKT", "BEWEGUNGSKRIEG", "TERRIFYING"],
         "sounds": {
             "move": "entwicklung_move",
             "fire": "entwicklung_fire"
@@ -838,14 +838,14 @@
     },
     "ENTWICKLUNG_MK2": {
         "health": 180,
-        "damage": 70,
+        "damage": 80,
         "weaponType": "MEDIUM",
         "armorType": "HEAVY",
         "movementRange": 7,
         "movementType": "TRACKED",
         "name": "ENTITY_NAME_ENTWICKLUNG_MK2",
         "desc": "ENTITY_DESC_ENTWICKLUNG_MK2",
-        "traits": ["SCHWERPUNKT", "BEWEGUNGSKRIEG", "TERRIFYING"],
+        "traits": ["SCHWERPUNKT", "BEWEGUNGSKRIEG", "TERRIFYING", "OVERHEAT"],
         "sounds": {
             "move": "entwicklung_move",
             "fire": "entwicklung_fire"
@@ -861,9 +861,57 @@
             "fire_up": "entwicklung_fire_up"
         }
     },
+    "IMPERTERRITUS": {
+        "health": 175,
+        "damage": 55,
+        "weaponType": "HEAVY",
+        "armorType": "HEAVY",
+        "movementRange": 3,
+        "movementType": "TRACKED",
+        "name": "ENTITY_NAME_IMPERTERRITUS",
+        "desc": "ENTITY_DESC_IMPERTERRITUS",
+        "traits": ["CEMENTED_STEEL_ARMOR", "TERRIFYING"],
+        "sounds": {
+            "move": ["massive_tank_move_1", "massive_tank_move_2", "massive_tank_move_3"]
+        },
+        "sprites": {
+            "idle_right": "annihilator_tank_idle_right",
+            "idle_left": "annihilator_tank_idle_left",
+            "idle_down": "annihilator_tank_idle_down",
+            "idle_up": "annihilator_tank_idle_up",
+            "fire_right": "annihilator_tank_fire_right",
+            "fire_left": "annihilator_tank_fire_left",
+            "fire_down": "annihilator_tank_fire_down",
+            "fire_up": "annihilator_tank_fire_up"
+        }
+    },
+    "ROLAND": {
+        "health": 200,
+        "damage": 70,
+        "weaponType": "HEAVY",
+        "armorType": "HEAVY",
+        "movementRange": 5,
+        "movementType": "TRACKED",
+        "name": "ENTITY_NAME_ROLAND",
+        "desc": "ENTITY_DESC_ROLAND",
+        "traits": ["CEMENTED_STEEL_ARMOR", "TERRIFYING", "SCHWERPUNKT", "BEWEGUNGSKRIEG"],
+        "sounds": {
+            "move": ["massive_tank_move_1", "massive_tank_move_2", "massive_tank_move_3"]
+        },
+        "sprites": {
+            "idle_right": "annihilator_tank_idle_right",
+            "idle_left": "annihilator_tank_idle_left",
+            "idle_down": "annihilator_tank_idle_down",
+            "idle_up": "annihilator_tank_idle_up",
+            "fire_right": "annihilator_tank_fire_right",
+            "fire_left": "annihilator_tank_fire_left",
+            "fire_down": "annihilator_tank_fire_down",
+            "fire_up": "annihilator_tank_fire_up"
+        }
+    },
     "STEALTH_TANK": {
         "health": 70,
-        "damage":35,
+        "damage": 35,
         "weaponType": "MEDIUM",
         "armorType": "MEDIUM",
         "movementRange": 5,
@@ -1330,7 +1378,7 @@
         "movementType": "FLIGHT",
         "name": "ENTITY_NAME_STIHIE",
         "desc": "ENTITY_DESC_STIHIE",
-        "traits": ["SKYSWEEPER", "STEALTH"],
+        "traits": ["SKYSWEEPER", "HIGH_ALTITUDE", "STEALTH"],
         "sounds": {
             "move": "zeus_move",
             "fire": "zeus_fire"

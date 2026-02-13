@@ -5,7 +5,8 @@
             "system.json",
             "traits.json",
             "entities.json",
-            "factions.json"
+            "factions.json",
+            "other.json"
         ]
     }
 }

@@ -1,4 +1,7 @@
 {
+    "ENTITY_NAME_CONSTRUCTION": "Construction",
+    "ENTITY_DESC_CONSTRUCTION": "Ad-hoc fortifications are being erected here.",
+
     "ENTITY_NAME_LIGHT_INFANTRY": "Light Infantry",
     "ENTITY_DESC_LIGHT_INFANTRY": "Lightly equipped and almost untrained, these men aren't the best for combat, but they're easy to pump out.",
  
@@ -51,7 +54,7 @@
     "ENTITY_DESC_PROFESSIONAL_TERRORIST": "Kaboom.",
 
     "ENTITY_NAME_INFANTRY_TRUCK": "Motorized Infantry",
-    "ENTITY_DESC_INFANTRY_TRUCK": "",
+    "ENTITY_DESC_INFANTRY_TRUCK": "Much faster than normal infantrymen, they are good if you want to occupy a lot of structures quickly.",
 
     "ENTITY_NAME_MORTAR_TRUCK": "Mortar Truck",
     "ENTITY_DESC_MORTAR_TRUCK": "",
@@ -60,46 +63,46 @@
     "ENTITY_DESC_ROCKET_TRUCK": "",
 
     "ENTITY_NAME_SUPPLY_TRUCK": "Supply Truck",
-    "ENTITY_DESC_SUPPLY_TRUCK": "",
+    "ENTITY_DESC_SUPPLY_TRUCK": "As if anyone had a doubt logistics win wars, this little fella is deceptively terrifying in the hands of a competent commander",
 
     "ENTITY_NAME_JAMMER_TRUCK": "Jammer Truck",
     "ENTITY_DESC_JAMMER_TRUCK": "",
 
     "ENTITY_NAME_ASEKARA_TANK": "Asekara Tank",
-    "ENTITY_DESC_ASEKARA_TANK": "",
+    "ENTITY_DESC_ASEKARA_TANK": "Standardized, easy to produce and easy to deploy, the Asekara Tank is the most cost-effective armored vehicle.",
 
     "ENTITY_NAME_CRAB_TANK": "Crab Tank",
-    "ENTITY_DESC_CRAB_TANK": "",
+    "ENTITY_DESC_CRAB_TANK": "The Crab cannot be stopped even by water. It can just as well fight in both environments.",
 
     "ENTITY_NAME_COCKROACH": "Cockroach Tank",
-    "ENTITY_DESC_COCKROACH": "",
+    "ENTITY_DESC_COCKROACH": "An annoying little bugger that can be mass-produced to piss off the enemy for good",
 
     "ENTITY_NAME_BOLT_TANK": "Bolt Tank",
-    "ENTITY_DESC_BOLT_TANK": "Extremely effective at taking out enemy infantry.",
+    "ENTITY_DESC_BOLT_TANK": "Extremely fast, fragile and ferocious against enemy infantry.",
 
     "ENTITY_NAME_FLAK_TANK": "Flak Tank",
-    "ENTITY_DESC_FLAK_TANK": "",
+    "ENTITY_DESC_FLAK_TANK": "Adapted to prevent enemy air supremacy, the Flak Tank shreds through aircraft.",
 
     "ENTITY_NAME_TANK_HUNTER": "Tank Hunter",
-    "ENTITY_DESC_TANK_HUNTER": "",
+    "ENTITY_DESC_TANK_HUNTER": "Cleverly designed to destroy enemy tanks effectively, and be hard to destroy in return.",
 
     "ENTITY_NAME_AMPAC": "AMPAC",
-    "ENTITY_DESC_AMPAC": "",
+    "ENTITY_DESC_AMPAC": "Incapable of making big tanks, Elam has considered to specialize them for action in rugged terrain.",
 
     "ENTITY_NAME_AYIN": "AYIN",
-    "ENTITY_DESC_AYIN": "",
+    "ENTITY_DESC_AYIN": "Forbidden technology; it shoots a neutron flux frontwards, irradiating scores of enemies. Its use will likely only be lawful for a decade or so.",
 
     "ENTITY_NAME_GORLITZ_TANK": "Gorlitz Tank",
-    "ENTITY_DESC_GORLITZ_TANK": "",
+    "ENTITY_DESC_GORLITZ_TANK": "The Gorlitz Tank is powerful but plagued with inadequacies.",
 
     "ENTITY_NAME_KOSCHEI": "Koschei Tank",
-    "ENTITY_DESC_KOSCHEI": "",
+    "ENTITY_DESC_KOSCHEI": "The pinnacle of Kargit engineering and Blitzkrieg doctrine, a wehrb's wet dream.",
 
     "ENTITY_NAME_ENTWICKLUNG": "Entwicklung",
-    "ENTITY_DESC_ENTWICKLUNG": "",
+    "ENTITY_DESC_ENTWICKLUNG": "Improving upon the Koschei's advantages and compensating its shortcomings; the ultimate main battle tank.",
 
     "ENTITY_NAME_ENTWICKLUNG_MK2": "Entwicklung MK2",
-    "ENTITY_DESC_ENTWICKLUNG_MK2": "",
+    "ENTITY_DESC_ENTWICKLUNG_MK2": "Forbidden prototype. This tank deals massive damage but overheats easily.",
 
     "ENTITY_NAME_STEALTH_TANK": "Stealth Tank",
     "ENTITY_DESC_STEALTH_TANK": "",
@@ -107,75 +110,84 @@
     "ENTITY_NAME_ANNIHILATOR_TANK": "Annihilator Tank",
     "ENTITY_DESC_ANNIHILATOR_TANK": "",
 
+    "ENTITY_NAME_IMPERTERRITUS": "Imperterritus Tank",
+    "ENTITY_DESC_IMPERTERRITUS": "The Imperterritus is as terrifying to face as it is invulnerable to most weapons.",
+
+    "ENTITY_NAME_ROLAND": "GBC Roland Mk3",
+    "ENTITY_DESC_ROLAND": "Combining Imperterritus's toughness and Koschei's speed to produce the ultimate battle tank.",
+
     "ENTITY_NAME_BERTHA_BATTERY": "Big Bertha Battery",
-    "ENTITY_DESC_BERTHA_BATTERY": "",
+    "ENTITY_DESC_BERTHA_BATTERY": "Yepee-ka-yeh, motherfucker!",
 
     "ENTITY_NAME_BRIMSTONE_BATTERY": "Brimstone Battery",
-    "ENTITY_DESC_BRIMSTONE_BATTERY": "",
+    "ENTITY_DESC_BRIMSTONE_BATTERY": "Cutting edge thermobaric artillery capable of unleashing literal fire and brimstone upon the enemy.",
 
     "ENTITY_NAME_WARMACHINE": "Warmachine",
-    "ENTITY_DESC_WARMACHINE": "",
+    "ENTITY_DESC_WARMACHINE": "A marvel of engineering, can fully produce other units on the go.",
 
     "ENTITY_NAME_HUNTER_SUPPORT": "Hunter Support",
-    "ENTITY_DESC_HUNTER_SUPPORT": "",
+    "ENTITY_DESC_HUNTER_SUPPORT": "The true jack-of-all-trades. It can do about anything.",
 
     "ENTITY_NAME_INTREPID": "Intrepid",
-    "ENTITY_DESC_INTREPID": "",
+    "ENTITY_DESC_INTREPID": "Capable of capturing buildings, like shipyards and oil rigs. Mmmmm, oil...",
 
     "ENTITY_NAME_U_BOAT": "Submarine",
-    "ENTITY_DESC_U_BOAT": "",
+    "ENTITY_DESC_U_BOAT": "Contrary to popular belief, it does NOT deal extra damage to big ships.",
 
     "ENTITY_NAME_LEVIATHAN_BARGE": "Leviathan Barge",
-    "ENTITY_DESC_LEVIATHAN_BARGE": "",
+    "ENTITY_DESC_LEVIATHAN_BARGE": "A barge designed with only one purpose in mind: To transport units.",
 
     "ENTITY_NAME_CORVETTE_FIGHTER": "Corvette Fighter",
-    "ENTITY_DESC_CORVETTE_FIGHTER": "",
+    "ENTITY_DESC_CORVETTE_FIGHTER": "Big guns, strong armor, but still reasonably affordable. Great for tormenting land units.",
 
     "ENTITY_NAME_BATTLESHIP": "Battleship",
-    "ENTITY_DESC_BATTLESHIP": "",
+    "ENTITY_DESC_BATTLESHIP": "Bigger guns, bigger armor, bigger hull, bigger range. Bigger everything. MORE DAKKA! BIGGER DAKKA!",
 
     "ENTITY_NAME_SUPER_BATTLESHIP": "Super Battleship",
-    "ENTITY_DESC_SUPER_BATTLESHIP": "",
+    "ENTITY_DESC_SUPER_BATTLESHIP": "Over 50.000 tons of steel for the ultimate dakka.",
 
     "ENTITY_NAME_RAPTOR_FIGHTER": "Raptor Fighter",
-    "ENTITY_DESC_RAPTOR_FIGHTER": "",
+    "ENTITY_DESC_RAPTOR_FIGHTER": "Fast and furious, specialized in hunting other enemy planes.",
 
     "ENTITY_NAME_VULTURE_DRONE": "Vulture Drone",
     "ENTITY_DESC_VULTURE_DRONE": "",
 
     "ENTITY_NAME_EAGLE_STRIKER": "Eagle Striker",
-    "ENTITY_DESC_EAGLE_STRIKER": "",
+    "ENTITY_DESC_EAGLE_STRIKER": "Made with the specific purpose of trolling land units.",
 
     "ENTITY_NAME_BLIMP": "Airship",
     "ENTITY_DESC_BLIMP": "",
 
     "ENTITY_NAME_CONDOR_BOMBER": "Condor Bomber",
-    "ENTITY_DESC_CONDOR_BOMBER": "",
+    "ENTITY_DESC_CONDOR_BOMBER": "For when you feel that the Eagle Striker doesn't carry enough dakka.",
 
-    "ENTITY_NAME_SOLOVEY_BOMBER": "Solovey Bomber",
-    "ENTITY_DESC_SOLOVEY_BOMBER": "",
+    "ENTITY_NAME_SOLOVEY_BOMBER": "Solovey Superbomber",
+    "ENTITY_DESC_SOLOVEY_BOMBER": "A heavy, sluggish bomber with massive payload. Devastating against infrastructure and fortifications.",
 
-    "ENTITY_NAME_ZEUS": "Zeus",
-    "ENTITY_DESC_ZEUS": "",
+    "ENTITY_NAME_ZEUS": "Zeus Stormlord",
+    "ENTITY_DESC_ZEUS": "Avant-garde technology, achieves much superior dogfighting and bombing results than any other plane.",
 
-    "ENTITY_NAME_STIHIE": "Stihie",
-    "ENTITY_DESC_STIHIE": "",
+    "ENTITY_NAME_STIHIE": "AVN1 Stihie",
+    "ENTITY_DESC_STIHIE": "Innovative plane design that maintains a very low radar signature while gunning down any enemy aircraft with advanced weaponry.",
 
     "ENTITY_NAME_ALEPH": "Aleph",
-    "ENTITY_DESC_ALEPH": "Judgement has come for you.",
+    "ENTITY_DESC_ALEPH": "The supreme weapon; as destructive as it is terrifying. Will forever change the face of warfare.",
 
     "ENTITY_NAME_ALBATROSS_TRANSPORT": "Albatross Transport",
-    "ENTITY_DESC_ALBATROSS_TRANSPORT": "",
+    "ENTITY_DESC_ALBATROSS_TRANSPORT": "NOT IMPLEMENTED",
+
+    "ENTITY_NAME_STORK_TRANSPORT": "Albatross Transport",
+    "ENTITY_DESC_STORK_TRANSPORT": "Actually remarkable piece of engineering, capable of transporting some units via air.",
 
     "ENTITY_NAME_TURRET": "Turret",
-    "ENTITY_DESC_TURRET": "",
+    "ENTITY_DESC_TURRET": "Capable of striking at land, sea and air units, the Turret is by far the most versatile fortification class.",
 
     "ENTITY_NAME_BLOCKADE": "Blockade",
-    "ENTITY_DESC_BLOCKADE": "",
+    "ENTITY_DESC_BLOCKADE": "Cheap and easy to erect static fortifications capable of delaying enemy advance for a short while.",
 
     "ENTITY_NAME_MEME_WTC": "World Trade Center",
-    "ENTITY_DESC_MEME_WTC": "",
+    "ENTITY_DESC_MEME_WTC": "ENTITY_DESC_MEME_WTC",
 
     "ENTITY_NAME_MEME_BUREAUCRAT": "Bureaucrat",
-    "ENTITY_DESC_MEME_BUREAUCRAT": ""
+    "ENTITY_DESC_MEME_BUREAUCRAT": "This specimen of fucking idiot shithead subhuman animal bitch goes to work at 10:00AM, scratches his ass until 12:00AM then leaves at 14:00AM. He will send you on an endless chase for approvals, signatures and requests, all the while acting so superior. Wtf is wrong with you, you dumb bitch? Don't you realize you can easily be replaced by a monkey with a typewritter? I yearn for the day when you are replaced by robots, and if that day does not come then all of humanity must join together and genocide all bureaucrats."
 }

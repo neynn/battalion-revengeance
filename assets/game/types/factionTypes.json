@@ -4,7 +4,6 @@
     "TRANSKAL": { "name": "FACTION_NAME_TRANSKAL", "desc": "FACTION_DESC_TRANSKAL", "currency": "KRONE", "color": "GRAY" },
     "POLASIE": { "name": "FACTION_NAME_POLASIE", "desc": "FACTION_DESC_POLASIE", "currency": "PULA", "color": "DARK_BLUE" },
     "ELAM": { "name": "FACTION_NAME_ELAM", "desc": "FACTION_DESC_ELAM", "currency": "RIAL", "color": "LIME" },
-
     "RED": { "name": "FACTION_NAME_RED", "desc": "FACTION_DESC_RED", "color": "RED" },
     "BLUE": { "name": "FACTION_NAME_BLUE", "desc": "FACTION_DESC_BLUE", "color": "BLUE" },
     "GREEN": { "name": "FACTION_NAME_GREEN", "desc": "FACTION_DESC_GREEN", "color": "GREEN" },
@@ -22,7 +21,6 @@
     "GRAY": { "name": "FACTION_NAME_GRAY", "desc": "FACTION_DESC_GRAY", "color": "GRAY" },
     "CREAM": { "name": "FACTION_NAME_CREAM", "desc": "FACTION_DESC_CREAM", "color": "CREAM" },
     "LIME": { "name": "FACTION_NAME_LIME", "desc": "FACTION_DESC_LIME", "color": "LIME" },
-
     "KANYE": { "name": "FACTION_NAME_KANYE", "desc": "FACTION_DESC_KANYE", "color": "BRONZE" },
     "NYPD": { "name": "FACTION_NAME_NYPD", "desc": "FACTION_DESC_NYPD", "color": "DARK_BLUE" }
 }

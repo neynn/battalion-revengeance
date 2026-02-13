@@ -1,3 +1,6 @@
 repairAction -> start repair and finish repair on the next active turn. onHit -> remove IS_REPAIRING flag.
 
 TweenManager for effects.
+
+Model for Imperterritus, Roland, Eagle Striker, Destroyer
+Data for Destroyer

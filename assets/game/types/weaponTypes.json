@@ -1,22 +1,22 @@
 {
     "NONE": {
-        "name": "TRAIT_NAME_NO_WEAPON",
+        "name": "WEAPON_NAME_NONE",
         "desc": "TRAIT_DESC_NO_WEAPON",
         "icon": "Assets/Traits/.png"
     },
     "LIGHT": {
-        "name": "TRAIT_NAME_LIGHT_WEAPON",
-        "desc": "TRAIT_DESC_LIGHT_WEAPON",
+        "name": "WEAPON_NAME_LIGHT",
+        "desc": "WEAPON_DESC_LIGHT",
         "icon": "Assets/Traits/.png"
     },
     "MEDIUM": {
-        "name": "TRAIT_NAME_MEDIUM_WEAPON",
-        "desc": "TRAIT_DESC_MEDIUM_WEAPON",
+        "name": "WEAPON_NAME_MEDIUM",
+        "desc": "WEAPON_DESC_MEDIUM",
         "icon": "Assets/Traits/.png"
     },
     "HEAVY": {
-        "name": "TRAIT_NAME_HEAVY_WEAPON",
-        "desc": "TRAIT_DESC_HEAVY_WEAPON",
+        "name": "WEAPON_NAME_HEAVY",
+        "desc": "WEAPON_DESC_HEAVY",
         "icon": "Assets/Traits/.png"
     }
 }
