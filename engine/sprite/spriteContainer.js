@@ -36,7 +36,7 @@ SpriteContainer.prototype.loadAnchor = function(anchor, tileWidth, tileHeight) {
     const { x = 0, y = 0 } = anchor;
 
     this.offsetX = tileWidth / 2 - x;
-    this.offsetY = tileHeight * 0.75 - y;
+    this.offsetY = tileHeight * 0.8 - y;
 }
 
 SpriteContainer.prototype.loadShift = function(shift) {

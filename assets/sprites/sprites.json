@@ -1929,7 +1929,7 @@
     "imper_move_up": {
         "texture": "imper_move",
         "frameTime": 0.2,
-        "shift": {"x":-22,"y":-20},
+        "anchor": {"x":49,"y":69},
         "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
     },
     "imper_move_right": {
@@ -1941,37 +1941,37 @@
     "imper_move_down": {
         "texture": "imper_move",
         "frameTime": 0.2,
-        "shift": {"x":-23,"y":-2},
+        "anchor": {"x":49,"y":45},
         "autoFrames": {"start": 9,"jump": 1,"repeat": 4}
     },
     "imper_move_left": {
         "texture": "imper_move",
         "frameTime": 0.2,
-        "shift": {"x":-44,"y":-7},
+        "anchor": {"x":71,"y":51},
         "autoFrames": {"start": 13,"jump": 1,"repeat": 4}
     },
     "imper_fire_up": {
         "texture": "imper_fire",
         "frameTime": 0.1,
-        "shift": {"x":-31,"y":-25},
+        "anchor": {"x":59,"y":79},
         "autoFrames": {"start": 1,"jump": 1,"repeat": 8}
     },
     "imper_fire_right": {
         "texture": "imper_fire",
         "frameTime": 0.1,
-        "shift": {"x":-3,"y":-11},
+        "anchor": {"x":28,"y":56},
         "autoFrames": {"start": 9,"jump": 1,"repeat": 8}
     },
     "imper_fire_down": {
         "texture": "imper_fire",
         "frameTime": 0.1,
-        "shift": {"x":-33,"y":-5},
+        "anchor": {"x":59,"y":45},
         "autoFrames": {"start": 17,"jump": 1,"repeat": 8}
     },
     "imper_fire_left": {
         "texture": "imper_fire",
         "frameTime": 0.1,
-        "shift": {"x":-59,"y":-11},
+        "anchor": {"x":91,"y":56},
         "autoFrames": {"start": 25,"jump": 1,"repeat": 8}
     }
 }
