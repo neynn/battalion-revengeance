@@ -1,41 +1,61 @@
 {
     "TILE_NAME_GRASS": "Plains",
-    "TILE_NAME_BOREAL": "Boreal",
-    "TILE_NAME_ARCTIC": "Arctic",
-    "TILE_NAME_FOREST": "Forest",
-    "TILE_NAME_HILL": "Hill",
-    "TILE_NAME_MOUNTAIN": "Mountain",
-    "TILE_NAME_CANYON": "Canyon",
-    "TILE_NAME_VOLCANO": "Volcano",
-    "TILE_NAME_RICH_ORE": "Enriched Ore Deposit",
-    "TILE_NAME_USED_ORE": "Ore Deposit",
-    "TILE_NAME_DEPLETED_ORE": "Depleted Ore Deposit",
-    "TILE_NAME_ROAD": "Road",
-    "TILE_NAME_BRIDGE": "Bridge",
-    "TILE_NAME_RAIL": "Rail",
-    "TILE_NAME_SEA": "Sea",
-    "TILE_NAME_RIVER": "River",
-    "TILE_NAME_SHORE": "Shore",
-    "TILE_NAME_ISLAND": "Archipelago",
-    "TILE_NAME_SWIRL": "Reef",
-    "TILE_NAME_ROCKS": "Rock Formation",
-
-    "TILE_DESC_CANYON": "Canyons protect non-air units from ranged attacks.",
-    "TILE_DESC_VOLCANO": "None may pass the treacherous volcano.",
-    "TILE_DESC_ROCKS": "Rocks provide heavy defensive cover but will damage units that rest on them.",
-    "TILE_DESC_ISLAND": "A cluster of small islands providing some defensive cover at the cost of mobility.",
-    "TILE_DESC_HILL": "Hills provide additional range to ranged units.",
-    "TILE_DESC_FOREST": "Forests slow wheeled and tracked units, but will provide cover from attacks.",
-    "TILE_DESC_ROAD": "Roads allow for quick movement, but provide no defensive cover.",
-    "TILE_DESC_MOUNTAIN": "Mountains provide exceptional cover but are very hard to cross.",
     "TILE_DESC_GRASS": "Plains slow movement slighty but provide minimal cover against enemy attacks.",
-    "TILE_DESC_SHORE": "Shores are the link between the land and sea. Order a Leviathan to pick ground troops up.",
-    "TILE_DESC_BRIDGE": "Bridges are useful for connecting lands, but they lack defensive cover.",
-    "TILE_DESC_RAIL": "Rails allow trains to move.",
-    "TILE_DESC_SEA": "The open sea form the theater for naval combat.",
-    "TILE_DESC_RIVER": "A relatively narrow body of flowing water, and the bane of every invader in history.",
-    "TILE_DESC_SWIRL": "Reefs slow movement and improve defense against attacks.",
+
+    "TILE_NAME_BOREAL": "Boreal",
+    "TILE_DESC_BOREAL": "",
+
+    "TILE_NAME_ARCTIC": "Arctic",
+    "TILE_DESC_ARCTIC": "",
+
+    "TILE_NAME_FOREST": "Forest",
+    "TILE_DESC_FOREST": "Forests slow wheeled and tracked units, but will provide cover from attacks.",
+
+    "TILE_NAME_HILL": "Hill",
+    "TILE_DESC_HILL": "Hills provide additional range to ranged units.",
+
+    "TILE_NAME_MOUNTAIN": "Mountain",
+    "TILE_DESC_MOUNTAIN": "Mountains provide exceptional cover but are very hard to cross.",
+
+    "TILE_NAME_CANYON": "Canyon",
+    "TILE_DESC_CANYON": "Canyons protect non-air units from ranged attacks.",
+
+    "TILE_NAME_VOLCANO": "Volcano",
+    "TILE_DESC_VOLCANO": "None may pass the treacherous volcano.",
+
+    "TILE_NAME_RICH_ORE": "Enriched Ore Deposit",
     "TILE_DESC_RICH_ORE": "Extractors can extract 500 [Cash] from this tile.",
+
+    "TILE_NAME_USED_ORE": "Ore Deposit",
     "TILE_DESC_USED_ORE": "Extractors can extract 300 [Cash] from this tile.",
-    "TILE_DESC_DEPLETED_ORE": "Nothing else can be extracted from this tile."
+
+    "TILE_NAME_DEPLETED_ORE": "Depleted Ore Deposit",
+    "TILE_DESC_DEPLETED_ORE": "Nothing else can be extracted from this tile.",
+
+    "TILE_NAME_ROAD": "Road",
+    "TILE_DESC_ROAD": "Roads allow for quick movement, but provide no defensive cover.",
+
+    "TILE_NAME_BRIDGE": "Bridge",
+    "TILE_DESC_BRIDGE": "Bridges are useful for connecting lands, but they lack defensive cover.",
+
+    "TILE_NAME_RAIL": "Rail",
+    "TILE_DESC_RAIL": "Rails allow trains to move.",
+
+    "TILE_NAME_SEA": "Sea",
+    "TILE_DESC_SEA": "The open sea form the theater for naval combat.",
+
+    "TILE_NAME_RIVER": "River",
+    "TILE_DESC_RIVER": "A relatively narrow body of flowing water, and the bane of every invader in history.",
+
+    "TILE_NAME_SHORE": "Shore",
+    "TILE_DESC_SHORE": "Shores are the link between the land and sea. Order a Leviathan to pick ground troops up.",
+
+    "TILE_NAME_ISLAND": "Archipelago",
+    "TILE_DESC_ISLAND": "A cluster of small islands providing some defensive cover at the cost of mobility.",
+
+    "TILE_NAME_SWIRL": "Reef",
+    "TILE_DESC_SWIRL": "Reefs slow movement and improve defense against attacks.",
+
+    "TILE_NAME_ROCKS": "Rock Formation",
+    "TILE_DESC_ROCKS": "Rocks provide heavy defensive cover but will damage units that rest on them."
 }
