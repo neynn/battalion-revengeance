@@ -1,5 +1,22 @@
 import { PrettyJSON } from "./engine/resources/prettyJSON.js";
 
+export const makeLanguageFile = function(fName, types) {
+    const file = new PrettyJSON(4);
+
+    file.open();
+
+    for(const typeID in types) {
+        const { name, desc } = types[typeID];
+
+        file.writeLine(name, "");
+        file.writeLine(desc, "");
+    }
+
+    file
+    .close()
+    .download(fName);
+}
+
 export const generateAnimations = function(fname, rName, resouces) {
     const regions = resouces.tiles[rName].regions;
     const file = new PrettyJSON(4);

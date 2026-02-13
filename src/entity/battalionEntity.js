@@ -350,6 +350,8 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
         }
     }
     
+    const terrainReduction = this.hasTrait(TRAIT_TYPE.STREAMLINED) ? TRAIT_CONFIG.STREAMLINED_REDUCTION : 1;
+    
     for(let i = 0; i < terrain.length; i++) {
         const terrainType = typeRegistry.getTerrainType(terrain[i]);
         const cost = terrainType.getCost(this.config.movementType);
@@ -359,7 +361,7 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
             return EntityType.MAX_MOVE_COST;
         }
 
-        tileCost += cost;
+        tileCost += (cost * terrainReduction);
     }
 
     const entityID = worldMap.getTopEntity(tileX, tileY);
@@ -384,7 +386,8 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
         tileCost = EntityType.MIN_MOVE_COST;
     }
 
-    return tileCost;
+    //Ceil the value so that only fully covered tiles are reached.
+    return Math.ceil(tileCost);
 }
 
 BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {

@@ -719,7 +719,7 @@
         "movementType": "TRACKED",
         "name": "ENTITY_NAME_AMPAC",
         "desc": "ENTITY_DESC_AMPAC",
-        "traits": ["ANTI_TANK", "STREAMLINED"],
+        "traits": ["ANTI_TANK", "TANK_HUNTER", "STREAMLINED"],
         "sounds": {
             "move": "tracked_move",
             "fire": "tank_fire"

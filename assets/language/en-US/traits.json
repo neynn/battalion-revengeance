@@ -101,7 +101,7 @@
     "TRAIT_DESC_INDOMITABLE": "No retreat, no surrender!",
     "TRAIT_DESC_SCHWERPUNKT": "This unit deals +40% damage against infantry if it attacks first.",
     "TRAIT_DESC_BEWEGUNGSKRIEG": "Can act again if a target was destroyed (once per turn).",
-    "TRAIT_DESC_STREAMLINED": "Can be deployed further from the base.",
+    "TRAIT_DESC_STREAMLINED": "This unit's movement is less impaired by terrain.",
     "TRAIT_DESC_CEMENTED_STEEL_ARMOR": "Receives -20 damage from all attacks.",
     "TRAIT_DESC_CAVITATION_EXPLOSION": "Bypasses [Cemented Steel Armor].",
     "TRAIT_DESC_SEABOUND": "Can only attack sea units.",

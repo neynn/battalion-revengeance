@@ -1,6 +1,6 @@
 import { LanguageHandler } from "./engine/language/languageHandler.js";
 import { AssetLoader } from "./engine/resources/assetLoader.js";
-import { generateAutoSheet } from "./helpers.js";
+import { generateAutoSheet, makeLanguageFile } from "./helpers.js";
 import { BattalionContext } from "./src/battalionContext.js";
 import { validateEntityTypes, validateTileTypes, validateTraitTypes } from "./src/type/validateTypes.js";
 

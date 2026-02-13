@@ -1,4 +1,73 @@
 {
+    "FACTION_NAME_SOMERTIN": "Synarchy of Somertin",
+    "FACTION_DESC_SOMERTIN": "",
+
+    "FACTION_NAME_KARGIT": "Kargit Revolutionary Gosudarstvo",
+    "FACTION_DESC_KARGIT": "",
+
+    "FACTION_NAME_TRANSKAL": "Commonwealth of Transkal",
+    "FACTION_DESC_TRANSKAL": "",
+
+    "FACTION_NAME_POLASIE": "Polasie People's Federation",
+    "FACTION_DESC_POLASIE": "",
+
+    "FACTION_NAME_ELAM": "Sublime Caliphate of Elam",
+    "FACTION_DESC_ELAM": "",
+
+    "FACTION_NAME_RED": "Red", 
+    "FACTION_DESC_RED": "",
+
+    "FACTION_NAME_BLUE": "Blue",
+    "FACTION_DESC_BLUE": "",
+
+    "FACTION_NAME_GREEN": "Green",
+    "FACTION_DESC_GREEN": "",
+
+    "FACTION_NAME_YELLOW": "Yellow",
+    "FACTION_DESC_YELLOW": "",
+
+    "FACTION_NAME_DARK_RED": "Dark Red",
+    "FACTION_DESC_DARK_RED": "",
+
+    "FACTION_NAME_DARK_BLUE": "Dark Blue",
+    "FACTION_DESC_DARK_BLUE": "",
+
+    "FACTION_NAME_BRONZE": "Bronze",
+    "FACTION_DESC_BRONZE": "",
+
+    "FACTION_NAME_DARK_GREEN": "Dark Green",
+    "FACTION_DESC_DARK_GREEN": "",
+
+    "FACTION_NAME_GOLD": "Gold",
+    "FACTION_DESC_GOLD": "",
+
+    "FACTION_NAME_CYAN": "Cyan",
+    "FACTION_DESC_CYAN": "",
+
+    "FACTION_NAME_PINK": "Pink",
+    "FACTION_DESC_PINK": "",
+
+    "FACTION_NAME_WHITE": "White",
+    "FACTION_DESC_WHITE": "",
+
+    "FACTION_NAME_PURPLE": "Purple",
+    "FACTION_DESC_PURPLE": "",
+
+    "FACTION_NAME_BLACK": "Black",
+    "FACTION_DESC_BLACK": "",
+
+    "FACTION_NAME_GRAY": "Gray",
+    "FACTION_DESC_GRAY": "",
+
+    "FACTION_NAME_CREAM": "Cream",
+    "FACTION_DESC_CREAM": "",
+
+    "FACTION_NAME_LIME": "Lime",
+    "FACTION_DESC_LIME": "",
+
     "FACTION_NAME_KANYE": "Kanye West's Junta",
-    "FACTION_NAME_NYPD": "New York Defense Force"
+    "FACTION_DESC_KANYE": "",
+
+    "FACTION_NAME_NYPD": "New York Defense Force",
+    "FACTION_DESC_NYPD": ""
 }
