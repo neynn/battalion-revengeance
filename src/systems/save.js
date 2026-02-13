@@ -1,4 +1,5 @@
 import { PrettyJSON } from "../../engine/resources/prettyJSON.js";
+import { BattalionEntity } from "../entity/battalionEntity.js";
 import { createClientEntityObject } from "./spawn.js";
 
 export const saveStoryMap = function(gameContext) {
@@ -35,7 +36,13 @@ export const loadStoryMap = function(gameContext, data) {
         const entity = createClientEntityObject(gameContext, entityID, teamID, type, tileX, tileY);
 
         if(entity) {
-            entity.load(gameContext, blob);
+            entity.load(blob);
+
+            if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+                entity.setOpacity(0);
+            }
+
+            entity.updateSprite(gameContext);
         }
     }
 }

@@ -65,21 +65,6 @@ ClientBattalionEntity.prototype.onDestroy = function() {
     this.view.destroy();
 }
 
-ClientBattalionEntity.prototype.onLoad = function(gameContext, data) {
-    this.setCustomInfo(data.name, data.desc);
-
-    if(this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-        this.setOpacity(0);
-    }
-
-    this.updateSprite(gameContext);
-}
-
-ClientBattalionEntity.prototype.onSave = function(data) {
-    data["name"] = this.customName;
-    data["desc"] = this.customDesc;
-}
-
 ClientBattalionEntity.prototype.getDescription = function(gameContext) {
     const { language } = gameContext;
     

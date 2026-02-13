@@ -57,7 +57,6 @@ BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
 
 BattalionEntity.prototype.onDestroy = function() {}
-BattalionEntity.prototype.onLoad = function(gameContext, data) {}
 
 BattalionEntity.prototype.save = function() {
     return {
@@ -81,7 +80,7 @@ BattalionEntity.prototype.save = function() {
     };
 }
 
-BattalionEntity.prototype.load = function(gameContext, data) {
+BattalionEntity.prototype.load = function(data) {
     this.flags = data.flags;
     this.maxHealth = data.maxHealth;
     this.moraleType = data.morale;
@@ -91,10 +90,9 @@ BattalionEntity.prototype.load = function(gameContext, data) {
     this.customID = data.id;
     this.turns = data.turns;
     this.localCash = data.cash;
-
     this.setDirection(data.direction);
     this.setHealth(data.health);
-    this.onLoad(gameContext, data);
+    this.setCustomInfo(data.name, data.desc);
 }
 
 BattalionEntity.prototype.loadConfig = function(config) {
