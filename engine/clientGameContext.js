@@ -80,7 +80,7 @@ ClientGameContext.prototype.exit = function() {
 
 ClientGameContext.prototype.loadResources = function(resources) {
     this.tileManager.load(this.resourceLoader, resources.tiles, resources.tileMeta, resources.autotilers);
-    this.spriteManager.load(resources.spriteTextures, resources.sprites);
+    this.spriteManager.load(this, resources.spriteTextures, resources.sprites);
     this.uiManager.load(resources.interfaces, resources.icons);
     this.fonts.load(resources.fonts);
     this.client.musicPlayer.load(resources.music, resources.playlists);

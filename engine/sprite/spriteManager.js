@@ -21,11 +21,13 @@ SpriteManager.ALIAS_SEPERATOR = "::";
 SpriteManager.EMPTY_SPRITE = new Sprite(-1, "EMPTY_SPRITE");
 SpriteManager.EMPTY_LAYER = [];
 
-SpriteManager.prototype.load = function(textures, sprites) {
+SpriteManager.prototype.load = function(gameContext, textures, sprites) {
     if(!textures || !sprites) {
         return;
     }
 
+    const { transform2D } = gameContext;
+    const { tileWidth, tileHeight } = transform2D;
     const textureMap = this.resources.createTextures(textures);
     
     for(const spriteID in sprites) {
@@ -57,7 +59,7 @@ SpriteManager.prototype.load = function(textures, sprites) {
             }
 
             if(anchor) {
-                spriteContainer.loadAnchor(anchor, 56, 56); //TODO
+                spriteContainer.loadAnchor(anchor, tileWidth, tileHeight);
             } else if(shift) {
                 spriteContainer.loadShift(shift);
             }
