@@ -10,18 +10,14 @@ export const DefendObjective = function(tiles) {
 DefendObjective.prototype = Object.create(Objective.prototype);
 DefendObjective.prototype.constructor = DefendObjective;
 
-DefendObjective.prototype.onEntityMove = function(gameContext, entity, teamID) {
-    if(entity.teamID === teamID) {
-        return;
-    }
+DefendObjective.prototype.onTurnEnd = function(gameContext, turn, teamID) {
+    const { world, teamManager } = gameContext;
 
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-    const entityID = entity.getID();
-
+    //This objective fails if any enemy is on the specified tile during checking phase.
     for(const { x, y } of this.tiles) {
-        if(worldMap.hasEntity(x, y, entityID)) {
+        const entity = world.getEntityAt(x, y);
+
+        if(entity && !teamManager.isAlly(teamID, entity.teamID)) {
             this.fail();
             break;
         }

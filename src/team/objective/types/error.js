@@ -1,7 +1,7 @@
 import { Objective } from "../objective.js";
 
 export const ErrorObjective = function() {
-    Objective.call(this, "LYNCHPIN");
+    Objective.call(this, "ERROR");
 
     this.status = Objective.STATUS.IDLE;
 }

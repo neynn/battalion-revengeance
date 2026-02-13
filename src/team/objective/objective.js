@@ -24,5 +24,4 @@ Objective.prototype.succeed = function() {
 }
 
 Objective.prototype.onEntityDeath = function(entity) {}
-Objective.prototype.onEntityMove = function(gameContext, entity, teamID) {}
-Objective.prototype.onTurnEnd = function(turn) {} 
+Objective.prototype.onTurnEnd = function(gameContext, turn, teamID) {} 

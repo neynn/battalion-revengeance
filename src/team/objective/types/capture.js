@@ -9,18 +9,16 @@ export const CaptureObjective = function(tiles) {
 CaptureObjective.prototype = Object.create(Objective.prototype);
 CaptureObjective.prototype.constructor = CaptureObjective;
 
-CaptureObjective.prototype.onEntityMove = function(gameContext, entity, teamID) {
+CaptureObjective.prototype.onTurnEnd = function(gameContext, turn, teamID) {
     const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-    const entityID = entity.getID();
     let totalCaptures = 0;
 
+    //This objective succeeds if all specified tiles are under the teams, and only the teams, control.
     for(const { x, y } of this.tiles) {
-        if(worldMap.hasEntity(x, y, entityID)) {
-            if(entity.teamID === teamID) {
-                totalCaptures++;
-            }
+        const entity = world.getEntityAt(x, y);
+
+        if(entity && entity.teamID === teamID) {
+            totalCaptures++;
         }
     }
 

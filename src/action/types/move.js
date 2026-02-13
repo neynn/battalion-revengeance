@@ -152,14 +152,6 @@ MoveAction.prototype.execute = function(gameContext, data) {
 
     entity.placeOnMap(gameContext);
     team.addStatistic(TEAM_STAT.UNITS_MOVED, 1);
-    
-    for(const teamID of activeTeams) {
-        const team = teamManager.getTeam(teamID);
-
-        team.onEntityMove(gameContext, entity);
-    }
-
-    teamManager.updateStatus();
 
     if(flags & MoveAction.FLAG.MINE_DISCOVERED) {
         team.addStatistic(TEAM_STAT.MINES_DISCOVERED, 1);

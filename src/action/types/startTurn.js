@@ -36,6 +36,7 @@ StartTurnAction.prototype.execute = function(gameContext, data) {
         team.generateBuildingCash(gameContext);
     }
 
+    teamManager.updateStatus();
     //TODO: Get next turn, then check if any construction grows. Add that as next.
 }
 

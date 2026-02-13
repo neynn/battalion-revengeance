@@ -146,12 +146,6 @@ Team.prototype.getID = function() {
     return this.id;
 }
 
-Team.prototype.onEntityMove = function(gameContext, entity) {
-    for(const objective of this.objectives) {
-        objective.onEntityMove(gameContext, entity, this.id);
-    }
-}
-
 Team.prototype.onEntityDeath = function(entity) {
     const entityID = entity.getID();
 
@@ -261,7 +255,7 @@ Team.prototype.endTurn = function(gameContext) {
     }
 
     for(const objective of this.objectives) {
-        objective.onTurnEnd(turn);
+        objective.onTurnEnd(gameContext, turn, this.id);
     }
 }
 
