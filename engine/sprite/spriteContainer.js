@@ -34,14 +34,9 @@ SpriteContainer.prototype.loadBounds = function(bounds) {
 
 SpriteContainer.prototype.loadPivot = function(pivot) {
     const { x = 0, y = 0 } = pivot;
-
-    if(x !== 0) {
-        this.shiftX = Math.floor((this.boundsW / 2)) - x;
-    }
-
-    if(y !== 0) {
-        this.shiftY = Math.floor((this.boundsH / 2)) - y;
-    }
+    
+    this.shiftX = Math.floor((this.boundsW / 2)) - x;
+    this.shiftY = Math.floor((this.boundsH / 2)) - y;
 }
 
 SpriteContainer.prototype.loadShift = function(shift) {

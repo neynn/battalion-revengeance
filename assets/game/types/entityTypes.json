@@ -936,7 +936,7 @@
     },
     "ANNIHILATOR_TANK": {
         "health": 140,
-        "damage": 70,
+        "damage": 50,
         "weaponType": "HEAVY",
         "armorType": "HEAVY",
         "movementRange": 4,
