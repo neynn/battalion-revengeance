@@ -1,10 +1,8 @@
 import { EntityManager } from "../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { BUILDING_TYPE, LAYER_TYPE, TEAM_STAT } from "../enums.js";
-import { createSchemaViewSprite } from "../sprite/schemaView.js";
-import { EntityView } from "../sprite/entityView.js";
+import { createSchemaViewSprite, SchemaView } from "../sprite/schemaView.js";
 import { getDirectionByName } from "./direction.js";
-import { BuildingView } from "../sprite/buildingView.js";
 import { ClientBattalionEntity } from "../entity/clientBattalionEntity.js";
 import { ClientBuilding } from "../entity/clientBuilding.js";
 import { Building } from "../entity/building.js";
@@ -66,7 +64,7 @@ export const createClientEntityObject = function(gameContext, entityID, teamID, 
     const { schema } = team;
     const entityType = typeRegistry.getEntityType(typeID);
     const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
-    const entityView = new EntityView(visualSprite, null);
+    const entityView = new SchemaView(visualSprite, null);
     const entityObject = new ClientBattalionEntity(entityID, entityView);
     const spawnPosition = transform2D.transformTileToWorld(tileX, tileY);
 
@@ -223,7 +221,7 @@ export const spawnClientBuilding = function(gameContext, worldMap, config) {
             const { sprite } = buildingType;
             const position = transform2D.transformTileToWorld(x, y);
             const visualSprite = createSchemaViewSprite(gameContext, sprite, schema, LAYER_TYPE.BUILDING);
-            const buildingView = new BuildingView(visualSprite, sprite);
+            const buildingView = new SchemaView(visualSprite, sprite);
             const building = new ClientBuilding(buildingType, buildingView);
 
             buildingView.schema = schema;

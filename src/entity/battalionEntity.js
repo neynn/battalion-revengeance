@@ -57,7 +57,6 @@ BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
 
 BattalionEntity.prototype.onDestroy = function() {}
-BattalionEntity.prototype.onHealthUpdate = function() {}
 BattalionEntity.prototype.onLoad = function(gameContext, data) {}
 
 BattalionEntity.prototype.save = function() {
@@ -188,8 +187,6 @@ BattalionEntity.prototype.setHealth = function(health) {
     } else {
         this.health = health;
     }
-
-    this.onHealthUpdate();
 }
 
 BattalionEntity.prototype.hasTrait = function(traitID) {

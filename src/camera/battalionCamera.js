@@ -3,11 +3,26 @@ import { TileOverlay } from "../../engine/camera/tileOverlay.js";
 import { SHAPE } from "../../engine/math/constants.js";
 import { Renderer } from "../../engine/renderer/renderer.js";
 import { drawShape, shadeScreen } from "../../engine/util/drawHelper.js";
+import { TILE_HEIGHT, TILE_WIDTH } from "../constants.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { mineTypeToTile } from "../enumHelpers.js";
-import { LAYER_TYPE, TILE_ID } from "../enums.js";
+import { LAYER_TYPE, PLAYER_PREFERENCE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { EntityType } from "../type/parsed/entityType.js";
+
+const BLOCK = { COUNT: 4, WIDTH: 4, HEIGHT: 8, GAP: 1 };
+const WIDTH = (BLOCK.GAP * (BLOCK.COUNT + 1)) + BLOCK.WIDTH * BLOCK.COUNT;
+const HEIGHT = BLOCK.GAP * 2 + BLOCK.HEIGHT;
+const OFFSET_X = TILE_WIDTH - 5 - WIDTH;
+const OFFSET_Y = TILE_HEIGHT - 5 - HEIGHT;
+const BACKGROUND_COLOR = "#000000";
+const DEFAULT_HEALTH_COLOR = "#ffffff";
+const HEALTH_THRESHOLDS = [
+    { "above": 0.75, "color": "#00ff00" },
+    { "above": 0.5, "color": "#ffff00"},
+    { "above": 0.25, "color": "#ff8800"},
+    { "above": 0, "color": "#ff0000" }
+];
 
 export const BattalionCamera = function() {
     Camera2D.call(this);
@@ -27,17 +42,74 @@ BattalionCamera.STEALTH_THRESHOLD = 0.5;
 BattalionCamera.prototype = Object.create(Camera2D.prototype);
 BattalionCamera.prototype.constructor = BattalionCamera;
 
-BattalionCamera.prototype.drawEntity = function(entity, display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime) {
+BattalionCamera.prototype.drawEntityHealth = function(display, drawX, drawY, healthFactor) {
+    const { context } = display;
+    const healthX = drawX + OFFSET_X;
+    const healthY = drawY + OFFSET_Y;
+    let healthColor = DEFAULT_HEALTH_COLOR;
+
+    for(let i = 0; i < HEALTH_THRESHOLDS.length; i++) {
+        const { above, color } = HEALTH_THRESHOLDS[i];
+
+        if(healthFactor >= above) {
+            healthColor = color;
+            break;
+        }
+    }
+
+    context.fillStyle = BACKGROUND_COLOR;
+    context.fillRect(healthX, healthY, WIDTH, HEIGHT);
+    context.fillStyle = healthColor;
+
+    let blockX = healthX + WIDTH;
+    let blockY = healthY + BLOCK.GAP;
+    let pixelFill = Math.floor((BLOCK.HEIGHT * BLOCK.COUNT) * healthFactor);
+
+    while(pixelFill > 0) {
+        blockX -= (BLOCK.WIDTH + BLOCK.GAP);
+        pixelFill -= BLOCK.HEIGHT;
+
+        if(pixelFill >= 0) {
+            context.fillRect(blockX, blockY, BLOCK.WIDTH, BLOCK.HEIGHT);
+        } else {
+            context.fillRect(blockX, blockY - pixelFill, BLOCK.WIDTH, pixelFill + BLOCK.HEIGHT);
+        }
+    }
+}
+
+BattalionCamera.prototype.drawEntityBlock = function(display, entity, realTime, deltaTime) {
+    const { view } = entity;
+    const { visual, positionX, positionY } = view;
+    const viewportX = this.fViewportX;
+    const viewportY = this.fViewportY;
+    let healthFactor = entity.getHealthFactor();
+
+    if(healthFactor > 1) {
+        healthFactor = 1;
+    }
+
+    visual.update(realTime, deltaTime);
+    visual.draw(display, viewportX, viewportY);
+
+    if(PLAYER_PREFERENCE.FORCE_HEALTH_DRAW || healthFactor > 0 && healthFactor < 1) {
+        const healthX = positionX - viewportX;
+        const healthY = positionY - viewportY;
+
+        this.drawEntityHealth(display, healthX, healthY, healthFactor);
+    }
+}
+
+BattalionCamera.prototype.drawEntity = function(display, entity, realTime, deltaTime) {
     const { view, flags } = entity;
     const { visual } = view;
     const opacity = visual.getOpacity();
 
     if((flags & BattalionEntity.FLAG.IS_CLOAKED) && opacity < BattalionCamera.STEALTH_THRESHOLD) {
         visual.setOpacity(BattalionCamera.STEALTH_THRESHOLD);
-        view.draw(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+        this.drawEntityBlock(display, entity, realTime, deltaTime);
         visual.setOpacity(opacity);
     } else {
-        view.draw(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+        this.drawEntityBlock(display, entity, realTime, deltaTime);
     }
 }
 
@@ -82,7 +154,7 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
 
         if(isVisible) {
             if(state === BattalionEntity.STATE.IDLE) {
-                this.drawEntity(entity, display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+                this.drawEntity(display, entity, realTime, deltaTime);
             } else {
                 priorityEntities.push(entity);
             }
@@ -94,7 +166,7 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
     for(let i = 0; i < priorityEntities.length; i++) {
         const entity = priorityEntities[i];
 
-        this.drawEntity(entity, display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+        this.drawEntity(display, entity, realTime, deltaTime);
     }
 
     if(Renderer.DEBUG.SPRITES) {
@@ -148,7 +220,10 @@ BattalionCamera.prototype.drawBuildings = function(display, worldMap, realTime, 
         const isVisible = view.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
 
         if(isVisible) {
-            view.draw(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime);
+            const { visual } = view;
+
+            visual.update(realTime, deltaTime);
+            visual.draw(display, viewportLeftEdge, viewportTopEdge);
             count++;
         }
     }

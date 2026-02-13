@@ -102,8 +102,3 @@ SchemaView.prototype.unlockEnd = function() {
 SchemaView.prototype.isVisible = function(x, y, w, h) {
     return this.visual.isVisible(x, y, w, h);
 }
-
-SchemaView.prototype.draw = function(display, viewportLeftEdge, viewportTopEdge, realTime, deltaTime) {
-    this.visual.update(realTime, deltaTime);
-    this.visual.draw(display, viewportLeftEdge, viewportTopEdge);
-}

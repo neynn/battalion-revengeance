@@ -65,10 +65,6 @@ ClientBattalionEntity.prototype.onDestroy = function() {
     this.view.destroy();
 }
 
-ClientBattalionEntity.prototype.onHealthUpdate = function() {
-    this.view.onHealthUpdate(this.health, this.maxHealth);
-}
-
 ClientBattalionEntity.prototype.onLoad = function(gameContext, data) {
     this.setCustomInfo(data.name, data.desc);
 
