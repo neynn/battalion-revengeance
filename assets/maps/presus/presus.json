@@ -60,7 +60,7 @@
         { "x": 4, "y": 6, "stealth": true, "type": "STEALTH_TANK", "team": "TRANSKAL" },
         { "x": 5, "y": 2, "type": "TANK_HUNTER", "team": "TRANSKAL", "direction": "WEST" },
         { "x": 6, "y": 7, "type": "JAMMER_TRUCK", "team": "SOMERTIN", "direction": "WEST" },
-        { "x": 6, "y": 8, "type": "IMPERTERRITUS", "team": "SOMERTIN", "direction": "WEST" },
+        { "x": 6, "y": 8, "type": "ANTI_TANK", "team": "SOMERTIN", "direction": "WEST" },
         { "x": 6, "y": 9, "type": "ROLAND", "team": "SOMERTIN", "direction": "WEST" },
         { "x": 7, "y": 8, "type": "ROLAND", "team": "TRANSKAL", "direction": "WEST" },
         { "x": 7, "y": 2, "health": 100, "type": "JAMMER_TRUCK", "team": "TRANSKAL", "direction": "WEST" },

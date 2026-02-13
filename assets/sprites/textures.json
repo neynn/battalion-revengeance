@@ -1440,5 +1440,29 @@
             "rows": 4,
             "columns": 8
         }
+    },
+    "anti_tank_idle": {
+        "directory": ["assets","sprites","textures","anti_tank"],
+        "source": "anti_tank_idle.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 65,
+            "frameHeight": 65,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "anti_tank_fire": {
+        "directory": ["assets","sprites","textures","anti_tank"],
+        "source": "anti_tank_fire.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 84,
+            "frameHeight": 77,
+            "rows": 4,
+            "columns": 8
+        }
     }
 }

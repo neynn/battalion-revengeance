@@ -1,4 +1,7 @@
 {
+    "ENTITY_NAME_ANTI_TANK": "Anti-Tank Artillery",
+    "ENTITY_DESC_ANTI_TANK": "Armor-piercing artillery designed to wreck tanks.",
+
     "ENTITY_NAME_CONSTRUCTION": "Construction",
     "ENTITY_DESC_CONSTRUCTION": "Ad-hoc fortifications are being erected here.",
 

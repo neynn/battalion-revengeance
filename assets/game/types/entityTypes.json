@@ -442,6 +442,33 @@
             "fire_up": "suicide_fire_up"
         }
     },
+    "ANTI_TANK": {
+        "health": 40,
+        "damage": 30,
+        "weaponType": "HEAVY",
+        "armorType": "LIGHT",
+        "movementRange": 3,
+        "movementType": "FOOT",
+        "minRange": 1,
+        "maxRange": 3,
+        "name": "ENTITY_NAME_ANTI_TANK",
+        "desc": "ENTITY_DESC_ANTI_TANK",
+        "traits": ["ANTI_TANK"],
+        "sounds": {
+            "move": "truck_move",
+            "fire": "anti_tank_fire"
+        },
+        "sprites": {
+            "idle_right": "anti_tank_idle_right",
+            "idle_left": "anti_tank_idle_left",
+            "idle_down": "anti_tank_idle_down",
+            "idle_up": "anti_tank_idle_up",
+            "fire_right": "anti_tank_fire_right",
+            "fire_left": "anti_tank_fire_left",
+            "fire_down": "anti_tank_fire_down",
+            "fire_up": "anti_tank_fire_up"
+        }
+    },
     "INFANTRY_TRUCK": {
         "health": 80,
         "damage": 25,
