@@ -68,7 +68,7 @@ ClientBattalionEntity.prototype.onDestroy = function() {
 ClientBattalionEntity.prototype.getDescription = function(gameContext) {
     const { language } = gameContext;
     
-    if(this.customDesc) {
+    if(this.customDesc !== null) {
         return language.getMapTranslation(this.customDesc);
     }
 
@@ -78,7 +78,7 @@ ClientBattalionEntity.prototype.getDescription = function(gameContext) {
 ClientBattalionEntity.prototype.getName = function(gameContext) {
     const { language } = gameContext;
     
-    if(this.customName) {
+    if(this.customName !== null) {
         return language.getMapTranslation(this.customName);
     }
 

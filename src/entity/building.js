@@ -28,32 +28,6 @@ Building.prototype.getGeneratedCash = function(gameContext) {
 
 Building.prototype.setCustomInfo = function(id, name, desc) {
     this.customID = id;
-
-    if(name) {
-        this.customName = name;
-    }
-
-    if(desc) {
-        this.customDesc = desc;
-    }
-}
-
-Building.prototype.getDescription = function(gameContext) {
-    const { language } = gameContext;
-    
-    if(this.customDesc) {
-        return language.getMapTranslation(this.customDesc);
-    }
-
-    return language.getSystemTranslation(this.config.desc);
-}
-
-Building.prototype.getName = function(gameContext) {
-    const { language } = gameContext;
-    
-    if(this.customName) {
-        return language.getMapTranslation(this.customName);
-    }
-
-    return language.getSystemTranslation(this.config.name);
+    this.customName = name;
+    this.customDesc = desc
 }

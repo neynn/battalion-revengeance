@@ -14,3 +14,23 @@ ClientBuilding.prototype.onTeamUpdate = function(gameContext, team) {
 
     this.view.updateSchema(gameContext, schema);
 }
+
+ClientBuilding.prototype.getDescription = function(gameContext) {
+    const { language } = gameContext;
+    
+    if(this.customDesc !== null) {
+        return language.getMapTranslation(this.customDesc);
+    }
+
+    return language.getSystemTranslation(this.config.desc);
+}
+
+ClientBuilding.prototype.getName = function(gameContext) {
+    const { language } = gameContext;
+    
+    if(this.customName !== null) {
+        return language.getMapTranslation(this.customName);
+    }
+
+    return language.getSystemTranslation(this.config.name);
+}
