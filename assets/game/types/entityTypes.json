@@ -1432,6 +1432,8 @@
     "MEME_WTC": {
         "health": 50,
         "armorType": "LIGHT",
+        "name": "ENTITY_NAME_MEME_WTC",
+        "desc": "ENTITY_DESC_MEME_WTC",
         "traits": ["FINANCIAL_CENTER"],
         "sounds": {
             "move": "turret_move",
