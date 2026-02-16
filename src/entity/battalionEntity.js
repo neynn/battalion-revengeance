@@ -30,7 +30,7 @@ export const BattalionEntity = function(id) {
     this.state = BattalionEntity.STATE.IDLE;
     this.teamID = null;
     this.transportID = null;
-    this.lastAttacker = EntityManager.ID.INVALID;
+    this.lastAttacker = EntityManager.INVALID_ID;
     this.turns = 0;
     this.cash = 0;
 }
@@ -366,7 +366,7 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
         tileCost += (cost * terrainReduction);
     }
 
-    const entityID = worldMap.getTopEntity(tileX, tileY);
+    const entityID = worldMap.getEntity(tileX, tileY);
     const entity = entityManager.getEntity(entityID);
     
     if(entity) {
@@ -661,11 +661,6 @@ BattalionEntity.prototype.isAttackValid = function(gameContext, target) {
     if(target.config.category === ENTITY_CATEGORY.AIR) {
         //Air units can only be attacked with skysweeper.
         if(!this.hasTrait(TRAIT_TYPE.SKYSWEEPER)) {
-            return false;
-        }
-
-        //Air units can cannot be attacked with GROUNDED.
-        if(this.hasTrait(TRAIT_TYPE.GROUNDED)) {
             return false;
         }
     }
@@ -1204,7 +1199,7 @@ BattalionEntity.prototype.setCloaked = function() {
 }
 
 BattalionEntity.prototype.clearLastAttacker = function() {
-    this.lastAttacker = EntityManager.ID.INVALID;
+    this.lastAttacker = EntityManager.INVALID_ID;
 }
 
 BattalionEntity.prototype.setLastAttacker = function(entityID) {

@@ -21,6 +21,23 @@ Layer.THRESHOLD = {
     BIT_32: 4294967295
 };
 
+Layer.copyBuffer = function(oldBuffer, newBuffer, oldWidth, oldHeight, newWidth, newHeight) {
+    const copyWidth = newWidth < oldWidth ? newWidth : oldWidth;
+    const copyHeight = newHeight < oldHeight ? newHeight : oldHeight;
+
+    for(let i = 0; i < copyHeight; ++i) {
+        const newRow = i * newWidth;
+        const oldRow = i * oldWidth;
+
+        for(let j = 0; j < copyWidth; ++j) {
+            const newIndex = newRow + j;
+            const oldIndex = oldRow + j;
+
+            newBuffer[newIndex] = oldBuffer[oldIndex];
+        }
+    }
+}
+
 Layer.getTypeFor = function(maxValue) {
     if(maxValue <= Layer.THRESHOLD.BIT_8) {
         return Layer.TYPE.BIT_8;
@@ -97,20 +114,7 @@ Layer.prototype.resize = function(oldWidth, oldHeight, newWidth, newHeight) {
         }
     }
 
-    const copyWidth = newWidth < oldWidth ? newWidth : oldWidth;
-    const copyHeight = newHeight < oldHeight ? newHeight : oldHeight;
-
-    for(let i = 0; i < copyHeight; ++i) {
-        const newRow = i * newWidth;
-        const oldRow = i * oldWidth;
-
-        for(let j = 0; j < copyWidth; ++j) {
-            const newIndex = newRow + j;
-            const oldIndex = oldRow + j;
-
-            newBuffer[newIndex] = this.buffer[oldIndex];
-        }
-    }
+    Layer.copyBuffer(this.buffer, newBuffer, oldWidth, oldHeight, newWidth, newHeight);
 
     this.buffer = newBuffer;
     this.evaluate();

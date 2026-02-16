@@ -10,9 +10,7 @@ EntityManager.FLAG = {
     DO_UPDATES: 1 << 0
 };
 
-EntityManager.ID = {
-    INVALID: -1
-};
+EntityManager.INVALID_ID = -1;
 
 EntityManager.prototype.exit = function() {
     this.nextID = 0;
@@ -101,7 +99,7 @@ EntityManager.prototype.getNextID = function() {
 EntityManager.prototype.addEntity = function(entity) {
     const entityID = entity.getID();
 
-    if(entityID !== EntityManager.ID.INVALID && !this.entityMap.has(entityID)) {
+    if(entityID !== EntityManager.INVALID_ID && !this.entityMap.has(entityID)) {
         this.entityMap.set(entityID, this.entities.length);
         this.entities.push(entity);
     }

@@ -46,7 +46,7 @@ SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, t
 
         if(isValid) {
             const player = stateMachine.getContext();
-            const request = createMoveRequest(this.entity.getID(), this.path, EntityManager.ID.INVALID);
+            const request = createMoveRequest(this.entity.getID(), this.path, EntityManager.INVALID_ID);
 
             player.addIntent(request);
         }

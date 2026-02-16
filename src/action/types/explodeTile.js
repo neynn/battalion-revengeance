@@ -1,4 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
+import { WorldMap } from "../../../engine/map/worldMap.js";
 import { TILE_ID } from "../../enums.js";
 import { BattalionMap } from "../../map/battalionMap.js";
 import { playExplosion } from "../../systems/animation.js";
@@ -50,7 +51,7 @@ ExplodeTileAction.prototype.fillExecutionPlan = function(gameContext, executionP
     const { layerID, tileX, tileY } = actionIntent;
     const index = BattalionMap.getLayerIndex(layerID);
 
-    if(index === -1) {
+    if(index === WorldMap.INVALID_LAYER_ID) {
         return;
     }
 

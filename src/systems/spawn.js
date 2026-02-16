@@ -121,7 +121,7 @@ export const spawnServerEntity = function(gameContext, config, entityID) {
     entity.addCash(cash);
 }
 
-export const spawnClientEntity = function(gameContext, config, externalID = EntityManager.ID.INVALID) {
+export const spawnClientEntity = function(gameContext, config, externalID = EntityManager.INVALID_ID) {
     const { 
         x = -1,
         y = -1,
@@ -139,7 +139,7 @@ export const spawnClientEntity = function(gameContext, config, externalID = Enti
     const { world } = gameContext;
     const { entityManager } = world;
 
-    if(externalID === EntityManager.ID.INVALID) {
+    if(externalID === EntityManager.INVALID_ID) {
         externalID = entityManager.getNextID();
     }
 

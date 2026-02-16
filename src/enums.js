@@ -108,7 +108,6 @@ export const TILE_TYPE = {
 };
 
 export const TRAIT_TYPE = {
-    GROUNDED: "GROUNDED",
     STREAMLINED: "STREAMLINED",
     COUNTER_BATTERY: "COUNTER_BATTERY",
     STUN: "STUN",

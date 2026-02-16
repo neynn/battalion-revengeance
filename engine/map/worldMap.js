@@ -1,14 +1,18 @@
+import { EntityManager } from "../entity/entityManager.js";
 import { FloodFill } from "../pathfinders/floodFill.js";
 import { Autotiler } from "../tile/autotiler.js";
 import { TileManager } from "../tile/tileManager.js";
 import { Layer } from "./layer.js";
 
 export const WorldMap = function(id, width, height) {
+    const BUFFER_SIZE = width * height;
+
     this.id = id;
     this.width = width;
     this.height = height;
     this.layers = [];
-    this.entities = new Map();
+    this.entities = new Int16Array(BUFFER_SIZE);
+    this.entities.fill(EntityManager.INVALID_ID);
 }
 
 WorldMap.EMPTY_LAYER = Layer.create(0, Layer.TYPE.BIT_0);
@@ -86,63 +90,16 @@ WorldMap.prototype.getIndex = function(tileX, tileY) {
     return tileY * this.width + tileX;
 }
 
-WorldMap.prototype.getEntities = function(tileX, tileY) {
-    const index = this.getIndex(tileX, tileY);
-    const list = this.entities.get(index);
-
-    if(!list) {
-        return [];
-    }
-
-    return list;
-}
-
-WorldMap.prototype.getTopEntity = function(tileX, tileY) {
-    const index = this.getIndex(tileX, tileY);
-    const list = this.entities.get(index);
-
-    if(!list || list.length === 0) {
-        return null;
-    }
-
-    return list[list.length - 1];
-}
-
-WorldMap.prototype.getBottomEntity = function(tileX, tileY) {
-    const index = this.getIndex(tileX, tileY);
-    const list = this.entities.get(index);
-
-    if(!list || list.length === 0) {
-        return null;
-    }
-
-    return list[0];
-}
-
 WorldMap.prototype.isTileOccupied = function(tileX, tileY) {
-    const index = this.getIndex(tileX, tileY);
-    const list = this.entities.get(index);
+    const entityID = this.getEntity(tileX, tileY);
 
-    if(!list) {
-        return false;
-    }
-
-    return list.length > 0;
+    return entityID !== EntityManager.INVALID_ID;
 }
 
-WorldMap.prototype.hasEntity = function(tileX, tileY, entityID) {
-    const index = this.getIndex(tileX, tileY);
-    const list = this.entities.get(index);
+WorldMap.prototype.hasEntity = function(tileX, tileY, targetID) {
+    const entityID = this.getEntity(tileX, tileY);
 
-    if(list) {
-        for(let i = 0; i < list.length; i++) {
-            if(list[i] === entityID) {
-                return true;
-            }
-        }
-    }
-
-    return false;
+    return entityID === targetID;
 } 
 
 WorldMap.prototype.removeEntity = function(tileX, tileY, rangeX, rangeY, entityID) {
@@ -154,22 +111,7 @@ WorldMap.prototype.removeEntity = function(tileX, tileY, rangeX, rangeY, entityI
             const index = this.getIndex(locationX, locationY);
 
             if(index !== WorldMap.OUT_OF_BOUNDS) {
-                const list = this.entities.get(index);
-
-                if(!list) {
-                    continue;
-                }
-            
-                for(let i = 0; i < list.length; i++) {
-                    if(list[i] === entityID) {
-                        list.splice(i, 1);
-                        break;
-                    }
-                }
-            
-                if(list.length === 0) {
-                    this.entities.delete(index);
-                }
+                this.entities[index] = EntityManager.INVALID_ID;
             }
         }
     }
@@ -184,12 +126,8 @@ WorldMap.prototype.addEntity = function(tileX, tileY, rangeX, rangeY, entityID) 
             const index = this.getIndex(locationX, locationY);
 
             if(index !== WorldMap.OUT_OF_BOUNDS) {
-                const list = this.entities.get(index);
-
-                if(!list) {
-                    this.entities.set(index, [entityID]);
-                } else {
-                    list.push(entityID);
+                if(this.entities[index] === EntityManager.INVALID_ID) {
+                    this.entities[index] = entityID;
                 }
             }
         }
@@ -205,8 +143,15 @@ WorldMap.prototype.resize = function(width, height) {
         this.layers[i].resize(this.width, this.height, width, height);
     }
 
+    const BUFFER_SIZE = width * height;
+    const newEntities = new Int16Array(BUFFER_SIZE);
+
+    newEntities.fill(EntityManager.INVALID_ID);
+    Layer.copyBuffer(this.entities, newEntities, this.width, this.height, width, height);
+
     this.width = width;
     this.height = height;
+    this.entities = newEntities;
 }
 
 WorldMap.prototype.clearTile = function(layerID, tileX, tileY) {
@@ -255,14 +200,24 @@ WorldMap.prototype.getTile = function(layerID, tileX, tileY) {
     return item;
 }
 
+WorldMap.prototype.getEntity = function(tileX, tileY) {
+    const index = this.getIndex(tileX, tileY);
+
+    if(index !== WorldMap.OUT_OF_BOUNDS) {
+        return this.entities[index];
+    }
+
+    return EntityManager.INVALID_ID;
+}
+
 WorldMap.prototype.getAllEntitiesInArea = function(startX, startY, endX, endY) {
     const entities = [];
 
     for(let i = startY; i < endY; i++) {
         for(let j = startX; j < endX; j++) {
-            const entityID = this.getTopEntity(j, i);
+            const entityID = this.getEntity(j, i);
 
-            if(entityID !== null) {
+            if(entityID !== EntityManager.INVALID_ID) {
                 entities.push(entityID);
             }
         }
@@ -276,9 +231,9 @@ WorldMap.prototype.getEntitiesInAreaUnique = function(startX, startY, endX, endY
 
     for(let i = startY; i < endY; i++) {
         for(let j = startX; j < endX; j++) {
-            const entityID = this.getTopEntity(j, i);
+            const entityID = this.getEntity(j, i);
 
-            if(entityID !== null && !entities.includes(entityID)) {
+            if(entityID !== EntityManager.INVALID_ID && !entities.includes(entityID)) {
                 entities.push(entityID);
             }
         }

@@ -49,7 +49,7 @@ BattalionMap.getLayerIndex = function(name) {
     const index = BattalionMap.LAYER[name];
 
     if(index === undefined) {
-        return -1;
+        return WorldMap.INVALID_LAYER_ID;
     }
 
     return index;
@@ -69,7 +69,7 @@ BattalionMap.prototype.loadEdits = function(edits) {
 BattalionMap.prototype.editTile = function(layerID, tileX, tileY, tileID) {
     const index = this.getIndex(tileX, tileY);
 
-    if(index !== -1) {
+    if(index !== WorldMap.OUT_OF_BOUNDS) {
         const layer = this.getLayer(layerID);
 
         if(layer !== WorldMap.EMPTY_LAYER) {
