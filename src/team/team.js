@@ -90,8 +90,12 @@ Team.prototype.reduceCash = function(cash) {
     this.cash -= cash;
 }
 
-Team.prototype.hasEnoughCash = function(cash) {
-    return this.cash >= cash;
+Team.prototype.getAdjustedCost = function(cost) {
+    return cost * this.currency.exchangeRate;
+}
+
+Team.prototype.hasEnoughCash = function(cost) {
+    return this.cash >= cost;
 }
 
 Team.prototype.addBuilding = function(building) {

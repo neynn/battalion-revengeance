@@ -67,10 +67,9 @@ ProduceEntityAction.prototype.fillExecutionPlan = function(gameContext, executio
         return;
     }
 
+    const { cost, movementType } = typeRegistry.getEntityType(typeID);
     const { x, y } = entity.getTileByDirection(direction);
     const tileType = worldMap.getTileType(gameContext, x, y);
-    const entityType = typeRegistry.getEntityType(typeID);
-    const { cost, movementType } = entityType;
 
     //If the entity cannot move to a tile, it should not spawn there.
     if(tileType.getPassabilityCost(movementType) <= 0) {
@@ -81,7 +80,11 @@ ProduceEntityAction.prototype.fillExecutionPlan = function(gameContext, executio
         return;
     }
 
-    if(!entity.canPurchase(gameContext, typeID, cost)) {
+    const team = entity.getTeam(gameContext);
+    const adjustedCost = team.getAdjustedCost(cost);
+
+    //Entities purchase produced units, not the team.
+    if(!entity.canPurchase(gameContext, typeID, adjustedCost)) {
         return;
     }
 
@@ -98,7 +101,7 @@ ProduceEntityAction.prototype.fillExecutionPlan = function(gameContext, executio
         "tileX": x,
         "tileY": y,
         "typeID": typeID,
-        "cost": cost,
+        "cost": adjustedCost,
         "morale": 0
     });
 }

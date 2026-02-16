@@ -980,6 +980,7 @@
         "weaponType": "HEAVY",
         "armorType": "HEAVY",
         "movementRange": 4,
+        "cost": 400,
         "movementType": "TRACKED",
         "name": "ENTITY_NAME_ANNIHILATOR_TANK",
         "desc": "ENTITY_DESC_ANNIHILATOR_TANK",

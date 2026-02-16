@@ -154,6 +154,7 @@ const TeamFactory = {
             const teamConfig = teams[teamName];
             const override = settings.getOverride(teamName);
 
+            const tCash = teamConfig.cash ?? 0;
             const tFaction = teamConfig.faction ?? null;
             const tObjectives = teamConfig.objectives ?? [];
             const tColor = teamConfig.color ?? null;
@@ -187,6 +188,9 @@ const TeamFactory = {
             if(tName !== null) {
                 team.setCustomName(tName);
             }
+
+            //The map may have a preset cash for each team.
+            team.cash = tCash;
 
             for(const objectiveID of tObjectives) {
                 const config = allObjectives[objectiveID];

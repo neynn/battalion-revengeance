@@ -81,10 +81,10 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
         return;
     }
 
-    const entityType = typeRegistry.getEntityType(typeID);
-    const { cost } = entityType;
+    const { cost } = typeRegistry.getEntityType(typeID);
+    const adjustedCost = team.getAdjustedCost(cost);
 
-    if(!team.hasEnoughCash(cost)) {
+    if(!team.hasEnoughCash(adjustedCost)) {
         return;
     }
 
@@ -99,7 +99,7 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
         "tileX": tileX,
         "tileY": tileY,
         "typeID": typeID,
-        "cost": cost,
+        "cost": adjustedCost,
         "morale": 0
     });
 }
