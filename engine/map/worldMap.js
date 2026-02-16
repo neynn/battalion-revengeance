@@ -250,9 +250,9 @@ WorldMap.prototype.createLayer = function(type) {
 }
 
 WorldMap.prototype.fill2DGraph = function(startX, startY, range, onFill) {
-    const list = FloodFill.LISTS[range];
+    if(range >= 0 && range < FloodFill.LISTS.length) {
+        const list = FloodFill.LISTS[range];
 
-    if(list !== undefined) {
         for(let i = 0; i < list.length; i += 3) {
             const deltaX = list[i];
             const deltaY = list[i + 1];

@@ -22,13 +22,13 @@ export const FloodFill = function(straightCost, crossCost) {
     this.crossCost = crossCost;
 }
 
-FloodFill.LISTS = {
-    0: precomputeOffsets(0),
-    1: precomputeOffsets(1),
-    2: precomputeOffsets(2),
-    3: precomputeOffsets(3),
-    4: precomputeOffsets(4)
-};
+FloodFill.LISTS = [
+    precomputeOffsets(0),
+    precomputeOffsets(1),
+    precomputeOffsets(2),
+    precomputeOffsets(3),
+    precomputeOffsets(4)
+];
 
 FloodFill.RESPONSE = {
     IGNORE_NEXT: 0,
