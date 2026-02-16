@@ -32,7 +32,7 @@ export const BattalionEntity = function(id) {
     this.transportID = null;
     this.lastAttacker = EntityManager.ID.INVALID;
     this.turns = 0;
-    this.localCash = 0;
+    this.cash = 0;
 }
 
 BattalionEntity.FLAG = {
@@ -76,7 +76,7 @@ BattalionEntity.prototype.save = function() {
         "name": this.customName,
         "desc": this.customDesc,
         "turns": this.turns,
-        "cash": this.localCash
+        "cash": this.cash
     };
 }
 
@@ -89,7 +89,7 @@ BattalionEntity.prototype.load = function(data) {
     this.state = data.state;
     this.customID = data.id;
     this.turns = data.turns;
-    this.localCash = data.cash;
+    this.cash = data.cash;
     this.setDirection(data.direction);
     this.setHealth(data.health);
     this.setCustomInfo(data.name, data.desc);
@@ -252,7 +252,7 @@ BattalionEntity.prototype.getTileByDirection = function(direction) {
 }
 
 BattalionEntity.prototype.addCash = function(value) {
-    this.localCash += value;
+    this.cash += value;
 }
 
 BattalionEntity.prototype.lookAt = function(entity) {
@@ -1456,7 +1456,7 @@ BattalionEntity.prototype.triggersMine = function(gameContext, mine) {
 }
 
 BattalionEntity.prototype.canPurchase = function(gameContext, typeID, cost) {
-    if(cost > this.localCash) {
+    if(cost > this.cash) {
         return false;
     }
 
@@ -1468,5 +1468,5 @@ BattalionEntity.prototype.canPurchase = function(gameContext, typeID, cost) {
 }
 
 BattalionEntity.prototype.reduceCash = function(cash) {
-    this.localCash -= cash;
+    this.cash -= cash;
 }

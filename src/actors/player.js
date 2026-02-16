@@ -11,8 +11,6 @@ import { MapInspector } from "./player/inspector.js";
 export const Player = function(id, camera) {
     BattalionActor.call(this, id);
 
-    this.tileX = -1;
-    this.tileY = -1;
     this.camera = camera;
     this.inspector = new MapInspector(camera);
 
@@ -105,17 +103,15 @@ Player.prototype.activeUpdate = function(gameContext) {
 }
 
 Player.prototype.update = function(gameContext) {
-    const { x, y } = getCursorTile(gameContext);
+    const hoverChanged = this.inspector.update(gameContext, this);
 
-    if(x !== this.tileX || y !== this.tileY) {
+    if(hoverChanged) {
         this.states.eventEnter(gameContext, Player.EVENT.TILE_CHANGE, {
-            "x": x,
-            "y": y
+            "x": this.inspector.lastHoverX,
+            "y": this.inspector.lastHoverY
         });
     }
 
-    this.tileX = x;
-    this.tileY = y;
     this.states.update(gameContext);
 }
 

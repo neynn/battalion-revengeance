@@ -6,4 +6,4 @@ Model for Destroyer
 Data for Destroyer
 
 Barges can spawn with "CARGO". Cargo is the id of an EntityType.
-Maintenance trait that heals 5HP every ROUND. StartTurn -> query entities -> filter by MAINTENANCE -> heal.
+Maintenance trait that heals 5HP every ROUND. StartTurn -> query entities -> filter by MAINTENANCE -> heal

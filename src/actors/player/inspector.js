@@ -1,9 +1,12 @@
+import { getCursorTile } from "../../../engine/camera/contextHelper.js";
 import { Autotiler } from "../../../engine/tile/autotiler.js";
 import { PATH_FLAG, RANGE_TYPE, TILE_ID } from "../../enums.js";
 
 export const MapInspector = function(camera) {
     this.lastX = -1;
     this.lastY = -1;
+    this.lastHoverX = -1;
+    this.lastHoverY = -1;
     this.state = MapInspector.STATE.NONE;
     this.camera = camera;
     this.nodeMap = new Map();
@@ -244,4 +247,25 @@ MapInspector.prototype.inspect = function(gameContext, inspector, tileX, tileY) 
     this.inspectTile(gameContext, tileX, tileY);
 
     return this.state;
+}
+
+MapInspector.prototype.update = function(gameContext, inspector) {
+    const { x, y } = getCursorTile(gameContext);
+    let hoverChanged = false;
+
+    if(x !== this.tileX || y !== this.tileY) {
+        hoverChanged = true;
+    }
+
+    this.lastHoverX = x;
+    this.lastHoverY = y;
+
+    const entity = inspector.getVisibleEntity(gameContext, x, y);
+
+    //TODO: get VISIBLE entity and check cash
+    if(entity) {
+        console.log(entity.cash);
+    }
+
+    return hoverChanged;
 }

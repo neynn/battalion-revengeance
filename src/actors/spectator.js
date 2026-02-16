@@ -5,8 +5,6 @@ import { MapInspector } from "./player/inspector.js";
 export const Spectator = function(id, camera) {
     BattalionActor.call(this, id);
 
-    this.tileX = -1;
-    this.tileY = -1;
     this.camera = camera;
     this.inspector = new MapInspector(camera);
 }
@@ -38,14 +36,11 @@ Spectator.prototype.loadKeybinds = function(gameContext) {
 
 
 Spectator.prototype.update = function(gameContext) {
-    const { x, y } = getCursorTile(gameContext);
+    const hoverChanged = this.inspector.update(gameContext, this);
 
-    if(x !== this.tileX || y !== this.tileY) {
-        //TILE CHANGED!
+    if(hoverChanged) {
+        //TODO: Update camera.
     }
-
-    this.tileX = x;
-    this.tileY = y;
 }
 
 Spectator.prototype.getVisibleEntity = function(gameContext, tileX, tileY) {
