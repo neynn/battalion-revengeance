@@ -2160,5 +2160,15 @@
         "texture": "bastion",
         "frameTime": 0.1,
         "autoFrames": {"start": 1,"jump": 1,"repeat": 1}
+    },
+    "depot": {
+        "texture": "depot",
+        "frameTime": 0.1,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 1}
+    },
+    "supply_attack": {
+        "texture": "supply_attack",
+        "frameTime": 0.1,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 8}
     }
 }

@@ -50,7 +50,7 @@
 
         { "x": 3, "y": 6, "stealth": true, "type": "STEALTH_TANK", "team": "TRANSKAL" },
         { "x": 3, "y": 7, "type": "ANNIHILATOR_TANK", "team": "TRANSKAL" },
-        { "x": 5, "y": 4, "direction":"SOUTH", "type": "LEVIATHAN_BARGE", "team": "SOMERTIN" },
+        { "x": 5, "y": 4, "direction":"SOUTH", "type": "AKONTIO", "team": "SOMERTIN" },
         { "x": 8, "y": 4, "direction":"SOUTH", "type": "U_BOAT", "team": "SOMERTIN" },
         { "x": 8, "y": 3, "id": "BOAT_1", "direction":"SOUTH", "type": "U_BOAT", "team": "TRANSKAL" },
         { "x": 4, "y": 4, "stealth": true, "direction":"SOUTH", "type": "U_BOAT", "team": "TRANSKAL" },
@@ -68,7 +68,8 @@
         { "x": 3, "y": 9, "type": "EAGLE_STRIKER", "team": "SOMERTIN", "direction": "WEST" },
         { "x": 7, "y": 3, "health": 100, "type": "JAMMER_TRUCK", "team": "TRANSKAL", "direction": "WEST" },
         { "x": 7, "y": 5, "type": "JAMMER_TRUCK", "team": "DRAGOON", "direction": "WEST" },
-        { "x": 8, "y": 5, "stealth": true, "type": "STEALTH_TANK", "team": "DRAGOON" }
+        { "x": 8, "y": 5, "stealth": true, "type": "STEALTH_TANK", "team": "DRAGOON" },
+        { "x": 8, "y": 6, "type": "DEPOT", "team": "SOMERTIN" }
     ],
     "buildings": [
         { "x": 0, "y": 6, "type": "AIR_CONTROL", "team": "SOMERTIN" },

@@ -556,6 +556,9 @@
             "move": "truck_move",
             "heal": "heal"
         },
+        "effects": {
+            "heal": "supply_attack"
+        },
         "sprites": {
             "idle_right": "supply_truck_idle_right",
             "idle_left": "supply_truck_idle_left",
@@ -1565,6 +1568,34 @@
             "fire_left": "bastion",
             "fire_down": "bastion",
             "fire_up": "bastion"
+        }
+    },
+    "DEPOT": {
+        "health": 100,
+        "damage": 35,
+        "weaponType": "NONE",
+        "minRange": 1,
+        "maxRange": 4,
+        "armorType": "MEDIUM",
+        "movementType": "STATIONARY",
+        "name": "ENTITY_NAME_DEPOT",
+        "desc": "ENTITY_DESC_DEPOT",
+        "traits": ["FIXED", "SUPPLY_DISTRIBUTION"],
+        "sounds": {
+            "heal": "heal"
+        },
+        "effects": {
+            "heal": "supply_attack"
+        },
+        "sprites": {
+            "idle_right": "depot",
+            "idle_left": "depot",
+            "idle_down": "depot",
+            "idle_up": "depot",
+            "fire_right": "depot",
+            "fire_left": "depot",
+            "fire_down": "depot",
+            "fire_up": "depot"
         }
     },
     "FORTRESS": {

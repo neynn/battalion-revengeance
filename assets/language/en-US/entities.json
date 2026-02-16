@@ -194,6 +194,9 @@
     "ENTITY_NAME_BASTION": "Bastion",
     "ENTITY_DESC_BASTION": "Static fortifications that will take the best of enemy bombardments and keep standing.",
 
+    "ENTITY_NAME_DEPOT": "Supply Depot",
+    "ENTITY_DESC_DEPOT": "Storehouse of food, ammunitions and all supplies your troops need to function.",
+
     "ENTITY_NAME_FORTRESS": "Fortress",
     "ENTITY_DESC_FORTRESS": "A formidable citadel capable of holding back an army all by itself.",
 

@@ -2,5 +2,7 @@ repairAction -> start repair and finish repair on the next active turn. onHit ->
 
 TweenManager for effects.
 
-Model for Eagle Striker, Destroyer
+Model for Destroyer
 Data for Destroyer
+
+Barges can spawn with "CARGO". Cargo is the id of an EntityType.

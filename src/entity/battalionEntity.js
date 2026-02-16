@@ -697,8 +697,8 @@ BattalionEntity.prototype.isHealValid = function(gameContext, target) {
         return false;
     }
 
-    //Only suppliers can heal.
-    if(!this.hasTrait(TRAIT_TYPE.SUPPLY_DISTRIBUTION)) {
+    //Only suppliers can heal. Stationary entities cannot be healed by supply distributors,
+    if(!this.hasTrait(TRAIT_TYPE.SUPPLY_DISTRIBUTION) || target.config.movementType === MOVEMENT_TYPE.STATIONARY) {
         return false;
     }
 

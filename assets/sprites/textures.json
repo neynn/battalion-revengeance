@@ -1512,5 +1512,29 @@
             "rows": 1,
             "columns": 1
         }
+    },
+    "supply_attack": {
+        "directory": ["assets","sprites","textures","effects"],
+        "source": "supply_attack.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 1,
+            "columns": 8
+        }
+    },
+    "depot": {
+        "directory": ["assets","sprites","textures"],
+        "source": "depot.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 1,
+            "columns": 1
+        }
     }
 }
