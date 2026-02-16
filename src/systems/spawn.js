@@ -94,7 +94,8 @@ export const spawnServerEntity = function(gameContext, config, entityID) {
         team = null,
         direction = null,
         health = -1,
-        stealth = false
+        stealth = false,
+        cash = 0
     } = config;
     const entity = createServerEntityObject(gameContext, entityID, team, type, x, y);
 
@@ -116,6 +117,8 @@ export const spawnServerEntity = function(gameContext, config, entityID) {
     if(stealth && entity.canCloak()) {
         entity.setCloaked();
     }
+
+    entity.addCash(cash);
 }
 
 export const spawnClientEntity = function(gameContext, config, externalID = EntityManager.ID.INVALID) {
@@ -129,7 +132,8 @@ export const spawnClientEntity = function(gameContext, config, externalID = Enti
         team = null,
         direction = null,
         health = -1,
-        stealth = false
+        stealth = false,
+        cash = 0
     } = config;
 
     const { world } = gameContext;
@@ -142,10 +146,8 @@ export const spawnClientEntity = function(gameContext, config, externalID = Enti
     const entity = createClientEntityObject(gameContext, externalID, team, type, x, y);
 
     if(!entity) {
-        return EntityManager.ID.INVALID;
+        return;
     }
-
-    const entityID = entity.getID();
 
     entity.setCustomID(id);
     entity.setCustomInfo(name, desc);
@@ -163,9 +165,8 @@ export const spawnClientEntity = function(gameContext, config, externalID = Enti
         entity.setOpacity(0);
     }
 
+    entity.addCash(cash);
     entity.playIdle(gameContext);
-
-    return entityID;
 }
 
 export const spawnServerBuilding = function(gameContext, worldMap, config) {

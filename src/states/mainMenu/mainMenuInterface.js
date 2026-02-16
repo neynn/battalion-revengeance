@@ -26,7 +26,7 @@ MainMenuInterface.prototype.load = function(gameContext, stateMachine) {
     const buttonEdit = this.getElement("BUTTON_EDIT");
     const buttonExtra = this.getElement("BUTTON_EXTRA");
 
-    const spritePlay = spriteManager.createSprite("stealth_tank_idle_right");
+    const spritePlay = spriteManager.createSprite("lancer_tank_idle_right");
     const spriteVersus = spriteManager.createSprite("red_battletank_idle");
     const spriteEdit = spriteManager.createSprite("hunter_support_idle_right");
     const spriteExtra = spriteManager.createSprite("aleph_idle_down");
