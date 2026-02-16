@@ -63,7 +63,9 @@
         { "x": 6, "y": 8, "type": "ANTI_TANK", "team": "SOMERTIN", "direction": "WEST" },
         { "x": 6, "y": 9, "type": "ROLAND", "team": "SOMERTIN", "direction": "WEST" },
         { "x": 7, "y": 8, "type": "ROLAND", "team": "TRANSKAL", "direction": "WEST" },
-        { "x": 7, "y": 2, "health": 100, "type": "JAMMER_TRUCK", "team": "TRANSKAL", "direction": "WEST" },
+        { "x": 4, "y": 8, "type": "STIHIE", "team": "SOMERTIN", "direction": "WEST" },
+        { "x": 4, "y": 9, "stealth": true, "type": "ZEUS", "team": "SOMERTIN", "direction": "WEST" },
+        { "x": 7, "y": 3, "health": 100, "type": "JAMMER_TRUCK", "team": "TRANSKAL", "direction": "WEST" },
         { "x": 7, "y": 5, "type": "JAMMER_TRUCK", "team": "DRAGOON", "direction": "WEST" },
         { "x": 8, "y": 5, "stealth": true, "type": "STEALTH_TANK", "team": "DRAGOON" }
     ],
