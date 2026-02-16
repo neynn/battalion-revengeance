@@ -1348,7 +1348,7 @@
         "movementType": "FLIGHT",
         "name": "ENTITY_NAME_CONDOR_BOMBER",
         "desc": "ENTITY_DESC_CONDOR_BOMBER",
-        "traits": ["CAVITATION_EXPLOSION", "DEPTH_CHARGE"],
+        "traits": ["GROUNDED", "CAVITATION_EXPLOSION", "DEPTH_CHARGE"],
         "sounds": {
             "move": "bomber_move",
             "fire": "bomber_fire"
@@ -1373,7 +1373,7 @@
         "movementType": "FLIGHT",
         "name": "ENTITY_NAME_SOLOVEY_BOMBER",
         "desc": "ENTITY_DESC_SOLOVEY_BOMBER",
-        "traits": ["ANTI_STRUCTURE"],
+        "traits": ["GROUNDED", "ANTI_STRUCTURE"],
         "sounds": {
             "move": "bomber_move",
             "fire": "bomber_fire"

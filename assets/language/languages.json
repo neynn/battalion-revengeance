@@ -3,6 +3,7 @@
         "directory": ["assets", "language", "en-US"],
         "sources": [
             "system.json",
+            "tiles.json",
             "traits.json",
             "entities.json",
             "factions.json",

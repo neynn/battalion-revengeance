@@ -1,4 +1,9 @@
 {
+    "GROUNDED": {
+        "name": "TRAIT_NAME_GROUNDED",
+        "desc": "TRAIT_DESC_GROUNDED",
+        "icon": null
+    },
     "COUNTER_BATTERY": {
         "name": "TRAIT_NAME_COUNTER_BATTERY",
         "desc": "TRAIT_DESC_COUNTER_BATTERY",

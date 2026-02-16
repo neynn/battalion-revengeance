@@ -658,9 +658,16 @@ BattalionEntity.prototype.isAttackValid = function(gameContext, target) {
         return false;
     }
 
-    //Air units can only be attacked with skysweeper.
-    if(target.config.category === ENTITY_CATEGORY.AIR && !this.hasTrait(TRAIT_TYPE.SKYSWEEPER)) {
-        return false;
+    if(target.config.category === ENTITY_CATEGORY.AIR) {
+        //Air units can only be attacked with skysweeper.
+        if(!this.hasTrait(TRAIT_TYPE.SKYSWEEPER)) {
+            return false;
+        }
+
+        //Air units can cannot be attacked with GROUNDED.
+        if(this.hasTrait(TRAIT_TYPE.GROUNDED)) {
+            return false;
+        }
     }
 
     //Seabound entities can only attack SEA units.
