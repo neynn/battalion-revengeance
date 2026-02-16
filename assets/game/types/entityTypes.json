@@ -1478,6 +1478,9 @@
             "move": "bomber_move",
             "fire": "bomber_fire"
         },
+        "effects": {
+            "fire": "gas_attack"
+        },
         "sprites": {
             "idle_right": "aleph_idle_right",
             "idle_left": "aleph_idle_left",

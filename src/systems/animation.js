@@ -1,3 +1,4 @@
+import { ClientBattalionEntity } from "../entity/clientBattalionEntity.js";
 import { ATTACK_TYPE, LAYER_TYPE } from "../enums.js";
 import { playSFX } from "./sound.js";
 
@@ -19,7 +20,7 @@ export const playExplosion = function(gameContext, tileX, tileY) {;
 }
 
 export const playHealEffect = function(gameContext, entity, target) {
-    const effectType = entity.getHealEffect();
+    const effectType = entity.getEffect(ClientBattalionEntity.EFFECT_TYPE.HEAL);
     const { tileX, tileY } = target;
 
     playGFX(gameContext, effectType, tileX, tileY);
@@ -28,7 +29,7 @@ export const playHealEffect = function(gameContext, entity, target) {
 export const playAttackEffect = function(gameContext, entity, target, resolutions) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const effectType = entity.getAttackEffect();
+    const effectType = entity.getEffect(ClientBattalionEntity.EFFECT_TYPE.FIRE);
     const attackType = entity.getAttackType();
 
     switch(attackType) {

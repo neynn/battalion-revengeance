@@ -1,6 +1,6 @@
 import { playGFX } from "../systems/animation.js";
 import { BattalionEntity } from "./battalionEntity.js";
-import { ATTACK_TYPE, DIRECTION } from "../enums.js";
+import { DIRECTION } from "../enums.js";
 
 export const ClientBattalionEntity = function(id, view) {
     BattalionEntity.call(this, id);
@@ -43,12 +43,6 @@ ClientBattalionEntity.DEFAULT_EFFECTS = {
     [ClientBattalionEntity.EFFECT_TYPE.DEATH]: "explosion",
     [ClientBattalionEntity.EFFECT_TYPE.HEAL]: "supply_attack",
     [ClientBattalionEntity.EFFECT_TYPE.FIRE]: "small_attack"
-};
-
-ClientBattalionEntity.DEFAULT_ATTACK_EFFECTS = {
-    [ATTACK_TYPE.REGULAR]: "small_attack",
-    [ATTACK_TYPE.DISPERSION]: "gas_attack",
-    [ATTACK_TYPE.STREAMBLAST]: "small_attack" //TODO: Implement
 };
 
 ClientBattalionEntity.DEFAULT_SOUNDS = {
@@ -104,7 +98,7 @@ ClientBattalionEntity.prototype.playMove = function(gameContext) {
 }
 
 ClientBattalionEntity.prototype.playDeath = function(gameContext) {
-    const spriteType = this.getDeathEffect();
+    const spriteType = this.getEffect(ClientBattalionEntity.EFFECT_TYPE.DEATH);
 
     this.state = BattalionEntity.STATE.DEAD;
     this.playSound(gameContext, ClientBattalionEntity.SOUND_TYPE.DEATH);
@@ -224,37 +218,11 @@ ClientBattalionEntity.prototype.getSpriteType = function() {
     return ClientBattalionEntity.SPRITE_TYPE.IDLE_RIGHT;
 }
 
-ClientBattalionEntity.prototype.getHealEffect = function() {
-    let sprite = this.config.effects[ClientBattalionEntity.EFFECT_TYPE.HEAL];
+ClientBattalionEntity.prototype.getEffect = function(type) {
+    let sprite = this.config.effects[type];
 
     if(!sprite) {
-        sprite = ClientBattalionEntity.DEFAULT_EFFECTS[ClientBattalionEntity.EFFECT_TYPE.HEAL];
-    }
-
-    return sprite;
-}
-
-ClientBattalionEntity.prototype.getDeathEffect = function() {
-    let sprite = this.config.effects[ClientBattalionEntity.EFFECT_TYPE.DEATH];
-
-    if(!sprite) {
-        sprite = ClientBattalionEntity.DEFAULT_EFFECTS[ClientBattalionEntity.EFFECT_TYPE.DEATH];
-    }
-
-    return sprite;
-}
-
-ClientBattalionEntity.prototype.getAttackEffect = function() {
-    let sprite = this.config.effects[ClientBattalionEntity.EFFECT_TYPE.FIRE];
-
-    if(!sprite) {
-        const attackType = this.getAttackType();
-
-        sprite = ClientBattalionEntity.DEFAULT_ATTACK_EFFECTS[attackType];
-
-        if(!sprite) {
-            sprite = ClientBattalionEntity.DEFAULT_EFFECTS[ClientBattalionEntity.EFFECT_TYPE.FIRE];
-        }
+        sprite = ClientBattalionEntity.DEFAULT_EFFECTS[type];
     }
 
     return sprite;
