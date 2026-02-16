@@ -1301,14 +1301,14 @@
             "fire": "raptor_fire"
         },
         "sprites": {
-            "idle_right": "vulture_drone_idle_right",
-            "idle_left": "vulture_drone_idle_left",
-            "idle_down": "vulture_drone_idle_down",
-            "idle_up": "vulture_drone_idle_up",
-            "fire_right": "vulture_drone_fire_right",
-            "fire_left": "vulture_drone_fire_left",
-            "fire_down": "vulture_drone_fire_down",
-            "fire_up": "vulture_drone_fire_up"
+            "idle_right": "eagle_striker_idle_right",
+            "idle_left": "eagle_striker_idle_left",
+            "idle_down": "eagle_striker_idle_down",
+            "idle_up": "eagle_striker_idle_up",
+            "fire_right": "eagle_striker_fire_right",
+            "fire_left": "eagle_striker_fire_left",
+            "fire_down": "eagle_striker_fire_down",
+            "fire_up": "eagle_striker_fire_up"
         }
     },
     "BLIMP": {
@@ -1445,7 +1445,7 @@
         "movementType": "FLIGHT",
         "name": "ENTITY_NAME_STIHIE",
         "desc": "ENTITY_DESC_STIHIE",
-        "traits": ["SKYSWEEPER", "HIGH_ALTITUDE", "STEALTH", "UNFAIR"],
+        "traits": ["SKYSWEEPER", "HIGH_ALTITUDE", "STEALTH"],
         "sounds": {
             "move": "zeus_move",
             "fire": "zeus_fire"

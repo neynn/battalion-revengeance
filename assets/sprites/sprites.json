@@ -2107,5 +2107,53 @@
         "frameTime": 0.1,
         "shift": {"x":-4,"y":0},
         "autoFrames": {"start": 57,"jump": 1,"repeat": 8}
+    },
+    "eagle_striker_idle_up": {
+        "texture": "eagle_striker",
+        "frameTime": 0.2,
+        "anchor": {"x":27,"y":42},
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 4}
+    },
+    "eagle_striker_idle_right": {
+        "texture": "eagle_striker",
+        "frameTime": 0.2,
+        "anchor": {"x":30,"y":42},
+        "autoFrames": {"start": 9,"jump": 1,"repeat": 4}
+    },
+    "eagle_striker_idle_down": {
+        "texture": "eagle_striker",
+        "frameTime": 0.2,
+        "anchor": {"x":27,"y":42},
+        "autoFrames": {"start": 17,"jump": 1,"repeat": 4}
+    },
+    "eagle_striker_idle_left": {
+        "texture": "eagle_striker",
+        "frameTime": 0.2,
+        "anchor": {"x":25,"y":42},
+        "autoFrames": {"start": 25,"jump": 1,"repeat": 4}
+    },
+    "eagle_striker_fire_up": {
+        "texture": "eagle_striker",
+        "frameTime": 0.1,
+        "anchor": {"x":29,"y":42},
+        "autoFrames": {"start": 33,"jump": 1,"repeat": 8}
+    },
+    "eagle_striker_fire_right": {
+        "texture": "eagle_striker",
+        "frameTime": 0.1,
+        "anchor": {"x":30,"y":42},
+        "autoFrames": {"start": 41,"jump": 1,"repeat": 8}
+    },
+    "eagle_striker_fire_down": {
+        "texture": "eagle_striker",
+        "frameTime": 0.1,
+        "anchor": {"x":29,"y":42},
+        "autoFrames": {"start": 49,"jump": 1,"repeat": 8}
+    },
+    "eagle_striker_fire_left": {
+        "texture": "eagle_striker",
+        "frameTime": 0.1,
+        "anchor": {"x":29,"y":42},
+        "autoFrames": {"start": 57,"jump": 1,"repeat": 8}
     }
 }
