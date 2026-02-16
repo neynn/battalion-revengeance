@@ -167,6 +167,9 @@
     "ENTITY_NAME_SOLOVEY_BOMBER": "Solovey Superbomber",
     "ENTITY_DESC_SOLOVEY_BOMBER": "A heavy, sluggish bomber with massive payload. Devastating against infrastructure and fortifications.",
 
+    "ENTITY_NAME_AKONTIO": "Akontio Torpedor",
+    "ENTITY_DESC_AKONTIO": "According to the principle of cavitation, this plane fucks ships harder than Azur Lane players would.",
+
     "ENTITY_NAME_ZEUS": "Zeus Stormlord",
     "ENTITY_DESC_ZEUS": "Avant-garde technology, achieves much superior dogfighting and bombing results than any other plane.",
 
@@ -187,6 +190,12 @@
 
     "ENTITY_NAME_BLOCKADE": "Blockade",
     "ENTITY_DESC_BLOCKADE": "Cheap and easy to erect static fortifications capable of delaying enemy advance for a short while.",
+
+    "ENTITY_NAME_BASTION": "Bastion",
+    "ENTITY_DESC_BASTION": "Static fortifications that will take the best of enemy bombardments and keep standing.",
+
+    "ENTITY_NAME_FORTRESS": "Fortress",
+    "ENTITY_DESC_FORTRESS": "A formidable citadel capable of holding back an army all by itself.",
 
     "ENTITY_NAME_MEME_WTC": "World Trade Center",
     "ENTITY_DESC_MEME_WTC": "ENTITY_DESC_MEME_WTC",

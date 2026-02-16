@@ -1500,5 +1500,17 @@
             "rows": 8,
             "columns": 8
         }
+    },
+    "bastion": {
+        "directory": ["assets","sprites","textures"],
+        "source": "bastion.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 56,
+            "frameHeight": 56,
+            "rows": 1,
+            "columns": 1
+        }
     }
 }

@@ -42,7 +42,7 @@ TypeCategory.prototype.getType = function(typeID) {
     const type = this.types[typeID];
 
     if(!type) {
-        console.error(`Type ${typeID} is not registered in category ${this.DEBUG_NAME}! Using stub!`);
+        //console.error(`Type ${typeID} is not registered in category ${this.DEBUG_NAME}! Using stub!`);
         return this.stub;
     }
 

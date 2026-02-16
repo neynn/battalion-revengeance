@@ -2155,5 +2155,10 @@
         "frameTime": 0.1,
         "anchor": {"x":29,"y":42},
         "autoFrames": {"start": 57,"jump": 1,"repeat": 8}
+    },
+    "bastion": {
+        "texture": "bastion",
+        "frameTime": 0.1,
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 1}
     }
 }

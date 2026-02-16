@@ -1,19 +1,16 @@
 {
   	"UNIT_DESC_CAVALRY": "Millenia have not yet seen the humble horseman be out of a role in warfare",
 	"UNIT_DESC_SCADP": "This wonderweapon will subject masses of enemy infantry to HORRIBLE suffering.",
-	"UNIT_DESC_TROSKY_WARMACHINE": "A marvel of engineering, can fully produce other units on the go",
 	"UNIT_DESC_SISU_APC": "A vehicle ultraspecialized in crossing difficult terrain and harsh conditions. Can perform admirably just about anywhere",
 	"UNIT_DESC_BOING_SH11_MEGOCOCKTER": "Overcompensating for the lack of competent ground forces with a supremely versatile close air support machine",
 	"UNIT_DESC_HOWITZER_BATTERY": "So long as the frontline holds, artillery will be the king of warfare.",
 	"UNIT_DESC_AA_ARTILLERY": "Designed with versatility in mind, that it may be compatible with both AA and HE shells.",
-	"UNIT_DESC_ANTI_TANK_ARTILLERY": "Armour-piercing artillery designed to wreck tanks",
 	"UNIT_DESC_MOLDAN_BATTERY": "The terror of infantry everywhere, and can also dodge counter-battery fire.",
 	"UNIT_DESC_SPAB": "Expensive piece of military hardware. Although on paper impressive, it is only feasible in several situations",
 	"UNIT_DESC_ROCKET_TANK": "Back in that crazy era, the astartian nations were experimenting strapping missiles to any vehicle type they could",
 	"UNIT_DESC_PULA_SRBMDP": "No better way to prove your superiority than by having the bigger dick. These giant flying dildos, for example",
 	"UNIT_DESC_TUGARIN_ATMB": "Specialized system that utilizes ballistic missiles to terrorize tanks and planes alike",
 	"UNIT_DESC_PELICAN_TRANSPORT": "We have one job. Fly in fresh boys; and fly out wounded men",
-	"UNIT_DESC_AKONTIO_TORPEDOR": "According to the principle of cavitation, this plane fucks ships harder than Azur Lane players would.",
 	"UNIT_DESC_DESTROYER": "Cheap, reliable and versatile vessel.",
 	"UNIT_DESC_AIRCRAFT_CARRIER": "Carriers are the undisputed kings of the seas. Really expensive, but they'll blast any ship.",
 	"UNIT_DESC_SUPERCARRIER": "Supremely expensive steel monsters, but nearly undefeatable. One of these is enough to defeat an entire armada",
@@ -22,7 +19,5 @@
 	"UNIT_DESC_COASTAL_BATTERY": "A battery of 400-mm artillery bores pointed at the sea. Will shatter enemy ships, but will not harm land or air units at all.",
 	"UNIT_DESC_WORKSHOP": "A temporary industrial installation capable of generating funds for your war effort",
 	"UNIT_DESC_MISSILE_SILO": "A missile box on top of a classic turret. Looks like a TV head dalek but is quite powerful. It can counter any land or air unit",
-	"UNIT_DESC_BASTION": "Static fortifications that will take the best of enemy bombardments and keep standing",
-	"UNIT_DESC_SUPPLY_DEPOT": "Storehouse of food, ammunitions and all supplies your troops need to function",
-	"UNIT_DESC_FORTRESS": "A formidable citadel capable of holding back an army all by itself"
+	"UNIT_DESC_SUPPLY_DEPOT": "Storehouse of food, ammunitions and all supplies your troops need to function"
 }

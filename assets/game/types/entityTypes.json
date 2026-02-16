@@ -1395,7 +1395,7 @@
         "movementType": "FLIGHT",
         "name": "ENTITY_NAME_AKONTIO",
         "desc": "ENTITY_DESC_AKONTIO",
-        "traits": ["SEABOUND", "CAVITATION_EXPLOSION", "DEPTH_CHARGE"],
+        "traits": ["SEABOUND", "DEPTH_CHARGE", "CAVITATION_EXPLOSION", "BLIND_SPOT"],
         "sounds": {
             "move": "bomber_move",
             "fire": "akontio_fire"
@@ -1542,6 +1542,54 @@
             "idle_left": "blockade_idle_left",
             "idle_down": "blockade_idle_down",
             "idle_up": "blockade_idle_up"
+        }
+    },
+    "BASTION": {
+        "health": 250,
+        "damage": 50,
+        "weaponType": "NONE",
+        "armorType": "HEAVY",
+        "movementType": "STATIONARY",
+        "name": "ENTITY_NAME_BASTION",
+        "desc": "ENTITY_DESC_BASTION",
+        "traits": ["FIXED", "IRREPARABLE"],
+        "sounds": {
+            "fire": "turret_fire"
+        },
+        "sprites": {
+            "idle_right": "bastion",
+            "idle_left": "bastion",
+            "idle_down": "bastion",
+            "idle_up": "bastion",
+            "fire_right": "bastion",
+            "fire_left": "bastion",
+            "fire_down": "bastion",
+            "fire_up": "bastion"
+        }
+    },
+    "FORTRESS": {
+        "health": 1000,
+        "damage": 50,
+        "weaponType": "MEDIUM",
+        "armorType": "HEAVY",
+        "movementType": "STATIONARY",
+        "minRange": 1,
+        "maxRange": 7,
+        "name": "ENTITY_NAME_FORTRESS",
+        "desc": "ENTITY_DESC_FORTRESS",
+        "traits": ["FIXED", "IRREPARABLE", "SKYSWEEPER"],
+        "sounds": {
+            "fire": "turret_fire"
+        },
+        "sprites": {
+            "idle_right": "bastion",
+            "idle_left": "bastion",
+            "idle_down": "bastion",
+            "idle_up": "bastion",
+            "fire_right": "bastion",
+            "fire_left": "bastion",
+            "fire_down": "bastion",
+            "fire_up": "bastion"
         }
     },
     "MEME_WTC": {

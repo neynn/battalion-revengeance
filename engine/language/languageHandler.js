@@ -14,6 +14,13 @@ export const LanguageHandler = function() {
 
 LanguageHandler.STUB_LANGUAGE = new Language("??-??", "", []);
 
+LanguageHandler.TEST_CODE = {
+    VALID: 0,
+    INVALID_INPUT: 1,
+    MISSING_TRANSLATION: 2,
+    EMPTY_TRANSLATION: 3
+};
+
 LanguageHandler.LANGUAGE = {
     ENGLISH: "en-US",
     GERMAN: "de-DE",
@@ -81,17 +88,36 @@ LanguageHandler.prototype.selectLanguage = function(languageID) {
     }
 }
 
+LanguageHandler.prototype.getSystemTranslationCode = function(key) {
+    if(typeof key !== "string") {
+        return LanguageHandler.TEST_CODE.INVALID_INPUT;
+    }
+
+    const { translations } = this.currentLanguage;
+    const translation = translations[key];
+
+    if(translation === undefined) {
+        return LanguageHandler.TEST_CODE.MISSING_TRANSLATION;
+    }
+
+    if(translation.length === 0) {
+        return LanguageHandler.TEST_CODE.EMPTY_TRANSLATION;
+    }
+
+    return LanguageHandler.TEST_CODE.VALID;
+}
+
 LanguageHandler.prototype.getSystemTranslation = function(key) {
     if(typeof key !== "string") {
         return "";
     }
 
-    const translation = this.currentLanguage.getTranslation(key);
+    const { translations } = this.currentLanguage;
+    const translation = translations[key];
 
-    if(translation.length === 0) {
+    //!"" = true. Thanks JavaScript.
+    if(!translation) {
         if(this.flags & LanguageHandler.FLAG.IS_STRICT) {
-            console.warn(`Missing translation! <${key}> in ${this.currentLanguage.getID()}`);
-
             return key;
         }
     }

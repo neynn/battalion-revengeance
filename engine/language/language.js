@@ -85,10 +85,6 @@ Language.prototype.loadTranslations = function(files) {
     }
 }
 
-Language.prototype.getTranslation = function(key) {
-    return this.translations[key] ?? "";
-}
-
 Language.prototype.getMissingTags = function(template) {
     const missing = new Set();
 
