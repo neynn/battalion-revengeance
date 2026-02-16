@@ -200,16 +200,6 @@ MapInspector.prototype.showPath = function(autotiler, oPath, entityX, entityY) {
     this.camera.pathOverlay.add(tileID, entityX, entityY);
 }
 
-MapInspector.prototype.inspectEntity = function(gameContext, entity) {
-    this.showEntity(gameContext, entity);
-
-    console.log("Inspected Entity", {
-        "dName":  entity.getName(gameContext),
-        "dDesc": entity.getDescription(gameContext),
-        "entity": entity
-    });
-}
-
 MapInspector.prototype.inspect = function(gameContext, inspector, tileX, tileY) {
     const { world } = gameContext;
     const { mapManager } = world;
