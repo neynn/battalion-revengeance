@@ -342,6 +342,8 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
         return EntityType.MAX_MOVE_COST;
     }
 
+    //Airspace is blocked by a jammer.
+    //Units with HIGH_ALTITUDE may fly regardless.
     if(this.config.category === ENTITY_CATEGORY.AIR && !this.hasTrait(TRAIT_TYPE.HIGH_ALTITUDE)) {
         const jammer = worldMap.getJammer(tileX, tileY);
 

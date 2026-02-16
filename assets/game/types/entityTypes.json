@@ -1386,6 +1386,31 @@
             "fire_up": "condor_fire_up"
         }
     },
+    "AKONTIO": {
+        "health": 50,
+        "damage": 50,
+        "weaponType": "MEDIUM",
+        "armorType": "LIGHT",
+        "movementRange": 5,
+        "movementType": "FLIGHT",
+        "name": "ENTITY_NAME_AKONTIO",
+        "desc": "ENTITY_DESC_AKONTIO",
+        "traits": ["SEABOUND", "CAVITATION_EXPLOSION", "DEPTH_CHARGE"],
+        "sounds": {
+            "move": "bomber_move",
+            "fire": "akontio_fire"
+        },
+        "sprites": {
+            "idle_right": "akontio_idle_right",
+            "idle_left": "akontio_idle_left",
+            "idle_down": "akontio_idle_down",
+            "idle_up": "akontio_idle_up",
+            "fire_right": "akontio_fire_right",
+            "fire_left": "akontio_fire_left",
+            "fire_down": "akontio_fire_down",
+            "fire_up": "akontio_fire_up"
+        }
+    },
     "ZEUS": {
         "health": 70,
         "damage": 35,
@@ -1420,7 +1445,7 @@
         "movementType": "FLIGHT",
         "name": "ENTITY_NAME_STIHIE",
         "desc": "ENTITY_DESC_STIHIE",
-        "traits": ["SKYSWEEPER", "HIGH_ALTITUDE", "STEALTH"],
+        "traits": ["SKYSWEEPER", "HIGH_ALTITUDE", "STEALTH", "UNFAIR"],
         "sounds": {
             "move": "zeus_move",
             "fire": "zeus_fire"
