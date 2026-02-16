@@ -262,9 +262,10 @@ MapInspector.prototype.update = function(gameContext, inspector) {
 
     const entity = inspector.getVisibleEntity(gameContext, x, y);
 
-    //TODO: get VISIBLE entity and check cash
     if(entity) {
-        console.log(entity.cash);
+        this.camera.updateCash(x, y, entity.cash);
+    } else {
+        this.camera.updateCash(-1, -1, 0);
     }
 
     return hoverChanged;

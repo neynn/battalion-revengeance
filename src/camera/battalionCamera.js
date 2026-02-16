@@ -35,12 +35,38 @@ export const BattalionCamera = function() {
     this.jammerOverlay = new TileOverlay(JAMMER_MAX_USED_TILES);
     this.selectOverlay = new TileOverlay(1000);
     this.showAllJammers = false;
+
+    this.cashX = -1;
+    this.cashY = -1;
+    this.cashValue = 0;
 }
 
 BattalionCamera.STEALTH_THRESHOLD = 0.5;
 
 BattalionCamera.prototype = Object.create(Camera2D.prototype);
 BattalionCamera.prototype.constructor = BattalionCamera;
+
+BattalionCamera.prototype.updateCash = function(tileX, tileY, cash) {
+    if(this.cashX !== tileX || this.cashY !== tileY || this.cashValue !== cash) {
+        this.cashX = tileX;
+        this.cashY = tileY;
+        this.cashValue = cash;
+    }    
+}
+
+BattalionCamera.prototype.drawCash = function(display) {
+    const { context } = display;
+
+    //To avoid clutter, only non 0 cash is visualized
+    if(this.cashValue !== 0) {
+        const drawX = this.tileXToScreen(this.cashX);
+        const drawY = this.tileYToScreen(this.cashY);
+
+        context.fillStyle = "#ffffff";
+        context.globalAlpha = 1;
+        context.fillText(this.cashValue, drawX, drawY);
+    }
+}
 
 BattalionCamera.prototype.drawEntityHealth = function(display, drawX, drawY, healthFactor) {
     const { context } = display;
@@ -260,6 +286,7 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     this.drawOverlay(tileManager, display, this.pathOverlay);
     this.drawEntities(gameContext, display, realTime, deltaTime);
     this.drawSpriteBatchYSorted(display, spriteManager.getLayer(LAYER_TYPE.GFX), realTime, deltaTime);
+    this.drawCash(display);
     //this.drawSpriteBatchYSorted(display, spriteManager.getLayer(LAYER_TYPE.SEA), realTime, deltaTime);
     //this.drawSpriteBatchYSorted(display, spriteManager.getLayer(LAYER_TYPE.LAND), realTime, deltaTime);
     //this.shadeScreen(display, "#000000", 0.5);

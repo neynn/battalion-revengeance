@@ -32,6 +32,14 @@ Camera2D.prototype.constructor = Camera2D;
 
 Camera2D.prototype.onMapSizeUpdate = function(oldWidth, oldHeight) {}
 
+Camera2D.prototype.tileXToScreen = function(tileX) {
+    return tileX * this.tileWidth - this.fViewportX;
+}
+
+Camera2D.prototype.tileYToScreen = function(tileY) {
+    return tileY * this.tileHeight - this.fViewportY;
+}
+
 Camera2D.prototype.jumpToTile = function(tileX, tileY) {
     const positionX = this.tileWidth * tileX;
     const positionY = this.tileHeight * tileY;
