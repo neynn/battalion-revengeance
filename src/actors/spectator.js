@@ -1,7 +1,6 @@
 import { getCursorTile } from "../../engine/camera/contextHelper.js";
 import { BattalionActor } from "./battalionActor.js";
-import { isNodeReachable } from "../systems/pathfinding.js";
-import { TILE_ID } from "../enums.js";
+import { MapInspector } from "./player/inspector.js";
 
 export const Spectator = function(id, camera) {
     BattalionActor.call(this, id);
@@ -9,67 +8,14 @@ export const Spectator = function(id, camera) {
     this.tileX = -1;
     this.tileY = -1;
     this.camera = camera;
-    this.lastInspectedEntity = null;
+    this.inspector = new MapInspector(camera);
 }
 
 Spectator.prototype = Object.create(BattalionActor.prototype);
 Spectator.prototype.constructor = Spectator;
 
-Spectator.prototype.inspectEntity = function(gameContext, entity) {
-    this.showJammer(gameContext, entity);
-    this.lastInspectedEntity = entity;
-
-    console.log("Inspected Entity", {
-        "dName":  entity.getName(gameContext),
-        "dDesc": entity.getDescription(gameContext),
-        "entity": entity
-    });
-}
-
-Spectator.prototype.inspectTile = function(gameContext, tileX, tileY) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-    const name = worldMap.getTileName(gameContext, tileX, tileY);
-    const desc = worldMap.getTileDesc(gameContext, tileX, tileY);
-    const climateType = worldMap.getClimateType(gameContext, tileX, tileY);
-    const tileType = worldMap.getTileType(gameContext, tileX, tileY);
-
-    this.lastInspectedEntity = null;
-    this.camera.jammerOverlay.clear();
-
-    console.log("Inspected Tile", {
-        "x": tileX,
-        "y": tileY,
-        "name": name,
-        "desc": desc,
-        "climate": climateType,
-        "type": tileType
-    });
-}
-
-Spectator.prototype.onClick = function(gameContext, worldMap, tileX, tileY) {
-    const { world } = gameContext;
-    const entity = world.getEntityAt(tileX, tileY);
-
-    if(entity) {
-        if(this.lastInspectedEntity === entity) {
-            this.inspectTile(gameContext, tileX, tileY);
-        } else {
-            this.inspectEntity(gameContext, entity);        
-        }
-
-        return;
-    }
-
-    const building = worldMap.getBuilding(tileX, tileY);
-
-    if(building) {
-        //Inspect building? Treat it as tile for inspection?
-        return;
-    }
-
-    this.inspectTile(gameContext, tileX, tileY);
+Spectator.prototype.onClick = function(gameContext, tileX, tileY) {
+    this.inspector.inspect(gameContext, this, tileX, tileY);
 }
 
 Spectator.prototype.loadKeybinds = function(gameContext) {
@@ -85,40 +31,13 @@ Spectator.prototype.loadKeybinds = function(gameContext) {
         if(worldMap) {
             const { x, y } = getCursorTile(gameContext);
 
-            this.onClick(gameContext, worldMap, x, y);
+            this.onClick(gameContext, x, y);
         }
     });
 }
 
-Spectator.prototype.showJammer = function(gameContext, entity) {
-    if(entity.isJammer()) {
-        const { tileX, tileY } = entity;
-
-        this.showJammerAt(gameContext, entity, tileX, tileY);
-    } else {
-        this.camera.jammerOverlay.clear();
-    }
-}
-
-Spectator.prototype.showJammerAt = function(gameContext, entity, jammerX, jammerY) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-    const jammerRange = entity.config.jammerRange;
-
-    this.camera.jammerOverlay.clear();
-
-    worldMap.fill2DGraph(jammerX, jammerY, jammerRange, (nextX, nextY) => {
-        this.camera.jammerOverlay.add(TILE_ID.JAMMER, nextX, nextY);
-    });
-}
 
 Spectator.prototype.update = function(gameContext) {
-    if(this.lastInspectedEntity && this.lastInspectedEntity.isDestroyed()) {
-        //TODO: Un-Inspect entity!
-        this.lastInspectedEntity = null;
-    }
-
     const { x, y } = getCursorTile(gameContext);
 
     if(x !== this.tileX || y !== this.tileY) {
@@ -129,18 +48,13 @@ Spectator.prototype.update = function(gameContext) {
     this.tileY = y;
 }
 
-Spectator.prototype.clearOverlays = function() {
-    this.camera.selectOverlay.clear();
-    this.camera.jammerOverlay.clear();
-}
+Spectator.prototype.getVisibleEntity = function(gameContext, tileX, tileY) {
+    const { world } = gameContext;
+    const entity = world.getEntityAt(tileX, tileY);
 
-Spectator.prototype.showNodeMap = function(nodeMap) {
-    this.clearOverlays();
-
-    for(const [index, node] of nodeMap) {
-        const { x, y } = node;
-        const id = isNodeReachable(node) ? TILE_ID.OVERLAY_MOVE : TILE_ID.OVERLAY_ATTACK;
-
-        this.camera.selectOverlay.add(id, x, y);
+    if(entity) {
+        return entity;
     }
+
+    return null;
 }

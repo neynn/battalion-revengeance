@@ -32,7 +32,7 @@ SelectState.prototype.selectEntity = function(gameContext, stateMachine, entity)
     const player = stateMachine.getContext();
 
     this.entity = entity;
-    this.nodeMap = player.nodeMap;
+    this.nodeMap = player.inspector.nodeMap;
     this.onTileChange(gameContext, stateMachine, this.entity.tileX, this.entity.tileY);
 }
 
@@ -179,7 +179,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
                 }
             }
 
-            player.showPath(attackAutotiler, this.path, this.entity.tileX, this.entity.tileY);
+            player.inspector.showPath(attackAutotiler, this.path, this.entity.tileX, this.entity.tileY);
             return;
         }
     }
@@ -210,13 +210,13 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
         this.path = getBestPath(gameContext, this.nodeMap, tileX, tileY);
     }
 
-    player.showPath(walkAutotiler, this.path, this.entity.tileX, this.entity.tileY);
+    player.inspector.showPath(walkAutotiler, this.path, this.entity.tileX, this.entity.tileY);
 
     if(this.entity.isJammer()) {
         const pathX = this.getPathX();
         const pathY = this.getPathY();
 
-        player.showJammerAt(gameContext, this.entity, pathX, pathY);
+        player.inspector.showJammerAt(gameContext, this.entity, pathX, pathY);
     }
 }
 
