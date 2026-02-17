@@ -1,7 +1,7 @@
 import { ACTION_TYPE } from "../enums.js";
 
 export const isClientTurn = function(gameContext, messengerID) {
-    const { mapSettings, world } = gameContext;
+    const { teamManager, mapSettings, world } = gameContext;
     const { turnManager } = world;
     const { slots } = mapSettings;
     const { currentActor } = turnManager;
@@ -13,8 +13,10 @@ export const isClientTurn = function(gameContext, messengerID) {
     //TODO: Create a ServerActor that has clientID and check currentActor.clientID === clientID. O(1)!
     for(const slot of slots) {
         const { clientID, teamID } = slot;
+        //TODO: This is a hack because slots SHOULD transform their teamID to the runtime id/index.
+        const tTeamID = teamManager.getTeamID(teamID);
 
-        if(clientID === messengerID && currentActor.teamID === teamID) {
+        if(clientID === messengerID && currentActor.teamID === tTeamID) {
             return true;
         }
     }

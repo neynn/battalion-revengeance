@@ -10,6 +10,7 @@ import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLA
 import { mapTransportToEntity } from "../enumHelpers.js";
 import { getLineEntities } from "../systems/targeting.js";
 import { mGetUncloakedEntities, mGetUncloakedMines } from "../systems/cloak.js";
+import { TeamManager } from "../team/teamManager.js";
 
 export const BattalionEntity = function(id) {
     Entity.call(this, id, "");
@@ -28,7 +29,7 @@ export const BattalionEntity = function(id) {
     this.tileZ = -1;
     this.direction = DIRECTION.EAST;
     this.state = BattalionEntity.STATE.IDLE;
-    this.teamID = null;
+    this.teamID = TeamManager.INVALID_ID;
     this.transportID = null;
     this.lastAttacker = EntityManager.INVALID_ID;
     this.turns = 0;

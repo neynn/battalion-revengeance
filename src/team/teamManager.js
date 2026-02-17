@@ -2,7 +2,8 @@ import { EventEmitter } from "../../engine/events/eventEmitter.js";
 import { Team } from "./team.js";
 
 export const TeamManager = function() {
-    this.teams = new Map();
+    this.teams = []
+    this.nameMap = new Map();
     this.activeTeams = [];
     this.isConcluded = false;
 
@@ -18,6 +19,8 @@ export const TeamManager = function() {
     this.events.on(TeamManager.EVENT.DRAW, () => console.log("DRAW!"));
 }
 
+TeamManager.INVALID_ID = -1;
+
 TeamManager.EVENT = {
     TEAM_LOST: "TEAM_LOST",
     TEAM_WON: "TEAM_WON",
@@ -26,43 +29,54 @@ TeamManager.EVENT = {
 };
 
 TeamManager.prototype.exit = function() {
-    this.teams.clear();
+    this.teams.length = 0;
+    this.nameMap.clear();
     this.activeTeams.length = 0;
     this.isConcluded = false;
 }
 
-TeamManager.prototype.createTeam = function(teamID) {
-    if(this.teams.has(teamID)) {
-        console.log("Team creation failed!")
-        return null;
-    }
-
+TeamManager.prototype.createTeam = function(teamName) {
+    const teamID = this.teams.length;
     const team = new Team(teamID);
 
-    this.teams.set(teamID, team);
+    this.teams.push(team);
     this.activeTeams.push(teamID);
+
+    if(teamName !== null && !this.nameMap.has(teamName)) {
+        this.nameMap.set(teamName, teamID);
+    } else {
+        console.error("Team name is null or already used!");
+    }
 
     return team;
 }
 
-TeamManager.prototype.getTeam = function(teamID) {
-    const team = this.teams.get(teamID);
+TeamManager.prototype.getTeamID = function(teamName) {
+    const teamIndex = this.nameMap.get(teamName);
 
-    if(!team) {
+    if(teamIndex === undefined) {
+        return TeamManager.INVALID_ID;
+    }
+
+    return teamIndex;
+}
+
+TeamManager.prototype.getTeam = function(teamIndex) {
+    if(teamIndex < 0 || teamIndex >= this.teams.length) {
         return null;
     }
 
-    return team;
+    return this.teams[teamIndex];
 }
 
 TeamManager.prototype.isAlly = function(teamA, teamB) {
-    const team = this.teams.get(teamA);
+    const team = this.getTeam(teamA);
 
-    if(team) {
-        return team.isAlly(teamB);
+    if(!team) {
+        return false;
     }
 
-    return false;
+    return team.isAlly(teamB);
 }
 
 TeamManager.prototype.removeActiveTeam = function(teamID) {

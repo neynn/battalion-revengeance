@@ -97,7 +97,10 @@ export const spawnServerEntity = function(gameContext, config, entityID) {
         stealth = false,
         cash = 0
     } = config;
-    const entity = createServerEntityObject(gameContext, entityID, team, type, x, y);
+
+    const { teamManager } = gameContext;
+    const teamID = teamManager.getTeamID(team);
+    const entity = createServerEntityObject(gameContext, entityID, teamID, type, x, y);
 
     if(!entity) {
         return;
@@ -136,14 +139,15 @@ export const spawnClientEntity = function(gameContext, config, externalID = Enti
         cash = 0
     } = config;
 
-    const { world } = gameContext;
+    const { world, teamManager } = gameContext;
     const { entityManager } = world;
 
     if(externalID === EntityManager.INVALID_ID) {
         externalID = entityManager.getNextID();
     }
 
-    const entity = createClientEntityObject(gameContext, externalID, team, type, x, y);
+    const teamID = teamManager.getTeamID(team);
+    const entity = createClientEntityObject(gameContext, externalID, teamID, type, x, y);
 
     if(!entity) {
         return;
@@ -181,7 +185,8 @@ export const spawnServerBuilding = function(gameContext, worldMap, config) {
         team = null
     } = config;
 
-    const teamObject = teamManager.getTeam(team);
+    const teamID = teamManager.getTeamID(team);
+    const teamObject = teamManager.getTeam(teamID);
 
     if(teamObject) {
         const isPlaceable = worldMap.isBuildingPlaceable(x, y);
@@ -192,7 +197,7 @@ export const spawnServerBuilding = function(gameContext, worldMap, config) {
 
             building.setCustomInfo(id, name, desc);
             building.setTile(x, y);
-            building.setTeam(team);
+            building.setTeam(teamID);
 
             worldMap.addBuilding(building);
         }
@@ -211,7 +216,8 @@ export const spawnClientBuilding = function(gameContext, worldMap, config) {
         team = null
     } = config;
 
-    const teamObject = teamManager.getTeam(team);
+    const teamID = teamManager.getTeamID(team);
+    const teamObject = teamManager.getTeam(teamID);
 
     if(teamObject) {
         const isPlaceable = worldMap.isBuildingPlaceable(x, y);
@@ -230,7 +236,7 @@ export const spawnClientBuilding = function(gameContext, worldMap, config) {
 
             building.setCustomInfo(id, name, desc);
             building.setTile(x, y);
-            building.setTeam(team);
+            building.setTeam(teamID);
             worldMap.addBuilding(building);
         }
     }

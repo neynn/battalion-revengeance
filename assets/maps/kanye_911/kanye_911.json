@@ -3,10 +3,10 @@
     "width": 10,
     "height": 10,
     "client": "KANYE",
-    "teams": {
-        "KANYE": { "commander": "KANYE", "faction": "KANYE" },
-        "NYPD": { "commander": "KANYE", "faction": "NYPD" }
-    },
+    "teams": [
+        { "id": "KANYE", "commander": "KANYE", "faction": "KANYE" },
+        { "id": "NYPD", "commander": "KANYE", "faction": "NYPD" }
+    ],
     "entities": [
         { "x": 2, "y": 3, "desc": "DESC_RAPTOR", "type": "RAPTOR_FIGHTER", "team": "KANYE" },
         { "x": 3, "y": 4, "desc": "DESC_EAGLE", "type": "EAGLE_STRIKER", "team": "KANYE" },

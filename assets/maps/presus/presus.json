@@ -3,11 +3,11 @@
     "width": 10,
     "height": 10,
     "client": "SOMERTIN",
-    "teams": {
-        "SOMERTIN": { "commander": "PLAYER", "cash": 1000, "faction": "SOMERTIN", "allies": ["DRAGOON"], "objectives": ["DEFEAT_BOAT_1", "CAPTURE_0_0", "SURVIVE_TURN_2"] },
-        "TRANSKAL": { "commander": "KANYE", "faction": "TRANSKAL", "objectives": ["PROTECT_BOAT_1"] },
-        "DRAGOON": { "commander": "KANYE", "faction": "ELAM" }
-    },
+    "teams": [
+        { "id": "SOMERTIN", "commander": "PLAYER", "cash": 1000, "faction": "SOMERTIN", "allies": ["DRAGOON"], "objectives": ["DEFEAT_BOAT_1", "CAPTURE_0_0", "SURVIVE_TURN_2"] },
+        { "id": "TRANSKAL", "commander": "KANYE", "faction": "TRANSKAL", "objectives": ["PROTECT_BOAT_1"] },
+        { "id": "DRAGOON", "commander": "KANYE", "faction": "ELAM" }
+    ],
     "entities": [
         { "x": 0, "y": 0, "direction": "SOUTH", "type": "ALEPH", "team": "SOMERTIN" },
         { "x": 1, "y": 0, "direction": "SOUTH", "type": "CONDOR_BOMBER", "team": "SOMERTIN" },

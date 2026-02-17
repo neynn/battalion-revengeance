@@ -1,11 +1,12 @@
 import { TurnActor } from "../../engine/world/turn/turnActor.js";
 import { createDeathIntent } from "../action/actionHelper.js";
+import { TeamManager } from "../team/teamManager.js";
 
 export const BattalionActor = function(id) {
     TurnActor.call(this, id);
 
     this.name = "";
-    this.teamID = null;
+    this.teamID = TeamManager.INVALID_ID;
     this.commander = null;
 }
 

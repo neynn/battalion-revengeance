@@ -1,8 +1,10 @@
+import { TeamManager } from "../team/teamManager.js";
+
 export const StaticObject = function(config) {
     this.config = config;
     this.tileX = -1;
     this.tileY = -1;
-    this.teamID = null;
+    this.teamID = TeamManager.INVALID_ID;
 }
 
 StaticObject.prototype.setTeam = function(teamID) {

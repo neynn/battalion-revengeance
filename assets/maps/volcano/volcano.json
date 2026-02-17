@@ -3,10 +3,10 @@
     "width": 9,
     "height": 9,
     "client": "TEST",
-    "teams": {
-        "TEST": { "commander": "KANYE", "faction": "GREEN" },
-        "TEST2": { "commander": "KANYE", "faction": "GOLD" }
-    },
+    "teams": [
+        { "id": "TEST", "commander": "KANYE", "faction": "GREEN" },
+        { "id": "TEST2", "commander": "KANYE", "faction": "GOLD" }
+    ],
     "entities": [
         { "x": 1, "y": 1, "type": "ENTWICKLUNG", "team": "TEST" },
         { "x": 1, "y": 2, "stealth": false, "type": "STEALTH_TANK", "team": "TEST" },
