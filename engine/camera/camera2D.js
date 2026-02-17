@@ -32,6 +32,10 @@ Camera2D.prototype.constructor = Camera2D;
 
 Camera2D.prototype.onMapSizeUpdate = function(oldWidth, oldHeight) {}
 
+Camera2D.prototype.isTileVisible = function(tileX, tileY) {
+    return tileX >= this.startX && tileX <= this.endX && tileY >= this.startY && tileY <= this.endY;
+}
+
 Camera2D.prototype.tileXToScreen = function(tileX) {
     return tileX * this.tileWidth - this.fViewportX;
 }

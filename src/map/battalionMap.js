@@ -2,7 +2,7 @@ import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { downgradeOre, oreToValue } from "../enumHelpers.js";
 import { CLIMATE_TYPE, TILE_TYPE } from "../enums.js";
-import { JammerField } from "./jammerField.js";
+import { JammerTile } from "./jammerTile.js";
 
 export const BattalionMap = function(id, width, height) {
     WorldMap.call(this, id, width, height);
@@ -13,7 +13,7 @@ export const BattalionMap = function(id, width, height) {
     this.buildings = [];
     this.mines = [];
     this.edits = [];
-    this.jammerFields = new Map();
+    this.jammers = new Map();
     this.createLayer(Layer.TYPE.BIT_16);
     this.createLayer(Layer.TYPE.BIT_16);
     this.createLayer(Layer.TYPE.BIT_16);
@@ -43,7 +43,7 @@ BattalionMap.SEARCH_ORDER = [
     BattalionMap.LAYER.GROUND
 ];
 
-BattalionMap.STUB_JAMMER = new JammerField(-1, -1);
+BattalionMap.STUB_JAMMER = new JammerTile(-1, -1);
 
 BattalionMap.getLayerIndex = function(name) {
     const index = BattalionMap.LAYER[name];
@@ -335,42 +335,42 @@ BattalionMap.prototype.addJammer = function(tileX, tileY, teamID, flags) {
     const index = this.getIndex(tileX, tileY);
 
     if(index !== WorldMap.OUT_OF_BOUNDS) {
-        const jammerField = this.jammerFields.get(index);
+        const jammerTile = this.jammers.get(index);
 
-        if(jammerField) {
-            jammerField.addBlocker(teamID, flags);
+        if(jammerTile) {
+            jammerTile.addBlocker(teamID, flags);
         } else {
-            const newField = new JammerField(tileX, tileY);
+            const newTile = new JammerTile(tileX, tileY);
 
-            newField.addBlocker(teamID, flags);
+            newTile.addBlocker(teamID, flags);
 
-            this.jammerFields.set(index, newField);
+            this.jammers.set(index, newTile);
         }
     }
 }
 
 BattalionMap.prototype.removeJammer = function(tileX, tileY, teamID, flags) {
     const index = this.getIndex(tileX, tileY);
-    const jammerField = this.jammerFields.get(index);
+    const jammerTile = this.jammers.get(index);
 
-    if(jammerField) {
-        jammerField.removeBlocker(teamID, flags);
+    if(jammerTile) {
+        jammerTile.removeBlocker(teamID, flags);
 
-        if(jammerField.isEmpty()) {
-            this.jammerFields.delete(index);
+        if(jammerTile.isEmpty()) {
+            this.jammers.delete(index);
         }
     }
 }
 
 BattalionMap.prototype.getJammer = function(tileX, tileY) {
     const index = this.getIndex(tileX, tileY);
-    const jammerField = this.jammerFields.get(index);
+    const jammerTile = this.jammers.get(index);
 
-    if(!jammerField) {
+    if(!jammerTile) {
         return BattalionMap.STUB_JAMMER;
     }
 
-    return jammerField;
+    return jammerTile;
 }
 
 BattalionMap.prototype.decodeLayers = function(layerData) {

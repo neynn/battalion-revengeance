@@ -1,12 +1,12 @@
 import { JAMMER_FLAG } from "../enums.js";
 
-export const JammerField = function(tileX, tileY) {
+export const JammerTile = function(tileX, tileY) {
     this.tileX = tileX;
     this.tileY = tileY;
     this.blockers = [];
 }
 
-JammerField.prototype.isJammed = function(gameContext, teamID, flags) {
+JammerTile.prototype.isJammed = function(gameContext, teamID, flags) {
     const { teamManager } = gameContext;
 
     for(let i = 0; i < this.blockers.length; i++) {
@@ -24,7 +24,7 @@ JammerField.prototype.isJammed = function(gameContext, teamID, flags) {
     return false;
 }
 
-JammerField.prototype.removeBlocker = function(teamID, flags) {
+JammerTile.prototype.removeBlocker = function(teamID, flags) {
     for(let i = 0; i < this.blockers.length; i++) {
         const blocker = this.blockers[i];
 
@@ -40,7 +40,7 @@ JammerField.prototype.removeBlocker = function(teamID, flags) {
     }
 }
 
-JammerField.prototype.addBlocker = function(teamID, flags) {
+JammerTile.prototype.addBlocker = function(teamID, flags) {
     let blockerFound = false;
 
     for(let i = 0; i < this.blockers.length; i++) {
@@ -61,6 +61,6 @@ JammerField.prototype.addBlocker = function(teamID, flags) {
     }
 }
 
-JammerField.prototype.isEmpty = function() {
+JammerTile.prototype.isEmpty = function() {
     return this.blockers.length === 0;
 }

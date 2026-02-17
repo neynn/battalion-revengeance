@@ -203,11 +203,11 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
 }
 
 BattalionCamera.prototype.drawJammers = function(tileManager, display, worldMap) {
-    const { jammerFields } = worldMap;
+    const { jammers } = worldMap;
     const { context } = display;
     let count = 0;
 
-    for(const [index, field] of jammerFields) {
+    for(const [index, field] of jammers) {
         const { tileX, tileY } = field;
 
         count += this.drawTileClipped(tileManager, TILE_ID.JAMMER, context, tileX, tileY);
