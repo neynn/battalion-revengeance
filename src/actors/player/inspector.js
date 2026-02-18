@@ -253,7 +253,7 @@ MapInspector.prototype.update = function(gameContext, inspector) {
     const { x, y } = getCursorTile(gameContext);
     let hoverChanged = false;
 
-    if(x !== this.tileX || y !== this.tileY) {
+    if(x !== this.lastHoverX || y !== this.lastHoverY) {
         hoverChanged = true;
     }
 
