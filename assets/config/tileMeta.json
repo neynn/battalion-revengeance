@@ -1,132 +1,23 @@
 [
-    { 
-        "id": "grass",
-        "type": "GRASS",
-        "texture": "background",
-        "tile": "grass"
-    },
-    {
-        "id": "boreal",
-        "type": "BOREAL",
-        "texture": "background",
-        "tile": "boreal"
-    },
-    {
-        "id": "arctic",
-        "type": "ARCTIC",
-        "texture": "background",
-        "tile": "arctic"
-    },
-    { 
-        "id": "road_",
-        "type": "ROAD",
-        "autotiler": "battalion_road",
-        "texture": "road",
-        "variants": { "prefix": "", "count": 16 }
-    },
-    { 
-        "id": "volcano",
-        "type": "VOLCANO",
-        "texture": "volcano",
-        "tile": "ANIMATION_0"
-    },
-    { 
-        "id": "river_",
-        "type": "RIVER",
-        "autotiler": "battalion_river",
-        "texture": "river",
-        "variants": { "prefix": "ANIMATION_", "count": 48 }
-    },
-    { 
-        "id": "shore_",
-        "type": "SHORE",
-        "autotiler": null,
-        "texture": "shore",
-        "variants": { "prefix": "ANIMATION_", "count": 12 }
-    },
-    { 
-        "id": "island_",
-        "type": "ISLAND",
-        "autotiler": null,
-        "texture": "water",
-        "variants": { "prefix": "ANIMATION_ISLAND_", "count": 4 }
-    },
-    { 
-        "id": "swirl_",
-        "type": "SWIRL",
-        "autotiler": null,
-        "texture": "water",
-        "variants": { "prefix": "ANIMATION_SWIRL_", "count": 4 }
-    },
-    { 
-        "id": "rocks_",
-        "type": "ROCKS",
-        "autotiler": null,
-        "texture": "water",
-        "variants": { "prefix": "ANIMATION_ROCKS_", "count": 4 }
-    },
-    { 
-        "id": "overlay_",
-        "type": "NONE",
-        "autotiler": null,
-        "texture": "overlay",
-        "variants": { "prefix": "", "count": 4 }
-    },
-    { 
-        "id": "path_",
-        "type": "PATH",
-        "autotiler": "battalion_path",
-        "texture": "path",
-        "variants": { "prefix": "", "count": 16 }
-    },
-    {
-        "id": "jammer",
-        "type": "NONE",
-        "texture": "jammer",
-        "tile": "0"
-    },
-    { 
-        "type": "RICH_ORE",
-        "texture": "ore_deposit",
-        "tile": "LEFT"
-    },
-    { 
-        "type": "RICH_ORE",
-        "texture": "ore_deposit",
-        "tile": "RIGHT"
-    },
-    { 
-        "type": "USED_ORE",
-        "texture": "ore_deposit",
-        "tile": "LEFT_USED"
-    },
-    { 
-        "type": "USED_ORE",
-        "texture": "ore_deposit",
-        "tile": "RIGHT_USED"
-    },
-    { 
-        "type": "DEPLETED_ORE",
-        "texture": "ore_deposit",
-        "tile": "LEFT_DEPLETED"
-    },
-    { 
-        "type": "DEPLETED_ORE",
-        "texture": "ore_deposit",
-        "tile": "RIGHT_DEPLETED"
-    },
-    { 
-        "id": "canyon_",
-        "type": "CANYON",
-        "autotiler": "battalion_canyon",
-        "texture": "canyon",
-        "variants": { "prefix": "", "count": 48 }
-    },
-    { 
-        "id": "rail_",
-        "type": "RAIL",
-        "autotiler": "battalion_rail",
-        "texture": "rail",
-        "variants": { "prefix": "", "count": 16 }
-    }
+    { "id": "grass", "type": "GRASS", "texture": "background", "tile": "grass" },
+    { "id": "boreal", "type": "BOREAL", "texture": "background", "tile": "boreal" },
+    { "id": "arctic", "type": "ARCTIC", "texture": "background", "tile": "arctic" },
+    { "id": "road_", "type": "ROAD", "autotiler": "battalion_road", "texture": "road", "variants": { "prefix": "", "count": 16 } },
+    { "id": "volcano", "type": "VOLCANO", "texture": "volcano", "tile": "ANIMATION_0" },
+    { "id": "river_", "type": "RIVER", "autotiler": "battalion_river", "texture": "river", "variants": { "prefix": "ANIMATION_", "count": 48 } },
+    { "id": "shore_", "type": "SHORE", "texture": "shore", "variants": { "prefix": "ANIMATION_", "count": 12 } },
+    { "id": "island_", "type": "ISLAND", "texture": "water", "variants": { "prefix": "ANIMATION_ISLAND_", "count": 4 }},
+    { "id": "swirl_", "type": "SWIRL", "texture": "water", "variants": { "prefix": "ANIMATION_SWIRL_", "count": 4 } },
+    { "id": "rocks_", "type": "ROCKS", "texture": "water", "variants": { "prefix": "ANIMATION_ROCKS_", "count": 4 } },
+    { "id": "overlay_", "type": "NONE", "texture": "overlay", "variants": { "prefix": "", "count": 4 } },
+    { "id": "path_", "type": "PATH", "autotiler": "battalion_path", "texture": "path", "variants": { "prefix": "", "count": 16 } },
+    { "id": "jammer", "type": "NONE", "texture": "jammer", "tile": "0" },
+    { "id": "ore_0", "type": "RICH_ORE", "texture": "ore_deposit", "tile": "LEFT" },
+    { "id": "ore_1", "type": "RICH_ORE", "texture": "ore_deposit", "tile": "RIGHT" },
+    { "id": "ore_2", "type": "USED_ORE", "texture": "ore_deposit", "tile": "LEFT_USED" },
+    { "id": "ore_3", "type": "USED_ORE", "texture": "ore_deposit", "tile": "RIGHT_USED" },
+    { "id": "ore_4", "type": "DEPLETED_ORE", "texture": "ore_deposit", "tile": "LEFT_DEPLETED" },
+    { "id": "ore_5", "type": "DEPLETED_ORE", "texture": "ore_deposit", "tile": "RIGHT_DEPLETED" },
+    { "id": "canyon_", "type": "CANYON", "autotiler": "battalion_canyon", "texture": "canyon", "variants": { "prefix": "", "count": 48 } },
+    { "id": "rail_", "type": "RAIL", "autotiler": "battalion_rail", "texture": "rail", "variants": { "prefix": "", "count": 16 } }
 ]

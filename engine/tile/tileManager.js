@@ -4,7 +4,6 @@ import { Tile } from "./tile.js";
 
 export const TileManager = function() {
     this.autotilers = new Map();
-    this.metaInversion = {};
     this.tiles = [];
     this.tileTable = [];
     this.visuals = [];
@@ -29,6 +28,7 @@ TileManager.prototype.update = function(gameContext) {
 }
 
 TileManager.prototype.createTiles = function(tileMeta) {
+    const visualMap = {};
     let mapID = 1;
     //0 is treated as an empty visual => counting begins at 1.
     //Table matches a visual tile to logical tile.
@@ -42,30 +42,39 @@ TileManager.prototype.createTiles = function(tileMeta) {
         if(variants) {
             const { count } = variants;
 
-            for(let j = 0; j < count; j++) {
-                const tileCID = id + j;
+            if(id !== null) {
+                for(let j = 0; j < count; j++) {
+                    const tileName = id + j;
 
-                if(this.metaInversion[tileCID] === undefined) {
-                    this.metaInversion[tileCID] = mapID;
+                    if(visualMap[tileName] === undefined) {
+                        visualMap[tileName] = mapID;
+                    }
+
+                    this.tileTable[mapID - 1] = i;
+                    mapID++;
                 }
-
-                this.tileTable[mapID - 1] = i;
-                mapID++;
-            } 
+            } else {
+                for(let j = 0; j < count; j++) {
+                    this.tileTable[mapID - 1] = i;
+                    mapID++;
+                }
+            }
         } else {
-            if(id !== null && this.metaInversion[id] === undefined) {
-                this.metaInversion[id] = mapID;
+            if(id !== null && visualMap[id] === undefined) {
+                visualMap[id] = mapID;
             }
 
             this.tileTable[mapID - 1] = i;
             mapID++;
         }
     }
+
+    return visualMap;
 }
 
-TileManager.prototype.createAutotilers = function(autotilers) {
+TileManager.prototype.createAutotilers = function(autotilers, visualMap) {
     for(const autotilerID in autotilers) {
-        const autotiler = this.createAutotiler(autotilers[autotilerID]);
+        const autotiler = this.createAutotiler(autotilers[autotilerID], visualMap);
 
         this.autotilers.set(autotilerID, autotiler);
     }
@@ -148,8 +157,8 @@ TileManager.prototype.loadServer = function(tileMeta, autotilers) {
         return;
     }
 
-    this.createTiles(tileMeta);
-    this.createAutotilers(autotilers);
+    const visualMap = this.createTiles(tileMeta);
+    this.createAutotilers(autotilers, visualMap);
 }
 
 TileManager.prototype.load = function(resourceLoader, tileAtlases, tileMeta, autotilers) {
@@ -158,13 +167,13 @@ TileManager.prototype.load = function(resourceLoader, tileAtlases, tileMeta, aut
         return;
     }
 
-    this.createTiles(tileMeta);
-    this.createAutotilers(autotilers);
+    const visualMap = this.createTiles(tileMeta);
+    this.createAutotilers(autotilers, visualMap);
     this.createTileVisuals(resourceLoader, tileAtlases, tileMeta);
     this.enableAllVisuals();
 }
 
-TileManager.prototype.createAutotiler = function(config) {
+TileManager.prototype.createAutotiler = function(config, visualMap) {
     const { type = Autotiler.TYPE.NONE, values = {}, members = [], autoMembers = [], useAutoValues = null } = config;
     const autotiler = new Autotiler(TileManager.TILE_ID.EMPTY);
 
@@ -172,50 +181,50 @@ TileManager.prototype.createAutotiler = function(config) {
 
     for(const { prefix, first, last } of autoMembers) {
         for(let i = first; i <= last; i++) {
-            const cID = `${prefix}${i}`;
-            const tileID = this.metaInversion[cID];
+            const namedID = `${prefix}${i}`;
+            const mapID = visualMap[namedID];
 
-            if(tileID !== undefined) {
-                autotiler.addMember(tileID);
+            if(mapID !== undefined) {
+                autotiler.addMember(mapID);
             } else {
-                console.error("cID does not exist!", cID);
+                console.error("namedID does not exist!", namedID);
             }  
         }
     }
 
-    for(const cID of members) {
-        const tileID = this.metaInversion[cID];
+    for(const namedID of members) {
+        const mapID = visualMap[namedID];
 
-        if(tileID !== undefined) {
-            autotiler.addMember(tileID);
+        if(mapID !== undefined) {
+            autotiler.addMember(mapID);
         } else {
-            console.error("cID does not exist!", cID);
+            console.error("namedID does not exist!", namedID);
         }
     }
 
     if(useAutoValues !== null) {
         for(let i = 0; i < autotiler.values.length; i++) {
-            const cID = `${useAutoValues}${i}`;
-            const tileID = this.metaInversion[cID];
+            const namedID = `${useAutoValues}${i}`;
+            const mapID = visualMap[namedID];
 
-            if(tileID !== undefined) {
-                autotiler.setValue(i, tileID);
+            if(mapID !== undefined) {
+                autotiler.setValue(i, mapID);
             } else {
-                console.error("cID does not exist!", cID);
+                console.error("namedID does not exist!", namedID);
             }  
         }
     }
 
     for(const indexID in values) {
-        const cID = values[indexID];
-        const tileID = this.metaInversion[cID];
+        const namedID = values[indexID];
+        const mapID = visualMap[namedID];
 
-        if(tileID !== undefined) {
+        if(mapID !== undefined) {
             const index = Number(indexID);
 
-            autotiler.setValue(index, tileID);
+            autotiler.setValue(index, mapID);
         } else {
-            console.error("cID does not exist!", cID);
+            console.error("namedID does not exist!", namedID);
         }
     }
 
