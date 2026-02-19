@@ -1,7 +1,5 @@
-export const Tile = function(id, cID, type, autotiler, visual) {
+export const Tile = function(id, type, autotiler) {
     this.id = id;
-    this.cID = cID;
     this.type = type;
     this.autotiler = autotiler;
-    this.visual = visual;
 }

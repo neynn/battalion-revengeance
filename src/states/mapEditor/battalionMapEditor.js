@@ -34,7 +34,7 @@ BattalionMapEditor.prototype.initPermutations = function() {
 BattalionMapEditor.prototype.onTilePaint = function(gameContext, tileX, tileY) {
     const { tileManager } = gameContext;
     const { id, width, height } = this.brush;
-    const autotiler = tileManager.getAutotilerByTile(id);
+    const autotiler = tileManager.getAutotilerByVisual(id);
     const brushID = this.getBrushTile();
     const actionsTaken = [];
 

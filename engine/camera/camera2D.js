@@ -87,8 +87,7 @@ Camera2D.prototype.drawFrame = function(context, bitmap, frame, renderX, renderY
 }
 
 Camera2D.prototype.drawTile = function(tileManager, tileID, context, renderX, renderY, scale = 1) {
-    const { visual } = tileManager.getTile(tileID);
-    const { texture, frames, frameIndex } = visual;
+    const { texture, frames, frameIndex } = tileManager.getVisual(tileID);
     const { bitmap } = texture;
 
     if(bitmap === null) {
