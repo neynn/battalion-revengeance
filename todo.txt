@@ -7,3 +7,5 @@ Data for Destroyer
 
 Barges can spawn with "CARGO". Cargo is the id of an EntityType.
 Maintenance trait that heals 5HP every ROUND. StartTurn -> query entities -> filter by MAINTENANCE -> heal
+
+new blend property that links and draws a second sprite as a child to one.

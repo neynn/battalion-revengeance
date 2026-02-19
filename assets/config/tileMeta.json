@@ -175,5 +175,22 @@
     { "id": "canyon_44", "type": "CANYON", "autotiler": "battalion_canyon", "texture": "canyon", "tile": "44" },
     { "id": "canyon_45", "type": "CANYON", "autotiler": "battalion_canyon", "texture": "canyon", "tile": "45" },
     { "id": "canyon_46", "type": "CANYON", "autotiler": "battalion_canyon", "texture": "canyon", "tile": "46" },
-    { "id": "canyon_47", "type": "CANYON", "autotiler": "battalion_canyon", "texture": "canyon", "tile": "47" }
+    { "id": "canyon_47", "type": "CANYON", "autotiler": "battalion_canyon", "texture": "canyon", "tile": "47" },
+
+    { "id": "rail_0", "type": "RAIL", "autotiler": "battalion_rail", "texture": "rail", "tile": "0" },
+    { "id": "rail_1", "type": "RAIL", "autotiler": "battalion_rail", "texture": "rail", "tile": "1" },
+    { "id": "rail_2", "type": "RAIL", "autotiler": "battalion_rail", "texture": "rail", "tile": "2" },
+    { "id": "rail_3", "type": "RAIL", "autotiler": "battalion_rail", "texture": "rail", "tile": "3" },
+    { "id": "rail_4", "type": "RAIL", "autotiler": "battalion_rail", "texture": "rail", "tile": "4" },
+    { "id": "rail_5", "type": "RAIL", "autotiler": "battalion_rail", "texture": "rail", "tile": "5" },
+    { "id": "rail_6", "type": "RAIL", "autotiler": "battalion_rail", "texture": "rail", "tile": "6" },
+    { "id": "rail_7", "type": "RAIL", "autotiler": "battalion_rail", "texture": "rail", "tile": "7" },
+    { "id": "rail_8", "type": "RAIL", "autotiler": "battalion_rail", "texture": "rail", "tile": "8" },
+    { "id": "rail_9", "type": "RAIL", "autotiler": "battalion_rail", "texture": "rail", "tile": "9" },
+    { "id": "rail_10", "type": "RAIL", "autotiler": "battalion_rail", "texture": "rail", "tile": "10" },
+    { "id": "rail_11", "type": "RAIL", "autotiler": "battalion_rail", "texture": "rail", "tile": "11" },
+    { "id": "rail_12", "type": "RAIL", "autotiler": "battalion_rail", "texture": "rail", "tile": "12" },
+    { "id": "rail_13", "type": "RAIL", "autotiler": "battalion_rail", "texture": "rail", "tile": "13" },
+    { "id": "rail_14", "type": "RAIL", "autotiler": "battalion_rail", "texture": "rail", "tile": "14" },
+    { "id": "rail_15", "type": "RAIL", "autotiler": "battalion_rail", "texture": "rail", "tile": "15" }
 ]

@@ -45,6 +45,7 @@ EditorController.prototype.initConfigurator = function() {
     const shoreSet = new BrushSet("MAP_EDITOR_SET_NAME_SHORE");
     const riverSet = new BrushSet("MAP_EDITOR_SET_NAME_RIVER");
     const seaSet = new BrushSet("MAP_EDITOR_SET_NAME_SEA");
+    const railSet = new BrushSet("MAP_EDITOR_SET_NAME_RAIL");
 
     for(let i = TILE_ID.GRASS; i < TILE_ID.COUNT; i++) {
         allSet.addValue(i);
@@ -80,6 +81,10 @@ EditorController.prototype.initConfigurator = function() {
         seaSet.addValue(i);
     }
 
+    for(let i = TILE_ID.RAIL_0; i <= TILE_ID.RAIL_15; i++) {
+        railSet.addValue(i);
+    }
+
     this.configurator.addBrushSet(allSet);
     this.configurator.addBrushSet(roadSet);
     this.configurator.addBrushSet(canyonSet);
@@ -87,7 +92,8 @@ EditorController.prototype.initConfigurator = function() {
     this.configurator.addBrushSet(shoreSet);
     this.configurator.addBrushSet(riverSet);
     this.configurator.addBrushSet(seaSet);
-
+    this.configurator.addBrushSet(railSet);
+    
     this.configurator.addBrushSize(0, 0);
     this.configurator.addBrushSize(1, 1);
     this.configurator.addBrushSize(2, 2);

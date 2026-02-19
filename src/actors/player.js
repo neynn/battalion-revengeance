@@ -89,7 +89,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
 
     router.on("EXTRACT", () => {
         //Do NOT cache the value. A lookup is meaningless in terms of performance.
-        const entity = world.getEntityAt(this.inspector.lastX, this.inspector.lastY);
+        const entity = this.inspector.getLastEntity(gameContext);
 
         if(entity) {
             //this.addIntent(createExtractIntent(entity.id));

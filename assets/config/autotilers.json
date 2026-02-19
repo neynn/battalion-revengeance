@@ -185,6 +185,13 @@
             "47": "river_26"
         }
     },
+    "battalion_rail": {
+        "type": "MIN_4",
+        "autoMembers": [
+            { "prefix": "rail_", "first": 0, "last": 15 }
+        ],
+        "useAutoValues": "rail_"
+    },
     "battalion_canyon": {
         "type": "MIN_8",
         "autoMembers": [

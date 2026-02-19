@@ -203,6 +203,13 @@ MapInspector.prototype.showPath = function(autotiler, oPath, entityX, entityY) {
     this.camera.pathOverlay.add(tileID, entityX, entityY);
 }
 
+MapInspector.prototype.getLastEntity = function(gameContext) {
+    const { world } = gameContext;
+    const entity = world.getEntityAt(this.lastX, this.lastY);
+
+    return entity;
+}
+
 MapInspector.prototype.inspect = function(gameContext, inspector, tileX, tileY) {
     const { world } = gameContext;
     const { mapManager } = world;

@@ -540,6 +540,34 @@
             "fire_up": "rocket_truck_fire_up"
         }
     },
+    "PULA": {
+        "health": 60,
+        "damage": 20,
+        "weaponType": "MEDIUM",
+        "armorType": "MEDIUM",
+        "movementRange": 5,
+        "minRange": 3,
+        "maxRange": 10,
+        "cost": 1500,
+        "movementType": "WHEELED",
+        "name": "ENTITY_NAME_PULA",
+        "desc": "ENTITY_DESC_PULA",
+        "traits": ["ANTI_STRUCTURE"],
+        "sounds": {
+            "move": "truck_move",
+            "fire": "pula_fire"
+        },
+        "sprites": {
+            "idle_right": "pula_idle_right",
+            "idle_left": "pula_idle_left",
+            "idle_down": "pula_idle_down",
+            "idle_up": "pula_idle_up",
+            "fire_right": "pula_fire_right",
+            "fire_left": "pula_fire_left",
+            "fire_down": "pula_fire_down",
+            "fire_up": "pula_fire_up"
+        }
+    },
     "SUPPLY_TRUCK": {
         "health": 30,
         "damage": 20,
@@ -1480,7 +1508,7 @@
             "fire": "bomber_fire"
         },
         "effects": {
-            "fire": "gas_attack"
+            "fire": "nuke"
         },
         "sprites": {
             "idle_right": "aleph_idle_right",

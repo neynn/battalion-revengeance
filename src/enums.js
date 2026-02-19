@@ -450,7 +450,10 @@ export const TILE_ID = {
     CANYON_0: 120,
     CANYON_47: 167,
 
-    COUNT: 168
+    RAIL_0: 168,
+    RAIL_15: 183,
+
+    COUNT: 184
 };
 
 export const DIRECTION = {

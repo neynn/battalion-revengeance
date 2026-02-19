@@ -1536,5 +1536,17 @@
             "rows": 1,
             "columns": 1
         }
+    },
+    "nuke": {
+        "directory": ["assets","sprites","textures"],
+        "source": "nuke.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 755,
+            "frameHeight": 424,
+            "rows": 7,
+            "columns": 7
+        }
     }
 }

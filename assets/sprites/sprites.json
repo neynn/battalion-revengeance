@@ -2170,5 +2170,11 @@
         "texture": "supply_attack",
         "frameTime": 0.1,
         "autoFrames": {"start": 1,"jump": 1,"repeat": 8}
+    },
+    "nuke": {
+        "texture": "nuke",
+        "frameTime": 0.03,
+        "anchor": {"x":376,"y":212},
+        "autoFrames": {"start": 1,"jump": 1,"repeat": 48}
     }
 }
