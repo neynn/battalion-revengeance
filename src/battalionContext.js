@@ -13,6 +13,7 @@ import { ArenaState } from "./states/arena/arena.js";
 import { UICore } from "./ui/uiCore.js";
 import { ClientActionRouter } from "./client/actionRouter.js";
 import { registerActions } from "./systems/context.js";
+import { resolveTileType } from "./enumHelpers.js";
 
 export const BattalionContext = function() {
     ClientGameContext.call(this);
@@ -55,7 +56,18 @@ BattalionContext.prototype = Object.create(ClientGameContext.prototype);
 BattalionContext.prototype.constructor = BattalionContext;
 
 BattalionContext.prototype.init = function(resources) {
-    this.spriteManager.initLayers(LAYER_TYPE.COUNT);
+    this.tileManager.loadClient(this.resourceLoader, resources.tiles, resources.tileMeta, resources.autotilers, resolveTileType);
+    this.spriteManager.load(this, resources.spriteTextures, resources.sprites);
+    this.uiManager.load(resources.interfaces, resources.icons);
+    this.fonts.load(resources.fonts);
+    this.client.musicPlayer.load(resources.music, resources.playlists);
+    this.client.soundPlayer.load(resources.sounds);
+    this.client.socket.load(resources.network.socket);
+    this.client.router.load(resources.keybinds);
+    this.mapRegistry.load(resources.maps);
+    this.language.load(resources.languages);
+
+    this.spriteManager.initLayers(LAYER_TYPE._COUNT);
     this.typeRegistry.load(resources);
 
     registerActions(this, false);

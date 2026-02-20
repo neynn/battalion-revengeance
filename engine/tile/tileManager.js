@@ -27,15 +27,17 @@ TileManager.prototype.update = function(gameContext) {
     }
 }
 
-TileManager.prototype.createTiles = function(tileMeta) {
+TileManager.prototype.createTiles = function(tileMeta, resolveType) {
     const visualMap = {};
     let mapID = 1;
+
     //0 is treated as an empty visual => counting begins at 1.
-    //Table matches a visual tile to logical tile.
+    //Table maps a visual tile to logical tile.
 
     for(let i = 0; i < tileMeta.length; i++) {
         const { id = null, type = null, autotiler = null, variants } = tileMeta[i];
-        const tileObject = new Tile(i, type, autotiler);
+        const typeID = resolveType(type);
+        const tileObject = new Tile(i, typeID, autotiler);
 
         this.tiles.push(tileObject);
 
@@ -151,23 +153,25 @@ TileManager.prototype.createTileVisuals = function(resourceLoader, tileAtlases, 
     }
 }
 
-TileManager.prototype.loadServer = function(tileMeta, autotilers) {
+TileManager.prototype.loadServer = function(tileMeta, autotilers, resolveType) {
     if(!tileMeta || !autotilers) {
         console.warn("TileMeta/Autotilers does not exist!");
         return;
     }
 
-    const visualMap = this.createTiles(tileMeta);
+    const visualMap = this.createTiles(tileMeta, resolveType);
+
     this.createAutotilers(autotilers, visualMap);
 }
 
-TileManager.prototype.load = function(resourceLoader, tileAtlases, tileMeta, autotilers) {
+TileManager.prototype.loadClient = function(resourceLoader, tileAtlases, tileMeta, autotilers, resolveType) {
     if(!tileAtlases || !tileMeta || !autotilers) {
         console.warn("TileAtlases/TileMeta/Autotilers does not exist!");
         return;
     }
 
-    const visualMap = this.createTiles(tileMeta);
+    const visualMap = this.createTiles(tileMeta, resolveType);
+
     this.createAutotilers(autotilers, visualMap);
     this.createTileVisuals(resourceLoader, tileAtlases, tileMeta);
     this.enableAllVisuals();

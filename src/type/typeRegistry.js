@@ -14,6 +14,9 @@ import { MoraleType } from "./parsed/moraleType.js";
 import { EntityType } from "./parsed/entityType.js";
 import { ShopType } from "./parsed/shopType.js";
 import { SchemaType } from "./parsed/schemaType.js";
+import { TILE_TYPE } from "../enums.js";
+
+const STUB_TILE = new TileType(-1);
 
 export const TypeRegistry = function() {
     this.categories = [];
@@ -64,6 +67,12 @@ export const TypeRegistry = function() {
 
         this.categories[i] = new TypeCategory(name, stub);
     }
+
+    this.tileTypes = [];
+
+    for(let i = 0; i < TILE_TYPE._COUNT; i++) {
+        this.tileTypes[i] = new TileType(i);
+    }
 }
 
 TypeRegistry.CATEGORY = {
@@ -97,7 +106,7 @@ TypeRegistry.prototype.load = function(resources) {
     this.categories[TypeRegistry.CATEGORY.CLIMATE].loadTypes(resources.climateTypes, ClimateType);
     this.categories[TypeRegistry.CATEGORY.MOVEMENT].loadTypes(resources.movementTypes, MovementType);
     this.categories[TypeRegistry.CATEGORY.TERRAIN].loadTypes(resources.terrainTypes, TerrainType);
-    this.categories[TypeRegistry.CATEGORY.TILE].loadTypes(resources.tileTypes, TileType);
+    //this.categories[TypeRegistry.CATEGORY.TILE].loadTypes(resources.tileTypes, TileType);
     this.categories[TypeRegistry.CATEGORY.TRAIT].loadTypes(resources.traitTypes, TraitType);
     this.categories[TypeRegistry.CATEGORY.WEAPON].loadTypes(resources.weaponTypes, WeaponType);
     this.categories[TypeRegistry.CATEGORY.NATION].loadTypes(resources.nationTypes, NationType);
@@ -105,6 +114,17 @@ TypeRegistry.prototype.load = function(resources) {
     this.categories[TypeRegistry.CATEGORY.COMMANDER].loadTypes(resources.commanderTypes, CommanderType);
     this.categories[TypeRegistry.CATEGORY.BUILDING].loadTypes(resources.buildingTypes, BuildingType);
     this.categories[TypeRegistry.CATEGORY.SHOP].loadTypes(resources.shopTypes, ShopType);
+
+    for(const typeID in resources.tileTypes) {
+        const config = resources.tileTypes[typeID];
+        const index = TILE_TYPE[typeID];
+
+        if(index !== undefined) {
+            this.tileTypes[index].load(config);
+        } else {
+            //Type does not exist in JSON!
+        }
+    }
 }
 
 TypeRegistry.prototype.getTerrainType = function(typeID) {
@@ -112,7 +132,11 @@ TypeRegistry.prototype.getTerrainType = function(typeID) {
 }
 
 TypeRegistry.prototype.getTileType = function(typeID) {
-    return this.categories[TypeRegistry.CATEGORY.TILE].getType(typeID);
+    if(typeID < 0 || typeID >= this.tileTypes.length) {
+        return STUB_TILE;
+    }
+    
+    return this.tileTypes[typeID];
 }
 
 TypeRegistry.prototype.getTraitType = function(typeID) {

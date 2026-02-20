@@ -47,7 +47,7 @@ EditorController.prototype.initConfigurator = function() {
     const seaSet = new BrushSet("MAP_EDITOR_SET_NAME_SEA");
     const railSet = new BrushSet("MAP_EDITOR_SET_NAME_RAIL");
 
-    for(let i = TILE_ID.GRASS; i < TILE_ID.COUNT; i++) {
+    for(let i = TILE_ID.GRASS; i < TILE_ID._COUNT; i++) {
         allSet.addValue(i);
     }
 

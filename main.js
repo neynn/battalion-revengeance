@@ -10,7 +10,6 @@ const gameContext = new BattalionContext();
 const assetLoader = new AssetLoader();
 const resources = await assetLoader.loadResourcesDev(gameContext.pathHandler, "assets/assets.json");
 
-gameContext.loadResources(resources);
 gameContext.init(resources);
 
 if(DO_TEST) {

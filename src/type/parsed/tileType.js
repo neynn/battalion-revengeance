@@ -1,6 +1,16 @@
 import { CLIMATE_TYPE, MINE_TYPE } from "../../enums.js";
 
-export const TileType = function(id, config) {
+export const TileType = function(id) {
+    this.id = id;
+    this.name = "MISSING_NAME_TILE";
+    this.desc = "MISSING_DESC_TILE";
+    this.climate = CLIMATE_TYPE.NONE;
+    this.terrain = [];
+    this.passability = {}; //TODO: Should be an array of each movement type.
+    this.allowedMines = [];
+}
+
+TileType.prototype.load = function(config) {
     const MAX_TERRAIN = 4;
 
     const {
@@ -12,13 +22,11 @@ export const TileType = function(id, config) {
         allowedMines = []
     } = config;
 
-    this.id = id;
     this.name = name;
     this.desc = desc;
     this.climate = climate;
     this.terrain = terrain;
     this.passability = passability;
-    this.allowedMines = [];
 
     for(const mineType of allowedMines) {
         const mineID = MINE_TYPE[mineType];

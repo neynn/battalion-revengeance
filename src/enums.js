@@ -89,22 +89,27 @@ export const COLOR_TYPE = {
 };
 
 export const TILE_TYPE = {
-    NONE: "NONE",
-    GRASS: "GRASS",
-    BOREAL: "BOREAL",
-    ARCTIC: "ARCTIC",
-    SHORE: "SHORE",
-    ISLAND: "ISLAND",
-    SWIRL: "SWIRL",
-    ROCKS: "ROCKS",
-    SEA: "SEA",
-    RIVER: "RIVER",
-    ROAD: "ROAD",
-    BRIDGE: "BRIDGE",
-    VOLCANO: "VOLCANO",
-    RICH_ORE: "RICH_ORE",
-    USED_ORE: "USED_ORE",
-    DEPLETED_ORE: "DEPLETED_ORE"
+    _INVALID: -1,
+    NONE: 0,
+    GRASS: 1,
+    BOREAL: 2,
+    ARCTIC: 3,
+    SHORE: 4,
+    ISLAND: 5,
+    SWIRL: 6,
+    ROCKS: 7,
+    SEA: 8,
+    RIVER: 9,
+    ROAD: 10,
+    BRIDGE: 11,
+    VOLCANO: 12,
+    RICH_ORE: 13,
+    USED_ORE: 14,
+    DEPLETED_ORE: 15,
+    CANYON: 16,
+    PATH: 17,
+    RAIL: 18,
+    _COUNT: 19
 };
 
 export const TRAIT_TYPE = {
@@ -367,7 +372,7 @@ export const LAYER_TYPE = {
     SEA: 1,
     LAND: 2,
     GFX: 3,
-    COUNT: 4
+    _COUNT: 4
 };
 
 export const TILE_ID = {
@@ -453,7 +458,7 @@ export const TILE_ID = {
     RAIL_0: 168,
     RAIL_15: 183,
 
-    COUNT: 184
+    _COUNT: 184
 };
 
 export const DIRECTION = {

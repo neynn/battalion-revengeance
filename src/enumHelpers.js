@@ -1,4 +1,4 @@
-import { ENTITY_CATEGORY, ENTITY_TYPE, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, TEAM_STAT, TILE_ID, TRANSPORT_TYPE } from "./enums.js";
+import { ENTITY_CATEGORY, ENTITY_TYPE, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, TEAM_STAT, TILE_ID, TILE_TYPE, TRANSPORT_TYPE } from "./enums.js";
 
 export const mapCategoryToStat = function(category) {
     switch(category) {
@@ -61,4 +61,22 @@ export const oreToValue = function(tileID) {
         case TILE_ID.ORE_RIGHT_USED: return 300;
         default: return 0;
     }
+}
+
+export const resolveTileType = function(type) {
+    if(!type) {
+        console.error("No TileType given!");
+
+        return TILE_TYPE._INVALID;
+    }
+
+    const typeID = TILE_TYPE[type];
+
+    if(typeID === undefined) {
+        console.error("TileType does not exist!", type);
+
+        return TILE_TYPE._INVALID;
+    }
+
+    return typeID;
 }

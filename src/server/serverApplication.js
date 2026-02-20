@@ -5,6 +5,8 @@ import { ServerGameContext } from "./serverContext.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { MapRegistry } from "../map/mapRegistry.js";
 import { registerActions } from "../systems/context.js";
+import { TILE_TYPE } from "../enums.js";
+import { resolveTileType } from "../enumHelpers.js";
 
 export const ServerApplication = function(io) {
     SocketServer.call(this, io);
@@ -19,7 +21,7 @@ ServerApplication.prototype = Object.create(SocketServer.prototype);
 ServerApplication.prototype.constructor = ServerApplication;
 
 ServerApplication.prototype.init = function(resources) {
-    this.tileManager.loadServer(resources.tileMeta, resources.autotilers);
+    this.tileManager.loadServer(resources.tileMeta, resources.autotilers, resolveTileType);
     this.mapRegistry.load(resources.maps);
     this.typeRegistry.load(resources);
 }

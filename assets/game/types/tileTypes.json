@@ -179,7 +179,7 @@
             "FOOT": 1,
             "WHEELED": 1,
             "TRACKED": 1,
-            "RAIL:": 1,
+            "RAIL": 1,
             "FLIGHT": 1,
             "AMPHIBIOUS": 1
         }

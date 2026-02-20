@@ -77,16 +77,3 @@ ClientGameContext.prototype.exit = function() {
     this.onExit();
     addDebug(this);
 }
-
-ClientGameContext.prototype.loadResources = function(resources) {
-    this.tileManager.load(this.resourceLoader, resources.tiles, resources.tileMeta, resources.autotilers);
-    this.spriteManager.load(this, resources.spriteTextures, resources.sprites);
-    this.uiManager.load(resources.interfaces, resources.icons);
-    this.fonts.load(resources.fonts);
-    this.client.musicPlayer.load(resources.music, resources.playlists);
-    this.client.soundPlayer.load(resources.sounds);
-    this.client.socket.load(resources.network.socket);
-    this.client.router.load(resources.keybinds);
-    this.mapRegistry.load(resources.maps);
-    this.language.load(resources.languages);
-}
