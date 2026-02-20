@@ -14,10 +14,11 @@ import { MoraleType } from "./parsed/moraleType.js";
 import { EntityType } from "./parsed/entityType.js";
 import { ShopType } from "./parsed/shopType.js";
 import { SchemaType } from "./parsed/schemaType.js";
-import { ARMOR_TYPE, BUILDING_TYPE, CLIMATE_TYPE, COMMANDER_TYPE, CURRENCY_TYPE, FACTION_TYPE, MOVEMENT_TYPE, NATION_TYPE, POWER_TYPE, TERRAIN_TYPE, TILE_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../enums.js";
+import { ARMOR_TYPE, BUILDING_TYPE, CLIMATE_TYPE, COMMANDER_TYPE, CURRENCY_TYPE, FACTION_TYPE, MOVEMENT_TYPE, NATION_TYPE, POWER_TYPE, SHOP_TYPE, TERRAIN_TYPE, TILE_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../enums.js";
 import { PowerType } from "./parsed/powerType.js";
 import { CurrencyType } from "./parsed/currencyType.js";
 
+const STUB_SHOP = new ShopType(-1);
 const STUB_FACTION = new FactionType(-1);
 const STUB_COMMANDER = new CommanderType(-1);
 const STUB_CURRENCY = new CurrencyType(-1);
@@ -95,6 +96,7 @@ export const TypeRegistry = function() {
     this.currencyTypes = [];
     this.commanderTypes = [];
     this.factionTypes = [];
+    this.shopTypes = [];
 
     for(let i = 0; i < TILE_TYPE._COUNT; i++) {
         this.tileTypes[i] = new TileType(i);
@@ -147,6 +149,10 @@ export const TypeRegistry = function() {
     for(let i = 0; i < FACTION_TYPE._COUNT; i++) {
         this.factionTypes[i] = new FactionType(i);
     }
+
+    for(let i = 0; i < SHOP_TYPE._COUNT; i++) {
+        this.shopTypes[i] = new ShopType(i);
+    }
 }
 
 TypeRegistry.CATEGORY = {
@@ -174,7 +180,17 @@ TypeRegistry.prototype.load = function(resources) {
     this.categories[TypeRegistry.CATEGORY.ENTITY].loadTypes(resources.entityTypes, EntityType);
     this.categories[TypeRegistry.CATEGORY.MORALE].loadTypes(resources.moraleTypes, MoraleType);
     this.categories[TypeRegistry.CATEGORY.BUILDING].loadTypes(resources.buildingTypes, BuildingType);
-    this.categories[TypeRegistry.CATEGORY.SHOP].loadTypes(resources.shopTypes, ShopType);
+
+    for(const typeID in resources.shopTypes) {
+        const config = resources.shopTypes[typeID];
+        const index = SHOP_TYPE[typeID];
+
+        if(index !== undefined) {
+            this.shopTypes[index].load(config, typeID);
+        } else {
+            //Type does not exist in JSON!
+        }
+    }
 
     for(const typeID in resources.factionTypes) {
         const config = resources.factionTypes[typeID];
@@ -438,5 +454,9 @@ TypeRegistry.prototype.getCurrencyType = function(typeID) {
 }
 
 TypeRegistry.prototype.getShopType = function(typeID) {
-    return this.categories[TypeRegistry.CATEGORY.SHOP].getType(typeID);
+    if(typeID < 0 || typeID >= SHOP_TYPE._COUNT) {
+        return STUB_SHOP;
+    }
+    
+    return this.shopTypes[typeID];
 }

@@ -36,7 +36,7 @@ export const EntityType = function(id, config) {
         maxRange = 1,
         streamRange = 1,
         cost = 0,
-        shop = SHOP_TYPE.NONE,
+        shop = "NONE",
         desc = "MISSING_DESC_ENTITY",
         name = "MISSING_NAME_ENTITY",
         traits = [],
@@ -69,7 +69,7 @@ export const EntityType = function(id, config) {
     this.traits = [];
     this.category = mapMovementToCategory(this.movementType);
     this.rangeType = getRangeType(minRange, maxRange);
-    this.shop = shop;
+    this.shop = SHOP_TYPE[shop] ?? SHOP_TYPE.NONE;
 
     if(this.maxRange < this.minRange) {
         this.maxRange = this.minRange;

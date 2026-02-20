@@ -16,14 +16,14 @@ BuildingType.prototype.load = function(config, DEBUG_NAME) {
         desc = "MISSING_DESC_BUILDING",
         sprite = null,
         traits = [],
-        shop = SHOP_TYPE.NONE
+        shop = "NONE"
     } = config; 
 
     this.name = name;
     this.desc = desc;
     this.sprite = sprite;
-    this.shop = shop;
-
+    this.shop = SHOP_TYPE[shop] ?? SHOP_TYPE.NONE;
+ 
     for(const traitID of traits) {
         const index = TRAIT_TYPE[traitID];
 

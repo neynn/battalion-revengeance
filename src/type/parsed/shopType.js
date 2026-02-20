@@ -1,10 +1,16 @@
-export const ShopType = function(id, config) {
+export const ShopType = function(id) {
+    this.id = id;
+    this.entities = [];
+}
+
+ShopType.prototype.load = function(config, DEBUG_NAME) {
     const { 
         entities = []
-    } = config;
+    } = config; 
 
-    this.id = id;
-    this.entities = entities;
+    for(const entityID of entities) {
+        this.entities.push(entityID);
+    }
 }
 
 ShopType.prototype.hasEntity = function(entityID) {

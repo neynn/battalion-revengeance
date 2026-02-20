@@ -67,10 +67,11 @@ export const ENTITY_CATEGORY = {
 };
 
 export const SHOP_TYPE = {
-    NONE: "NONE",
-    ENGINEER: "ENGINEER",
-    WARMACHINE: "WARMACHINE",
-    FACTORY: "FACTORY"
+    NONE: 0,
+    ENGINEER: 1,
+    WARMACHINE: 2,
+    FACTORY: 3,
+    _COUNT: 4
 };
 
 export const GAME_EVENT = {
