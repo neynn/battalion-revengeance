@@ -1,4 +1,4 @@
-import { MOVEMENT_TYPE } from "../../enums.js";
+import { ARMOR_TYPE, MOVEMENT_TYPE } from "../../enums.js";
 
 export const TraitType = function(id, config) {
     const {
@@ -16,12 +16,14 @@ export const TraitType = function(id, config) {
     this.icon = icon;
     this.cashPerTurn = cashPerTurn;
     this.moveDamage = [];
-    this.armorDamage = armorDamage;
-    this.defaultMoveDamage = 0;
-    this.defaultArmorDamage = 0;
+    this.armorDamage = [];
 
     for(let i = 0; i < MOVEMENT_TYPE._COUNT; i++) {
         this.moveDamage[i] = 0;
+    }
+
+    for(let i = 0; i < ARMOR_TYPE._COUNT; i++) {
+        this.armorDamage[i] = 0;
     }
 
     if(moveDamage['*'] !== undefined) {
@@ -35,7 +37,9 @@ export const TraitType = function(id, config) {
     if(armorDamage['*'] !== undefined) {
         const defaultArmorDamage = armorDamage['*'];
 
-        //TODO: ARMOR
+        for(let i = 0; i < ARMOR_TYPE._COUNT; i++) {
+            this.armorDamage[i] = defaultArmorDamage;
+        }
     }
 
     for(const typeID in moveDamage) {
@@ -43,6 +47,14 @@ export const TraitType = function(id, config) {
 
         if(index !== undefined) {
             this.moveDamage[index] = moveDamage[typeID];
+        }
+    }
+
+    for(const typeID in armorDamage) {
+        const index = ARMOR_TYPE[typeID];
+
+        if(index !== undefined) {
+            this.armorDamage[index] = armorDamage[typeID];
         }
     }
 }
@@ -56,5 +68,9 @@ TraitType.prototype.getMoveDamage = function(movementType) {
 }
 
 TraitType.prototype.getArmorDamage = function(armorType) {
-    return (1 + (this.armorDamage[armorType] ?? this.armorDamage['*'] ?? 0));
+    if(armorType < 0 || armorType >= ARMOR_TYPE._COUNT) {
+        return 1;
+    }
+
+    return (1 + this.armorDamage[armorType]);
 }

@@ -1,4 +1,12 @@
-export const ArmorType = function(id, config) {
+export const ArmorType = function(id) {
+    this.id = id;
+    this.name = "MISSING_NAME_ARMOR";
+    this.desc = "MISSING_DESC_ARMOR";
+    this.icon = null;
+    this.resistance = {};
+}
+
+ArmorType.prototype.load = function(config) {
     const {
         name = "MISSING_NAME_ARMOR",
         desc = "MISSING_DESC_ARMOR",
@@ -6,7 +14,6 @@ export const ArmorType = function(id, config) {
         resistance = {}
     } = config;
 
-    this.id = id;
     this.name = name;
     this.desc = desc;
     this.icon = icon;

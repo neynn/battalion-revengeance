@@ -29,7 +29,7 @@ export const EntityType = function(id, config) {
         health = 1,
         damage = 0,
         weaponType = WEAPON_TYPE.NONE,
-        armorType = ARMOR_TYPE.NONE,
+        armorType = "NONE",
         movementRange = 0,
         movementType = "STATIONARY",
         movementSpeed = 224,
@@ -47,11 +47,8 @@ export const EntityType = function(id, config) {
         effects = {}
     } = config;
 
-    if(MOVEMENT_TYPE[movementType] !== undefined) {
-        this.movementType = MOVEMENT_TYPE[movementType];
-    } else {
-        this.movementType = MOVEMENT_TYPE.STATIONARY;
-    }
+    this.movementType = MOVEMENT_TYPE[movementType] ?? MOVEMENT_TYPE.STATIONARY;
+    this.armorType = ARMOR_TYPE[armorType] ?? ARMOR_TYPE.NONE;
 
     this.id = id;
     this.dimX = dimX;
@@ -61,7 +58,6 @@ export const EntityType = function(id, config) {
     this.health = health;
     this.damage = damage;
     this.weaponType = weaponType;
-    this.armorType = armorType;
     this.movementRange = movementRange;
     this.movementSpeed = movementSpeed;
     this.jammerRange = jammerRange;

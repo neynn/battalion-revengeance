@@ -193,11 +193,12 @@ export const WEAPON_TYPE = {
 };
 
 export const ARMOR_TYPE = {
-    NONE: "NONE",
-    LIGHT: "LIGHT",
-    MEDIUM: "MEDIUM",
-    HEAVY: "HEAVY",
-    OMEGA: "OMEGA"
+    NONE: 0,
+    LIGHT: 1,
+    MEDIUM: 2,
+    HEAVY: 3,
+    OMEGA: 4,
+    _COUNT: 5
 };
 
 export const TERRAIN_TYPE = {

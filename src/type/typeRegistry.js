@@ -14,8 +14,9 @@ import { MoraleType } from "./parsed/moraleType.js";
 import { EntityType } from "./parsed/entityType.js";
 import { ShopType } from "./parsed/shopType.js";
 import { SchemaType } from "./parsed/schemaType.js";
-import { MOVEMENT_TYPE, TILE_TYPE } from "../enums.js";
+import { ARMOR_TYPE, MOVEMENT_TYPE, TILE_TYPE } from "../enums.js";
 
+const STUB_ARMOR = new ArmorType(-1);
 const STUB_MOVEMENT = new MovementType(-1);
 const STUB_TILE = new TileType(-1);
 
@@ -71,6 +72,7 @@ export const TypeRegistry = function() {
 
     this.tileTypes = [];
     this.movementTypes = [];
+    this.armorTypes = [];
 
     for(let i = 0; i < TILE_TYPE._COUNT; i++) {
         this.tileTypes[i] = new TileType(i);
@@ -78,6 +80,10 @@ export const TypeRegistry = function() {
 
     for(let i = 0; i < MOVEMENT_TYPE._COUNT; i++) {
         this.movementTypes[i] = new MovementType(i);
+    }
+
+    for(let i = 0; i < ARMOR_TYPE._COUNT; i++) {
+        this.armorTypes[i] = new ArmorType(i);
     }
 }
 
@@ -108,7 +114,7 @@ TypeRegistry.prototype.load = function(resources) {
     this.categories[TypeRegistry.CATEGORY.SCHEMA].loadTypes(resources.schemaTypes, SchemaType);
     this.categories[TypeRegistry.CATEGORY.ENTITY].loadTypes(resources.entityTypes, EntityType);
     this.categories[TypeRegistry.CATEGORY.MORALE].loadTypes(resources.moraleTypes, MoraleType);
-    this.categories[TypeRegistry.CATEGORY.ARMOR].loadTypes(resources.armorTypes, ArmorType);
+    //this.categories[TypeRegistry.CATEGORY.ARMOR].loadTypes(resources.armorTypes, ArmorType);
     this.categories[TypeRegistry.CATEGORY.CLIMATE].loadTypes(resources.climateTypes, ClimateType);
     //this.categories[TypeRegistry.CATEGORY.MOVEMENT].loadTypes(resources.movementTypes, MovementType);
     this.categories[TypeRegistry.CATEGORY.TERRAIN].loadTypes(resources.terrainTypes, TerrainType);
@@ -120,6 +126,17 @@ TypeRegistry.prototype.load = function(resources) {
     this.categories[TypeRegistry.CATEGORY.COMMANDER].loadTypes(resources.commanderTypes, CommanderType);
     this.categories[TypeRegistry.CATEGORY.BUILDING].loadTypes(resources.buildingTypes, BuildingType);
     this.categories[TypeRegistry.CATEGORY.SHOP].loadTypes(resources.shopTypes, ShopType);
+
+    for(const typeID in resources.armorTypes) {
+        const config = resources.armorTypes[typeID];
+        const index = ARMOR_TYPE[typeID];
+
+        if(index !== undefined) {
+            this.armorTypes[index].load(config);
+        } else {
+            //Type does not exist in JSON!
+        }
+    }
 
     for(const typeID in resources.movementTypes) {
         const config = resources.movementTypes[typeID];
@@ -149,7 +166,7 @@ TypeRegistry.prototype.getTerrainType = function(typeID) {
 }
 
 TypeRegistry.prototype.getTileType = function(typeID) {
-    if(typeID < 0 || typeID >= this.tileTypes.length) {
+    if(typeID < 0 || typeID >= TILE_TYPE._COUNT) {
         return STUB_TILE;
     }
     
@@ -181,7 +198,7 @@ TypeRegistry.prototype.getClimateType = function(typeID) {
 }
 
 TypeRegistry.prototype.getMovementType = function(typeID) {
-    if(typeID < 0 || typeID >= this.movementTypes.length) {
+    if(typeID < 0 || typeID >= MOVEMENT_TYPE._COUNT) {
         return STUB_MOVEMENT;
     }
     
@@ -189,7 +206,11 @@ TypeRegistry.prototype.getMovementType = function(typeID) {
 }
 
 TypeRegistry.prototype.getArmorType = function(typeID) {
-    return this.categories[TypeRegistry.CATEGORY.ARMOR].getType(typeID);
+    if(typeID < 0 || typeID >= ARMOR_TYPE._COUNT) {
+        return STUB_ARMOR;
+    }
+    
+    return this.armorTypes[typeID];
 }
 
 TypeRegistry.prototype.getBuildingType = function(typeID) {
