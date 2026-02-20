@@ -250,9 +250,10 @@ export const SCHEMA_TYPE = {
 };
 
 export const POWER_TYPE = {
-    MAJOR: "MAJOR",
-    MINOR: "MINOR",
-    REGIONAL: "REGIONAL"
+    MAJOR: 0,
+    MINOR: 1,
+    REGIONAL: 2,
+    _COUNT: 3
 };
 
 export const NATION_TYPE = {
