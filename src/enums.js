@@ -218,15 +218,16 @@ export const TERRAIN_TYPE = {
 };
 
 export const CLIMATE_TYPE = {
-    NONE: "NONE",
-    TEMPERATE: "TEMPERATE",
-    ARID: "ARID",
-    BOREAL: "BOREAL",
-    BARREN: "BARREN",
-    ARCTIC: "ARCTIC",
-    LUNAR: "LUNAR",
-    MARTIAN: "MARTIAN",
-    HELLISH: "HELLISH"
+    NONE: 0,
+    TEMPERATE: 1,
+    ARID: 2,
+    BOREAL: 3,
+    BARREN: 4,
+    ARCTIC: 5,
+    LUNAR: 6,
+    MARTIAN: 7,
+    HELLISH: 8,
+    _COUNT: 9
 };
 
 export const SCHEMA_TYPE = {

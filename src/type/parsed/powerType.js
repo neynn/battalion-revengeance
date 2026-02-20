@@ -5,7 +5,7 @@ export const PowerType = function(id) {
 }
 
 PowerType.prototype.load = function(config) {
-    const { name,desc } = config;
+    const { name, desc } = config;
 
     if(name !== undefined) {
         this.name = name;

@@ -20,7 +20,7 @@ TileType.prototype.load = function(config) {
     const {
         name = "MISSING_NAME_TILE",
         desc = "MISSING_DESC_TILE",
-        climate = CLIMATE_TYPE.NONE,
+        climate = "NONE",
         terrain = [],
         passability = {},
         allowedMines = []
@@ -28,8 +28,11 @@ TileType.prototype.load = function(config) {
 
     this.name = name;
     this.desc = desc;
-    this.climate = climate;
     this.terrain = terrain;
+
+    if(CLIMATE_TYPE[climate] !== undefined) {
+        this.climate = CLIMATE_TYPE[climate];
+    }
 
     if(passability['*'] !== undefined) {
         const defaultPassability = passability['*'];

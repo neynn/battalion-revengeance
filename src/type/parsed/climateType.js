@@ -1,4 +1,12 @@
-export const ClimateType = function(id, config) {
+export const ClimateType = function(id) {
+    this.id = id;
+    this.name = "MISSING_NAME_CLIMATE";
+    this.desc = "MISSING_DESC_CLIMATE";
+    this.icon = null;
+    this.logisticFactor = 1;
+}
+
+ClimateType.prototype.load = function(config) {
     const {
         name = "MISSING_NAME_CLIMATE",
         desc = "MISSING_DESC_CLIMATE",
@@ -6,7 +14,6 @@ export const ClimateType = function(id, config) {
         logisticFactor = 1
     } = config;
 
-    this.id = id;
     this.name = name;
     this.desc = desc;
     this.icon = icon;

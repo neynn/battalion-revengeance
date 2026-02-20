@@ -88,11 +88,6 @@ BattalionMap.prototype.saveFlags = function() {
     return [];
 }
 
-BattalionMap.prototype.setClimate = function(local, global) {
-    this.climate = local ?? CLIMATE_TYPE.NONE;
-    this.globalClimate = global ?? CLIMATE_TYPE.NONE;
-}
-
 BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
     const { tileManager, typeRegistry } = gameContext;
 
@@ -105,14 +100,12 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
         for(const layerID of BattalionMap.SEARCH_ORDER) {
             const typeID = this.getTile(layerID, tileX, tileY);
             const { type } = tileManager.getTile(typeID);
+            const { climate } = typeRegistry.getTileType(type);
 
             //A climate type of NONE means falling through. This allows roads to be climate agnostic.
-            if(type !== null) {
-                const { climate } = typeRegistry.getTileType(type);
-
-                if(climate !== CLIMATE_TYPE.NONE) {
-                    return typeRegistry.getClimateType(climate);
-                }
+            //By default, every TileType has a climate of NONE.
+            if(climate !== CLIMATE_TYPE.NONE) {
+                return typeRegistry.getClimateType(climate);
             }
         }
     }
@@ -160,7 +153,7 @@ BattalionMap.prototype.getTileType = function(gameContext, tileX, tileY) {
         const { type } = tileManager.getTile(typeID);
 
         //Unknown tile types and empty tiles always use -1 (_INVALID).
-        if(type !== TILE_TYPE._INVALID) {
+        if(type !== TILE_TYPE._INVALID && type !== TILE_TYPE.NONE) {
             return typeRegistry.getTileType(type);
         }
     }
