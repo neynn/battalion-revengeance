@@ -18,6 +18,7 @@ import { ARMOR_TYPE, BUILDING_TYPE, CLIMATE_TYPE, COMMANDER_TYPE, CURRENCY_TYPE,
 import { PowerType } from "./parsed/powerType.js";
 import { CurrencyType } from "./parsed/currencyType.js";
 
+const STUB_ENTITY = new EntityType(-1, {});
 const STUB_SCHEMA = new SchemaType(-1);
 const STUB_MORALE = new MoraleType(-1);
 const STUB_SHOP = new ShopType(-1);
@@ -36,55 +37,6 @@ const STUB_MOVEMENT = new MovementType(-1);
 const STUB_TILE = new TileType(-1);
 
 export const TypeRegistry = function() {
-    this.categories = [];
-
-    const CATEGORY_NAME = {
-        [TypeRegistry.CATEGORY.ENTITY]: "ENTITY",
-        [TypeRegistry.CATEGORY.TRAIT]: "TRAIT",
-        [TypeRegistry.CATEGORY.MOVEMENT]: "MOVEMENT",
-        [TypeRegistry.CATEGORY.WEAPON]: "WEAPON",
-        [TypeRegistry.CATEGORY.ARMOR]: "ARMOR",
-        [TypeRegistry.CATEGORY.TERRAIN]: "TERRAIN",
-        [TypeRegistry.CATEGORY.TILE]: "TILE",
-        [TypeRegistry.CATEGORY.CLIMATE]: "CLIMATE",
-        [TypeRegistry.CATEGORY.SCHEMA]: "SCHEMA",
-        [TypeRegistry.CATEGORY.NATION]: "NATION",
-        [TypeRegistry.CATEGORY.POWER]: "POWER",
-        [TypeRegistry.CATEGORY.CURRENCY]: "CURRENCY",
-        [TypeRegistry.CATEGORY.FACTION]: "FACTION",
-        [TypeRegistry.CATEGORY.BUILDING]: "BUILDING",
-        [TypeRegistry.CATEGORY.MORALE]: "MORALE",
-        [TypeRegistry.CATEGORY.COMMANDER]: "COMMANDER",
-        [TypeRegistry.CATEGORY.SHOP]: "SHOP"
-    };
-
-    const STUB = {
-        [TypeRegistry.CATEGORY.SCHEMA]: new SchemaType("ERROR_SCHEMA", {}),
-        [TypeRegistry.CATEGORY.ENTITY]: new EntityType("ERROR_ENTITY", {}),
-        [TypeRegistry.CATEGORY.MORALE]: new MoraleType("ERROR_MORALE", {}),
-        [TypeRegistry.CATEGORY.BUILDING]: new BuildingType("ERROR_BUILDING", {}),
-        [TypeRegistry.CATEGORY.ARMOR]: new ArmorType("ERROR_ARMOR", {}),
-        [TypeRegistry.CATEGORY.MOVEMENT]: new MovementType("ERROR_MOVEMENT", {}),
-        [TypeRegistry.CATEGORY.CLIMATE]: new ClimateType("ERROR_CLIMATE", {}),
-        [TypeRegistry.CATEGORY.FACTION]: new FactionType("ERROR_FACTION", {}),
-        [TypeRegistry.CATEGORY.NATION]: new NationType("ERROR_NATION", {}),
-        [TypeRegistry.CATEGORY.COMMANDER]: new CommanderType("ERROR_COMMANDER", {}),
-        [TypeRegistry.CATEGORY.WEAPON]: new WeaponType("ERROR_WEAPON", {}),
-        [TypeRegistry.CATEGORY.TRAIT]: new TraitType("ERROR_TRAIT", {}),
-        [TypeRegistry.CATEGORY.TILE]: new TileType("ERROR_TILE", {}),
-        [TypeRegistry.CATEGORY.TERRAIN]: new TerrainType("ERROR_TERRAIN", {}),
-        [TypeRegistry.CATEGORY.SHOP]: new ShopType("ERROR_SHOP", {}),
-    };
-
-    const count = Object.keys(TypeRegistry.CATEGORY).length;
-
-    for(let i = 0; i < count; i++) {
-        const name = CATEGORY_NAME[i] ?? "UNNAMED";
-        const stub = STUB[i] ?? null;
-
-        this.categories[i] = new TypeCategory(name, stub);
-    }
-
     this.tileTypes = [];
     this.movementTypes = [];
     this.armorTypes = [];
@@ -101,6 +53,7 @@ export const TypeRegistry = function() {
     this.shopTypes = [];
     this.moraleTypes = [];
     this.schemaTypes = [];
+    this.entityTypes = new TypeCategory("ENTITY_TYPE", STUB_ENTITY);
 
     for(let i = 0; i < TILE_TYPE._COUNT; i++) {
         this.tileTypes[i] = new TileType(i);
@@ -167,28 +120,8 @@ export const TypeRegistry = function() {
     }
 }
 
-TypeRegistry.CATEGORY = {
-    ENTITY: 0,
-    TRAIT: 1,
-    MOVEMENT: 2,
-    WEAPON: 3,
-    ARMOR: 4,
-    TERRAIN: 5,
-    TILE: 6,
-    CLIMATE: 7,
-    SCHEMA: 8,
-    NATION: 9,
-    POWER: 10,
-    CURRENCY: 11,
-    FACTION: 12,
-    BUILDING: 13,
-    MORALE: 14,
-    COMMANDER: 15,
-    SHOP: 16
-};
-
 TypeRegistry.prototype.load = function(resources) {
-    this.categories[TypeRegistry.CATEGORY.ENTITY].loadTypes(resources.entityTypes, EntityType);
+    this.entityTypes.loadTypes(resources.entityTypes, EntityType);
 
     for(const typeID in resources.schemaTypes) {
         const config = resources.schemaTypes[typeID];
@@ -368,6 +301,10 @@ TypeRegistry.prototype.load = function(resources) {
     }
 }
 
+TypeRegistry.prototype.getEntityType = function(typeID) {
+    return this.entityTypes.getType(typeID);
+}
+
 TypeRegistry.prototype.getTerrainType = function(typeID) {
     if(typeID < 0 || typeID >= TERRAIN_TYPE._COUNT) {
         return STUB_TERRAIN;
@@ -470,10 +407,6 @@ TypeRegistry.prototype.getMoraleType = function(typeID) {
     }
     
     return this.moraleTypes[typeID];
-}
-
-TypeRegistry.prototype.getEntityType = function(typeID) {
-    return this.categories[TypeRegistry.CATEGORY.ENTITY].getType(typeID);
 }
 
 TypeRegistry.prototype.getSchemaType = function(typeID) {

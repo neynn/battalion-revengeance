@@ -2,7 +2,7 @@ import { LanguageHandler } from "./engine/language/languageHandler.js";
 import { AssetLoader } from "./engine/resources/assetLoader.js";
 import { generateAutoSheet, makeLanguageFile } from "./helpers.js";
 import { BattalionContext } from "./src/battalionContext.js";
-import { validateEntityTypes, validateTileTypes, validateTraitTypes } from "./src/type/validateTypes.js";
+import { validateTraitTypes } from "./src/type/validateTypes.js";
 import { tAllNamesAndDescriptionsPresent } from "./test.js";
 
 const DO_TEST = false;
@@ -14,7 +14,6 @@ gameContext.init(resources);
 
 if(DO_TEST) {
     gameContext.language.events.on(LanguageHandler.EVENT.LANGUAGE_CHANGE, () => {
-        validateTileTypes(gameContext);
         validateTraitTypes(resources.traitTypes);
         console.log("Missing entity translations:", tAllNamesAndDescriptionsPresent(gameContext, resources.entityTypes));
         console.log("Missing tile translations:", tAllNamesAndDescriptionsPresent(gameContext, resources.tileTypes));
