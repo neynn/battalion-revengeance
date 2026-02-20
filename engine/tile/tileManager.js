@@ -11,7 +11,7 @@ export const TileManager = function() {
 }
 
 TileManager.EMPTY_VISUAL = new TileVisual(-1);
-TileManager.EMPTY_TILE = new Tile(-1, null, null, null, TileManager.EMPTY_VISUAL);
+TileManager.EMPTY_TILE = new Tile(-1, -1, null);
 
 TileManager.TILE_ID = {
     EMPTY: 0,
