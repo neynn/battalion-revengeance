@@ -14,10 +14,11 @@ import { MoraleType } from "./parsed/moraleType.js";
 import { EntityType } from "./parsed/entityType.js";
 import { ShopType } from "./parsed/shopType.js";
 import { SchemaType } from "./parsed/schemaType.js";
-import { ARMOR_TYPE, BUILDING_TYPE, CLIMATE_TYPE, COMMANDER_TYPE, CURRENCY_TYPE, FACTION_TYPE, MOVEMENT_TYPE, NATION_TYPE, POWER_TYPE, SHOP_TYPE, TERRAIN_TYPE, TILE_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../enums.js";
+import { ARMOR_TYPE, BUILDING_TYPE, CLIMATE_TYPE, COMMANDER_TYPE, CURRENCY_TYPE, FACTION_TYPE, MORALE_TYPE, MOVEMENT_TYPE, NATION_TYPE, POWER_TYPE, SHOP_TYPE, TERRAIN_TYPE, TILE_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../enums.js";
 import { PowerType } from "./parsed/powerType.js";
 import { CurrencyType } from "./parsed/currencyType.js";
 
+const StUB_MORALE = new MoraleType(-1);
 const STUB_SHOP = new ShopType(-1);
 const STUB_FACTION = new FactionType(-1);
 const STUB_COMMANDER = new CommanderType(-1);
@@ -97,6 +98,7 @@ export const TypeRegistry = function() {
     this.commanderTypes = [];
     this.factionTypes = [];
     this.shopTypes = [];
+    this.moraleTypes = [];
 
     for(let i = 0; i < TILE_TYPE._COUNT; i++) {
         this.tileTypes[i] = new TileType(i);
@@ -153,6 +155,10 @@ export const TypeRegistry = function() {
     for(let i = 0; i < SHOP_TYPE._COUNT; i++) {
         this.shopTypes[i] = new ShopType(i);
     }
+
+    for(let i = 0; i < MORALE_TYPE._COUNT; i++) {
+        this.moraleTypes[i] = new MoraleType(i);
+    }
 }
 
 TypeRegistry.CATEGORY = {
@@ -178,8 +184,17 @@ TypeRegistry.CATEGORY = {
 TypeRegistry.prototype.load = function(resources) {
     this.categories[TypeRegistry.CATEGORY.SCHEMA].loadTypes(resources.schemaTypes, SchemaType);
     this.categories[TypeRegistry.CATEGORY.ENTITY].loadTypes(resources.entityTypes, EntityType);
-    this.categories[TypeRegistry.CATEGORY.MORALE].loadTypes(resources.moraleTypes, MoraleType);
-    this.categories[TypeRegistry.CATEGORY.BUILDING].loadTypes(resources.buildingTypes, BuildingType);
+
+    for(const typeID in resources.moraleTypes) {
+        const config = resources.moraleTypes[typeID];
+        const index = MORALE_TYPE[typeID];
+
+        if(index !== undefined) {
+            this.moraleTypes[index].load(config, typeID);
+        } else {
+            //Type does not exist in JSON!
+        }
+    }
 
     for(const typeID in resources.shopTypes) {
         const config = resources.shopTypes[typeID];
@@ -434,7 +449,11 @@ TypeRegistry.prototype.getBuildingType = function(typeID) {
 }
 
 TypeRegistry.prototype.getMoraleType = function(typeID) {
-    return this.categories[TypeRegistry.CATEGORY.MORALE].getType(typeID);
+    if(typeID < 0 || typeID >= MORALE_TYPE._COUNT) {
+        return StUB_MORALE;
+    }
+    
+    return this.moraleTypes[typeID];
 }
 
 TypeRegistry.prototype.getEntityType = function(typeID) {

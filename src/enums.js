@@ -357,7 +357,17 @@ export const ACTION_TYPE = {
 };
 
 export const MORALE_TYPE = {
-    NONE: "NONE"
+    LOWEST: 0,
+    SUPER_LOW: 1,
+    VERY_LOW: 2,
+    LOW: 3,
+    NORMAL: 4,
+    HIGH: 5,
+    VERY_HIGH: 6,
+    SUPER_HIGH: 7,
+    ULTRA_HIGH: 8,
+    HIGHEST: 9,
+    _COUNT: 10
 };
 
 export const OBJECTIVE_TYPE = {
