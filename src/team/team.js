@@ -24,7 +24,7 @@ export const Team = function(id) {
         new LynchpinObjective()
     ];
 
-    for(let i = 0; i < TEAM_STAT.COUNT; i++) {
+    for(let i = 0; i < TEAM_STAT._COUNT; i++) {
         this.stats[i] = 0;
     }
 }

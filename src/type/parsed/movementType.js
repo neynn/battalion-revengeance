@@ -1,11 +1,17 @@
-export const MovementType = function(id, config) {
+export const MovementType = function(id) {
+    this.id = id;
+    this.name = "MISSING_NAME_MOVEMENT";
+    this.desc = "MISSING_DESC_MOVEMENT";
+    this.icon = null;
+}
+
+MovementType.prototype.load = function(config) {
     const {
         name = "MISSING_NAME_MOVEMENT",
         desc = "MISSING_DESC_MOVEMENT",
         icon = null,
     } = config;
 
-    this.id = id;
     this.name = name;
     this.desc = desc;
     this.icon = icon;

@@ -159,7 +159,8 @@ BattalionMap.prototype.getTileType = function(gameContext, tileX, tileY) {
         const typeID = this.getTile(layerID, tileX, tileY);
         const { type } = tileManager.getTile(typeID);
 
-        if(type !== null && type !== TILE_TYPE.NONE) {
+        //Unknown tile types and empty tiles always use -1 (_INVALID).
+        if(type !== TILE_TYPE._INVALID) {
             return typeRegistry.getTileType(type);
         }
     }

@@ -44,7 +44,7 @@ export const TEAM_STAT = {
     UNITS_MOVED: 15,
     RESOURCE_DAMAGE: 16,
     MINES_DISCOVERED: 17,
-    COUNT: 18
+    _COUNT: 18
 };
 
 export const JAMMER_FLAG = {
@@ -63,7 +63,7 @@ export const ENTITY_CATEGORY = {
     LAND: 0,
     SEA: 1,
     AIR: 2,
-    COUNT: 3
+    _COUNT: 3
 };
 
 export const SHOP_TYPE = {
@@ -173,15 +173,16 @@ export const TRAIT_TYPE = {
 };
 
 export const MOVEMENT_TYPE = {
-    STATIONARY: "STATIONARY",
-    FOOT: "FOOT",
-    WHEELED: "WHEELED",
-    TRACKED: "TRACKED",
-    RAIL: "RAIL",
-    FLIGHT: "FLIGHT",
-    RUDDER: "RUDDER",
-    HEAVY_RUDDER: "HEAVY_RUDDER",
-    AMPHIBIOUS: "AMPHIBIOUS"
+    STATIONARY: 0,
+    FOOT: 1,
+    WHEELED: 2,
+    TRACKED: 3,
+    RAIL: 4,
+    FLIGHT: 5,
+    RUDDER: 6,
+    HEAVY_RUDDER: 7,
+    AMPHIBIOUS: 8,
+    _COUNT: 9
 };
 
 export const WEAPON_TYPE = {

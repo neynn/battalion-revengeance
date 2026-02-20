@@ -1,4 +1,4 @@
-import { CLIMATE_TYPE, MINE_TYPE } from "../../enums.js";
+import { CLIMATE_TYPE, MINE_TYPE, MOVEMENT_TYPE } from "../../enums.js";
 
 export const TileType = function(id) {
     this.id = id;
@@ -6,8 +6,12 @@ export const TileType = function(id) {
     this.desc = "MISSING_DESC_TILE";
     this.climate = CLIMATE_TYPE.NONE;
     this.terrain = [];
-    this.passability = {}; //TODO: Should be an array of each movement type.
     this.allowedMines = [];
+    this.passability = [];
+
+    for(let i = 0; i < MOVEMENT_TYPE._COUNT; i++) {
+        this.passability[i] = -1;
+    }
 }
 
 TileType.prototype.load = function(config) {
@@ -26,7 +30,22 @@ TileType.prototype.load = function(config) {
     this.desc = desc;
     this.climate = climate;
     this.terrain = terrain;
-    this.passability = passability;
+
+    if(passability['*'] !== undefined) {
+        const defaultPassability = passability['*'];
+
+        for(let i = 0; i < MOVEMENT_TYPE._COUNT; i++) {
+            this.passability[i] = defaultPassability;
+        }
+    }
+
+    for(const typeID in passability) {
+        const index = MOVEMENT_TYPE[typeID];
+
+        if(index !== undefined) {
+            this.passability[index] = passability[typeID];
+        }
+    }
 
     for(const mineType of allowedMines) {
         const mineID = MINE_TYPE[mineType];
@@ -56,5 +75,9 @@ TileType.prototype.allowsMine = function(mineType) {
 }
 
 TileType.prototype.getPassabilityCost = function(movementType) {
-    return this.passability[movementType] ?? this.passability['*'] ?? -1;
+    if(movementType < 0 || movementType >= MOVEMENT_TYPE._COUNT) {
+        return -1;
+    }
+
+    return this.passability[movementType];
 }

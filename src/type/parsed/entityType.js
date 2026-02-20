@@ -31,7 +31,7 @@ export const EntityType = function(id, config) {
         weaponType = WEAPON_TYPE.NONE,
         armorType = ARMOR_TYPE.NONE,
         movementRange = 0,
-        movementType = MOVEMENT_TYPE.STATIONARY,
+        movementType = "STATIONARY",
         movementSpeed = 224,
         jammerRange = 1,
         minRange = 1,
@@ -47,6 +47,12 @@ export const EntityType = function(id, config) {
         effects = {}
     } = config;
 
+    if(MOVEMENT_TYPE[movementType] !== undefined) {
+        this.movementType = MOVEMENT_TYPE[movementType];
+    } else {
+        this.movementType = MOVEMENT_TYPE.STATIONARY;
+    }
+
     this.id = id;
     this.dimX = dimX;
     this.dimY = dimY;
@@ -57,7 +63,6 @@ export const EntityType = function(id, config) {
     this.weaponType = weaponType;
     this.armorType = armorType;
     this.movementRange = movementRange;
-    this.movementType = movementType;
     this.movementSpeed = movementSpeed;
     this.jammerRange = jammerRange;
     this.minRange = minRange;
@@ -68,7 +73,7 @@ export const EntityType = function(id, config) {
     this.sprites = sprites;
     this.effects = effects;
     this.traits = traits;
-    this.category = mapMovementToCategory(movementType);
+    this.category = mapMovementToCategory(this.movementType);
     this.rangeType = getRangeType(minRange, maxRange);
     this.shop = shop;
 
