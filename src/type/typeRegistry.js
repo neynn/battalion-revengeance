@@ -14,11 +14,12 @@ import { MoraleType } from "./parsed/moraleType.js";
 import { EntityType } from "./parsed/entityType.js";
 import { ShopType } from "./parsed/shopType.js";
 import { SchemaType } from "./parsed/schemaType.js";
-import { ARMOR_TYPE, BUILDING_TYPE, CLIMATE_TYPE, COMMANDER_TYPE, CURRENCY_TYPE, FACTION_TYPE, MORALE_TYPE, MOVEMENT_TYPE, NATION_TYPE, POWER_TYPE, SHOP_TYPE, TERRAIN_TYPE, TILE_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../enums.js";
+import { ARMOR_TYPE, BUILDING_TYPE, CLIMATE_TYPE, COMMANDER_TYPE, CURRENCY_TYPE, FACTION_TYPE, MORALE_TYPE, MOVEMENT_TYPE, NATION_TYPE, POWER_TYPE, SCHEMA_TYPE, SHOP_TYPE, TERRAIN_TYPE, TILE_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../enums.js";
 import { PowerType } from "./parsed/powerType.js";
 import { CurrencyType } from "./parsed/currencyType.js";
 
-const StUB_MORALE = new MoraleType(-1);
+const STUB_SCHEMA = new SchemaType(-1);
+const STUB_MORALE = new MoraleType(-1);
 const STUB_SHOP = new ShopType(-1);
 const STUB_FACTION = new FactionType(-1);
 const STUB_COMMANDER = new CommanderType(-1);
@@ -99,6 +100,7 @@ export const TypeRegistry = function() {
     this.factionTypes = [];
     this.shopTypes = [];
     this.moraleTypes = [];
+    this.schemaTypes = [];
 
     for(let i = 0; i < TILE_TYPE._COUNT; i++) {
         this.tileTypes[i] = new TileType(i);
@@ -159,6 +161,10 @@ export const TypeRegistry = function() {
     for(let i = 0; i < MORALE_TYPE._COUNT; i++) {
         this.moraleTypes[i] = new MoraleType(i);
     }
+
+    for(let i = 0; i < SCHEMA_TYPE._COUNT; i++) {
+        this.schemaTypes[i] = new SchemaType(i);
+    }
 }
 
 TypeRegistry.CATEGORY = {
@@ -182,8 +188,18 @@ TypeRegistry.CATEGORY = {
 };
 
 TypeRegistry.prototype.load = function(resources) {
-    this.categories[TypeRegistry.CATEGORY.SCHEMA].loadTypes(resources.schemaTypes, SchemaType);
     this.categories[TypeRegistry.CATEGORY.ENTITY].loadTypes(resources.entityTypes, EntityType);
+
+    for(const typeID in resources.schemaTypes) {
+        const config = resources.schemaTypes[typeID];
+        const index = SCHEMA_TYPE[typeID];
+
+        if(index !== undefined) {
+            this.schemaTypes[index].load(config, typeID);
+        } else {
+            //Type does not exist in JSON!
+        }
+    }
 
     for(const typeID in resources.moraleTypes) {
         const config = resources.moraleTypes[typeID];
@@ -450,7 +466,7 @@ TypeRegistry.prototype.getBuildingType = function(typeID) {
 
 TypeRegistry.prototype.getMoraleType = function(typeID) {
     if(typeID < 0 || typeID >= MORALE_TYPE._COUNT) {
-        return StUB_MORALE;
+        return STUB_MORALE;
     }
     
     return this.moraleTypes[typeID];
@@ -461,7 +477,11 @@ TypeRegistry.prototype.getEntityType = function(typeID) {
 }
 
 TypeRegistry.prototype.getSchemaType = function(typeID) {
-    return this.categories[TypeRegistry.CATEGORY.SCHEMA].getType(typeID);
+    if(typeID < 0 || typeID >= SCHEMA_TYPE._COUNT) {
+        return STUB_SCHEMA;
+    }
+    
+    return this.schemaTypes[typeID];
 }
 
 TypeRegistry.prototype.getCurrencyType = function(typeID) {

@@ -169,7 +169,8 @@ const TeamFactory = {
             if(oColor !== null) {
                 team.createCustomSchema(oColor);
             } else if(tColor !== null) {
-                const schemaType = typeRegistry.getSchemaType(tColor);
+                const tColorID = SCHEMA_TYPE[tColor] ?? SCHEMA_TYPE.RED;
+                const schemaType = typeRegistry.getSchemaType(tColorID);
 
                 team.schema = schemaType;
             }

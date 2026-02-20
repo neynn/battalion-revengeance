@@ -85,11 +85,6 @@ export const GAME_EVENT = {
     MP_SERVER_STATE_UPDATE: 15
 };
 
-export const COLOR_TYPE = {
-    RED: "RED",
-    WHITE: "WHITE"
-};
-
 export const TILE_TYPE = {
     _INVALID: -1,
     NONE: 0,
@@ -241,23 +236,24 @@ export const CLIMATE_TYPE = {
 };
 
 export const SCHEMA_TYPE = {
-    RED: "RED",
-    BLUE: "BLUE",
-    GREEN: "GREEN",
-    YELLOW: "YELLOW",
-    DARK_RED: "DARK_RED",
-    DARK_BLUE: "DARK_BLUE",
-    BRONZE: "BRONZE",
-    DARK_GREEN: "DARK_GREEN",
-    GOLD: "GOLD",
-    CYAN: "CYAN",
-    PINK: "PINK",
-    WHITE: "WHITE",
-    PURPLE: "PURPLE",
-    BLACK: "BLACK",
-    GRAY: "GRAY",
-    CREAM: "CREAM",
-    LIME: "LIME"
+    RED: 0,
+    BLUE: 1,
+    GREEN: 2,
+    YELLOW: 3,
+    DARK_RED: 4,
+    DARK_BLUE: 5,
+    BRONZE: 6,
+    DARK_GREEN: 7,
+    GOLD: 8,
+    CYAN: 9,
+    PINK: 10,
+    WHITE: 11,
+    PURPLE: 12,
+    BLACK: 13,
+    GRAY: 14,
+    CREAM: 15,
+    LIME: 16,
+    _COUNT: 17
 };
 
 export const POWER_TYPE = {

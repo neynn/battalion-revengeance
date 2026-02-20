@@ -2,7 +2,7 @@ import { createDeathIntent, createUncloakIntent } from "../action/actionHelper.j
 import { Objective } from "./objective/objective.js";
 import { UnitSurviveObjective } from "./objective/types/unitSurvive.js";
 import { LynchpinObjective } from "./objective/types/lynchpin.js";
-import { TEAM_STAT, TRAIT_TYPE } from "../enums.js";
+import { SCHEMA_TYPE, TEAM_STAT, TRAIT_TYPE } from "../enums.js";
 import { SCORE_BONUS, VICTORY_BONUS } from "../constants.js";
 import { SchemaType } from "../type/parsed/schemaType.js";
 
@@ -167,8 +167,11 @@ Team.prototype.createCustomSchema = function(colorMap) {
         "desc": "SCHEMA_DESC_CUSTOM"
     };
 
-    const schemaID = "#" + this.id;
-    const schemaType = new SchemaType(schemaID, config);
+    //Ensures it's always ABOVE all predefined schemas
+    const schemaID = SCHEMA_TYPE._COUNT + this.id;
+    const schemaType = new SchemaType(schemaID);
+
+    schemaType.load(config, "CUSTOM");
 
     this.schema = schemaType;
 
