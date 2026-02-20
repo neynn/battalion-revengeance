@@ -6,7 +6,7 @@ export const ClimateType = function(id) {
     this.logisticFactor = 1;
 }
 
-ClimateType.prototype.load = function(config) {
+ClimateType.prototype.load = function(config, DEBUG_NAME) {
     const {
         name = "MISSING_NAME_CLIMATE",
         desc = "MISSING_DESC_CLIMATE",

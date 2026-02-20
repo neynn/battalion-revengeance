@@ -4,7 +4,7 @@ export const PowerType = function(id) {
     this.desc = "MISSING_DESC_POWER";
 }
 
-PowerType.prototype.load = function(config) {
+PowerType.prototype.load = function(config, DEBUG_NAME) {
     const { name, desc } = config;
 
     if(name !== undefined) {

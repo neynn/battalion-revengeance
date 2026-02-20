@@ -18,7 +18,7 @@ export const TraitType = function(id) {
     }
 }
 
-TraitType.prototype.load = function(config) {
+TraitType.prototype.load = function(config, DEBUG_NAME) {
     const {
         name = "MISSING_NAME_TRAIT",
         desc = "MISSING_DESC_TRAIT",

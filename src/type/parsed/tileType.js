@@ -14,7 +14,7 @@ export const TileType = function(id) {
     }
 }
 
-TileType.prototype.load = function(config) {
+TileType.prototype.load = function(config, DEBUG_NAME) {
     const MAX_TERRAIN = 4;
 
     const {
@@ -56,14 +56,14 @@ TileType.prototype.load = function(config) {
         if(mineID !== undefined) {
             this.allowedMines.push(mineID);
         } else {
-            console.warn(`${this.id}: Unknown mine type! [mineType:${mineType}]`);
+            console.warn(`${DEBUG_NAME}: Unknown mine type! [mineType:${mineType}]`);
         }
     }
 
     if(this.terrain.length > MAX_TERRAIN) {
         this.terrain.length = MAX_TERRAIN;
 
-        console.warn(`${this.id}: More than ${MAX_TERRAIN} terrains detected!`);
+        console.warn(`${DEBUG_NAME}: More than ${MAX_TERRAIN} terrains detected!`);
     }
 }
 

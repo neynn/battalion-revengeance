@@ -151,7 +151,7 @@ TypeRegistry.prototype.load = function(resources) {
         const index = BUILDING_TYPE[typeID];
 
         if(index !== undefined) {
-            this.buildingTypes[index].load(config);
+            this.buildingTypes[index].load(config, typeID);
         } else {
             //Type does not exist in JSON!
         }
@@ -162,7 +162,7 @@ TypeRegistry.prototype.load = function(resources) {
         const index = TRAIT_TYPE[typeID];
 
         if(index !== undefined) {
-            this.traitTypes[index].load(config);
+            this.traitTypes[index].load(config, typeID);
         } else {
             //Type does not exist in JSON!
         }
@@ -173,7 +173,7 @@ TypeRegistry.prototype.load = function(resources) {
         const index = CLIMATE_TYPE[typeID];
 
         if(index !== undefined) {
-            this.climateTypes[index].load(config);
+            this.climateTypes[index].load(config, typeID);
         } else {
             //Type does not exist in JSON!
         }
@@ -184,7 +184,7 @@ TypeRegistry.prototype.load = function(resources) {
         const index = POWER_TYPE[typeID];
 
         if(index !== undefined) {
-            this.powerTypes[index].load(config);
+            this.powerTypes[index].load(config, typeID);
         } else {
             //Type does not exist in JSON!
         }
@@ -195,7 +195,7 @@ TypeRegistry.prototype.load = function(resources) {
         const index = ARMOR_TYPE[typeID];
 
         if(index !== undefined) {
-            this.armorTypes[index].load(config);
+            this.armorTypes[index].load(config, typeID);
         } else {
             //Type does not exist in JSON!
         }
@@ -206,7 +206,7 @@ TypeRegistry.prototype.load = function(resources) {
         const index = MOVEMENT_TYPE[typeID];
 
         if(index !== undefined) {
-            this.movementTypes[index].load(config);
+            this.movementTypes[index].load(config, typeID);
         } else {
             //Type does not exist in JSON!
         }
@@ -217,7 +217,7 @@ TypeRegistry.prototype.load = function(resources) {
         const index = TILE_TYPE[typeID];
 
         if(index !== undefined) {
-            this.tileTypes[index].load(config);
+            this.tileTypes[index].load(config, typeID);
         } else {
             //Type does not exist in JSON!
         }

@@ -6,7 +6,7 @@ export const ArmorType = function(id) {
     this.resistance = {};
 }
 
-ArmorType.prototype.load = function(config) {
+ArmorType.prototype.load = function(config, DEBUG_NAME) {
     const {
         name = "MISSING_NAME_ARMOR",
         desc = "MISSING_DESC_ARMOR",

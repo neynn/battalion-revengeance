@@ -10,7 +10,7 @@ export const BuildingType = function(id) {
     this.traits = [];
 }
 
-BuildingType.prototype.load = function(config) {
+BuildingType.prototype.load = function(config, DEBUG_NAME) {
        const {
         name = "MISSING_NAME_BUILDING",
         desc = "MISSING_DESC_BUILDING",
@@ -35,6 +35,6 @@ BuildingType.prototype.load = function(config) {
     if(this.traits.length > MAX_TRAITS) {
         this.traits.length = MAX_TRAITS;
 
-        console.warn(`${this.id}: More than ${MAX_TRAITS} traits detected!`);
+        console.warn(`${DEBUG_NAME}: More than ${MAX_TRAITS} traits detected!`);
     }
 }
