@@ -1,5 +1,4 @@
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { mineTypeToJammer } from "../enumHelpers.js";
 import { JAMMER_FLAG, TRAIT_TYPE } from "../enums.js";
 
 export const mGetUncloakedMines = function(gameContext, targetX, targetY, teamID, entityType, mUncloakedList) {
@@ -20,8 +19,7 @@ export const mGetUncloakedMines = function(gameContext, targetX, targetY, teamID
                 isDetected = true;
                 standsOnMine = mine.isEnemy(gameContext, teamID);
             } else {
-                const { type } = mine;
-                const neededFlag = mineTypeToJammer(type);
+                const neededFlag = mine.getJammerFlag();
 
                 isDetected = (jammerFlags & neededFlag) !== 0;
             }

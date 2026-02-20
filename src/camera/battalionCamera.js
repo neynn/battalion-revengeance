@@ -5,7 +5,6 @@ import { Renderer } from "../../engine/renderer/renderer.js";
 import { drawShape, shadeScreen } from "../../engine/util/drawHelper.js";
 import { TILE_HEIGHT, TILE_WIDTH } from "../constants.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { mineTypeToTile } from "../enumHelpers.js";
 import { LAYER_TYPE, PLAYER_PREFERENCE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { EntityType } from "../type/parsed/entityType.js";
@@ -223,8 +222,8 @@ BattalionCamera.prototype.drawMines = function(tileManager, display, worldMap) {
     let count = 0;
 
     for(let i = 0; i < length; i++) {
-        const { tileX, tileY, type } = mines[i];
-        const tileID = mineTypeToTile(type);
+        const { tileX, tileY } = mines[i];
+        const tileID = mines[i].getTileSprite();
 
         count += this.drawTileClipped(tileManager, tileID, context, tileX, tileY);
     }

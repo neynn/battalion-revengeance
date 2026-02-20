@@ -27,6 +27,7 @@
     "currencyTypes": { "directory": ["assets", "game", "types"], "source": "currencyTypes.json" },
     "entityTypes": { "directory": ["assets", "game", "types"], "source": "entityTypes.json" },
     "factionTypes": { "directory": ["assets", "game", "types"], "source": "factionTypes.json" },
+    "mineTypes": { "directory": ["assets", "game", "types"], "source": "mineTypes.json" },
     "moraleTypes": { "directory": ["assets", "game", "types"], "source": "moraleTypes.json" },
     "movementTypes": { "directory": ["assets", "game", "types"], "source": "movementTypes.json" },
     "nationTypes": { "directory": ["assets", "game", "types"], "source": "nationTypes.json" },

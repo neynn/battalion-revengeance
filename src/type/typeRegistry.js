@@ -13,10 +13,12 @@ import { MoraleType } from "./parsed/moraleType.js";
 import { EntityType } from "./parsed/entityType.js";
 import { ShopType } from "./parsed/shopType.js";
 import { SchemaType } from "./parsed/schemaType.js";
-import { ARMOR_TYPE, BUILDING_TYPE, CLIMATE_TYPE, COMMANDER_TYPE, CURRENCY_TYPE, ENTITY_TYPE, FACTION_TYPE, MORALE_TYPE, MOVEMENT_TYPE, NATION_TYPE, POWER_TYPE, SCHEMA_TYPE, SHOP_TYPE, TERRAIN_TYPE, TILE_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../enums.js";
+import { ARMOR_TYPE, BUILDING_TYPE, CLIMATE_TYPE, COMMANDER_TYPE, CURRENCY_TYPE, ENTITY_TYPE, FACTION_TYPE, MINE_TYPE, MORALE_TYPE, MOVEMENT_TYPE, NATION_TYPE, POWER_TYPE, SCHEMA_TYPE, SHOP_TYPE, TERRAIN_TYPE, TILE_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../enums.js";
 import { PowerType } from "./parsed/powerType.js";
 import { CurrencyType } from "./parsed/currencyType.js";
+import { MineType } from "./parsed/mineType.js";
 
+const STUB_MINE = new MineType(-1);
 const STUB_ENTITY = new EntityType(-1);
 const STUB_SCHEMA = new SchemaType(-1);
 const STUB_MORALE = new MoraleType(-1);
@@ -76,6 +78,7 @@ export const TypeRegistry = function() {
     this.moraleTypes = createTypeCategory(MoraleType, MORALE_TYPE._COUNT);
     this.schemaTypes = createTypeCategory(SchemaType, SCHEMA_TYPE._COUNT);
     this.entityTypes = createTypeCategory(EntityType, ENTITY_TYPE._COUNT);
+    this.mineTypes = createTypeCategory(MineType, MINE_TYPE._COUNT);
 }
 
 TypeRegistry.prototype.load = function(resources) {
@@ -96,6 +99,15 @@ TypeRegistry.prototype.load = function(resources) {
     mLoadTypeCategory(resources.armorTypes, this.armorTypes, ARMOR_TYPE);
     mLoadTypeCategory(resources.movementTypes, this.movementTypes, MOVEMENT_TYPE);
     mLoadTypeCategory(resources.tileTypes, this.tileTypes, TILE_TYPE);
+    mLoadTypeCategory(resources.mineTypes, this.mineTypes, MINE_TYPE);
+}
+
+TypeRegistry.prototype.getMineType = function(typeID) {
+    if(typeID < 0 || typeID >= MINE_TYPE._COUNT) {
+        return STUB_MINE;
+    }
+    
+    return this.mineTypes[typeID];
 }
 
 TypeRegistry.prototype.getEntityType = function(typeID) {

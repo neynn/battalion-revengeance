@@ -1,4 +1,7 @@
 {
+    "TRAIT_NAME_ENGINEER": "Engineer",
+    "TRAIT_DESC_ENGINEER": "This unit can construct obstacles and towers.",
+
     "TRAIT_NAME_COUNTER_BATTERY": "Counter Battery",
     "TRAIT_DESC_COUNTER_BATTERY": "This unit counters ranged enemies.",
 

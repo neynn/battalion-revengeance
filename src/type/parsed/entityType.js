@@ -1,6 +1,6 @@
 import { MAX_TRAITS } from "../../constants.js";
 import { mapMovementToCategory } from "../../enumHelpers.js";
-import { ARMOR_TYPE, ATTACK_TYPE, JAMMER_FLAG, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../../enums.js";
+import { ARMOR_TYPE, ATTACK_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../../enums.js";
 
 const ENABLE_HYBRID = false;
 

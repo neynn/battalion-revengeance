@@ -1,4 +1,34 @@
-import { BUILDING_TYPE, ENTITY_CATEGORY, ENTITY_TYPE, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, TEAM_STAT, TILE_ID, TILE_TYPE, TRANSPORT_TYPE } from "./enums.js";
+import { ENTITY_CATEGORY, ENTITY_TYPE, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, TEAM_STAT, TILE_ID, TILE_TYPE, TRANSPORT_TYPE } from "./enums.js";
+
+export const mTryPutValue = function(config, mapping, list, DEBUG_NAME) {
+    for(const typeID in config) {
+        const index = mapping[typeID];
+
+        if(index !== undefined) {
+            list[index] = config[typeID];
+        } else {
+            console.warn(`${DEBUG_NAME}: Unknown type! ${typeID}`);
+        }
+    }
+}
+
+export const mTryFillDefault = function(config, list) {
+    if(config['*'] !== undefined) {
+        const defaultValue = config['*'];
+
+        for(let i = 0; i < list.length; i++) {
+            list[i] = defaultValue;
+        }
+    }
+}
+
+export const mapCategoryToMine = function(category) {
+    switch(category) {
+        case ENTITY_CATEGORY.LAND: return MINE_TYPE.LAND;
+        case ENTITY_CATEGORY.SEA: return MINE_TYPE.SEA;
+        default: return MINE_TYPE.LAND;
+    }
+}
 
 export const mapCategoryToStat = function(category) {
     switch(category) {
@@ -24,22 +54,6 @@ export const mapTransportToEntity = function(transportType) {
         case TRANSPORT_TYPE.PELICAN: return ENTITY_TYPE.PELICAN_TRANSPORT;
         case TRANSPORT_TYPE.STORK: return ENTITY_TYPE.STORK_TRANSPORT;
         default: return ENTITY_TYPE.LEVIATHAN_BARGE;
-    }
-}
-
-export const mineTypeToTile = function(mineType) {
-    switch(mineType) {
-        case MINE_TYPE.LAND: return TILE_ID.VOLANO;
-        case MINE_TYPE.SEA: return TILE_ID.VOLANO;
-        default: return TILE_ID.VOLANO;
-    }
-}
-
-export const mineTypeToJammer = function(mineType) {
-    switch(mineType) {
-        case MINE_TYPE.LAND: return JAMMER_FLAG.RADAR;
-        case MINE_TYPE.SEA: return JAMMER_FLAG.SONAR;
-        default: return JAMMER_FLAG.NONE;
     }
 }
 

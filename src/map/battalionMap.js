@@ -240,12 +240,6 @@ BattalionMap.prototype.isMinePlaceable = function(gameContext, tileX, tileY, min
         return false;
     }
 
-    const index = this.getIndex(tileX, tileY);
-
-    if(index === WorldMap.OUT_OF_BOUNDS) {
-        return false;
-    }
-
     if(this.getMine(tileX, tileY) !== null) {
         return false;
     } 

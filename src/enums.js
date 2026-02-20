@@ -25,6 +25,17 @@ export const TRAIT_CONFIG = {
     STREAMLINED_REDUCTION: 0.5
 };
 
+export const GAME_EVENT = {
+    MP_CLIENT_SELECT_MAP: 8,
+    MP_CLIENT_START_MATCH: 9,
+    MP_CLIENT_ACTION_INTENT: 10,
+    MP_CLIENT_MAP_LOADED: 11,
+    MP_SERVER_LOAD_MAP: 12,
+    MP_SERVER_LOAD_MAP_CUSTOM: 13,
+    MP_SERVER_START_MAP: 14,
+    MP_SERVER_STATE_UPDATE: 15
+};
+
 export const TEAM_STAT = {
     UNITS_BUILT: 0,
     UNITS_KILLED: 1,
@@ -56,7 +67,8 @@ export const JAMMER_FLAG = {
 
 export const MINE_TYPE = {
     LAND: 0,
-    SEA: 1
+    SEA: 1,
+    _COUNT: 2
 };
 
 export const ENTITY_CATEGORY = {
@@ -72,17 +84,6 @@ export const SHOP_TYPE = {
     WARMACHINE: 2,
     FACTORY: 3,
     _COUNT: 4
-};
-
-export const GAME_EVENT = {
-    MP_CLIENT_SELECT_MAP: 8,
-    MP_CLIENT_START_MATCH: 9,
-    MP_CLIENT_ACTION_INTENT: 10,
-    MP_CLIENT_MAP_LOADED: 11,
-    MP_SERVER_LOAD_MAP: 12,
-    MP_SERVER_LOAD_MAP_CUSTOM: 13,
-    MP_SERVER_START_MAP: 14,
-    MP_SERVER_STATE_UPDATE: 15
 };
 
 export const TILE_TYPE = {
@@ -172,7 +173,8 @@ export const TRAIT_TYPE = {
     FIDUCIARY_CENTER: 59,
     CRAB: 60,
     UNBUILT: 61,
-    _COUNT: 62
+    ENGINEER: 62,
+    _COUNT: 63
 };
 
 export const MOVEMENT_TYPE = {
@@ -403,6 +405,20 @@ export const ENTITY_TYPE = {
     _COUNT: 70
 };
 
+export const MORALE_TYPE = {
+    LOWEST: 0,
+    SUPER_LOW: 1,
+    VERY_LOW: 2,
+    LOW: 3,
+    NORMAL: 4,
+    HIGH: 5,
+    VERY_HIGH: 6,
+    SUPER_HIGH: 7,
+    ULTRA_HIGH: 8,
+    HIGHEST: 9,
+    _COUNT: 10
+};
+
 export const ACTION_TYPE = {
     MINE_TRIGGER: "MINE_TRIGGER",
     PURCHASE_ENTITY: "PURCHASE_ENTITY",
@@ -419,20 +435,6 @@ export const ACTION_TYPE = {
     CLOAK: "CLOAK",
     DEATH: "DEATH",
     UNCLOAK: "UNCLOAK"
-};
-
-export const MORALE_TYPE = {
-    LOWEST: 0,
-    SUPER_LOW: 1,
-    VERY_LOW: 2,
-    LOW: 3,
-    NORMAL: 4,
-    HIGH: 5,
-    VERY_HIGH: 6,
-    SUPER_HIGH: 7,
-    ULTRA_HIGH: 8,
-    HIGHEST: 9,
-    _COUNT: 10
 };
 
 export const OBJECTIVE_TYPE = {

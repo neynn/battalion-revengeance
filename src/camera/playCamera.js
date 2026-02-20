@@ -1,7 +1,6 @@
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { Mine } from "../entity/mine.js";
-import { mineTypeToTile } from "../enumHelpers.js";
 import { BattalionCamera } from "./battalionCamera.js";
 
 export const PlayCamera = function() {
@@ -37,10 +36,10 @@ PlayCamera.prototype.drawMines = function(tileManager, display, worldMap) {
     let count = 0;
 
     for(let i = 0; i < length; i++) {
-        const { tileX, tileY, state, teamID, type } = mines[i];
+        const { tileX, tileY, state, teamID } = mines[i];
 
         if(state === Mine.STATE.VISIBLE || this.perspectives.has(teamID)) {
-            const tileID = mineTypeToTile(type);
+            const tileID = mines[i].getTileSprite();
             
             count += this.drawTileClipped(tileManager, tileID, context, tileX, tileY);
         }

@@ -1,10 +1,9 @@
-import { MINE_TYPE } from "../enums.js";
+import { JAMMER_FLAG, MINE_TYPE, TILE_ID } from "../enums.js";
 import { StaticObject } from "./staticObject.js";
 
 export const Mine = function(config) {
     StaticObject.call(this, config);
 
-    this.type = MINE_TYPE.LAND;
     this.state = Mine.STATE.HIDDEN;
     this.opacity = 0;
 }
@@ -27,4 +26,24 @@ Mine.prototype.show = function() {
 
 Mine.prototype.isHidden = function() {
     return this.state === Mine.STATE.HIDDEN;
+}
+
+Mine.prototype.getJammerFlag = function() {
+    switch(this.config.id) {
+        case MINE_TYPE.LAND: return JAMMER_FLAG.RADAR;
+        case MINE_TYPE.SEA: return JAMMER_FLAG.SONAR;
+        default: return JAMMER_FLAG.NONE;
+    }
+}
+
+Mine.prototype.getTileSprite = function() {
+    switch(this.config.id) {
+        case MINE_TYPE.LAND: return TILE_ID.VOLANO;
+        case MINE_TYPE.SEA: return TILE_ID.VOLANO;
+        default: return TILE_ID.VOLANO;
+    }
+}
+
+Mine.prototype.getDamage = function(movementType) {
+    return this.config.getDamage(movementType);
 }

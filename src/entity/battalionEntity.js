@@ -6,8 +6,8 @@ import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { createNode, mGetLowestCostNode } from "../systems/pathfinding.js";
 import { getDirectionByDelta, getDirectionVector } from "../systems/direction.js";
-import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, MINE_TYPE, JAMMER_FLAG, ENTITY_TYPE } from "../enums.js";
-import { mapTransportToEntity } from "../enumHelpers.js";
+import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE } from "../enums.js";
+import { mapCategoryToMine, mapTransportToEntity } from "../enumHelpers.js";
 import { getLineEntities } from "../systems/targeting.js";
 import { mGetUncloakedEntities, mGetUncloakedMines } from "../systems/cloak.js";
 import { TeamManager } from "../team/teamManager.js";
@@ -1438,17 +1438,20 @@ BattalionEntity.prototype.setPurchased = function() {
 }
 
 BattalionEntity.prototype.triggersMine = function(gameContext, mine) {
-    if(!mine.isEnemy(gameContext, this.teamID)) {
+    const damage = mine.getDamage(this.config.movementType);
+
+    //Only mines that deal damage blow up.
+    if(damage <= 0) {
         return false;
     }
 
-    const { type } = mine;
-
-    switch(type) {
-        case MINE_TYPE.LAND: return this.config.category === ENTITY_CATEGORY.LAND && !this.hasTrait(TRAIT_TYPE.ELUSIVE);
-        case MINE_TYPE.SEA: return this.config.category === ENTITY_CATEGORY.SEA && !this.hasTrait(TRAIT_TYPE.STEER);
-        default: return false;
+    //Some traits can dodge mines.
+    if(this.hasTrait(TRAIT_TYPE.ELUSIVE) || this.hasTrait(TRAIT_TYPE.STEER)) {
+        return false;
     }
+
+    //Only enemy mines blow up.
+    return mine.isEnemy(gameContext, this.teamID);
 }
 
 BattalionEntity.prototype.canPurchase = function(gameContext, typeID, cost) {
@@ -1465,4 +1468,27 @@ BattalionEntity.prototype.canPurchase = function(gameContext, typeID, cost) {
 
 BattalionEntity.prototype.reduceCash = function(cash) {
     this.cash -= cash;
+}
+
+BattalionEntity.prototype.canPlaceMine = function(gameContext, direction) {
+    const { world, typeRegistry } = gameContext;
+    const { mapManager } = world;
+
+    //Only engineers are able to place mines.
+    if(!this.hasTrait(TRAIT_TYPE.ENGINEER)) {
+        return false;
+    }
+
+    const mineID = mapCategoryToMine(this.config.category);
+    const { cost } = typeRegistry.getMineType(mineID);
+
+    if(this.cash < cost) {
+        return false;
+    }
+
+    const worldMap = mapManager.getActiveMap();
+    const { x, y } = this.getTileByDirection(direction);
+    const isPlaceable = worldMap.isMinePlaceable(gameContext, x, y, mineID);
+
+    return isPlaceable;
 }

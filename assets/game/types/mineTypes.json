@@ -1,0 +1,16 @@
+{
+    "LAND": {
+        "name": "MINE_NAME_LAND",
+        "desc": "MINE_DESC_LAND",
+        "damage": {
+            "*": 100
+        }
+    },
+    "SEA": {
+        "name": "MINE_NAME_SEA",
+        "desc": "MINE_DESC_SEA",
+        "damage": {
+            "*": 100
+        }
+    }
+}

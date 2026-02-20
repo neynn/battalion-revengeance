@@ -1,4 +1,9 @@
 {
+    "ENGINEER": {
+        "name": "TRAIT_NAME_ENGINEER",
+        "desc": "TRAIT_DESC_ENGINEER",
+        "icon": null
+    },
     "COUNTER_BATTERY": {
         "name": "TRAIT_NAME_COUNTER_BATTERY",
         "desc": "TRAIT_DESC_COUNTER_BATTERY",
