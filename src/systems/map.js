@@ -1,7 +1,7 @@
 import { BattalionMap } from "../map/battalionMap.js";
 import { spawnClientBuilding, spawnClientEntity, spawnServerBuilding, spawnServerEntity } from "./spawn.js";
 import { MapSettings } from "../map/settings.js";
-import { COMMANDER_TYPE, COMPONENT_TYPE, CURRENCY_TYPE, OBJECTIVE_TYPE, SCHEMA_TYPE } from "../enums.js";
+import { COMMANDER_TYPE, COMPONENT_TYPE, CURRENCY_TYPE, FACTION_TYPE, OBJECTIVE_TYPE, SCHEMA_TYPE } from "../enums.js";
 import { Mine } from "../entity/mine.js";
 import { DialogueComponent } from "../event/components/dialogue.js";
 import { ExplodeTileComponent } from "../event/components/explodeTile.js";
@@ -161,7 +161,9 @@ const TeamFactory = {
             const team = teamManager.createTeam(tID);
 
             if(tFaction !== null) {
-                team.loadAsFaction(gameContext, tFaction);
+                const tFactionID = FACTION_TYPE[tFaction] ?? FACTION_TYPE.RED;
+
+                team.loadAsFaction(gameContext, tFactionID);
             }
 
             if(oColor !== null) {

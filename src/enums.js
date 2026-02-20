@@ -85,6 +85,7 @@ export const GAME_EVENT = {
 };
 
 export const COLOR_TYPE = {
+    RED: "RED",
     WHITE: "WHITE"
 };
 
@@ -285,26 +286,31 @@ export const CURRENCY_TYPE = {
 };
 
 export const FACTION_TYPE = {
-    CONTINENTAL_SECURITY_LEAGUE: "CONTINENTAL_SECURITY_LEAGUE",
-    GLORIOUS_COALLITION: "GLORIOUS_COALLITION",
-    RED: "RED",
-    BLUE: "BLUE",
-    GREEN: "GREEN",
-    YELLOW: "YELLOW",
-    DARK_RED: "DARK_RED",
-    DARK_BLUE: "DARK_BLUE",
-    BRONZE: "BRONZE",
-    DARK_GREEN: "DARK_GREEN",
-    GOLD: "GOLD",
-    CYAN: "CYAN",
-    PINK: "PINK",
-    WHITE: "WHITE",
-    PURPLE: "PURPLE",
-    BLACK: "BLACK",
-    GRAY: "GRAY",
-    CREAM: "CREAM",
-    LIME: "LIME",
-    WHITE: "WHITE"
+    RED: 0,
+    BLUE: 1,
+    GREEN: 2,
+    YELLOW: 3,
+    DARK_RED: 4,
+    DARK_BLUE: 5,
+    BRONZE: 6,
+    DARK_GREEN: 7,
+    GOLD: 8,
+    CYAN: 9,
+    PINK: 10,
+    WHITE: 11,
+    PURPLE: 12,
+    BLACK: 13,
+    GRAY: 14,
+    CREAM: 15,
+    LIME: 16,
+    SOMERTIN: 17,
+    KARGIT: 18,
+    TRANSKAL: 19,
+    POLASIE: 20,
+    ELAM: 21,
+    KANYE: 22,
+    NYPD: 23,
+    _COUNT: 24
 };
 
 export const COMMANDER_TYPE = {
