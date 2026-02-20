@@ -1,6 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
 import { playExplosion } from "../../systems/animation.js";
-import { despawnEntity } from "../../systems/spawn.js";
+import { createDeathIntent } from "../actionHelper.js";
 
 export const MineTriggerAction = function() {
     Action.call(this);
@@ -10,12 +10,12 @@ MineTriggerAction.prototype = Object.create(Action.prototype);
 MineTriggerAction.prototype.constructor = MineTriggerAction;
 
 MineTriggerAction.prototype.onStart = function(gameContext, data) {
-    const { world } = gameContext;
-    const { entityManager } = world;
-    const { entityID, tileX, tileY } = data;
-    const entity = entityManager.getEntity(entityID);
+    const { entityID, health, tileX, tileY } = data;
 
-    playExplosion(gameContext, tileX, tileY);
+    //Ensures that only one explosion is played: Either death or the mine.
+    if(health > 0) {
+        playExplosion(gameContext, tileX, tileY);
+    }
 }
 
 MineTriggerAction.prototype.isFinished = function(gameContext, executionPlan) {
@@ -29,13 +29,12 @@ MineTriggerAction.prototype.onEnd = function(gameContext, data) {
 MineTriggerAction.prototype.execute = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager, mapManager } = world;
-    const { entityID, tileX, tileY } = data;
+    const { entityID, health, tileX, tileY } = data;
     const entity = entityManager.getEntity(entityID);
     const worldMap = mapManager.getActiveMap();
 
     worldMap.removeMine(tileX, tileY);
-    despawnEntity(gameContext, entity);
-    //Take damage instead of deleting.
+    entity.setHealth(health);
 }
 
 MineTriggerAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
@@ -61,8 +60,21 @@ MineTriggerAction.prototype.fillExecutionPlan = function(gameContext, executionP
         return;
     }
 
+    const damage = mine.getDamage(entity.config.movementType);
+
+    if(damage === 0) {
+        return;
+    }
+
+    const health = entity.getHealthAfterDamage(damage);
+
+    if(health <= 0) {
+        executionPlan.addNext(createDeathIntent([entityID]));
+    }
+
     executionPlan.setData({
         "entityID": entityID,
+        "health": health,
         "tileX": tileX,
         "tileY": tileY
     });
