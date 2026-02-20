@@ -266,11 +266,12 @@ export const POWER_TYPE = {
 };
 
 export const NATION_TYPE = {
-    SOMERTIN: "SOMERTIN",
-    KARGIT: "KARGIT",
-    TRANSKAL: "TRANSKAL",
-    POLASIE: "POLASIE",
-    ELAM: "ELAM"
+    SOMERTIN: 0,
+    KARGIT: 1,
+    TRANSKAL: 2,
+    POLASIE: 3,
+    ELAM: 4,
+    _COUNT: 5
 };
 
 export const CURRENCY_TYPE = {
