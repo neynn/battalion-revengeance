@@ -1,21 +1,28 @@
 import { MAX_TRAITS } from "../../constants.js";
 import { SHOP_TYPE, TRAIT_TYPE } from "../../enums.js";
 
-export const BuildingType = function(id, config) {
-    const {
+export const BuildingType = function(id) {
+    this.id = id;
+    this.name = "MISSING_NAME_BUILDING";
+    this.desc = "MISSING_DESC_BUILDING";
+    this.sprite = null;
+    this.shop = SHOP_TYPE.NONE;
+    this.traits = [];
+}
+
+BuildingType.prototype.load = function(config) {
+       const {
         name = "MISSING_NAME_BUILDING",
         desc = "MISSING_DESC_BUILDING",
         sprite = null,
         traits = [],
         shop = SHOP_TYPE.NONE
-    } = config;
+    } = config; 
 
-    this.id = id;
     this.name = name;
     this.desc = desc;
     this.sprite = sprite;
     this.shop = shop;
-    this.traits = [];
 
     for(const traitID of traits) {
         const index = TRAIT_TYPE[traitID];

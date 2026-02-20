@@ -14,9 +14,10 @@ import { MoraleType } from "./parsed/moraleType.js";
 import { EntityType } from "./parsed/entityType.js";
 import { ShopType } from "./parsed/shopType.js";
 import { SchemaType } from "./parsed/schemaType.js";
-import { ARMOR_TYPE, CLIMATE_TYPE, MOVEMENT_TYPE, POWER_TYPE, TILE_TYPE, TRAIT_TYPE } from "../enums.js";
+import { ARMOR_TYPE, BUILDING_TYPE, CLIMATE_TYPE, MOVEMENT_TYPE, POWER_TYPE, TILE_TYPE, TRAIT_TYPE } from "../enums.js";
 import { PowerType } from "./parsed/powerType.js";
 
+const STUB_BUILDING = new BuildingType(-1);
 const STUB_TRAIT = new TraitType(-1);
 const STUB_CLIMATE = new ClimateType(-1);
 const STUB_POWER = new PowerType(-1);
@@ -80,6 +81,7 @@ export const TypeRegistry = function() {
     this.powerTypes = [];
     this.climateTypes = [];
     this.traitTypes = [];
+    this.buildingTypes = [];
 
     for(let i = 0; i < TILE_TYPE._COUNT; i++) {
         this.tileTypes[i] = new TileType(i);
@@ -103,6 +105,10 @@ export const TypeRegistry = function() {
 
     for(let i = 0; i < TRAIT_TYPE._COUNT; i++) {
         this.traitTypes[i] = new TraitType(i);
+    }
+
+    for(let i = 0; i < BUILDING_TYPE._COUNT; i++) {
+        this.buildingTypes[i] = new BuildingType(i);
     }
 }
 
@@ -139,6 +145,17 @@ TypeRegistry.prototype.load = function(resources) {
     this.categories[TypeRegistry.CATEGORY.COMMANDER].loadTypes(resources.commanderTypes, CommanderType);
     this.categories[TypeRegistry.CATEGORY.BUILDING].loadTypes(resources.buildingTypes, BuildingType);
     this.categories[TypeRegistry.CATEGORY.SHOP].loadTypes(resources.shopTypes, ShopType);
+
+    for(const typeID in resources.buildingTypes) {
+        const config = resources.buildingTypes[typeID];
+        const index = BUILDING_TYPE[typeID];
+
+        if(index !== undefined) {
+            this.buildingTypes[index].load(config);
+        } else {
+            //Type does not exist in JSON!
+        }
+    }
 
     for(const typeID in resources.traitTypes) {
         const config = resources.traitTypes[typeID];
@@ -276,7 +293,11 @@ TypeRegistry.prototype.getArmorType = function(typeID) {
 }
 
 TypeRegistry.prototype.getBuildingType = function(typeID) {
-    return this.categories[TypeRegistry.CATEGORY.BUILDING].getType(typeID);
+    if(typeID < 0 || typeID >= BUILDING_TYPE._COUNT) {
+        return STUB_BUILDING;
+    }
+    
+    return this.buildingTypes[typeID];
 }
 
 TypeRegistry.prototype.getMoraleType = function(typeID) {

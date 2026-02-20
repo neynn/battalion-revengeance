@@ -7,6 +7,16 @@ import { ClientBattalionEntity } from "../entity/clientBattalionEntity.js";
 import { ClientBuilding } from "../entity/clientBuilding.js";
 import { Building } from "../entity/building.js";
 
+const getBuildingID = function(name) {
+    const index = BUILDING_TYPE[name];
+
+    if(index === undefined) {
+        return BUILDING_TYPE.AIR_CONTROL;
+    }
+
+    return index;
+}
+
 export const despawnEntity = function(gameContext, entity) {
     const { teamManager, world } = gameContext;
     const { entityManager } = world;
@@ -181,7 +191,7 @@ export const spawnServerBuilding = function(gameContext, worldMap, config) {
         desc = null,
         x = -1,
         y = -1,
-        type = BUILDING_TYPE.AIR_CONTROL,
+        type = "NONE",
         team = null
     } = config;
 
@@ -192,7 +202,8 @@ export const spawnServerBuilding = function(gameContext, worldMap, config) {
         const isPlaceable = worldMap.isBuildingPlaceable(x, y);
 
         if(isPlaceable) {
-            const buildingType = typeRegistry.getBuildingType(type);
+            const typeID = getBuildingID(type);
+            const buildingType = typeRegistry.getBuildingType(typeID);
             const building = new Building(buildingType);
 
             building.setCustomInfo(id, name, desc);
@@ -212,7 +223,7 @@ export const spawnClientBuilding = function(gameContext, worldMap, config) {
         desc = null,
         x = -1,
         y = -1,
-        type = BUILDING_TYPE.AIR_CONTROL,
+        type = "NONE",
         team = null
     } = config;
 
@@ -223,7 +234,8 @@ export const spawnClientBuilding = function(gameContext, worldMap, config) {
         const isPlaceable = worldMap.isBuildingPlaceable(x, y);
 
         if(isPlaceable) {
-            const buildingType = typeRegistry.getBuildingType(type);
+            const typeID = getBuildingID(type);
+            const buildingType = typeRegistry.getBuildingType(typeID);
             const { schema } = teamObject;
             const { sprite } = buildingType;
             const position = transform2D.transformTileToWorld(x, y);
