@@ -35,282 +35,67 @@ const STUB_ARMOR = new ArmorType(-1);
 const STUB_MOVEMENT = new MovementType(-1);
 const STUB_TILE = new TileType(-1);
 
+const createTypeCategory = function(Type, count) {
+    const list = [];
+
+    for(let i = 0; i < count; i++) {
+        list[i] = new Type(i);
+    }
+
+    return list;
+}
+
+const mLoadTypeCategory = function(types, list, mapper) {
+    for(const typeID in types) {
+        const config = types[typeID];
+        const index = mapper[typeID];
+
+        if(index !== undefined) {
+            list[index].load(config, typeID);
+        } else {
+            //Type does not exist in JSON!
+        }
+    }  
+}
+
 export const TypeRegistry = function() {
-    this.tileTypes = [];
-    this.movementTypes = [];
-    this.armorTypes = [];
-    this.powerTypes = [];
-    this.climateTypes = [];
-    this.traitTypes = [];
-    this.buildingTypes = [];
-    this.terrainTypes = [];
-    this.weaponTypes = [];
-    this.nationTypes = [];
-    this.currencyTypes = [];
-    this.commanderTypes = [];
-    this.factionTypes = [];
-    this.shopTypes = [];
-    this.moraleTypes = [];
-    this.schemaTypes = [];
-    this.entityTypes = [];
-
-    for(let i = 0; i < TILE_TYPE._COUNT; i++) {
-        this.tileTypes[i] = new TileType(i);
-    }
-
-    for(let i = 0; i < MOVEMENT_TYPE._COUNT; i++) {
-        this.movementTypes[i] = new MovementType(i);
-    }
-
-    for(let i = 0; i < ARMOR_TYPE._COUNT; i++) {
-        this.armorTypes[i] = new ArmorType(i);
-    }
-
-    for(let i = 0; i < POWER_TYPE._COUNT; i++) {
-        this.powerTypes[i] = new PowerType(i);
-    }
-
-    for(let i = 0; i < CLIMATE_TYPE._COUNT; i++) {
-        this.climateTypes[i] = new ClimateType(i);
-    }
-
-    for(let i = 0; i < TRAIT_TYPE._COUNT; i++) {
-        this.traitTypes[i] = new TraitType(i);
-    }
-
-    for(let i = 0; i < BUILDING_TYPE._COUNT; i++) {
-        this.buildingTypes[i] = new BuildingType(i);
-    }
-
-    for(let i = 0; i < TERRAIN_TYPE._COUNT; i++) {
-        this.terrainTypes[i] = new TerrainType(i);
-    }
-
-    for(let i = 0; i < WEAPON_TYPE._COUNT; i++) {
-        this.weaponTypes[i] = new WeaponType(i);
-    }
-
-    for(let i = 0; i < NATION_TYPE._COUNT; i++) {
-        this.nationTypes[i] = new NationType(i);
-    }
-
-    for(let i = 0; i < CURRENCY_TYPE._COUNT; i++) {
-        this.currencyTypes[i] = new CurrencyType(i);
-    }
-
-    for(let i = 0; i < COMMANDER_TYPE._COUNT; i++) {
-        this.commanderTypes[i] = new CommanderType(i);
-    }
-
-    for(let i = 0; i < FACTION_TYPE._COUNT; i++) {
-        this.factionTypes[i] = new FactionType(i);
-    }
-
-    for(let i = 0; i < SHOP_TYPE._COUNT; i++) {
-        this.shopTypes[i] = new ShopType(i);
-    }
-
-    for(let i = 0; i < MORALE_TYPE._COUNT; i++) {
-        this.moraleTypes[i] = new MoraleType(i);
-    }
-
-    for(let i = 0; i < SCHEMA_TYPE._COUNT; i++) {
-        this.schemaTypes[i] = new SchemaType(i);
-    }
-
-    for(let i = 0; i < ENTITY_TYPE._COUNT; i++) {
-        this.entityTypes[i] = new EntityType(i);
-    }
+    this.tileTypes = createTypeCategory(TileType, TILE_TYPE._COUNT);
+    this.movementTypes = createTypeCategory(MovementType, MOVEMENT_TYPE._COUNT);
+    this.armorTypes = createTypeCategory(ArmorType, ARMOR_TYPE._COUNT);
+    this.powerTypes = createTypeCategory(PowerType, POWER_TYPE._COUNT);
+    this.climateTypes = createTypeCategory(ClimateType, CLIMATE_TYPE._COUNT);
+    this.traitTypes = createTypeCategory(TraitType, TRAIT_TYPE._COUNT);
+    this.buildingTypes = createTypeCategory(BuildingType, BUILDING_TYPE._COUNT);
+    this.terrainTypes = createTypeCategory(TerrainType, TERRAIN_TYPE._COUNT);
+    this.weaponTypes = createTypeCategory(WeaponType, WEAPON_TYPE._COUNT);
+    this.nationTypes = createTypeCategory(NationType, NATION_TYPE._COUNT);
+    this.currencyTypes = createTypeCategory(CurrencyType, CURRENCY_TYPE._COUNT);
+    this.commanderTypes = createTypeCategory(CommanderType, COMMANDER_TYPE._COUNT);
+    this.factionTypes = createTypeCategory(FactionType, FACTION_TYPE._COUNT);
+    this.shopTypes = createTypeCategory(ShopType, SHOP_TYPE._COUNT);
+    this.moraleTypes = createTypeCategory(MoraleType, MORALE_TYPE._COUNT);
+    this.schemaTypes = createTypeCategory(SchemaType, SCHEMA_TYPE._COUNT);
+    this.entityTypes = createTypeCategory(EntityType, ENTITY_TYPE._COUNT);
 }
 
 TypeRegistry.prototype.load = function(resources) {
-    for(const typeID in resources.entityTypes) {
-        const config = resources.entityTypes[typeID];
-        const index = ENTITY_TYPE[typeID];
-
-        if(index !== undefined) {
-            this.entityTypes[index].load(config, typeID);
-        } else {
-            //Type does not exist in JSON!
-        }
-    }
-
-    for(const typeID in resources.schemaTypes) {
-        const config = resources.schemaTypes[typeID];
-        const index = SCHEMA_TYPE[typeID];
-
-        if(index !== undefined) {
-            this.schemaTypes[index].load(config, typeID);
-        } else {
-            //Type does not exist in JSON!
-        }
-    }
-
-    for(const typeID in resources.moraleTypes) {
-        const config = resources.moraleTypes[typeID];
-        const index = MORALE_TYPE[typeID];
-
-        if(index !== undefined) {
-            this.moraleTypes[index].load(config, typeID);
-        } else {
-            //Type does not exist in JSON!
-        }
-    }
-
-    for(const typeID in resources.shopTypes) {
-        const config = resources.shopTypes[typeID];
-        const index = SHOP_TYPE[typeID];
-
-        if(index !== undefined) {
-            this.shopTypes[index].load(config, typeID);
-        } else {
-            //Type does not exist in JSON!
-        }
-    }
-
-    for(const typeID in resources.factionTypes) {
-        const config = resources.factionTypes[typeID];
-        const index = FACTION_TYPE[typeID];
-
-        if(index !== undefined) {
-            this.factionTypes[index].load(config, typeID);
-        } else {
-            //Type does not exist in JSON!
-        }
-    }
-
-    for(const typeID in resources.commanderTypes) {
-        const config = resources.commanderTypes[typeID];
-        const index = COMMANDER_TYPE[typeID];
-
-        if(index !== undefined) {
-            this.commanderTypes[index].load(config, typeID);
-        } else {
-            //Type does not exist in JSON!
-        }
-    }
-
-    for(const typeID in resources.currencyTypes) {
-        const config = resources.currencyTypes[typeID];
-        const index = CURRENCY_TYPE[typeID];
-
-        if(index !== undefined) {
-            this.currencyTypes[index].load(config, typeID);
-        } else {
-            //Type does not exist in JSON!
-        }
-    }
-
-
-    for(const typeID in resources.nationTypes) {
-        const config = resources.nationTypes[typeID];
-        const index = NATION_TYPE[typeID];
-
-        if(index !== undefined) {
-            this.nationTypes[index].load(config, typeID);
-        } else {
-            //Type does not exist in JSON!
-        }
-    }
-
-    for(const typeID in resources.weaponTypes) {
-        const config = resources.weaponTypes[typeID];
-        const index = WEAPON_TYPE[typeID];
-
-        if(index !== undefined) {
-            this.weaponTypes[index].load(config, typeID);
-        } else {
-            //Type does not exist in JSON!
-        }
-    }
-
-    for(const typeID in resources.terrainTypes) {
-        const config = resources.terrainTypes[typeID];
-        const index = TERRAIN_TYPE[typeID];
-
-        if(index !== undefined) {
-            this.terrainTypes[index].load(config, typeID);
-        } else {
-            //Type does not exist in JSON!
-        }
-    }
-
-    for(const typeID in resources.buildingTypes) {
-        const config = resources.buildingTypes[typeID];
-        const index = BUILDING_TYPE[typeID];
-
-        if(index !== undefined) {
-            this.buildingTypes[index].load(config, typeID);
-        } else {
-            //Type does not exist in JSON!
-        }
-    }
-
-    for(const typeID in resources.traitTypes) {
-        const config = resources.traitTypes[typeID];
-        const index = TRAIT_TYPE[typeID];
-
-        if(index !== undefined) {
-            this.traitTypes[index].load(config, typeID);
-        } else {
-            //Type does not exist in JSON!
-        }
-    }
-
-    for(const typeID in resources.climateTypes) {
-        const config = resources.climateTypes[typeID];
-        const index = CLIMATE_TYPE[typeID];
-
-        if(index !== undefined) {
-            this.climateTypes[index].load(config, typeID);
-        } else {
-            //Type does not exist in JSON!
-        }
-    }
-
-    for(const typeID in resources.powerTypes) {
-        const config = resources.powerTypes[typeID];
-        const index = POWER_TYPE[typeID];
-
-        if(index !== undefined) {
-            this.powerTypes[index].load(config, typeID);
-        } else {
-            //Type does not exist in JSON!
-        }
-    }
-
-    for(const typeID in resources.armorTypes) {
-        const config = resources.armorTypes[typeID];
-        const index = ARMOR_TYPE[typeID];
-
-        if(index !== undefined) {
-            this.armorTypes[index].load(config, typeID);
-        } else {
-            //Type does not exist in JSON!
-        }
-    }
-
-    for(const typeID in resources.movementTypes) {
-        const config = resources.movementTypes[typeID];
-        const index = MOVEMENT_TYPE[typeID];
-
-        if(index !== undefined) {
-            this.movementTypes[index].load(config, typeID);
-        } else {
-            //Type does not exist in JSON!
-        }
-    }
-
-    for(const typeID in resources.tileTypes) {
-        const config = resources.tileTypes[typeID];
-        const index = TILE_TYPE[typeID];
-
-        if(index !== undefined) {
-            this.tileTypes[index].load(config, typeID);
-        } else {
-            //Type does not exist in JSON!
-        }
-    }
+    mLoadTypeCategory(resources.entityTypes, this.entityTypes, ENTITY_TYPE);
+    mLoadTypeCategory(resources.schemaTypes, this.schemaTypes, SCHEMA_TYPE);
+    mLoadTypeCategory(resources.moraleTypes, this.moraleTypes, MORALE_TYPE);
+    mLoadTypeCategory(resources.shopTypes, this.shopTypes, SHOP_TYPE);
+    mLoadTypeCategory(resources.factionTypes, this.factionTypes, FACTION_TYPE);
+    mLoadTypeCategory(resources.commanderTypes, this.commanderTypes, COMMANDER_TYPE);
+    mLoadTypeCategory(resources.currencyTypes, this.currencyTypes, CURRENCY_TYPE);
+    mLoadTypeCategory(resources.nationTypes, this.nationTypes, NATION_TYPE);
+    mLoadTypeCategory(resources.weaponTypes, this.weaponTypes, WEAPON_TYPE);
+    mLoadTypeCategory(resources.terrainTypes, this.terrainTypes, TERRAIN_TYPE);
+    mLoadTypeCategory(resources.buildingTypes, this.buildingTypes, BUILDING_TYPE);
+    mLoadTypeCategory(resources.traitTypes, this.traitTypes, TRAIT_TYPE);
+    mLoadTypeCategory(resources.climateTypes, this.climateTypes, CLIMATE_TYPE);
+    mLoadTypeCategory(resources.powerTypes, this.powerTypes, POWER_TYPE);
+    mLoadTypeCategory(resources.armorTypes, this.armorTypes, ARMOR_TYPE);
+    mLoadTypeCategory(resources.movementTypes, this.movementTypes, MOVEMENT_TYPE);
+    mLoadTypeCategory(resources.tileTypes, this.tileTypes, TILE_TYPE);
 }
 
 TypeRegistry.prototype.getEntityType = function(typeID) {
