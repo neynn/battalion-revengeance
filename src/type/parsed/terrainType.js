@@ -1,6 +1,30 @@
 import { MOVEMENT_TYPE } from "../../enums.js";
 
-export const TerrainType = function(id, config) {
+export const TerrainType = function(id) {
+    this.id = id;
+    this.name = "MISSING_NAME_TERRAIN";
+    this.desc = "MISSING_DESC_TERRAIN";
+    this.icon = null;
+    this.rangeGuard = false;
+    this.rangeBoost = 0;
+    this.damage = [];
+    this.cost = [];
+    this.protection = [];
+
+    for(let i = 0; i < MOVEMENT_TYPE._COUNT; i++) {
+        this.damage[i] = 0;
+    }
+
+    for(let i = 0; i < MOVEMENT_TYPE._COUNT; i++) {
+        this.cost[i] = 0;
+    }
+
+    for(let i = 0; i < MOVEMENT_TYPE._COUNT; i++) {
+        this.protection[i] = 0;
+    }
+}
+
+TerrainType.prototype.load = function(config, DEBUG_NAME) {
     const { 
         name = "MISSING_NAME_TERRAIN",
         desc = "MISSING_DESC_TERRAIN",
@@ -12,41 +36,34 @@ export const TerrainType = function(id, config) {
         cost = {}
     } = config;
 
-    this.id = id;
     this.name = name;
     this.desc = desc;
     this.icon = icon;
     this.rangeGuard = rangeGuard;
     this.rangeBoost = rangeBoost;
-    this.damage = [];
-    this.cost = [];
-    this.protection = [];
-    this.defaultDamage = 0;
-    this.defaultCost = 0;
-    this.defaultProtection = 0;
 
     if(damage['*'] !== undefined) {
-        this.defaultDamage = damage['*'];
+        const defaultDamage = damage['*'];
+
+        for(let i = 0; i < MOVEMENT_TYPE._COUNT; i++) {
+            this.damage[i] = defaultDamage;
+        }
     }
 
     if(cost['*'] !== undefined) {
-        this.defaultCost = cost['*'];
+        const defaultCost = cost['*'];
+
+        for(let i = 0; i < MOVEMENT_TYPE._COUNT; i++) {
+            this.cost[i] = defaultCost;
+        }
     }
 
     if(protection['*'] !== undefined) {
-        this.defaultProtection = protection['*'];
-    }
+        const defaultProtection = protection['*'];
 
-    for(let i = 0; i < MOVEMENT_TYPE._COUNT; i++) {
-        this.damage[i] = this.defaultDamage;
-    }
-
-    for(let i = 0; i < MOVEMENT_TYPE._COUNT; i++) {
-        this.cost[i] = this.defaultCost;
-    }
-
-    for(let i = 0; i < MOVEMENT_TYPE._COUNT; i++) {
-        this.protection[i] = this.defaultProtection;
+        for(let i = 0; i < MOVEMENT_TYPE._COUNT; i++) {
+            this.protection[i] = defaultProtection;
+        }
     }
 
     for(const typeID in damage) {

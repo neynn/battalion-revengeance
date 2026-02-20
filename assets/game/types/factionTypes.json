@@ -1,5 +1,5 @@
 {
-    "SOMERTIN": { "name": "FACTION_NAME_SOMERTIN", "desc": "FACTION_DESC_SOMERTIN", "currency": "ZLOT", "color": "GOLD" },
+    "SOMERTIN": { "name": "FACTION_NAME_SOMERTIN", "desc": "FACTION_DESC_SOMERTIN", "currency": "ZLOT", "color": "WHITE" },
     "KARGIT": { "name": "FACTION_NAME_KARGIT", "desc": "FACTION_DESC_KARGIT", "currency": "KARGIL", "color": "BLACK" },
     "TRANSKAL": { "name": "FACTION_NAME_TRANSKAL", "desc": "FACTION_DESC_TRANSKAL", "currency": "KRONE", "color": "GRAY" },
     "POLASIE": { "name": "FACTION_NAME_POLASIE", "desc": "FACTION_DESC_POLASIE", "currency": "PULA", "color": "DARK_BLUE" },

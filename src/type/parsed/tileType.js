@@ -1,4 +1,4 @@
-import { CLIMATE_TYPE, MINE_TYPE, MOVEMENT_TYPE } from "../../enums.js";
+import { CLIMATE_TYPE, MINE_TYPE, MOVEMENT_TYPE, TERRAIN_TYPE } from "../../enums.js";
 
 export const TileType = function(id) {
     this.id = id;
@@ -28,11 +28,7 @@ TileType.prototype.load = function(config, DEBUG_NAME) {
 
     this.name = name;
     this.desc = desc;
-    this.terrain = terrain;
-
-    if(CLIMATE_TYPE[climate] !== undefined) {
-        this.climate = CLIMATE_TYPE[climate];
-    }
+    this.climate = CLIMATE_TYPE[climate] ?? CLIMATE_TYPE.NONE;
 
     if(passability['*'] !== undefined) {
         const defaultPassability = passability['*'];
@@ -57,6 +53,16 @@ TileType.prototype.load = function(config, DEBUG_NAME) {
             this.allowedMines.push(mineID);
         } else {
             console.warn(`${DEBUG_NAME}: Unknown mine type! [mineType:${mineType}]`);
+        }
+    }
+
+    for(const terrainID of terrain) {
+        const index = TERRAIN_TYPE[terrainID];
+
+        if(index !== undefined) {
+            this.terrain.push(index);
+        } else {
+            console.warn(`${DEBUG_NAME}: Terrain ${terrainID} does not exist!`);
         }
     }
 
