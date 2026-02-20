@@ -5,12 +5,12 @@ export const FactionType = function(id, config) {
         name = "MISSING_NAME_FACTION",
         desc = "MISSING_DESC_FACTION",
         color = COLOR_TYPE.WHITE,
-        currency = CURRENCY_TYPE.NONE
+        currency = "NONE"
     } = config;
 
     this.id = id;
     this.name = name;
     this.desc = desc;
     this.color = color;
-    this.currency = currency;
+    this.currency = CURRENCY_TYPE[currency] ?? CURRENCY_TYPE.NONE;
 }

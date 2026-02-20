@@ -275,12 +275,13 @@ export const NATION_TYPE = {
 };
 
 export const CURRENCY_TYPE = {
-    NONE: "NONE",
-    ZLOT: "ZLOT",
-    KARGIL: "KARGIL",
-    KRONE: "KRONE",
-    PULA: "PULA",
-    RIAL: "RIAL"
+    NONE: 0,
+    ZLOT: 1,
+    KARGIL: 2,
+    KRONE: 3,
+    PULA: 4,
+    RIAL: 5,
+    _COUNT: 6
 };
 
 export const FACTION_TYPE = {
