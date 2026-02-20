@@ -6,7 +6,7 @@ import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { createNode, mGetLowestCostNode } from "../systems/pathfinding.js";
 import { getDirectionByDelta, getDirectionVector } from "../systems/direction.js";
-import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, MINE_TYPE, JAMMER_FLAG } from "../enums.js";
+import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, MINE_TYPE, JAMMER_FLAG, ENTITY_TYPE } from "../enums.js";
 import { mapTransportToEntity } from "../enumHelpers.js";
 import { getLineEntities } from "../systems/targeting.js";
 import { mGetUncloakedEntities, mGetUncloakedMines } from "../systems/cloak.js";
@@ -30,7 +30,7 @@ export const BattalionEntity = function(id) {
     this.direction = DIRECTION.EAST;
     this.state = BattalionEntity.STATE.IDLE;
     this.teamID = TeamManager.INVALID_ID;
-    this.transportID = null;
+    this.transportID = ENTITY_TYPE._INVALID;
     this.lastAttacker = EntityManager.INVALID_ID;
     this.turns = 0;
     this.cash = 0;
@@ -1153,7 +1153,7 @@ BattalionEntity.prototype.getDistanceMoved = function(deltaTime) {
 }
 
 BattalionEntity.prototype.fromTransport = function(gameContext) {
-    if(this.transportID !== null) {
+    if(this.transportID !== ENTITY_TYPE._INVALID) {
         const { typeRegistry } = gameContext;
         const transportType = typeRegistry.getEntityType(this.transportID);
         const previousHealthFactor = this.health / this.maxHealth;
@@ -1161,12 +1161,12 @@ BattalionEntity.prototype.fromTransport = function(gameContext) {
         this.loadConfig(transportType);
         this.setHealth(this.maxHealth * previousHealthFactor);
         this.playIdle(gameContext);
-        this.transportID = null;
+        this.transportID = ENTITY_TYPE._INVALID;
     }
 }
 
 BattalionEntity.prototype.toTransport = function(gameContext, transportType) {
-    if(this.transportID === null) {
+    if(this.transportID === ENTITY_TYPE._INVALID) {
         const { typeRegistry } = gameContext;
         const previousHealthFactor = this.health / this.maxHealth;
         const entityTypeID = mapTransportToEntity(transportType);

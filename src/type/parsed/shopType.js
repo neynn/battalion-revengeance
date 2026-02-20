@@ -1,3 +1,5 @@
+import { ENTITY_TYPE } from "../../enums.js";
+
 export const ShopType = function(id) {
     this.id = id;
     this.entities = [];
@@ -9,7 +11,13 @@ ShopType.prototype.load = function(config, DEBUG_NAME) {
     } = config; 
 
     for(const entityID of entities) {
-        this.entities.push(entityID);
+        const index = ENTITY_TYPE[entityID];
+
+        if(index !== undefined) {
+            this.entities.push(index);
+        } else {
+            console.warn(`${DEBUG_NAME}: EntityType ${entityID} does not exist!`);
+        }
     }
 }
 

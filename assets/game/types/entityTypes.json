@@ -1538,6 +1538,40 @@
             "idle_up": "albatross_transport_idle_up"
         }
     },
+    "PELICAN_TRANSPORT": {
+        "health": 10,
+        "damage": 0,
+        "weaponType": "NONE",
+        "armorType": "NONE",
+        "movementRange": 1,
+        "movementType": "STATIONARY",
+        "name": "ENTITY_NAME_PELICAN_TRANSPORT",
+        "desc": "ENTITY_DESC_PELICAN_TRANSPORT",
+        "traits": [],
+        "sprites": {
+            "idle_right": "albatross_transport_idle_right",
+            "idle_left": "albatross_transport_idle_left",
+            "idle_down": "albatross_transport_idle_down",
+            "idle_up": "albatross_transport_idle_up"
+        }
+    },
+    "STORK_TRANSPORT": {
+        "health": 10,
+        "damage": 0,
+        "weaponType": "NONE",
+        "armorType": "NONE",
+        "movementRange": 1,
+        "movementType": "STATIONARY",
+        "name": "ENTITY_NAME_STORK_TRANSPORT",
+        "desc": "ENTITY_DESC_STORK_TRANSPORT",
+        "traits": [],
+        "sprites": {
+            "idle_right": "albatross_transport_idle_right",
+            "idle_left": "albatross_transport_idle_left",
+            "idle_down": "albatross_transport_idle_down",
+            "idle_up": "albatross_transport_idle_up"
+        }
+    },
     "TURRET": {
         "health": 150,
         "damage": 30,

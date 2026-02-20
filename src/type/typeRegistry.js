@@ -1,4 +1,3 @@
-import { TypeCategory } from "./typeCategory.js";
 import { CommanderType } from "./parsed/commanderType.js";
 import { FactionType } from "./parsed/factionType.js";
 import { NationType } from "./parsed/nationType.js";
@@ -14,11 +13,11 @@ import { MoraleType } from "./parsed/moraleType.js";
 import { EntityType } from "./parsed/entityType.js";
 import { ShopType } from "./parsed/shopType.js";
 import { SchemaType } from "./parsed/schemaType.js";
-import { ARMOR_TYPE, BUILDING_TYPE, CLIMATE_TYPE, COMMANDER_TYPE, CURRENCY_TYPE, FACTION_TYPE, MORALE_TYPE, MOVEMENT_TYPE, NATION_TYPE, POWER_TYPE, SCHEMA_TYPE, SHOP_TYPE, TERRAIN_TYPE, TILE_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../enums.js";
+import { ARMOR_TYPE, BUILDING_TYPE, CLIMATE_TYPE, COMMANDER_TYPE, CURRENCY_TYPE, ENTITY_TYPE, FACTION_TYPE, MORALE_TYPE, MOVEMENT_TYPE, NATION_TYPE, POWER_TYPE, SCHEMA_TYPE, SHOP_TYPE, TERRAIN_TYPE, TILE_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../enums.js";
 import { PowerType } from "./parsed/powerType.js";
 import { CurrencyType } from "./parsed/currencyType.js";
 
-const STUB_ENTITY = new EntityType(-1, {});
+const STUB_ENTITY = new EntityType(-1);
 const STUB_SCHEMA = new SchemaType(-1);
 const STUB_MORALE = new MoraleType(-1);
 const STUB_SHOP = new ShopType(-1);
@@ -53,7 +52,7 @@ export const TypeRegistry = function() {
     this.shopTypes = [];
     this.moraleTypes = [];
     this.schemaTypes = [];
-    this.entityTypes = new TypeCategory("ENTITY_TYPE", STUB_ENTITY);
+    this.entityTypes = [];
 
     for(let i = 0; i < TILE_TYPE._COUNT; i++) {
         this.tileTypes[i] = new TileType(i);
@@ -118,10 +117,23 @@ export const TypeRegistry = function() {
     for(let i = 0; i < SCHEMA_TYPE._COUNT; i++) {
         this.schemaTypes[i] = new SchemaType(i);
     }
+
+    for(let i = 0; i < ENTITY_TYPE._COUNT; i++) {
+        this.entityTypes[i] = new EntityType(i);
+    }
 }
 
 TypeRegistry.prototype.load = function(resources) {
-    this.entityTypes.loadTypes(resources.entityTypes, EntityType);
+    for(const typeID in resources.entityTypes) {
+        const config = resources.entityTypes[typeID];
+        const index = ENTITY_TYPE[typeID];
+
+        if(index !== undefined) {
+            this.entityTypes[index].load(config, typeID);
+        } else {
+            //Type does not exist in JSON!
+        }
+    }
 
     for(const typeID in resources.schemaTypes) {
         const config = resources.schemaTypes[typeID];
@@ -302,7 +314,11 @@ TypeRegistry.prototype.load = function(resources) {
 }
 
 TypeRegistry.prototype.getEntityType = function(typeID) {
-    return this.entityTypes.getType(typeID);
+    if(typeID < 0 || typeID >= ENTITY_TYPE._COUNT) {
+        return STUB_ENTITY;
+    }
+    
+    return this.entityTypes[typeID];
 }
 
 TypeRegistry.prototype.getTerrainType = function(typeID) {

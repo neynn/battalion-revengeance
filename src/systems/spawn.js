@@ -1,11 +1,21 @@
 import { EntityManager } from "../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { BUILDING_TYPE, LAYER_TYPE, TEAM_STAT } from "../enums.js";
+import { BUILDING_TYPE, ENTITY_TYPE, LAYER_TYPE, TEAM_STAT } from "../enums.js";
 import { createSchemaViewSprite, SchemaView } from "../sprite/schemaView.js";
 import { getDirectionByName } from "./direction.js";
 import { ClientBattalionEntity } from "../entity/clientBattalionEntity.js";
 import { ClientBuilding } from "../entity/clientBuilding.js";
 import { Building } from "../entity/building.js";
+
+const getEntityID = function(name) {
+    const index = ENTITY_TYPE[name];
+
+    if(index === undefined) {
+        return ENTITY_TYPE._INVALID;
+    }
+
+    return index;
+}
 
 const getBuildingID = function(name) {
     const index = BUILDING_TYPE[name];
@@ -110,7 +120,8 @@ export const spawnServerEntity = function(gameContext, config, entityID) {
 
     const { teamManager } = gameContext;
     const teamID = teamManager.getTeamID(team);
-    const entity = createServerEntityObject(gameContext, entityID, teamID, type, x, y);
+    const typeID = getEntityID(type);
+    const entity = createServerEntityObject(gameContext, entityID, teamID, typeID, x, y);
 
     if(!entity) {
         return;
@@ -157,7 +168,8 @@ export const spawnClientEntity = function(gameContext, config, externalID = Enti
     }
 
     const teamID = teamManager.getTeamID(team);
-    const entity = createClientEntityObject(gameContext, externalID, teamID, type, x, y);
+    const typeID = getEntityID(type);
+    const entity = createClientEntityObject(gameContext, externalID, teamID, typeID, x, y);
 
     if(!entity) {
         return;

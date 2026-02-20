@@ -1,5 +1,6 @@
 import { LanguageHandler } from "./engine/language/languageHandler.js";
 import { AssetLoader } from "./engine/resources/assetLoader.js";
+import { PrettyJSON } from "./engine/resources/prettyJSON.js";
 import { generateAutoSheet, makeLanguageFile } from "./helpers.js";
 import { BattalionContext } from "./src/battalionContext.js";
 import { validateTraitTypes } from "./src/type/validateTypes.js";

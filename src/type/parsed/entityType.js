@@ -20,7 +20,39 @@ const getRangeType = function(minRange, maxRange) {
     return RANGE_TYPE.NONE;
 }
 
-export const EntityType = function(id, config) {
+export const EntityType = function(id) {
+    this.id = id;
+    this.dimX = 1;
+    this.dimY = 1;
+    this.name = "MISSING_NAME_ENTITY";
+    this.desc = "MISSING_DESC_ENTITY";
+    this.health = 1;
+    this.damage = 0;
+    this.weaponType = WEAPON_TYPE.NONE;
+    this.movementType = MOVEMENT_TYPE.STATIONARY;
+    this.armorType = ARMOR_TYPE.NONE;
+    this.movementRange = 0;
+    this.movementSpeed = 224;
+    this.jammerRange = 1;
+    this.minRange = 1;
+    this.maxRange = 1;
+    this.streamRange = 1;
+    this.cost = 0;
+    this.sounds = {};
+    this.sprites = {};
+    this.effects = {};
+    this.traits = [];
+    this.category = mapMovementToCategory(this.movementType);
+    this.rangeType = getRangeType(this.minRange, this.maxRange);
+    this.shop = SHOP_TYPE.NONE;
+}
+
+EntityType.MIN_MOVE_COST = 1;
+EntityType.MAX_MOVE_COST = 99;
+EntityType.MIN_JAMMER_RANGE = 1;
+EntityType.MAX_JAMMER_RANGE = 4;
+
+EntityType.prototype.load = function(config, DEBUG_NAME) {
     const {
         dimX = 1,
         dimY = 1,
@@ -45,31 +77,26 @@ export const EntityType = function(id, config) {
         effects = {}
     } = config;
 
-    this.weaponType = WEAPON_TYPE[weaponType] ?? WEAPON_TYPE.NONE;
-    this.movementType = MOVEMENT_TYPE[movementType] ?? MOVEMENT_TYPE.STATIONARY;
-    this.armorType = ARMOR_TYPE[armorType] ?? ARMOR_TYPE.NONE;
-
-    this.id = id;
     this.dimX = dimX;
     this.dimY = dimY;
     this.desc = desc;
     this.name = name;
     this.health = health;
     this.damage = damage;
+    this.weaponType = WEAPON_TYPE[weaponType] ?? WEAPON_TYPE.NONE;
+    this.movementType = MOVEMENT_TYPE[movementType] ?? MOVEMENT_TYPE.STATIONARY;
+    this.armorType = ARMOR_TYPE[armorType] ?? ARMOR_TYPE.NONE;
+    this.shop = SHOP_TYPE[shop] ?? SHOP_TYPE.NONE;
     this.movementRange = movementRange;
     this.movementSpeed = movementSpeed;
     this.jammerRange = jammerRange;
-    this.minRange = minRange;
-    this.maxRange = maxRange;
     this.streamRange = streamRange;
     this.cost = cost;
+    this.minRange = minRange;
+    this.maxRange = maxRange;
     this.sounds = sounds;
     this.sprites = sprites;
     this.effects = effects;
-    this.traits = [];
-    this.category = mapMovementToCategory(this.movementType);
-    this.rangeType = getRangeType(minRange, maxRange);
-    this.shop = SHOP_TYPE[shop] ?? SHOP_TYPE.NONE;
 
     if(this.maxRange < this.minRange) {
         this.maxRange = this.minRange;
@@ -80,6 +107,13 @@ export const EntityType = function(id, config) {
     } else if(this.jammerRange > EntityType.MAX_JAMMER_RANGE) {
         this.jammerRange = EntityType.MAX_JAMMER_RANGE;
     }
+
+    if(this.movementRange >= EntityType.MAX_MOVE_COST) {
+        this.movementRange = EntityType.MAX_MOVE_COST;
+    }
+
+    this.category = mapMovementToCategory(this.movementType);
+    this.rangeType = getRangeType(this.minRange, this.maxRange);
 
     for(const traitID of traits) {
         const index = TRAIT_TYPE[traitID];
@@ -92,11 +126,7 @@ export const EntityType = function(id, config) {
     if(this.traits.length > MAX_TRAITS) {
         this.traits.length = MAX_TRAITS;
 
-        console.warn(`${this.id}: More than ${MAX_TRAITS} traits detected!`);
-    }
-
-    if(this.movementRange >= EntityType.MAX_MOVE_COST) {
-        this.movementRange = EntityType.MAX_MOVE_COST;
+        console.warn(`${DEBUG_NAME}: More than ${MAX_TRAITS} traits detected!`);
     }
 
     if(this.sprites["move_right"] === undefined) {
@@ -115,11 +145,6 @@ export const EntityType = function(id, config) {
         this.sprites["move_down"] = this.sprites["idle_down"];
     }
 }
-
-EntityType.MIN_MOVE_COST = 1;
-EntityType.MAX_MOVE_COST = 99;
-EntityType.MIN_JAMMER_RANGE = 1;
-EntityType.MAX_JAMMER_RANGE = 4;
 
 EntityType.prototype.hasTrait = function(traitID) {
     for(let i = 0; i < this.traits.length; i++) {

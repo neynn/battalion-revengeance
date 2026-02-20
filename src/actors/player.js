@@ -3,7 +3,7 @@ import { StateMachine } from "../../engine/state/stateMachine.js";
 import { BattalionActor } from "./battalionActor.js";
 import { IdleState } from "./player/idle.js";
 import { SelectState } from "./player/select.js";
-import { DIRECTION } from "../enums.js";
+import { DIRECTION, ENTITY_TYPE } from "../enums.js";
 import { saveStoryMap } from "../systems/save.js";
 import { createEndTurnIntent, createExtractIntent, createProduceEntityIntent, createPurchseEntityIntent } from "../action/actionHelper.js";
 import { MapInspector } from "./player/inspector.js";
@@ -93,7 +93,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
 
         if(entity) {
             //this.addIntent(createExtractIntent(entity.id));
-            this.addIntent(createProduceEntityIntent(entity.id, "ANNIHILATOR_TANK", DIRECTION.WEST));
+            this.addIntent(createProduceEntityIntent(entity.id, ENTITY_TYPE.ANNIHILATOR_TANK, DIRECTION.WEST));
         }
     });
 }
