@@ -192,10 +192,11 @@ export const MOVEMENT_TYPE = {
 };
 
 export const WEAPON_TYPE = {
-    NONE: "NONE",
-    LIGHT: "LIGHT",
-    MEDIUM: "MEDIUM",
-    HEAVY: "HEAVY"
+    NONE: 0,
+    LIGHT: 1,
+    MEDIUM: 2,
+    HEAVY: 3,
+    _COUNT: 4
 };
 
 export const ARMOR_TYPE = {
