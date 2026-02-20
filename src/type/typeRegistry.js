@@ -14,10 +14,11 @@ import { MoraleType } from "./parsed/moraleType.js";
 import { EntityType } from "./parsed/entityType.js";
 import { ShopType } from "./parsed/shopType.js";
 import { SchemaType } from "./parsed/schemaType.js";
-import { ARMOR_TYPE, BUILDING_TYPE, CLIMATE_TYPE, CURRENCY_TYPE, MOVEMENT_TYPE, NATION_TYPE, POWER_TYPE, TERRAIN_TYPE, TILE_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../enums.js";
+import { ARMOR_TYPE, BUILDING_TYPE, CLIMATE_TYPE, COMMANDER_TYPE, CURRENCY_TYPE, MOVEMENT_TYPE, NATION_TYPE, POWER_TYPE, TERRAIN_TYPE, TILE_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../enums.js";
 import { PowerType } from "./parsed/powerType.js";
 import { CurrencyType } from "./parsed/currencyType.js";
 
+const STUB_COMMANDER = new CommanderType(-1);
 const STUB_CURRENCY = new CurrencyType(-1);
 const STUB_NATION = new NationType(-1);
 const STUB_WEAPON = new WeaponType(-1);
@@ -91,6 +92,7 @@ export const TypeRegistry = function() {
     this.weaponTypes = [];
     this.nationTypes = [];
     this.currencyTypes = [];
+    this.commanderTypes = [];
 
     for(let i = 0; i < TILE_TYPE._COUNT; i++) {
         this.tileTypes[i] = new TileType(i);
@@ -135,6 +137,10 @@ export const TypeRegistry = function() {
     for(let i = 0; i < CURRENCY_TYPE._COUNT; i++) {
         this.currencyTypes[i] = new CurrencyType(i);
     }
+
+    for(let i = 0; i < COMMANDER_TYPE._COUNT; i++) {
+        this.commanderTypes[i] = new CommanderType(i);
+    }
 }
 
 TypeRegistry.CATEGORY = {
@@ -162,9 +168,19 @@ TypeRegistry.prototype.load = function(resources) {
     this.categories[TypeRegistry.CATEGORY.ENTITY].loadTypes(resources.entityTypes, EntityType);
     this.categories[TypeRegistry.CATEGORY.MORALE].loadTypes(resources.moraleTypes, MoraleType);
     this.categories[TypeRegistry.CATEGORY.FACTION].loadTypes(resources.factionTypes, FactionType);
-    this.categories[TypeRegistry.CATEGORY.COMMANDER].loadTypes(resources.commanderTypes, CommanderType);
     this.categories[TypeRegistry.CATEGORY.BUILDING].loadTypes(resources.buildingTypes, BuildingType);
     this.categories[TypeRegistry.CATEGORY.SHOP].loadTypes(resources.shopTypes, ShopType);
+
+    for(const typeID in resources.commanderTypes) {
+        const config = resources.commanderTypes[typeID];
+        const index = COMMANDER_TYPE[typeID];
+
+        if(index !== undefined) {
+            this.commanderTypes[index].load(config, typeID);
+        } else {
+            //Type does not exist in JSON!
+        }
+    }
 
     for(const typeID in resources.currencyTypes) {
         const config = resources.currencyTypes[typeID];
@@ -330,7 +346,11 @@ TypeRegistry.prototype.getWeaponType = function(typeID) {
 }
 
 TypeRegistry.prototype.getCommanderType = function(typeID) {
-    return this.categories[TypeRegistry.CATEGORY.COMMANDER].getType(typeID);
+    if(typeID < 0 || typeID >= COMMANDER_TYPE._COUNT) {
+        return STUB_COMMANDER;
+    }
+    
+    return this.commanderTypes[typeID];
 }
 
 TypeRegistry.prototype.getNationType = function(typeID) {

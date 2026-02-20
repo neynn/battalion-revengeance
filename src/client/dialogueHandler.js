@@ -1,3 +1,5 @@
+import { COMMANDER_TYPE } from "../enums.js";
+
 export const DialogueHandler = function() {
     this.prelogue = [];
     this.postlogue = [];
@@ -140,9 +142,9 @@ DialogueHandler.prototype.showNextEntry = function(gameContext) {
     const { soundPlayer } = client;
     const { narrator, text, voice } = this.currentDialogue[this.currentIndex];
     const translation = language.getMapTranslation(text);
-    
-    const commanderType = typeRegistry.getCommanderType(narrator);
-    const { portrait, name } = commanderType;
+
+    const commanderID = COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE;
+    const { portrait, name } = typeRegistry.getCommanderType(commanderID);
     const portraitTexture = portraitHandler.getPortraitTexture(portrait);
     const nameTranslation = language.getSystemTranslation(name);
 

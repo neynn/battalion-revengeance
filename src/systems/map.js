@@ -1,7 +1,7 @@
 import { BattalionMap } from "../map/battalionMap.js";
 import { spawnClientBuilding, spawnClientEntity, spawnServerBuilding, spawnServerEntity } from "./spawn.js";
 import { MapSettings } from "../map/settings.js";
-import { COMPONENT_TYPE, CURRENCY_TYPE, OBJECTIVE_TYPE, SCHEMA_TYPE } from "../enums.js";
+import { COMMANDER_TYPE, COMPONENT_TYPE, CURRENCY_TYPE, OBJECTIVE_TYPE, SCHEMA_TYPE } from "../enums.js";
 import { Mine } from "../entity/mine.js";
 import { DialogueComponent } from "../event/components/dialogue.js";
 import { ExplodeTileComponent } from "../event/components/explodeTile.js";
@@ -207,7 +207,8 @@ const TeamFactory = {
             const team = teamManager.getTeam(i);
 
             const tAllies = teamConfig.allies ?? [];
-            const tCommander = teamConfig.commander ?? null;
+            const tCommander = teamConfig.commander ?? "NONE";
+            const tCommanderID = COMMANDER_TYPE[tCommander] ?? COMMANDER_TYPE.NONE;
 
             for(const allyTeamName of tAllies) {
                 const allyTeamID = teamManager.getTeamID(allyTeamName);
@@ -219,7 +220,7 @@ const TeamFactory = {
                 }
             }
 
-            onActorCreate(team, tCommander);
+            onActorCreate(team, tCommanderID);
         }
     }
 };

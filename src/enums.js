@@ -308,7 +308,9 @@ export const FACTION_TYPE = {
 };
 
 export const COMMANDER_TYPE = {
-    KANYE: "KANYE"
+    NONE: 0,
+    KANYE: 1,
+    _COUNT: 2
 };
 
 export const BUILDING_TYPE = {
