@@ -15,6 +15,7 @@ gameContext.init(resources);
 if(DO_TEST) {
     gameContext.language.events.on(LanguageHandler.EVENT.LANGUAGE_CHANGE, () => {
         validateTileTypes(gameContext);
+        validateTraitTypes(resources.traitTypes);
         console.log("Missing entity translations:", tAllNamesAndDescriptionsPresent(gameContext, resources.entityTypes));
         console.log("Missing tile translations:", tAllNamesAndDescriptionsPresent(gameContext, resources.tileTypes));
         console.log("Missing faction translations:", tAllNamesAndDescriptionsPresent(gameContext, resources.factionTypes));

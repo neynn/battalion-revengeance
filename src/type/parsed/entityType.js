@@ -1,3 +1,4 @@
+import { MAX_TRAITS } from "../../constants.js";
 import { mapMovementToCategory } from "../../enumHelpers.js";
 import { ARMOR_TYPE, ATTACK_TYPE, JAMMER_FLAG, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../../enums.js";
 
@@ -20,9 +21,6 @@ const getRangeType = function(minRange, maxRange) {
 }
 
 export const EntityType = function(id, config) {
-    const MAX_TRAITS = 4;
-
-
     const {
         dimX = 1,
         dimY = 1,
@@ -68,7 +66,7 @@ export const EntityType = function(id, config) {
     this.sounds = sounds;
     this.sprites = sprites;
     this.effects = effects;
-    this.traits = traits;
+    this.traits = [];
     this.category = mapMovementToCategory(this.movementType);
     this.rangeType = getRangeType(minRange, maxRange);
     this.shop = shop;
@@ -81,6 +79,14 @@ export const EntityType = function(id, config) {
         this.jammerRange = EntityType.MIN_JAMMER_RANGE;
     } else if(this.jammerRange > EntityType.MAX_JAMMER_RANGE) {
         this.jammerRange = EntityType.MAX_JAMMER_RANGE;
+    }
+
+    for(const traitID of traits) {
+        const index = TRAIT_TYPE[traitID];
+
+        if(index !== undefined) {
+            this.traits.push(index);
+        }
     }
 
     if(this.traits.length > MAX_TRAITS) {

@@ -1,20 +1,11 @@
 import { ARMOR_TYPE, MOVEMENT_TYPE } from "../../enums.js";
 
-export const TraitType = function(id, config) {
-    const {
-        name = "MISSING_NAME_TRAIT",
-        desc = "MISSING_DESC_TRAIT",
-        icon = null,
-        moveDamage = {},
-        armorDamage = {},
-        cashPerTurn = 0
-    } = config;
-
+export const TraitType = function(id) {
     this.id = id;
-    this.name = name;
-    this.desc = desc;
-    this.icon = icon;
-    this.cashPerTurn = cashPerTurn;
+    this.name = "MISSING_NAME_TRAIT";
+    this.desc = "MISSING_DESC_TRAIT";
+    this.icon = null;
+    this.cashPerTurn = 0;
     this.moveDamage = [];
     this.armorDamage = [];
 
@@ -25,6 +16,22 @@ export const TraitType = function(id, config) {
     for(let i = 0; i < ARMOR_TYPE._COUNT; i++) {
         this.armorDamage[i] = 0;
     }
+}
+
+TraitType.prototype.load = function(config) {
+    const {
+        name = "MISSING_NAME_TRAIT",
+        desc = "MISSING_DESC_TRAIT",
+        icon = null,
+        moveDamage = {},
+        armorDamage = {},
+        cashPerTurn = 0
+    } = config;
+
+    this.name = name;
+    this.desc = desc;
+    this.icon = icon;
+    this.cashPerTurn = cashPerTurn;
 
     if(moveDamage['*'] !== undefined) {
         const defaultMoveDamage = moveDamage['*'];

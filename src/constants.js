@@ -1,5 +1,7 @@
 import { TEAM_STAT } from "./enums.js";
 
+export const MAX_TRAITS = 4;
+
 export const TILE_WIDTH = 56;
 
 export const TILE_HEIGHT = 56;
