@@ -26,7 +26,7 @@ export const mapCategoryToMine = function(category) {
     switch(category) {
         case ENTITY_CATEGORY.LAND: return MINE_TYPE.LAND;
         case ENTITY_CATEGORY.SEA: return MINE_TYPE.SEA;
-        default: return MINE_TYPE.LAND;
+        default: return MINE_TYPE._INVALID;
     }
 }
 

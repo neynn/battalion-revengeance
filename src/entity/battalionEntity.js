@@ -1470,7 +1470,7 @@ BattalionEntity.prototype.reduceCash = function(cash) {
     this.cash -= cash;
 }
 
-BattalionEntity.prototype.canPlaceMine = function(gameContext, direction) {
+BattalionEntity.prototype.canPlaceMine = function(gameContext) {
     const { world, typeRegistry } = gameContext;
     const { mapManager } = world;
 
@@ -1479,6 +1479,7 @@ BattalionEntity.prototype.canPlaceMine = function(gameContext, direction) {
         return false;
     }
 
+    //TODO: Cost needs inflation adjusment
     const mineID = mapCategoryToMine(this.config.category);
     const { cost } = typeRegistry.getMineType(mineID);
 
@@ -1486,9 +1487,10 @@ BattalionEntity.prototype.canPlaceMine = function(gameContext, direction) {
         return false;
     }
 
+    //Tiles should only be placeable on the units feet.
+    //_INVALID mines will never be placeable.
     const worldMap = mapManager.getActiveMap();
-    const { x, y } = this.getTileByDirection(direction);
-    const isPlaceable = worldMap.isMinePlaceable(gameContext, x, y, mineID);
+    const isPlaceable = worldMap.isMinePlaceable(gameContext, this.tileX, this.tileY, mineID);
 
     return isPlaceable;
 }

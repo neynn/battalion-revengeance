@@ -66,6 +66,7 @@ export const JAMMER_FLAG = {
 };
 
 export const MINE_TYPE = {
+    _INVALID: -1,
     LAND: 0,
     SEA: 1,
     _COUNT: 2
