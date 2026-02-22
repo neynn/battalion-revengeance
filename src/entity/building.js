@@ -11,6 +11,17 @@ export const Building = function(config) {
 Building.prototype = Object.create(StaticObject.prototype);
 Building.prototype.constructor = Building;
 
+Building.prototype.save = function() {
+    return {
+        "type": this.config.id,
+        "teamID": this.teamID,
+        "tileX": this.tileX,
+        "tileY": this.tileY
+    }
+}
+
+Building.prototype.load = function(data) {}
+
 Building.prototype.onTeamUpdate = function(gameContext, team) {}
 
 Building.prototype.getGeneratedCash = function(gameContext) {

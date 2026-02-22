@@ -35,6 +35,12 @@ TeamManager.prototype.exit = function() {
     this.isConcluded = false;
 }
 
+TeamManager.prototype.forEachTeam = function(onCall) {
+    for(let i = 0; i < this.teams.length; i++) {
+        onCall(this.teams[i]);
+    }
+}
+
 TeamManager.prototype.createTeam = function(teamName) {
     const teamID = this.teams.length;
     const team = new Team(teamID);

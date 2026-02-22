@@ -16,6 +16,21 @@ Mine.STATE = {
 Mine.prototype = Object.create(StaticObject.prototype);
 Mine.prototype.constructor = Mine;
 
+Mine.prototype.save = function() {
+    return {
+        "type": this.config.id,
+        "tileX": this.tileX,
+        "tileY": this.tileY,
+        "teamID": this.teamID,
+        "state": this.state
+    }
+}
+
+Mine.prototype.load = function(data) {
+    this.state = data.state;
+    this.opacity = this.state === Mine.STATE.HIDDEN ? 0 : 1;
+} 
+
 Mine.prototype.hide = function() {
     this.state = Mine.STATE.HIDDEN;
 }

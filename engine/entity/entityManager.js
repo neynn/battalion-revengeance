@@ -23,13 +23,11 @@ EntityManager.prototype.hasEntity = function(entityID) {
 }
 
 EntityManager.prototype.forEachEntity = function(onCall) {
-    if(typeof onCall === "function") {
-        for(let i = 0; i < this.entities.length; i++) {
-            const entity = this.entities[i];
+    for(let i = 0; i < this.entities.length; i++) {
+        const entity = this.entities[i];
 
-            if(!entity.isMarkedForDestroy) {
-                onCall(entity);
-            }
+        if(!entity.isMarkedForDestroy) {
+            onCall(entity);
         }
     }
 }

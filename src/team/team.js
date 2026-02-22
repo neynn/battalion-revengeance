@@ -13,11 +13,11 @@ export const Team = function(id) {
     this.entities = [];
     this.schema = null;
     this.currency = null;
-    this.status = Team.STATUS.IDLE;
-    this.cash = 0;
     this.name = "MISSING_NAME_TEAM";
     this.desc = "MISSING_DESC_TEAM";
+    this.cash = 0;
     this.stats = [];
+    this.status = Team.STATUS.IDLE;
     this.flags = Team.FLAG.NONE;
     this.objectives = [
         new UnitSurviveObjective(),
@@ -44,6 +44,19 @@ Team.STATUS = {
     WINNER: 1,
     LOSER: 2
 };
+
+Team.prototype.save = function() {
+    return {
+        "status": this.status,
+        "cash": this.cash,
+        "stats": this.stats,
+        "objectives": [] //TODO save objective state
+    }
+}
+
+Team.prototype.load = function(data) {
+    
+}
 
 Team.prototype.setCustomName = function(name) {
     this.name = name;

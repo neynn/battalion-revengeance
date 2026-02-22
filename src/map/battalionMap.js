@@ -59,8 +59,8 @@ BattalionMap.prototype = Object.create(WorldMap.prototype);
 BattalionMap.prototype.constructor = BattalionMap;
 
 BattalionMap.prototype.loadEdits = function(edits) {
-    for(const { layer, index, tile } of edits) {
-        this.getLayer(layer).setItem(tile, index);
+    for(const { layer, index, previous, current } of edits) {
+        this.getLayer(layer).setItem(current, index);
     }
 
     this.edits = edits;
@@ -73,12 +73,15 @@ BattalionMap.prototype.editTile = function(layerID, tileX, tileY, tileID) {
         const layer = this.getLayer(layerID);
 
         if(layer !== WorldMap.EMPTY_LAYER) {
+            const previous = layer.getItem(index);
+
             layer.setItem(tileID, index);
 
             this.edits.push({
                 "layer": layerID,
                 "index": index,
-                "tile": tileID
+                "previous": previous,
+                "current": tileID
             });
         }
     }
