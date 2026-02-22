@@ -18,14 +18,26 @@ StartTurnAction.prototype.onEnd = function(gameContext, data) {
 
 StartTurnAction.prototype.execute = function(gameContext, data) {
     const { world, teamManager } = gameContext;
-    const { turnManager, eventHandler } = world;
+    const { turnManager, eventHandler, mapManager } = world;
     const { teamID } = data;
     const team = teamManager.getTeam(teamID);
     const actor = teamManager.findActorByTeam(gameContext, teamID);
+    const worldMap = mapManager.getActiveMap();
 
     team.startTurn(gameContext);
     turnManager.setCurrentActor(gameContext, actor.getID());
     eventHandler.checkEventTriggers(gameContext);
+
+    for(const building of worldMap.buildings) {
+        const cash = building.generateCash(gameContext);
+        
+        if(cash !== 0) {
+            const team = building.getTeam(gameContext);
+            const totalCash = team.addGeneratedCash(cash);
+
+            //TODO: Display total cash?
+        }
+    }
 
     const { activeTeams } = teamManager;
 
@@ -33,7 +45,6 @@ StartTurnAction.prototype.execute = function(gameContext, data) {
         const team = teamManager.getTeam(teamID);
 
         team.addStatistic(TEAM_STAT.ROUNDS_TAKEN, 1);
-        team.generateBuildingCash(gameContext);
     }
 
     teamManager.updateStatus();

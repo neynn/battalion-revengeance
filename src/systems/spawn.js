@@ -103,7 +103,51 @@ export const createClientEntityObject = function(gameContext, entityID, teamID, 
     return entityObject;
 }
 
-export const spawnServerEntity = function(gameContext, config, entityID) {
+export const createServerBuildingObject = function(gameContext, teamID, typeID, tileX, tileY) {
+    const { teamManager, typeRegistry } = gameContext;
+    const team = teamManager.getTeam(teamID);
+
+    if(!team) {
+        return null;
+    }
+
+    const buildingType = typeRegistry.getBuildingType(typeID);
+    const building = new Building(buildingType);
+
+    building.setTile(tileX, tileY);
+    building.setTeam(teamID);
+
+    return building;
+}
+
+export const createClientBuildingObject = function(gameContext, teamID, typeID, tileX, tileY) {
+    const { teamManager, typeRegistry, transform2D } = gameContext;
+    const team = teamManager.getTeam(teamID);
+
+    if(!team) {
+        return null;
+    }
+
+    const buildingType = typeRegistry.getBuildingType(typeID);
+
+    const { schema } = team;
+    const { sprite } = buildingType;
+
+    const position = transform2D.transformTileToWorld(tileX, tileY);
+    const visualSprite = createSchemaViewSprite(gameContext, sprite, schema, LAYER_TYPE.BUILDING);
+    const buildingView = new SchemaView(visualSprite, sprite);
+    const building = new ClientBuilding(buildingType, buildingView);
+
+    buildingView.schema = schema;
+    buildingView.setPositionVec(position);
+
+    building.setTile(tileX, tileY);
+    building.setTeam(teamID);
+
+    return building;
+}
+
+const parseEntityJSON = function(gameContext, json, entityID, createEntity) {
     const { 
         x = -1,
         y = -1,
@@ -116,15 +160,15 @@ export const spawnServerEntity = function(gameContext, config, entityID) {
         health = -1,
         stealth = false,
         cash = 0
-    } = config;
+    } = json;
 
     const { teamManager } = gameContext;
     const teamID = teamManager.getTeamID(team);
     const typeID = getEntityID(type);
-    const entity = createServerEntityObject(gameContext, entityID, teamID, typeID, x, y);
+    const entity = createEntity(gameContext, entityID, teamID, typeID, x, y);
 
     if(!entity) {
-        return;
+        return null;
     }
 
     entity.setCustomID(id);
@@ -143,60 +187,38 @@ export const spawnServerEntity = function(gameContext, config, entityID) {
     }
 
     entity.addCash(cash);
+
+    return entity;
+}
+
+export const spawnServerEntity = function(gameContext, config, entityID) {
+    const entity = parseEntityJSON(gameContext, config, entityID, createServerEntityObject);
+
+    if(entity) {
+        //Post-Parsing
+    }
 }
 
 export const spawnClientEntity = function(gameContext, config, externalID = EntityManager.INVALID_ID) {
-    const { 
-        x = -1,
-        y = -1,
-        id = null,
-        name = null,
-        desc = null,
-        type = null,
-        team = null,
-        direction = null,
-        health = -1,
-        stealth = false,
-        cash = 0
-    } = config;
-
-    const { world, teamManager } = gameContext;
+    const { world } = gameContext;
     const { entityManager } = world;
 
     if(externalID === EntityManager.INVALID_ID) {
         externalID = entityManager.getNextID();
     }
 
-    const teamID = teamManager.getTeamID(team);
-    const typeID = getEntityID(type);
-    const entity = createClientEntityObject(gameContext, externalID, teamID, typeID, x, y);
+    const entity = parseEntityJSON(gameContext, config, externalID, createClientEntityObject);
 
-    if(!entity) {
-        return;
+    if(entity) {
+        entity.playIdle(gameContext);
+
+        if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+            entity.setOpacity(0);
+        }
     }
-
-    entity.setCustomID(id);
-    entity.setCustomInfo(name, desc);
-
-    if(direction !== null) {
-        entity.setDirection(getDirectionByName(direction));
-    }
-
-    if(health > 0) {
-        entity.setHealth(health);
-    }
-
-    if(stealth && entity.canCloak()) {
-        entity.setCloaked();
-        entity.setOpacity(0);
-    }
-
-    entity.addCash(cash);
-    entity.playIdle(gameContext);
 }
 
 export const spawnServerBuilding = function(gameContext, worldMap, config) {
-    const { typeRegistry, teamManager } = gameContext;
     const {
         id = null,
         name = null,
@@ -207,28 +229,22 @@ export const spawnServerBuilding = function(gameContext, worldMap, config) {
         team = null
     } = config;
 
+    const { teamManager } = gameContext;
     const teamID = teamManager.getTeamID(team);
-    const teamObject = teamManager.getTeam(teamID);
+    const isPlaceable = worldMap.isBuildingPlaceable(x, y);
 
-    if(teamObject) {
-        const isPlaceable = worldMap.isBuildingPlaceable(x, y);
+    if(isPlaceable) {
+        const typeID = getBuildingID(type);
+        const building = createServerBuildingObject(gameContext, teamID, typeID, x, y);
 
-        if(isPlaceable) {
-            const typeID = getBuildingID(type);
-            const buildingType = typeRegistry.getBuildingType(typeID);
-            const building = new Building(buildingType);
-
+        if(building) {
             building.setCustomInfo(id, name, desc);
-            building.setTile(x, y);
-            building.setTeam(teamID);
-
             worldMap.addBuilding(building);
         }
     }
 }
 
 export const spawnClientBuilding = function(gameContext, worldMap, config) {
-    const { typeRegistry, teamManager, transform2D } = gameContext;
     const {
         id = null,
         name = null,
@@ -239,28 +255,16 @@ export const spawnClientBuilding = function(gameContext, worldMap, config) {
         team = null
     } = config;
 
+    const { teamManager } = gameContext;
     const teamID = teamManager.getTeamID(team);
-    const teamObject = teamManager.getTeam(teamID);
+    const isPlaceable = worldMap.isBuildingPlaceable(x, y);
 
-    if(teamObject) {
-        const isPlaceable = worldMap.isBuildingPlaceable(x, y);
+    if(isPlaceable) {
+        const typeID = getBuildingID(type);
+        const building = createClientBuildingObject(gameContext, teamID, typeID, x, y);
 
-        if(isPlaceable) {
-            const typeID = getBuildingID(type);
-            const buildingType = typeRegistry.getBuildingType(typeID);
-            const { schema } = teamObject;
-            const { sprite } = buildingType;
-            const position = transform2D.transformTileToWorld(x, y);
-            const visualSprite = createSchemaViewSprite(gameContext, sprite, schema, LAYER_TYPE.BUILDING);
-            const buildingView = new SchemaView(visualSprite, sprite);
-            const building = new ClientBuilding(buildingType, buildingView);
-
-            buildingView.schema = schema;
-            buildingView.setPositionVec(position);
-
+        if(building) {
             building.setCustomInfo(id, name, desc);
-            building.setTile(x, y);
-            building.setTeam(teamID);
             worldMap.addBuilding(building);
         }
     }

@@ -11,6 +11,16 @@ Objective.STATUS = {
     FAILURE: 3
 };
 
+Objective.prototype.save = function() {
+    return {
+        "status": this.status
+    }
+}
+
+Objective.prototype.load = function(data) {
+    this.status = data.status;
+} 
+
 Objective.prototype.addModifier = function(modifier) {
     this.modifiers.push(modifier);
 }

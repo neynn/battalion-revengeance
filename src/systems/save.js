@@ -1,6 +1,6 @@
 import { PrettyJSON } from "../../engine/resources/prettyJSON.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { createClientEntityObject } from "./spawn.js";
+import { createClientBuildingObject, createClientEntityObject } from "./spawn.js";
 
 const saveEntities = function(gameContext) {
     const { world } = gameContext;
@@ -70,36 +70,11 @@ const saveEdits = function(worldMap) {
     return data;
 }
 
-export const saveStoryMap = function(gameContext) {
+const loadEntities = function(gameContext, entities) {
     const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-    const file = new PrettyJSON(4);
+    const { entityManager } = world;
 
-    const entities = saveEntities(gameContext);
-    const teams = saveTeams(gameContext);
-    const buildings = saveBuildings(worldMap);
-    const mines = saveMines(worldMap);
-    const edits = saveEdits(worldMap);
-
-    file.open();
-    file.writeLine("edits", edits, PrettyJSON.LIST_TYPE.ARRAY);
-    file.writeList("entities", entities, PrettyJSON.LIST_TYPE.ARRAY);
-    file.writeList("teams", teams, PrettyJSON.LIST_TYPE.ARRAY);
-    file.writeList("mines", mines, PrettyJSON.LIST_TYPE.ARRAY);
-    file.writeList("buildings", buildings, PrettyJSON.LIST_TYPE.ARRAY);
-    file.close();
-    file.download("map");
-}
-
-export const loadStoryMap = function(gameContext, data) {
-    const { world } = gameContext;
-    const { mapManager, entityManager } = world;
-    const worldMap = mapManager.getActiveMap();
-
-    worldMap.loadEdits(data.edits);
-
-    for(const blob of data.entities) {
+    for(const blob of entities) {
         const { type, tileX, tileY, teamID } = blob;
         const entityID = entityManager.getNextID();
         const entity = createClientEntityObject(gameContext, entityID, teamID, type, tileX, tileY);
@@ -114,4 +89,58 @@ export const loadStoryMap = function(gameContext, data) {
             entity.updateSprite(gameContext);
         }
     }
+}
+
+const loadBuildings = function(gameContext, buildings) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+
+    for(const blob of buildings) {
+        const { type, tileX, tileY, teamID } = blob;
+        const building = createClientBuildingObject(gameContext, teamID, type, tileX, tileY);
+
+        if(building) {
+            building.load(blob);
+            worldMap.addBuilding(building);
+        }
+    }
+}
+
+const loadMines = function(gameContext, mines) {
+    
+}
+
+export const saveStoryMap = function(gameContext) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const file = new PrettyJSON(4);
+
+    const entities = saveEntities(gameContext);
+    const teams = saveTeams(gameContext);
+    const buildings = saveBuildings(worldMap);
+    const mines = saveMines(worldMap);
+    const edits = saveEdits(worldMap);
+
+    file.open();
+    file.writeLine("mapID", worldMap.sourceID);
+    file.writeLine("edits", edits, PrettyJSON.LIST_TYPE.ARRAY);
+    file.writeList("entities", entities, PrettyJSON.LIST_TYPE.ARRAY);
+    file.writeList("teams", teams, PrettyJSON.LIST_TYPE.ARRAY);
+    file.writeList("mines", mines, PrettyJSON.LIST_TYPE.ARRAY);
+    file.writeList("buildings", buildings, PrettyJSON.LIST_TYPE.ARRAY);
+    file.close();
+    file.download("map");
+}
+
+export const loadStoryMap = function(gameContext, data) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+
+    worldMap.loadEdits(data.edits);
+
+    loadBuildings(gameContext, data.buildings)
+    loadEntities(gameContext, data.entities);
 }

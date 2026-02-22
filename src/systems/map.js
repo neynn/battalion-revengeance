@@ -141,7 +141,29 @@ const ObjectiveFactory = {
 };
 
 const TeamFactory = {
-    createTeams: function(gameContext, teams, settings, allObjectives, onActorCreate) {
+    applySettings: function(gameContext, teams, settings) {
+        const { teamManager } = gameContext;
+    
+        for(let i = 0; i < teams.length; i++) {
+            const teamConfig = teams[i];
+            const team = teamManager.getTeam(i);
+
+            //Overrides use the teams name (tID) as a reference, not the runtime ID.
+            const tID = teamConfig.id ?? null;
+            const override = settings.getOverride(tID);
+            const oName = override.name ?? null;
+            const oColor = override.color ?? null;
+
+            if(oColor !== null) {
+                team.createCustomSchema(oColor);
+            }
+
+            if(oName !== null) {
+                team.setCustomName(oName);
+            }
+        }
+    },
+    createTeams: function(gameContext, teams, allObjectives, onActorCreate) {
         const { typeRegistry, teamManager } = gameContext;
 
         for(let i = 0; i < teams.length; i++) {
@@ -153,11 +175,6 @@ const TeamFactory = {
             const tObjectives = teamConfig.objectives ?? [];
             const tColor = teamConfig.color ?? null;
 
-            //Overrides use the teams name (tID) as a reference, not the runtime ID.
-            const override = settings.getOverride(tID);
-            const oName = override.name ?? null;
-            const oColor = override.color ?? null;
-
             const team = teamManager.createTeam(tID);
 
             if(tFaction !== null) {
@@ -166,9 +183,7 @@ const TeamFactory = {
                 team.loadAsFaction(gameContext, tFactionID);
             }
 
-            if(oColor !== null) {
-                team.createCustomSchema(oColor);
-            } else if(tColor !== null) {
+            if(tColor !== null) {
                 const tColorID = SCHEMA_TYPE[tColor] ?? SCHEMA_TYPE.RED;
                 const schemaType = typeRegistry.getSchemaType(tColorID);
 
@@ -185,10 +200,6 @@ const TeamFactory = {
 
             if(!team.currency) {
                 team.currency = typeRegistry.getCurrencyType(CURRENCY_TYPE.NONE);
-            }
-
-            if(oName !== null) {
-                team.setCustomName(oName);
             }
 
             //The map may have a preset cash for each team.
@@ -238,8 +249,8 @@ export const ClientMapLoader = {
 
         if(file !== null) {
             const { width, height, data } = file;
-            const mapID = mapManager.getNextID();
-            const worldMap = new BattalionMap(mapID, width, height);
+            const nextID = mapManager.getNextID();
+            const worldMap = new BattalionMap(nextID, width, height, mapID);
 
             worldMap.decodeLayers(data);
 
@@ -248,7 +259,7 @@ export const ClientMapLoader = {
             }
 
             mapManager.addMap(worldMap);
-            mapManager.enableMap(mapID);
+            mapManager.enableMap(nextID);
 
             const cContext = createPlayCamera(gameContext);
             const camera = cContext.getCamera();
@@ -269,8 +280,8 @@ export const ClientMapLoader = {
 
         if(file !== null) {
             const { width, height, data, client } = file;
-            const mapID = mapManager.getNextID();
-            const worldMap = new BattalionMap(mapID, width, height);
+            const nextID = mapManager.getNextID();
+            const worldMap = new BattalionMap(nextID, width, height, mapID);
 
             worldMap.decodeLayers(data);
 
@@ -283,7 +294,7 @@ export const ClientMapLoader = {
             }
 
             mapManager.addMap(worldMap);
-            mapManager.enableMap(mapID);
+            mapManager.enableMap(nextID);
 
             const cContext = createPlayCamera(gameContext);
             const camera = cContext.getCamera();
@@ -299,12 +310,12 @@ export const ClientMapLoader = {
 
         if(file !== null) {
             const { width, height, data } = file;
-            const mapID = mapManager.getNextID();
-            const worldMap = new BattalionMap(mapID, width, height);
+            const nextID = mapManager.getNextID();
+            const worldMap = new BattalionMap(nextID, width, height, sourceID);
 
             worldMap.decodeLayers(data);
             mapManager.addMap(worldMap);
-            mapManager.enableMap(mapID);
+            mapManager.enableMap(nextID);
             
             return worldMap;
         }
@@ -314,11 +325,11 @@ export const ClientMapLoader = {
     createEmptyMap: function(gameContext, width, height) {     
         const { world } = gameContext;
         const { mapManager } = world;
-        const mapID = mapManager.getNextID();
-        const worldMap = new BattalionMap(mapID, width, height);
+        const nextID = mapManager.getNextID();
+        const worldMap = new BattalionMap(nextID, width, height, null);
 
         mapManager.addMap(worldMap);
-        mapManager.enableMap(mapID);
+        mapManager.enableMap(nextID);
 
         return worldMap;
     },
@@ -339,7 +350,7 @@ export const ClientMapLoader = {
             defeat = []
         } = mapData;
 
-        TeamFactory.createTeams(gameContext, teams, settings, objectives, (team, commanderType) => {
+        TeamFactory.createTeams(gameContext, teams, objectives, (team, commanderType) => {
             const { id, allies } = team;
             const clientTeamID = teamManager.getTeamID(clientTeam);
 
@@ -359,6 +370,8 @@ export const ClientMapLoader = {
                 ActorFactory.createActor(gameContext, commanderType, id);
             }
         });
+
+        TeamFactory.applySettings(gameContext, teams, settings);
 
         switch(settings.mode) {
             case MapSettings.MODE.STORY: {
@@ -417,12 +430,12 @@ export const ServerMapLoader = {
 
         if(file !== null) {
             const { width, height, data } = file;
-            const mapID = mapManager.getNextID();
-            const worldMap = new BattalionMap(mapID, width, height);
+            const nextID = mapManager.getNextID();
+            const worldMap = new BattalionMap(nextID, width, height, mapID);
 
             worldMap.decodeLayers(data);
             mapManager.addMap(worldMap);
-            mapManager.enableMap(mapID);
+            mapManager.enableMap(nextID);
 
             ServerMapLoader.loadMap(gameContext, worldMap, file, settings);
         } 
@@ -449,12 +462,13 @@ export const ServerMapLoader = {
             buildings = []
         } = mapData;
 
-        TeamFactory.createTeams(gameContext, teams, settings, objectives, (team, commanderType) => {
+        TeamFactory.createTeams(gameContext, teams, objectives, (team, commanderType) => {
             const { id } = team;
 
             ActorFactory.createActor(gameContext, commanderType, id);
         });
 
+        TeamFactory.applySettings(gameContext, teams, settings);
         ServerMapLoader.spawnEntities(gameContext, entities, settings);
 
         for(let i = 0; i < buildings.length; i++) {

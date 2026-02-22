@@ -9,7 +9,6 @@ import { SchemaType } from "../type/parsed/schemaType.js";
 export const Team = function(id) {
     this.id = id;
     this.allies = [];
-    this.buildings = [];
     this.entities = [];
     this.schema = null;
     this.currency = null;
@@ -46,16 +45,37 @@ Team.STATUS = {
 };
 
 Team.prototype.save = function() {
+    const objectives = [];
+
+    for(const objective of this.objectives) {
+        objectives.push(objective.save());
+    }
+
     return {
         "status": this.status,
         "cash": this.cash,
         "stats": this.stats,
-        "objectives": [] //TODO save objective state
+        "objectives": objectives
     }
 }
 
 Team.prototype.load = function(data) {
-    
+    const objectives = data.objectives;
+
+    this.status = data.status;
+    this.cash = data.cash;
+    this.stats = data.stats;
+
+    if(objectives.length !== this.objectives.length) {
+        console.error("Critical! Saved objectives do not align with all objectives!");
+        return;
+    }
+
+    for(let i = 0; i < this.objectives.length; i++) {
+        const objectiveData = objectives[i];
+
+        this.objectives[i].load(objectiveData);
+    }
 }
 
 Team.prototype.setCustomName = function(name) {
@@ -109,26 +129,6 @@ Team.prototype.getAdjustedCost = function(cost) {
 
 Team.prototype.hasEnoughCash = function(cost) {
     return this.cash >= cost;
-}
-
-Team.prototype.addBuilding = function(building) {
-    for(let i = 0; i < this.buildings.length; i++) {
-        if(this.buildings[i] === building) {
-            return;
-        }
-    }
-
-    this.buildings.push(building);
-}
-
-Team.prototype.removeBuilding = function(building) {
-    for(let i = 0; i < this.buildings.length; i++) {
-        if(this.buildings[i] === building) {
-            this.buildings[i] = this.buildings[this.buildings.length - 1];
-            this.buildings.pop();
-            break;
-        }
-    }
 }
 
 Team.prototype.loadAsFaction = function(gameContext, factionID) {
@@ -279,19 +279,11 @@ Team.prototype.endTurn = function(gameContext) {
     }
 }
 
-Team.prototype.generateBuildingCash = function(gameContext) {
-    let totalCash = 0;
+Team.prototype.addGeneratedCash = function(cash) {
+    this.cash += cash;
+    this.addStatistic(TEAM_STAT.RESOURCES_COLLECTED, cash);
 
-    for(const building of this.buildings) {
-        const cash = building.getGeneratedCash(gameContext);
-
-        totalCash += cash;
-    }
-
-    this.cash += totalCash;
-    this.addStatistic(TEAM_STAT.RESOURCES_COLLECTED, totalCash);
-
-    return totalCash;
+    return this.cash;
 }
 
 Team.prototype.startTurn = function(gameContext) {

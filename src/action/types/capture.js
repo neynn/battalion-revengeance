@@ -29,12 +29,9 @@ CaptureAction.prototype.execute = function(gameContext, data) {
 
     if(previousTeam) {
         previousTeam.addStatistic(TEAM_STAT.STRUCTURES_LOST, 1);
-        previousTeam.removeBuilding(building);
     }
 
     nextTeam.addStatistic(TEAM_STAT.STRUCTURES_CAPTURED, 1);
-    nextTeam.addBuilding(building);
-
     building.setTeam(entity.teamID);
     building.onTeamUpdate(gameContext, nextTeam);
 }
