@@ -1,6 +1,7 @@
 import { PrettyJSON } from "../../engine/resources/prettyJSON.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { MapSettings } from "../map/settings.js";
+import { TeamManager } from "../team/teamManager.js";
 import { ClientMapLoader, ClientMatchLoader } from "./map.js";
 import { createClientBuildingObject, createClientEntityObject, createMineObject } from "./spawn.js";
 
@@ -137,9 +138,43 @@ const loadTeams = function(gameContext, teamData) {
     }
 }
 
+const loadTurn = function(gameContext, turn) {
+    const { teamManager, world } = gameContext;
+    const { turnManager } = world;
+    const { team, rounds, turns } = turn;
+    const actor = teamManager.findActorByTeam(gameContext, team);
+
+    turnManager.globalRound = rounds;
+    teamManager.globalTurn = turns;
+
+    if(actor) {
+        turnManager.setCurrentActor(gameContext, actor.getID());
+    }
+}
+
+const getTurnData = function(gameContext) {
+    const { world } = gameContext;
+    const { turnManager } = world;
+    const { currentActor, globalTurn, globalRound } = turnManager;
+    const turnData = {
+        "team": TeamManager.INVALID_ID,
+        "rounds": globalRound,
+        "turns": globalTurn
+    };
+
+    if(currentActor) {
+        const team = currentActor.getTeam(gameContext);
+        const teamID = team.getID();
+
+        turnData.team = teamID;
+    }
+
+    return turnData;
+}
+
 export const saveStoryMap = function(gameContext) {
     const { world } = gameContext;
-    const { mapManager } = world;
+    const { mapManager, eventHandler } = world;
     const worldMap = mapManager.getActiveMap();
     const file = new PrettyJSON(4);
 
@@ -148,9 +183,12 @@ export const saveStoryMap = function(gameContext) {
     const buildings = saveBuildings(worldMap);
     const mines = saveMines(worldMap);
     const edits = saveEdits(worldMap);
+    const events = eventHandler.saveTriggeredEvents();
 
     file.open();
     file.writeLine("mapID", worldMap.sourceID);
+    file.writeLine("turn", getTurnData(gameContext));
+    file.writeLine("events", events);
     file.writeLine("edits", edits, PrettyJSON.LIST_TYPE.ARRAY);
     file.writeList("entities", entities, PrettyJSON.LIST_TYPE.ARRAY);
     file.writeList("teams", teams, PrettyJSON.LIST_TYPE.ARRAY);
@@ -161,6 +199,8 @@ export const saveStoryMap = function(gameContext) {
 }
 
 export const loadStoryMap = async function(gameContext, data) {
+    const { world } = gameContext;
+    const { eventHandler } = world;
     const settings = new MapSettings();
     const matchLoader = await ClientMapLoader.createStoryLoader(gameContext, data.mapID);
 
@@ -171,7 +211,11 @@ export const loadStoryMap = async function(gameContext, data) {
         loadMines(gameContext, data.mines);
         loadBuildings(gameContext, data.buildings);
         loadEntities(gameContext, data.entities);
+        eventHandler.loadTriggeredEvents(data.events);
         matchLoader.worldMap.loadEdits(data.edits);
         matchLoader.startGame(gameContext);
+
+        //Called after startGame, because startGame resets currentActor.
+        loadTurn(gameContext, data.turn);
     }
 }

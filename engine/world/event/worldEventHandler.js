@@ -92,6 +92,22 @@ WorldEventHandler.prototype.triggerEvent = function(gameContext, event) {
     }
 }
 
+WorldEventHandler.prototype.loadTriggeredEvents = function(events) {
+    for(const eventID of events) {
+        this.triggeredEvents.add(eventID);
+    }
+}
+
+WorldEventHandler.prototype.saveTriggeredEvents = function() {
+    const events = [];
+
+    for(const eventID of this.triggeredEvents) {
+        events.push(eventID);
+    }
+
+    return events;
+}
+
 WorldEventHandler.prototype.getEvent = function(eventID) {
     for(const event of this.worldEvents) {
         const { id } = event;
