@@ -1,5 +1,7 @@
 import { PrettyJSON } from "../../engine/resources/prettyJSON.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
+import { MapSettings } from "../map/settings.js";
+import { ClientMapLoader, ClientMatchLoader } from "./map.js";
 import { createClientBuildingObject, createClientEntityObject, createMineObject } from "./spawn.js";
 
 const saveEntities = function(gameContext) {
@@ -158,39 +160,18 @@ export const saveStoryMap = function(gameContext) {
     file.download("map");
 }
 
-//TODO: save events.
-//Map loading rework:
+export const loadStoryMap = async function(gameContext, data) {
+    const settings = new MapSettings();
+    const matchLoader = await ClientMapLoader.createStoryLoader(gameContext, data.mapID);
 
-/*
-    1. load preview
-    2. create teams
-    3. load music
-    4. load localization
-    5. load dialogue
-    6. load events
-
-    THEN by needs:
-        load entities
-        load buildings
-        load mines
-    OR from saved data:
-        load entities
-        load buildings
-        load mines
-    
-    7. update turn order
-    8. enqueue start turn
-*/
-
-export const loadStoryMap = function(gameContext, data) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-
-    worldMap.loadEdits(data.edits);
-
-    loadTeams(gameContext, data.teams);
-    loadMines(gameContext, data.mines);
-    loadBuildings(gameContext, data.buildings);
-    loadEntities(gameContext, data.entities);
+    if(matchLoader) {
+        matchLoader.setMode(ClientMatchLoader.MODE.CUSTOM);
+        matchLoader.loadMap(gameContext, settings);
+        loadTeams(gameContext, data.teams);
+        loadMines(gameContext, data.mines);
+        loadBuildings(gameContext, data.buildings);
+        loadEntities(gameContext, data.entities);
+        matchLoader.worldMap.loadEdits(data.edits);
+        matchLoader.startGame(gameContext);
+    }
 }

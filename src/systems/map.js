@@ -1,5 +1,5 @@
 import { BattalionMap } from "../map/battalionMap.js";
-import { createMineObject, spawnClientBuilding, spawnClientEntity, spawnServerBuilding, spawnServerEntity } from "./spawn.js";
+import { createClientEntityObject, createMineObject, spawnClientBuilding, spawnClientEntity, spawnServerBuilding, spawnServerEntity } from "./spawn.js";
 import { MapSettings } from "../map/settings.js";
 import { COMMANDER_TYPE, COMPONENT_TYPE, CURRENCY_TYPE, FACTION_TYPE, MINE_TYPE, OBJECTIVE_TYPE, SCHEMA_TYPE } from "../enums.js";
 import { DialogueComponent } from "../event/components/dialogue.js";
@@ -18,6 +18,7 @@ import { DefendObjective } from "../team/objective/types/defend.js";
 import { SurviveObjective } from "../team/objective/types/survive.js";
 import { TimeLimitObjective } from "../team/objective/types/timeLimit.js";
 import { ErrorObjective } from "../team/objective/types/error.js";
+import { TeamManager } from "../team/teamManager.js";
 
 const MP_SERVER_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.EXPLODE_TILE, COMPONENT_TYPE.SPAWN_ENTITY]);
 const MP_CLIENT_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.DIALOGUE, COMPONENT_TYPE.PLAY_EFFECT]);
@@ -89,7 +90,7 @@ const EventFactory = {
 };
 
 const ActorFactory = {
-    createActor: function(gameContext, commanderType, teamID) {
+    createActor: function(gameContext, teamID) {
         const { world } = gameContext;
         const { turnManager } = world;
         const actorID = turnManager.getNextID();
@@ -97,10 +98,9 @@ const ActorFactory = {
 
         turnManager.addActor(actor);
         actor.setTeam(teamID);
-        actor.loadCommander(gameContext, commanderType);
         actor.setName("NPC");
     },
-    createPlayer: function(gameContext, commanderType, teamID, clientCamera) {
+    createPlayer: function(gameContext, teamID, clientCamera) {
         const { world } = gameContext;
         const { turnManager } = world;
         const actorID = turnManager.getNextID();
@@ -109,7 +109,6 @@ const ActorFactory = {
         turnManager.addActor(actor);
         actor.setTeam(teamID);
         actor.loadKeybinds(gameContext);
-        actor.loadCommander(gameContext, commanderType);
         actor.states.setNextState(gameContext, Player.STATE.IDLE);
         actor.setName("PLAYER");
     },
@@ -162,7 +161,7 @@ const TeamFactory = {
             }
         }
     },
-    createTeams: function(gameContext, teams, allObjectives, onActorCreate) {
+    createTeams: function(gameContext, teams, allObjectives) {
         const { typeRegistry, teamManager } = gameContext;
 
         for(let i = 0; i < teams.length; i++) {
@@ -233,72 +232,198 @@ const TeamFactory = {
                 }
             }
 
-            onActorCreate(team, tCommanderID);
+            team.loadCommander(gameContext, tCommanderID);
         }
     }
 };
 
+export const ClientMatchLoader = function(worldMap, mapFile) {
+    this.worldMap = worldMap;
+    this.music = mapFile.music ?? "rivers_of_steel";
+    this.playlist = mapFile.playlist ?? null;
+    this.teams = mapFile.teams ?? [];
+    this.entities = mapFile.entities ?? [];
+    this.objectives = mapFile.objectives ?? {};
+    this.events = mapFile.events ?? {};
+    this.buildings = mapFile.buildings ?? [];
+    this.localization = mapFile.localization ?? [];
+    this.prelogue = mapFile.prelogue ?? [];
+    this.postlogue = mapFile.postlogue ?? [];
+    this.defeat = mapFile.defeat ?? [];
+    this.clientTeam = mapFile.client ?? null;
+    this.mode = ClientMatchLoader.MODE.CUSTOM;
+}
+
+ClientMatchLoader.MODE = {
+    CUSTOM: 0,
+    PVE: 1,
+    PVP: 2
+};
+
+ClientMatchLoader.prototype.setMode = function(mode) {
+    this.mode = mode;
+}
+
+ClientMatchLoader.prototype.createActors = function(gameContext, camera) {
+    const { teamManager } = gameContext;
+    const clientTeamID = teamManager.getTeamID(this.clientTeam);
+
+    //If no client team is found, assume they're a spectator.
+    if(clientTeamID === TeamManager.INVALID_ID) {
+        ActorFactory.createSpectator(gameContext, camera);
+    }
+
+    teamManager.forEachTeam((team) => {
+        const { id, allies } = team;
+
+        if(id === clientTeamID) {
+            //Each client SHOULD have a team.
+            //If not, the client camera renders with no perspective.
+            ActorFactory.createPlayer(gameContext, id, camera);
+
+            camera.addPerspective(id);
+
+            //Adds all allies as perspective. This allows the client to see allied stealth units.
+            for(const allyID of allies) {
+                camera.addPerspective(allyID)
+            }
+        } else {
+            ActorFactory.createActor(gameContext, id);
+        }
+    });
+}
+
+ClientMatchLoader.prototype.createBuildings = function(gameContext) {
+    switch(this.mode) {
+        case ClientMatchLoader.MODE.CUSTOM: {
+            //Custom loader called in between.
+            break;
+        }
+        case ClientMatchLoader.MODE.PVE:
+        case ClientMatchLoader.MODE.PVP: {
+            for(const building of this.buildings) {
+                spawnClientBuilding(gameContext, this.worldMap, building); 
+            }
+
+            break;
+        }
+        default: {
+            console.error("Unknown mode!");
+            break;
+        }
+    }
+}
+
+ClientMatchLoader.prototype.createEntities = function(gameContext, settings) {
+    switch(this.mode) {
+        case ClientMatchLoader.MODE.CUSTOM: {
+            //Custom loader called in between.
+            break;
+        }
+        case ClientMatchLoader.MODE.PVE: {
+            for(const entity of this.entities) {
+                spawnClientEntity(gameContext, entity);
+            }
+
+            break;
+        }
+        case ClientMatchLoader.MODE.PVP: {
+            const externalIDs = settings.entities;
+
+            if(externalIDs.length === this.entities.length) {
+                for(let i = 0; i < this.entities.length; i++) {
+                    spawnClientEntity(gameContext, this.entities[i], externalIDs[i]);
+                }
+            }
+
+            break;
+        }
+        default: {
+            console.error("Unknown mode!");
+            break;
+        }
+    }
+}
+
+ClientMatchLoader.prototype.createMines = function(gameContext) {
+    //TODO: TEST
+    this.worldMap.addMine(createMineObject(gameContext, -1, MINE_TYPE.LAND, 6, 3));
+}
+
+ClientMatchLoader.prototype.loadMusic = function(gameContext) {
+    const { client } = gameContext;
+    const { musicPlayer } = client;
+
+    if(this.playlist) {
+        musicPlayer.playPlaylist(this.playlist);
+    } else {
+        musicPlayer.play(this.music);
+    }
+}
+
+ClientMatchLoader.prototype.getAllowedComponents = function() {
+    switch(this.mode) {
+        case ClientMatchLoader.MODE.CUSTOM: return CLIENT_EVENT_COMPONENTS;
+        case ClientMatchLoader.MODE.PVE: return CLIENT_EVENT_COMPONENTS;
+        case ClientMatchLoader.MODE.PVP: return MP_CLIENT_EVENT_COMPONENTS;
+        default: return CLIENT_EVENT_COMPONENTS;
+    }
+}
+
+ClientMatchLoader.prototype.loadMap = function(gameContext, settings) {
+    const { dialogueHandler } = gameContext;
+    const cContext = createPlayCamera(gameContext);
+    const camera = cContext.getCamera();
+    const allowedComponents = this.getAllowedComponents();
+
+    TeamFactory.createTeams(gameContext, this.teams, this.objectives);
+    TeamFactory.applySettings(gameContext, this.teams, settings);
+
+    this.createActors(gameContext, camera);
+    this.createEntities(gameContext, settings);
+    this.createBuildings(gameContext);
+    this.createMines(gameContext);
+    this.loadMusic(gameContext);
+    this.worldMap.loadLocalization(this.localization);
+
+    EventFactory.createWorldEvents(gameContext, this.events, allowedComponents);
+    dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);   
+}
+
+ClientMatchLoader.prototype.startGame = function(gameContext) {
+    const { teamManager } = gameContext;
+    
+    teamManager.updateStatus();
+    teamManager.setTurnOrder(gameContext);
+
+    //Enqueue start turn action.
+}
+
 export const ClientMapLoader = {
-    mpClientCreateStaticMap: async function(gameContext, settings, client, isSpectator) {
+    createStoryLoader: async function(gameContext, sourceID) {
         const { pathHandler, mapRegistry, world, language } = gameContext;
         const { mapManager } = world;
-        const { mapID } = settings;
-        const mapSource = mapRegistry.getMapPreview(mapID);
+        const mapSource = mapRegistry.getMapPreview(sourceID);
         const [file, translations] = await Promise.all([mapSource.promiseFile(pathHandler), mapSource.promiseTranslations(pathHandler)]);
 
-        if(file !== null) {
-            const { width, height, data } = file;
-            const nextID = mapManager.getNextID();
-            const worldMap = new BattalionMap(nextID, width, height, mapID);
-
-            worldMap.decodeLayers(data);
-
-            if(translations !== null) {
-                language.registerMapTranslations(translations);
-            }
-
-            mapManager.addMap(worldMap);
-            mapManager.enableMap(nextID);
-
-            const cContext = createPlayCamera(gameContext);
-            const camera = cContext.getCamera();
-
-            ClientMapLoader.loadMap(gameContext, worldMap, file, client, settings, MP_CLIENT_EVENT_COMPONENTS, camera);
-            
-            if(isSpectator) {
-                ActorFactory.createSpectator(gameContext, camera);
-            }
+        if(file === null) {
+            return null;
         }
-    },
-    createStoryMap: async function(gameContext, settings) {
-        const { pathHandler, mapRegistry, world, language } = gameContext;
-        const { mapManager } = world;
-        const { mapID } = settings;
-        const mapSource = mapRegistry.getMapPreview(mapID);
-        const [file, translations] = await Promise.all([mapSource.promiseFile(pathHandler), mapSource.promiseTranslations(pathHandler)]);
 
-        if(file !== null) {
-            const { width, height, data, client } = file;
-            const nextID = mapManager.getNextID();
-            const worldMap = new BattalionMap(nextID, width, height, mapID);
+        const { width, height, data } = file;
+        const nextID = mapManager.getNextID();
+        const worldMap = new BattalionMap(nextID, width, height, sourceID);
 
-            worldMap.decodeLayers(data);
-            
-            //TODO: TEST
-            worldMap.addMine(createMineObject(gameContext, -1, MINE_TYPE.LAND, 6, 3));
+        worldMap.decodeLayers(data);
 
-            if(translations !== null) {
-                language.registerMapTranslations(translations);
-            }
-
-            mapManager.addMap(worldMap);
-            mapManager.enableMap(nextID);
-
-            const cContext = createPlayCamera(gameContext);
-            const camera = cContext.getCamera();
-
-            ClientMapLoader.loadMap(gameContext, worldMap, file, client, settings, CLIENT_EVENT_COMPONENTS, camera);
+        if(translations !== null) {
+            language.registerMapTranslations(translations);
         }
+
+        mapManager.addMap(worldMap);
+        mapManager.enableMap(nextID);
+
+        return new ClientMatchLoader(worldMap, file);
     },
     createEditorMap: async function(gameContext, sourceID) {
         const { pathHandler, mapRegistry, world } = gameContext;
@@ -330,106 +455,20 @@ export const ClientMapLoader = {
         mapManager.enableMap(nextID);
 
         return worldMap;
-    },
-    loadMap: function(gameContext, worldMap, mapData, clientTeam, settings, allowedComponents, camera) {
-        const { teamManager, dialogueHandler, client } = gameContext;
-        const { musicPlayer } = client;
-        const { 
-            music,
-            playlist,
-            teams = [],
-            entities = [],
-            objectives = {},
-            events = {},
-            buildings = [],
-            localization = [],
-            prelogue = [],
-            postlogue = [],
-            defeat = []
-        } = mapData;
-
-        TeamFactory.createTeams(gameContext, teams, objectives, (team, commanderType) => {
-            const { id, allies } = team;
-            const clientTeamID = teamManager.getTeamID(clientTeam);
-
-            //Unnecessary lookups, but it's okay. The clientTeam string has to be transformed into an ID AFTER all teams have been created.
-            if(id === clientTeamID) {
-                //Each client SHOULD have a team.
-                //If not, the client camera renders with no perspective.
-                ActorFactory.createPlayer(gameContext, commanderType, id, camera);
-
-                camera.addPerspective(id);
-
-                //Adds all allies as perspective. This allows the client to see allied stealth units.
-                for(const allyID of allies) {
-                    camera.addPerspective(allyID)
-                }
-            } else {
-                ActorFactory.createActor(gameContext, commanderType, id);
-            }
-        });
-
-        TeamFactory.applySettings(gameContext, teams, settings);
-
-        switch(settings.mode) {
-            case MapSettings.MODE.STORY: {
-                for(let i = 0; i < entities.length; i++) {
-                    spawnClientEntity(gameContext, entities[i]);
-                }  
-
-                break;
-            }
-            case MapSettings.MODE.PVP: {
-                const externalIDs = settings.entities;
-
-                //Only spawn entities if all have been set by the server.
-                //This ensures a linked id.
-                if(externalIDs.length === entities.length) {
-                    for(let i = 0; i < entities.length; i++) {
-                        spawnClientEntity(gameContext, entities[i], externalIDs[i]);
-                    }
-                }
-
-                break;
-            }
-            default: {
-                console.error("Unknown mode!");
-                break;
-            }
-        }
-
-        for(let i = 0; i < buildings.length; i++) {
-            spawnClientBuilding(gameContext, worldMap, buildings[i]);
-        }
-
-        if(playlist) {
-            musicPlayer.playPlaylist(playlist);
-        } else {
-            musicPlayer.play(music);
-        }
-
-        worldMap.loadLocalization(localization);
-        dialogueHandler.loadMapDialogue(prelogue, postlogue, defeat);   
-
-        EventFactory.createWorldEvents(gameContext, events, allowedComponents);
-     
-        teamManager.updateStatus();
-        teamManager.setTurnOrder(gameContext);
     }
 };
 
 export const ServerMapLoader = {
-    mpCreateMap: async function(gameContext, settings) {
+    mpCreateMap: async function(gameContext, sourceID, settings) {
         const { pathHandler, mapRegistry, world } = gameContext;
         const { mapManager } = world;
-        const { mapID } = settings;
-        const mapSource = mapRegistry.getMapPreview(mapID);
+        const mapSource = mapRegistry.getMapPreview(sourceID);
         const file = await mapSource.promiseFile(pathHandler);
 
         if(file !== null) {
             const { width, height, data } = file;
             const nextID = mapManager.getNextID();
-            const worldMap = new BattalionMap(nextID, width, height, mapID);
+            const worldMap = new BattalionMap(nextID, width, height, sourceID);
 
             worldMap.decodeLayers(data);
             mapManager.addMap(worldMap);
@@ -450,6 +489,15 @@ export const ServerMapLoader = {
             settings.addEntity(entityID);
         }
     },
+    createActors: function(gameContext) {
+        const { teamManager } = gameContext;
+
+        teamManager.forEachTeam((team) => {
+            const { id } = team;
+
+            ActorFactory.createActor(gameContext, id);
+        })
+    },
     loadMap: function(gameContext, worldMap, mapData, settings) {
         const { teamManager } = gameContext;
         const { 
@@ -460,13 +508,9 @@ export const ServerMapLoader = {
             buildings = []
         } = mapData;
 
-        TeamFactory.createTeams(gameContext, teams, objectives, (team, commanderType) => {
-            const { id } = team;
-
-            ActorFactory.createActor(gameContext, commanderType, id);
-        });
-
+        TeamFactory.createTeams(gameContext, teams, objectives);
         TeamFactory.applySettings(gameContext, teams, settings);
+        ServerMapLoader.createActors(gameContext);
         ServerMapLoader.spawnEntities(gameContext, entities, settings);
 
         for(let i = 0; i < buildings.length; i++) {

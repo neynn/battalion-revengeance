@@ -3,7 +3,7 @@ import { Socket } from "../../../engine/network/socket.js";
 import { State } from "../../../engine/state/state.js";
 import { GAME_EVENT } from "../../enums.js";
 import { MapSettings } from "../../map/settings.js";
-import { ClientMapLoader } from "../../systems/map.js";
+import { ClientMapLoader, ClientMatchLoader } from "../../systems/map.js";
 
 export const ArenaState = function() {}
 
@@ -30,13 +30,22 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
 
         switch(type) {
             case GAME_EVENT.MP_SERVER_LOAD_MAP: {
-                const { isSpectator, client, settings } = payload;
-                const mapSettings = new MapSettings();
+                const { client, settings, mapID } = payload;
 
-                mapSettings.fromJSON(settings);
-                ClientMapLoader.mpClientCreateStaticMap(gameContext, mapSettings, client, isSpectator)
-                .then(() => {
-                    socket.messageRoom(GAME_EVENT.MP_CLIENT_MAP_LOADED, {});
+                ClientMapLoader.createStoryLoader(gameContext, mapID)
+                .then((mapLoader) => {
+                    if(mapLoader) {
+                        const mapSettings = new MapSettings();
+
+                        mapSettings.fromJSON(settings);
+                        mapLoader.setMode(ClientMatchLoader.MODE.PVP);
+                        mapLoader.clientTeam = client;
+                        mapLoader.loadMap(gameContext, mapSettings);
+                        mapLoader.startGame(gameContext);
+                        socket.messageRoom(GAME_EVENT.MP_CLIENT_MAP_LOADED, {});
+                    } else {
+                        //TODO: Signal a failed load.
+                    }
                 });
 
                 break;

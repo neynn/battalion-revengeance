@@ -12,6 +12,7 @@ export const Team = function(id) {
     this.entities = [];
     this.schema = null;
     this.currency = null;
+    this.commander = null;
     this.name = "MISSING_NAME_TEAM";
     this.desc = "MISSING_DESC_TEAM";
     this.cash = 0;
@@ -129,6 +130,13 @@ Team.prototype.getAdjustedCost = function(cost) {
 
 Team.prototype.hasEnoughCash = function(cost) {
     return this.cash >= cost;
+}
+
+Team.prototype.loadCommander = function(gameContext, commanderID) {
+    const { typeRegistry } = gameContext;
+    const commanderType = typeRegistry.getCommanderType(commanderID);
+
+    this.commander = commanderType;
 }
 
 Team.prototype.loadAsFaction = function(gameContext, factionID) {

@@ -2,13 +2,14 @@ import { Room } from "../../engine/network/room/room.js";
 import { StateMachine } from "../../engine/state/stateMachine.js";
 import { World } from "../../engine/world/world.js";
 import { TeamManager } from "../team/teamManager.js";
-import { GAME_EVENT, SCHEMA_TYPE } from "../enums.js";
+import { GAME_EVENT } from "../enums.js";
 import { ServerMapLoader } from "../systems/map.js";
 import { createStartTurnIntent } from "../action/actionHelper.js";
 import { mpIsPlayerIntentValid } from "../action/actionValidator.js";
-import { MapSettings } from "../map/settings.js";
 import { ServerActionRouter } from "./actionRouter.js";
 import { ActionIntent } from "../../engine/action/actionIntent.js";
+import { MapMaster } from "../map/mapMaster.js";
+import { MapSettings } from "../map/settings.js";
 
 export const ServerGameContext = function(serverApplication, id) {
     Room.call(this, id);
@@ -29,7 +30,7 @@ export const ServerGameContext = function(serverApplication, id) {
     this.teamManager = new TeamManager();
     this.states = new StateMachine(this);
     this.actionRouter = new ServerActionRouter();
-    this.mapSettings = new MapSettings();
+    this.mapMaster = new MapMaster();
     this.state = ServerGameContext.STATE.NONE;
     this.readyClients = 0;
 
@@ -46,32 +47,32 @@ ServerGameContext.prototype = Object.create(Room.prototype);
 ServerGameContext.prototype.constructor = ServerGameContext;
 
 ServerGameContext.prototype.onClientJoin = function(clientID) {
-    const index = this.mapSettings.getFreeSlotIndex();
+    const index = this.mapMaster.getFreeSlotIndex();
 
-    this.mapSettings.addPlayer(index, clientID);
+    this.mapMaster.addPlayer(index, clientID);
 }
 
 ServerGameContext.prototype.onClientLeave = function(clientID) {
-    this.mapSettings.removePlayer(clientID);
+    this.mapMaster.removePlayer(clientID);
 }
 
 ServerGameContext.prototype.mpSelectMap = function(mapID) {
     const preview = this.mapRegistry.getMapPreview(mapID);
     const { maxPlayers, teams } = preview;
 
-    this.mapSettings.clear();
-    this.mapSettings.mapID = mapID;
-    this.mapSettings.maxPlayers = maxPlayers;
+    this.mapMaster.clear();
+    this.mapMaster.maxPlayers = maxPlayers;
+    this.mapMaster.mapID = mapID;
 
     for(const teamID of teams) {
-        this.mapSettings.createSlot(teamID);
+        this.mapMaster.createSlot(teamID);
     }
 
     for(let i = 0; i < this.members.length; i++) {
         const member = this.members[i];
         const clientID = member.getID();
 
-        this.mapSettings.addPlayer(i, clientID);
+        this.mapMaster.addPlayer(i, clientID);
     }
 }
 
@@ -93,33 +94,36 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
             //Done in MP_CLIENT_SELECT_MAP!!!
             this.mpSelectMap("volcano");
 
-            if(!this.mapSettings.canStart()) {
+            if(!this.mapMaster.canStart()) {
                 console.error("Map could not start!");
                 return;
             }
 
             this.state = ServerGameContext.STATE.STARTING;
-            this.mapSettings.selectColor(messengerID, {
+            this.mapMaster.selectColor(messengerID, {
                 "0x661A5E": [105, 125, 108],
                 "0xAA162C": [197, 171, 159],
                 "0xE9332E": [66, 65, 68],
                 "0xFF9085": [71, 75, 136]
             });
 
-            this.mapSettings.updateOverrides();
+            const sourceID = this.mapMaster.mapID;
+            const settings = new MapSettings();
 
-            ServerMapLoader.mpCreateMap(this, this.mapSettings)
+            settings.createOverridesFromMaster(this.mapMaster);
+
+            ServerMapLoader.mpCreateMap(this, sourceID, settings)
             .then(() => {
-                const settings = this.mapSettings.toJSON();
+                const json = settings.toJSON();
 
                 for(let i = 0; i < this.members.length; i++) {
                     const memberID = this.members[i].getID();
-                    const teamID = this.mapSettings.getTeamID(memberID);
+                    const teamID = this.mapMaster.getTeamID(memberID);
 
                     this.sendMessage(GAME_EVENT.MP_SERVER_LOAD_MAP, {
-                        "settings": settings,
-                        "client": teamID,
-                        "isSpectator": (teamID === null)
+                        "mapID": sourceID,
+                        "settings": json,
+                        "client": teamID
                     }, memberID);
                 }
             });

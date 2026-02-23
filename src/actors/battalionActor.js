@@ -7,7 +7,6 @@ export const BattalionActor = function(id) {
 
     this.name = "";
     this.teamID = TeamManager.INVALID_ID;
-    this.commander = null;
 }
 
 BattalionActor.prototype = Object.create(TurnActor.prototype);
@@ -41,11 +40,4 @@ BattalionActor.prototype.surrender = function(gameContext) {
 
 BattalionActor.prototype.setTeam = function(teamID) {
     this.teamID = teamID;
-}
-
-BattalionActor.prototype.loadCommander = function(gameContext, typeID) {
-    const { typeRegistry } = gameContext;
-    const commanderType = typeRegistry.getCommanderType(typeID);
-
-    this.commander = commanderType;
 }

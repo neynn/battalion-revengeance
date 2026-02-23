@@ -2,7 +2,7 @@ import { State } from "../../engine/state/state.js";
 import { createStartTurnIntent } from "../action/actionHelper.js";
 import { BattalionContext } from "../battalionContext.js";
 import { MapSettings } from "../map/settings.js";
-import { ClientMapLoader } from "../systems/map.js";
+import { ClientMapLoader, ClientMatchLoader } from "../systems/map.js";
 
 export const PlayState = function() {}
 
@@ -18,13 +18,14 @@ PlayState.prototype.onEnter = async function(gameContext, stateMachine, transiti
     eventHandler.toAuthority();
     actionRouter.toSelf();
 
-    settings.mapID = "presus";
-    settings.mode = MapSettings.MODE.STORY;
+    const matchLoader = await ClientMapLoader.createStoryLoader(gameContext, "presus");
 
-    ClientMapLoader.createStoryMap(gameContext, settings)
-    .then(() => {
+    if(matchLoader) {
+        matchLoader.setMode(ClientMatchLoader.MODE.PVE);
+        matchLoader.loadMap(gameContext, settings);
+        matchLoader.startGame(gameContext);
         actionRouter.forceEnqueue(gameContext, createStartTurnIntent());
-    });
+    }
 
     router.on("ESCAPE", () => stateMachine.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));
 }

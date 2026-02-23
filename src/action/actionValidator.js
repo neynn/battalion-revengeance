@@ -1,9 +1,9 @@
 import { ACTION_TYPE } from "../enums.js";
 
 export const isClientTurn = function(gameContext, messengerID) {
-    const { teamManager, mapSettings, world } = gameContext;
+    const { teamManager, mapMaster, world } = gameContext;
     const { turnManager } = world;
-    const { slots } = mapSettings;
+    const { slots } = mapMaster;
     const { currentActor } = turnManager;
 
     if(!currentActor) {
