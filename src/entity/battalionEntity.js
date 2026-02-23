@@ -6,7 +6,7 @@ import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { createNode, mGetLowestCostNode } from "../systems/pathfinding.js";
 import { getDirectionByDelta, getDirectionVector } from "../systems/direction.js";
-import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE } from "../enums.js";
+import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE } from "../enums.js";
 import { mapCategoryToMine, mapTransportToEntity } from "../enumHelpers.js";
 import { getLineEntities } from "../systems/targeting.js";
 import { mGetUncloakedEntities, mGetUncloakedMines } from "../systems/cloak.js";
@@ -371,9 +371,19 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
     const entity = entityManager.getEntity(entityID);
     
     if(entity) {
+        //Trains are always blocked if an entity is on rail, no matter the type.
+        //On the contrary, trains can move really fast.
+        if(this.config.movementType === MOVEMENT_TYPE.RAIL && tileType.id === TILE_TYPE.RAIL) {
+            //Always block on allied units and VISIBLE enemy units.
+            //Invisible enemy units get ignored.
+            if(this.isAllyWith(gameContext, entity) || !entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+                return EntityType.MAX_MOVE_COST;
+            }
+        }
+
         //Blocks on non-cloaked enemy units. Ignores cloaked enemy units and treats them as walkable.
         if(!this.isAllyWith(gameContext, entity) && !entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-            tileCost += EntityType.MAX_MOVE_COST;
+            return EntityType.MAX_MOVE_COST;
         }
 
         const mine = worldMap.getMine(tileX, tileY);
@@ -381,7 +391,7 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
         //We could always assume that an enemy mine is visible if an entity is on it, but safety first.
         //Ally on tile but !isHidden && mine is an impossible state.
         if(mine && !mine.isHidden() && this.triggersMine(gameContext, mine)) {
-            tileCost += EntityType.MAX_MOVE_COST;
+            return EntityType.MAX_MOVE_COST;
         }
     }
 

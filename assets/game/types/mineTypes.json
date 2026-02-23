@@ -3,6 +3,7 @@
         "name": "MINE_NAME_LAND",
         "desc": "MINE_DESC_LAND",
         "damage": {
+            "RAIL": 0,
             "*": 100
         }
     },
