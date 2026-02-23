@@ -4,7 +4,7 @@ import { BattalionContext } from "../battalionContext.js";
 import { LOADER_MODE } from "../enums.js";
 import { TeamOverride } from "../map/override.js";
 import { MapSettings } from "../map/settings.js";
-import { ClientMapLoader } from "../systems/map.js";
+import { createClientMapLoader } from "../systems/map.js";
 
 export const PlayState = function() {}
 
@@ -29,12 +29,11 @@ PlayState.prototype.onEnter = async function(gameContext, stateMachine, transiti
     };
 
     settings.overrides.push(over);
-    const matchLoader = await ClientMapLoader.createStoryLoader(gameContext, "presus");
+    const matchLoader = await createClientMapLoader(gameContext, "presus");
 
     if(matchLoader) {
         matchLoader.setMode(LOADER_MODE.SP_FIXED);
         matchLoader.loadMap(gameContext, settings);
-        matchLoader.startGame(gameContext);
         actionRouter.forceEnqueue(gameContext, createStartTurnIntent());
     }
 

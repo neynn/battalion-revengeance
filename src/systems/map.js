@@ -138,103 +138,6 @@ const ObjectiveFactory = {
     }
 };
 
-const TeamFactory = {
-    applyOverrides: function(gameContext, overrides) {
-        const { teamManager } = gameContext;
-
-        for(const override of overrides) {
-            const { team, color, name, allies } = override;
-            const teamID = teamManager.getTeamID(team);
-            const teamObject = teamManager.getTeam(teamID);
-
-            if(teamObject) {
-                if(color !== null) {
-                    teamObject.createCustomSchema(color);
-                }
-
-                if(name !== null) {
-                    teamObject.setCustomName(name);
-                }
-
-                //Only do ally removal if allies are specified
-                //Otherwise no ally config would work.
-                if(allies.length !== 0) {
-                    teamManager.clearAllies(teamID);
-                    teamManager.loadAllies(teamID, allies);
-                }
-            }
-        }
-    },
-    createTeams: function(gameContext, teams, allObjectives) {
-        const { typeRegistry, teamManager } = gameContext;
-
-        for(let i = 0; i < teams.length; i++) {
-            const { 
-                id = null,
-                cash = 0,
-                faction = null,
-                objectives = [],
-                color = null,
-                commander = null
-            } = teams[i];
-
-            const team = teamManager.createTeam(id);
-
-            if(commander !== null) {
-                const commanderID = COMMANDER_TYPE[commander] ?? COMMANDER_TYPE.NONE;
-
-                team.loadCommander(gameContext, commanderID);
-            }
-
-            if(faction !== null) {
-                const factionID = FACTION_TYPE[faction] ?? FACTION_TYPE.RED;
-
-                team.loadAsFaction(gameContext, factionID);
-            }
-
-            if(color !== null) {
-                const colorID = SCHEMA_TYPE[color] ?? SCHEMA_TYPE.RED;
-                const schemaType = typeRegistry.getSchemaType(colorID);
-
-                team.schema = schemaType;
-            }
-
-            //Assume that schema is always not null after this point.
-            if(!team.schema) {
-                const schemaType = typeRegistry.getSchemaType(SCHEMA_TYPE.RED);
-
-                team.schema = schemaType;
-            }
-
-            //Assume that currency is always not null after this point.
-            if(!team.currency) {
-                team.currency = typeRegistry.getCurrencyType(CURRENCY_TYPE.NONE);
-            }
-
-            //The map may have a preset cash for each team.
-            team.cash = cash;
-
-            for(const objectiveID of objectives) {
-                const config = allObjectives[objectiveID];
-
-                if(config) {
-                    const objective = ObjectiveFactory.createObjective(config);
-
-                    team.addObjective(objective);
-                }
-            }
-        }
-
-        for(let i = 0; i < teams.length; i++) {
-            const {
-                allies = []
-            } = teams[i];
-
-            teamManager.loadAllies(i, allies);
-        }
-    }
-};
-
 export const ClientMatchLoader = function(worldMap, mapFile) {
     this.worldMap = worldMap;
     this.music = mapFile.music ?? "rivers_of_steel";
@@ -271,6 +174,10 @@ ClientMatchLoader.prototype.setMode = function(mode) {
         }
         case LOADER_MODE.MP_CUSTOM: {
             this.allowedComponents = MP_CLIENT_EVENT_COMPONENTS;
+            break;
+        }
+        default: {
+            console.error("Unsupported mode!");
             break;
         }
     }
@@ -448,7 +355,7 @@ ClientMatchLoader.prototype.loadMusic = function(gameContext) {
 }
 
 ClientMatchLoader.prototype.loadMap = function(gameContext, settings) {
-    const { dialogueHandler } = gameContext;
+    const { dialogueHandler, teamManager } = gameContext;
     const { overrides, entities } = settings;
     const cContext = createPlayCamera(gameContext);
     const camera = cContext.getCamera();
@@ -458,143 +365,276 @@ ClientMatchLoader.prototype.loadMap = function(gameContext, settings) {
     this.createEntities(gameContext, entities);
     this.createBuildings(gameContext);
     this.createMines(gameContext);
+
     this.loadMusic(gameContext);
     this.worldMap.loadLocalization(this.localization);
 
     EventFactory.createWorldEvents(gameContext, this.events, this.allowedComponents);
-    dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);   
-}
-
-ClientMatchLoader.prototype.startGame = function(gameContext) {
-    const { teamManager } = gameContext;
-    
+    dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);
     teamManager.updateStatus();
     teamManager.setTurnOrder(gameContext);
-
-    //Enqueue start turn action.
 }
 
-export const ClientMapLoader = {
-    createStoryLoader: async function(gameContext, sourceID) {
-        const { pathHandler, mapRegistry, world, language } = gameContext;
-        const { mapManager } = world;
-        const mapSource = mapRegistry.getMapPreview(sourceID);
-        const [file, translations] = await Promise.all([mapSource.promiseFile(pathHandler), mapSource.promiseTranslations(pathHandler)]);
+export const ServerMatchLoader = function(worldMap, mapFile) {
+    this.worldMap = worldMap;
+    this.teams = mapFile.teams ?? [];
+    this.entities = mapFile.entities ?? [];
+    this.objectives = mapFile.objectives ?? {};
+    this.events = mapFile.events ?? {};
+    this.buildings = mapFile.buildings ?? [];
+    this.rules = LOADER_RULE.NONE;
+    this.entityIDList = [];
+    this.allowedComponents = MP_SERVER_EVENT_COMPONENTS;
+}
 
-        if(file === null) {
-            return null;
+ServerMatchLoader.prototype.setMode = function(mode) {
+    this.rules = getLoaderRules(mode);
+
+    switch(mode) {
+        case LOADER_MODE.MP_FIXED: {
+            break;
+        }
+        case LOADER_MODE.MP_FIXED: {
+            break;
+        }
+        default: {
+            this.rules = LOADER_RULE.NONE;
+            console.error("Unsupported mode!");
+            break;
+        }
+    }
+}
+
+ServerMatchLoader.prototype.createTeams = function(gameContext, overrides) {
+    const { typeRegistry, teamManager } = gameContext;
+
+    for(let i = 0; i < this.teams.length; i++) {
+        const { 
+            id = null,
+            cash = 0,
+            faction = null,
+            objectives = [],
+            color = null,
+            commander = null
+        } = this.teams[i];
+
+        const team = teamManager.createTeam(id);
+
+        if(commander !== null) {
+            const commanderID = COMMANDER_TYPE[commander] ?? COMMANDER_TYPE.NONE;
+
+            team.loadCommander(gameContext, commanderID);
         }
 
+        if(faction !== null) {
+            const factionID = FACTION_TYPE[faction] ?? FACTION_TYPE.RED;
+
+            team.loadAsFaction(gameContext, factionID);
+        }
+
+        if(color !== null) {
+            const colorID = SCHEMA_TYPE[color] ?? SCHEMA_TYPE.RED;
+            const schemaType = typeRegistry.getSchemaType(colorID);
+
+            team.schema = schemaType;
+        }
+
+        //Assume that schema is always not null after this point.
+        if(!team.schema) {
+            const schemaType = typeRegistry.getSchemaType(SCHEMA_TYPE.RED);
+
+            team.schema = schemaType;
+        }
+
+        //Assume that currency is always not null after this point.
+        if(!team.currency) {
+            team.currency = typeRegistry.getCurrencyType(CURRENCY_TYPE.NONE);
+        }
+
+        //The map may have a preset cash for each team.
+        team.cash = cash;
+
+        //Most game modes have objectives, except custom PvP.
+        if(this.rules & LOADER_RULE.LOAD_OBJECTIVES) {
+            for(const objectiveID of objectives) {
+                const config = this.objectives[objectiveID];
+
+                if(config) {
+                    const objective = ObjectiveFactory.createObjective(config);
+
+                    team.addObjective(objective);
+                }
+            }
+        }
+    }
+
+    //When allies are fixed, the map determines them.
+    if(this.rules & LOADER_RULE.FIXED_ALLIES) {
+        for(let i = 0; i < this.teams.length; i++) {
+            const {
+                allies = []
+            } = this.teams[i];
+
+            teamManager.loadAllies(i, allies);
+        }
+    }
+
+    for(const override of overrides) {
+        const { team, color, name, allies } = override;
+        const teamID = teamManager.getTeamID(team);
+        const teamObject = teamManager.getTeam(teamID);
+
+        if(teamObject) {
+            if(color !== null) {
+                //Colors can always be overridden!
+                teamObject.createCustomSchema(color);
+            }
+
+            if(name !== null) {
+                //Names can always be overridden!
+                teamObject.setCustomName(name);
+            }
+
+            //In dynamic PvP games, the allies are set by the overrides.
+            if(!(this.rules & LOADER_RULE.FIXED_ALLIES)) {
+                teamManager.loadAllies(teamID, allies);
+            }
+        }
+    }
+}
+
+ServerMatchLoader.prototype.createActors = function(gameContext) {
+    const { teamManager } = gameContext;
+
+    teamManager.forEachTeam((team) => {
+        const { id } = team;
+
+        ActorFactory.createActor(gameContext, id);
+    })
+}
+
+ServerMatchLoader.prototype.createBuildings = function(gameContext) {
+    if(this.rules & LOADER_RULE.SPAWN_BUILDINGS) {
+        for(const building of this.buildings) {
+            spawnServerBuilding(gameContext, this.worldMap, building); 
+        }
+    }
+}
+
+ServerMatchLoader.prototype.createEntities = function(gameContext) {
+    const { world } = gameContext;
+    const { entityManager } = world; 
+
+    //Override is irrelevant as the server is the authority for ids.
+    if(this.rules & LOADER_RULE.SPAWN_ENTITIES) {
+        for(let i = 0; i < this.entities.length; i++) {
+            const entityID = entityManager.getNextID();
+            
+            spawnServerEntity(gameContext, this.entities[i], entityID);
+
+            this.entityIDList.push(entityID);
+        }
+    }
+}
+
+ServerMatchLoader.prototype.createMines = function(gameContext) {
+    if(this.rules & LOADER_RULE.SPAWN_MINES) {
+        //TODO: TEST
+        this.worldMap.addMine(createMineObject(gameContext, -1, MINE_TYPE.LAND, 6, 3));
+    }
+}
+
+ServerMatchLoader.prototype.loadMap = function(gameContext, overrides) {
+    const { teamManager } = gameContext;
+
+    this.createTeams(gameContext, overrides);
+    this.createActors(gameContext);
+    this.createEntities(gameContext);
+    this.createBuildings(gameContext);
+    this.createMines(gameContext);
+
+    EventFactory.createWorldEvents(gameContext, this.events, this.allowedComponents);
+
+    teamManager.updateStatus();
+    teamManager.setTurnOrder(gameContext);
+}
+
+export const createEditorMap = async function(gameContext, sourceID) {
+    const { pathHandler, mapRegistry, world } = gameContext;
+    const { mapManager } = world;
+    const mapSource = mapRegistry.getMapPreview(sourceID);
+    const file = await mapSource.promiseFile(pathHandler);
+
+    if(file !== null) {
         const { width, height, data } = file;
         const nextID = mapManager.getNextID();
         const worldMap = new BattalionMap(nextID, width, height, sourceID);
 
         worldMap.decodeLayers(data);
-
-        if(translations !== null) {
-            language.registerMapTranslations(translations);
-        }
-
         mapManager.addMap(worldMap);
         mapManager.enableMap(nextID);
-
-        return new ClientMatchLoader(worldMap, file);
-    },
-    createEditorMap: async function(gameContext, sourceID) {
-        const { pathHandler, mapRegistry, world } = gameContext;
-        const { mapManager } = world;
-        const mapSource = mapRegistry.getMapPreview(sourceID);
-        const file = await mapSource.promiseFile(pathHandler);
-
-        if(file !== null) {
-            const { width, height, data } = file;
-            const nextID = mapManager.getNextID();
-            const worldMap = new BattalionMap(nextID, width, height, sourceID);
-
-            worldMap.decodeLayers(data);
-            mapManager.addMap(worldMap);
-            mapManager.enableMap(nextID);
-            
-            return worldMap;
-        }
-
-        return null;
-    },
-    createEmptyMap: function(gameContext, width, height) {     
-        const { world } = gameContext;
-        const { mapManager } = world;
-        const nextID = mapManager.getNextID();
-        const worldMap = new BattalionMap(nextID, width, height, null);
-
-        mapManager.addMap(worldMap);
-        mapManager.enableMap(nextID);
-
+        
         return worldMap;
     }
-};
 
-export const ServerMapLoader = {
-    mpCreateMap: async function(gameContext, sourceID, settings) {
-        const { pathHandler, mapRegistry, world } = gameContext;
-        const { mapManager } = world;
-        const mapSource = mapRegistry.getMapPreview(sourceID);
-        const file = await mapSource.promiseFile(pathHandler);
+    return null;
+}
 
-        if(file !== null) {
-            const { width, height, data } = file;
-            const nextID = mapManager.getNextID();
-            const worldMap = new BattalionMap(nextID, width, height, sourceID);
+export const createEmptyMap = function(gameContext, width, height) {     
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const nextID = mapManager.getNextID();
+    const worldMap = new BattalionMap(nextID, width, height, null);
 
-            worldMap.decodeLayers(data);
-            mapManager.addMap(worldMap);
-            mapManager.enableMap(nextID);
+    mapManager.addMap(worldMap);
+    mapManager.enableMap(nextID);
 
-            ServerMapLoader.loadMap(gameContext, worldMap, file, settings);
-        } 
-    },
-    spawnEntities: function(gameContext, entities, settings) {
-        const { world } = gameContext;
-        const { entityManager } = world; 
+    return worldMap;
+}
 
-        for(let i = 0; i < entities.length; i++) {
-            const entityID = entityManager.getNextID();
-            
-            spawnServerEntity(gameContext, entities[i], entityID);
+export const createClientMapLoader = async function(gameContext, sourceID) {
+    const { pathHandler, mapRegistry, world, language } = gameContext;
+    const { mapManager } = world;
+    const mapSource = mapRegistry.getMapPreview(sourceID);
+    const [file, translations] = await Promise.all([mapSource.promiseFile(pathHandler), mapSource.promiseTranslations(pathHandler)]);
 
-            settings.addEntity(entityID);
-        }
-    },
-    createActors: function(gameContext) {
-        const { teamManager } = gameContext;
-
-        teamManager.forEachTeam((team) => {
-            const { id } = team;
-
-            ActorFactory.createActor(gameContext, id);
-        })
-    },
-    loadMap: function(gameContext, worldMap, mapData, settings) {
-        const { teamManager } = gameContext;
-        const { 
-            teams = [],
-            entities = [],
-            objectives = {},
-            events = {},
-            buildings = []
-        } = mapData;
-
-        TeamFactory.createTeams(gameContext, teams, objectives);
-        TeamFactory.applyOverrides(gameContext, settings.overrides);
-        ServerMapLoader.createActors(gameContext);
-        ServerMapLoader.spawnEntities(gameContext, entities, settings);
-
-        for(let i = 0; i < buildings.length; i++) {
-            spawnServerBuilding(gameContext, worldMap, buildings[i]);
-        }
-        
-        EventFactory.createWorldEvents(gameContext, events, MP_SERVER_EVENT_COMPONENTS);
-
-        teamManager.updateStatus();
-        teamManager.setTurnOrder(gameContext);
+    if(file === null) {
+        return null;
     }
-};
+
+    const { width, height, data } = file;
+    const nextID = mapManager.getNextID();
+    const worldMap = new BattalionMap(nextID, width, height, sourceID);
+
+    worldMap.decodeLayers(data);
+
+    if(translations !== null) {
+        language.registerMapTranslations(translations);
+    }
+
+    mapManager.addMap(worldMap);
+    mapManager.enableMap(nextID);
+
+    return new ClientMatchLoader(worldMap, file);
+}
+
+export const createServerMapLoader = async function(gameContext, sourceID) {
+    const { pathHandler, mapRegistry, world } = gameContext;
+    const { mapManager } = world;
+    const mapSource = mapRegistry.getMapPreview(sourceID);
+    const file = await mapSource.promiseFile(pathHandler);
+
+    if(file === null) {
+        return null;
+    }
+
+    const { width, height, data } = file;
+    const nextID = mapManager.getNextID();
+    const worldMap = new BattalionMap(nextID, width, height, sourceID);
+
+    worldMap.decodeLayers(data);
+    mapManager.addMap(worldMap);
+    mapManager.enableMap(nextID);
+
+    return new ServerMatchLoader(worldMap, file);
+}

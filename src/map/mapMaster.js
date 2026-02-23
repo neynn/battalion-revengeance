@@ -113,3 +113,21 @@ MapMaster.prototype.selectColor = function(clientID, colorMap) {
         }
     }
 }
+
+MapMaster.prototype.createOverrides = function() {
+    const overrides = [];
+
+    for(const slot of this.slots) {
+        const { colorMap, name, teamID } = slot;
+        const override = {
+            "team": teamID,
+            "color": colorMap,
+            "name": name,
+            "allies": []
+        };
+
+        overrides.push(override);
+    }
+
+    return overrides;
+}

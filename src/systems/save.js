@@ -3,7 +3,7 @@ import { BattalionEntity } from "../entity/battalionEntity.js";
 import { LOADER_MODE } from "../enums.js";
 import { MapSettings } from "../map/settings.js";
 import { TeamManager } from "../team/teamManager.js";
-import { ClientMapLoader } from "./map.js";
+import { createClientMapLoader } from "./map.js";
 import { createClientBuildingObject, createClientEntityObject, createMineObject } from "./spawn.js";
 
 const saveEntities = function(gameContext) {
@@ -203,7 +203,7 @@ export const loadStoryMap = async function(gameContext, data) {
     const { world } = gameContext;
     const { eventHandler } = world;
     const settings = new MapSettings();
-    const matchLoader = await ClientMapLoader.createStoryLoader(gameContext, data.mapID);
+    const matchLoader = await createClientMapLoader(gameContext, data.mapID);
 
     if(matchLoader) {
         matchLoader.setMode(LOADER_MODE.SP_CUSTOM);
@@ -214,9 +214,6 @@ export const loadStoryMap = async function(gameContext, data) {
         loadEntities(gameContext, data.entities);
         eventHandler.loadTriggeredEvents(data.events);
         matchLoader.worldMap.loadEdits(data.edits);
-        matchLoader.startGame(gameContext);
-
-        //Called after startGame, because startGame resets currentActor.
         loadTurn(gameContext, data.turn);
     }
 }

@@ -1,6 +1,6 @@
 import { PrettyJSON } from "../../../engine/resources/prettyJSON.js";
 import { BattalionContext } from "../../battalionContext.js";
-import { ClientMapLoader } from "../../systems/map.js";
+import { createEditorMap, createEmptyMap } from "../../systems/map.js";
 import { BattalionMap } from "../../map/battalionMap.js";
 import { clampValue, loopValue } from "../../../engine/math/math.js";
 import { ButtonHandler } from "../../../engine/map/editor/buttonHandler.js";
@@ -336,7 +336,7 @@ EditorController.prototype.createMap = function(gameContext) {
     const createNew = confirm("This will create and load a brand new map! Proceed?");
 
     if(createNew) {
-        const worldMap = ClientMapLoader.createEmptyMap(gameContext, this.defaultWidth, this.defaultHeight);
+        const worldMap = createEmptyMap(gameContext, this.defaultWidth, this.defaultHeight);
 
         if(worldMap) {
             this.editor.setTargetMap(worldMap);
@@ -348,7 +348,7 @@ EditorController.prototype.createMap = function(gameContext) {
 EditorController.prototype.loadMap = async function(gameContext) {
     const { language } = gameContext;
     const mapID = prompt(language.getSystemTranslation("EDITOR_LOAD_MAP"));
-    const worldMap = await ClientMapLoader.createEditorMap(gameContext, mapID);
+    const worldMap = await createEditorMap(gameContext, mapID);
 
     if(worldMap) {
         this.editor.setTargetMap(worldMap);

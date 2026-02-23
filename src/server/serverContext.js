@@ -2,14 +2,13 @@ import { Room } from "../../engine/network/room/room.js";
 import { StateMachine } from "../../engine/state/stateMachine.js";
 import { World } from "../../engine/world/world.js";
 import { TeamManager } from "../team/teamManager.js";
-import { GAME_EVENT } from "../enums.js";
-import { ServerMapLoader } from "../systems/map.js";
+import { GAME_EVENT, LOADER_MODE } from "../enums.js";
+import { createServerMapLoader } from "../systems/map.js";
 import { createStartTurnIntent } from "../action/actionHelper.js";
 import { mpIsPlayerIntentValid } from "../action/actionValidator.js";
 import { ServerActionRouter } from "./actionRouter.js";
 import { ActionIntent } from "../../engine/action/actionIntent.js";
 import { MapMaster } from "../map/mapMaster.js";
-import { MapSettings } from "../map/settings.js";
 
 export const ServerGameContext = function(serverApplication, id) {
     Room.call(this, id);
@@ -108,23 +107,29 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
             });
 
             const sourceID = this.mapMaster.mapID;
-            const settings = new MapSettings();
+            const overrides = this.mapMaster.createOverrides();
 
-            settings.createOverridesFromMaster(this.mapMaster);
+            createServerMapLoader(this, sourceID)
+            .then((mapLoader) => {
+                if(mapLoader) {
+                    mapLoader.setMode(LOADER_MODE.MP_FIXED)
+                    mapLoader.loadMap(this, overrides);
 
-            ServerMapLoader.mpCreateMap(this, sourceID, settings)
-            .then(() => {
-                const json = settings.toJSON();
+                    const json = {
+                        "entities": mapLoader.entityIDList,
+                        "overrides": overrides
+                    };
 
-                for(let i = 0; i < this.members.length; i++) {
-                    const memberID = this.members[i].getID();
-                    const teamID = this.mapMaster.getTeamID(memberID);
+                    for(let i = 0; i < this.members.length; i++) {
+                        const memberID = this.members[i].getID();
+                        const teamID = this.mapMaster.getTeamID(memberID);
 
-                    this.sendMessage(GAME_EVENT.MP_SERVER_LOAD_MAP, {
-                        "mapID": sourceID,
-                        "settings": json,
-                        "client": teamID
-                    }, memberID);
+                        this.sendMessage(GAME_EVENT.MP_SERVER_LOAD_MAP, {
+                            "mapID": sourceID,
+                            "settings": json,
+                            "client": teamID
+                        }, memberID);
+                    }
                 }
             });
 

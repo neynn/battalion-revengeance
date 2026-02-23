@@ -21,19 +21,3 @@ MapSettings.prototype.toJSON = function() {
         "overrides": this.overrides
     }
 }
-
-MapSettings.prototype.createOverridesFromMaster = function(mapMaster) {
-    const { slots } = mapMaster;
-
-    for(const slot of slots) {
-        const { colorMap, name, teamID } = slot;
-        const override = {
-            "team": teamID,
-            "color": colorMap,
-            "name": name,
-            "allies": []
-        };
-
-        this.overrides.push(override);
-    }
-}

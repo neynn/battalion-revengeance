@@ -3,7 +3,7 @@ import { Socket } from "../../../engine/network/socket.js";
 import { State } from "../../../engine/state/state.js";
 import { GAME_EVENT, LOADER_MODE } from "../../enums.js";
 import { MapSettings } from "../../map/settings.js";
-import { ClientMapLoader } from "../../systems/map.js";
+import { createClientMapLoader } from "../../systems/map.js";
 
 export const ArenaState = function() {}
 
@@ -32,7 +32,7 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
             case GAME_EVENT.MP_SERVER_LOAD_MAP: {
                 const { client, settings, mapID } = payload;
 
-                ClientMapLoader.createStoryLoader(gameContext, mapID)
+                createClientMapLoader(gameContext, mapID)
                 .then((mapLoader) => {
                     if(mapLoader) {
                         const mapSettings = new MapSettings();
@@ -41,7 +41,6 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
                         mapLoader.setMode(LOADER_MODE.MP_CUSTOM);
                         mapLoader.clientTeam = client;
                         mapLoader.loadMap(gameContext, mapSettings);
-                        mapLoader.startGame(gameContext);
                         socket.messageRoom(GAME_EVENT.MP_CLIENT_MAP_LOADED, {});
                     } else {
                         //TODO: Signal a failed load.
