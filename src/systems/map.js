@@ -1,8 +1,7 @@
 import { BattalionMap } from "../map/battalionMap.js";
-import { spawnClientBuilding, spawnClientEntity, spawnServerBuilding, spawnServerEntity } from "./spawn.js";
+import { createMineObject, spawnClientBuilding, spawnClientEntity, spawnServerBuilding, spawnServerEntity } from "./spawn.js";
 import { MapSettings } from "../map/settings.js";
 import { COMMANDER_TYPE, COMPONENT_TYPE, CURRENCY_TYPE, FACTION_TYPE, MINE_TYPE, OBJECTIVE_TYPE, SCHEMA_TYPE } from "../enums.js";
-import { Mine } from "../entity/mine.js";
 import { DialogueComponent } from "../event/components/dialogue.js";
 import { ExplodeTileComponent } from "../event/components/explodeTile.js";
 import { PlayEffectComponent } from "../event/components/playEffect.js";
@@ -284,10 +283,9 @@ export const ClientMapLoader = {
             const worldMap = new BattalionMap(nextID, width, height, mapID);
 
             worldMap.decodeLayers(data);
-
-            const testmine = new Mine(gameContext.typeRegistry.getMineType(MINE_TYPE.LAND));
-            testmine.setTile(6, 3);
-            worldMap.addMine(testmine);
+            
+            //TODO: TEST
+            worldMap.addMine(createMineObject(gameContext, -1, MINE_TYPE.LAND, 6, 3));
 
             if(translations !== null) {
                 language.registerMapTranslations(translations);

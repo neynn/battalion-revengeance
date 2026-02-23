@@ -1,6 +1,6 @@
 import { PrettyJSON } from "../../engine/resources/prettyJSON.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { createClientBuildingObject, createClientEntityObject } from "./spawn.js";
+import { createClientBuildingObject, createClientEntityObject, createMineObject } from "./spawn.js";
 
 const saveEntities = function(gameContext) {
     const { world } = gameContext;
@@ -108,7 +108,31 @@ const loadBuildings = function(gameContext, buildings) {
 }
 
 const loadMines = function(gameContext, mines) {
-    
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+
+    for(const blob of mines) {
+        const { type, tileX, tileY, teamID } = blob;
+        const mine = createMineObject(gameContext, teamID, type, tileX, tileY);
+
+        mine.load(blob);
+        worldMap.addMine(mine);
+    }
+}
+
+const loadTeams = function(gameContext, teamData) {
+    const { teamManager } = gameContext;
+    const { teams } = teamManager;
+
+    if(teams.length !== teamData.length) {
+        console.error("Amount of teams does not match!");
+        return;
+    }
+
+    for(let i = 0; i < teams.length; i++) {
+        teams[i].load(teamData[i]);
+    }
 }
 
 export const saveStoryMap = function(gameContext) {
@@ -134,6 +158,30 @@ export const saveStoryMap = function(gameContext) {
     file.download("map");
 }
 
+//TODO: save events.
+//Map loading rework:
+
+/*
+    1. load preview
+    2. create teams
+    3. load music
+    4. load localization
+    5. load dialogue
+    6. load events
+
+    THEN by needs:
+        load entities
+        load buildings
+        load mines
+    OR from saved data:
+        load entities
+        load buildings
+        load mines
+    
+    7. update turn order
+    8. enqueue start turn
+*/
+
 export const loadStoryMap = function(gameContext, data) {
     const { world } = gameContext;
     const { mapManager } = world;
@@ -141,6 +189,8 @@ export const loadStoryMap = function(gameContext, data) {
 
     worldMap.loadEdits(data.edits);
 
-    loadBuildings(gameContext, data.buildings)
+    loadTeams(gameContext, data.teams);
+    loadMines(gameContext, data.mines);
+    loadBuildings(gameContext, data.buildings);
     loadEntities(gameContext, data.entities);
 }

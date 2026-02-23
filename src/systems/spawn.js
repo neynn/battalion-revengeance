@@ -6,6 +6,7 @@ import { getDirectionByName } from "./direction.js";
 import { ClientBattalionEntity } from "../entity/clientBattalionEntity.js";
 import { ClientBuilding } from "../entity/clientBuilding.js";
 import { Building } from "../entity/building.js";
+import { Mine } from "../entity/mine.js";
 
 const getEntityID = function(name) {
     const index = ENTITY_TYPE[name];
@@ -145,6 +146,17 @@ export const createClientBuildingObject = function(gameContext, teamID, typeID, 
     building.setTeam(teamID);
 
     return building;
+}
+
+export const createMineObject = function(gameContext, teamID, typeID, tileX, tileY) {
+    const { typeRegistry } = gameContext;
+    const mineType = typeRegistry.getMineType(typeID);
+    const mine = new Mine(mineType);
+
+    mine.setTile(tileX, tileY);
+    mine.setTeam(teamID);
+
+    return mine;
 }
 
 const parseEntityJSON = function(gameContext, json, entityID, createEntity) {
