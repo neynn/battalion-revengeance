@@ -213,6 +213,16 @@ Team.prototype.isAlly = function(teamID) {
     return false;
 }
 
+Team.prototype.removeAlly = function(teamID) {
+    for(let i = 0; i < this.allies.length; i++) {
+        if(this.allies[i] === teamID) {
+            this.allies[i] = this.allies[this.allies.length - 1];
+            this.allies.pop();
+            break;
+        }
+    }
+}
+
 Team.prototype.addAlly = function(teamID) {
     if(!this.isAlly(teamID)) {
         this.allies.push(teamID);

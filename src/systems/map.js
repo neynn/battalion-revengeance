@@ -1,7 +1,6 @@
 import { BattalionMap } from "../map/battalionMap.js";
-import { createClientEntityObject, createMineObject, spawnClientBuilding, spawnClientEntity, spawnServerBuilding, spawnServerEntity } from "./spawn.js";
-import { MapSettings } from "../map/settings.js";
-import { COMMANDER_TYPE, COMPONENT_TYPE, CURRENCY_TYPE, FACTION_TYPE, MINE_TYPE, OBJECTIVE_TYPE, SCHEMA_TYPE } from "../enums.js";
+import { createMineObject, spawnClientBuilding, spawnClientEntity, spawnServerBuilding, spawnServerEntity } from "./spawn.js";
+import { COMMANDER_TYPE, COMPONENT_TYPE, CURRENCY_TYPE, FACTION_TYPE, LOADER_MODE, LOADER_RULE, MINE_TYPE, OBJECTIVE_TYPE, SCHEMA_TYPE } from "../enums.js";
 import { DialogueComponent } from "../event/components/dialogue.js";
 import { ExplodeTileComponent } from "../event/components/explodeTile.js";
 import { PlayEffectComponent } from "../event/components/playEffect.js";
@@ -19,6 +18,7 @@ import { SurviveObjective } from "../team/objective/types/survive.js";
 import { TimeLimitObjective } from "../team/objective/types/timeLimit.js";
 import { ErrorObjective } from "../team/objective/types/error.js";
 import { TeamManager } from "../team/teamManager.js";
+import { getLoaderRules } from "../enumHelpers.js";
 
 const MP_SERVER_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.EXPLODE_TILE, COMPONENT_TYPE.SPAWN_ENTITY]);
 const MP_CLIENT_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.DIALOGUE, COMPONENT_TYPE.PLAY_EFFECT]);
@@ -139,25 +139,29 @@ const ObjectiveFactory = {
 };
 
 const TeamFactory = {
-    applySettings: function(gameContext, teams, settings) {
+    applyOverrides: function(gameContext, overrides) {
         const { teamManager } = gameContext;
-    
-        for(let i = 0; i < teams.length; i++) {
-            const teamConfig = teams[i];
-            const team = teamManager.getTeam(i);
 
-            //Overrides use the teams name (tID) as a reference, not the runtime ID.
-            const tID = teamConfig.id ?? null;
-            const override = settings.getOverride(tID);
-            const oName = override.name ?? null;
-            const oColor = override.color ?? null;
+        for(const override of overrides) {
+            const { team, color, name, allies } = override;
+            const teamID = teamManager.getTeamID(team);
+            const teamObject = teamManager.getTeam(teamID);
 
-            if(oColor !== null) {
-                team.createCustomSchema(oColor);
-            }
+            if(teamObject) {
+                if(color !== null) {
+                    teamObject.createCustomSchema(color);
+                }
 
-            if(oName !== null) {
-                team.setCustomName(oName);
+                if(name !== null) {
+                    teamObject.setCustomName(name);
+                }
+
+                //Only do ally removal if allies are specified
+                //Otherwise no ally config would work.
+                if(allies.length !== 0) {
+                    teamManager.clearAllies(teamID);
+                    teamManager.loadAllies(teamID, allies);
+                }
             }
         }
     },
@@ -165,30 +169,36 @@ const TeamFactory = {
         const { typeRegistry, teamManager } = gameContext;
 
         for(let i = 0; i < teams.length; i++) {
-            const teamConfig = teams[i];
+            const { 
+                id = null,
+                cash = 0,
+                faction = null,
+                objectives = [],
+                color = null,
+                commander = null
+            } = teams[i];
 
-            const tID = teamConfig.id ?? null;
-            const tCash = teamConfig.cash ?? 0;
-            const tFaction = teamConfig.faction ?? null;
-            const tObjectives = teamConfig.objectives ?? [];
-            const tColor = teamConfig.color ?? null;
+            const team = teamManager.createTeam(id);
 
-            const team = teamManager.createTeam(tID);
+            if(commander !== null) {
+                const commanderID = COMMANDER_TYPE[commander] ?? COMMANDER_TYPE.NONE;
 
-            if(tFaction !== null) {
-                const tFactionID = FACTION_TYPE[tFaction] ?? FACTION_TYPE.RED;
-
-                team.loadAsFaction(gameContext, tFactionID);
+                team.loadCommander(gameContext, commanderID);
             }
 
-            if(tColor !== null) {
-                const tColorID = SCHEMA_TYPE[tColor] ?? SCHEMA_TYPE.RED;
-                const schemaType = typeRegistry.getSchemaType(tColorID);
+            if(faction !== null) {
+                const factionID = FACTION_TYPE[faction] ?? FACTION_TYPE.RED;
+
+                team.loadAsFaction(gameContext, factionID);
+            }
+
+            if(color !== null) {
+                const colorID = SCHEMA_TYPE[color] ?? SCHEMA_TYPE.RED;
+                const schemaType = typeRegistry.getSchemaType(colorID);
 
                 team.schema = schemaType;
             }
 
-            //If NO faction, NO oColor and NO tColor was given, fall back to RED.
             //Assume that schema is always not null after this point.
             if(!team.schema) {
                 const schemaType = typeRegistry.getSchemaType(SCHEMA_TYPE.RED);
@@ -196,14 +206,15 @@ const TeamFactory = {
                 team.schema = schemaType;
             }
 
+            //Assume that currency is always not null after this point.
             if(!team.currency) {
                 team.currency = typeRegistry.getCurrencyType(CURRENCY_TYPE.NONE);
             }
 
             //The map may have a preset cash for each team.
-            team.cash = tCash;
+            team.cash = cash;
 
-            for(const objectiveID of tObjectives) {
+            for(const objectiveID of objectives) {
                 const config = allObjectives[objectiveID];
 
                 if(config) {
@@ -215,24 +226,11 @@ const TeamFactory = {
         }
 
         for(let i = 0; i < teams.length; i++) {
-            const teamConfig = teams[i];
-            const team = teamManager.getTeam(i);
+            const {
+                allies = []
+            } = teams[i];
 
-            const tAllies = teamConfig.allies ?? [];
-            const tCommander = teamConfig.commander ?? "NONE";
-            const tCommanderID = COMMANDER_TYPE[tCommander] ?? COMMANDER_TYPE.NONE;
-
-            for(const allyTeamName of tAllies) {
-                const allyTeamID = teamManager.getTeamID(allyTeamName);
-                const allyTeam = teamManager.getTeam(allyTeamID);
-
-                if(allyTeam) {
-                    team.addAlly(allyTeamID);
-                    allyTeam.addAlly(i); //i MUST be the correct id.
-                }
-            }
-
-            team.loadCommander(gameContext, tCommanderID);
+            teamManager.loadAllies(i, allies);
         }
     }
 };
@@ -251,26 +249,140 @@ export const ClientMatchLoader = function(worldMap, mapFile) {
     this.postlogue = mapFile.postlogue ?? [];
     this.defeat = mapFile.defeat ?? [];
     this.clientTeam = mapFile.client ?? null;
-    this.mode = ClientMatchLoader.MODE.CUSTOM;
+    this.rules = LOADER_RULE.NONE;
+    this.allowedComponents = CLIENT_EVENT_COMPONENTS;
 }
 
-ClientMatchLoader.MODE = {
-    CUSTOM: 0,
-    PVE: 1,
-    PVP: 2
-};
-
 ClientMatchLoader.prototype.setMode = function(mode) {
-    this.mode = mode;
+    this.rules = getLoaderRules(mode);
+
+    switch(mode) {
+        case LOADER_MODE.SP_FIXED: {
+            this.allowedComponents = CLIENT_EVENT_COMPONENTS;
+            break;
+        }
+        case LOADER_MODE.SP_CUSTOM: {
+            this.allowedComponents = CLIENT_EVENT_COMPONENTS;
+            break;
+        }
+        case LOADER_MODE.MP_FIXED: {
+            this.allowedComponents = MP_CLIENT_EVENT_COMPONENTS;
+            break;
+        }
+        case LOADER_MODE.MP_CUSTOM: {
+            this.allowedComponents = MP_CLIENT_EVENT_COMPONENTS;
+            break;
+        }
+    }
+}
+
+ClientMatchLoader.prototype.createTeams = function(gameContext, overrides) {
+    const { typeRegistry, teamManager } = gameContext;
+
+    for(let i = 0; i < this.teams.length; i++) {
+        const { 
+            id = null,
+            cash = 0,
+            faction = null,
+            objectives = [],
+            color = null,
+            commander = null
+        } = this.teams[i];
+
+        const team = teamManager.createTeam(id);
+
+        if(commander !== null) {
+            const commanderID = COMMANDER_TYPE[commander] ?? COMMANDER_TYPE.NONE;
+
+            team.loadCommander(gameContext, commanderID);
+        }
+
+        if(faction !== null) {
+            const factionID = FACTION_TYPE[faction] ?? FACTION_TYPE.RED;
+
+            team.loadAsFaction(gameContext, factionID);
+        }
+
+        if(color !== null) {
+            const colorID = SCHEMA_TYPE[color] ?? SCHEMA_TYPE.RED;
+            const schemaType = typeRegistry.getSchemaType(colorID);
+
+            team.schema = schemaType;
+        }
+
+        //Assume that schema is always not null after this point.
+        if(!team.schema) {
+            const schemaType = typeRegistry.getSchemaType(SCHEMA_TYPE.RED);
+
+            team.schema = schemaType;
+        }
+
+        //Assume that currency is always not null after this point.
+        if(!team.currency) {
+            team.currency = typeRegistry.getCurrencyType(CURRENCY_TYPE.NONE);
+        }
+
+        //The map may have a preset cash for each team.
+        team.cash = cash;
+
+        //Most game modes have objectives, except custom PvP.
+        if(this.rules & LOADER_RULE.LOAD_OBJECTIVES) {
+            for(const objectiveID of objectives) {
+                const config = this.objectives[objectiveID];
+
+                if(config) {
+                    const objective = ObjectiveFactory.createObjective(config);
+
+                    team.addObjective(objective);
+                }
+            }
+        }
+    }
+
+    //When allies are fixed, the map determines them.
+    if(this.rules & LOADER_RULE.FIXED_ALLIES) {
+        for(let i = 0; i < this.teams.length; i++) {
+            const {
+                allies = []
+            } = this.teams[i];
+
+            teamManager.loadAllies(i, allies);
+        }
+    }
+
+    for(const override of overrides) {
+        const { team, color, name, allies } = override;
+        const teamID = teamManager.getTeamID(team);
+        const teamObject = teamManager.getTeam(teamID);
+
+        if(teamObject) {
+            if(color !== null) {
+                //Colors can always be overridden!
+                teamObject.createCustomSchema(color);
+            }
+
+            if(name !== null) {
+                //Names can always be overridden!
+                teamObject.setCustomName(name);
+            }
+
+            //In dynamic PvP games, the allies are set by the overrides.
+            if(!(this.rules & LOADER_RULE.FIXED_ALLIES)) {
+                teamManager.loadAllies(teamID, allies);
+            }
+        }
+    }
 }
 
 ClientMatchLoader.prototype.createActors = function(gameContext, camera) {
     const { teamManager } = gameContext;
     const clientTeamID = teamManager.getTeamID(this.clientTeam);
 
-    //If no client team is found, assume they're a spectator.
-    if(clientTeamID === TeamManager.INVALID_ID) {
-        ActorFactory.createSpectator(gameContext, camera);
+    if(this.rules & LOADER_RULE.ALLOW_SPECTATOR) {
+        //If no client team is found, assume they're a spectator.
+        if(clientTeamID === TeamManager.INVALID_ID) {
+            ActorFactory.createSpectator(gameContext, camera);
+        }
     }
 
     teamManager.forEachTeam((team) => {
@@ -294,60 +406,34 @@ ClientMatchLoader.prototype.createActors = function(gameContext, camera) {
 }
 
 ClientMatchLoader.prototype.createBuildings = function(gameContext) {
-    switch(this.mode) {
-        case ClientMatchLoader.MODE.CUSTOM: {
-            //Custom loader called in between.
-            break;
-        }
-        case ClientMatchLoader.MODE.PVE:
-        case ClientMatchLoader.MODE.PVP: {
-            for(const building of this.buildings) {
-                spawnClientBuilding(gameContext, this.worldMap, building); 
-            }
-
-            break;
-        }
-        default: {
-            console.error("Unknown mode!");
-            break;
+    if(this.rules & LOADER_RULE.SPAWN_BUILDINGS) {
+        for(const building of this.buildings) {
+            spawnClientBuilding(gameContext, this.worldMap, building); 
         }
     }
 }
 
-ClientMatchLoader.prototype.createEntities = function(gameContext, settings) {
-    switch(this.mode) {
-        case ClientMatchLoader.MODE.CUSTOM: {
-            //Custom loader called in between.
-            break;
-        }
-        case ClientMatchLoader.MODE.PVE: {
+ClientMatchLoader.prototype.createEntities = function(gameContext, entityIDList) {
+    if(this.rules & LOADER_RULE.SPAWN_ENTITIES) {
+        if(this.rules & LOADER_RULE.ENTITY_ID_OVERRIDE) {
+            if(entityIDList.length === this.entities.length) {
+                for(let i = 0; i < this.entities.length; i++) {
+                    spawnClientEntity(gameContext, this.entities[i], entityIDList[i]);
+                }
+            }
+        } else {
             for(const entity of this.entities) {
                 spawnClientEntity(gameContext, entity);
             }
-
-            break;
-        }
-        case ClientMatchLoader.MODE.PVP: {
-            const externalIDs = settings.entities;
-
-            if(externalIDs.length === this.entities.length) {
-                for(let i = 0; i < this.entities.length; i++) {
-                    spawnClientEntity(gameContext, this.entities[i], externalIDs[i]);
-                }
-            }
-
-            break;
-        }
-        default: {
-            console.error("Unknown mode!");
-            break;
         }
     }
 }
 
 ClientMatchLoader.prototype.createMines = function(gameContext) {
-    //TODO: TEST
-    this.worldMap.addMine(createMineObject(gameContext, -1, MINE_TYPE.LAND, 6, 3));
+    if(this.rules & LOADER_RULE.SPAWN_MINES) {
+        //TODO: TEST
+        this.worldMap.addMine(createMineObject(gameContext, -1, MINE_TYPE.LAND, 6, 3));
+    }
 }
 
 ClientMatchLoader.prototype.loadMusic = function(gameContext) {
@@ -361,32 +447,21 @@ ClientMatchLoader.prototype.loadMusic = function(gameContext) {
     }
 }
 
-ClientMatchLoader.prototype.getAllowedComponents = function() {
-    switch(this.mode) {
-        case ClientMatchLoader.MODE.CUSTOM: return CLIENT_EVENT_COMPONENTS;
-        case ClientMatchLoader.MODE.PVE: return CLIENT_EVENT_COMPONENTS;
-        case ClientMatchLoader.MODE.PVP: return MP_CLIENT_EVENT_COMPONENTS;
-        default: return CLIENT_EVENT_COMPONENTS;
-    }
-}
-
 ClientMatchLoader.prototype.loadMap = function(gameContext, settings) {
     const { dialogueHandler } = gameContext;
+    const { overrides, entities } = settings;
     const cContext = createPlayCamera(gameContext);
     const camera = cContext.getCamera();
-    const allowedComponents = this.getAllowedComponents();
 
-    TeamFactory.createTeams(gameContext, this.teams, this.objectives);
-    TeamFactory.applySettings(gameContext, this.teams, settings);
-
+    this.createTeams(gameContext, overrides);
     this.createActors(gameContext, camera);
-    this.createEntities(gameContext, settings);
+    this.createEntities(gameContext, entities);
     this.createBuildings(gameContext);
     this.createMines(gameContext);
     this.loadMusic(gameContext);
     this.worldMap.loadLocalization(this.localization);
 
-    EventFactory.createWorldEvents(gameContext, this.events, allowedComponents);
+    EventFactory.createWorldEvents(gameContext, this.events, this.allowedComponents);
     dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);   
 }
 
@@ -509,7 +584,7 @@ export const ServerMapLoader = {
         } = mapData;
 
         TeamFactory.createTeams(gameContext, teams, objectives);
-        TeamFactory.applySettings(gameContext, teams, settings);
+        TeamFactory.applyOverrides(gameContext, settings.overrides);
         ServerMapLoader.createActors(gameContext);
         ServerMapLoader.spawnEntities(gameContext, entities, settings);
 

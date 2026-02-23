@@ -1,8 +1,9 @@
 import { PrettyJSON } from "../../engine/resources/prettyJSON.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
+import { LOADER_MODE } from "../enums.js";
 import { MapSettings } from "../map/settings.js";
 import { TeamManager } from "../team/teamManager.js";
-import { ClientMapLoader, ClientMatchLoader } from "./map.js";
+import { ClientMapLoader } from "./map.js";
 import { createClientBuildingObject, createClientEntityObject, createMineObject } from "./spawn.js";
 
 const saveEntities = function(gameContext) {
@@ -205,7 +206,7 @@ export const loadStoryMap = async function(gameContext, data) {
     const matchLoader = await ClientMapLoader.createStoryLoader(gameContext, data.mapID);
 
     if(matchLoader) {
-        matchLoader.setMode(ClientMatchLoader.MODE.CUSTOM);
+        matchLoader.setMode(LOADER_MODE.SP_CUSTOM);
         matchLoader.loadMap(gameContext, settings);
         loadTeams(gameContext, data.teams);
         loadMines(gameContext, data.mines);

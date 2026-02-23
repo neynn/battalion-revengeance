@@ -3,25 +3,8 @@ export const MapSettings = function() {
     this.overrides = [];
 }
 
-MapSettings.MISSING_OVERRIDE = {
-    "teamID": null,
-    "color": null,
-    "name": null,
-    "allies": []
-};
-
 MapSettings.prototype.addEntity = function(entityID) {
     this.entities.push(entityID);
-}
-
-MapSettings.prototype.getOverride = function(teamID) {
-    for(let i = 0; i < this.overrides.length; i++) {
-        if(this.overrides[i].teamID === teamID) {
-            return this.overrides[i];
-        }
-    }
-
-    return MapSettings.MISSING_OVERRIDE;
 }
 
 MapSettings.prototype.fromJSON = function(json) {
@@ -45,7 +28,7 @@ MapSettings.prototype.createOverridesFromMaster = function(mapMaster) {
     for(const slot of slots) {
         const { colorMap, name, teamID } = slot;
         const override = {
-            "teamID": teamID,
+            "team": teamID,
             "color": colorMap,
             "name": name,
             "allies": []

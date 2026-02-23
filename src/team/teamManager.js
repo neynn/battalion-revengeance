@@ -41,6 +41,39 @@ TeamManager.prototype.forEachTeam = function(onCall) {
     }
 }
 
+TeamManager.prototype.clearAllies = function(teamIndex) {
+    const team = this.getTeam(teamIndex);
+
+    if(!team) {
+        return;
+    }
+
+    const { allies } = team;
+
+    for(const allyID of allies) {
+        const allyTeam = this.getTeam(allyID);
+
+        allyTeam.removeAlly(teamIndex);
+    }
+
+    //Clear all allies after iterating.
+    allies.length = 0;
+}
+
+TeamManager.prototype.loadAllies = function(teamIndex, allies) {
+    const team = this.getTeam(teamIndex);
+
+    for(const allyName of allies) {
+        const allyID = this.getTeamID(allyName);
+        const allyTeam = this.getTeam(allyID);
+
+        if(allyTeam) {
+            team.addAlly(allyID);
+            allyTeam.addAlly(teamIndex);
+        }
+    }
+}
+
 TeamManager.prototype.createTeam = function(teamName) {
     const teamID = this.teams.length;
     const team = new Team(teamID);

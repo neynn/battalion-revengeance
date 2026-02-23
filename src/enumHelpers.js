@@ -1,4 +1,4 @@
-import { ENTITY_CATEGORY, ENTITY_TYPE, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, TEAM_STAT, TILE_ID, TILE_TYPE, TRANSPORT_TYPE } from "./enums.js";
+import { ENTITY_CATEGORY, ENTITY_TYPE, LOADER_MODE, JAMMER_FLAG, LOADER_RULE, MINE_TYPE, MOVEMENT_TYPE, TEAM_STAT, TILE_ID, TILE_TYPE, TRANSPORT_TYPE } from "./enums.js";
 
 export const mTryPutValue = function(config, mapping, list, DEBUG_NAME) {
     for(const typeID in config) {
@@ -93,4 +93,44 @@ export const resolveTileType = function(type) {
     }
 
     return typeID;
+}
+
+export const getLoaderRules = function(mode) {
+    let rules = LOADER_RULE.NONE;
+
+    switch(mode) {
+        case LOADER_MODE.SP_FIXED: {
+            rules |= LOADER_RULE.SPAWN_BUILDINGS;
+            rules |= LOADER_RULE.SPAWN_ENTITIES;
+            rules |= LOADER_RULE.SPAWN_MINES;
+            rules |= LOADER_RULE.FIXED_ALLIES;
+            rules |= LOADER_RULE.LOAD_OBJECTIVES;
+            break;
+        }
+        case LOADER_MODE.SP_CUSTOM: {
+            rules |= LOADER_RULE.FIXED_ALLIES;
+            rules |= LOADER_RULE.LOAD_OBJECTIVES;
+            break;
+        }
+        case LOADER_MODE.MP_FIXED: {
+            rules |= LOADER_RULE.SPAWN_BUILDINGS;
+            rules |= LOADER_RULE.SPAWN_ENTITIES;
+            rules |= LOADER_RULE.ENTITY_ID_OVERRIDE;
+            rules |= LOADER_RULE.SPAWN_MINES;
+            rules |= LOADER_RULE.ALLOW_SPECTATOR;
+            rules |= LOADER_RULE.FIXED_ALLIES;
+            rules |= LOADER_RULE.LOAD_OBJECTIVES;
+            break;
+        }
+        case LOADER_MODE.MP_CUSTOM: {
+            rules |= LOADER_RULE.SPAWN_BUILDINGS;
+            rules |= LOADER_RULE.SPAWN_ENTITIES;
+            rules |= LOADER_RULE.ENTITY_ID_OVERRIDE;
+            rules |= LOADER_RULE.SPAWN_MINES;
+            rules |= LOADER_RULE.ALLOW_SPECTATOR;
+            break;
+        }
+    }
+
+    return rules;
 }

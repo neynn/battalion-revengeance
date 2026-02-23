@@ -1,9 +1,9 @@
 import { getRandomElement } from "../../../engine/math/math.js";
 import { Socket } from "../../../engine/network/socket.js";
 import { State } from "../../../engine/state/state.js";
-import { GAME_EVENT } from "../../enums.js";
+import { GAME_EVENT, LOADER_MODE } from "../../enums.js";
 import { MapSettings } from "../../map/settings.js";
-import { ClientMapLoader, ClientMatchLoader } from "../../systems/map.js";
+import { ClientMapLoader } from "../../systems/map.js";
 
 export const ArenaState = function() {}
 
@@ -38,7 +38,7 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
                         const mapSettings = new MapSettings();
 
                         mapSettings.fromJSON(settings);
-                        mapLoader.setMode(ClientMatchLoader.MODE.PVP);
+                        mapLoader.setMode(LOADER_MODE.MP_CUSTOM);
                         mapLoader.clientTeam = client;
                         mapLoader.loadMap(gameContext, mapSettings);
                         mapLoader.startGame(gameContext);

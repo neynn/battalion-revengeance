@@ -3,6 +3,24 @@ export const PLAYER_PREFERENCE = {
     DISABLE_IDLE_ANIMATIONS: 0 //TODO: Implement!
 };
 
+export const LOADER_RULE = {
+    NONE: 0,
+    SPAWN_BUILDINGS: 1 << 0,
+    SPAWN_ENTITIES: 1 << 1,
+    ENTITY_ID_OVERRIDE: 1 << 2,
+    SPAWN_MINES: 1 << 3,
+    ALLOW_SPECTATOR: 1 << 4,
+    FIXED_ALLIES: 1 << 5,
+    LOAD_OBJECTIVES: 1 << 6
+};
+
+export const LOADER_MODE = {
+    SP_FIXED: 0,
+    SP_CUSTOM: 1,
+    MP_FIXED: 2,
+    MP_CUSTOM: 3
+};
+
 export const TRAIT_CONFIG = {
     CEMENTED_STEEL_ARMOR_REDUCTION: 20,
     SHRAPNEL_RANGE: 1,
