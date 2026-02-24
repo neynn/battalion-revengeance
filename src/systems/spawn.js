@@ -1,8 +1,7 @@
 import { EntityManager } from "../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { BUILDING_TYPE, ENTITY_TYPE, LAYER_TYPE, TEAM_STAT } from "../enums.js";
+import { BUILDING_TYPE, DIRECTION, ENTITY_TYPE, LAYER_TYPE, TEAM_STAT } from "../enums.js";
 import { createSchemaViewSprite, SchemaView } from "../sprite/schemaView.js";
-import { getDirectionByName } from "./direction.js";
 import { ClientBattalionEntity } from "../entity/clientBattalionEntity.js";
 import { ClientBuilding } from "../entity/clientBuilding.js";
 import { Building } from "../entity/building.js";
@@ -29,10 +28,29 @@ const getBuildingID = function(name) {
 }
 
 export const despawnClientEntity = function(gameContext, entity) {
+    const { teamManager, world } = gameContext;
+    const { entityManager } = world;
+    const { activeTeams } = teamManager;
+    const entityID = entity.getID();
+    const team = entity.getTeam(gameContext);
 
+    entity.removeFromMap(gameContext);
+    entity.isMarkedForDestroy = true;
+    entity.onDestroy();
+    
+    team.addStatistic(TEAM_STAT.UNITS_LOST, 1);
+
+    for(const teamID of activeTeams) {
+        const team = teamManager.getTeam(teamID);
+
+        team.onEntityDeath(entity);
+    }
+
+    entityManager.destroyEntityByID(entityID);
+    teamManager.updateStatus();
 }
 
-export const despawnEntity = function(gameContext, entity) {
+export const despawnServerEntity = function(gameContext, entity) {
     const { teamManager, world } = gameContext;
     const { entityManager } = world;
     const { activeTeams } = teamManager;
@@ -192,7 +210,7 @@ const parseEntityJSON = function(gameContext, json, entityID, createEntity) {
     entity.setCustomInfo(name, desc);
 
     if(direction !== null) {
-        entity.setDirection(getDirectionByName(direction));
+        entity.setDirection(DIRECTION[direction] ?? DIRECTION.EAST);
     }
 
     if(health > 0) {
@@ -227,6 +245,8 @@ export const spawnClientEntity = function(gameContext, config, externalID = Enti
     const entity = parseEntityJSON(gameContext, config, externalID, createClientEntityObject);
 
     if(entity) {
+        entity.playIdle(gameContext);
+        
         if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
             entity.setOpacity(0);
         }

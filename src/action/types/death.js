@@ -1,12 +1,12 @@
 import { Action } from "../../../engine/action/action.js";
 import { DEATH_FADE_RATE } from "../../constants.js";
-import { despawnEntity } from "../../systems/spawn.js";
 
-export const DeathAction = function() {
+export const DeathAction = function(despawn) {
     Action.call(this);
 
     this.opacity = 1;
     this.entities = [];
+    this._despawn = despawn;
 }
 
 DeathAction.prototype = Object.create(Action.prototype);
@@ -62,7 +62,7 @@ DeathAction.prototype.execute = function(gameContext, data) {
 
         entity.setHealth(0);
 
-        despawnEntity(gameContext, entity);
+        this._despawn(gameContext, entity);
     }
 }
 

@@ -3,10 +3,11 @@ import { WorldMap } from "../../../engine/map/worldMap.js";
 import { TILE_ID } from "../../enums.js";
 import { BattalionMap } from "../../map/battalionMap.js";
 import { playExplosion } from "../../systems/animation.js";
-import { despawnEntity } from "../../systems/spawn.js";
 
-export const ExplodeTileAction = function() {
+export const ExplodeTileAction = function(despawn) {
     Action.call(this);
+
+    this._despawn = despawn;
 }
 
 ExplodeTileAction.prototype = Object.create(Action.prototype);
@@ -40,7 +41,7 @@ ExplodeTileAction.prototype.execute = function(gameContext, data) {
     for(let i = 0; i < entities.length; i++) {
         const entity = entityManager.getEntity(entities[i]);
 
-        despawnEntity(gameContext, entity);
+        this._despawn(gameContext, entity);
     }
 
     worldMap.editTile(layerIndex, tileX, tileY, TILE_ID.NONE);

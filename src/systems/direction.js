@@ -37,7 +37,3 @@ export const getDirectionByDelta = function(deltaX, deltaY) {
 
     return DIRECTION.EAST;
 }
-
-export const getDirectionByName = function(name) {
-    return DIRECTION[name] ?? DIRECTION.EAST;
-}

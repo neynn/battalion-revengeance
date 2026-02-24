@@ -15,7 +15,7 @@ import { PurchaseEntityAction } from "../action/types/purchaseEntity.js";
 import { StartTurnAction } from "../action/types/startTurn.js";
 import { UncloakAction } from "../action/types/uncloak.js";
 import { ACTION_TYPE } from "../enums.js";
-import { createClientEntityObject, createServerEntityObject, spawnClientEntity, spawnServerEntity } from "./spawn.js";
+import { createClientEntityObject, createServerEntityObject, despawnClientEntity, despawnServerEntity, spawnClientEntity, spawnServerEntity } from "./spawn.js";
 
 export const registerClientActions = function(gameContext) {
     const { world } = gameContext;
@@ -27,13 +27,13 @@ export const registerClientActions = function(gameContext) {
     actionQueue.registerAction(ACTION_TYPE.EXTRACT, new ExtractAction());
     actionQueue.registerAction(ACTION_TYPE.ENTITY_SPAWN, new EntitySpawnAction(spawnClientEntity));
     actionQueue.registerAction(ACTION_TYPE.START_TURN, new StartTurnAction());
-    actionQueue.registerAction(ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction());
+    actionQueue.registerAction(ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction(despawnClientEntity));
     actionQueue.registerAction(ACTION_TYPE.CAPTURE, new CaptureAction());
     actionQueue.registerAction(ACTION_TYPE.MOVE, new MoveAction());
     actionQueue.registerAction(ACTION_TYPE.HEAL, new HealAction());
     actionQueue.registerAction(ACTION_TYPE.ATTACK, new AttackAction());
     actionQueue.registerAction(ACTION_TYPE.CLOAK, new CloakAction());
-    actionQueue.registerAction(ACTION_TYPE.DEATH, new DeathAction());
+    actionQueue.registerAction(ACTION_TYPE.DEATH, new DeathAction(despawnClientEntity));
     actionQueue.registerAction(ACTION_TYPE.UNCLOAK, new UncloakAction());
     actionQueue.registerAction(ACTION_TYPE.END_TURN, new EndTurnAction());
 }
@@ -48,13 +48,13 @@ export const registerServerActions = function(gameContext) {
     actionQueue.registerAction(ACTION_TYPE.EXTRACT, new ExtractAction());
     actionQueue.registerAction(ACTION_TYPE.ENTITY_SPAWN, new EntitySpawnAction(spawnServerEntity));
     actionQueue.registerAction(ACTION_TYPE.START_TURN, new StartTurnAction());
-    actionQueue.registerAction(ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction());
+    actionQueue.registerAction(ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction(despawnServerEntity));
     actionQueue.registerAction(ACTION_TYPE.CAPTURE, new CaptureAction());
     actionQueue.registerAction(ACTION_TYPE.MOVE, new MoveAction());
     actionQueue.registerAction(ACTION_TYPE.HEAL, new HealAction());
     actionQueue.registerAction(ACTION_TYPE.ATTACK, new AttackAction());
     actionQueue.registerAction(ACTION_TYPE.CLOAK, new CloakAction());
-    actionQueue.registerAction(ACTION_TYPE.DEATH, new DeathAction());
+    actionQueue.registerAction(ACTION_TYPE.DEATH, new DeathAction(despawnServerEntity));
     actionQueue.registerAction(ACTION_TYPE.UNCLOAK, new UncloakAction());
     actionQueue.registerAction(ACTION_TYPE.END_TURN, new EndTurnAction());
 }
