@@ -131,8 +131,16 @@ SpriteManager.prototype.createCopyTexture = function(spriteID, schemaID, schema)
     const spriteEntry = this.spriteMap.get(spriteID);
     const aliasID = this.getAlias(spriteID, schemaID);
 
-    if(!spriteEntry || this.spriteMap.has(aliasID)) {
-        return null;
+    if(!spriteEntry) {
+        return TextureRegistry.EMPTY_ATLAS_TEXTURE;
+    }
+
+    const copyEntry = this.spriteMap.get(aliasID);
+
+    if(copyEntry) {
+        const { index, textureID, copyAlias } = copyEntry;
+
+        return this.resources.getCopyTexture(copyAlias);
     }
 
     const { index, textureID } = spriteEntry;
