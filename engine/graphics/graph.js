@@ -76,6 +76,11 @@ Graph.prototype.traverse = function(onCall) {
 }
 
 Graph.prototype.update = function(timestamp, deltaTime) {
+    if(this.children.length === 0) {
+        this.onUpdate(timestamp, deltaTime);
+        return;
+    }
+
     const stack = [this];
 
     while(stack.length !== 0) {
@@ -91,6 +96,11 @@ Graph.prototype.update = function(timestamp, deltaTime) {
 }
 
 Graph.prototype.debug = function(display, viewportX, viewportY) {
+    if(this.children.length === 0) {
+        this.onDebug(display, this.positionX - viewportX, this.positionY - viewportY);
+        return;
+    }
+
     const stack = [this];
     const positions = [this.positionX - viewportX, this.positionY - viewportY];
 
@@ -115,6 +125,12 @@ Graph.prototype.debug = function(display, viewportX, viewportY) {
 
 Graph.prototype.draw = function(display, viewportX, viewportY) {
     if((this._flags & Graph.FLAG.IS_VISIBLE) === 0) {
+        return;
+    }
+
+    if(this.children.length === 0) {
+        display.setAlpha(this.opacity);
+        this.onDraw(display, this.positionX - viewportX, this.positionY - viewportY);
         return;
     }
 
