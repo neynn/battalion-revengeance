@@ -1,5 +1,5 @@
 import { mTryFillDefault, mTryPutValue } from "../../enumHelpers.js";
-import { MOVEMENT_TYPE } from "../../enums.js";
+import { MINE_CATEGORY, MOVEMENT_TYPE } from "../../enums.js";
 
 export const MineType = function(id) {
     this.id = id;
@@ -7,6 +7,7 @@ export const MineType = function(id) {
     this.desc = "MISSING_DESC_MINE";
     this.cost = 0;
     this.damage = [];
+    this.category = MINE_CATEGORY._INVALID;
 
     for(let i = 0; i < MOVEMENT_TYPE._COUNT; i++) {
         this.damage[i] = 0;
@@ -18,12 +19,14 @@ MineType.prototype.load = function(config, DEBUG_NAME) {
         name = "MISSING_NAME_MINE",
         desc = "MISSING_DESC_MINE",
         cost = 0,
-        damage = {}
+        damage = {},
+        category = "LAND"
     } = config;
 
     this.name = name;
     this.desc = desc;
     this.cost = cost;
+    this.category = MINE_CATEGORY[category] ?? MINE_CATEGORY._INVALID;
 
     mTryFillDefault(damage, this.damage);
     mTryPutValue(damage, MOVEMENT_TYPE, this.damage, DEBUG_NAME);

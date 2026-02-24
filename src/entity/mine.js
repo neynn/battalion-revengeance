@@ -1,4 +1,4 @@
-import { JAMMER_FLAG, MINE_TYPE, TILE_ID } from "../enums.js";
+import { JAMMER_FLAG, MINE_CATEGORY, MINE_TYPE, TILE_ID, TRAIT_TYPE } from "../enums.js";
 import { StaticObject } from "./staticObject.js";
 
 export const Mine = function(config) {
@@ -61,4 +61,12 @@ Mine.prototype.getTileSprite = function() {
 
 Mine.prototype.getDamage = function(movementType) {
     return this.config.getDamage(movementType);
+}
+
+Mine.prototype.getNullifierTrait = function() {
+    switch(this.config.category) {
+        case MINE_CATEGORY.LAND: return TRAIT_TYPE.ELUSIVE;
+        case MINE_CATEGORY.SEA: return TRAIT_TYPE.STEER;
+        default: return TRAIT_TYPE._INVALID;
+    }
 }

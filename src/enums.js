@@ -84,6 +84,12 @@ export const JAMMER_FLAG = {
 };
 
 export const MINE_TYPE = {
+    LAND: 0,
+    SEA: 1,
+    _COUNT: 2
+};
+
+export const MINE_CATEGORY = {
     _INVALID: -1,
     LAND: 0,
     SEA: 1,
@@ -130,6 +136,7 @@ export const TILE_TYPE = {
 };
 
 export const TRAIT_TYPE = {
+    _INVALID: -1,
     STREAMLINED: 0,
     COUNTER_BATTERY: 1,
     STUN: 2,

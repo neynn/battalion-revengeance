@@ -237,10 +237,10 @@ BattalionMap.prototype.loadLocalization = function(localization) {
     }
 }
 
-BattalionMap.prototype.isMinePlaceable = function(gameContext, tileX, tileY, mineType) {
+BattalionMap.prototype.isMinePlaceable = function(gameContext, tileX, tileY, mineCategory) {
     const tileType = this.getTileType(gameContext, tileX, tileY);
 
-    if(!tileType.allowsMine(mineType)) {
+    if(!tileType.allowsMine(mineCategory)) {
         return false;
     }
 

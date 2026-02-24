@@ -6,7 +6,7 @@ import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { createNode, mGetLowestCostNode } from "../systems/pathfinding.js";
 import { getDirectionByDelta, getDirectionVector } from "../systems/direction.js";
-import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE } from "../enums.js";
+import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE, MINE_CATEGORY } from "../enums.js";
 import { mapCategoryToMine, mapTransportToEntity } from "../enumHelpers.js";
 import { getLineEntities } from "../systems/targeting.js";
 import { mGetUncloakedEntities, mGetUncloakedMines } from "../systems/cloak.js";
@@ -1455,8 +1455,11 @@ BattalionEntity.prototype.triggersMine = function(gameContext, mine) {
         return false;
     }
 
+    const traitID = mine.getNullifierTrait();
+
     //Some traits can dodge mines.
-    if(this.hasTrait(TRAIT_TYPE.ELUSIVE) || this.hasTrait(TRAIT_TYPE.STEER)) {
+    //These are defined in mine.js
+    if(this.hasTrait(traitID)) {
         return false;
     }
 
@@ -1491,7 +1494,7 @@ BattalionEntity.prototype.canPlaceMine = function(gameContext) {
 
     //TODO: Cost needs inflation adjusment
     const mineID = mapCategoryToMine(this.config.category);
-    const { cost } = typeRegistry.getMineType(mineID);
+    const { cost, category } = typeRegistry.getMineType(mineID);
 
     if(this.cash < cost) {
         return false;
@@ -1500,7 +1503,7 @@ BattalionEntity.prototype.canPlaceMine = function(gameContext) {
     //Tiles should only be placeable on the units feet.
     //_INVALID mines will never be placeable.
     const worldMap = mapManager.getActiveMap();
-    const isPlaceable = worldMap.isMinePlaceable(gameContext, this.tileX, this.tileY, mineID);
+    const isPlaceable = worldMap.isMinePlaceable(gameContext, this.tileX, this.tileY, category);
 
     return isPlaceable;
 }

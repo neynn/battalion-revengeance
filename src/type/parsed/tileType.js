@@ -1,4 +1,4 @@
-import { CLIMATE_TYPE, MINE_TYPE, MOVEMENT_TYPE, TERRAIN_TYPE } from "../../enums.js";
+import { CLIMATE_TYPE, MINE_CATEGORY, MOVEMENT_TYPE, TERRAIN_TYPE } from "../../enums.js";
 
 export const TileType = function(id) {
     this.id = id;
@@ -47,12 +47,12 @@ TileType.prototype.load = function(config, DEBUG_NAME) {
     }
 
     for(const mineType of allowedMines) {
-        const mineID = MINE_TYPE[mineType];
+        const mineID = MINE_CATEGORY[mineType];
 
         if(mineID !== undefined) {
             this.allowedMines.push(mineID);
         } else {
-            console.warn(`${DEBUG_NAME}: Unknown mine type! [mineType:${mineType}]`);
+            console.warn(`${DEBUG_NAME}: Unknown mine category! [MineCategory:${mineType}]`);
         }
     }
 
