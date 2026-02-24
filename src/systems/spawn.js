@@ -28,6 +28,10 @@ const getBuildingID = function(name) {
     return index;
 }
 
+export const despawnClientEntity = function(gameContext, entity) {
+    
+}
+
 export const despawnEntity = function(gameContext, entity) {
     const { teamManager, world } = gameContext;
     const { entityManager } = world;

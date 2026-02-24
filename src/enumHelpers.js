@@ -22,15 +22,6 @@ export const mTryFillDefault = function(config, list) {
     }
 }
 
-//TODO: Extract it into entity type.
-export const mapCategoryToMine = function(category) {
-    switch(category) {
-        case ENTITY_CATEGORY.LAND: return MINE_TYPE.LAND;
-        case ENTITY_CATEGORY.SEA: return MINE_TYPE.SEA;
-        default: return MINE_TYPE.LAND;
-    }
-}
-
 export const mapCategoryToStat = function(category) {
     switch(category) {
         case ENTITY_CATEGORY.AIR: return TEAM_STAT.AIR_UNITS_BUILT;
@@ -116,8 +107,8 @@ export const getLoaderRules = function(mode) {
         case LOADER_MODE.MP_FIXED: {
             rules |= LOADER_RULE.SPAWN_BUILDINGS;
             rules |= LOADER_RULE.SPAWN_ENTITIES;
-            rules |= LOADER_RULE.ENTITY_ID_OVERRIDE;
             rules |= LOADER_RULE.SPAWN_MINES;
+            rules |= LOADER_RULE.ENTITY_ID_OVERRIDE;
             rules |= LOADER_RULE.ALLOW_SPECTATOR;
             rules |= LOADER_RULE.FIXED_ALLIES;
             rules |= LOADER_RULE.LOAD_OBJECTIVES;
@@ -126,8 +117,8 @@ export const getLoaderRules = function(mode) {
         case LOADER_MODE.MP_CUSTOM: {
             rules |= LOADER_RULE.SPAWN_BUILDINGS;
             rules |= LOADER_RULE.SPAWN_ENTITIES;
-            rules |= LOADER_RULE.ENTITY_ID_OVERRIDE;
             rules |= LOADER_RULE.SPAWN_MINES;
+            rules |= LOADER_RULE.ENTITY_ID_OVERRIDE;
             rules |= LOADER_RULE.ALLOW_SPECTATOR;
             break;
         }

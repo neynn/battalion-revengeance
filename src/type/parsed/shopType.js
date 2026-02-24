@@ -1,14 +1,18 @@
-import { ENTITY_TYPE } from "../../enums.js";
+import { ENTITY_TYPE, MINE_TYPE } from "../../enums.js";
 
 export const ShopType = function(id) {
     this.id = id;
     this.entities = [];
+    this.mine = MINE_TYPE._INVALID;
 }
 
 ShopType.prototype.load = function(config, DEBUG_NAME) {
     const { 
-        entities = []
+        entities = [],
+        mine = "NONE"
     } = config; 
+
+    this.mine = MINE_TYPE[mine] ?? MINE_TYPE._INVALID;
 
     for(const entityID of entities) {
         const index = ENTITY_TYPE[entityID];

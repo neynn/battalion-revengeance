@@ -20,7 +20,7 @@ MineType.prototype.load = function(config, DEBUG_NAME) {
         desc = "MISSING_DESC_MINE",
         cost = 0,
         damage = {},
-        category = "LAND"
+        category = "NONE"
     } = config;
 
     this.name = name;

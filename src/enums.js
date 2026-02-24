@@ -7,8 +7,8 @@ export const LOADER_RULE = {
     NONE: 0,
     SPAWN_BUILDINGS: 1 << 0,
     SPAWN_ENTITIES: 1 << 1,
-    ENTITY_ID_OVERRIDE: 1 << 2,
-    SPAWN_MINES: 1 << 3,
+    SPAWN_MINES: 1 << 2,
+    ENTITY_ID_OVERRIDE: 1 << 3,
     ALLOW_SPECTATOR: 1 << 4,
     FIXED_ALLIES: 1 << 5,
     LOAD_OBJECTIVES: 1 << 6
@@ -84,6 +84,7 @@ export const JAMMER_FLAG = {
 };
 
 export const MINE_TYPE = {
+    _INVALID: -1,
     LAND: 0,
     SEA: 1,
     _COUNT: 2

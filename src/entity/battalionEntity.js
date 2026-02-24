@@ -7,7 +7,7 @@ import { EntityType } from "../type/parsed/entityType.js";
 import { createNode, mGetLowestCostNode } from "../systems/pathfinding.js";
 import { getDirectionByDelta, getDirectionVector } from "../systems/direction.js";
 import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE, MINE_CATEGORY } from "../enums.js";
-import { mapCategoryToMine, mapTransportToEntity } from "../enumHelpers.js";
+import { mapTransportToEntity } from "../enumHelpers.js";
 import { getLineEntities } from "../systems/targeting.js";
 import { mGetUncloakedEntities, mGetUncloakedMines } from "../systems/cloak.js";
 import { TeamManager } from "../team/teamManager.js";
@@ -1492,9 +1492,9 @@ BattalionEntity.prototype.canPlaceMine = function(gameContext) {
         return false;
     }
 
-    //TODO: Cost needs inflation adjusment
-    const mineID = mapCategoryToMine(this.config.category);
-    const { cost, category } = typeRegistry.getMineType(mineID);
+    //TODO: Cost needs inflation adjustment
+    const { mine } = typeRegistry.getShopType(this.config.shop);
+    const { cost, category } = typeRegistry.getMineType(mine);
 
     if(this.cash < cost) {
         return false;
