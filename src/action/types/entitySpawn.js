@@ -1,10 +1,9 @@
 import { Action } from "../../../engine/action/action.js";
-import { spawnClientEntity, spawnServerEntity } from "../../systems/spawn.js";
 
-export const EntitySpawnAction = function(isServer) {
+export const EntitySpawnAction = function(spawnEntity) {
     Action.call(this);
 
-    this.isServer = isServer;
+    this._spawnEntity = spawnEntity;
 }
 
 EntitySpawnAction.prototype = Object.create(Action.prototype);
@@ -26,11 +25,7 @@ EntitySpawnAction.prototype.execute = function(gameContext, data) {
         const setup = setups[i];
         const entityID = entityMap[i];
 
-        if(this.isServer) {
-            spawnServerEntity(gameContext, setup, entityID);
-        } else {
-            spawnClientEntity(gameContext, setup, entityID);
-        }
+        this._spawnEntity(gameContext, setup, entityID);
     }
 }
 

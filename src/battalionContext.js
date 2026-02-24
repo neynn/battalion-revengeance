@@ -12,7 +12,7 @@ import { TILE_HEIGHT, TILE_WIDTH } from "./constants.js";
 import { ArenaState } from "./states/arena/arena.js";
 import { UICore } from "./ui/uiCore.js";
 import { ClientActionRouter } from "./client/actionRouter.js";
-import { registerActions } from "./systems/context.js";
+import { registerClientActions } from "./systems/context.js";
 import { resolveTileType } from "./enumHelpers.js";
 
 export const BattalionContext = function() {
@@ -70,7 +70,7 @@ BattalionContext.prototype.init = function(resources) {
     this.spriteManager.initLayers(LAYER_TYPE._COUNT);
     this.typeRegistry.load(resources);
 
-    registerActions(this, false);
+    registerClientActions(this);
 
     this.uiCore.init(this);
     this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);

@@ -29,7 +29,7 @@ const getBuildingID = function(name) {
 }
 
 export const despawnClientEntity = function(gameContext, entity) {
-    
+
 }
 
 export const despawnEntity = function(gameContext, entity) {
@@ -104,6 +104,7 @@ export const createClientEntityObject = function(gameContext, entityID, teamID, 
     team.addEntity(entityObject);
     entityManager.addEntity(entityObject);
     entityObject.placeOnMap(gameContext);
+    entityObject.playIdle(gameContext);
 
     return entityObject;
 }
@@ -226,8 +227,6 @@ export const spawnClientEntity = function(gameContext, config, externalID = Enti
     const entity = parseEntityJSON(gameContext, config, externalID, createClientEntityObject);
 
     if(entity) {
-        entity.playIdle(gameContext);
-
         if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
             entity.setOpacity(0);
         }

@@ -2,13 +2,12 @@ import { Action } from "../../../engine/action/action.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { mapCategoryToStat } from "../../enumHelpers.js";
 import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
-import { createClientEntityObject, createServerEntityObject } from "../../systems/spawn.js";
 import { createMineTriggerIntent, createUncloakIntent } from "../actionHelper.js";
 
-export const ProduceEntityAction = function(isServer) {
+export const ProduceEntityAction = function(createEntity) {
     Action.call(this);
 
-    this.isServer = isServer;
+    this._createEntity = createEntity;
 }
 
 ProduceEntityAction.prototype = Object.create(Action.prototype);
@@ -29,17 +28,7 @@ ProduceEntityAction.prototype.execute = function(gameContext, data) {
     const spawnerEntity = entityManager.getEntity(entityID);
     const team = spawnerEntity.getTeam(gameContext);
     const teamID = team.getID();
-    let entity = null;
-
-    if(this.isServer) {
-        entity = createServerEntityObject(gameContext, id, teamID, typeID, tileX, tileY);
-    } else {
-        entity = createClientEntityObject(gameContext, id, teamID, typeID, tileX, tileY);
-
-        if(entity) {
-            entity.playIdle(gameContext);
-        }
-    }
+    const entity = this._createEntity(gameContext, id, teamID, typeID, tileX, tileY);
 
     if(!entity) {
         console.error("Critical Error: Entity could not be spawned!");

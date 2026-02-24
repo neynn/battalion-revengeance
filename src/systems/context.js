@@ -15,16 +15,38 @@ import { PurchaseEntityAction } from "../action/types/purchaseEntity.js";
 import { StartTurnAction } from "../action/types/startTurn.js";
 import { UncloakAction } from "../action/types/uncloak.js";
 import { ACTION_TYPE } from "../enums.js";
+import { createClientEntityObject, createServerEntityObject, spawnClientEntity, spawnServerEntity } from "./spawn.js";
 
-export const registerActions = function(gameContext, isServer) {
+export const registerClientActions = function(gameContext) {
     const { world } = gameContext;
     const { actionQueue } = world;
 
     actionQueue.registerAction(ACTION_TYPE.MINE_TRIGGER, new MineTriggerAction());
-    actionQueue.registerAction(ACTION_TYPE.PRODUCE_ENTITY, new ProduceEntityAction(isServer));
-    actionQueue.registerAction(ACTION_TYPE.PURCHASE_ENTITY, new PurchaseEntityAction(isServer));
+    actionQueue.registerAction(ACTION_TYPE.PRODUCE_ENTITY, new ProduceEntityAction(createClientEntityObject));
+    actionQueue.registerAction(ACTION_TYPE.PURCHASE_ENTITY, new PurchaseEntityAction(createClientEntityObject));
     actionQueue.registerAction(ACTION_TYPE.EXTRACT, new ExtractAction());
-    actionQueue.registerAction(ACTION_TYPE.ENTITY_SPAWN, new EntitySpawnAction(isServer));
+    actionQueue.registerAction(ACTION_TYPE.ENTITY_SPAWN, new EntitySpawnAction(spawnClientEntity));
+    actionQueue.registerAction(ACTION_TYPE.START_TURN, new StartTurnAction());
+    actionQueue.registerAction(ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction());
+    actionQueue.registerAction(ACTION_TYPE.CAPTURE, new CaptureAction());
+    actionQueue.registerAction(ACTION_TYPE.MOVE, new MoveAction());
+    actionQueue.registerAction(ACTION_TYPE.HEAL, new HealAction());
+    actionQueue.registerAction(ACTION_TYPE.ATTACK, new AttackAction());
+    actionQueue.registerAction(ACTION_TYPE.CLOAK, new CloakAction());
+    actionQueue.registerAction(ACTION_TYPE.DEATH, new DeathAction());
+    actionQueue.registerAction(ACTION_TYPE.UNCLOAK, new UncloakAction());
+    actionQueue.registerAction(ACTION_TYPE.END_TURN, new EndTurnAction());
+}
+
+export const registerServerActions = function(gameContext) {
+    const { world } = gameContext;
+    const { actionQueue } = world;
+
+    actionQueue.registerAction(ACTION_TYPE.MINE_TRIGGER, new MineTriggerAction());
+    actionQueue.registerAction(ACTION_TYPE.PRODUCE_ENTITY, new ProduceEntityAction(createServerEntityObject));
+    actionQueue.registerAction(ACTION_TYPE.PURCHASE_ENTITY, new PurchaseEntityAction(createServerEntityObject));
+    actionQueue.registerAction(ACTION_TYPE.EXTRACT, new ExtractAction());
+    actionQueue.registerAction(ACTION_TYPE.ENTITY_SPAWN, new EntitySpawnAction(spawnServerEntity));
     actionQueue.registerAction(ACTION_TYPE.START_TURN, new StartTurnAction());
     actionQueue.registerAction(ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction());
     actionQueue.registerAction(ACTION_TYPE.CAPTURE, new CaptureAction());

@@ -1,13 +1,12 @@
 import { Action } from "../../../engine/action/action.js";
 import { mapCategoryToStat } from "../../enumHelpers.js";
 import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
-import { createClientEntityObject, createServerEntityObject } from "../../systems/spawn.js";
 import { createUncloakIntent } from "../actionHelper.js";
 
-export const PurchaseEntityAction = function(isServer) {
+export const PurchaseEntityAction = function(createEntity) {
     Action.call(this);
 
-    this.isServer = isServer;
+    this._createEntity = createEntity;
 }
 
 PurchaseEntityAction.prototype = Object.create(Action.prototype);
@@ -25,17 +24,7 @@ PurchaseEntityAction.prototype.execute = function(gameContext, data) {
     const { teamManager } = gameContext;
     const { id, tileX, tileY, teamID, typeID, cost, morale } = data;
     const team = teamManager.getTeam(teamID);
-    let entity = null;
-
-    if(this.isServer) {
-        entity = createServerEntityObject(gameContext, id, teamID, typeID, tileX, tileY);
-    } else {
-        entity = createClientEntityObject(gameContext, id, teamID, typeID, tileX, tileY);
-
-        if(entity) {
-            entity.playIdle(gameContext);
-        }
-    }
+    const entity = this._createEntity(gameContext, id, teamID, typeID, tileX, tileY);
 
     if(!entity) {
         console.error("Critical Error: Entity could not be spawned!");
