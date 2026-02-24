@@ -33,10 +33,12 @@ Mine.prototype.load = function(data) {
 
 Mine.prototype.hide = function() {
     this.state = Mine.STATE.HIDDEN;
+    this.opacity = 0;
 }
 
 Mine.prototype.show = function() {
     this.state = Mine.STATE.VISIBLE;
+    this.opacity = 1;
 }
 
 Mine.prototype.isHidden = function() {

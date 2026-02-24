@@ -147,6 +147,7 @@ export const ClientMatchLoader = function(worldMap, mapFile) {
     this.objectives = mapFile.objectives ?? {};
     this.events = mapFile.events ?? {};
     this.buildings = mapFile.buildings ?? [];
+    this.mines = mapFile.mines ?? [];
     this.localization = mapFile.localization ?? [];
     this.prelogue = mapFile.prelogue ?? [];
     this.postlogue = mapFile.postlogue ?? [];
@@ -337,9 +338,32 @@ ClientMatchLoader.prototype.createEntities = function(gameContext, entityIDList)
 }
 
 ClientMatchLoader.prototype.createMines = function(gameContext) {
+    const { teamManager, typeRegistry } = gameContext;
+
     if(this.rules & LOADER_RULE.SPAWN_MINES) {
-        //TODO: TEST
-        this.worldMap.addMine(createMineObject(gameContext, -1, MINE_TYPE.LAND, 6, 3));
+        for(const mine of this.mines) {
+            const { 
+                x = -1, 
+                y = -1,
+                team = null,
+                type = "NONE",
+                visible = false
+            } = mine;
+
+            const teamID = teamManager.getTeamID(team);
+            const typeID = MINE_TYPE[type] ?? MINE_TYPE.LAND;
+            const { category } = typeRegistry.getMineType(typeID);
+
+            if(this.worldMap.isMinePlaceable(gameContext, x, y, category)) {
+                const mineObject = createMineObject(gameContext, teamID, typeID, x, y);
+
+                if(visible) {
+                    mineObject.show();
+                }
+                
+                this.worldMap.addMine(mineObject);
+            }
+        }
     }
 }
 
@@ -382,6 +406,7 @@ export const ServerMatchLoader = function(worldMap, mapFile) {
     this.objectives = mapFile.objectives ?? {};
     this.events = mapFile.events ?? {};
     this.buildings = mapFile.buildings ?? [];
+    this.mines = mapFile.mines ?? [];
     this.rules = LOADER_RULE.NONE;
     this.entityIDList = [];
     this.allowedComponents = MP_SERVER_EVENT_COMPONENTS;
@@ -538,9 +563,32 @@ ServerMatchLoader.prototype.createEntities = function(gameContext) {
 }
 
 ServerMatchLoader.prototype.createMines = function(gameContext) {
+    const { teamManager, typeRegistry } = gameContext;
+
     if(this.rules & LOADER_RULE.SPAWN_MINES) {
-        //TODO: TEST
-        this.worldMap.addMine(createMineObject(gameContext, -1, MINE_TYPE.LAND, 6, 3));
+        for(const mine of this.mines) {
+            const { 
+                x = -1, 
+                y = -1,
+                team = null,
+                type = "NONE",
+                hidden = false
+            } = mine;
+
+            const teamID = teamManager.getTeamID(team);
+            const typeID = MINE_TYPE[type] ?? MINE_TYPE.LAND;
+            const { category } = typeRegistry.getMineType(typeID);
+
+            if(this.worldMap.isMinePlaceable(gameContext, x, y, category)) {
+                const mineObject = createMineObject(gameContext, teamID, typeID, x, y);
+
+                if(hidden) {
+                    mineObject.hide();
+                }
+
+                this.worldMap.addMine(mineObject);
+            }
+        }
     }
 }
 

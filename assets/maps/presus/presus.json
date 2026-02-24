@@ -81,6 +81,9 @@
         { "x": 6, "y": 6, "type": "OIL_RIG", "team": "TRANSKAL" },
         { "x": 7, "y": 6, "type": "SEA_CONTROL", "team": "TRANSKAL" }
     ],
+    "mines": [
+        { "x": 6, "y": 3, "type": "LAND", "team": "TRANSKAL", "visible": false }
+    ],
     "objectives": {
         "SURVIVE_TURN_2": { "type": "SURVIVE", "turn": 2 },
         "PROTECT_BOAT_1": { "type": "PROTECT", "targets": ["BOAT_1"] },
