@@ -162,7 +162,7 @@ SpriteManager.prototype.createCopyTexture = function(spriteID, schemaID, schema)
                 break;
             }
             case Texture.STATE.LOADED: {
-                copyTexture.loadColoredRegions(texture.bitmap, schema);
+                copyTexture.loadColoredRegions(texture.handle.bitmap, schema);
                 break;
             }
         }
@@ -438,12 +438,14 @@ SpriteManager.prototype.updateSprite = function(spriteIndex, spriteID) {
 
     if(textureID === TextureRegistry.COPY_ID) {
         const copyTexture = this.resources.getCopyTexture(copyAlias);
+        const { handle } = copyTexture;
 
-        sprite.setTexture(copyTexture);
+        sprite.setHandle(handle);
     } else {
         const texture = this.resources.getTexture(textureID);
+        const { handle } = texture;
 
-        sprite.setTexture(texture);
+        sprite.setHandle(handle);
 
         if(texture.state === Texture.STATE.EMPTY) {
             this.resources.loadTexture(textureID);

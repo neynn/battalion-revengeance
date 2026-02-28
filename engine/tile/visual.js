@@ -2,7 +2,7 @@ import { TextureRegistry } from "../resources/textureRegistry.js";
 
 export const TileVisual = function(id) {
     this.id = id;
-    this.texture = TextureRegistry.EMPTY_TEXTURE;
+    this.handle = TextureRegistry.EMPTY_HANDLE;
     this.frames = [];
     this.frameTime = TileVisual.DEFAULT.FRAME_TIME;
     this.frameIndex = 0;
@@ -66,8 +66,8 @@ TileVisual.createPatternFrame = function(pattern, frames) {
     return frame;
 }
 
-TileVisual.prototype.setTexture = function(texture) {
-    this.texture = texture;
+TileVisual.prototype.setHandle = function(handle) {
+    this.handle = handle;
 }
 
 TileVisual.prototype.getFrameTime = function() {

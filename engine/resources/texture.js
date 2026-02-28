@@ -1,14 +1,12 @@
 import { createBitmapData, mapBitmap, mapBitmapPartial } from "../graphics/colorHelper.js";
+import { TextureHandle } from "./texture/textureHandle.js";
 import { TextureRegion } from "./texture/region.js";
 
 export const Texture = function(id, name, path) {
     this.id = id;
     this.name = name;
     this.path = path;
-    this.bitmap = null;
-    this.references = 0;
-    this.width = 0;
-    this.height = 0;
+    this.handle = new TextureHandle();
     this.state = Texture.STATE.EMPTY;
     this.variants = [];
     this.regions = [];
@@ -48,7 +46,7 @@ Texture.createImageData = function(bitmap) {
 }
 
 Texture.prototype.getSizeBytes = function() {
-    return this.width * this.height * 4;
+    return this.handle.getBytes();
 }
 
 Texture.prototype.loadColoredImage = function(copyBitmap, schema) {
@@ -64,12 +62,8 @@ Texture.prototype.loadColoredImage = function(copyBitmap, schema) {
     }
 }
 
-Texture.prototype.isState = function(state) {
-    return this.state === state;
-}
-
 Texture.prototype.clear = function() {
-    this.bitmap = null;
+    this.handle.clear();
     this.state = Texture.STATE.EMPTY;
 }
 
@@ -82,7 +76,7 @@ Texture.prototype.getLoadingError = function() {
         return Texture.ERROR_CODE.ERROR_IMAGE_IS_LOADING;
     }
 
-    if(this.bitmap) {
+    if(this.handle.bitmap) {
         return Texture.ERROR_CODE.ERROR_IMAGE_ALREADY_LOADED;
     }
 
@@ -120,29 +114,8 @@ Texture.prototype.requestBitmap = function() {
 };
 
 Texture.prototype.clear = function() {
-    this.bitmap = null;
-    this.width = 0;
-    this.height = 0;
     this.state = Texture.STATE.EMPTY;
-}
-
-Texture.prototype.setImageData = function(bitmap, width, height) {
-    this.bitmap = bitmap;
-    this.width = width;
-    this.height = height;
-    this.state = Texture.STATE.LOADED;
-}
-
-Texture.prototype.addReference = function() {
-    return this.references++;
-}
-
-Texture.prototype.removeReference = function() {
-    if(this.references === 1) {
-        this.clear();
-    }
-
-    return this.references--;
+    this.handle.clear();
 }
 
 Texture.prototype.getID = function() {
@@ -150,9 +123,9 @@ Texture.prototype.getID = function() {
 }
 
 Texture.prototype.setBitmapData = function(bitmap) {
-    const { width, height } = bitmap;
-
-    this.setImageData(bitmap, width, height);
+    this.state = Texture.STATE.LOADED;
+    this.handle.bitmap = bitmap;
+    this.handle.state = TextureHandle.STATE.LOADED;
 }
 
 Texture.prototype.loadColoredRegions = function(copyBitmap, schema) {

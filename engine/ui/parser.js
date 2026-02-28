@@ -84,13 +84,14 @@ const parseElement = function(uiManager, config, DEBUG_NAME) {
             } = config;
 
             const texture = uiManager.getIconTexture(image);
+            const { handle } = texture;
 
             element.setPosition(x, y);
             element.setOpacity(opacity);
             element.setOrigin(x, y);
             element.setAnchor(anchor);
             element.setSize(width, height);
-            element.setTexture(texture);
+            element.setHandle(handle);
             element.setScale(scale);
 
             return element;

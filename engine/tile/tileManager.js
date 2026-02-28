@@ -110,9 +110,10 @@ TileManager.prototype.createTileVisuals = function(resourceLoader, tileAtlases, 
 
                     if(frameCount > 0 && textureID !== undefined) {
                         const textureObject = resourceLoader.getTexture(textureID);
+                        const { handle } = textureObject;
 
-                        visual.setTexture(textureObject);
-                        textureObject.addReference();
+                        visual.setHandle(handle);
+                        handle.addReference();
 
                         resourceLoader.loadTexture(textureID);
                     }
@@ -138,9 +139,10 @@ TileManager.prototype.createTileVisuals = function(resourceLoader, tileAtlases, 
 
                 if(frameCount > 0 && textureID !== undefined) {
                     const textureObject = resourceLoader.getTexture(textureID);
+                    const { handle } = textureObject;
 
-                    visual.setTexture(textureObject);
-                    textureObject.addReference();
+                    visual.setHandle(handle);
+                    handle.addReference();
 
                     resourceLoader.loadTexture(textureID);
                 }

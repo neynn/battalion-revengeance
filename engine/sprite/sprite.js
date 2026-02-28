@@ -1,11 +1,13 @@
 import { Graph } from "../graphics/graph.js";
 import { isRectangleRectangleIntersect } from "../math/math.js";
+import { TextureHandle } from "../resources/texture/textureHandle.js";
+import { TextureRegistry } from "../resources/textureRegistry.js";
 
 export const Sprite = function(index, DEBUG_NAME) {
     Graph.call(this, DEBUG_NAME);
     
     this.index = index;
-    this.texture = null;
+    this.handle = TextureRegistry.EMPTY_HANDLE;
     this.container = null;
     this.lastCallTime = 0;
     this.frameCount = 1;
@@ -58,17 +60,25 @@ Sprite.prototype.onDraw = function(display, localX, localY) {
         display.unflip();
     }
 
-    if(this.texture && this.texture.bitmap) {
-        const { x, y, w, h } = this.container.frames[this.currentFrame];
+    switch(this.handle.state) {
+        case TextureHandle.STATE.LOADED: {
+            const { x, y, w, h } = this.container.frames[this.currentFrame];
 
-        context.drawImage(
-            this.texture.bitmap,
-            x, y, w, h,
-            renderX, renderY, w, h
-        );
-    } else if(Sprite.DEBUG.RENDER_PLACEHOLDER) {
-        context.fillStyle = Sprite.DEBUG.PLACEHOLDER;
-        context.fillRect(renderX, renderY, this.width, this.height);
+            context.drawImage(
+                this.handle.bitmap,
+                x, y, w, h,
+                renderX, renderY, w, h
+            );
+            break;
+        }
+        default: {
+            if(Sprite.DEBUG.RENDER_PLACEHOLDER) {
+                context.fillStyle = Sprite.DEBUG.PLACEHOLDER;
+                context.fillRect(renderX, renderY, this.width, this.height);
+            }
+
+            break;
+        }
     }
 }
 
@@ -117,7 +127,7 @@ Sprite.prototype.getIndex = function() {
 }
 
 Sprite.prototype.reset = function() {
-    this.texture = null;
+    this.handle = TextureRegistry.EMPTY_HANDLE;
     this.container = null;
     this.lastCallTime = 0;
     this.frameCount = 1;
@@ -136,10 +146,8 @@ Sprite.prototype.reset = function() {
     this.show();
 }
 
-Sprite.prototype.setTexture = function(texture) {
-    if(texture) {
-        this.texture = texture;
-    }
+Sprite.prototype.setHandle = function(handle) {
+    this.handle = handle;
 }
 
 Sprite.prototype.init = function(container, lastCallTime, DEBUG_NAME) {

@@ -1,11 +1,13 @@
 import { PathHandler } from "./pathHandler.js";
 import { Texture } from "./texture.js";
+import { TextureHandle } from "./texture/textureHandle.js";
 
 export const TextureRegistry = function() {
     this.textures = [];
     this.copyTextures = new Map();
 }
 
+TextureRegistry.EMPTY_HANDLE = new TextureHandle();
 TextureRegistry.EMPTY_ID = -1;
 TextureRegistry.COPY_ID = -2;
 TextureRegistry.DEFAULT_TEXTURE_TYPE = ".png";

@@ -1,5 +1,6 @@
 import { clampValue } from "../math/math.js";
 import { Renderer } from "../renderer/renderer.js";
+import { TextureHandle } from "../resources/texture/textureHandle.js";
 import { Camera } from "./camera.js";
 
 export const Camera2D = function() {
@@ -87,10 +88,10 @@ Camera2D.prototype.drawFrame = function(context, bitmap, frame, renderX, renderY
 }
 
 Camera2D.prototype.drawTile = function(tileManager, tileID, context, renderX, renderY, scale = 1) {
-    const { texture, frames, frameIndex } = tileManager.getVisual(tileID);
-    const { bitmap } = texture;
+    const { handle, frames, frameIndex } = tileManager.getVisual(tileID);
+    const { state, bitmap } = handle;
 
-    if(bitmap === null) {
+    if(state !== TextureHandle.STATE.LOADED) {
         this.drawEmptyTile(context, renderX, renderY, scale);
     } else {
         this.drawFrame(context, bitmap, frames[frameIndex], renderX, renderY, scale);
