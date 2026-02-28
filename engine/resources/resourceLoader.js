@@ -61,11 +61,11 @@ ResourceLoader.prototype.destroyCopyTextures = function() {
 }
 
 ResourceLoader.prototype.createCopyTexture = function(textureName, texture) {
-    return this.textureRegistry.createCopyAtlasTexture(textureName, texture);
+    return this.textureRegistry.createCopyTexture(textureName, texture);
 }
 
 ResourceLoader.prototype.createTextures = function(textures) {
-    return this.textureRegistry.createAtlasTextures(textures);
+    return this.textureRegistry.createTextures(textures);
 }
 
 ResourceLoader.prototype.getTexture = function(index) {

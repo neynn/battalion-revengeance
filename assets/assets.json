@@ -5,8 +5,6 @@
     "tileMeta": { "directory": ["assets", "config"], "source": "tileMeta.json" },
     "keybinds": { "directory": ["assets", "config"], "source": "keybinds.json" },
 
-    "archetypes": { "directory": ["assets", "entity"], "source": "archetypes.json" },
-    "traits": { "directory": ["assets", "entity"], "source": "traits.json" },
     "fonts": { "directory": ["assets", "fonts"], "source": "fonts.json" },
     "icons": { "directory": ["assets", "icons"], "source": "icons.json" },
     "languages": { "directory": ["assets", "language"], "source": "languages.json" },

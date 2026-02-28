@@ -2,7 +2,7 @@ import { TextureRegistry } from "../resources/textureRegistry.js";
 
 export const TileVisual = function(id) {
     this.id = id;
-    this.texture = TextureRegistry.EMPTY_ATLAS_TEXTURE;
+    this.texture = TextureRegistry.EMPTY_TEXTURE;
     this.frames = [];
     this.frameTime = TileVisual.DEFAULT.FRAME_TIME;
     this.frameIndex = 0;

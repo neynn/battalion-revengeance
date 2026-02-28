@@ -1,7 +1,0 @@
-{
-    "ExampleTrait": {
-        "components": {
-            "ExampleComponent": { "exampleValue": 1 } 
-        }
-    }
-}

@@ -60,8 +60,8 @@ export const mapBitmapPartial = function(imageData, colorMap, regions) {
 
     copy.set(data);
 
-    for(const frameID in regions) {
-        const { x, y, w, h } = regions[frameID];
+    for(let i = 0; i < regions.length; i++) {
+        const { x, y, w, h } = regions[i];
 
         mapFrame(copy, width, colorMap, x, y, w, h);
     }

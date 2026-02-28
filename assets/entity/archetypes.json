@@ -1,7 +1,0 @@
-{
-    "ExampleArchetype": {
-        "components": {
-            "ExampleComponent": { "exampleValue": 1 }
-        }
-    }
-}

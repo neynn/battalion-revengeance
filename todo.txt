@@ -12,3 +12,5 @@ new blend property that links and draws a second sprite as a child to one.
 
 train as transport.
 Transport: Do NOT call playIdle on the server.
+
+variants are part of textures, not the spritemanager

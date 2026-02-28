@@ -1170,7 +1170,6 @@ BattalionEntity.prototype.fromTransport = function(gameContext) {
 
         this.loadConfig(transportType);
         this.setHealth(this.maxHealth * previousHealthFactor);
-        this.playIdle(gameContext);
         this.transportID = ENTITY_TYPE._INVALID;
     }
 }
@@ -1185,7 +1184,6 @@ BattalionEntity.prototype.toTransport = function(gameContext, transportType) {
         this.transportID = this.config.id;
         this.loadConfig(transportConfig);
         this.setHealth(this.maxHealth * previousHealthFactor);
-        this.playIdle(gameContext);
     }
 }
 
