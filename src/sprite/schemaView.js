@@ -1,14 +1,15 @@
+import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { SCHEMA_TYPE } from "../enums.js";
 
 export const createSchemaViewSprite = function(gameContext, spriteID, schema, layerID) {
     const { spriteManager } = gameContext;
     const { id, colorMap } = schema;
 
-    if(schema.id === SCHEMA_TYPE.RED) {
-        return spriteManager.createSpriteWithAlias(spriteID, id, layerID);
-    } else {
-        return spriteManager.createColoredSprite(spriteID, id, colorMap, layerID);  
+    if(id !== SCHEMA_TYPE.RED) {
+        spriteManager.createCopyTexture(spriteID, id, colorMap);
     }
+
+    return spriteManager.createSprite(spriteID, layerID, id);
 }
 
 export const SchemaView = function(visual, spriteID) {
@@ -19,7 +20,7 @@ export const SchemaView = function(visual, spriteID) {
     this.positionY = 0;
 }
 
-SchemaView.prototype.preload = function(gameContext, spriteID) {
+SchemaView.prototype.createTexture = function(gameContext, spriteID) {
     if(!this.schema) {
         return;
     }
@@ -27,9 +28,8 @@ SchemaView.prototype.preload = function(gameContext, spriteID) {
     const { spriteManager } = gameContext;
     const { id, colorMap } = this.schema;
 
-    if(id === SCHEMA_TYPE.RED) {
-        spriteManager.createSpriteAlias(spriteID, id);
-    } else {
+    //Red is the default color. Creating a copy of it wasted memory.
+    if(id !== SCHEMA_TYPE.RED) {
         spriteManager.createCopyTexture(spriteID, id, colorMap);
     }
 }
@@ -43,6 +43,7 @@ SchemaView.prototype.destroy = function() {
 SchemaView.prototype.updateSchema = function(gameContext, schema) {
     if(!this.schema || this.schema !== schema) {
         this.schema = schema;
+        this.createTexture(gameContext, this.spriteID);
         this.updateVisual(gameContext);
     }
 }
@@ -50,6 +51,7 @@ SchemaView.prototype.updateSchema = function(gameContext, schema) {
 SchemaView.prototype.updateType = function(gameContext, spriteType) {
     if(spriteType !== this.spriteID) {
         this.spriteID = spriteType;
+        this.createTexture(gameContext, this.spriteID);
         this.updateVisual(gameContext);
     }
 }
@@ -77,14 +79,9 @@ SchemaView.prototype.setPosition = function(positionX, positionY) {
 SchemaView.prototype.updateVisual = function(gameContext) {
     const { spriteManager } = gameContext;
     const spriteIndex = this.visual.getIndex();
+    const variantID = this.schema === null ? SpriteManager.NO_VARIANT : this.schema.id;
 
-    if(this.schema === null) {
-        spriteManager.updateSprite(spriteIndex, this.spriteID);
-    } else if(this.schema.id === SCHEMA_TYPE.RED) {
-        spriteManager.updateSpriteWithAlias(spriteIndex, this.spriteID, this.schema.id);
-    } else {
-        spriteManager.updateColoredSprite(spriteIndex, this.spriteID, this.schema.id, this.schema.colorMap);
-    }
+    spriteManager.updateSprite(spriteIndex, this.spriteID, variantID);
 }
 
 SchemaView.prototype.setOpacity = function(opacity) {

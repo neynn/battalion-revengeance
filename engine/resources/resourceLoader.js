@@ -1,6 +1,6 @@
 import { EventEmitter } from "../events/eventEmitter.js";
 import { TextureRegistry } from "./textureRegistry.js";
-import { Texture } from "./texture.js";
+import { TextureHandle } from "./texture/textureHandle.js";
 
 export const ResourceLoader = function() {
     this.textureRegistry = new TextureRegistry();
@@ -19,23 +19,6 @@ ResourceLoader.EVENT = {
     TEXTURE_ERROR: "TEXTURE_ERROR"
 };
 
-ResourceLoader.prototype.getLoadedTextureInfo = function() {
-    const loadedTextures = [];
-
-    for(let i = 0; i < this.textureRegistry.textures.length; i++) {
-        const texture = this.textureRegistry.textures[i];
-
-        if(texture.state === Texture.STATE.LOADED) {
-            loadedTextures.push({
-                "name": texture.name,
-                "size(kb)": Math.floor(texture.getSizeBytes() / 1024)
-            });
-        }
-    }
-
-    return loadedTextures;
-}
-
 ResourceLoader.prototype.clearTexture = function(index) {
     const texture = this.textureRegistry.getTexture(index);
 
@@ -46,22 +29,6 @@ ResourceLoader.prototype.clearTexture = function(index) {
 
 ResourceLoader.prototype.getTotalKBUsed = function() {
     return this.textureRegistry.getSizeBytes() / 1024;
-}
-
-ResourceLoader.prototype.getCopyTexture = function(textureName) {
-    return this.textureRegistry.getCopyTexture(textureName);
-}
-
-ResourceLoader.prototype.destroyCopyTexture = function(textureName) {
-    this.textureRegistry.destroyCopyTexture(textureName);
-}
-
-ResourceLoader.prototype.destroyCopyTextures = function() {
-    this.textureRegistry.destroyCopyTextures();
-}
-
-ResourceLoader.prototype.createCopyTexture = function(textureName, texture) {
-    return this.textureRegistry.createCopyTexture(textureName, texture);
 }
 
 ResourceLoader.prototype.createTextures = function(textures) {
@@ -103,7 +70,7 @@ ResourceLoader.prototype.resolveError = function(textureID) {
 ResourceLoader.prototype.loadTexture = function(id) {
     const texture = this.getTexture(id);
 
-    if(texture && texture.state === Texture.STATE.EMPTY) {
+    if(texture && texture.handle.state === TextureHandle.STATE.EMPTY) {
         texture.requestBitmap()
         .then((bitmap) => {
             this.resolveLoad(id, bitmap);

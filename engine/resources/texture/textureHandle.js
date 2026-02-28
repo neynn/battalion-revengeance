@@ -1,4 +1,5 @@
-export const TextureHandle = function() {
+export const TextureHandle = function(id) {
+    this.id = id;
     this.state = TextureHandle.STATE.EMPTY;
     this.references = 0;
     this.width = 0;

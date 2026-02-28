@@ -6,25 +6,22 @@ export const Texture = function(id, name, path) {
     this.id = id;
     this.name = name;
     this.path = path;
-    this.handle = new TextureHandle();
-    this.state = Texture.STATE.EMPTY;
+    this.handle = new TextureHandle(id);
     this.variants = [];
     this.regions = [];
     this.regionMap = {};
 }
 
-Texture.STATE = {
-    EMPTY: 0,
-    LOADING: 1,
-    LOADED: 2
+Texture.COPY_TYPE = {
+    FULL: 0,
+    REGIONAL: 1
 };
 
 Texture.ERROR_CODE = {
     NONE: "NONE",
-    ERROR_IMAGE_LOAD: "LOAD_ERROR",
+    ERROR_RESPONSE: "LOAD_ERROR",
     ERROR_NO_PATH: "NO_PATH",
-    ERROR_IMAGE_ALREADY_LOADED: "ALREADY_LOADED",
-    ERROR_IMAGE_IS_LOADING: "IS_LOADING"
+    ERROR_STATE: "ERROR_STATE"
 };
 
 Texture.createImageData = function(bitmap) {
@@ -46,51 +43,35 @@ Texture.createImageData = function(bitmap) {
 }
 
 Texture.prototype.getSizeBytes = function() {
-    return this.handle.getBytes();
-}
+    let bytes = this.handle.getBytes();
 
-Texture.prototype.loadColoredImage = function(copyBitmap, schema) {
-    if(this.state === Texture.STATE.EMPTY) {
-        this.state = Texture.STATE.LOADING;
-
-        const bitmapData = createBitmapData(copyBitmap);
-        const mappedData = mapBitmap(bitmapData, schema);
-
-        createImageBitmap(mappedData)
-        .then(bitmap => this.setBitmapData(bitmap))
-        .catch(error => this.clear());
+    for(let i = 0; i < this.variants.length; i++) {
+        bytes += this.variants[i].getBytes();
     }
+
+    return bytes;
 }
 
 Texture.prototype.clear = function() {
     this.handle.clear();
-    this.state = Texture.STATE.EMPTY;
-}
-
-Texture.prototype.getLoadingError = function() {
-    if(!this.path) {
-        return Texture.ERROR_CODE.ERROR_NO_PATH;
+    
+    for(let i = 0; i < this.variants.length; i++) {
+        this.variants[i].clear();
     }
 
-    if(this.state === Texture.STATE.LOADING) {
-        return Texture.ERROR_CODE.ERROR_IMAGE_IS_LOADING;
-    }
-
-    if(this.handle.bitmap) {
-        return Texture.ERROR_CODE.ERROR_IMAGE_ALREADY_LOADED;
-    }
-
-    return Texture.ERROR_CODE.NONE;
+    this.variants.length = 0;
 }
 
 Texture.prototype.requestBitmap = function() {
-    const errorCode = this.getLoadingError();
-
-    if(errorCode !== Texture.ERROR_CODE.NONE) {
-        return Promise.reject(errorCode);
+    if(!this.path) {
+        return Promise.reject(Texture.ERROR_CODE.ERROR_NO_PATH);
     }
 
-    this.state = Texture.STATE.LOADING;
+    if(this.handle.state !== TextureHandle.STATE.EMPTY) {
+        return Promise.reject(Texture.ERROR_CODE.ERROR_STATE);
+    }
+
+    this.handle.state = TextureHandle.STATE.LOADING;
 
     return fetch(this.path)
     .then((response) => {
@@ -98,7 +79,7 @@ Texture.prototype.requestBitmap = function() {
             return response.blob();
         }
 
-        return Promise.reject(Texture.ERROR_CODE.ERROR_IMAGE_LOAD);
+        return Promise.reject(Texture.ERROR_CODE.ERROR_RESPONSE);
     })
     .then((blob) => createImageBitmap(blob))
     .then((bitmap) => {
@@ -107,37 +88,51 @@ Texture.prototype.requestBitmap = function() {
         return Promise.resolve(bitmap);
     })
     .catch((error) => {
-        this.state = Texture.STATE.EMPTY;
+        this.handle.state = TextureHandle.STATE.EMPTY;
 
         return Promise.reject(error);
     });
 };
-
-Texture.prototype.clear = function() {
-    this.state = Texture.STATE.EMPTY;
-    this.handle.clear();
-}
 
 Texture.prototype.getID = function() {
     return this.id;
 }
 
 Texture.prototype.setBitmapData = function(bitmap) {
-    this.state = Texture.STATE.LOADED;
     this.handle.bitmap = bitmap;
     this.handle.state = TextureHandle.STATE.LOADED;
 }
 
-Texture.prototype.loadColoredRegions = function(copyBitmap, schema) {
-    if(this.state === Texture.STATE.EMPTY) {
-        this.state = Texture.STATE.LOADING;
+Texture.prototype.createHandle = function(handleID) {
+    for(let i = 0; i < this.variants.length; i++) {
+        if(this.variants[i].id === handleID) {
+            return this.variants[i];
+        }
+    }
 
-        const bitmapData = createBitmapData(copyBitmap);
-        const mappedData = mapBitmapPartial(bitmapData, schema, this.regions);
+    const handle = new TextureHandle(handleID);
+
+    this.variants.push(handle);
+
+    return handle;
+}
+
+Texture.prototype.loadHandle = function(handleID, schema, copyType) {
+    const handle = this.getHandle(handleID);
+
+    if(handle === this.handle) {
+        return;
+    }
+
+    if(handle.state === TextureHandle.STATE.EMPTY) {
+        handle.state = TextureHandle.STATE.LOADING;
+
+        const bitmapData = createBitmapData(this.handle.bitmap);
+        const mappedData = copyType === Texture.COPY_TYPE.FULL ? mapBitmap(bitmapData, schema) : mapBitmapPartial(bitmapData, schema, this.regions);
 
         createImageBitmap(mappedData)
-        .then(bitmap => this.setBitmapData(bitmap))
-        .catch(error => this.clear());
+        .then(bitmap => handle.setImage(bitmap))
+        .catch(error => handle.clear());
     }
 }
 
@@ -199,4 +194,14 @@ Texture.prototype.getFrames = function(regions) {
     }
 
     return frames;
+}
+
+Texture.prototype.getHandle = function(handleID) {
+    for(let i = 0; i < this.variants.length; i++) {
+        if(this.variants[i].id === handleID) {
+            return this.variants[i];
+        }
+    }
+
+    return this.handle;
 }

@@ -4,14 +4,12 @@ import { TextureHandle } from "./texture/textureHandle.js";
 
 export const TextureRegistry = function() {
     this.textures = [];
-    this.copyTextures = new Map();
 }
 
-TextureRegistry.EMPTY_HANDLE = new TextureHandle();
 TextureRegistry.EMPTY_ID = -1;
-TextureRegistry.COPY_ID = -2;
-TextureRegistry.DEFAULT_TEXTURE_TYPE = ".png";
+TextureRegistry.EMPTY_HANDLE = new TextureHandle(TextureRegistry.EMPTY_ID);
 TextureRegistry.EMPTY_TEXTURE = new Texture(TextureRegistry.EMPTY_ID, "EMPTY_TEXTURE", "");
+TextureRegistry.DEFAULT_TEXTURE_TYPE = ".png";
 
 TextureRegistry.prototype.getSizeBytes = function() {
     let bytes = 0;
@@ -20,50 +18,7 @@ TextureRegistry.prototype.getSizeBytes = function() {
         bytes += this.textures[i].getSizeBytes();
     }
 
-    this.copyTextures.forEach(texture => bytes += texture.getSizeBytes());
-
     return bytes;
-}
-
-TextureRegistry.prototype.getCopyTexture = function(textureName) {
-    const texture = this.copyTextures.get(textureName);
-
-    if(!texture) {
-        return null;
-    }
-
-    return texture;
-}
-
-TextureRegistry.prototype.destroyCopyTexture = function(textureName) {
-    const texture = this.copyTextures.get(textureName);
-
-    if(texture) {
-        texture.clear();
-
-        this.copyTextures.delete(textureName);
-    }
-}
-
-TextureRegistry.prototype.destroyCopyTextures = function() {
-    this.copyTextures.forEach(texture => texture.clear());
-    this.copyTextures.clear();
-}
-
-TextureRegistry.prototype.createCopyTexture = function(textureName, texture) {
-    const copyTexture = this.copyTextures.get(textureName);
-
-    if(copyTexture) {
-        return copyTexture;
-    }
-
-    const newTexture = new Texture(TextureRegistry.COPY_ID, texture.name, textureName);
-
-    newTexture.regions = texture.regions;
-
-    this.copyTextures.set(textureName, newTexture);
-
-    return newTexture;
 }
 
 TextureRegistry.prototype.createTextures = function(textures) {
@@ -106,6 +61,4 @@ TextureRegistry.prototype.clear = function() {
     for(let i = 0; i < this.textures.length; i++) {
         this.textures[i].clear();
     }
-
-    this.destroyCopyTextures();
 }

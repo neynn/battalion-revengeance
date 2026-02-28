@@ -1,4 +1,4 @@
-import { Texture } from "../../engine/resources/texture.js";
+import { TextureHandle } from "../../engine/resources/texture/textureHandle.js";
 import { TextureRegistry } from "../../engine/resources/textureRegistry.js";
 
 export const PortraitHandler = function() {
@@ -21,7 +21,7 @@ PortraitHandler.prototype.getPortraitTexture = function(portraitID) {
         const texture = this.registry.getTexture(textureID);
 
         if(texture !== null) {
-            if(texture.state === Texture.STATE.EMPTY) {
+            if(texture.handle.state === TextureHandle.STATE.EMPTY) {
                 texture.requestBitmap();
             }
 

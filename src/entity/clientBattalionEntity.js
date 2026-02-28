@@ -179,7 +179,7 @@ ClientBattalionEntity.prototype.bufferSprites = function(gameContext) {
         const spriteID = this.config.sprites[spriteName];
 
         if(spriteID) {
-            this.view.preload(gameContext, spriteID);
+            this.view.createTexture(gameContext, spriteID);
         }
     }
 }
