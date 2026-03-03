@@ -1,3 +1,4 @@
+import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { TeamManager } from "../team/teamManager.js";
 
 export const StaticObject = function(config) {
@@ -5,6 +6,7 @@ export const StaticObject = function(config) {
     this.tileX = -1;
     this.tileY = -1;
     this.teamID = TeamManager.INVALID_ID;
+    this.spriteID = SpriteManager.INVALID_ID;
 }
 
 StaticObject.prototype.setTeam = function(teamID) {

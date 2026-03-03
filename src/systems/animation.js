@@ -1,5 +1,4 @@
-import { ClientBattalionEntity } from "../entity/clientBattalionEntity.js";
-import { ATTACK_TYPE, LAYER_TYPE } from "../enums.js";
+import { LAYER_TYPE } from "../enums.js";
 import { playSFX } from "./sound.js";
 
 export const playGFX = function(gameContext, spriteType, tileX, tileY) {
@@ -17,39 +16,4 @@ export const playGFX = function(gameContext, spriteType, tileX, tileY) {
 export const playExplosion = function(gameContext, tileX, tileY) {;
     playSFX(gameContext, "explosion");
     playGFX(gameContext, "explosion", tileX, tileY);
-}
-
-export const playHealEffect = function(gameContext, entity, target) {
-    const effectType = entity.getEffect(ClientBattalionEntity.EFFECT_TYPE.HEAL);
-    const { tileX, tileY } = target;
-
-    playGFX(gameContext, effectType, tileX, tileY);
-}
-
-export const playAttackEffect = function(gameContext, entity, target, resolutions) {
-    const { world } = gameContext;
-    const { entityManager } = world;
-    const effectType = entity.getEffect(ClientBattalionEntity.EFFECT_TYPE.FIRE);
-    const attackType = entity.getAttackType();
-
-    switch(attackType) {
-        case ATTACK_TYPE.DISPERSION: {
-            const { tileX, tileY } = target;
-
-            playGFX(gameContext, effectType, tileX, tileY);
-            break;
-        }
-        default: {
-            for(const { health, entityID } of resolutions) {
-                const target = entityManager.getEntity(entityID);
-                const { tileX, tileY } = target;
-
-                if(target !== entity && entity.canSee(gameContext, target)) {
-                    playGFX(gameContext, effectType, tileX, tileY);
-                }
-            }
-
-            break;
-        }
-    }
 }

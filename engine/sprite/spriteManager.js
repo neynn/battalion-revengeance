@@ -16,9 +16,10 @@ export const SpriteManager = function(resourceLoader) {
     this.layers = [];
 }
 
+SpriteManager.INVALID_ID = -1;
 SpriteManager.NO_VARIANT = -1;
 SpriteManager.SECONDS_TO_CLEANUP = 5;
-SpriteManager.EMPTY_SPRITE = new Sprite(-1, "EMPTY_SPRITE");
+SpriteManager.EMPTY_SPRITE = new Sprite(SpriteManager.INVALID_ID, "EMPTY_SPRITE");
 SpriteManager.EMPTY_LAYER = [];
 
 SpriteManager.prototype.load = function(gameContext, textures, sprites) {

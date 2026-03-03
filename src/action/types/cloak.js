@@ -1,5 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
 import { FADE_RATE } from "../../constants.js";
+import { SOUND_TYPE } from "../../enums.js";
+import { playEntitySound } from "../../systems/sound.js";
 
 export const CloakAction = function() {
     Action.call(this);
@@ -17,7 +19,7 @@ CloakAction.prototype.onStart = function(gameContext, data) {
     const { entityID } = data;
     const entity = entityManager.getEntity(entityID);
 
-    entity.playCloak(gameContext);
+    playEntitySound(gameContext, entity, SOUND_TYPE.CLOAK);
 
     this.entity = entity;
     this.execute(gameContext, data);

@@ -1,10 +1,11 @@
 import { Action } from "../../../engine/action/action.js";
 import { FADE_RATE, TILE_WIDTH } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
-import { COMMAND_TYPE, PATH_INTERCEPT, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { COMMAND_TYPE, PATH_INTERCEPT, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { mInterceptMine, mInterceptPath } from "../../systems/pathfinding.js";
-import { playUncloakSound } from "../../systems/sound.js";
-import { createAttackRequest, createCaptureIntent, createCloakIntent, createDeathIntent, createHealRequest, createMineTriggerIntent, createTrackingIntent, createUncloakIntent } from "../actionHelper.js";
+import { playEntitySound, playUncloakSound } from "../../systems/sound.js";
+import { setEntityPosition, updateEntityPosition, updateEntitySprite } from "../../systems/sprite.js";
+import { createAttackRequest, createCaptureIntent, createCloakIntent, createHealRequest, createMineTriggerIntent, createUncloakIntent } from "../actionHelper.js";
 
 export const MoveAction = function() {
     Action.call(this);
@@ -38,7 +39,9 @@ MoveAction.prototype.onStart = function(gameContext, data) {
     const { entityID, path } = data;
     const entity = entityManager.getEntity(entityID);
 
-    entity.playMove(gameContext);
+    entity.setState(BattalionEntity.STATE.MOVE);
+    playEntitySound(gameContext, entity, SOUND_TYPE.MOVE);
+    updateEntitySprite(gameContext, entity);
 
     this.path = path;
     this.pathIndex = this.path.length - 1;
@@ -56,11 +59,12 @@ MoveAction.prototype.onUpdate = function(gameContext, data) {
             const directionChanged = this.entity.setDirectionByDelta(deltaX, deltaY);
 
             if(directionChanged) {
-                this.entity.updateSprite(gameContext);
+                updateEntitySprite(gameContext, this.entity);
             }
 
+            updateEntityPosition(gameContext, this.entity, deltaX * distanceMoved, deltaY * distanceMoved);
+
             this.distanceMoved += distanceMoved;
-            this.entity.updatePosition(deltaX * distanceMoved, deltaY * distanceMoved);
 
             while(this.distanceMoved >= TILE_WIDTH && this.pathIndex >= 0) {
                 const { deltaX, deltaY } = this.path[this.pathIndex]; 
@@ -68,9 +72,10 @@ MoveAction.prototype.onUpdate = function(gameContext, data) {
                 const positionVec = transform2D.transformTileToWorld(tileX, tileY);
             
                 this.entity.setDirectionByDelta(deltaX, deltaY);
-                this.entity.setPositionVec(positionVec);
                 this.distanceMoved -= TILE_WIDTH;
                 this.pathIndex--;
+
+                setEntityPosition(gameContext, this.entity, positionVec.x, positionVec.y);
 
                 if(!this.wasDiscovered && this.entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.entity.isDiscoveredByJammerAt(gameContext, tileX, tileY)) {
                     this.state = MoveAction.STATE.DISCOVERED;
@@ -111,9 +116,11 @@ MoveAction.prototype.onEnd = function(gameContext, data) {
     const position = transform2D.transformTileToWorld(tileX, tileY);
 
     this.execute(gameContext, data);
-    this.entity.setPositionVec(position);
     this.entity.setDirectionByDelta(deltaX, deltaY);
-    this.entity.playIdle(gameContext);
+    this.entity.setState(BattalionEntity.STATE.IDLE);
+
+    setEntityPosition(gameContext, this.entity, position.x, position.y);
+    updateEntitySprite(gameContext, this.entity);
 
     this.path = [];
     this.pathIndex = 0;

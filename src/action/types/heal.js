@@ -1,7 +1,8 @@
 import { Action } from "../../../engine/action/action.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
-import { COMMAND_TYPE } from "../../enums.js";
-import { playHealEffect } from "../../systems/animation.js";
+import { COMMAND_TYPE, SOUND_TYPE } from "../../enums.js";
+import { playEntitySound } from "../../systems/sound.js";
+import { getAnimationDuration, playHealEffect, updateEntitySprite } from "../../systems/sprite.js";
 import { createDeathIntent } from "../actionHelper.js";
 import { InteractionResolver } from "../interactionResolver.js";
 
@@ -29,11 +30,13 @@ HealAction.prototype.onStart = function(gameContext, data) {
     const target = entityManager.getEntity(targetID);
 
     entity.lookAt(target);
-    entity.playHeal(gameContext, target);
+    entity.setState(BattalionEntity.STATE.FIRE);
 
+    updateEntitySprite(gameContext, entity);
+    playEntitySound(gameContext, entity, SOUND_TYPE.HEAL);
     playHealEffect(gameContext, entity, target);
 
-    this.duration = entity.getAnimationDuration();
+    this.duration = getAnimationDuration(gameContext, entity);
 }
 
 HealAction.prototype.onUpdate = function(gameContext, data) {
@@ -53,7 +56,8 @@ HealAction.prototype.onEnd = function(gameContext, data) {
     const { entityID } = data;
     const entity = entityManager.getEntity(entityID);
 
-    entity.playIdle(gameContext);
+    entity.setState(BattalionEntity.STATE.IDLE);
+    updateEntitySprite(gameContext, entity);
 
     this.execute(gameContext, data);
     this.duration = 0;

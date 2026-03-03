@@ -1,11 +1,11 @@
 import { EntityManager } from "../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { BUILDING_TYPE, DIRECTION, ENTITY_TYPE, LAYER_TYPE, TEAM_STAT } from "../enums.js";
-import { createSchemaViewSprite, SchemaView } from "../sprite/schemaView.js";
-import { ClientBattalionEntity } from "../entity/clientBattalionEntity.js";
-import { ClientBuilding } from "../entity/clientBuilding.js";
 import { Building } from "../entity/building.js";
 import { Mine } from "../entity/mine.js";
+import { bufferEntitySprites, createSchematicSprite, setEntityPosition, updateEntitySprite } from "./sprite.js";
+import { SpriteManager } from "../../engine/sprite/spriteManager.js";
+import { bufferEntitySounds } from "./sound.js";
 
 const getEntityID = function(name) {
     const index = ENTITY_TYPE[name];
@@ -27,7 +27,7 @@ const getBuildingID = function(name) {
     return index;
 }
 
-export const despawnClientEntity = function(gameContext, entity) {
+const destroyEntity = function(gameContext, entity) {
     const { teamManager, world } = gameContext;
     const { entityManager } = world;
     const { activeTeams } = teamManager;
@@ -36,7 +36,6 @@ export const despawnClientEntity = function(gameContext, entity) {
 
     entity.removeFromMap(gameContext);
     entity.isMarkedForDestroy = true;
-    entity.onDestroy();
     
     team.addStatistic(TEAM_STAT.UNITS_LOST, 1);
 
@@ -50,27 +49,16 @@ export const despawnClientEntity = function(gameContext, entity) {
     teamManager.updateStatus();
 }
 
+export const despawnClientEntity = function(gameContext, entity) {
+    const { spriteManager } = gameContext;
+
+    spriteManager.destroySprite(entity.spriteID);
+    entity.spriteID = SpriteManager.INVALID_ID;
+    destroyEntity(gameContext, entity);
+}
+
 export const despawnServerEntity = function(gameContext, entity) {
-    const { teamManager, world } = gameContext;
-    const { entityManager } = world;
-    const { activeTeams } = teamManager;
-    const entityID = entity.getID();
-    const team = entity.getTeam(gameContext);
-
-    entity.removeFromMap(gameContext);
-    entity.isMarkedForDestroy = true;
-    entity.onDestroy();
-    
-    team.addStatistic(TEAM_STAT.UNITS_LOST, 1);
-
-    for(const teamID of activeTeams) {
-        const team = teamManager.getTeam(teamID);
-
-        team.onEntityDeath(entity);
-    }
-
-    entityManager.destroyEntityByID(entityID);
-    teamManager.updateStatus();
+    destroyEntity(gameContext, entity);
 }
 
 export const createServerEntityObject = function(gameContext, entityID, teamID, typeID, tileX, tileY) {
@@ -104,25 +92,23 @@ export const createClientEntityObject = function(gameContext, entityID, teamID, 
         return null;
     }
 
-    const { schema } = team;
     const entityType = typeRegistry.getEntityType(typeID);
     const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
-    const entityView = new SchemaView(visualSprite, null);
-    const entityObject = new ClientBattalionEntity(entityID, entityView);
+    const entityObject = new BattalionEntity(entityID);
     const spawnPosition = transform2D.transformTileToWorld(tileX, tileY);
 
-    entityView.schema = schema;
-
+    entityObject.spriteID = visualSprite.getIndex();
     entityObject.loadConfig(entityType);
-    entityObject.setPositionVec(spawnPosition);
     entityObject.setTile(tileX, tileY);
     entityObject.setTeam(teamID);
-    entityObject.bufferSounds(gameContext);
-    entityObject.bufferSprites(gameContext);
     team.addEntity(entityObject);
     entityManager.addEntity(entityObject);
     entityObject.placeOnMap(gameContext);
-    entityObject.playIdle(gameContext);
+
+    bufferEntitySounds(gameContext, entityObject);
+    setEntityPosition(gameContext, entityObject, spawnPosition.x, spawnPosition.y);
+    bufferEntitySprites(gameContext, entityObject);
+    updateEntitySprite(gameContext, entityObject);
 
     return entityObject;
 }
@@ -158,15 +144,13 @@ export const createClientBuildingObject = function(gameContext, teamID, typeID, 
     const { sprite } = buildingType;
 
     const position = transform2D.transformTileToWorld(tileX, tileY);
-    const visualSprite = createSchemaViewSprite(gameContext, sprite, schema, LAYER_TYPE.BUILDING);
-    const buildingView = new SchemaView(visualSprite, sprite);
-    const building = new ClientBuilding(buildingType, buildingView);
+    const visualSprite = createSchematicSprite(gameContext, sprite, schema, LAYER_TYPE.BUILDING);
+    const building = new Building(buildingType);
 
-    buildingView.schema = schema;
-    buildingView.setPositionVec(position);
-
+    building.spriteID = visualSprite.getIndex();
     building.setTile(tileX, tileY);
     building.setTeam(teamID);
+    visualSprite.setPosition(position.x, position.y);
 
     return building;
 }
@@ -245,8 +229,8 @@ export const spawnClientEntity = function(gameContext, config, externalID = Enti
     const entity = parseEntityJSON(gameContext, config, externalID, createClientEntityObject);
 
     if(entity) {
-        entity.playIdle(gameContext);
-        
+        updateEntitySprite(gameContext, entity);
+
         if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
             entity.setOpacity(0);
         }

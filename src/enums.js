@@ -3,6 +3,17 @@ export const PLAYER_PREFERENCE = {
     DISABLE_IDLE_ANIMATIONS: 0 //TODO: Implement!
 };
 
+export const SOUND_TYPE = {
+    HEAL: "heal",
+    MOVE: "move",
+    FIRE: "fire",
+    CLOAK: "cloak",
+    DEATH: "death",
+    RECRUIT: "recruit",
+    UNCLOAK: "uncloak",
+    _COUNT: 7
+};
+
 export const LOADER_RULE = {
     NONE: 0,
     SPAWN_BUILDINGS: 1 << 0,

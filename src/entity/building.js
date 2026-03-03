@@ -32,8 +32,6 @@ Building.prototype.load = function(data) {
     this.totalGeneratedCash = data.totalGeneratedCash;
 }
 
-Building.prototype.onTeamUpdate = function(gameContext, team) {}
-
 Building.prototype.generateCash = function(gameContext) {
     const { typeRegistry } = gameContext;
     let generatedCash = 0;
@@ -53,4 +51,24 @@ Building.prototype.setCustomInfo = function(id, name, desc) {
     this.customID = id;
     this.customName = name;
     this.customDesc = desc
+}
+
+Building.prototype.getDescription = function(gameContext) {
+    const { language } = gameContext;
+    
+    if(this.customDesc !== null) {
+        return language.getMapTranslation(this.customDesc);
+    }
+
+    return language.getSystemTranslation(this.config.desc);
+}
+
+Building.prototype.getName = function(gameContext) {
+    const { language } = gameContext;
+    
+    if(this.customName !== null) {
+        return language.getMapTranslation(this.customName);
+    }
+
+    return language.getSystemTranslation(this.config.name);
 }

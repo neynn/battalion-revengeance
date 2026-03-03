@@ -1,6 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { TEAM_STAT } from "../../enums.js";
+import { updateBuildingSprite } from "../../systems/sprite.js";
 
 export const CaptureAction = function() {
     Action.call(this);
@@ -33,7 +34,8 @@ CaptureAction.prototype.execute = function(gameContext, data) {
 
     nextTeam.addStatistic(TEAM_STAT.STRUCTURES_CAPTURED, 1);
     building.setTeam(entity.teamID);
-    building.onTeamUpdate(gameContext, nextTeam);
+
+    updateBuildingSprite(gameContext, building);
 }
 
 CaptureAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {

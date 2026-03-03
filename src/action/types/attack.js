@@ -1,7 +1,8 @@
 import { Action } from "../../../engine/action/action.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
-import { ATTACK_TYPE, COMMAND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
-import { playAttackEffect } from "../../systems/animation.js";
+import { ATTACK_TYPE, COMMAND_TYPE, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { playEntitySound } from "../../systems/sound.js";
+import { getAnimationDuration, playAttackEffect, updateEntitySprite } from "../../systems/sprite.js";
 import { createAttackRequest, createDeathIntent } from "../actionHelper.js";
 import { InteractionResolver } from "../interactionResolver.js";
 
@@ -60,20 +61,21 @@ AttackAction.prototype.onStart = function(gameContext, data) {
     const target = entityManager.getEntity(targetID);
 
     entity.lookAt(target);
+    entity.setState(BattalionEntity.STATE.FIRE);
 
     if(flags & AttackAction.FLAG.COUNTER) {
-        entity.playCounter(gameContext, target);
-    } else {
-        entity.playAttack(gameContext, target);
+        //TODO: Special counter anim!
     }
+
+    updateEntitySprite(gameContext, entity);
+    playEntitySound(gameContext, entity, SOUND_TYPE.FIRE);
+    playAttackEffect(gameContext, entity, target, resolutions);
 
     if(flags & AttackAction.FLAG.UNCLOAK) {
         entity.setOpacity(1);
     }
 
-    playAttackEffect(gameContext, entity, target, resolutions);
-
-    this.duration = entity.getAnimationDuration();
+    this.duration = getAnimationDuration(gameContext, entity);
 }
 
 AttackAction.prototype.onUpdate = function(gameContext, data) {
@@ -93,7 +95,8 @@ AttackAction.prototype.onEnd = function(gameContext, data) {
     const { attackerID } = data;
     const entity = entityManager.getEntity(attackerID);
 
-    entity.playIdle(gameContext);
+    entity.setState(BattalionEntity.STATE.IDLE);
+    updateEntitySprite(gameContext, entity);
 
     this.execute(gameContext, data);
     this.duration = 0;

@@ -48,23 +48,23 @@ PlayCamera.prototype.drawMines = function(tileManager, display, worldMap) {
     return count;
 }
 
-PlayCamera.prototype.drawEntity = function(display, entity, realTime, deltaTime) {
-    const { view, flags, state, teamID } = entity;
-    const { positionX, positionY, visual } = view;
+PlayCamera.prototype.drawEntity = function(display, entity, sprite, realTime, deltaTime) {
+    const { flags, state, teamID, opacity } = entity;
+    const { positionX, positionY } = sprite;
     const markerX = positionX - this.fViewportX;
     const markerY = positionY - this.fViewportY;
-    const opacity = visual.getOpacity();
 
     if(opacity < BattalionCamera.STEALTH_THRESHOLD) {
         if((flags & BattalionEntity.FLAG.IS_CLOAKED) && this.perspectives.has(teamID)) {
-            visual.setOpacity(BattalionCamera.STEALTH_THRESHOLD);
-            this.drawEntityBlock(display, entity, realTime, deltaTime);
-            visual.setOpacity(opacity);
+            sprite.setOpacity(BattalionCamera.STEALTH_THRESHOLD);
+            this.drawEntityBlock(display, entity, sprite, realTime, deltaTime);
         } else {
-            this.drawEntityBlock(display, entity, realTime, deltaTime);
+            sprite.setOpacity(opacity);
+            this.drawEntityBlock(display, entity, sprite, realTime, deltaTime);
         }
     } else {
-        this.drawEntityBlock(display, entity, realTime, deltaTime);
+        sprite.setOpacity(opacity);
+        this.drawEntityBlock(display, entity, sprite, realTime, deltaTime);
     }
 
     if(state === BattalionEntity.STATE.IDLE && entity.canAct()) {

@@ -11,6 +11,7 @@ import { mapTransportToEntity } from "../enumHelpers.js";
 import { getLineEntities } from "../systems/targeting.js";
 import { mGetUncloakedEntities, mGetUncloakedMines } from "../systems/cloak.js";
 import { TeamManager } from "../team/teamManager.js";
+import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 
 export const BattalionEntity = function(id) {
     Entity.call(this, id, "");
@@ -34,6 +35,8 @@ export const BattalionEntity = function(id) {
     this.lastAttacker = EntityManager.INVALID_ID;
     this.turns = 0;
     this.cash = 0;
+    this.spriteID = SpriteManager.INVALID_ID;
+    this.opacity = 1;
 }
 
 BattalionEntity.FLAG = {
@@ -56,8 +59,6 @@ BattalionEntity.STATE = {
 
 BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
-
-BattalionEntity.prototype.onDestroy = function() {}
 
 BattalionEntity.prototype.save = function() {
     return {
@@ -94,6 +95,10 @@ BattalionEntity.prototype.load = function(data) {
     this.setDirection(data.direction);
     this.setHealth(data.health);
     this.setCustomInfo(data.name, data.desc);
+}
+
+BattalionEntity.prototype.setState = function(stateID) {
+    this.state = stateID;
 }
 
 BattalionEntity.prototype.loadConfig = function(config) {
@@ -1504,4 +1509,28 @@ BattalionEntity.prototype.canPlaceMine = function(gameContext) {
     const isPlaceable = worldMap.isMinePlaceable(gameContext, this.tileX, this.tileY, category);
 
     return isPlaceable;
+}
+
+BattalionEntity.prototype.getDescription = function(gameContext) {
+    const { language } = gameContext;
+    
+    if(this.customDesc !== null) {
+        return language.getMapTranslation(this.customDesc);
+    }
+
+    return language.getSystemTranslation(this.config.desc);
+}
+
+BattalionEntity.prototype.getName = function(gameContext) {
+    const { language } = gameContext;
+    
+    if(this.customName !== null) {
+        return language.getMapTranslation(this.customName);
+    }
+
+    return language.getSystemTranslation(this.config.name);
+}
+
+BattalionEntity.prototype.setOpacity = function(opacity) {
+    this.opacity = opacity;
 }

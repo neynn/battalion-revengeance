@@ -5,6 +5,7 @@ import { MapSettings } from "../map/settings.js";
 import { TeamManager } from "../team/teamManager.js";
 import { createClientMapLoader } from "./map.js";
 import { createClientBuildingObject, createClientEntityObject, createMineObject } from "./spawn.js";
+import { updateEntitySprite } from "./sprite.js";
 
 const saveEntities = function(gameContext) {
     const { world } = gameContext;
@@ -90,7 +91,7 @@ const loadEntities = function(gameContext, entities) {
                 entity.setOpacity(0);
             }
 
-            entity.updateSprite(gameContext);
+            updateEntitySprite(gameContext, entity);
         }
     }
 }

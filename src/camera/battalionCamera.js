@@ -102,9 +102,8 @@ BattalionCamera.prototype.drawEntityHealth = function(display, drawX, drawY, hea
     }
 }
 
-BattalionCamera.prototype.drawEntityBlock = function(display, entity, realTime, deltaTime) {
-    const { view } = entity;
-    const { visual, positionX, positionY } = view;
+BattalionCamera.prototype.drawEntityBlock = function(display, entity, sprite, realTime, deltaTime) {
+    const { positionX, positionY } = sprite;
     const viewportX = this.fViewportX;
     const viewportY = this.fViewportY;
     let healthFactor = entity.getHealthFactor();
@@ -113,8 +112,8 @@ BattalionCamera.prototype.drawEntityBlock = function(display, entity, realTime, 
         healthFactor = 1;
     }
 
-    visual.update(realTime, deltaTime);
-    visual.draw(display, viewportX, viewportY);
+    sprite.update(realTime, deltaTime);
+    sprite.draw(display, viewportX, viewportY);
 
     if(PLAYER_PREFERENCE.FORCE_HEALTH_DRAW || healthFactor > 0 && healthFactor < 1) {
         const healthX = positionX - viewportX;
@@ -124,24 +123,24 @@ BattalionCamera.prototype.drawEntityBlock = function(display, entity, realTime, 
     }
 }
 
-BattalionCamera.prototype.drawEntity = function(display, entity, realTime, deltaTime) {
-    const { view, flags } = entity;
-    const { visual } = view;
-    const opacity = visual.getOpacity();
+BattalionCamera.prototype.drawEntity = function(display, entity, sprite, realTime, deltaTime) {
+    const { flags, opacity } = entity;
 
     if((flags & BattalionEntity.FLAG.IS_CLOAKED) && opacity < BattalionCamera.STEALTH_THRESHOLD) {
-        visual.setOpacity(BattalionCamera.STEALTH_THRESHOLD);
-        this.drawEntityBlock(display, entity, realTime, deltaTime);
-        visual.setOpacity(opacity);
+        sprite.setOpacity(BattalionCamera.STEALTH_THRESHOLD);
+        this.drawEntityBlock(display, entity, sprite, realTime, deltaTime);
     } else {
-        this.drawEntityBlock(display, entity, realTime, deltaTime);
+        sprite.setOpacity(opacity);
+        this.drawEntityBlock(display, entity, sprite, realTime, deltaTime);
     }
 }
 
 BattalionCamera.prototype.debugEntities = function(gameContext, display) {
-    const { world } = gameContext;
+    const { world, spriteManager } = gameContext;
     const { entityManager } = world;
     const { entities } = entityManager;
+    const { pool } = spriteManager;
+    const { elements } = pool;
     const viewportLeftEdge = this.fViewportX;
     const viewportTopEdge = this.fViewportY;
     const viewportRightEdge = viewportLeftEdge + this.wViewportWidth;
@@ -151,20 +150,22 @@ BattalionCamera.prototype.debugEntities = function(gameContext, display) {
 
     for(let i = 0; i < entities.length; i++) {
         const entity = entities[i];
-        const { view } = entity;
-        const { visual } = view;
-        const isVisible = view.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
+        const { spriteID } = entity;
+        const sprite = elements[spriteID];
+        const isVisible = sprite.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
 
         if(isVisible) {
-            visual.debug(display, viewportLeftEdge, viewportTopEdge);
+            sprite.debug(display, viewportLeftEdge, viewportTopEdge);
         }
     }
 }
 
 BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime, deltaTime) {
-    const { world } = gameContext;
+    const { world, spriteManager } = gameContext;
     const { entityManager } = world;
     const { entities } = entityManager;
+    const { pool } = spriteManager;
+    const { elements } = pool;
     const viewportLeftEdge = this.fViewportX;
     const viewportTopEdge = this.fViewportY;
     const viewportRightEdge = viewportLeftEdge + this.wViewportWidth;
@@ -174,12 +175,13 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
 
     for(let i = 0; i < entities.length; i++) {
         const entity = entities[i];
-        const { view, state } = entity;
-        const isVisible = view.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
+        const { state, spriteID } = entity;
+        const sprite = elements[spriteID];
+        const isVisible = sprite.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
 
         if(isVisible) {
             if(state === BattalionEntity.STATE.IDLE) {
-                this.drawEntity(display, entity, realTime, deltaTime);
+                this.drawEntity(display, entity, sprite, realTime, deltaTime);
             } else {
                 priorityEntities.push(entity);
             }
@@ -190,8 +192,10 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
 
     for(let i = 0; i < priorityEntities.length; i++) {
         const entity = priorityEntities[i];
+        const { spriteID } = entity;
+        const sprite = elements[spriteID];
 
-        this.drawEntity(display, entity, realTime, deltaTime);
+        this.drawEntity(display, entity, sprite, realTime, deltaTime);
     }
 
     if(Renderer.DEBUG.SPRITES) {
@@ -226,31 +230,6 @@ BattalionCamera.prototype.drawMines = function(tileManager, display, worldMap) {
         const tileID = mines[i].getTileSprite();
 
         count += this.drawTileClipped(tileManager, tileID, context, tileX, tileY);
-    }
-
-    return count;
-}
-
-BattalionCamera.prototype.drawBuildings = function(display, worldMap, realTime, deltaTime) {
-    const { buildings } = worldMap;
-    const length = buildings.length;
-    const viewportLeftEdge = this.fViewportX;
-    const viewportTopEdge = this.fViewportY;
-    const viewportRightEdge = viewportLeftEdge + this.wViewportWidth;
-    const viewportBottomEdge = viewportTopEdge + this.wViewportHeight
-    let count = 0;
-
-    for(let i = 0; i < length; i++) {
-        const { view } = buildings[i];
-        const isVisible = view.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
-
-        if(isVisible) {
-            const { visual } = view;
-
-            visual.update(realTime, deltaTime);
-            visual.draw(display, viewportLeftEdge, viewportTopEdge);
-            count++;
-        }
     }
 
     return count;

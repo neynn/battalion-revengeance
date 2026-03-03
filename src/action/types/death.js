@@ -1,5 +1,9 @@
 import { Action } from "../../../engine/action/action.js";
 import { DEATH_FADE_RATE } from "../../constants.js";
+import { BattalionEntity } from "../../entity/battalionEntity.js";
+import { SOUND_TYPE } from "../../enums.js";
+import { playEntitySound } from "../../systems/sound.js";
+import { playDeathEffect } from "../../systems/sprite.js";
 
 export const DeathAction = function(despawn) {
     Action.call(this);
@@ -21,7 +25,10 @@ DeathAction.prototype.onStart = function(gameContext, data) {
         const entity = entityManager.getEntity(entities[i]);
 
         entity.setOpacity(1);
-        entity.playDeath(gameContext);
+        entity.setState(BattalionEntity.STATE.DEAD);
+
+        playDeathEffect(gameContext, entity);
+        playEntitySound(gameContext, entity, SOUND_TYPE.DEATH);
 
         this.entities.push(entity);
     }
