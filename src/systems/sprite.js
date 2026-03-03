@@ -165,9 +165,8 @@ export const playAttackEffect = function(gameContext, entity, target, resolution
     }
 }
 
-export const bufferEntitySprites = function(gameContext, entity) {
+export const bufferEntitySprites = function(gameContext, entity, schema) {
     const { spriteManager } = gameContext;
-    const { schema } = entity.getTeam(gameContext);
     const { id, colorMap } = schema;
 
     if(id === SCHEMA_TYPE.RED) {
@@ -179,7 +178,7 @@ export const bufferEntitySprites = function(gameContext, entity) {
     for(const spriteKey of spriteKeys) {
         const spriteName = entity.config.sprites[spriteKey];
 
-        if(spriteName) {
+        if(spriteName !== undefined) {
             spriteManager.createCopyTexture(spriteName, id, colorMap);
         }
     }

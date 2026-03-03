@@ -92,6 +92,7 @@ export const createClientEntityObject = function(gameContext, entityID, teamID, 
         return null;
     }
 
+    const { schema } = team;
     const entityType = typeRegistry.getEntityType(typeID);
     const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
     const entityObject = new BattalionEntity(entityID);
@@ -106,8 +107,8 @@ export const createClientEntityObject = function(gameContext, entityID, teamID, 
     entityObject.placeOnMap(gameContext);
 
     bufferEntitySounds(gameContext, entityObject);
+    bufferEntitySprites(gameContext, entityObject, schema);
     setEntityPosition(gameContext, entityObject, spawnPosition.x, spawnPosition.y);
-    bufferEntitySprites(gameContext, entityObject);
     updateEntitySprite(gameContext, entityObject);
 
     return entityObject;
