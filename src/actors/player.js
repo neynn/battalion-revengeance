@@ -93,7 +93,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
 
         if(entity) {
             //this.addIntent(createExtractIntent(entity.id));
-            this.addIntent(createProduceEntityIntent(entity.id, ENTITY_TYPE.ANNIHILATOR_TANK, DIRECTION.WEST));
+            this.addIntent(createProduceEntityIntent(entity.id, ENTITY_TYPE.ANNIHILATOR_TANK, DIRECTION.NORTH));
         }
     });
 }

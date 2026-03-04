@@ -33,6 +33,10 @@ Camera2D.prototype.constructor = Camera2D;
 
 Camera2D.prototype.onMapSizeUpdate = function(oldWidth, oldHeight) {}
 
+Camera2D.prototype.getRenderedArea = function() {
+    return (this.endY - this.startY + 1) * (this.endX - this.startX + 1);
+}
+
 Camera2D.prototype.isTileVisible = function(tileX, tileY) {
     return tileX >= this.startX && tileX <= this.endX && tileY >= this.startY && tileY <= this.endY;
 }

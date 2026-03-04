@@ -16,6 +16,7 @@ export const Camera = function() {
     this.worldHeight = 0;
     this.viewportMode = Camera.VIEWPORT_MODE.DRAG;
     this.viewportType = Camera.VIEWPORT_TYPE.BOUND;
+    this.currentFrame = 0;
 }
 
 Camera.VIEWPORT_TYPE = {

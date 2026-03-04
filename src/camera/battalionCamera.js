@@ -1,7 +1,9 @@
 import { Camera2D } from "../../engine/camera/camera2D.js";
 import { TileOverlay } from "../../engine/camera/tileOverlay.js";
+import { EntityManager } from "../../engine/entity/entityManager.js";
 import { SHAPE } from "../../engine/math/constants.js";
 import { Renderer } from "../../engine/renderer/renderer.js";
+import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { drawShape, shadeScreen } from "../../engine/util/drawHelper.js";
 import { TILE_HEIGHT, TILE_WIDTH } from "../constants.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
@@ -151,6 +153,11 @@ BattalionCamera.prototype.debugEntities = function(gameContext, display) {
     for(let i = 0; i < entities.length; i++) {
         const entity = entities[i];
         const { spriteID } = entity;
+
+        if(spriteID === SpriteManager.INVALID_ID) {
+            continue;
+        }
+
         const sprite = elements[spriteID];
         const isVisible = sprite.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
 
@@ -160,7 +167,64 @@ BattalionCamera.prototype.debugEntities = function(gameContext, display) {
     }
 }
 
-BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime, deltaTime) {
+BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap, realTime, deltaTime) {
+    const { world, spriteManager } = gameContext;
+    const { entityManager } = world;
+    const { entities } = worldMap;
+    const { pool } = spriteManager;
+    const { elements } = pool;
+
+    const startX = this.startX;
+    const startY = this.startY;
+    const endX = this.endX;
+    const endY = this.endY;
+    const mapWidth = this.mapWidth;
+    const deferred = [];
+
+    let count = 0;
+
+    for(let i = startY; i <= endY; i++) {
+        let index = i * mapWidth + startX;
+
+        for(let j = startX; j <= endX; j++) {
+            const entityID = entities[index];
+
+            if(entityID !== EntityManager.INVALID_ID) {
+                const entity = entityManager.getEntity(entityID);
+                const spriteID = entity.spriteID;
+                const state = entity.state;
+
+                if(spriteID !== SpriteManager.INVALID_ID) {
+                    if(state === BattalionEntity.STATE.IDLE) {
+                        this.drawEntity(display, entity, elements[spriteID], realTime, deltaTime);
+                    } else {
+                        deferred.push(entity);
+                    }
+
+                    count++;
+                }
+            }
+
+            index++;
+        }
+    }
+
+    for(let i = 0; i < deferred.length; i++) {
+        const entity = deferred[i];
+        const spriteID = entity.spriteID;
+
+        this.drawEntity(display, entity, elements[spriteID], realTime, deltaTime);
+        count++;
+    }
+
+    if(Renderer.DEBUG.SPRITES) {
+        this.debugEntities(gameContext, display);
+    }
+
+    return count;
+}
+
+BattalionCamera.prototype.drawEntities_old = function(gameContext, display, realTime, deltaTime) {
     const { world, spriteManager } = gameContext;
     const { entityManager } = world;
     const { entities } = entityManager;
@@ -176,6 +240,11 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, realTime
     for(let i = 0; i < entities.length; i++) {
         const entity = entities[i];
         const { state, spriteID } = entity;
+
+        if(spriteID === SpriteManager.INVALID_ID) {
+            continue;
+        }
+
         const sprite = elements[spriteID];
         const isVisible = sprite.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
 
@@ -252,7 +321,7 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.CLOUD));
     this.drawOverlay(tileManager, display, this.selectOverlay);
-    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(LAYER_TYPE.BUILDING), realTime, deltaTime);
+    this.drawSpriteBatch(display, spriteManager.getLayer(LAYER_TYPE.BUILDING), realTime, deltaTime);
     this.drawMines(tileManager, display, worldMap);
 
     if(this.showAllJammers) {
@@ -262,17 +331,19 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     }
 
     this.drawOverlay(tileManager, display, this.pathOverlay);
-    this.drawEntities(gameContext, display, realTime, deltaTime);
+    this.drawEntities(gameContext, display, worldMap, realTime, deltaTime);
     this.drawSpriteBatchYSorted(display, spriteManager.getLayer(LAYER_TYPE.GFX), realTime, deltaTime);
     this.drawCash(display);
-    //this.drawSpriteBatchYSorted(display, spriteManager.getLayer(LAYER_TYPE.SEA), realTime, deltaTime);
-    //this.drawSpriteBatchYSorted(display, spriteManager.getLayer(LAYER_TYPE.LAND), realTime, deltaTime);
     //this.shadeScreen(display, "#000000", 0.5);
 
     if(Renderer.DEBUG.MAP) {
         this.debugMap(display, worldMap);
         this.drawInfo(gameContext, display);
     }
+
+    //TODO: Add sprite layers properly.
+    
+    this.currentFrame++;
 }
 
 BattalionCamera.prototype.shadeScreen = function(display, color, alpha) {

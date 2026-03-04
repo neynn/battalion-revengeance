@@ -444,3 +444,9 @@ SpriteManager.prototype.clearShared = function() {
 
     this.sharedSprites.length = 0;
 }
+
+SpriteManager.prototype.sortLayer = function(index) {
+    const layer = this.getLayer(index);
+
+    layer.sort((current, next) => current.positionY - next.positionY);
+}

@@ -39,7 +39,7 @@ EditCamera.prototype.update = function(gameContext, display) {
     }
 
     this.drawEntities(gameContext, display, realTime, deltaTime);
-    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(LAYER_TYPE.BUILDING), realTime, deltaTime);
+    this.drawSpriteBatch(display, spriteManager.getLayer(LAYER_TYPE.BUILDING), realTime, deltaTime);
     this.drawHoverTile(gameContext, context);
 
     if(Renderer.DEBUG.MAP) {

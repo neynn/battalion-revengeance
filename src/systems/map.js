@@ -1,6 +1,6 @@
 import { BattalionMap } from "../map/battalionMap.js";
 import { createMineObject, spawnClientBuilding, spawnClientEntity, spawnServerBuilding, spawnServerEntity } from "./spawn.js";
-import { COMMANDER_TYPE, COMPONENT_TYPE, CURRENCY_TYPE, FACTION_TYPE, LOADER_MODE, LOADER_RULE, MINE_TYPE, OBJECTIVE_TYPE, SCHEMA_TYPE } from "../enums.js";
+import { COMMANDER_TYPE, COMPONENT_TYPE, CURRENCY_TYPE, FACTION_TYPE, LAYER_TYPE, LOADER_MODE, LOADER_RULE, MINE_TYPE, OBJECTIVE_TYPE, SCHEMA_TYPE } from "../enums.js";
 import { DialogueComponent } from "../event/components/dialogue.js";
 import { ExplodeTileComponent } from "../event/components/explodeTile.js";
 import { PlayEffectComponent } from "../event/components/playEffect.js";
@@ -379,7 +379,7 @@ ClientMatchLoader.prototype.loadMusic = function(gameContext) {
 }
 
 ClientMatchLoader.prototype.loadMap = function(gameContext, settings) {
-    const { dialogueHandler, teamManager } = gameContext;
+    const { dialogueHandler, teamManager, spriteManager } = gameContext;
     const { overrides, entities } = settings;
     const cContext = createPlayCamera(gameContext);
     const camera = cContext.getCamera();
@@ -397,6 +397,9 @@ ClientMatchLoader.prototype.loadMap = function(gameContext, settings) {
     dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);
     teamManager.updateStatus();
     teamManager.setTurnOrder(gameContext);
+
+    //Sort buildings once after all are created!
+    spriteManager.sortLayer(LAYER_TYPE.BUILDING);
 }
 
 export const ServerMatchLoader = function(worldMap, mapFile) {
