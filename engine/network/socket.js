@@ -12,11 +12,6 @@ export const Socket = function() {
     this.events.register(Socket.EVENT.MESSAGE_FROM_SERVER);
 }
 
-Socket.DEBUG = {
-    CONNECT: 1,
-    DISCONNECT: 1
-};
-
 Socket.EVENT = {
     CONNECTED_TO_SERVER: "CONNECTED_TO_SERVER",
     DISCONNECTED_FROM_SERVER: "DISCONNECTED_FROM_SERVER",

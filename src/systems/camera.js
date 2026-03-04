@@ -1,6 +1,5 @@
 import { Cursor } from "../../engine/client/cursor.js";
 import { Scroller } from "../../engine/util/scroller.js";
-import { BattalionCamera } from "../camera/battalionCamera.js";
 import { EditCamera } from "../camera/editCamera.js";
 import { PlayCamera } from "../camera/playCamera.js";
 
@@ -66,8 +65,8 @@ export const createPlayCamera = function(gameContext) {
     context.enableBuffer();
     context.enableAutoCenter();
 
-    //context.fixBuffer();
-    //context.setResolution(560, 560);
+    context.fixBuffer();
+    context.setResolution(560, 560);
 
     context.setScale(1);
     context.forceReload();

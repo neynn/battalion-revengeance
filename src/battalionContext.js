@@ -12,7 +12,7 @@ import { TILE_HEIGHT, TILE_WIDTH } from "./constants.js";
 import { ArenaState } from "./states/arena/arena.js";
 import { UICore } from "./ui/uiCore.js";
 import { ClientActionRouter } from "./client/actionRouter.js";
-import { registerClientActions } from "./systems/context.js";
+import { addDebug, registerClientActions } from "./systems/context.js";
 import { resolveTileType } from "./enumHelpers.js";
 
 export const BattalionContext = function() {
@@ -82,6 +82,7 @@ BattalionContext.prototype.init = function(resources) {
     this.states.addState(BattalionContext.STATE.PLAY, new PlayState());
     this.states.setNextState(this, BattalionContext.STATE.MAIN_MENU);
     this.timer.start();
+    addDebug(this);
 }
 
 BattalionContext.prototype.onExit = function() {
@@ -89,4 +90,5 @@ BattalionContext.prototype.onExit = function() {
     this.portraitHandler.exit();
     this.dialogueHandler.exit();
     this.uiCore.exit();
+    addDebug(this);
 }

@@ -1,3 +1,4 @@
+import { DEBUG } from "../../debug.js";
 import { clampValue } from "../../math/math.js";
 import { PathHandler } from "../../resources/pathHandler.js";
 import { MockAudio } from "./mockAudio.js";
@@ -17,8 +18,6 @@ export const MusicPlayer = function() {
 }
 
 MusicPlayer.EMPTY_TRACK = new MusicTrack(new MockAudio(), 0, false);
-
-MusicPlayer.DEBUG = 1;
 
 MusicPlayer.MODE = {
     SINGLE: 0,
@@ -48,7 +47,7 @@ MusicPlayer.prototype.loadTrack = function(trackID) {
     const meta = this.tracks[trackID];
 
     if(!meta) {
-        if(MusicPlayer.DEBUG) {
+        if(DEBUG.MUSIC) {
             console.warn(`Track ${trackID} does not exist!`);
         }
 
@@ -96,7 +95,7 @@ MusicPlayer.prototype.play = function(trackID) {
 
     this.currentTrack = trackID;
 
-    if(MusicPlayer.DEBUG) {
+    if(DEBUG.MUSIC) {
         console.log(`Now playing: ${trackID}`);
     }
 }
@@ -198,7 +197,7 @@ MusicPlayer.prototype.stop = function() {
 
 MusicPlayer.prototype.playTrack = function(musicID) {
     if(!this.tracks[musicID]) {
-        if(MusicPlayer.DEBUG) {
+        if(DEBUG.MUSIC) {
             console.warn(`Track ${trackID} does not exist!`);
         }
         return;
@@ -212,7 +211,7 @@ MusicPlayer.prototype.playPlaylist = function(playlistID) {
     const playlist = this.playlists[playlistID];
 
     if(!playlist) {
-        if(MusicPlayer.DEBUG) {
+        if(DEBUG.MUSIC) {
             console.warn(`Playlist ${playlistID} does not exist!`);
         }
         return;

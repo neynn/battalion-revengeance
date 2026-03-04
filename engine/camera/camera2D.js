@@ -1,5 +1,5 @@
+import { DEBUG } from "../debug.js";
 import { clampValue } from "../math/math.js";
-import { Renderer } from "../renderer/renderer.js";
 import { TextureHandle } from "../resources/texture/textureHandle.js";
 import { Camera } from "./camera.js";
 
@@ -214,23 +214,26 @@ Camera2D.prototype.drawLayer = function(tileManager, display, layer) {
     return count;
 }
 
-Camera2D.prototype.drawSpriteBatch = function(display, spriteBatch, realTime, deltaTime) {
+Camera2D.prototype.drawSpriteLayer = function(gameContext, display, layerID) {
+    const { timer, spriteManager } = gameContext;
+    const { realTime, deltaTime } = timer;
     const viewportLeftEdge = this.fViewportX;
     const viewportTopEdge = this.fViewportY;
     const viewportRightEdge = viewportLeftEdge + this.wViewportWidth;
     const viewportBottomEdge = viewportTopEdge + this.wViewportHeight;
-    const length = spriteBatch.length;
+    const layer = spriteManager.getLayer(layerID);
+    const length = layer.length;
     let count = 0;
 
     for(let i = 0; i < length; i++) {
-        const sprite = spriteBatch[i];
+        const sprite = layer[i];
         const isVisible = sprite.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
 
         if(isVisible) {
             sprite.update(realTime, deltaTime);
             sprite.draw(display, viewportLeftEdge, viewportTopEdge);
 
-            if(Renderer.DEBUG.SPRITES) {
+            if(DEBUG.SPRITES) {
                 sprite.debug(display, viewportLeftEdge, viewportTopEdge);
             }
 
@@ -241,41 +244,42 @@ Camera2D.prototype.drawSpriteBatch = function(display, spriteBatch, realTime, de
     return count;
 }
 
-Camera2D.prototype.drawSpriteBatchYSorted = function(display, spriteBatch, realTime, deltaTime) {
+Camera2D.prototype.drawSortedSpriteLayer = function(gameContext, display, layerID) {
+    const { timer, spriteManager } = gameContext;
+    const { realTime, deltaTime } = timer;
     const viewportLeftEdge = this.fViewportX;
     const viewportTopEdge = this.fViewportY;
     const viewportRightEdge = viewportLeftEdge + this.wViewportWidth;
     const viewportBottomEdge = viewportTopEdge + this.wViewportHeight;
-    const length = spriteBatch.length;
-    const visibleSprites = [];
+    const layer = spriteManager.getLayer(layerID);
+    const length = layer.length;
+    const sprites = [];
+    let count = 0;
 
     for(let i = 0; i < length; i++) {
-        const sprite = spriteBatch[i];
+        const sprite = layer[i];
         const isVisible = sprite.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
 
         if(isVisible) {
-            visibleSprites.push(sprite);
+            sprites.push(sprite);
+            count++;
         }
     }
 
-    visibleSprites.sort((current, next) => current.positionY - next.positionY);
-    
-    for(let i = 0; i < visibleSprites.length; i++) {
-        const sprite = visibleSprites[i];
+    sprites.sort((current, next) => current.positionY - next.positionY);
+
+    for(let i = 0; i < count; i++) {
+        const sprite = sprites[i];
 
         sprite.update(realTime, deltaTime);
         sprite.draw(display, viewportLeftEdge, viewportTopEdge);
-    }
 
-    if(Renderer.DEBUG.SPRITES) {
-        for(let i = 0; i < visibleSprites.length; i++) {
-            const sprite = visibleSprites[i];
-    
+        if(DEBUG.SPRITES) {
             sprite.debug(display, viewportLeftEdge, viewportTopEdge);
         }
     }
 
-    return visibleSprites.length;
+    return count;
 }
 
 Camera2D.prototype.drawTilesWithCallback = function(onDraw) {

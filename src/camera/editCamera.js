@@ -1,5 +1,5 @@
 import { getCursorTile } from "../../engine/camera/contextHelper.js";
-import { Renderer } from "../../engine/renderer/renderer.js";
+import { DEBUG } from "../../engine/debug.js";
 import { TileManager } from "../../engine/tile/tileManager.js";
 import { LAYER_TYPE } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
@@ -17,17 +17,13 @@ EditCamera.prototype = Object.create(BattalionCamera.prototype);
 EditCamera.prototype.constructor = EditCamera;
 
 EditCamera.prototype.update = function(gameContext, display) {
-    const { world, timer, spriteManager, tileManager } = gameContext;
+    const { world, tileManager } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
 
     if(!worldMap) {
         return;
     }
-    
-    const { context } = display;
-    const deltaTime = timer.getDeltaTime();
-    const realTime = timer.getRealTime();
 
     this.updateWorldBounds();
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.GROUND));
@@ -38,16 +34,17 @@ EditCamera.prototype.update = function(gameContext, display) {
         this.drawJammers(tileManager, display, worldMap);
     }
 
-    this.drawEntities(gameContext, display, realTime, deltaTime);
-    this.drawSpriteBatch(display, spriteManager.getLayer(LAYER_TYPE.BUILDING), realTime, deltaTime);
-    this.drawHoverTile(gameContext, context);
+    this.drawEntities(gameContext, display, worldMap);
+    this.drawSpriteLayer(gameContext, display, LAYER_TYPE.BUILDING);
+    this.drawHoverTile(gameContext, display);
 
-    if(Renderer.DEBUG.MAP) {
+    if(DEBUG.WORLD) {
         this.debugMap(display, worldMap);
     }
 }
 
-EditCamera.prototype.drawHoverTile = function(gameContext, context) {
+EditCamera.prototype.drawHoverTile = function(gameContext, display) {
+    const { context } = display;
     const { id, name, width, height } = this.brush;
 
     if(id === TileManager.TILE_ID.INVALID) {

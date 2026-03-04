@@ -3,6 +3,7 @@ import { EffectManager } from "../effects/effectManager.js";
 import { CameraContext } from "../camera/cameraContext.js";
 import { Camera2D } from "../camera/camera2D.js";
 import { getCursorTile } from "../camera/contextHelper.js";
+import { DEBUG } from "../debug.js";
 
 export const Renderer = function(windowWidth, windowHeight) {
     this.nextID = 0;
@@ -14,14 +15,6 @@ export const Renderer = function(windowWidth, windowHeight) {
     this.display.init(this.windowWidth, this.windowHeight, Display.TYPE.DISPLAY);
     this.display.toDocument();
 }
-
-Renderer.DEBUG = {
-    CONTEXT: 0,
-    INTERFACE: 0,
-    SPRITES: 0,
-    MAP: 0,
-    INFO: 1
-};
 
 Renderer.FPS_COLOR = {
     LOW: "#ff0000",
@@ -95,7 +88,7 @@ Renderer.prototype.update = function(gameContext) {
         this.contexts[i].draw(gameContext, this.display);
     }
 
-    if(Renderer.DEBUG.CONTEXT) {
+    if(DEBUG.CONTEXT) {
         for(let i = 0; i < this.contexts.length; i++) {
             this.contexts[i].debug(this.display.context);
         }
@@ -107,11 +100,11 @@ Renderer.prototype.update = function(gameContext) {
 
     this.display.reset();
 
-    if(Renderer.DEBUG.INTERFACE) {
+    if(DEBUG.UI) {
         uiManager.debug(this.display);
     }
 
-    if(Renderer.DEBUG.INFO) {
+    if(DEBUG.SHOW_INFO) {
         this.drawInfo(gameContext);
     }
 }
@@ -141,10 +134,10 @@ Renderer.prototype.drawInfo = function(gameContext) {
     context.fillText(`WindowX: ${this.windowWidth}, WindowY: ${this.windowHeight}`, 0, WINDOW_Y + TEXT_SIZE * 2);
     context.fillText(`MouseX: ${x}, MouseY: ${y}`, 0, WINDOW_Y + TEXT_SIZE * 3);
 
-    context.fillText(`DEBUG-MAP: ${Renderer.DEBUG.MAP}`, 0, DEBUG_Y);
-    context.fillText(`DEBUG-CONTEXT: ${Renderer.DEBUG.CONTEXT}`, 0, DEBUG_Y + TEXT_SIZE);
-    context.fillText(`DEBUG-SPRITES: ${Renderer.DEBUG.SPRITES}`, 0, DEBUG_Y + TEXT_SIZE * 2);
-    context.fillText(`DEBUG-INTERFACE: ${Renderer.DEBUG.INTERFACE}`, 0, DEBUG_Y + TEXT_SIZE * 3);
+    context.fillText(`World: ${DEBUG.WORLD}`, 0, DEBUG_Y);
+    context.fillText(`Context: ${DEBUG.CONTEXT}`, 0, DEBUG_Y + TEXT_SIZE);
+    context.fillText(`Sprites: ${DEBUG.SPRITES}`, 0, DEBUG_Y + TEXT_SIZE * 2);
+    context.fillText(`UI: ${DEBUG.UI}`, 0, DEBUG_Y + TEXT_SIZE * 3);
 }
 
 Renderer.prototype.onWindowResize = function(width, height) {

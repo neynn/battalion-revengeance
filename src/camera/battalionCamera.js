@@ -1,8 +1,8 @@
 import { Camera2D } from "../../engine/camera/camera2D.js";
 import { TileOverlay } from "../../engine/camera/tileOverlay.js";
+import { DEBUG } from "../../engine/debug.js";
 import { EntityManager } from "../../engine/entity/entityManager.js";
 import { SHAPE } from "../../engine/math/constants.js";
-import { Renderer } from "../../engine/renderer/renderer.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { drawShape, shadeScreen } from "../../engine/util/drawHelper.js";
 import { TILE_HEIGHT, TILE_WIDTH } from "../constants.js";
@@ -167,8 +167,9 @@ BattalionCamera.prototype.debugEntities = function(gameContext, display) {
     }
 }
 
-BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap, realTime, deltaTime) {
-    const { world, spriteManager } = gameContext;
+BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap) {
+    const { timer, world, spriteManager } = gameContext;
+    const { realTime, deltaTime } = timer;
     const { entityManager } = world;
     const { entities } = worldMap;
     const { pool } = spriteManager;
@@ -214,10 +215,9 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
         const spriteID = entity.spriteID;
 
         this.drawEntity(display, entity, elements[spriteID], realTime, deltaTime);
-        count++;
     }
 
-    if(Renderer.DEBUG.SPRITES) {
+    if(DEBUG.SPRITES) {
         this.debugEntities(gameContext, display);
     }
 
@@ -267,7 +267,7 @@ BattalionCamera.prototype.drawEntities_old = function(gameContext, display, real
         this.drawEntity(display, entity, sprite, realTime, deltaTime);
     }
 
-    if(Renderer.DEBUG.SPRITES) {
+    if(DEBUG.SPRITES) {
         this.debugEntities(gameContext, display);
     }
 
@@ -305,7 +305,7 @@ BattalionCamera.prototype.drawMines = function(tileManager, display, worldMap) {
 }
 
 BattalionCamera.prototype.update = function(gameContext, display) {
-    const { world, timer, spriteManager, tileManager } = gameContext;
+    const { world, tileManager } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
 
@@ -313,36 +313,36 @@ BattalionCamera.prototype.update = function(gameContext, display) {
         return;
     }
 
-    const realTime = timer.getRealTime();
-    const deltaTime = timer.getDeltaTime();
+    let tiles = 0;
+    let sprites = 0;
+    let overlays = 0;
+    let other = 0;
 
     this.updateWorldBounds();
-    this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.GROUND));
-    this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
-    this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.CLOUD));
-    this.drawOverlay(tileManager, display, this.selectOverlay);
-    this.drawSpriteBatch(display, spriteManager.getLayer(LAYER_TYPE.BUILDING), realTime, deltaTime);
-    this.drawMines(tileManager, display, worldMap);
+    tiles += this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.GROUND));
+    tiles += this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
+    tiles += this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.CLOUD));
+    overlays += this.drawOverlay(tileManager, display, this.selectOverlay);
+    sprites += this.drawSpriteLayer(gameContext, display, LAYER_TYPE.BUILDING);
+    other += this.drawMines(tileManager, display, worldMap);
 
     if(this.showAllJammers) {
-        this.drawJammers(tileManager, display, worldMap);
+        other += this.drawJammers(tileManager, display, worldMap);
     } else {
-        this.drawOverlay(tileManager, display, this.jammerOverlay);
+        overlays += this.drawOverlay(tileManager, display, this.jammerOverlay);
     }
 
-    this.drawOverlay(tileManager, display, this.pathOverlay);
-    this.drawEntities(gameContext, display, worldMap, realTime, deltaTime);
-    this.drawSpriteBatchYSorted(display, spriteManager.getLayer(LAYER_TYPE.GFX), realTime, deltaTime);
+    overlays += this.drawOverlay(tileManager, display, this.pathOverlay);
+    sprites += this.drawEntities(gameContext, display, worldMap);
+    sprites += this.drawSortedSpriteLayer(gameContext, display, LAYER_TYPE.GFX);
     this.drawCash(display);
     //this.shadeScreen(display, "#000000", 0.5);
 
-    if(Renderer.DEBUG.MAP) {
+    if(DEBUG.WORLD) {
         this.debugMap(display, worldMap);
-        this.drawInfo(gameContext, display);
+        this.drawInfo(gameContext, display, tiles, sprites, overlays, other);
     }
 
-    //TODO: Add sprite layers properly.
-    
     this.currentFrame++;
 }
 
@@ -362,16 +362,18 @@ BattalionCamera.prototype.shadeScreen = function(display, color, alpha) {
     shadeScreen(display, color, alpha, drawWidth, drawHeight);
 }
 
-BattalionCamera.prototype.drawInfo = function(gameContext, display) {
+BattalionCamera.prototype.drawInfo = function(gameContext, display, tiles, sprites, overlays, other) {
     const { world } = gameContext;
     const { turnManager } = world;
-    const { currentRound, currentTurn } = turnManager;
+    const { globalRound, globalTurn } = turnManager;
     const { context } = display;
     
     drawShape(display, SHAPE.RECTANGLE, "#222222", 0, 0, 100, 30);
 
-    context.fillStyle = "#ff0000";
-    context.fillText(`Turn ${currentTurn} | Round ${currentRound}`, 0, 10);
+    context.fillStyle = "#467fc9";
+    context.fillText(`Turn ${globalTurn} | Round ${globalRound}`, 0, 5);
+    context.fillText(`Tiles ${tiles} | Sprites ${sprites}`, 0, 15);
+    context.fillText(`Overlays ${overlays} | Other ${other}`, 0, 25);
 }
 
 BattalionCamera.prototype.debugMap = function(display, worldMap) {

@@ -15,7 +15,6 @@ import { ResourceLoader } from "./resources/resourceLoader.js";
 import { ApplicationWindow } from "./applicationWindow.js";
 import { ClientPathHandler } from "./resources/pathHandler.js";
 import { MapRegistry } from "../src/map/mapRegistry.js";
-import { addDebug } from "../src/systems/context.js";
 
 export const ClientGameContext = function() {
     this.client = new Client();
@@ -75,5 +74,4 @@ ClientGameContext.prototype.exit = function() {
     this.uiManager.exit();
     this.language.exit();
     this.onExit();
-    addDebug(this);
 }
