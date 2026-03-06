@@ -171,9 +171,10 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
     const { timer, world, spriteManager } = gameContext;
     const { realTime, deltaTime } = timer;
     const { entityManager } = world;
-    const { entities } = worldMap;
-    const { pool } = spriteManager;
-    const { elements } = pool;
+
+    const spriteList = spriteManager.pool.elements;
+    const worldEntities = worldMap.entities;
+    const managerEntities = entityManager.entities;
 
     const startX = this.startX;
     const startY = this.startY;
@@ -188,16 +189,16 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
         let index = i * mapWidth + startX;
 
         for(let j = startX; j <= endX; j++) {
-            const entityID = entities[index];
+            const entityIndex = worldEntities[index];
 
-            if(entityID !== EntityManager.INVALID_ID) {
-                const entity = entityManager.getEntity(entityID);
+            if(entityIndex !== EntityManager.INVALID_INDEX) {
+                const entity = managerEntities[entityIndex];
                 const spriteID = entity.spriteID;
                 const state = entity.state;
 
                 if(spriteID !== SpriteManager.INVALID_ID) {
                     if(state === BattalionEntity.STATE.IDLE) {
-                        this.drawEntity(display, entity, elements[spriteID], realTime, deltaTime);
+                        this.drawEntity(display, entity, spriteList[spriteID], realTime, deltaTime);
                     } else {
                         deferred.push(entity);
                     }
@@ -214,7 +215,7 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
         const entity = deferred[i];
         const spriteID = entity.spriteID;
 
-        this.drawEntity(display, entity, elements[spriteID], realTime, deltaTime);
+        this.drawEntity(display, entity, spriteList[spriteID], realTime, deltaTime);
     }
 
     if(DEBUG.SPRITES) {

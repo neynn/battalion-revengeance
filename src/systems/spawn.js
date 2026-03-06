@@ -31,7 +31,6 @@ const destroyEntity = function(gameContext, entity) {
     const { teamManager, world } = gameContext;
     const { entityManager } = world;
     const { activeTeams } = teamManager;
-    const entityID = entity.getID();
     const team = entity.getTeam(gameContext);
 
     entity.removeFromMap(gameContext);
@@ -45,7 +44,7 @@ const destroyEntity = function(gameContext, entity) {
         team.onEntityDeath(entity);
     }
 
-    entityManager.destroyEntityByID(entityID);
+    entityManager.destroyEntity(entity.index);
     teamManager.updateStatus();
 }
 

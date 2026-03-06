@@ -42,8 +42,8 @@ export const mGetUncloakedEntities = function(gameContext, targetX, targetY, tea
     let shouldSelfUncloak = false;
 
     worldMap.fill2DGraph(targetX, targetY, searchRange, (tileX, tileY, tileD, tileI) => {
-        const entityID = worldMap.getEntity(tileX, tileY);
-        const entity = entityManager.getEntity(entityID);
+        const index = worldMap.getEntity(tileX, tileY);
+        const entity = entityManager.getEntityByIndex(index);
 
         if(entity) {
             const distance = entity.getDistanceToTile(targetX, targetY);

@@ -4,5 +4,5 @@ export const DEBUG = {
     CONTEXT: 0,
     UI: 0,
     SHOW_INFO: 1,
-    WORLD: 0
+    WORLD: 1
 };

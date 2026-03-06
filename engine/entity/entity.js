@@ -1,12 +1,17 @@
+import { SpriteManager } from "../sprite/spriteManager.js";
+import { EntityManager } from "./entityManager.js";
+
 export const Entity = function(id, DEBUG_NAME = "") {
     this.DEBUG_NAME = DEBUG_NAME;
     this.id = id;
+    this.index = EntityManager.INVALID_INDEX;
+    this.spriteID = SpriteManager.INVALID_ID;
     this.isMarkedForDestroy = false;
     this.flags = 0;
 }
 
-Entity.prototype.isDestroyed = function() {
-    return this.isMarkedForDestroy;
+Entity.prototype.reset = function() {
+    this.isMarkedForDestroy = false;
 }
 
 Entity.prototype.clearFlags = function() {

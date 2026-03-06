@@ -35,8 +35,8 @@ World.prototype.getEntityAt = function(tileX, tileY) {
         return null;
     }
 
-    const entityID = worldMap.getEntity(tileX, tileY);
-    const entity = this.entityManager.getEntity(entityID);
+    const index = worldMap.getEntity(tileX, tileY);
+    const entity = this.entityManager.getEntityByIndex(index);
 
     return entity;
 }
@@ -56,8 +56,8 @@ World.prototype.getEntitiesInRange = function(tileX, tileY, width, height) {
 
     for(let i = startY; i <= endY; i++) {
         for(let j = startX; j <= endX; j++) {
-            const entityID = worldMap.getEntity(j, i);
-            const entity = this.entityManager.getEntity(entityID);
+            const index = worldMap.getEntity(j, i);
+            const entity = this.entityManager.getEntityByIndex(index);
 
             if(entity) {
                 entities.push(entity);
@@ -78,8 +78,8 @@ World.prototype.getEntitiesInArea = function(startX, startY, endX, endY) {
 
     for(let i = startY; i < endY; i++) {
         for(let j = startX; j < endX; j++) {
-            const entityID = worldMap.getEntity(j, i);
-            const entity = this.entityManager.getEntity(entityID);
+            const index = worldMap.getEntity(j, i);
+            const entity = this.entityManager.getEntityByIndex(index);
 
             if(entity) {
                 entities.push(entity);
@@ -98,18 +98,18 @@ World.prototype.getEntitiesInAreaUnique = function(startX, startY, endX, endY) {
         return entities;
     }
 
-    const uniquedIDs = new Set();
+    const uniqueIndices = new Set();
 
     for(let i = startY; i < endY; i++) {
         for(let j = startX; j < endX; j++) {
-            const entityID = worldMap.getEntity(j, i);
+            const index = worldMap.getEntity(j, i);
 
-            if(entityID !== null && !uniquedIDs.has(entityID)) {
-                const entity = this.entityManager.getEntity(entityID); 
+            if(!uniqueIndices.has(index)) {
+                const entity = this.entityManager.getEntityByIndex(index); 
 
                 if(entity) {
                     entities.push(entity);
-                    uniquedIDs.add(entityID);
+                    uniqueIndices.add(index);
                 }
             }
         }
@@ -130,8 +130,8 @@ World.prototype.getEntitiesAround = function(tileX, tileY) {
         const [deltaX, deltaY, type] = FloodFill.NEIGHBORS[i];
         const neighborX = deltaX + tileX;
         const neighborY = deltaY + tileY;
-        const entityID = worldMap.getEntity(neighborX, neighborY);
-        const entity = this.entityManager.getEntity(entityID);
+        const index = worldMap.getEntity(neighborX, neighborY);
+        const entity = this.entityManager.getEntityByIndex(index);
 
         if(entity) {
             entities.push(entity);
@@ -153,8 +153,8 @@ World.prototype.getEntitiesAroundFull = function(tileX, tileY) {
         const [deltaX, deltaY, type] = FloodFill.ALL_NEIGHBORS[i];
         const neighborX = deltaX + tileX;
         const neighborY = deltaY + tileY;
-        const entityID = worldMap.getEntity(neighborX, neighborY);
-        const entity = this.entityManager.getEntity(entityID);
+        const index = worldMap.getEntity(neighborX, neighborY);
+        const entity = this.entityManager.getEntityByIndex(index);
 
         if(entity) {
             entities.push(entity);
@@ -173,8 +173,8 @@ World.prototype.getEntitiesInLine = function(tileX, tileY, deltaX, deltaY, maxSt
     let step = 0;
 
     while(step < maxSteps && !worldMap.isTileOutOfBounds(currentX, currentY)) {
-        const entityID = worldMap.getEntity(currentX, currentY);
-        const entity = this.entityManager.getEntity(entityID);
+        const index = worldMap.getEntity(currentX, currentY);
+        const entity = this.entityManager.getEntityByIndex(index);
 
         if(entity) {
             entities.push(entity);

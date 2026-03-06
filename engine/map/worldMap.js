@@ -12,7 +12,7 @@ export const WorldMap = function(id, width, height) {
     this.height = height;
     this.layers = [];
     this.entities = new Int16Array(BUFFER_SIZE);
-    this.entities.fill(EntityManager.INVALID_ID);
+    this.entities.fill(EntityManager.INVALID_INDEX);
 }
 
 WorldMap.EMPTY_LAYER = Layer.create(0, Layer.TYPE.BIT_0);
@@ -91,18 +91,22 @@ WorldMap.prototype.getIndex = function(tileX, tileY) {
 }
 
 WorldMap.prototype.isTileOccupied = function(tileX, tileY) {
-    const entityID = this.getEntity(tileX, tileY);
+    const entityIndex = this.getEntity(tileX, tileY);
 
-    return entityID !== EntityManager.INVALID_ID;
+    return entityIndex !== EntityManager.INVALID_INDEX;
 }
 
-WorldMap.prototype.hasEntity = function(tileX, tileY, targetID) {
-    const entityID = this.getEntity(tileX, tileY);
+WorldMap.prototype.hasEntity = function(tileX, tileY, entityIndex) {
+    const index = this.getEntity(tileX, tileY);
 
-    return entityID === targetID;
+    if(index === EntityManager.INVALID_INDEX) {
+        return false;
+    }
+    
+    return index === entityIndex;
 } 
 
-WorldMap.prototype.removeEntity = function(tileX, tileY, rangeX, rangeY, entityID) {
+WorldMap.prototype.removeEntity = function(tileX, tileY, rangeX, rangeY, entityIndex) {
     for(let i = 0; i < rangeY; i++) {
         const locationY = tileY + i;
 
@@ -111,13 +115,13 @@ WorldMap.prototype.removeEntity = function(tileX, tileY, rangeX, rangeY, entityI
             const index = this.getIndex(locationX, locationY);
 
             if(index !== WorldMap.OUT_OF_BOUNDS) {
-                this.entities[index] = EntityManager.INVALID_ID;
+                this.entities[index] = EntityManager.INVALID_INDEX;
             }
         }
     }
 }
 
-WorldMap.prototype.addEntity = function(tileX, tileY, rangeX, rangeY, entityID) {
+WorldMap.prototype.addEntity = function(tileX, tileY, rangeX, rangeY, entityIndex) {
     for(let i = 0; i < rangeY; i++) {
         const locationY = tileY + i;
 
@@ -126,8 +130,8 @@ WorldMap.prototype.addEntity = function(tileX, tileY, rangeX, rangeY, entityID) 
             const index = this.getIndex(locationX, locationY);
 
             if(index !== WorldMap.OUT_OF_BOUNDS) {
-                if(this.entities[index] === EntityManager.INVALID_ID) {
-                    this.entities[index] = entityID;
+                if(this.entities[index] === EntityManager.INVALID_INDEX) {
+                    this.entities[index] = entityIndex;
                 }
             }
         }
@@ -146,7 +150,7 @@ WorldMap.prototype.resize = function(width, height) {
     const BUFFER_SIZE = width * height;
     const newEntities = new Int16Array(BUFFER_SIZE);
 
-    newEntities.fill(EntityManager.INVALID_ID);
+    newEntities.fill(EntityManager.INVALID_INDEX);
     Layer.copyBuffer(this.entities, newEntities, this.width, this.height, width, height);
 
     this.width = width;
@@ -207,7 +211,7 @@ WorldMap.prototype.getEntity = function(tileX, tileY) {
         return this.entities[index];
     }
 
-    return EntityManager.INVALID_ID;
+    return EntityManager.INVALID_INDEX;
 }
 
 WorldMap.prototype.getAllEntitiesInArea = function(startX, startY, endX, endY) {
@@ -215,10 +219,10 @@ WorldMap.prototype.getAllEntitiesInArea = function(startX, startY, endX, endY) {
 
     for(let i = startY; i < endY; i++) {
         for(let j = startX; j < endX; j++) {
-            const entityID = this.getEntity(j, i);
+            const entityIndex = this.getEntity(j, i);
 
-            if(entityID !== EntityManager.INVALID_ID) {
-                entities.push(entityID);
+            if(entityIndex !== EntityManager.INVALID_INDEX) {
+                entities.push(entityIndex);
             }
         }
     }
@@ -231,10 +235,10 @@ WorldMap.prototype.getEntitiesInAreaUnique = function(startX, startY, endX, endY
 
     for(let i = startY; i < endY; i++) {
         for(let j = startX; j < endX; j++) {
-            const entityID = this.getEntity(j, i);
+            const entityIndex = this.getEntity(j, i);
 
-            if(entityID !== EntityManager.INVALID_ID && !entities.includes(entityID)) {
-                entities.push(entityID);
+            if(entityIndex !== EntityManager.INVALID_INDEX && !entities.includes(entityIndex)) {
+                entities.push(entityIndex);
             }
         }
     }

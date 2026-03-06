@@ -11,7 +11,6 @@ import { mapTransportToEntity } from "../enumHelpers.js";
 import { getLineEntities } from "../systems/targeting.js";
 import { mGetUncloakedEntities, mGetUncloakedMines } from "../systems/cloak.js";
 import { TeamManager } from "../team/teamManager.js";
-import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 
 export const BattalionEntity = function(id) {
     Entity.call(this, id, "");
@@ -35,7 +34,6 @@ export const BattalionEntity = function(id) {
     this.lastAttacker = EntityManager.INVALID_ID;
     this.turns = 0;
     this.cash = 0;
-    this.spriteID = SpriteManager.INVALID_ID;
     this.opacity = 1;
 }
 
@@ -372,8 +370,8 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
         tileCost += (cost * terrainReduction);
     }
 
-    const entityID = worldMap.getEntity(tileX, tileY);
-    const entity = entityManager.getEntity(entityID);
+    const index = worldMap.getEntity(tileX, tileY);
+    const entity = entityManager.getEntityByIndex(index);
     
     if(entity) {
         //Trains are always blocked if an entity is on rail, no matter the type.
@@ -1397,7 +1395,7 @@ BattalionEntity.prototype.placeOnMap = function(gameContext) {
     const { dimX, dimY, jammerRange } = this.config;
     const jammerFlags = this.config.getJammerFlags();
 
-    worldMap.addEntity(this.tileX, this.tileY, dimX, dimY, this.id);
+    worldMap.addEntity(this.tileX, this.tileY, dimX, dimY, this.index);
 
     if(jammerFlags !== JAMMER_FLAG.NONE) {
         worldMap.fill2DGraph(this.tileX, this.tileY, jammerRange, (nextX, nextY) => {
@@ -1418,7 +1416,7 @@ BattalionEntity.prototype.removeFromMap = function(gameContext) {
     const { dimX, dimY, jammerRange } = this.config;
     const jammerFlags = this.config.getJammerFlags();
 
-    worldMap.removeEntity(this.tileX, this.tileY, dimX, dimY, this.id);
+    worldMap.removeEntity(this.tileX, this.tileY, dimX, dimY, this.index);
 
     if(jammerFlags !== JAMMER_FLAG.NONE) {
         worldMap.fill2DGraph(this.tileX, this.tileY, jammerRange, (nextX, nextY) => {
