@@ -484,9 +484,15 @@ export const OBJECTIVE_TYPE = {
     TIME_LIMIT: "TIME_LIMIT"
 };
 
+export const MOVE_COMMAND = {
+    NONE: 0,
+    HEAL: 1,
+    ATTACK: 2
+};
+
 export const COMMAND_TYPE = {
     ATTACK: 0,
-    COUNTER: 1,
+    COUNTER: 1
 };
 
 export const EFFECT_TYPE = {

@@ -87,10 +87,11 @@ export const createAttackRequest = function(entityID, targetID, command) {
     });
 }
 
-export const createMoveRequest = function(entityID, path, targetID) {
+export const createMoveRequest = function(entityID, path, command, targetID) {
     return new ActionIntent(ACTION_TYPE.MOVE, {
         "entityID": entityID,
         "path": path,
+        "command": command,
         "targetID": targetID
     });
 }

@@ -1,7 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
 import { FADE_RATE, TILE_WIDTH } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
-import { COMMAND_TYPE, PATH_INTERCEPT, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { COMMAND_TYPE, MOVE_COMMAND, PATH_INTERCEPT, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { mInterceptMine, mInterceptPath } from "../../systems/pathfinding.js";
 import { playEntitySound, playUncloakSound } from "../../systems/sound.js";
 import { setEntityPosition, updateEntityPosition, updateEntitySprite } from "../../systems/sprite.js";
@@ -167,7 +167,7 @@ MoveAction.prototype.execute = function(gameContext, data) {
 MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
     const { entityManager, mapManager } = world;
-    const { entityID, path, targetID } = actionIntent;
+    const { entityID, path, command, targetID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
 
     if(!entity || !entity.hasFlag(BattalionEntity.FLAG.CAN_MOVE) || entity.hasFlag(BattalionEntity.FLAG.HAS_FIRED)) {
@@ -194,7 +194,6 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
 
     const targetX = path[0].tileX;
     const targetY = path[0].tileY;
-    const targetEntity = entityManager.getEntity(targetID);
     const worldMap = mapManager.getActiveMap();
     const mine = worldMap.getMine(targetX, targetY);
     let flags = MoveAction.FLAG.NONE;
@@ -203,13 +202,35 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
         flags |= MoveAction.FLAG.MINE_DISCOVERED;
     }
 
-    if(targetEntity && targetEntity.isNextToTile(targetX, targetY)) {
-        if(entity.isHealValid(gameContext, targetEntity)) {
-            executionPlan.addNext(createHealRequest(entityID, targetID));
-        } else if(entity.isAttackValid(gameContext, targetEntity)) {
-            executionPlan.addNext(createAttackRequest(entityID, targetID, COMMAND_TYPE.ATTACK));
-        } else {
-            console.error("Heal and attack are both invalid!");
+    //Follow-Up commands are ignored if there is no target.
+    //Follow-Up commands only work on neighboring entities.
+    //If a Follow-Up command is given but is invalid, the move is canceled.
+    switch(command) {
+        case MOVE_COMMAND.HEAL: {
+            const targetEntity = entityManager.getEntity(targetID);
+
+            if(!targetEntity || !targetEntity.isNextToTile(targetX, targetY)) {
+                return;
+            }
+
+            if(entity.isHealValid(gameContext, targetEntity)) {
+                executionPlan.addNext(createHealRequest(entityID, targetID));
+            }
+
+            break;
+        }
+        case MOVE_COMMAND.ATTACK: {
+            const targetEntity = entityManager.getEntity(targetID);
+
+            if(!targetEntity || !targetEntity.isNextToTile(targetX, targetY)) {
+                return;
+            }
+
+            if(entity.isAttackValid(gameContext, targetEntity)) {
+                executionPlan.addNext(createAttackRequest(entityID, targetID, COMMAND_TYPE.ATTACK));
+            }
+
+            break;
         }
     }
 

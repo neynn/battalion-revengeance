@@ -1,7 +1,7 @@
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { FloodFill } from "../../../engine/pathfinders/floodFill.js";
 import { createAttackRequest, createHealRequest, createMoveRequest } from "../../action/actionHelper.js";
-import { AUTOTILER_TYPE, COMMAND_TYPE, RANGE_TYPE } from "../../enums.js";
+import { AUTOTILER_TYPE, COMMAND_TYPE, MOVE_COMMAND, RANGE_TYPE } from "../../enums.js";
 import { createStep, isNodeReachable, getBestPath } from "../../systems/pathfinding.js";
 import { Player } from "../player.js";
 import { PlayerState } from "./playerState.js";
@@ -46,7 +46,7 @@ SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, t
 
         if(isValid) {
             const player = stateMachine.getContext();
-            const request = createMoveRequest(this.entity.getID(), this.path, EntityManager.INVALID_ID);
+            const request = createMoveRequest(this.entity.getID(), this.path, MOVE_COMMAND.NONE, EntityManager.INVALID_ID);
 
             player.addIntent(request);
         }
@@ -240,7 +240,7 @@ SelectState.prototype.getAttackRequest = function(entity) {
             if(this.path.length === 0) {
                 request = createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.ATTACK);
             } else {
-                request = createMoveRequest(this.entity.getID(), this.path, entity.getID());
+                request = createMoveRequest(this.entity.getID(), this.path, MOVE_COMMAND.ATTACK, entity.getID());
             }
 
             break;
@@ -274,7 +274,7 @@ SelectState.prototype.getHealRequest = function(entity) {
                 default: {
                     //Cut the final step (index 0) as the PATH sees an ally as walkable.
                     this.path.shift();
-                    request = createMoveRequest(this.entity.getID(), this.path, entity.getID());
+                    request = createMoveRequest(this.entity.getID(), this.path, MOVE_COMMAND.HEAL, entity.getID());
                     break;
                 }
             }
