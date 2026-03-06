@@ -72,11 +72,10 @@ export const createTrackingIntent = function(entity, potentialTargets) {
     });
 }
 
-export const createHealRequest = function(entityID, targetID, command) {
+export const createHealRequest = function(entityID, targetID) {
     return new ActionIntent(ACTION_TYPE.HEAL, {
         "entityID": entityID,
-        "targetID": targetID,
-        "command": command
+        "targetID": targetID
     });
 }
 

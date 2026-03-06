@@ -225,56 +225,6 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
     return count;
 }
 
-BattalionCamera.prototype.drawEntities_old = function(gameContext, display, realTime, deltaTime) {
-    const { world, spriteManager } = gameContext;
-    const { entityManager } = world;
-    const { entities } = entityManager;
-    const { pool } = spriteManager;
-    const { elements } = pool;
-    const viewportLeftEdge = this.fViewportX;
-    const viewportTopEdge = this.fViewportY;
-    const viewportRightEdge = viewportLeftEdge + this.wViewportWidth;
-    const viewportBottomEdge = viewportTopEdge + this.wViewportHeight;
-    const priorityEntities = [];
-    let count = 0;
-
-    for(let i = 0; i < entities.length; i++) {
-        const entity = entities[i];
-        const { state, spriteID } = entity;
-
-        if(spriteID === SpriteManager.INVALID_ID) {
-            continue;
-        }
-
-        const sprite = elements[spriteID];
-        const isVisible = sprite.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
-
-        if(isVisible) {
-            if(state === BattalionEntity.STATE.IDLE) {
-                this.drawEntity(display, entity, sprite, realTime, deltaTime);
-            } else {
-                priorityEntities.push(entity);
-            }
-
-            count++;
-        }
-    }
-
-    for(let i = 0; i < priorityEntities.length; i++) {
-        const entity = priorityEntities[i];
-        const { spriteID } = entity;
-        const sprite = elements[spriteID];
-
-        this.drawEntity(display, entity, sprite, realTime, deltaTime);
-    }
-
-    if(DEBUG.SPRITES) {
-        this.debugEntities(gameContext, display);
-    }
-
-    return count;
-}
-
 BattalionCamera.prototype.drawJammers = function(tileManager, display, worldMap) {
     const { jammers } = worldMap;
     const { context } = display;

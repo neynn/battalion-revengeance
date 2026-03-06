@@ -256,7 +256,7 @@ SelectState.prototype.getHealRequest = function(entity) {
 
     switch(rangeType) {
         case RANGE_TYPE.RANGE: {
-            request = createHealRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.ATTACK);
+            request = createHealRequest(this.entity.getID(), entity.getID());
             break;
         }
         case RANGE_TYPE.MELEE:
@@ -268,7 +268,7 @@ SelectState.prototype.getHealRequest = function(entity) {
                 }
                 case 1: {
                     //The ally is next to the healer, as the path is 1 longer than it should be. It's treated as melee.
-                    request = createHealRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.ATTACK);
+                    request = createHealRequest(this.entity.getID(), entity.getID());
                     break;
                 }
                 default: {

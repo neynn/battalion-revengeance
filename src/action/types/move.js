@@ -205,7 +205,7 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
 
     if(targetEntity && targetEntity.isNextToTile(targetX, targetY)) {
         if(entity.isHealValid(gameContext, targetEntity)) {
-            executionPlan.addNext(createHealRequest(entityID, targetID, COMMAND_TYPE.ATTACK));
+            executionPlan.addNext(createHealRequest(entityID, targetID));
         } else if(entity.isAttackValid(gameContext, targetEntity)) {
             executionPlan.addNext(createAttackRequest(entityID, targetID, COMMAND_TYPE.ATTACK));
         } else {

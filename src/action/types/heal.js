@@ -83,7 +83,7 @@ HealAction.prototype.execute = function(gameContext, data) {
 HealAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID, targetID, command } = actionIntent;
+    const { entityID, targetID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
     const target = entityManager.getEntity(targetID);
 
@@ -93,19 +93,13 @@ HealAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
 
     const resolver = new InteractionResolver();
 
-    switch(command) {
-        case COMMAND_TYPE.ATTACK: {
-            if(entity.canAct()) {
-               resolveHeal(gameContext, entity, target, resolver);
-            } else {
-                //Melee healers.
-                if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && !entity.hasFlag(BattalionEntity.FLAG.HAS_FIRED) && entity.isNextToEntity(target)) {
-                    resolveHeal(gameContext, entity, target, resolver);
-                } 
-            }
-
-            break;
-        }
+    if(entity.canAct()) {
+        resolveHeal(gameContext, entity, target, resolver);
+    } else {
+        //Melee healers.
+        if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && !entity.hasFlag(BattalionEntity.FLAG.HAS_FIRED) && entity.isNextToEntity(target)) {
+            resolveHeal(gameContext, entity, target, resolver);
+        } 
     }
 
     const hitEntities = resolver.getHitEntities();
