@@ -37,6 +37,7 @@ export const BattalionContext = function() {
     }
 
     this.timer.render = (deltaTime) => {
+        this.resourceLoader.update();
         this.applicationWindow.update(this);
         this.dialogueHandler.update(this, deltaTime);
         this.spriteManager.update(this);

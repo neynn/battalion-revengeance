@@ -1,8 +1,8 @@
 import { Sprite } from "./sprite.js";
 import { ObjectPool } from "../util/objectPool.js";
 import { SpriteContainer } from "./spriteContainer.js";
-import { Texture } from "../resources/texture.js";
 import { TextureHandle } from "../resources/texture/textureHandle.js";
+import { Texture } from "../resources/texture.js";
 
 export const SpriteManager = function(resourceLoader) {
     this.resources = resourceLoader;
@@ -115,19 +115,20 @@ SpriteManager.prototype.createCopyTexture = function(spriteID, variantID, colorM
     const texture = this.resources.getTexture(textureID);
     const handle = texture.createHandle(variantID);
 
+    //TODO: Unnecessary state checks.
     if(handle.state === TextureHandle.STATE.EMPTY) {
         switch(texture.handle.state) {
             case TextureHandle.STATE.EMPTY: {
                 this.resources.loadTexture(textureID);
-                this.resources.addLoadResolver(textureID, (bitmap) => texture.loadHandle(variantID, colorMap, Texture.COPY_TYPE.REGIONAL));
+                this.resources.addRecolorTask(textureID, variantID, colorMap, Texture.COPY_TYPE.REGIONAL);
                 break;
             }
             case TextureHandle.STATE.LOADING: {
-                this.resources.addLoadResolver(textureID, (bitmap) => texture.loadHandle(variantID, colorMap, Texture.COPY_TYPE.REGIONAL));
+                this.resources.addRecolorTask(textureID, variantID, colorMap, Texture.COPY_TYPE.REGIONAL);
                 break;
             }
             case TextureHandle.STATE.LOADED: {
-                texture.loadHandle(variantID, colorMap, Texture.COPY_TYPE.REGIONAL);
+                this.resources.addRecolorTask(textureID, variantID, colorMap, Texture.COPY_TYPE.REGIONAL);
                 break;
             }
         }
