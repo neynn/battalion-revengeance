@@ -98,6 +98,7 @@ HealAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
             if(entity.canAct()) {
                resolveHeal(gameContext, entity, target, resolver);
             } else {
+                //Melee healers.
                 if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && !entity.hasFlag(BattalionEntity.FLAG.HAS_FIRED) && entity.isNextToEntity(target)) {
                     resolveHeal(gameContext, entity, target, resolver);
                 } 

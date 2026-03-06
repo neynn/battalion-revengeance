@@ -1,5 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
-import { playExplosion } from "../../systems/animation.js";
+import { playExplosion } from "../../systems/sprite.js";
 import { createDeathIntent } from "../actionHelper.js";
 
 export const MineTriggerAction = function() {

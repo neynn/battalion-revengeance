@@ -14,13 +14,6 @@ export const playUncloakSound = function(gameContext) {
     soundPlayer.play("uncloak");
 }
 
-export const playSFX = function(gameContext, soundID) {
-    const { client } = gameContext;
-    const { soundPlayer } = client;
-
-    soundPlayer.play(soundID);
-}
-
 export const playEntitySound = function(gameContext, entity, soundType) {
     const { client } = gameContext;
     const { soundPlayer } = client;

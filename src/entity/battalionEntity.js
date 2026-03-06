@@ -9,16 +9,15 @@ import { getDirectionByDelta, getDirectionVector } from "../systems/direction.js
 import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE, MINE_CATEGORY } from "../enums.js";
 import { mapTransportToEntity } from "../enumHelpers.js";
 import { getLineEntities } from "../systems/targeting.js";
-import { mGetUncloakedEntities, mGetUncloakedMines } from "../systems/cloak.js";
 import { TeamManager } from "../team/teamManager.js";
 
 export const BattalionEntity = function(id) {
     Entity.call(this, id, "");
 
+    this.config = null;
     this.customID = null;
     this.customName = null;
     this.customDesc = null;
-    this.config = null;
     this.health = 1;
     this.maxHealth = 1;
     this.damage = 0;
@@ -87,12 +86,11 @@ BattalionEntity.prototype.load = function(data) {
     this.tileZ = data.tileZ;
     this.transportID = data.transport;
     this.state = data.state;
-    this.customID = data.id;
     this.turns = data.turns;
     this.cash = data.cash;
     this.setDirection(data.direction);
     this.setHealth(data.health);
-    this.setCustomInfo(data.name, data.desc);
+    this.setCustomInfo(data.id, data.name, data.desc);
 }
 
 BattalionEntity.prototype.setState = function(stateID) {
@@ -110,13 +108,10 @@ BattalionEntity.prototype.loadConfig = function(config) {
     this.setHealth(this.health);
 }
 
-BattalionEntity.prototype.setCustomInfo = function(name, desc) {
+BattalionEntity.prototype.setCustomInfo = function(id, name, desc) {
+    this.customID = id;
     this.customName = name;
     this.customDesc = desc;
-}
-
-BattalionEntity.prototype.setCustomID = function(customID) {
-    this.customID = customID;
 }
 
 BattalionEntity.prototype.getHealthFactor = function() {
@@ -295,13 +290,6 @@ BattalionEntity.prototype.isAllyWith = function(gameContext, entity) {
     const { teamID } = entity;
 
     return teamManager.isAlly(this.teamID, teamID);
-}
-
-BattalionEntity.prototype.takeTerrainDamage = function(gameContext) {
-    const damage = this.getTerrainDamage(gameContext, this.tileX, this.tileY);
-    const health = this.health - damage;
-
-    this.setHealth(health);
 }
 
 BattalionEntity.prototype.getTerrainDamage = function(gameContext, tileX, tileY) {
@@ -522,6 +510,7 @@ BattalionEntity.prototype.isPathWalkable = function(gameContext, path) {
     let currentY = this.tileY;
     let totalCost = 0;
 
+    //Path[0] is the target.
     for(let i = path.length - 1; i >= 0; i--) {
         const { deltaX, deltaY, tileX, tileY } = path[i];
         const totalDelta = Math.abs(deltaX) + Math.abs(deltaY);
@@ -1101,8 +1090,63 @@ BattalionEntity.prototype.canExtract = function() {
     return this.hasTrait(TRAIT_TYPE.EXTRACTOR);
 }
 
-BattalionEntity.prototype.getUncloakedEntitiesAtSelf = function(gameContext) {
-    return this.getUncloakedEntities(gameContext, this.tileX, this.tileY);
+BattalionEntity.prototype.getUncloakedEntities = function(gameContext) {
+    const { world, teamManager } = gameContext;
+    const { mapManager, entityManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const jammerFlags = this.config.getJammerFlags();
+    const searchRange = jammerFlags !== JAMMER_FLAG.NONE ? this.config.jammerRange : 1;
+    const uncloakedEntities = [];
+    let shouldSelfUncloak = false;
+
+    worldMap.fill2DGraph(this.tileX, this.tileY, searchRange, (tileX, tileY, tileD, tileI) => {
+        const index = worldMap.getEntity(tileX, tileY);
+        const entity = entityManager.getEntityByIndex(index);
+
+        if(!entity) {
+            return;
+        }
+
+        const distance = entity.getDistanceToTile(this.tileX, this.tileY);
+
+        switch(distance) {
+            case 0: {
+                //Distance 0 is the entity itself.
+                break;
+            }
+            case 1: {
+                //isVisibleTo check, but split up.
+                if(!teamManager.isAlly(this.teamID, entity.teamID)) {
+                    if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+                        uncloakedEntities.push(entity);
+                    }
+
+                    //Always uncloak next to an enemy, regardless of their state.
+                    shouldSelfUncloak = true;
+                }
+                break;
+            }
+            default: {
+                const cloakFlag = entity.config.getCloakFlag();
+
+                if(jammerFlags & cloakFlag) {
+                    if(!entity.hasTrait(TRAIT_TYPE.UNFAIR) && !entity.isVisibleTo(gameContext, this.teamID)) {
+                        uncloakedEntities.push(entity);
+                    }
+                }
+                break;
+            }
+        }
+    });
+
+   //Self uncloaking logic.
+    if(this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+        if(shouldSelfUncloak || this.isDiscoveredByJammerAt(gameContext, this.tileX, this.tileY) || this.isSpottedBySpawner(gameContext, this.tileX, this.tileY)) {
+            uncloakedEntities.push(this);
+        }
+    }
+
+    return uncloakedEntities;
 }
 
 BattalionEntity.prototype.isDiscoveredByJammerAt = function(gameContext, tileX, tileY) {
@@ -1121,25 +1165,34 @@ BattalionEntity.prototype.isDiscoveredByJammerAt = function(gameContext, tileX, 
 }
 
 BattalionEntity.prototype.getUncloakedMines = function(gameContext) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const jammerFlags = this.config.getJammerFlags();
+    const searchRange = jammerFlags !== JAMMER_FLAG.NONE ? this.config.jammerRange : 0;
     const uncloakedMines = [];
-    
-    mGetUncloakedMines(gameContext, this.tileX, this.tileY, this.teamID, this.config, uncloakedMines);
+
+    worldMap.fill2DGraph(this.tileX, this.tileY, searchRange, (tileX, tileY, distance, index) => {
+        const mine = worldMap.getMine(tileX, tileY);
+
+        if(mine && mine.isHidden()) {
+            let isDetected = false;
+
+            if(distance === 0) {
+                isDetected = true;
+            } else {
+                const neededFlag = mine.getJammerFlag();
+
+                isDetected = (jammerFlags & neededFlag) !== 0;
+            }
+
+            if(isDetected && mine.isEnemy(gameContext, this.teamID)) {
+                uncloakedMines.push(mine);
+            }
+        }
+    });
 
     return uncloakedMines;
-}
-
-BattalionEntity.prototype.getUncloakedEntities = function(gameContext, targetX, targetY) {
-    const uncloakedEntities = [];
-    const shouldSelfUncloak = mGetUncloakedEntities(gameContext, targetX, targetY, this.teamID, this.config, uncloakedEntities);
-
-    //Self uncloaking logic.
-    if(this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-        if(shouldSelfUncloak || this.isDiscoveredByJammerAt(gameContext, targetX, targetY) || this.isSpottedBySpawner(gameContext, targetX, targetY)) {
-            uncloakedEntities.push(this);
-        }
-    }
-
-    return uncloakedEntities;
 }
 
 BattalionEntity.prototype.isSelectable = function() {
@@ -1228,7 +1281,10 @@ BattalionEntity.prototype.onTurnStart = function(gameContext) {
 
     //Entities are immune to taking damage/proccing on their first turn.
     if(this.turns > 0) {
-        this.takeTerrainDamage(gameContext);
+        const terrainDamage = this.getTerrainDamage(gameContext, this.tileX, this.tileY);
+        const health = Math.floor(this.health - terrainDamage);
+
+        this.setHealth(health);
     }
 } 
 
@@ -1327,10 +1383,9 @@ BattalionEntity.prototype.mResolveStreamblastAttack = function(gameContext, targ
     this.mResolveAttackTraits(resolver);
 }
 
-BattalionEntity.prototype.isHurtByDispersion = function(attackerID) {
+BattalionEntity.prototype.isHurtByDispersion = function() {
     //Dispersion does not hurt air units, but unlike SHRAPNEL and STREAMBLAST hurts IS_SUBMERGED units.
-    //Dispersion also does not hurt the attacker.
-    return this.config.category !== ENTITY_CATEGORY.AIR && attackerID !== this.id;
+    return this.config.category !== ENTITY_CATEGORY.AIR;
 }
 
 BattalionEntity.prototype.mResolveDispersionAttack = function(gameContext, target, resolver) {
@@ -1342,7 +1397,7 @@ BattalionEntity.prototype.mResolveDispersionAttack = function(gameContext, targe
     for(let i = 0; i < targets.length; i++) {
         const target = targets[i];
 
-        if(target.isHurtByDispersion(this.id)) {
+        if(target.isHurtByDispersion() && this.id !== target.id) {
             const damage = this.getAttackDamage(gameContext, target, ATTACK_FLAG.AREA);
 
             resolver.addAttack(target, damage);

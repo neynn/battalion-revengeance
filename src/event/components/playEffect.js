@@ -1,7 +1,7 @@
 import { EventComponent } from "../../../engine/world/event/eventComponent.js";
 import { EFFECT_TYPE } from "../../enums.js";
-import { playExplosion, playGFX } from "../../systems/animation.js";
-import { playSFX } from "../../systems/sound.js";
+import { playExplosion } from "../../systems/sprite.js";
+import { playSprite } from "../../systems/sprite.js";
 
 export const PlayEffectComponent = function(effects) {
     EventComponent.call(this);
@@ -13,6 +13,9 @@ PlayEffectComponent.prototype = Object.create(EventComponent.prototype);
 PlayEffectComponent.prototype.constructor = PlayEffectComponent;
 
 PlayEffectComponent.prototype.execute = function(gameContext) {
+    const { client } = gameContext;
+    const { soundPlayer } = client;
+
     for(const effect of this.effects) {
         switch(effect.type) {
             case EFFECT_TYPE.EXPLOSION: {
@@ -20,11 +23,11 @@ PlayEffectComponent.prototype.execute = function(gameContext) {
                 break;
             }
             case EFFECT_TYPE.SFX: {
-                playSFX(gameContext, effect.sfx);
+                soundPlayer.play(effect.sfx);
                 break;
             }
             case EFFECT_TYPE.GFX: {
-                playGFX(gameContext, effect.gfx, effect.x, effect.y);
+                playSprite(gameContext, effect.gfx, effect.x, effect.y);
                 break;
             }
             default: {

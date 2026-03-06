@@ -132,10 +132,9 @@ MoveAction.prototype.onEnd = function(gameContext, data) {
 }
 
 MoveAction.prototype.execute = function(gameContext, data) {
-    const { world, teamManager } = gameContext;
-    const { entityManager, mapManager } = world;
+    const { world } = gameContext;
+    const { entityManager } = world;
     const { entityID, path, flags } = data;
-    const { activeTeams } = teamManager;
     const entity = entityManager.getEntity(entityID);
     const team = entity.getTeam(gameContext);
 

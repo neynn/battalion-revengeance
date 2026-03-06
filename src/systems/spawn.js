@@ -190,8 +190,7 @@ const parseEntityJSON = function(gameContext, json, entityID, createEntity) {
         return null;
     }
 
-    entity.setCustomID(id);
-    entity.setCustomInfo(name, desc);
+    entity.setCustomInfo(id, name, desc);
 
     if(direction !== null) {
         entity.setDirection(DIRECTION[direction] ?? DIRECTION.EAST);

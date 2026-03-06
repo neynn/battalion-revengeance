@@ -2,7 +2,7 @@ import { Action } from "../../../engine/action/action.js";
 import { WorldMap } from "../../../engine/map/worldMap.js";
 import { TILE_ID } from "../../enums.js";
 import { BattalionMap } from "../../map/battalionMap.js";
-import { playExplosion } from "../../systems/animation.js";
+import { playExplosion } from "../../systems/sprite.js";
 
 export const ExplodeTileAction = function(despawn) {
     Action.call(this);

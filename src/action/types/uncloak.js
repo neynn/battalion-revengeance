@@ -111,7 +111,7 @@ UncloakAction.prototype.fillExecutionPlan = function(gameContext, executionPlan,
 
     const { teamID } = entity;
     const uncloakedMines = entity.getUncloakedMines(gameContext);
-    const uncloakedEntities = entity.getUncloakedEntitiesAtSelf(gameContext);
+    const uncloakedEntities = entity.getUncloakedEntities(gameContext);
 
     if(uncloakedEntities.length !== 0 && entity.hasTrait(TRAIT_TYPE.TRACKING)) {
         executionPlan.addNext(createTrackingIntent(entity, uncloakedEntities));

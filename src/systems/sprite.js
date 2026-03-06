@@ -1,7 +1,6 @@
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { ATTACK_TYPE, DIRECTION, SCHEMA_TYPE } from "../enums.js";
-import { playGFX } from "./animation.js";
+import { ATTACK_TYPE, DIRECTION, LAYER_TYPE, SCHEMA_TYPE } from "../enums.js";
 
 const SPRITE_KEY = {    
     IDLE_RIGHT: "idle_right",
@@ -74,6 +73,24 @@ const getEffect = function(entity, effectType) {
     return effectName;
 }
 
+export const playSprite = function(gameContext, spriteType, tileX, tileY) {
+    const { spriteManager, transform2D } = gameContext;
+    const sprite = spriteManager.createSprite(spriteType, LAYER_TYPE.GFX);
+    const { x, y } = transform2D.transformTileToWorld(tileX, tileY);
+
+    sprite.setPosition(x, y);
+    sprite.expire();
+}
+
+export const playExplosion = function(gameContext, tileX, tileY) {
+    const { client } = gameContext;
+    const { soundPlayer } = client;
+
+    soundPlayer.play("explosion");
+
+    playSprite(gameContext, "explosion", tileX, tileY);
+}
+
 export const createSchematicSprite = function(gameContext, spriteID, schema, layerID) {
     const { spriteManager } = gameContext;
     const { id, colorMap } = schema;
@@ -127,14 +144,14 @@ export const playDeathEffect = function(gameContext, entity) {
     const { tileX, tileY } = entity;
     const effectName = getEffect(entity, EFFECT_KEY.DEATH);
 
-    playGFX(gameContext, effectName, tileX, tileY);
+    playSprite(gameContext, effectName, tileX, tileY);
 }
 
 export const playHealEffect = function(gameContext, entity, target) {
     const { tileX, tileY } = target;
     const effectName = getEffect(entity, EFFECT_KEY.HEAL);
 
-    playGFX(gameContext, effectName, tileX, tileY);
+    playSprite(gameContext, effectName, tileX, tileY);
 }
 
 export const playAttackEffect = function(gameContext, entity, target, resolutions) {
@@ -147,16 +164,17 @@ export const playAttackEffect = function(gameContext, entity, target, resolution
         case ATTACK_TYPE.DISPERSION: {
             const { tileX, tileY } = target;
 
-            playGFX(gameContext, effectName, tileX, tileY);
+            playSprite(gameContext, effectName, tileX, tileY);
             break;
         }
         default: {
             for(const { health, entityID } of resolutions) {
                 const target = entityManager.getEntity(entityID);
-                const { tileX, tileY } = target;
 
                 if(target !== entity && entity.canSee(gameContext, target)) {
-                    playGFX(gameContext, effectName, tileX, tileY);
+                    const { tileX, tileY } = target;
+
+                    playSprite(gameContext, effectName, tileX, tileY);
                 }
             }
 
