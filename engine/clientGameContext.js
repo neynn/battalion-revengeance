@@ -12,13 +12,13 @@ import { FontHandler } from "./fontHandler.js";
 import { MapManager } from "./map/mapManager.js";
 import { TextureLoader } from "./resources/texture/textureLoader.js";
 import { ApplicationWindow } from "./applicationWindow.js";
-import { ClientPathHandler } from "./resources/pathHandler.js";
+import { PathHandler } from "./resources/pathHandler.js";
 import { MapRegistry } from "../src/map/mapRegistry.js";
 
 export const ClientGameContext = function() {
     this.client = new Client();
     this.world = new World();
-    this.pathHandler = new ClientPathHandler();
+    this.pathHandler = PathHandler;
     this.applicationWindow = new ApplicationWindow();
     this.renderer = new Renderer(window.innerWidth, window.innerHeight);
     this.textureLoader = new TextureLoader();

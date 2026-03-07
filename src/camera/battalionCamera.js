@@ -10,6 +10,8 @@ import { BattalionEntity } from "../entity/battalionEntity.js";
 import { LAYER_TYPE, PLAYER_PREFERENCE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { EntityType } from "../type/parsed/entityType.js";
+import { Mine } from "../entity/mine.js";
+import { TeamManager } from "../team/teamManager.js";
 
 const BLOCK = { COUNT: 4, WIDTH: 4, HEIGHT: 8, GAP: 1 };
 const WIDTH = (BLOCK.GAP * (BLOCK.COUNT + 1)) + BLOCK.WIDTH * BLOCK.COUNT;
@@ -35,17 +37,41 @@ export const BattalionCamera = function() {
     this.pathOverlay = new TileOverlay(EntityType.MAX_MOVE_COST);
     this.jammerOverlay = new TileOverlay(JAMMER_MAX_USED_TILES);
     this.selectOverlay = new TileOverlay(1000);
-    this.showAllJammers = false;
+    this.flags = BattalionCamera.FLAG.NONE;
+    this.markerSprite = SpriteManager.EMPTY_SPRITE;
+    this.weakMarkerSprite = SpriteManager.EMPTY_SPRITE;
+    this.perspectives = new Set();
+    this.mainPerspective = TeamManager.INVALID_ID;
 
     this.cashX = -1;
     this.cashY = -1;
     this.cashValue = 0;
 }
 
+BattalionCamera.FLAG = {
+    NONE: 0,
+    SHOW_ALL_JAMMERS: 1 << 0,
+    USE_PERSPECTIVES: 1 << 1
+}
+
 BattalionCamera.STEALTH_THRESHOLD = 0.5;
 
 BattalionCamera.prototype = Object.create(Camera2D.prototype);
 BattalionCamera.prototype.constructor = BattalionCamera;
+
+BattalionCamera.prototype.loadSprites = function(gameContext) {
+    const { spriteManager } = gameContext;
+
+    this.markerSprite = spriteManager.createSprite("marker");
+}
+
+BattalionCamera.prototype.addPerspective = function(teamID) {
+    this.perspectives.add(teamID);
+}
+
+BattalionCamera.prototype.setMainPerspective = function(teamID) {
+    this.mainPerspective = teamID;
+}
 
 BattalionCamera.prototype.updateCash = function(tileX, tileY, cash) {
     if(this.cashX !== tileX || this.cashY !== tileY || this.cashValue !== cash) {
@@ -104,7 +130,7 @@ BattalionCamera.prototype.drawEntityHealth = function(display, drawX, drawY, hea
     }
 }
 
-BattalionCamera.prototype.drawEntityBlock = function(display, entity, sprite, realTime, deltaTime) {
+BattalionCamera.prototype.drawEntityBlock = function(display, entity, sprite, alpha, realTime, deltaTime) {
     const { positionX, positionY } = sprite;
     const viewportX = this.fViewportX;
     const viewportY = this.fViewportY;
@@ -114,6 +140,7 @@ BattalionCamera.prototype.drawEntityBlock = function(display, entity, sprite, re
         healthFactor = 1;
     }
 
+    sprite.setOpacity(alpha);
     sprite.update(realTime, deltaTime);
     sprite.draw(display, viewportX, viewportY);
 
@@ -126,14 +153,46 @@ BattalionCamera.prototype.drawEntityBlock = function(display, entity, sprite, re
 }
 
 BattalionCamera.prototype.drawEntity = function(display, entity, sprite, realTime, deltaTime) {
-    const { flags, opacity } = entity;
+    const { state, teamID, flags, opacity } = entity;
+    let alpha = 1;
 
-    if((flags & BattalionEntity.FLAG.IS_CLOAKED) && opacity < BattalionCamera.STEALTH_THRESHOLD) {
-        sprite.setOpacity(BattalionCamera.STEALTH_THRESHOLD);
-        this.drawEntityBlock(display, entity, sprite, realTime, deltaTime);
+    if(this.flags & BattalionCamera.FLAG.USE_PERSPECTIVES) {
+        const { positionX, positionY } = sprite;
+        const markerX = positionX - this.fViewportX;
+        const markerY = positionY - this.fViewportY;
+
+        if(opacity < BattalionCamera.STEALTH_THRESHOLD) {
+            if((flags & BattalionEntity.FLAG.IS_CLOAKED) && this.perspectives.has(teamID)) {
+                //Limit stealth opacity to STEALTH_THRESHOLD if perspectvies align.
+                alpha = BattalionCamera.STEALTH_THRESHOLD;
+            } else {
+                //Fully hide entity.
+                alpha = opacity;
+            }
+        } else {
+            //Draw entity as usual.
+            alpha = opacity;
+        }
+
+        this.drawEntityBlock(display, entity, sprite, alpha, realTime, deltaTime);
+
+        if(state === BattalionEntity.STATE.IDLE && entity.canAct()) {
+            display.setAlpha(1);
+
+            if(teamID === this.mainPerspective) {
+                this.markerSprite.onDraw(display, markerX, markerY);
+            } else {
+                this.weakMarkerSprite.onDraw(display, markerX, markerY);
+            }
+        }
     } else {
-        sprite.setOpacity(opacity);
-        this.drawEntityBlock(display, entity, sprite, realTime, deltaTime);
+        if((flags & BattalionEntity.FLAG.IS_CLOAKED) && opacity < BattalionCamera.STEALTH_THRESHOLD) {
+            alpha = BattalionCamera.STEALTH_THRESHOLD;
+        } else {
+            alpha = opacity;
+        }
+
+        this.drawEntityBlock(display, entity, sprite, alpha, realTime, deltaTime);
     }
 }
 
@@ -245,11 +304,29 @@ BattalionCamera.prototype.drawMines = function(tileManager, display, worldMap) {
     const length = mines.length;
     let count = 0;
 
-    for(let i = 0; i < length; i++) {
-        const { tileX, tileY } = mines[i];
-        const tileID = mines[i].getTileSprite();
+    if(this.flags & BattalionCamera.FLAG.USE_PERSPECTIVES) {
+        for(let i = 0; i < length; i++) {
+            const { tileX, tileY, state, teamID } = mines[i];
+    
+            if(state === Mine.STATE.VISIBLE || this.perspectives.has(teamID)) {
+                const tileID = mines[i].getTileSprite();
+                
+                count += this.drawTileClipped(tileManager, tileID, context, tileX, tileY);
+            }
+        }
+    } else {
+        for(let i = 0; i < length; i++) {
+            const { tileX, tileY, state } = mines[i];
+            const tileID = mines[i].getTileSprite();
 
-        count += this.drawTileClipped(tileManager, tileID, context, tileX, tileY);
+            if(state === Mine.STATE.VISIBLE) {
+                display.setAlpha(1);
+            } else {
+                display.setAlpha(BattalionCamera.STEALTH_THRESHOLD);
+            }
+
+            count += this.drawTileClipped(tileManager, tileID, context, tileX, tileY);
+        }
     }
 
     return count;
@@ -277,7 +354,7 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     sprites += this.drawSpriteLayer(gameContext, display, LAYER_TYPE.BUILDING);
     other += this.drawMines(tileManager, display, worldMap);
 
-    if(this.showAllJammers) {
+    if(this.flags & BattalionCamera.FLAG.SHOW_ALL_JAMMERS) {
         other += this.drawJammers(tileManager, display, worldMap);
     } else {
         overlays += this.drawOverlay(tileManager, display, this.jammerOverlay);

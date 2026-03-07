@@ -27,7 +27,9 @@ ClientPathHandler.prototype.getPath = function(directory, source) {
 }
 
 ClientPathHandler.prototype.promiseJSON = function(path) {
-    return fetch(path).then(response => response.json()).catch(error => null);
+    return fetch(path)
+    .then(response => response.json())
+    .catch(error => null);
 }
 
 ClientPathHandler.prototype.promiseAudioBuffer = function(path, context) {

@@ -1,8 +1,8 @@
 import { Cursor } from "../../engine/client/cursor.js";
 import { TILE_HEIGHT, TILE_WIDTH } from "../../engine/engine_constants.js";
 import { Scroller } from "../../engine/util/scroller.js";
+import { BattalionCamera } from "../camera/battalionCamera.js";
 import { EditCamera } from "../camera/editCamera.js";
-import { PlayCamera } from "../camera/playCamera.js";
 
 export const addZoom = function(gameContext, cContext) {
     const { client } = gameContext;
@@ -50,9 +50,10 @@ export const createEditCamera = function(gameContext, brush) {
 
 export const createPlayCamera = function(gameContext) {
     const { renderer } = gameContext;
-    const camera = new PlayCamera();
+    const camera = new BattalionCamera();
     const context = renderer.createContext(camera);
 
+    camera.flags |= BattalionCamera.FLAG.USE_PERSPECTIVES;
     camera.bindViewport();
     camera.setTileSize(TILE_WIDTH, TILE_HEIGHT);
     camera.loadSprites(gameContext);
