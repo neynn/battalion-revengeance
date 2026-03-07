@@ -44,11 +44,7 @@ const recolorImageWithRegions = function(imageData, colorMap, regions) {
 
 const createImageData = function(bitmap) {
     const { width, height } = bitmap;
-    const canvas = document.createElement("canvas");
-
-    canvas.width = width;
-    canvas.height = height;
-
+    const canvas = new OffscreenCanvas(width, height);
     const context = canvas.getContext("2d");
 
     context.imageSmoothingEnabled = false;
