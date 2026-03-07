@@ -114,19 +114,23 @@ BattalionCamera.prototype.drawEntityHealth = function(display, drawX, drawY, hea
     context.fillRect(healthX, healthY, WIDTH, HEIGHT);
     context.fillStyle = healthColor;
 
+    const blockPixels = BLOCK.HEIGHT * BLOCK.COUNT;
+    const filledPixels = Math.floor(blockPixels * healthFactor);
+    const fullBlocks = Math.floor(filledPixels / BLOCK.HEIGHT);
+    const partialPixels = filledPixels % BLOCK.HEIGHT;
+
     let blockX = healthX + WIDTH;
-    let blockY = healthY + BLOCK.GAP;
-    let pixelFill = Math.floor((BLOCK.HEIGHT * BLOCK.COUNT) * healthFactor);
+    const blockY = healthY + BLOCK.GAP;
+    const stepX = BLOCK.WIDTH + BLOCK.GAP;
 
-    while(pixelFill > 0) {
-        blockX -= (BLOCK.WIDTH + BLOCK.GAP);
-        pixelFill -= BLOCK.HEIGHT;
+    for(let i = 0; i < fullBlocks; i++) {
+        blockX -= stepX;
+        context.fillRect(blockX, blockY, BLOCK.WIDTH, BLOCK.HEIGHT);
+    }
 
-        if(pixelFill >= 0) {
-            context.fillRect(blockX, blockY, BLOCK.WIDTH, BLOCK.HEIGHT);
-        } else {
-            context.fillRect(blockX, blockY - pixelFill, BLOCK.WIDTH, pixelFill + BLOCK.HEIGHT);
-        }
+    if(partialPixels > 0) {
+        blockX -= stepX;
+        context.fillRect(blockX, blockY + (BLOCK.HEIGHT - partialPixels), BLOCK.WIDTH, partialPixels);
     }
 }
 
