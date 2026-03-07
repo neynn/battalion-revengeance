@@ -1,22 +1,18 @@
 import { Action } from "../../../engine/action/action.js";
-import { FADE_RATE } from "../../constants.js";
 import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { playUncloakSound } from "../../systems/sound.js";
+import { UncloakTween } from "../../tween/types/uncloakTween.js";
 import { createTrackingIntent } from "../actionHelper.js";
 
 export const UncloakAction = function() {
     Action.call(this);
-
-    this.opacity = 0;
-    this.entities = [];
-    this.mines = [];
 }
 
 UncloakAction.prototype = Object.create(Action.prototype);
 UncloakAction.prototype.constructor = UncloakAction;
 
 UncloakAction.prototype.onStart = function(gameContext, data) {
-    const { world } = gameContext;
+    const { world, tweenManager } = gameContext;
     const { entityManager, mapManager } = world;
     const { entities, mines } = data;
     const worldMap = mapManager.getActiveMap();
@@ -26,54 +22,25 @@ UncloakAction.prototype.onStart = function(gameContext, data) {
     for(let i = 0; i < entities.length; i++) {
         const entity = entityManager.getEntity(entities[i]);
 
-        this.entities.push(entity);
+        tweenManager.addTween(new UncloakTween(entity));
     }
 
     for(let i = 0; i < mines.length; i++) {
         const { x, y } = mines[i];
         const mine = worldMap.getMine(x, y);
 
-        this.mines.push(mine);
-    }
-}
-
-UncloakAction.prototype.onUpdate = function(gameContext, data) {
-    const { timer } = gameContext;
-    const fixedDeltaTime = timer.getFixedDeltaTime();
-
-    this.opacity += FADE_RATE * fixedDeltaTime;
-
-    if(this.opacity > 1) {
-        this.opacity = 1;
-    }
-
-    for(const entity of this.entities) {
-        entity.setOpacity(this.opacity);
-    }
-
-    for(const mine of this.mines) {
-        mine.opacity = this.opacity;
+        tweenManager.addTween(new UncloakTween(mine));
     }
 }
 
 UncloakAction.prototype.isFinished = function(gameContext, executionPlan) {
-    return this.opacity >= 1;
+    const { tweenManager } = gameContext;
+
+    return tweenManager.isEmpty();
 }
 
 UncloakAction.prototype.onEnd = function(gameContext, data) {
     this.execute(gameContext, data);
-
-    for(const entity of this.entities) {
-        entity.setOpacity(1);
-    }
-
-    for(const mine of this.mines) {
-        mine.opacity = 1;
-    }
-
-    this.entities.length = 0;
-    this.mines.length = 0;
-    this.opacity = 0;
 }
 
 UncloakAction.prototype.execute = function(gameContext, data) {

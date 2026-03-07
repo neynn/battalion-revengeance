@@ -1,50 +1,32 @@
 import { Action } from "../../../engine/action/action.js";
-import { FADE_RATE } from "../../constants.js";
 import { SOUND_TYPE } from "../../enums.js";
 import { playEntitySound } from "../../systems/sound.js";
+import { CloakTween } from "../../tween/types/cloakTween.js";
 
 export const CloakAction = function() {
     Action.call(this);
-
-    this.opacity = 1;
-    this.entity = null;
 }
 
 CloakAction.prototype = Object.create(Action.prototype);
 CloakAction.prototype.constructor = CloakAction;
 
 CloakAction.prototype.onStart = function(gameContext, data) {
-    const { world } = gameContext;
+    const { world, tweenManager } = gameContext;
     const { entityManager } = world;
     const { entityID } = data;
     const entity = entityManager.getEntity(entityID);
 
     playEntitySound(gameContext, entity, SOUND_TYPE.CLOAK);
 
-    this.entity = entity;
+    tweenManager.addTween(new CloakTween(entity));
+
     this.execute(gameContext, data);
 }
 
-CloakAction.prototype.onUpdate = function(gameContext, data) {
-    const { timer } = gameContext;
-    const fixedDeltaTime = timer.getFixedDeltaTime();
-
-    this.opacity -= FADE_RATE * fixedDeltaTime;
-
-    if(this.opacity < 0) {
-        this.opacity = 0;
-    }
-
-    this.entity.setOpacity(this.opacity);
-}
-
 CloakAction.prototype.isFinished = function(gameContext, executionPlan) {
-    return this.opacity <= 0;
-}
+    const { tweenManager } = gameContext;
 
-CloakAction.prototype.onEnd = function(gameContext, data) {
-    this.entity = null;
-    this.opacity = 1;
+    return tweenManager.isEmpty();
 }
 
 CloakAction.prototype.execute = function(gameContext, data) {

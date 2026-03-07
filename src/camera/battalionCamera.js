@@ -230,13 +230,63 @@ BattalionCamera.prototype.debugEntities = function(gameContext, display) {
     }
 }
 
-BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap) {
+BattalionCamera.prototype.drawEntitiesSpatial = function(gameContext, display) {
     const { timer, world, spriteManager } = gameContext;
     const { realTime, deltaTime } = timer;
     const { entityManager } = world;
 
     const spriteList = spriteManager.pool.elements;
+    const managerEntities = entityManager.entities;
+    const viewportLeftEdge = this.fViewportX;
+    const viewportTopEdge = this.fViewportY;
+    const viewportRightEdge = viewportLeftEdge + this.wViewportWidth;
+    const viewportBottomEdge = viewportTopEdge + this.wViewportHeight;
+    const deferred = [];
+
+    let count = 0;
+
+    for(let i = 0; i < managerEntities.length; i++) {
+        const entity = managerEntities[i];
+        const spriteID = entity.spriteID;
+        const state = entity.state;
+
+        if(spriteID !== SpriteManager.INVALID_ID) {
+            const sprite = spriteList[spriteID];
+            const isVisible = sprite.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
+
+            if(isVisible) {
+                if(state === BattalionEntity.STATE.IDLE) {
+                    this.drawEntity(display, entity, spriteList[spriteID], realTime, deltaTime);
+                } else {
+                    deferred.push(entity);
+                }
+
+                count++;
+            }
+        }
+    }
+
+    for(let i = 0; i < deferred.length; i++) {
+        const entity = deferred[i];
+        const spriteID = entity.spriteID;
+
+        this.drawEntity(display, entity, spriteList[spriteID], realTime, deltaTime);
+    }
+
+    if(DEBUG.SPRITES) {
+        this.debugEntities(gameContext, display);
+    }
+
+    return count;
+}
+
+BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap) {
+    const { timer, world, spriteManager } = gameContext;
+    const { realTime, deltaTime } = timer;
+    const { entityManager } = world;
+
     const worldEntities = worldMap.entities;
+    const spriteList = spriteManager.pool.elements;
     const managerEntities = entityManager.entities;
 
     const startX = this.startX;
@@ -310,11 +360,20 @@ BattalionCamera.prototype.drawMines = function(tileManager, display, worldMap) {
 
     if(this.flags & BattalionCamera.FLAG.USE_PERSPECTIVES) {
         for(let i = 0; i < length; i++) {
-            const { tileX, tileY, state, teamID } = mines[i];
-    
-            if(state === Mine.STATE.VISIBLE || this.perspectives.has(teamID)) {
+            const { tileX, tileY, teamID, opacity } = mines[i];
+            let alpha = 1;
+            
+            if(opacity < BattalionCamera.STEALTH_THRESHOLD && this.perspectives.has(teamID)) {
+                alpha = BattalionCamera.STEALTH_THRESHOLD;
+            } else {
+                alpha = opacity;
+            }
+
+            if(alpha !== 0) {
                 const tileID = mines[i].getTileSprite();
                 
+                display.setAlpha(alpha);
+
                 count += this.drawTileClipped(tileManager, tileID, context, tileX, tileY);
             }
         }
@@ -365,7 +424,7 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     }
 
     overlays += this.drawOverlay(tileManager, display, this.pathOverlay);
-    sprites += this.drawEntities(gameContext, display, worldMap);
+    sprites += this.drawEntitiesSpatial(gameContext, display);
     sprites += this.drawSortedSpriteLayer(gameContext, display, LAYER_TYPE.GFX);
     this.drawCash(display);
     //this.shadeScreen(display, "#000000", 0.5);

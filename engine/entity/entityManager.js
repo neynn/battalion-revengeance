@@ -121,8 +121,8 @@ EntityManager.prototype.destroyEntity = function(index) {
     if(index === this.entities.length) {
         this.entities.pop();
     } else {
+        entity.reset();
         entity.isMarkedForDestroy = true;
-        entity.index = EntityManager.INVALID_INDEX;
         this.openSlots.push(index);
     }
 }

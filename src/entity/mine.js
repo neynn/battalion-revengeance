@@ -26,6 +26,10 @@ Mine.prototype.save = function() {
     }
 }
 
+Mine.prototype.setOpacity = function(opacity) {
+    this.opacity = opacity;
+}
+
 Mine.prototype.load = function(data) {
     this.state = data.state;
     this.opacity = this.state === Mine.STATE.HIDDEN ? 0 : 1;

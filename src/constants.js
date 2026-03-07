@@ -2,9 +2,9 @@ import { TEAM_STAT } from "./enums.js";
 
 export const MAX_TRAITS = 4;
 
-export const FADE_RATE = 3;
+export const FADE_RATE = 2.5;
 
-export const DEATH_FADE_RATE = 1.5;
+export const DEATH_FADE_RATE = 1;
 
 export const SCORE_BONUS = {
     [TEAM_STAT.UNITS_BUILT]: 500,

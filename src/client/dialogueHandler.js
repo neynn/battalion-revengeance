@@ -27,7 +27,10 @@ DialogueHandler.TYPE = {
     DEFEAT: 2
 };
 
-DialogueHandler.prototype.update = function(gameContext, deltaTime) {
+DialogueHandler.prototype.update = function(gameContext) {
+    const { timer } = gameContext;
+    const { deltaTime } = timer;
+
     if(this.currentDialogue.length !== 0) {
         this.secondsPassed += deltaTime;
 

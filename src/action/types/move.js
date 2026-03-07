@@ -206,12 +206,17 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
     //Follow-Up commands are ignored if there is no target.
     //Follow-Up commands only work on neighboring entities.
     //If a Follow-Up command is given but is invalid, the move is canceled.
+    //Move is NOT canceled if ANY intercept is triggered! Otherwise information might leak.
     switch(command) {
         case MOVE_COMMAND.HEAL: {
             const targetEntity = entityManager.getEntity(targetID);
 
             if(!targetEntity || !targetEntity.isNextToTile(targetX, targetY)) {
-                return;
+                if(mineIntercept === PATH_INTERCEPT.NONE && intercept === PATH_INTERCEPT.NONE) {
+                    return;
+                }
+
+                break;
             }
 
             if(entity.isHealValid(gameContext, targetEntity)) {
@@ -224,7 +229,11 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
             const targetEntity = entityManager.getEntity(targetID);
 
             if(!targetEntity || !targetEntity.isNextToTile(targetX, targetY)) {
-                return;
+                if(mineIntercept === PATH_INTERCEPT.NONE && intercept === PATH_INTERCEPT.NONE) {
+                    return;
+                }
+
+                break;
             }
 
             if(entity.isAttackValid(gameContext, targetEntity)) {

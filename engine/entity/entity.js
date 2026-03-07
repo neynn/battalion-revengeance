@@ -13,7 +13,6 @@ export const Entity = function(id, DEBUG_NAME = "") {
 Entity.prototype.reset = function() {
     this.index = EntityManager.INVALID_INDEX;
     this.spriteID = SpriteManager.INVALID_ID;
-    this.isMarkedForDestroy = false;
     this.flags = 0;
 }
 

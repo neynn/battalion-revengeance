@@ -1,7 +1,5 @@
 repairAction -> start repair and finish repair on the next active turn. onHit -> remove IS_REPAIRING flag.
 
-TweenManager for effects.
-
 Model for Destroyer
 Data for Destroyer
 
@@ -11,6 +9,3 @@ Maintenance trait that heals 5HP every ROUND. StartTurn -> query entities -> fil
 new blend property that links and draws a second sprite as a child to one.
 
 train as transport.
-Transport: Do NOT call playIdle on the server.
-
-variants are part of textures, not the spritemanager
