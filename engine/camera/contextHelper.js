@@ -1,3 +1,5 @@
+import { transformWorldToTile } from "../math/transform2D.js";
+
 const getContextAtMouse = function(gameContext) {
     const { renderer, client } = gameContext;
     const { cursor } = client;
@@ -38,10 +40,10 @@ export const getCursorTile = function(gameContext) {
         }
     }
 
-    const { transform2D, client } = gameContext;
+    const { client } = gameContext;
     const { cursor } = client;
     const { x, y } = context.getWorldPosition(cursor.positionX, cursor.positionY);
-    const mouseTile = transform2D.transformWorldToTile(x, y);
+    const mouseTile = transformWorldToTile(x, y);
 
     return mouseTile;
 }

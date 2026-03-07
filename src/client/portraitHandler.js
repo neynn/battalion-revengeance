@@ -1,5 +1,5 @@
 import { TextureHandle } from "../../engine/resources/texture/textureHandle.js";
-import { TextureRegistry } from "../../engine/resources/textureRegistry.js";
+import { TextureRegistry } from "../../engine/resources/texture/textureRegistry.js";
 
 export const PortraitHandler = function() {
     this.registry = new TextureRegistry();

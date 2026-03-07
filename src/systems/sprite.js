@@ -1,3 +1,4 @@
+import { transformTileToWorld } from "../../engine/math/transform2D.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { ATTACK_TYPE, DIRECTION, LAYER_TYPE, SCHEMA_TYPE } from "../enums.js";
@@ -74,9 +75,9 @@ const getEffect = function(entity, effectType) {
 }
 
 export const playSprite = function(gameContext, spriteType, tileX, tileY) {
-    const { spriteManager, transform2D } = gameContext;
+    const { spriteManager } = gameContext;
     const sprite = spriteManager.createSprite(spriteType, LAYER_TYPE.GFX);
-    const { x, y } = transform2D.transformTileToWorld(tileX, tileY);
+    const { x, y } = transformTileToWorld(tileX, tileY);
 
     sprite.setPosition(x, y);
     sprite.expire();

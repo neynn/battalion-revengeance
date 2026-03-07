@@ -1,5 +1,5 @@
-export const UIManager = function(resourceLoader) {
-    this.resources = resourceLoader;
+export const UIManager = function(textureLoader) {
+    this.resources = textureLoader;
     this.textureMap = {};
     this.rawInterfaces = {};
     this.interfaces = [];

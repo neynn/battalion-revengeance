@@ -1,26 +1,8 @@
-export const Transform2D = function() {
-    this.tileWidth = 64;
-    this.tileHeight = 64;
-    this.halfTileWidth = 32;
-    this.halfTileHeight = 32;
-}
+import { TILE_HEIGHT, TILE_WIDTH } from "../engine_constants.js";
 
-Transform2D.prototype.setSize = function(tileWidth, tileHeight) {
-    this.tileWidth = tileWidth;
-    this.tileHeight = tileHeight;
-    this.halfTileWidth = tileWidth / 2;
-    this.halfTileHeight = tileHeight / 2;
-}
-
-Transform2D.prototype.transformWorldToTileToWorld = function(positionX, positionY) {
-    const { x, y } = this.transformWorldToTile(positionX, positionY);
-
-    return this.transformTileToWorld(x, y);
-}
-
-Transform2D.prototype.transformTileToWorld = function(tileX, tileY) {
-	const positionX = tileX * this.tileWidth;
-	const positionY = tileY * this.tileHeight;
+export const transformTileToWorld = function(tileX, tileY) {
+	const positionX = tileX * TILE_WIDTH;
+	const positionY = tileY * TILE_HEIGHT;
 
 	return {
 		"x": positionX,
@@ -28,9 +10,19 @@ Transform2D.prototype.transformTileToWorld = function(tileX, tileY) {
 	}
 }
 
-Transform2D.prototype.transformWorldToTile = function(positionX, positionY) {
-    const tileX = Math.floor(positionX / this.tileWidth);
-	const tileY = Math.floor(positionY / this.tileHeight);
+export const transformTileToWorldCenter = function(tileX, tileY) {
+    const positionX = tileX * TILE_WIDTH + (TILE_WIDTH / 2);
+	const positionY = tileY * TILE_HEIGHT + (TILE_HEIGHT / 2);
+
+	return {
+		"x": positionX,
+		"y": positionY
+	}
+}
+
+export const transformWorldToTile = function(positionX, positionY) {
+    const tileX = Math.floor(positionX / TILE_WIDTH);
+	const tileY = Math.floor(positionY / TILE_HEIGHT);
 
 	return {
 		"x": tileX,
@@ -38,9 +30,9 @@ Transform2D.prototype.transformWorldToTile = function(positionX, positionY) {
 	}
 }
 
-Transform2D.prototype.transformSizeToWorldOffsetCenter = function(sizeX, sizeY) {
-    const xOffset = this.tileWidth * (sizeX / 2 - 0.5);
-    const yOffset = this.tileHeight * (sizeY / 2 - 0.5);
+export const transformSizeToWorldOffset = function(sizeX, sizeY) {
+    const xOffset = TILE_WIDTH * (sizeX - 1);
+    const yOffset = TILE_HEIGHT * (sizeY - 1);
 
     return { 
 		"x": xOffset,
@@ -48,9 +40,9 @@ Transform2D.prototype.transformSizeToWorldOffsetCenter = function(sizeX, sizeY) 
 	}
 }
 
-Transform2D.prototype.transformSizeToWorldOffset = function(sizeX, sizeY) {
-    const xOffset = this.tileWidth * (sizeX - 1);
-    const yOffset = this.tileHeight * (sizeY - 1);
+export const transformSizeToWorldOffsetCenter = function(sizeX, sizeY) {
+    const xOffset = TILE_WIDTH * (sizeX / 2 - 0.5);
+    const yOffset = TILE_HEIGHT * (sizeY / 2 - 0.5);
 
     return { 
 		"x": xOffset,
@@ -58,25 +50,21 @@ Transform2D.prototype.transformSizeToWorldOffset = function(sizeX, sizeY) {
 	}
 }
 
-Transform2D.prototype.transformTileToWorldCenter = function(tileX, tileY) {
-    const positionX = tileX * this.tileWidth + this.halfTileWidth;
-	const positionY = tileY * this.tileHeight + this.halfTileHeight;
-
-	return {
-		"x": positionX,
-		"y": positionY
-	}
-}
-
-Transform2D.prototype.transformSizeToRandomOffset = function(sizeX, sizeY, maxOffsetX, maxOffsetY) {
+export const transformSizeToRandomOffset = function(sizeX, sizeY, maxOffsetX, maxOffsetY) {
     const offsetX = (Math.random() * 2 - 1) * maxOffsetX;
     const offsetY = (Math.random() * 2 - 1) * maxOffsetY;
     const randomX = Math.floor(Math.random() * sizeX);
     const randomY = Math.floor(Math.random() * sizeY);
-    const { x, y } = this.transformTileToWorld(randomX, randomY);
+    const world = transformTileToWorld(randomX, randomY);
 
-    return {
-        "x": x + offsetX,
-        "y": y + offsetY
-    }
+    world.x += offsetX;
+    world.y += offsetY;
+
+    return world;
+}
+
+export const transformWorldToTileToWorld = function(positionX, positionY) {
+    const { x, y } = transformWorldToTile(positionX, positionY);
+
+    return transformTileToWorld(x, y);
 }

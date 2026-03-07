@@ -7,7 +7,7 @@ import { ButtonHandler } from "../../../engine/map/editor/buttonHandler.js";
 import { getCursorTile } from "../../../engine/camera/contextHelper.js";
 import { TileManager } from "../../../engine/tile/tileManager.js";
 import { Cursor } from "../../../engine/client/cursor.js";
-import { TILE_WIDTH } from "../../constants.js";
+import { TILE_WIDTH } from "../../../engine/engine_constants.js";
 import { BrushSet } from "../../../engine/map/editor/brushSet.js";
 import { TILE_ID } from "../../enums.js";
 import { EditorConfigurator } from "../../../engine/map/editor/configurator.js";

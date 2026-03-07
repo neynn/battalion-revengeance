@@ -82,8 +82,8 @@ TileManager.prototype.createAutotilers = function(autotilers, visualMap) {
     }
 }
 
-TileManager.prototype.createTileVisuals = function(resourceLoader, tileAtlases, tileMeta) {
-    const textureMap = resourceLoader.createTextures(tileAtlases);
+TileManager.prototype.createTileVisuals = function(textureLoader, tileAtlases, tileMeta) {
+    const textureMap = textureLoader.createTextures(tileAtlases);
     const generatedVisuals = new Set();
     let mapID = 1;
 
@@ -109,13 +109,13 @@ TileManager.prototype.createTileVisuals = function(resourceLoader, tileAtlases, 
                     const frameCount = visual.getFrameCount();
 
                     if(frameCount > 0 && textureID !== undefined) {
-                        const textureObject = resourceLoader.getTexture(textureID);
+                        const textureObject = textureLoader.getTexture(textureID);
                         const { handle } = textureObject;
 
                         visual.setHandle(handle);
                         handle.addReference();
 
-                        resourceLoader.loadTexture(textureID);
+                        textureLoader.loadTexture(textureID);
                     }
 
                     this.visuals.push(visual);
@@ -138,13 +138,13 @@ TileManager.prototype.createTileVisuals = function(resourceLoader, tileAtlases, 
                 const frameCount = visual.getFrameCount();
 
                 if(frameCount > 0 && textureID !== undefined) {
-                    const textureObject = resourceLoader.getTexture(textureID);
+                    const textureObject = textureLoader.getTexture(textureID);
                     const { handle } = textureObject;
 
                     visual.setHandle(handle);
                     handle.addReference();
 
-                    resourceLoader.loadTexture(textureID);
+                    textureLoader.loadTexture(textureID);
                 }
 
                 this.visuals.push(visual);
@@ -166,7 +166,7 @@ TileManager.prototype.loadServer = function(tileMeta, autotilers, resolveType) {
     this.createAutotilers(autotilers, visualMap);
 }
 
-TileManager.prototype.loadClient = function(resourceLoader, tileAtlases, tileMeta, autotilers, resolveType) {
+TileManager.prototype.loadClient = function(textureLoader, tileAtlases, tileMeta, autotilers, resolveType) {
     if(!tileAtlases || !tileMeta || !autotilers) {
         console.warn("TileAtlases/TileMeta/Autotilers does not exist!");
         return;
@@ -175,7 +175,7 @@ TileManager.prototype.loadClient = function(resourceLoader, tileAtlases, tileMet
     const visualMap = this.createTiles(tileMeta, resolveType);
 
     this.createAutotilers(autotilers, visualMap);
-    this.createTileVisuals(resourceLoader, tileAtlases, tileMeta);
+    this.createTileVisuals(textureLoader, tileAtlases, tileMeta);
     this.enableAllVisuals();
 }
 

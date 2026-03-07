@@ -1,4 +1,5 @@
 import { Cursor } from "../../engine/client/cursor.js";
+import { TILE_HEIGHT, TILE_WIDTH } from "../../engine/engine_constants.js";
 import { Scroller } from "../../engine/util/scroller.js";
 import { EditCamera } from "../camera/editCamera.js";
 import { PlayCamera } from "../camera/playCamera.js";
@@ -29,14 +30,12 @@ export const addZoom = function(gameContext, cContext) {
 }
 
 export const createEditCamera = function(gameContext, brush) {
-    const { renderer, transform2D } = gameContext;
-    const { tileWidth, tileHeight } = transform2D;
-
+    const { renderer } = gameContext;
     const camera = new EditCamera(brush);
     const context = renderer.createContext(camera);
 
     camera.freeViewport();
-    camera.setTileSize(tileWidth, tileHeight);
+    camera.setTileSize(TILE_WIDTH, TILE_HEIGHT);
     camera.tryLoadingWorldSize(gameContext);
 
     context.setDragButton(Cursor.BUTTON.LEFT);
@@ -50,14 +49,12 @@ export const createEditCamera = function(gameContext, brush) {
 }
 
 export const createPlayCamera = function(gameContext) {
-    const { renderer, transform2D } = gameContext;
-    const { tileWidth, tileHeight } = transform2D;
-
+    const { renderer } = gameContext;
     const camera = new PlayCamera();
     const context = renderer.createContext(camera);
 
     camera.bindViewport();
-    camera.setTileSize(tileWidth, tileHeight);
+    camera.setTileSize(TILE_WIDTH, TILE_HEIGHT);
     camera.loadSprites(gameContext);
     camera.tryLoadingWorldSize(gameContext);
 

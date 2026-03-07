@@ -5,7 +5,7 @@ import { EntityManager } from "../../engine/entity/entityManager.js";
 import { SHAPE } from "../../engine/math/constants.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { drawShape, shadeScreen } from "../../engine/util/drawHelper.js";
-import { TILE_HEIGHT, TILE_WIDTH } from "../constants.js";
+import { TILE_HEIGHT, TILE_WIDTH } from "../../engine/engine_constants.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { LAYER_TYPE, PLAYER_PREFERENCE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";

@@ -1,30 +1,48 @@
-import { createBitmapData, mapBitmap, mapBitmapPartial } from "../graphics/colorHelper.js";
-import { TextureHandle } from "./texture/textureHandle.js";
-import { TextureRegion } from "./texture/region.js";
+import { TextureHandle } from "./textureHandle.js";
+import { TextureRegion } from "./region.js";
 
-export const Texture = function(id, name, path) {
-    this.id = id;
-    this.name = name;
-    this.path = path;
-    this.handle = new TextureHandle(id);
-    this.variants = [];
-    this.regions = [];
-    this.regionMap = {};
+const recolorRect = function(buffer, bufferWidth, colorMap, frameX, frameY, frameW, frameH) {
+    for(let i = 0; i < frameH; i++) {
+        const rowStart = (frameY + i) * bufferWidth + frameX;
+
+        for(let j = 0; j < frameW; j++) {
+            const index = (rowStart + j) * 4;
+
+            const r = buffer[index];
+            const g = buffer[index + 1];
+            const b = buffer[index + 2];
+            
+            const colorKey = (r << 16) | (g << 8) | b;
+            const mappedColor = colorMap[colorKey];
+
+            if(mappedColor) {
+                const [nr, ng, nb] = mappedColor;
+
+                buffer[index] = nr;
+                buffer[index + 1] = ng;
+                buffer[index + 2] = nb;
+            }
+        }
+    }
 }
 
-Texture.COPY_TYPE = {
-    FULL: 0,
-    REGIONAL: 1
-};
+const recolorImage = function(imageData, colorMap) {
+    const { data, width, height } = imageData;
 
-Texture.ERROR_CODE = {
-    NONE: "NONE",
-    ERROR_RESPONSE: "LOAD_ERROR",
-    ERROR_NO_PATH: "NO_PATH",
-    ERROR_STATE: "ERROR_STATE"
-};
+    recolorRect(data, width, colorMap, 0, 0, width, height);
+}
 
-Texture.createImageData = function(bitmap) {
+const recolorImageWithRegions = function(imageData, colorMap, regions) {
+    const { data, width } = imageData;
+
+    for(let i = 0; i < regions.length; i++) {
+        const { x, y, w, h } = regions[i];
+
+        recolorRect(data, width, colorMap, x, y, w, h);
+    }
+}
+
+const createImageData = function(bitmap) {
     const { width, height } = bitmap;
     const canvas = document.createElement("canvas");
 
@@ -37,10 +55,26 @@ Texture.createImageData = function(bitmap) {
     context.drawImage(bitmap, 0, 0);
 
     const imageData = context.getImageData(0, 0, width, height);
-    const pixelArray = imageData.data;
 
-    return pixelArray;
+    return imageData;
 }
+
+export const Texture = function(id, name, path) {
+    this.id = id;
+    this.name = name;
+    this.path = path;
+    this.handle = new TextureHandle(id);
+    this.variants = [];
+    this.regions = [];
+    this.regionMap = {};
+}
+
+Texture.EMPTY_HANDLE = new TextureHandle(-1);
+
+Texture.COPY_TYPE = {
+    FULL: 0,
+    REGIONAL: 1
+};
 
 Texture.prototype.getSizeBytes = function() {
     let bytes = this.handle.getBytes();
@@ -64,11 +98,11 @@ Texture.prototype.clear = function() {
 
 Texture.prototype.requestBitmap = function() {
     if(!this.path) {
-        return Promise.reject(Texture.ERROR_CODE.ERROR_NO_PATH);
+        return Promise.reject("Missing path!");
     }
 
     if(this.handle.state !== TextureHandle.STATE.EMPTY) {
-        return Promise.reject(Texture.ERROR_CODE.ERROR_STATE);
+        return Promise.reject("Texture is loading/loaded!");
     }
 
     this.handle.state = TextureHandle.STATE.LOADING;
@@ -79,11 +113,11 @@ Texture.prototype.requestBitmap = function() {
             return response.blob();
         }
 
-        return Promise.reject(Texture.ERROR_CODE.ERROR_RESPONSE);
+        return Promise.reject("File could not be fetched!");
     })
     .then((blob) => createImageBitmap(blob))
     .then((bitmap) => {
-        this.setBitmapData(bitmap);
+        this.handle.setImage(bitmap);
     
         return Promise.resolve(bitmap);
     })
@@ -96,11 +130,6 @@ Texture.prototype.requestBitmap = function() {
 
 Texture.prototype.getID = function() {
     return this.id;
-}
-
-Texture.prototype.setBitmapData = function(bitmap) {
-    this.handle.bitmap = bitmap;
-    this.handle.state = TextureHandle.STATE.LOADED;
 }
 
 Texture.prototype.createHandle = function(handleID) {
@@ -127,10 +156,20 @@ Texture.prototype.loadHandle = function(handleID, schema, copyType) {
     if(handle.state === TextureHandle.STATE.EMPTY) {
         handle.state = TextureHandle.STATE.LOADING;
 
-        const bitmapData = createBitmapData(this.handle.bitmap);
-        const mappedData = copyType === Texture.COPY_TYPE.FULL ? mapBitmap(bitmapData, schema) : mapBitmapPartial(bitmapData, schema, this.regions);
+        const imageData = createImageData(this.handle.bitmap);
 
-        createImageBitmap(mappedData)
+        switch(copyType) {
+            case Texture.COPY_TYPE.FULL: {
+                recolorImage(imageData, schema);
+                break;
+            }
+            case Texture.COPY_TYPE.REGIONAL: {
+                recolorImageWithRegions(imageData, schema, this.regions);
+                break;
+            }
+        }
+
+        createImageBitmap(imageData)
         .then(bitmap => handle.setImage(bitmap))
         .catch(error => handle.clear());
     }

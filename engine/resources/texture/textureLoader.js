@@ -1,13 +1,13 @@
 import { TextureRegistry } from "./textureRegistry.js";
-import { TextureHandle } from "./texture/textureHandle.js";
+import { TextureHandle } from "./textureHandle.js";
 
-export const ResourceLoader = function() {
+export const TextureLoader = function() {
     this.textureRegistry = new TextureRegistry();
     this.toResolve = new Map();
     this.tasks = [];
 }
 
-ResourceLoader.prototype.clearTexture = function(index) {
+TextureLoader.prototype.clearTexture = function(index) {
     const texture = this.textureRegistry.getTexture(index);
 
     if(texture) {
@@ -15,19 +15,19 @@ ResourceLoader.prototype.clearTexture = function(index) {
     }
 }
 
-ResourceLoader.prototype.getTotalKBUsed = function() {
+TextureLoader.prototype.getTotalKBUsed = function() {
     return this.textureRegistry.getSizeBytes() / 1024;
 }
 
-ResourceLoader.prototype.createTextures = function(textures) {
+TextureLoader.prototype.createTextures = function(textures) {
     return this.textureRegistry.createTextures(textures);
 }
 
-ResourceLoader.prototype.getTexture = function(index) {
+TextureLoader.prototype.getTexture = function(index) {
     return this.textureRegistry.getTexture(index);
 }
 
-ResourceLoader.prototype.update = function() {
+TextureLoader.prototype.update = function() {
     if(this.tasks.length !== 0) {
         const { textureID, handleID, colorMap, type } = this.tasks[0];
         const texture = this.getTexture(textureID);
@@ -52,7 +52,7 @@ ResourceLoader.prototype.update = function() {
     }
 }
 
-ResourceLoader.prototype.addRecolorTask = function(textureID, handleID, colorMap, taskType) {
+TextureLoader.prototype.addRecolorTask = function(textureID, handleID, colorMap, taskType) {
     //Allow only one task per texture variant.
     for(let i = 0; i < this.tasks.length; i++) {
         const task = this.tasks[i];
@@ -70,7 +70,7 @@ ResourceLoader.prototype.addRecolorTask = function(textureID, handleID, colorMap
     });
 }
 
-ResourceLoader.prototype.addLoadResolver = function(textureID, onLoad) {
+TextureLoader.prototype.addLoadResolver = function(textureID, onLoad) {
     const toResolve = this.toResolve.get(textureID);
 
     if(toResolve) {
@@ -80,7 +80,7 @@ ResourceLoader.prototype.addLoadResolver = function(textureID, onLoad) {
     }
 }
 
-ResourceLoader.prototype.resolveLoad = function(textureID, bitmap) {
+TextureLoader.prototype.resolveLoad = function(textureID, bitmap) {
     const toResolve = this.toResolve.get(textureID);
 
     if(toResolve) {
@@ -90,7 +90,7 @@ ResourceLoader.prototype.resolveLoad = function(textureID, bitmap) {
     }
 }
 
-ResourceLoader.prototype.resolveError = function(textureID) {
+TextureLoader.prototype.resolveError = function(textureID) {
     const toResolve = this.toResolve.get(textureID);
 
     if(toResolve) {
@@ -98,7 +98,7 @@ ResourceLoader.prototype.resolveError = function(textureID) {
     }  
 }
 
-ResourceLoader.prototype.loadTexture = function(id) {
+TextureLoader.prototype.loadTexture = function(id) {
     const texture = this.getTexture(id);
 
     if(texture && texture.handle.state === TextureHandle.STATE.EMPTY) {

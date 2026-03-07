@@ -1,11 +1,11 @@
+import { Texture } from "../../resources/texture/texture.js";
 import { TextureHandle } from "../../resources/texture/textureHandle.js";
-import { TextureRegistry } from "../../resources/textureRegistry.js";
 import { UIElement } from "../uiElement.js";
 
 export const Icon = function(DEBUG_NAME) {
     UIElement.call(this, DEBUG_NAME);
 
-    this.handle = TextureRegistry.EMPTY_HANDLE;
+    this.handle = Texture.EMPTY_HANDLE;
     this.scale = 1;
 }
 

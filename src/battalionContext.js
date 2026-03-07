@@ -8,7 +8,6 @@ import { MapEditorState } from "./states/mapEditor/mapEditorState.js";
 import { PlayState } from "./states/play.js";
 import { TeamManager } from "./team/teamManager.js";
 import { TypeRegistry } from "./type/typeRegistry.js";
-import { TILE_HEIGHT, TILE_WIDTH } from "./constants.js";
 import { ArenaState } from "./states/arena/arena.js";
 import { UICore } from "./ui/uiCore.js";
 import { ClientActionRouter } from "./client/actionRouter.js";
@@ -18,7 +17,6 @@ import { resolveTileType } from "./enumHelpers.js";
 export const BattalionContext = function() {
     ClientGameContext.call(this);
 
-    this.transform2D.setSize(TILE_WIDTH, TILE_HEIGHT);
     this.typeRegistry = new TypeRegistry();
     this.teamManager = new TeamManager();
     this.portraitHandler = new PortraitHandler();
@@ -37,7 +35,7 @@ export const BattalionContext = function() {
     }
 
     this.timer.render = (deltaTime) => {
-        this.resourceLoader.update();
+        this.textureLoader.update();
         this.applicationWindow.update(this);
         this.dialogueHandler.update(this, deltaTime);
         this.spriteManager.update(this);
@@ -57,8 +55,8 @@ BattalionContext.prototype = Object.create(ClientGameContext.prototype);
 BattalionContext.prototype.constructor = BattalionContext;
 
 BattalionContext.prototype.init = function(resources) {
-    this.tileManager.loadClient(this.resourceLoader, resources.tiles, resources.tileMeta, resources.autotilers, resolveTileType);
-    this.spriteManager.load(this, resources.spriteTextures, resources.sprites);
+    this.tileManager.loadClient(this.textureLoader, resources.tiles, resources.tileMeta, resources.autotilers, resolveTileType);
+    this.spriteManager.load(resources.spriteTextures, resources.sprites);
     this.uiManager.load(resources.interfaces, resources.icons);
     this.fonts.load(resources.fonts);
     this.client.musicPlayer.load(resources.music, resources.playlists);

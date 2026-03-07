@@ -1,13 +1,13 @@
 import { Graph } from "../graphics/graph.js";
 import { isRectangleRectangleIntersect } from "../math/math.js";
+import { Texture } from "../resources/texture/texture.js";
 import { TextureHandle } from "../resources/texture/textureHandle.js";
-import { TextureRegistry } from "../resources/textureRegistry.js";
 
 export const Sprite = function(index, DEBUG_NAME) {
     Graph.call(this, DEBUG_NAME);
     
     this.index = index;
-    this.handle = TextureRegistry.EMPTY_HANDLE;
+    this.handle = Texture.EMPTY_HANDLE;
     this.container = null;
     this.lastCallTime = 0;
     this.frameCount = 1;
@@ -127,7 +127,7 @@ Sprite.prototype.getIndex = function() {
 }
 
 Sprite.prototype.reset = function() {
-    this.handle = TextureRegistry.EMPTY_HANDLE;
+    this.handle = Texture.EMPTY_HANDLE;
     this.container = null;
     this.lastCallTime = 0;
     this.frameCount = 1;

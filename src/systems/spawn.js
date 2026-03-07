@@ -6,6 +6,7 @@ import { Mine } from "../entity/mine.js";
 import { bufferEntitySprites, createSchematicSprite, setEntityPosition, updateEntitySprite } from "./sprite.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { bufferEntitySounds } from "./sound.js";
+import { transformTileToWorld } from "../../engine/math/transform2D.js";
 
 const getEntityID = function(name) {
     const index = ENTITY_TYPE[name];
@@ -83,7 +84,7 @@ export const createServerEntityObject = function(gameContext, entityID, teamID, 
 }
 
 export const createClientEntityObject = function(gameContext, entityID, teamID, typeID, tileX, tileY) {
-    const { teamManager, world, transform2D, spriteManager, typeRegistry } = gameContext;
+    const { teamManager, world, spriteManager, typeRegistry } = gameContext;
     const { entityManager } = world;
     const team = teamManager.getTeam(teamID);
 
@@ -95,7 +96,7 @@ export const createClientEntityObject = function(gameContext, entityID, teamID, 
     const entityType = typeRegistry.getEntityType(typeID);
     const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
     const entityObject = new BattalionEntity(entityID);
-    const spawnPosition = transform2D.transformTileToWorld(tileX, tileY);
+    const spawnPosition = transformTileToWorld(tileX, tileY);
 
     entityObject.spriteID = visualSprite.getIndex();
     entityObject.loadConfig(entityType);
@@ -131,7 +132,7 @@ export const createServerBuildingObject = function(gameContext, teamID, typeID, 
 }
 
 export const createClientBuildingObject = function(gameContext, teamID, typeID, tileX, tileY) {
-    const { teamManager, typeRegistry, transform2D } = gameContext;
+    const { teamManager, typeRegistry } = gameContext;
     const team = teamManager.getTeam(teamID);
 
     if(!team) {
@@ -143,7 +144,7 @@ export const createClientBuildingObject = function(gameContext, teamID, typeID, 
     const { schema } = team;
     const { sprite } = buildingType;
 
-    const position = transform2D.transformTileToWorld(tileX, tileY);
+    const position = transformTileToWorld(tileX, tileY);
     const visualSprite = createSchematicSprite(gameContext, sprite, schema, LAYER_TYPE.BUILDING);
     const building = new Building(buildingType);
 

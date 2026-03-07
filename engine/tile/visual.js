@@ -1,8 +1,8 @@
-import { TextureRegistry } from "../resources/textureRegistry.js";
+import { Texture } from "../resources/texture/texture.js";
 
 export const TileVisual = function(id) {
     this.id = id;
-    this.handle = TextureRegistry.EMPTY_HANDLE;
+    this.handle = Texture.EMPTY_HANDLE;
     this.frames = [];
     this.frameTime = TileVisual.DEFAULT.FRAME_TIME;
     this.frameIndex = 0;

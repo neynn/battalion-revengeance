@@ -1,5 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
-import { FADE_RATE, TILE_WIDTH } from "../../constants.js";
+import { TILE_WIDTH } from "../../../engine/engine_constants.js";
+import { transformTileToWorld } from "../../../engine/math/transform2D.js";
+import { FADE_RATE } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { COMMAND_TYPE, MOVE_COMMAND, PATH_INTERCEPT, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { mInterceptMine, mInterceptPath } from "../../systems/pathfinding.js";
@@ -49,7 +51,7 @@ MoveAction.prototype.onStart = function(gameContext, data) {
 }
 
 MoveAction.prototype.onUpdate = function(gameContext, data) {
-    const { timer, transform2D } = gameContext;
+    const { timer } = gameContext;
     const deltaTime = timer.getFixedDeltaTime();
 
     switch(this.state) {
@@ -69,7 +71,7 @@ MoveAction.prototype.onUpdate = function(gameContext, data) {
             while(this.distanceMoved >= TILE_WIDTH && this.pathIndex >= 0) {
                 const { deltaX, deltaY } = this.path[this.pathIndex]; 
                 const { tileX, tileY } = this.path[this.pathIndex];
-                const positionVec = transform2D.transformTileToWorld(tileX, tileY);
+                const positionVec = transformTileToWorld(tileX, tileY);
             
                 this.entity.setDirectionByDelta(deltaX, deltaY);
                 this.distanceMoved -= TILE_WIDTH;
@@ -111,9 +113,8 @@ MoveAction.prototype.isFinished = function(gameContext, executionPlan) {
 }
 
 MoveAction.prototype.onEnd = function(gameContext, data) {
-    const { transform2D } = gameContext;
     const { deltaX, deltaY, tileX, tileY } = this.path[0];
-    const position = transform2D.transformTileToWorld(tileX, tileY);
+    const position = transformTileToWorld(tileX, tileY);
 
     this.execute(gameContext, data);
     this.entity.setDirectionByDelta(deltaX, deltaY);

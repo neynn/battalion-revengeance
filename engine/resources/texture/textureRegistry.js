@@ -1,14 +1,11 @@
-import { PathHandler } from "./pathHandler.js";
+import { PathHandler } from "../pathHandler.js";
 import { Texture } from "./texture.js";
-import { TextureHandle } from "./texture/textureHandle.js";
 
 export const TextureRegistry = function() {
     this.textures = [];
 }
 
-TextureRegistry.EMPTY_ID = -1;
-TextureRegistry.EMPTY_HANDLE = new TextureHandle(TextureRegistry.EMPTY_ID);
-TextureRegistry.EMPTY_TEXTURE = new Texture(TextureRegistry.EMPTY_ID, "EMPTY_TEXTURE", "");
+TextureRegistry.EMPTY_TEXTURE = new Texture(-1, "EMPTY_TEXTURE", "");
 TextureRegistry.DEFAULT_TEXTURE_TYPE = ".png";
 
 TextureRegistry.prototype.getSizeBytes = function() {

@@ -2,10 +2,11 @@ import { Sprite } from "./sprite.js";
 import { ObjectPool } from "../util/objectPool.js";
 import { SpriteContainer } from "./spriteContainer.js";
 import { TextureHandle } from "../resources/texture/textureHandle.js";
-import { Texture } from "../resources/texture.js";
+import { Texture } from "../resources/texture/texture.js";
+import { TILE_HEIGHT, TILE_WIDTH } from "../engine_constants.js";
 
-export const SpriteManager = function(resourceLoader) {
-    this.resources = resourceLoader;
+export const SpriteManager = function(textureLoader) {
+    this.resources = textureLoader;
     this.spriteTracker = new Set();
     this.spriteMap = new Map();
     this.containers = [];
@@ -22,13 +23,11 @@ SpriteManager.SECONDS_TO_CLEANUP = 5;
 SpriteManager.EMPTY_SPRITE = new Sprite(SpriteManager.INVALID_ID, "EMPTY_SPRITE");
 SpriteManager.EMPTY_LAYER = [];
 
-SpriteManager.prototype.load = function(gameContext, textures, sprites) {
+SpriteManager.prototype.load = function(textures, sprites) {
     if(!textures || !sprites) {
         return;
     }
 
-    const { transform2D } = gameContext;
-    const { tileWidth, tileHeight } = transform2D;
     const textureMap = this.resources.createTextures(textures);
     
     for(const spriteID in sprites) {
@@ -60,7 +59,7 @@ SpriteManager.prototype.load = function(gameContext, textures, sprites) {
             }
 
             if(anchor) {
-                spriteContainer.loadAnchor(anchor, tileWidth, tileHeight);
+                spriteContainer.loadAnchor(anchor, TILE_WIDTH, TILE_HEIGHT);
             } else if(shift) {
                 spriteContainer.loadShift(shift);
             }
