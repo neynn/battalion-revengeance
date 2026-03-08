@@ -1,3 +1,5 @@
+import { TILE_HEIGHT, TILE_WIDTH } from "../engine_constants.js";
+
 export const SpriteContainer = function(id, frames) {
     this.id = id;
     this.frames = frames;
@@ -32,11 +34,11 @@ SpriteContainer.prototype.loadBounds = function(bounds) {
     this.boundsH = h ?? this.frames[0].h;
 }
 
-SpriteContainer.prototype.loadAnchor = function(anchor, tileWidth, tileHeight) {
+SpriteContainer.prototype.loadAnchor = function(anchor) {
     const { x = 0, y = 0 } = anchor;
 
-    this.offsetX = tileWidth / 2 - x;
-    this.offsetY = tileHeight * 0.8 - y;
+    this.offsetX = TILE_WIDTH / 2 - x;
+    this.offsetY = TILE_HEIGHT * 0.8 - y;
 }
 
 SpriteContainer.prototype.loadShift = function(shift) {

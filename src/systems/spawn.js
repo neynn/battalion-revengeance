@@ -3,7 +3,7 @@ import { BattalionEntity } from "../entity/battalionEntity.js";
 import { BUILDING_TYPE, DIRECTION, ENTITY_TYPE, LAYER_TYPE, TEAM_STAT } from "../enums.js";
 import { Building } from "../entity/building.js";
 import { Mine } from "../entity/mine.js";
-import { bufferEntitySprites, createSchematicSprite, setEntityPosition, updateEntitySprite } from "./sprite.js";
+import { bufferEntitySprites, createSchematicSprite, updateEntitySprite } from "./sprite.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { bufferEntitySounds } from "./sound.js";
 import { transformTileToWorld } from "../../engine/math/transform2D.js";
@@ -74,10 +74,10 @@ export const createServerEntityObject = function(gameContext, entityID, teamID, 
     const entityObject = new BattalionEntity(entityID);
 
     entityObject.loadConfig(entityType);
-    entityObject.setTile(tileX, tileY);
     entityObject.setTeam(teamID);
     team.addEntity(entityObject);
     entityManager.addEntity(entityObject);
+    entityObject.setTile(tileX, tileY);
     entityObject.placeOnMap(gameContext);
 
     return entityObject;
@@ -96,19 +96,17 @@ export const createClientEntityObject = function(gameContext, entityID, teamID, 
     const entityType = typeRegistry.getEntityType(typeID);
     const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
     const entityObject = new BattalionEntity(entityID);
-    const spawnPosition = transformTileToWorld(tileX, tileY);
 
     entityObject.spriteID = visualSprite.getIndex();
     entityObject.loadConfig(entityType);
-    entityObject.setTile(tileX, tileY);
     entityObject.setTeam(teamID);
     team.addEntity(entityObject);
     entityManager.addEntity(entityObject);
+    entityObject.setTile(tileX, tileY);
     entityObject.placeOnMap(gameContext);
 
     bufferEntitySounds(gameContext, entityObject);
     bufferEntitySprites(gameContext, entityObject, schema);
-    setEntityPosition(gameContext, entityObject, spawnPosition.x, spawnPosition.y);
     updateEntitySprite(gameContext, entityObject);
 
     return entityObject;

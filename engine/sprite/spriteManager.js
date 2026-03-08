@@ -3,7 +3,6 @@ import { ObjectPool } from "../util/objectPool.js";
 import { SpriteContainer } from "./spriteContainer.js";
 import { TextureHandle } from "../resources/texture/textureHandle.js";
 import { Texture } from "../resources/texture/texture.js";
-import { TILE_HEIGHT, TILE_WIDTH } from "../engine_constants.js";
 
 export const SpriteManager = function(textureLoader) {
     this.resources = textureLoader;
@@ -59,7 +58,7 @@ SpriteManager.prototype.load = function(textures, sprites) {
             }
 
             if(anchor) {
-                spriteContainer.loadAnchor(anchor, TILE_WIDTH, TILE_HEIGHT);
+                spriteContainer.loadAnchor(anchor);
             } else if(shift) {
                 spriteContainer.loadShift(shift);
             }

@@ -26,6 +26,8 @@ export const BattalionEntity = function(id) {
     this.tileX = -1;
     this.tileY = -1;
     this.tileZ = -1;
+    this.offsetX = 0;
+    this.offsetY = 0;
     this.direction = DIRECTION.EAST;
     this.state = BattalionEntity.STATE.IDLE;
     this.teamID = TeamManager.INVALID_ID;
@@ -1212,6 +1214,16 @@ BattalionEntity.prototype.getMaxRange = function(gameContext) {
     }
     
     return range;
+}
+
+BattalionEntity.prototype.clearOffset = function() {
+    this.offsetX = 0;
+    this.offsetY = 0;
+}
+
+BattalionEntity.prototype.updateOffset = function(offsetX, offsetY) {
+    this.offsetX += offsetX;
+    this.offsetY += offsetY;
 }
 
 BattalionEntity.prototype.getDistanceMoved = function(deltaTime) {

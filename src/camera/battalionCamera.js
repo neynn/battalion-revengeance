@@ -134,37 +134,36 @@ BattalionCamera.prototype.drawEntityHealth = function(display, drawX, drawY, hea
     }
 }
 
-BattalionCamera.prototype.drawEntityBlock = function(display, entity, sprite, alpha, realTime, deltaTime) {
-    const { positionX, positionY } = sprite;
-    const viewportX = this.fViewportX;
-    const viewportY = this.fViewportY;
+BattalionCamera.prototype.drawEntityBlock = function(display, entity, sprite, screenX, screenY, alpha, realTime, deltaTime) {
     let healthFactor = entity.getHealthFactor();
 
     if(healthFactor > 1) {
         healthFactor = 1;
     }
 
+    sprite.setPosition(screenX, screenY);
     sprite.setOpacity(alpha);
     sprite.update(realTime, deltaTime);
-    sprite.draw(display, viewportX, viewportY);
+    sprite.draw(display, 0, 0);
 
     if(PLAYER_PREFERENCE.FORCE_HEALTH_DRAW || healthFactor > 0 && healthFactor < 1) {
-        const healthX = positionX - viewportX;
-        const healthY = positionY - viewportY;
+        this.drawEntityHealth(display, screenX, screenY, healthFactor);
+    }
 
-        this.drawEntityHealth(display, healthX, healthY, healthFactor);
+    if(DEBUG.SPRITES) {
+        sprite.debug(display, 0, 0);
     }
 }
 
 BattalionCamera.prototype.drawEntity = function(display, entity, sprite, realTime, deltaTime) {
-    const { state, teamID, flags, opacity } = entity;
+    const { tileX, tileY, offsetX, offsetY, state, teamID, flags, opacity } = entity;
+
+    //TODO(neyn): Create proper screen calculation. This is unstable at large floats.
+    const screenX = tileX * TILE_WIDTH + offsetX - this.fViewportX;
+    const screenY = tileY * TILE_HEIGHT + offsetY - this.fViewportY;
     let alpha = 1;
 
     if(this.flags & BattalionCamera.FLAG.USE_PERSPECTIVES) {
-        const { positionX, positionY } = sprite;
-        const markerX = positionX - this.fViewportX;
-        const markerY = positionY - this.fViewportY;
-
         if(opacity < BattalionCamera.STEALTH_THRESHOLD) {
             if((flags & BattalionEntity.FLAG.IS_CLOAKED) && this.perspectives.has(teamID)) {
                 //Limit stealth opacity to STEALTH_THRESHOLD if perspectvies align.
@@ -178,15 +177,15 @@ BattalionCamera.prototype.drawEntity = function(display, entity, sprite, realTim
             alpha = opacity;
         }
 
-        this.drawEntityBlock(display, entity, sprite, alpha, realTime, deltaTime);
+        this.drawEntityBlock(display, entity, sprite, screenX, screenY, alpha, realTime, deltaTime);
 
         if(state === BattalionEntity.STATE.IDLE && entity.canAct()) {
             display.setAlpha(1);
 
             if(teamID === this.mainPerspective) {
-                this.markerSprite.onDraw(display, markerX, markerY);
+                this.markerSprite.onDraw(display, screenX, screenY);
             } else {
-                this.weakMarkerSprite.onDraw(display, markerX, markerY);
+                this.weakMarkerSprite.onDraw(display, screenX, screenY);
             }
         }
     } else {
@@ -196,65 +195,32 @@ BattalionCamera.prototype.drawEntity = function(display, entity, sprite, realTim
             alpha = opacity;
         }
 
-        this.drawEntityBlock(display, entity, sprite, alpha, realTime, deltaTime);
+        this.drawEntityBlock(display, entity, sprite, screenX, screenY, alpha, realTime, deltaTime);
     }
 }
 
-BattalionCamera.prototype.debugEntities = function(gameContext, display) {
-    const { world, spriteManager } = gameContext;
-    const { entityManager } = world;
-    const { entities } = entityManager;
-    const { pool } = spriteManager;
-    const { elements } = pool;
-    const viewportLeftEdge = this.fViewportX;
-    const viewportTopEdge = this.fViewportY;
-    const viewportRightEdge = viewportLeftEdge + this.wViewportWidth;
-    const viewportBottomEdge = viewportTopEdge + this.wViewportHeight;
-
-    display.setAlpha(1);
-
-    for(let i = 0; i < entities.length; i++) {
-        const entity = entities[i];
-        const { spriteID } = entity;
-
-        if(spriteID === SpriteManager.INVALID_ID) {
-            continue;
-        }
-
-        const sprite = elements[spriteID];
-        const isVisible = sprite.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
-
-        if(isVisible) {
-            sprite.debug(display, viewportLeftEdge, viewportTopEdge);
-        }
-    }
-}
-
-BattalionCamera.prototype.drawEntitiesSpatial = function(gameContext, display) {
+BattalionCamera.prototype.drawEntities = function(gameContext, display) {
     const { timer, world, spriteManager } = gameContext;
     const { realTime, deltaTime } = timer;
     const { entityManager } = world;
 
     const spriteList = spriteManager.pool.elements;
     const managerEntities = entityManager.entities;
-    const viewportLeftEdge = this.fViewportX;
-    const viewportTopEdge = this.fViewportY;
-    const viewportRightEdge = viewportLeftEdge + this.wViewportWidth;
-    const viewportBottomEdge = viewportTopEdge + this.wViewportHeight;
+
+    const startX = this.startX;
+    const startY = this.startY;
+    const endX = this.endX;
+    const endY = this.endY;
     const deferred = [];
 
     let count = 0;
 
     for(let i = 0; i < managerEntities.length; i++) {
         const entity = managerEntities[i];
-        const spriteID = entity.spriteID;
-        const state = entity.state;
+        const { tileX, tileY, spriteID, state } = entity;
 
         if(spriteID !== SpriteManager.INVALID_ID) {
-            const sprite = spriteList[spriteID];
-            const isVisible = sprite.isVisible(viewportRightEdge, viewportLeftEdge, viewportBottomEdge, viewportTopEdge);
-
-            if(isVisible) {
+            if(tileX >= startX && tileX <= endX && tileY >= startY && tileY <= endY) {
                 if(state === BattalionEntity.STATE.IDLE) {
                     this.drawEntity(display, entity, spriteList[spriteID], realTime, deltaTime);
                 } else {
@@ -271,68 +237,6 @@ BattalionCamera.prototype.drawEntitiesSpatial = function(gameContext, display) {
         const spriteID = entity.spriteID;
 
         this.drawEntity(display, entity, spriteList[spriteID], realTime, deltaTime);
-    }
-
-    if(DEBUG.SPRITES) {
-        this.debugEntities(gameContext, display);
-    }
-
-    return count;
-}
-
-BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap) {
-    const { timer, world, spriteManager } = gameContext;
-    const { realTime, deltaTime } = timer;
-    const { entityManager } = world;
-
-    const worldEntities = worldMap.entities;
-    const spriteList = spriteManager.pool.elements;
-    const managerEntities = entityManager.entities;
-
-    const startX = this.startX;
-    const startY = this.startY;
-    const endX = this.endX;
-    const endY = this.endY;
-    const mapWidth = this.mapWidth;
-    const deferred = [];
-
-    let count = 0;
-
-    for(let i = startY; i <= endY; i++) {
-        let index = i * mapWidth + startX;
-
-        for(let j = startX; j <= endX; j++) {
-            const entityIndex = worldEntities[index];
-
-            if(entityIndex !== EntityManager.INVALID_INDEX) {
-                const entity = managerEntities[entityIndex];
-                const spriteID = entity.spriteID;
-                const state = entity.state;
-
-                if(spriteID !== SpriteManager.INVALID_ID) {
-                    if(state === BattalionEntity.STATE.IDLE) {
-                        this.drawEntity(display, entity, spriteList[spriteID], realTime, deltaTime);
-                    } else {
-                        deferred.push(entity);
-                    }
-
-                    count++;
-                }
-            }
-
-            index++;
-        }
-    }
-
-    for(let i = 0; i < deferred.length; i++) {
-        const entity = deferred[i];
-        const spriteID = entity.spriteID;
-
-        this.drawEntity(display, entity, spriteList[spriteID], realTime, deltaTime);
-    }
-
-    if(DEBUG.SPRITES) {
-        this.debugEntities(gameContext, display);
     }
 
     return count;
@@ -424,7 +328,7 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     }
 
     overlays += this.drawOverlay(tileManager, display, this.pathOverlay);
-    sprites += this.drawEntitiesSpatial(gameContext, display);
+    sprites += this.drawEntities(gameContext, display);
     sprites += this.drawSortedSpriteLayer(gameContext, display, LAYER_TYPE.GFX);
     this.drawCash(display);
     //this.shadeScreen(display, "#000000", 0.5);

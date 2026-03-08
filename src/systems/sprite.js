@@ -203,22 +203,6 @@ export const bufferEntitySprites = function(gameContext, entity, schema) {
     }
 }
 
-export const setEntityPosition = function(gameContext, entity, positionX, positionY) {
-    const { spriteManager } = gameContext;
-    const { spriteID } = entity;
-    const sprite = spriteManager.getSprite(spriteID);
-
-    sprite.setPosition(positionX, positionY);
-}
-
-export const updateEntityPosition = function(gameContext, entity, deltaX, deltaY) {
-    const { spriteManager } = gameContext;
-    const { spriteID } = entity;
-    const sprite = spriteManager.getSprite(spriteID);
-
-    sprite.updatePosition(deltaX, deltaY);
-}
-
 export const getAnimationDuration = function(gameContext, entity) {
     const { spriteManager } = gameContext;
     const { spriteID } = entity;

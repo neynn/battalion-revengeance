@@ -92,5 +92,6 @@ BattalionContext.prototype.onExit = function() {
     this.portraitHandler.exit();
     this.dialogueHandler.exit();
     this.uiCore.exit();
+    this.tweenManager.exit();
     addDebug(this);
 }

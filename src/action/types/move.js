@@ -1,12 +1,11 @@
 import { Action } from "../../../engine/action/action.js";
-import { TILE_WIDTH } from "../../../engine/engine_constants.js";
-import { transformTileToWorld } from "../../../engine/math/transform2D.js";
+import { TILE_HEIGHT, TILE_WIDTH } from "../../../engine/engine_constants.js";
 import { FADE_RATE } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { COMMAND_TYPE, MOVE_COMMAND, PATH_INTERCEPT, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { mInterceptMine, mInterceptPath } from "../../systems/pathfinding.js";
 import { playEntitySound, playUncloakSound } from "../../systems/sound.js";
-import { setEntityPosition, updateEntityPosition, updateEntitySprite } from "../../systems/sprite.js";
+import { updateEntitySprite } from "../../systems/sprite.js";
 import { createAttackRequest, createCaptureIntent, createCloakIntent, createHealRequest, createMineTriggerIntent, createUncloakIntent } from "../actionHelper.js";
 
 export const MoveAction = function() {
@@ -15,7 +14,6 @@ export const MoveAction = function() {
     this.entity = null;
     this.path = [];
     this.pathIndex = 0;
-    this.distanceMoved = 0;
     this.state = MoveAction.STATE.NONE;
     this.wasDiscovered = false;
     this.opacity = 0;
@@ -59,25 +57,28 @@ MoveAction.prototype.onUpdate = function(gameContext, data) {
             const { deltaX, deltaY } = this.path[this.pathIndex]; 
             const distanceMoved = this.entity.getDistanceMoved(deltaTime);
             const directionChanged = this.entity.setDirectionByDelta(deltaX, deltaY);
+            const distanceX = deltaX * distanceMoved;
+            const distanceY = deltaY * distanceMoved;
 
             if(directionChanged) {
                 updateEntitySprite(gameContext, this.entity);
             }
 
-            updateEntityPosition(gameContext, this.entity, deltaX * distanceMoved, deltaY * distanceMoved);
+            this.entity.updateOffset(distanceX, distanceY);
 
-            this.distanceMoved += distanceMoved;
+            //Since deltaX or deltaY must be 0, we can safely use oversteps.
+            const overstepX = Math.floor(Math.abs(this.entity.offsetX) / TILE_WIDTH);
+            const overstepY = Math.floor(Math.abs(this.entity.offsetY) / TILE_HEIGHT);
+            let oversteps = Math.max(overstepX, overstepY);
 
-            while(this.distanceMoved >= TILE_WIDTH && this.pathIndex >= 0) {
-                const { deltaX, deltaY } = this.path[this.pathIndex]; 
-                const { tileX, tileY } = this.path[this.pathIndex];
-                const positionVec = transformTileToWorld(tileX, tileY);
-            
+            while(this.pathIndex >= 0 && oversteps > 0) {
+                const { deltaX, deltaY, tileX, tileY } = this.path[this.pathIndex];
+
+                this.entity.clearOffset();
+                this.entity.setTile(tileX, tileY);
                 this.entity.setDirectionByDelta(deltaX, deltaY);
-                this.distanceMoved -= TILE_WIDTH;
                 this.pathIndex--;
-
-                setEntityPosition(gameContext, this.entity, positionVec.x, positionVec.y);
+                oversteps--;
 
                 if(!this.wasDiscovered && this.entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.entity.isDiscoveredByJammerAt(gameContext, tileX, tileY)) {
                     this.state = MoveAction.STATE.DISCOVERED;
@@ -113,20 +114,16 @@ MoveAction.prototype.isFinished = function(gameContext, executionPlan) {
 }
 
 MoveAction.prototype.onEnd = function(gameContext, data) {
-    const { deltaX, deltaY, tileX, tileY } = this.path[0];
-    const position = transformTileToWorld(tileX, tileY);
-
     this.execute(gameContext, data);
-    this.entity.setDirectionByDelta(deltaX, deltaY);
-    this.entity.setState(BattalionEntity.STATE.IDLE);
 
-    setEntityPosition(gameContext, this.entity, position.x, position.y);
+    this.entity.setState(BattalionEntity.STATE.IDLE);
+    this.entity.clearOffset();
+
     updateEntitySprite(gameContext, this.entity);
 
     this.path = [];
     this.pathIndex = 0;
     this.entity = null;
-    this.distanceMoved = 0;
     this.state = MoveAction.STATE.NONE;
     this.wasDiscovered = false;
     this.opacity = 0;
@@ -136,9 +133,16 @@ MoveAction.prototype.execute = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
     const { entityID, path, flags } = data;
+    const { tileX, tileY, deltaX, deltaY } = path[path.length - 1];
     const entity = entityManager.getEntity(entityID);
     const team = entity.getTeam(gameContext);
 
+    //Remove the entity from the origin.
+    //Client would otherwise bug out because it modifies tileX, tileY itself.
+    const originX = tileX - deltaX;
+    const originY = tileY - deltaY;
+
+    entity.setTile(originX, originY);
     entity.removeFromMap(gameContext);
     entity.setFlag(BattalionEntity.FLAG.HAS_MOVED);
     entity.clearFlag(BattalionEntity.FLAG.CAN_MOVE);
@@ -146,10 +150,9 @@ MoveAction.prototype.execute = function(gameContext, data) {
     for(let i = path.length - 1; i >= 0; i--) {
         const { tileX, tileY } = path[i];
 
-        entity.setTile(tileX, tileY);
-
         if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && entity.isDiscoveredByJammerAt(gameContext, tileX, tileY)) {
             entity.setUncloaked();
+            break;
         }
     }
 
@@ -157,6 +160,13 @@ MoveAction.prototype.execute = function(gameContext, data) {
         entity.triggerElusive();
     }
 
+    const lastTileX = path[0].tileX;
+    const lastTileY = path[0].tileY;
+    const lastDeltaX = path[0].deltaX;
+    const lastDeltaY = path[0].deltaY;
+
+    entity.setTile(lastTileX, lastTileY);
+    entity.setDirectionByDelta(lastDeltaX, lastDeltaY);
     entity.placeOnMap(gameContext);
     team.addStatistic(TEAM_STAT.UNITS_MOVED, 1);
 
