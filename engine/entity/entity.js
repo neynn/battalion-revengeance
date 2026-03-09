@@ -7,7 +7,24 @@ export const Entity = function(id, DEBUG_NAME = "") {
     this.index = EntityManager.INVALID_INDEX;
     this.spriteID = SpriteManager.INVALID_ID;
     this.isMarkedForDestroy = false;
+    this.offsetX = 0;
+    this.offsetY = 0;
     this.flags = 0;
+}
+
+Entity.prototype.clearOffset = function() {
+    this.offsetX = 0;
+    this.offsetY = 0;
+}
+
+Entity.prototype.updateOffset = function(offsetX, offsetY) {
+    this.offsetX += offsetX;
+    this.offsetY += offsetY;
+}
+
+Entity.prototype.setOffset = function(offsetX, offsetY) {
+    this.offsetX = offsetX;
+    this.offsetY = offsetY;
 }
 
 Entity.prototype.reset = function() {

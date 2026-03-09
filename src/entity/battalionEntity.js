@@ -22,12 +22,9 @@ export const BattalionEntity = function(id) {
     this.maxHealth = 1;
     this.damage = 0;
     this.moraleType = MORALE_TYPE.NORMAL;
-    this.moraleAmplifier = 1;
     this.tileX = -1;
     this.tileY = -1;
     this.tileZ = -1;
-    this.offsetX = 0;
-    this.offsetY = 0;
     this.direction = DIRECTION.EAST;
     this.state = BattalionEntity.STATE.IDLE;
     this.teamID = TeamManager.INVALID_ID;
@@ -704,8 +701,13 @@ BattalionEntity.prototype.isHealValid = function(gameContext, target) {
         return false;
     }
 
-    //Only suppliers can heal. Stationary entities cannot be healed by supply distributors,
-    if(!this.hasTrait(TRAIT_TYPE.SUPPLY_DISTRIBUTION) || target.config.movementType === MOVEMENT_TYPE.STATIONARY) {
+    //Only suppliers can heal. 
+    if(!this.hasTrait(TRAIT_TYPE.SUPPLY_DISTRIBUTION)) {
+        return false;
+    }
+
+    //Stationary entities cannot be healed.
+    if(target.config.movementType === MOVEMENT_TYPE.STATIONARY) {
         return false;
     }
 
@@ -798,71 +800,21 @@ BattalionEntity.prototype.isCounterValid = function(target) {
     return true;
 }
 
-BattalionEntity.prototype.getHealAmplifier = function(gameContext) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
+BattalionEntity.prototype.getMoraleFactor = function(gameContext) {
+    const { typeRegistry } = gameContext;
+    const { damageModifier } = typeRegistry.getMoraleType(this.moraleType);
 
-    let healthFactor = 1;
-    let damageAmplifier = 1;
-    let logisticFactor = 1;
+    //TODO(neyn): Think about adding "moraleBuff" which goes from -3 to 3
+    //Then transform that value to a morale type. (Table?)
 
-    if(!this.hasTrait(TRAIT_TYPE.INDOMITABLE)) {
-        healthFactor = this.health / this.maxHealth;
-
-        if(healthFactor > 1) {
-            healthFactor = 1;
-        }
-    }
-
-    if(!this.hasTrait(TRAIT_TYPE.COMMANDO)) {
-        const climateType = worldMap.getClimateType(gameContext, this.tileX, this.tileY);
-
-        logisticFactor = climateType.logisticFactor;
-    }
-
-    damageAmplifier *= this.moraleAmplifier;
-    damageAmplifier *= healthFactor;
-    damageAmplifier *= logisticFactor;
-
-    return damageAmplifier;
+    return damageModifier;
 }
 
-BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, damageFlags) {
-    const { world, typeRegistry } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-    const targetArmor = target.config.armorType;
-    const targetMove = target.config.movementType;
-    const targetX = target.tileX;
-    const targetY = target.tileY;
-
-    let armorFactor = 1;
-    let terrainFactor = 1;
-    let logisticFactor = 1;
-    let healthFactor = 1;
-    let traitFactor = 1;
-    let otherFactor = 1;
-    let damageAmplifier = 1;
-
-    if(!this.hasTrait(TRAIT_TYPE.INDOMITABLE)) {
-        healthFactor = this.health / this.maxHealth;
-
-        if(healthFactor >= 1) {
-            healthFactor = 1;
-        }
-    }
-
-    //Logistic factor. Applies only to non-commandos.
-    if(!this.hasTrait(TRAIT_TYPE.COMMANDO)) {
-        const climateType = worldMap.getClimateType(gameContext, this.tileX, this.tileY);
-
-        logisticFactor = climateType.logisticFactor;
-    }
-
-    //Armor factor.
+BattalionEntity.prototype.getArmorFactor = function(gameContext, targetArmor) {
+    const { typeRegistry } = gameContext;
     const armorType = typeRegistry.getArmorType(targetArmor);
     const resistance = armorType.getResistance(this.config.weaponType);
+    let armorFactor = 1;
 
     //Maxes out at 100%
     if(resistance > 1) {
@@ -876,7 +828,18 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
         armorFactor = 1;
     }
 
-    //Target tile.
+    return armorFactor;
+}
+
+BattalionEntity.prototype.getTerrainFactor = function(gameContext, target) {
+    const { world, typeRegistry } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const targetMove = target.config.movementType;
+    const targetX = target.tileX;
+    const targetY = target.tileY;
+    let terrainFactor = 1;
+
     const { terrain } = worldMap.getTileType(gameContext, targetX, targetY);
 
     for(let i = 0; i < terrain.length; i++) {
@@ -891,6 +854,69 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
             terrainFactor *= (1 - protectionFactor);
         }
     }
+
+    return terrainFactor;
+}
+
+BattalionEntity.prototype.getLogisticFactor = function(gameContext) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    let logisticFactor = 1;
+
+    //Applies only to non-commandos.
+    if(!this.hasTrait(TRAIT_TYPE.COMMANDO)) {
+        const worldMap = mapManager.getActiveMap();
+        const climateType = worldMap.getClimateType(gameContext, this.tileX, this.tileY);
+
+        logisticFactor = climateType.logisticFactor;
+    }
+
+    return logisticFactor;
+}
+
+BattalionEntity.prototype.getHealthFactor = function() {
+    let healthFactor = 1;
+
+    if(!this.hasTrait(TRAIT_TYPE.INDOMITABLE)) {
+        healthFactor = this.health / this.maxHealth;
+
+        if(healthFactor > 1) {
+            healthFactor = 1;
+        }
+    }
+
+    return healthFactor;
+}
+
+BattalionEntity.prototype.getHealAmplifier = function(gameContext) {
+    let damageAmplifier = 1;
+
+    damageAmplifier *= this.getHealthFactor();
+    damageAmplifier *= this.getMoraleFactor(gameContext);
+    damageAmplifier *= this.getLogisticFactor(gameContext);
+
+    return damageAmplifier;
+}
+
+BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, damageFlags) {
+    const { typeRegistry } = gameContext;
+    const targetArmor = target.config.armorType;
+    const targetMove = target.config.movementType;
+
+    let healthFactor = 1;
+    let moraleFactor = 1;
+    let armorFactor = 1;
+    let terrainFactor = 1;
+    let logisticFactor = 1;
+    let traitFactor = 1;
+    let otherFactor = 1;
+    let damageAmplifier = 1;
+
+    healthFactor = this.getHealthFactor();
+    moraleFactor = this.getMoraleFactor(gameContext);
+    armorFactor = this.getArmorFactor(gameContext, targetArmor);
+    terrainFactor = this.getTerrainFactor(gameContext, target);
+    logisticFactor = this.getLogisticFactor(gameContext);
 
     //Attacker traits.
     for(let i = 0; i < this.config.traits.length; i++) {
@@ -907,6 +933,7 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
     }
 
     //Bonus damage if at full health.
+    //TODO(neyn): Maybe move this to non-counters? CEMENTED_STEEL_ARMOR + ANNIHILATE would be broken.
     if(healthFactor >= 1 && this.hasTrait(TRAIT_TYPE.ANNIHILATE)) {
         otherFactor *= TRAIT_CONFIG.ANNIHILATE_DAMAGE;
     }
@@ -963,11 +990,11 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
         otherFactor *= TRAIT_CONFIG.SHRAPNEL_DAMAGE;
     }
 
-    damageAmplifier *= this.moraleAmplifier;
+    damageAmplifier *= healthFactor;
+    damageAmplifier *= moraleFactor;
     damageAmplifier *= armorFactor;
     damageAmplifier *= terrainFactor;
     damageAmplifier *= logisticFactor;
-    damageAmplifier *= healthFactor;
     damageAmplifier *= traitFactor;
     damageAmplifier *= otherFactor;
 
@@ -1214,16 +1241,6 @@ BattalionEntity.prototype.getMaxRange = function(gameContext) {
     }
     
     return range;
-}
-
-BattalionEntity.prototype.clearOffset = function() {
-    this.offsetX = 0;
-    this.offsetY = 0;
-}
-
-BattalionEntity.prototype.updateOffset = function(offsetX, offsetY) {
-    this.offsetX += offsetX;
-    this.offsetY += offsetY;
 }
 
 BattalionEntity.prototype.getDistanceMoved = function(deltaTime) {
