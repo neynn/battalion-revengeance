@@ -1,7 +1,6 @@
 import { PATH_FLAG, PATH_INTERCEPT } from "../enums.js";
 import { EntityType } from "../type/parsed/entityType.js";
 
-//TODO: Merge intercept functions
 export const mInterceptPath = function(gameContext, teamID, mPath) {
     const { world } = gameContext;
     let elementsToDelete = mPath.length;

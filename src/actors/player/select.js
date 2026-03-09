@@ -85,13 +85,12 @@ SelectState.prototype.splitPath = function(targetX, targetY) {
         return true;
     }
 
-    const path = this.path.toReversed();
+    for(let i = this.path.length - 1; i >= 0; i--) {
+        const { tileX, tileY } = this.path[i];
 
-    for(let i = 0; i < path.length; i++) {
-        if(path[i].tileX === targetX && path[i].tileY === targetY) {
-            //Cuts the path off at the target.
-            path.length = i + 1;
-            this.path = path.toReversed();
+        if(tileX === targetX && tileY === targetY) {
+            this.path.splice(0, i);
+
             return true;
         }
     }

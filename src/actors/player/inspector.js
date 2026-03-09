@@ -143,9 +143,7 @@ MapInspector.prototype.inspectTile = function(gameContext, tileX, tileY) {
     });
 }
 
-MapInspector.prototype.showPath = function(autotiler, oPath, entityX, entityY) { 
-    const path = oPath.toReversed();
-
+MapInspector.prototype.showPath = function(autotiler, path, entityX, entityY) { 
     let previousX = entityX;
     let previousY = entityY;
     let nextX = -2;
@@ -154,12 +152,12 @@ MapInspector.prototype.showPath = function(autotiler, oPath, entityX, entityY) {
 
     this.camera.pathOverlay.clear();
 
-    for(let i = 0; i < path.length; i++) {
+    for(let i = path.length - 1; i >= 0; i--) {
         const { tileX, tileY } = path[i];
 
-        if(i < path.length - 1) {
-            nextX = path[i + 1].tileX;
-            nextY = path[i + 1].tileY;
+        if(i > 0) {
+            nextX = path[i - 1].tileX;
+            nextY = path[i - 1].tileY;
         } else {
             nextX = -2;
             nextY = -2;
@@ -185,7 +183,7 @@ MapInspector.prototype.showPath = function(autotiler, oPath, entityX, entityY) {
 
     //Put the starting node.
     if(path.length !== 0) {
-        const { deltaX, deltaY } = path[0];
+        const { deltaX, deltaY } = path[path.length - 1];
 
         if(deltaX === 1) {
             tileID = TILE_ID.PATH_RIGHT;
