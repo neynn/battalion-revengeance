@@ -6,13 +6,13 @@ import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { createNode, mGetLowestCostNode } from "../systems/pathfinding.js";
 import { getDirectionByDelta, getDirectionVector } from "../systems/direction.js";
-import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE, MINE_CATEGORY } from "../enums.js";
+import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE } from "../enums.js";
 import { mapTransportToEntity } from "../enumHelpers.js";
 import { getLineEntities } from "../systems/targeting.js";
 import { TeamManager } from "../team/teamManager.js";
 
 export const BattalionEntity = function(id) {
-    Entity.call(this, id, "");
+    Entity.call(this, id);
 
     this.config = null;
     this.customID = null;

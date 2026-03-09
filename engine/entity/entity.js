@@ -1,8 +1,7 @@
 import { SpriteManager } from "../sprite/spriteManager.js";
 import { EntityManager } from "./entityManager.js";
 
-export const Entity = function(id, DEBUG_NAME = "") {
-    this.DEBUG_NAME = DEBUG_NAME;
+export const Entity = function(id) {
     this.id = id;
     this.index = EntityManager.INVALID_INDEX;
     this.spriteID = SpriteManager.INVALID_ID;
