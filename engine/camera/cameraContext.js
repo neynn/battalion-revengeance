@@ -90,11 +90,13 @@ CameraContext.prototype.setDragButton = function(buttonID) {
 }
 
 CameraContext.prototype.getWorldPosition = function(screenX, screenY) {
-    const { scale, viewportX, viewportY } = this.camera;
+    const { scale } = this.camera;
+    const worldX = this.camera.getWorldX();
+    const worldY = this.camera.getWorldY();
 
     return {
-        "x": (screenX - this.positionX) / scale + viewportX,
-        "y": (screenY - this.positionY) / scale + viewportY
+        "x": (screenX - this.positionX) / scale + worldX,
+        "y": (screenY - this.positionY) / scale + worldY
     }
 }
 
@@ -108,11 +110,11 @@ CameraContext.prototype.setPosition = function(x, y) {
 }
 
 CameraContext.prototype.centerCameraOnScreen = function() {
-    const { scale, worldWidth, worldHeight, sViewportWidth, sViewportHeight } = this.camera;
+    const { scale, mapWidth, mapHeight, tileWidth, tileHeight, sViewportWidth, sViewportHeight } = this.camera;
     const { width, height } = this.display;
     const { windowWidth, windowHeight } = this.renderer;
-    const sWorldWidth = worldWidth * scale;
-    const sWorldHeight = worldHeight * scale;
+    const sWorldWidth = mapWidth * tileWidth * scale;
+    const sWorldHeight = mapHeight * tileHeight * scale;
 
     let visibleWidth = 0;
     let visibleHeight = 0;
