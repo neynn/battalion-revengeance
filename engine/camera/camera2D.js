@@ -6,6 +6,10 @@ import { Camera } from "./camera.js";
 export const Camera2D = function() {
     Camera.call(this);
 
+    this.tileX = 0;
+    this.tileY = 0;
+    this.offsetX = 0;
+    this.offsetY = 0;
     this.startX = 0;
     this.startY = 0;
     this.endX = -1;

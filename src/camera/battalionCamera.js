@@ -159,8 +159,8 @@ BattalionCamera.prototype.drawEntity = function(display, entity, sprite, realTim
     const { tileX, tileY, offsetX, offsetY, state, teamID, flags, opacity } = entity;
 
     //TODO(neyn): Create proper screen calculation. This is unstable at large floats.
-    const screenX = tileX * TILE_WIDTH + offsetX - this.fViewportX;
-    const screenY = tileY * TILE_HEIGHT + offsetY - this.fViewportY;
+    const screenX = (tileX - this.startX) * TILE_WIDTH + offsetX;
+    const screenY = (tileY - this.startY) * TILE_HEIGHT + offsetY;
     let alpha = 1;
 
     if(this.flags & BattalionCamera.FLAG.USE_PERSPECTIVES) {

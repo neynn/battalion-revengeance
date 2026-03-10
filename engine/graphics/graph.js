@@ -24,8 +24,8 @@ Graph.ID = {
 };
 
 Graph.prototype.onWindowResize = function(width, height) {}
-Graph.prototype.onDraw = function(display, localX, localY) {}
-Graph.prototype.onDebug = function(display, localX, localY) {}
+Graph.prototype.onDraw = function(display, screenX, screenY) {}
+Graph.prototype.onDebug = function(display, screenX, screenY) {}
 Graph.prototype.onUpdate = function(timestamp, deltaTime) {}
 Graph.prototype.onClick = function(event) {}
 
@@ -95,14 +95,14 @@ Graph.prototype.update = function(timestamp, deltaTime) {
     }
 }
 
-Graph.prototype.debug = function(display, viewportX, viewportY) {
+Graph.prototype.debug = function(display, screenX, screenY) {
     if(this.children.length === 0) {
-        this.onDebug(display, this.positionX - viewportX, this.positionY - viewportY);
+        this.onDebug(display, this.positionX - screenX, this.positionY - screenY);
         return;
     }
 
     const stack = [this];
-    const positions = [this.positionX - viewportX, this.positionY - viewportY];
+    const positions = [this.positionX - screenX, this.positionY - screenY];
 
     while(stack.length !== 0) {
         const localY = positions.pop();
@@ -123,19 +123,19 @@ Graph.prototype.debug = function(display, viewportX, viewportY) {
     }
 }
 
-Graph.prototype.draw = function(display, viewportX, viewportY) {
+Graph.prototype.draw = function(display, screenX, screenY) {
     if((this._flags & Graph.FLAG.IS_VISIBLE) === 0) {
         return;
     }
 
     if(this.children.length === 0) {
         display.setAlpha(this.opacity);
-        this.onDraw(display, this.positionX - viewportX, this.positionY - viewportY);
+        this.onDraw(display, this.positionX - screenX, this.positionY - screenY);
         return;
     }
 
     const stack = [this];
-    const positions = [this.positionX - viewportX, this.positionY - viewportY];
+    const positions = [this.positionX - screenX, this.positionY - screenY];
 
     while(stack.length !== 0) {
         const localY = positions.pop();
