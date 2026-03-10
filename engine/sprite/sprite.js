@@ -9,6 +9,7 @@ export const Sprite = function(index, DEBUG_NAME) {
     this.index = index;
     this.handle = Texture.EMPTY_HANDLE;
     this.container = null;
+    this.lastFrame = 0;
     this.lastCallTime = 0;
     this.frameCount = 1;
     this.frameTime = 1;

@@ -197,44 +197,105 @@ BattalionCamera.prototype.drawEntity = function(display, entity, sprite, realTim
     }
 }
 
-BattalionCamera.prototype.drawEntities = function(gameContext, display) {
+BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap) {
     const { timer, world, spriteManager } = gameContext;
     const { realTime, deltaTime } = timer;
     const { entityManager } = world;
 
-    const spriteList = spriteManager.pool.elements;
-    const managerEntities = entityManager.entities;
+    const movingEntities = worldMap.movingEntities;
+    const mapEntities = worldMap.entities;
+    const sprites = spriteManager.pool.elements;
+    const entities = entityManager.entities;
 
     const startX = this.startX;
     const startY = this.startY;
     const endX = this.endX;
     const endY = this.endY;
+    const mapWidth = this.mapWidth;
+    const currentFrame = this.currentFrame;
     const deferred = [];
 
     let count = 0;
 
-    for(let i = 0; i < managerEntities.length; i++) {
-        const entity = managerEntities[i];
-        const { tileX, tileY, spriteID, state } = entity;
+    for(let i = startY; i <= endY; i++) {
+        let index = i * mapWidth + startX;
 
-        if(spriteID !== SpriteManager.INVALID_ID) {
-            if(tileX >= startX && tileX <= endX && tileY >= startY && tileY <= endY) {
-                if(state === BattalionEntity.STATE.IDLE) {
-                    this.drawEntity(display, entity, spriteList[spriteID], realTime, deltaTime);
-                } else {
-                    deferred.push(entity);
+        for(let j = startX; j <= endX; j++) {
+            const eIndex = mapEntities[index];
+
+            if(eIndex !== EntityManager.INVALID_INDEX) {
+                const entity = entities[eIndex];
+                const { spriteID, state } = entity;
+
+                if(spriteID !== SpriteManager.INVALID_ID) {
+                    const sprite = sprites[spriteID];
+
+                    if(sprite.lastFrame < currentFrame) {
+                        sprite.lastFrame = currentFrame;
+
+                        if(state === BattalionEntity.STATE.IDLE) {
+                            this.drawEntity(display, entity, sprite, realTime, deltaTime);
+                        } else {
+                            deferred.push(entity);
+                        }
+
+                        count++;
+                    }
                 }
+            }
 
-                count++;
+            index++;
+        }
+    }
+
+    for(let i = 0; i < movingEntities.length; i++) {
+        const eIndex = movingEntities[i];
+        const entity = entities[eIndex];
+        const { tileX, tileY, spriteID } = entity;
+
+        if(spriteID !== SpriteManager.INVALID_ID) {   
+            if(tileX >= startX && tileX <= endX && tileY >= startY && tileY <= endY) {
+                const sprite = sprites[spriteID];
+
+                if(sprite.lastFrame < currentFrame) {
+                    sprite.lastFrame = currentFrame;
+                    deferred.push(entity);
+                    count++;
+                }
             }
         }
     }
 
+    /*
+    for(let i = 0; i < entities.length; i++) {
+        const entity = entities[i];
+        const { tileX, tileY, spriteID, state } = entity;
+
+        if(spriteID !== SpriteManager.INVALID_ID) {
+            if(tileX >= startX && tileX <= endX && tileY >= startY && tileY <= endY) {
+                const sprite = sprites[spriteID];
+
+                //Prevents double-draw.
+                if(sprite.lastFrame < this.currentFrame) {
+                    if(state === BattalionEntity.STATE.IDLE) {
+                        this.drawEntity(display, entity, sprite, realTime, deltaTime);
+                    } else {
+                        deferred.push(entity);
+                    }
+
+                    count++;
+                }
+            }
+        }
+    }
+    */
+
     for(let i = 0; i < deferred.length; i++) {
         const entity = deferred[i];
         const spriteID = entity.spriteID;
+        const sprite = sprites[spriteID];
 
-        this.drawEntity(display, entity, spriteList[spriteID], realTime, deltaTime);
+        this.drawEntity(display, entity, sprite, realTime, deltaTime);
     }
 
     return count;
@@ -326,7 +387,7 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     }
 
     overlays += this.drawOverlay(tileManager, display, this.pathOverlay);
-    sprites += this.drawEntities(gameContext, display);
+    sprites += this.drawEntities(gameContext, display, worldMap);
     sprites += this.drawSortedSpriteLayer(gameContext, display, LAYER_TYPE.GFX);
     this.drawCash(display);
     //this.shadeScreen(display, "#000000", 0.5);

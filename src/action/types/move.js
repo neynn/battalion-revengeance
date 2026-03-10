@@ -35,9 +35,10 @@ MoveAction.prototype.constructor = MoveAction;
 
 MoveAction.prototype.onStart = function(gameContext, data) {
     const { world } = gameContext;
-    const { entityManager } = world;
+    const { mapManager, entityManager } = world;
     const { entityID, path } = data;
     const entity = entityManager.getEntity(entityID);
+    const worldMap = mapManager.getActiveMap();
 
     entity.setState(BattalionEntity.STATE.MOVE);
     playEntitySound(gameContext, entity, SOUND_TYPE.MOVE);
@@ -46,6 +47,8 @@ MoveAction.prototype.onStart = function(gameContext, data) {
     this.path = path;
     this.pathIndex = this.path.length - 1;
     this.entity = entity;
+
+    worldMap.addMoving(entity.getIndex());
 }
 
 MoveAction.prototype.onUpdate = function(gameContext, data) {
@@ -114,12 +117,18 @@ MoveAction.prototype.isFinished = function(gameContext, executionPlan) {
 }
 
 MoveAction.prototype.onEnd = function(gameContext, data) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+
     this.execute(gameContext, data);
 
     this.entity.setState(BattalionEntity.STATE.IDLE);
     this.entity.clearOffset();
 
     updateEntitySprite(gameContext, this.entity);
+
+    worldMap.removeMoving(this.entity.getIndex());
 
     this.path = [];
     this.pathIndex = 0;

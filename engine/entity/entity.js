@@ -48,6 +48,10 @@ Entity.prototype.clearFlag = function(flag) {
     this.flags &= ~flag;
 }
 
+Entity.prototype.getIndex = function() {
+    return this.index;
+}
+
 Entity.prototype.getID = function() {
     return this.id;
 }

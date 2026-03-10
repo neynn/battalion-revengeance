@@ -14,6 +14,7 @@ export const BattalionMap = function(id, width, height, sourceID) {
     this.buildings = [];
     this.mines = [];
     this.edits = [];
+    this.movingEntities = [];
     this.jammers = new Map();
     this.createLayer(Layer.TYPE.BIT_16);
     this.createLayer(Layer.TYPE.BIT_16);
@@ -58,6 +59,22 @@ BattalionMap.getLayerIndex = function(name) {
 
 BattalionMap.prototype = Object.create(WorldMap.prototype);
 BattalionMap.prototype.constructor = BattalionMap;
+
+BattalionMap.prototype.addMoving = function(index) {
+    if(!this.movingEntities.includes(index)) {
+        this.movingEntities.push(index);
+    }
+}
+
+BattalionMap.prototype.removeMoving = function(index) {
+    for(let i = 0; i < this.movingEntities.length; i++) {
+        if(this.movingEntities[i] === index) {
+            this.movingEntities[i] = this.movingEntities[this.movingEntities.length - 1];
+            this.movingEntities.pop();
+            break;
+        }
+    }
+}
 
 BattalionMap.prototype.loadEdits = function(edits) {
     for(const { layer, index, previous, current } of edits) {
