@@ -42,9 +42,15 @@ export const BattalionCamera = function() {
     this.weakMarkerSprite = SpriteManager.EMPTY_SPRITE;
     this.perspectives = new Set();
     this.mainPerspective = TeamManager.INVALID_ID;
+    this.deferred = new Int32Array(BattalionCamera.MAX_DEFERRED);
+    this.deferredCount = 0;
     this.inspectX = -1;
     this.inspectY = -1;
 }
+
+//TODO(neyn): Increase the size if ever needed.
+//Maybe do not let DEAD be a deferred state?
+BattalionCamera.MAX_DEFERRED = 64;
 
 BattalionCamera.FLAG = {
     NONE: 0,
@@ -194,7 +200,6 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
     const endY = this.endY;
     const mapWidth = this.mapWidth;
     const currentFrame = this.currentFrame;
-    const deferred = [];
     let inspectedEntity = null;
     let count = 0;
 
@@ -238,7 +243,7 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
                         if(state === BattalionEntity.STATE.IDLE) {
                             this.drawEntity(display, entity, sprite, realTime, deltaTime);
                         } else {
-                            deferred.push(entity);
+                            this.addDeferred(eIndex);
                         }
 
                         count++;
@@ -252,8 +257,7 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
 
     for(let i = 0; i < movingEntities.length; i++) {
         const eIndex = movingEntities[i];
-        const entity = entities[eIndex];
-        const { tileX, tileY, spriteID } = entity;
+        const { tileX, tileY, spriteID } = entities[eIndex];
 
         if(spriteID !== SpriteManager.INVALID_ID) {   
             if(tileX >= startX && tileX <= endX && tileY >= startY && tileY <= endY) {
@@ -261,15 +265,15 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
 
                 if(sprite.lastFrame < currentFrame) {
                     sprite.lastFrame = currentFrame;
-                    deferred.push(entity);
+                    this.addDeferred(eIndex);
                     count++;
                 }
             }
         }
     }
 
-    for(let i = 0; i < deferred.length; i++) {
-        const entity = deferred[i];
+    for(let i = 0; i < this.deferredCount; i++) {
+        const entity = entities[this.deferred[i]];
         const spriteID = entity.spriteID;
 
         this.drawEntity(display, entity, sprites[spriteID], realTime, deltaTime);
@@ -293,7 +297,15 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
         count++;
     }
 
+    this.deferredCount = 0;
+
     return count;
+}
+
+BattalionCamera.prototype.addDeferred = function(index) {
+    if(this.deferredCount < BattalionCamera.MAX_DEFERRED) {
+        this.deferred[this.deferredCount++] = index;
+    }
 }
 
 BattalionCamera.prototype.drawJammers = function(tileManager, display, worldMap) {
