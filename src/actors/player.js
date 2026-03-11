@@ -103,7 +103,7 @@ Player.prototype.activeUpdate = function(gameContext) {
 }
 
 Player.prototype.update = function(gameContext) {
-    const hoverChanged = this.inspector.update(gameContext, this);
+    const hoverChanged = this.inspector.update(gameContext);
 
     if(hoverChanged) {
         this.states.eventEnter(gameContext, Player.EVENT.TILE_CHANGE, {

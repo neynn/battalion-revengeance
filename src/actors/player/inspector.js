@@ -254,7 +254,7 @@ MapInspector.prototype.inspect = function(gameContext, inspector, tileX, tileY) 
     return this.state;
 }
 
-MapInspector.prototype.update = function(gameContext, inspector) {
+MapInspector.prototype.update = function(gameContext) {
     const { x, y } = getCursorTile(gameContext);
     let hoverChanged = false;
 
@@ -264,14 +264,7 @@ MapInspector.prototype.update = function(gameContext, inspector) {
 
     this.lastHoverX = x;
     this.lastHoverY = y;
-
-    const entity = inspector.getVisibleEntity(gameContext, x, y);
-
-    if(entity) {
-        this.camera.updateCash(x, y, entity.cash);
-    } else {
-        this.camera.updateCash(-1, -1, 0);
-    }
+    this.camera.setInspect(x, y);
 
     return hoverChanged;
 }

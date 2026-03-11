@@ -36,7 +36,7 @@ Spectator.prototype.loadKeybinds = function(gameContext) {
 
 
 Spectator.prototype.update = function(gameContext) {
-    const hoverChanged = this.inspector.update(gameContext, this);
+    const hoverChanged = this.inspector.update(gameContext);
 
     if(hoverChanged) {
         //TODO: Update camera.

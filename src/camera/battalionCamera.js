@@ -42,10 +42,8 @@ export const BattalionCamera = function() {
     this.weakMarkerSprite = SpriteManager.EMPTY_SPRITE;
     this.perspectives = new Set();
     this.mainPerspective = TeamManager.INVALID_ID;
-
-    this.cashX = -1;
-    this.cashY = -1;
-    this.cashValue = 0;
+    this.inspectX = -1;
+    this.inspectY = -1;
 }
 
 BattalionCamera.FLAG = {
@@ -73,26 +71,9 @@ BattalionCamera.prototype.setMainPerspective = function(teamID) {
     this.mainPerspective = teamID;
 }
 
-BattalionCamera.prototype.updateCash = function(tileX, tileY, cash) {
-    if(this.cashX !== tileX || this.cashY !== tileY || this.cashValue !== cash) {
-        this.cashX = tileX;
-        this.cashY = tileY;
-        this.cashValue = cash;
-    }    
-}
-
-BattalionCamera.prototype.drawCash = function(display) {
-    const { context } = display;
-
-    //To avoid clutter, only non 0 cash is visualized
-    if(this.cashValue !== 0) {
-        const drawX = this.tileXToScreen(this.cashX);
-        const drawY = this.tileYToScreen(this.cashY);
-
-        context.fillStyle = "#ffffff";
-        context.globalAlpha = 1;
-        context.fillText(this.cashValue, drawX, drawY);
-    }
+BattalionCamera.prototype.setInspect = function(inspectX, inspectY) {
+    this.inspectX = inspectX;
+    this.inspectY = inspectY;
 }
 
 BattalionCamera.prototype.drawEntityHealth = function(display, drawX, drawY, healthFactor) {
@@ -214,8 +195,29 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
     const mapWidth = this.mapWidth;
     const currentFrame = this.currentFrame;
     const deferred = [];
-
+    let inspectedEntity = null;
     let count = 0;
+
+    {
+        const index = worldMap.getEntity(this.inspectX, this.inspectY);
+        
+        if(index !== EntityManager.INVALID_INDEX) {
+            const entity = entities[index];
+            const { spriteID, teamID } = entity;
+
+            if(spriteID !== SpriteManager.INVALID_ID) {
+                if(this.flags & BattalionCamera.FLAG.USE_PERSPECTIVES) {
+                    if(this.perspectives.has(teamID) || entity.isVisibleTo(gameContext, this.mainPerspective)) {
+                        sprites[spriteID].lastFrame = currentFrame;
+                        inspectedEntity = entity;
+                    }
+                } else {
+                    sprites[spriteID].lastFrame = currentFrame;
+                    inspectedEntity = entity;
+                }
+            }
+        }
+    }
 
     for(let i = startY; i <= endY; i++) {
         let index = i * mapWidth + startX;
@@ -266,36 +268,29 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
         }
     }
 
-    /*
-    for(let i = 0; i < entities.length; i++) {
-        const entity = entities[i];
-        const { tileX, tileY, spriteID, state } = entity;
-
-        if(spriteID !== SpriteManager.INVALID_ID) {
-            if(tileX >= startX && tileX <= endX && tileY >= startY && tileY <= endY) {
-                const sprite = sprites[spriteID];
-
-                //Prevents double-draw.
-                if(sprite.lastFrame < this.currentFrame) {
-                    if(state === BattalionEntity.STATE.IDLE) {
-                        this.drawEntity(display, entity, sprite, realTime, deltaTime);
-                    } else {
-                        deferred.push(entity);
-                    }
-
-                    count++;
-                }
-            }
-        }
-    }
-    */
-
     for(let i = 0; i < deferred.length; i++) {
         const entity = deferred[i];
         const spriteID = entity.spriteID;
-        const sprite = sprites[spriteID];
 
-        this.drawEntity(display, entity, sprite, realTime, deltaTime);
+        this.drawEntity(display, entity, sprites[spriteID], realTime, deltaTime);
+    }
+
+    if(inspectedEntity) {
+        const { spriteID, tileX, tileY, cash } = inspectedEntity;
+
+        this.drawEntity(display, inspectedEntity, sprites[spriteID], realTime, deltaTime);
+
+        if(cash !== 0) {
+            const { context } = display;
+            const screenX = this.tileXToScreen(tileX);
+            const screenY = this.tileYToScreen(tileY);
+
+            context.fillStyle = "#ffffff";
+            context.globalAlpha = 1;
+            context.fillText(cash, screenX, screenY);
+        }
+
+        count++;
     }
 
     return count;
@@ -389,7 +384,6 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     overlays += this.drawOverlay(tileManager, display, this.pathOverlay);
     sprites += this.drawEntities(gameContext, display, worldMap);
     sprites += this.drawSortedSpriteLayer(gameContext, display, LAYER_TYPE.GFX);
-    this.drawCash(display);
     //this.shadeScreen(display, "#000000", 0.5);
 
     if(DEBUG.WORLD) {
