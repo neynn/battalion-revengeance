@@ -143,8 +143,10 @@ Sprite.prototype.reset = function() {
     this.height = 0;
     this.flags = Sprite.FLAG.NONE;
     this.opacity = 1;
+    this.lastFrame = 0;
     this.setPosition(0, 0);
     this.show();
+    this.clear();
 }
 
 Sprite.prototype.setHandle = function(handle) {

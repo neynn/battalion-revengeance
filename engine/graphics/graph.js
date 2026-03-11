@@ -6,10 +6,12 @@ export const Graph = function(DEBUG_NAME = "") {
     this.width = 0;
     this.height = 0;
     this.opacity = 1;
-    this.name = "";
     this.children = [];
     this.parent = null;
     this.collider = null;
+    this._child = 0;
+    this._screenX = 0;
+    this._screenY = 0;
     this._flags = Graph.FLAG.IS_VISIBLE;
 }
 
@@ -29,6 +31,12 @@ Graph.prototype.onDebug = function(display, screenX, screenY) {}
 Graph.prototype.onUpdate = function(timestamp, deltaTime) {}
 Graph.prototype.onClick = function(event) {}
 
+Graph.prototype.clear = function() {
+    this._child = 0;
+    this._screenX = 0;
+    this._screenY = 0;
+}
+
 Graph.prototype.isVisible = function() {
     return (this._flags & Graph.FLAG.IS_VISIBLE) !== 0;
 }
@@ -40,18 +48,21 @@ Graph.prototype.setClick = function(onClick) {
 }
 
 Graph.prototype.find = function(childID) {
-    const stack = [this];
+    let element = this;
 
-    while(stack.length !== 0) {
-        const graph = stack.pop();
-        const { children, id } = graph;
+    while(element) {
+        if(element.id === childID) {
+            return element;
+        }   
 
-        if(id === childID) {
-            return graph;
-        }
-
-        for(let i = children.length - 1; i >= 0; i--) {
-            stack.push(children[i]);
+        while(element) {
+            if(element._child >= element.children.length) {
+                element._child = 0;
+                element = element.parent;
+            } else {
+                element = element.children[element._child++];
+                break;
+            }
         }
     }
 
@@ -76,84 +87,74 @@ Graph.prototype.traverse = function(onCall) {
 }
 
 Graph.prototype.update = function(timestamp, deltaTime) {
-    if(this.children.length === 0) {
-        this.onUpdate(timestamp, deltaTime);
-        return;
-    }
+    let element = this;
 
-    const stack = [this];
+    while(element) {        
+        element.onUpdate(timestamp, deltaTime);
 
-    while(stack.length !== 0) {
-        const graph = stack.pop();
-        const { children } = graph;
-
-        for(let i = children.length - 1; i >= 0; i--) {
-            stack.push(children[i]);
+        while(element) {
+            if(element._child >= element.children.length) {
+                element._child = 0;
+                element = element.parent;
+            } else {
+                element = element.children[element._child++];
+                break;
+            }
         }
-
-        graph.onUpdate(timestamp, deltaTime);
     }
 }
 
 Graph.prototype.debug = function(display, screenX, screenY) {
-    if(this.children.length === 0) {
-        this.onDebug(display, this.positionX - screenX, this.positionY - screenY);
-        return;
-    }
+    this._screenX = this.positionX - screenX;
+    this._screenY = this.positionY - screenY;
+    let element = this;
 
-    const stack = [this];
-    const positions = [this.positionX - screenX, this.positionY - screenY];
+    while(element) {
+        const { _screenX, _screenY } = element;
+        
+        element.onDebug(display, _screenX, _screenY);
 
-    while(stack.length !== 0) {
-        const localY = positions.pop();
-        const localX = positions.pop();
-        const graph = stack.pop();
-        const { children } = graph;
-
-        graph.onDebug(display, localX, localY);
-
-        for(let i = children.length - 1; i >= 0; i--) {
-            const child = children[i];
-            const { positionX, positionY } = child;
-
-            stack.push(child);
-            positions.push(localX + positionX);
-            positions.push(localY + positionY);
+        while(element) {
+            if(element._child >= element.children.length) {
+                element._child = 0;
+                element = element.parent;
+            } else {
+                element = element.children[element._child++];
+                element._screenX = element.parent._screenX + element.positionX;
+                element._screenY = element.parent._screenY + element.positionY;
+                break;
+            }
         }
     }
 }
 
 Graph.prototype.draw = function(display, screenX, screenY) {
-    if((this._flags & Graph.FLAG.IS_VISIBLE) === 0) {
+    if(!(this._flags & Graph.FLAG.IS_VISIBLE)) {
         return;
     }
 
-    if(this.children.length === 0) {
-        display.setAlpha(this.opacity);
-        this.onDraw(display, this.positionX - screenX, this.positionY - screenY);
-        return;
-    }
+    this._screenX = this.positionX - screenX;
+    this._screenY = this.positionY - screenY;
+    let element = this;
 
-    const stack = [this];
-    const positions = [this.positionX - screenX, this.positionY - screenY];
-
-    while(stack.length !== 0) {
-        const localY = positions.pop();
-        const localX = positions.pop();
-        const graph = stack.pop();
-        const { children, opacity } = graph;
-
+    while(element) {
+        const { _screenX, _screenY, opacity } = element;
+        
         display.setAlpha(opacity);
-        graph.onDraw(display, localX, localY);
+        element.onDraw(display, _screenX, _screenY);
 
-        for(let i = children.length - 1; i >= 0; i--) {
-            const child = children[i];
-            const { _flags, positionX, positionY } = child;
+        while(element) {
+            if(element._child >= element.children.length) {
+                element._child = 0;
+                element = element.parent;
+            } else {
+                element = element.children[element._child++];
 
-            if((_flags & Graph.FLAG.IS_VISIBLE) !== 0) {
-                stack.push(child);
-                positions.push(localX + positionX);
-                positions.push(localY + positionY);
+                if(element._flags & Graph.FLAG.IS_VISIBLE) {
+                    element._screenX = element.parent._screenX + element.positionX;
+                    element._screenY = element.parent._screenY + element.positionY;
+                    break;
+                }
             }
         }
     }
@@ -164,11 +165,10 @@ Graph.prototype.getGraph = function() {
     let index = 0;
 
     while(index < stack.length) {
-        const graph = stack[index];
-        const { children } = graph;
+        const { children } = stack[index];
 
-        for(let i = 0; i < children.length; i++) {
-            stack.push(children[i]);
+        for(const child of children) {
+            stack.push(child);
         }
 
         index++;
@@ -248,30 +248,6 @@ Graph.prototype.getChild = function(id) {
     return null;
 }
 
-Graph.prototype.getChildByName = function(name) {
-    for(let i = 0; i < this.children.length; i++) {
-        const child = this.children[i];
-
-        if(child.name === name) {
-            return child;
-        }
-    }
-
-    return null;
-}
-
-Graph.prototype.isNameReserved = function(name) {
-    for(let i = 0; i < this.children.length; i++) {
-        const child = this.children[i];
-
-        if(child.name === name) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
 Graph.prototype.removeChild = function(childID) {
     for(let i = 0; i < this.children.length; i++) {
         const child = this.children[i];
@@ -296,16 +272,12 @@ Graph.prototype.close = function() {
     this.children.length = 0;
 }
 
-Graph.prototype.addChild = function(child, name = "") {
+Graph.prototype.addChild = function(child) {
     const childID = child.getID();
     const graph = this.find(childID);
 
     if(graph) {
         return;
-    }
-
-    if(name !== "" && !this.isNameReserved(name)) {
-        child.name = name;
     }
 
     child.setParent(this);
