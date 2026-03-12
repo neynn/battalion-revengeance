@@ -48,9 +48,9 @@ UIManager.prototype.update = function(gameContext) {
     const { positionX, positionY, radius } = cursor;
 
     for(let i = this.interfaces.length - 1; i >= 0; i--) {
-        const collisions = this.interfaces[i].updateCollisions(positionX, positionY, radius);
+        const isCollided = this.interfaces[i].updateCollisions(positionX, positionY, radius);
 
-        if(collisions > 0) {
+        if(isCollided) {
             break;
         }
     }
@@ -86,9 +86,10 @@ UIManager.prototype.getInterfaceByID = function(id) {
 
 UIManager.prototype.handleClick = function(event) {
     for(let i = this.interfaces.length - 1; i >= 0; i--) {
-        const collisions = this.interfaces[i].onClick(event);
+        const { previousHot } = this.interfaces[i];
 
-        if(collisions > 0) {
+        if(previousHot !== null) {
+            previousHot.onClick(event);
             break;
         }
     }

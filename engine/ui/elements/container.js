@@ -1,5 +1,5 @@
-import { Collider } from "../../graphics/collider.js";
 import { getRGBAString } from "../../graphics/colorHelper.js";
+import { Graph } from "../../graphics/graph.js";
 import { SHAPE } from "../../math/constants.js";
 import { drawShape, strokeShape } from "../../util/drawHelper.js";
 import { UIElement } from "../uiElement.js";
@@ -7,11 +7,11 @@ import { UIElement } from "../uiElement.js";
 export const Container = function(DEBUG_NAME) {
     UIElement.call(this, DEBUG_NAME);
 
-    this.collider = new Collider();
     this.drawFlags = Container.DRAW_FLAG.OUTLINE;
     this.outlineSize = 1;
     this.outlineColor = getRGBAString(255, 255, 255, 255);
     this.backgroundColor = getRGBAString(255, 255, 255, 255);
+    this.collider = Graph.COLLIDER.RECTANGLE;
 } 
 
 Container.DRAW_FLAG = {

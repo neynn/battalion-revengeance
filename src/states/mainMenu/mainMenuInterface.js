@@ -1,13 +1,12 @@
 import { parseInterfaceByID } from "../../../engine/ui/parser.js";
-import { UICollider } from "../../../engine/ui/uiCollider.js";
-import { UserInterface } from "../../../engine/ui/userInterface.js";
+import { UIContext } from "../../../engine/ui/uiContext.js";
 import { BattalionContext } from "../../battalionContext.js";
 
 export const MainMenuInterface = function() {
-    UserInterface.call(this);
+    UIContext.call(this);
 }
 
-MainMenuInterface.prototype = Object.create(UserInterface.prototype);
+MainMenuInterface.prototype = Object.create(UIContext.prototype);
 MainMenuInterface.prototype.constructor = MainMenuInterface;
 
 MainMenuInterface.prototype.load = function(gameContext, stateMachine) {
@@ -39,16 +38,4 @@ MainMenuInterface.prototype.load = function(gameContext, stateMachine) {
     buttonVersus.addChild(spriteVersus);
     buttonEdit.addChild(spriteEdit)
     buttonExtra.addChild(spriteExtra);
-
-    buttonPlay.collider.events.on(UICollider.EVENT.FIRST_COLLISION, (event) => spriteManager.updateSprite(spritePlay.getIndex(), "tank_hunter_idle_right"));
-    buttonPlay.collider.events.on(UICollider.EVENT.LAST_COLLISION, (event) => spriteManager.updateSprite(spritePlay.getIndex(), "tank_hunter_idle_right"));
-
-    buttonVersus.collider.events.on(UICollider.EVENT.FIRST_COLLISION, (event) => spriteManager.updateSprite(spriteVersus.getIndex(), "red_battletank_aim"));
-    buttonVersus.collider.events.on(UICollider.EVENT.LAST_COLLISION, (event) => spriteManager.updateSprite(spriteVersus.getIndex(), "red_battletank_idle"));
-
-    buttonEdit.collider.events.on(UICollider.EVENT.FIRST_COLLISION, (event) => spriteManager.updateSprite(spriteEdit.getIndex(), "hunter_support_idle_right"));
-    buttonEdit.collider.events.on(UICollider.EVENT.LAST_COLLISION, (event) => spriteManager.updateSprite(spriteEdit.getIndex(), "hunter_support_idle_right"));
-
-    buttonExtra.collider.events.on(UICollider.EVENT.FIRST_COLLISION, (event) => spriteManager.updateSprite(spriteExtra.getIndex(), "aleph_idle_down"));
-    buttonExtra.collider.events.on(UICollider.EVENT.LAST_COLLISION, (event) => spriteManager.updateSprite(spriteExtra.getIndex(), "aleph_idle_down"));
 }

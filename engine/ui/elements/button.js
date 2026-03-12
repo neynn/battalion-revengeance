@@ -1,23 +1,29 @@
+import { EventEmitter } from "../../events/eventEmitter.js";
 import { getRGBAString } from "../../graphics/colorHelper.js";
+import { Graph } from "../../graphics/graph.js";
 import { SHAPE } from "../../math/constants.js";
 import { drawShape, strokeShape } from "../../util/drawHelper.js";
-import { UICollider } from "../uiCollider.js";
 import { UIElement } from "../uiElement.js";
 
 export const Button = function(DEBUG_NAME) {
     UIElement.call(this, DEBUG_NAME);
 
     this.shape = SHAPE.RECTANGLE;
-    this.collider = new UICollider();
     this.drawFlags = Button.DRAW_FLAG.OUTLINE;
     this.outlineSize = 1;
     this.outlineColor = getRGBAString(255, 255, 255, 255);
     this.backgroundColor = getRGBAString(0, 0, 0, 0);
     this.highlightColor = getRGBAString(200, 200, 200, 64);
 
-    this.collider.events.on(UICollider.EVENT.FIRST_COLLISION, (event) => this.drawFlags |= Button.DRAW_FLAG.HIGHLIGHT, { permanent: true });
-    this.collider.events.on(UICollider.EVENT.LAST_COLLISION, (event) => this.drawFlags &= ~Button.DRAW_FLAG.HIGHLIGHT, { permanent: true });
+    this.events = new EventEmitter();
+    this.events.register(Button.EVENT.COLLISION_BEGIN);
+    this.events.register(Button.EVENT.COLLISION_END);
 }
+
+Button.EVENT = {
+    COLLISION_BEGIN: 0,
+    COLLISION_END: 1
+};
 
 Button.DRAW_FLAG = {
     NONE: 0,
@@ -29,16 +35,26 @@ Button.DRAW_FLAG = {
 Button.prototype = Object.create(UIElement.prototype);
 Button.prototype.constructor = Button;
 
+Button.prototype.onCollisionBegin = function() {
+    this.drawFlags |= Button.DRAW_FLAG.HIGHLIGHT;
+    this.events.emit(Button.EVENT.COLLISION_BEGIN);
+}
+
+Button.prototype.onCollisionEnd = function() {
+    this.drawFlags &= ~Button.DRAW_FLAG.HIGHLIGHT;
+    this.events.emit(Button.EVENT.COLLISION_END);
+}
+
 Button.prototype.setShape = function(shape) {
     switch(shape) {
         case SHAPE.RECTANGLE: {
             this.shape = SHAPE.RECTANGLE;
-            this.collider.setShape(SHAPE.RECTANGLE);
+            this.collider = Graph.COLLIDER.RECTANGLE;
             break;
         }
         case SHAPE.CIRCLE: {
             this.shape = SHAPE.CIRCLE;
-            this.collider.setShape(SHAPE.CIRCLE);
+            this.collider = Graph.COLLIDER.CIRCLE;
             break;
         }
     }

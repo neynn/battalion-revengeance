@@ -25,8 +25,6 @@ UIElement.ANCHOR_TYPE = {
 UIElement.prototype = Object.create(Graph.prototype);
 UIElement.prototype.constructor = UIElement;
 
-UIElement.prototype.setText = function(text) {}
-
 UIElement.prototype.setOrigin = function(originX, originY) {
     this.originX = originX;
     this.originY = originY;

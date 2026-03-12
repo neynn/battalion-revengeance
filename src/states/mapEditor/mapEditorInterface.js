@@ -3,10 +3,10 @@ import { PalletButton } from "../../../engine/map/editor/palletButton.js";
 import { SHAPE } from "../../../engine/math/constants.js";
 import { Container } from "../../../engine/ui/elements/container.js";
 import { parseInterfaceByID } from "../../../engine/ui/parser.js";
-import { UserInterface } from "../../../engine/ui/userInterface.js";
+import { UIContext } from "../../../engine/ui/uiContext.js";
 
 export const MapEditorInterface = function() {
-    UserInterface.call(this);
+    UIContext.call(this);
 
     this.slotButtonSize = 50;
     this.textColorView = [238, 238, 238, 255];
@@ -14,7 +14,7 @@ export const MapEditorInterface = function() {
     this.textColorHide = [207, 55, 35, 255];
 }
 
-MapEditorInterface.prototype = Object.create(UserInterface.prototype);
+MapEditorInterface.prototype = Object.create(UIContext.prototype);
 MapEditorInterface.prototype.constructor = MapEditorInterface;
 
 MapEditorInterface.prototype.load = function(gameContext) {

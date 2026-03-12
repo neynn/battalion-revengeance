@@ -1,13 +1,13 @@
 import { parseInterfaceByID } from "../../../engine/ui/parser.js";
-import { UserInterface } from "../../../engine/ui/userInterface.js";
+import { UIContext } from "../../../engine/ui/uiContext.js";
 import { BattalionContext } from "../../battalionContext.js";
 import { GAME_EVENT } from "../../enums.js";
 
 export const ArenaInterface = function() {
-    UserInterface.call(this);
+    UIContext.call(this);
 }
 
-ArenaInterface.prototype = Object.create(UserInterface.prototype);
+ArenaInterface.prototype = Object.create(UIContext.prototype);
 ArenaInterface.prototype.constructor = ArenaInterface;
 
 ArenaInterface.prototype.load = function(gameContext, stateMachine) {

@@ -1,29 +1,41 @@
+import { isCircleCicleIntersect, isRectangleRectangleIntersect } from "../math/math.js";
+
 export const Graph = function(DEBUG_NAME = "") {
     this.DEBUG_NAME = DEBUG_NAME;
-    this.id = Graph.ID.NEXT++;
+    this.id = Graph.NEXT_ID++;
     this.positionX = 0;
     this.positionY = 0;
     this.width = 0;
     this.height = 0;
     this.opacity = 1;
+    this.collider = Graph.COLLIDER.NONE;
     this.children = [];
     this.parent = null;
-    this.collider = null;
+
     this._child = 0;
     this._screenX = 0;
     this._screenY = 0;
     this._flags = Graph.FLAG.IS_VISIBLE;
 }
 
-Graph.FLAG = {
+Graph.COLLIDER = {
     NONE: 0,
-    IS_VISIBLE: 1
+    RECTANGLE: 1,
+    CIRCLE: 2
 };
 
-Graph.ID = {
-    NEXT: 100000,
-    INVALID: -1
+Graph.FLAG = {
+    NONE: 0,
+    IS_VISIBLE: 1 << 0,
+    BLEND_ALPHA: 1 << 1
 };
+
+Graph.NEXT_ID = 100000;
+Graph.INVALID_ID = -1;
+
+Graph.prototype.onCollisionBegin = function() {}
+Graph.prototype.onCollisionEnd = function() {}
+Graph.prototype.onCollision = function() {}
 
 Graph.prototype.onWindowResize = function(width, height) {}
 Graph.prototype.onDraw = function(display, screenX, screenY) {}
@@ -42,7 +54,7 @@ Graph.prototype.isVisible = function() {
 }
 
 Graph.prototype.setClick = function(onClick) {
-    if(this.collider !== null) {
+    if(this.collider !== Graph.COLLIDER.NONE) {
         this.onClick = onClick;
     }
 }
@@ -139,20 +151,23 @@ Graph.prototype.draw = function(display, screenX, screenY) {
 
     while(element) {
         const { _screenX, _screenY, opacity } = element;
-        
+        let next = element;
+
         display.setAlpha(opacity);
         element.onDraw(display, _screenX, _screenY);
 
-        while(element) {
+        while(next) {
             if(element._child >= element.children.length) {
                 element._child = 0;
                 element = element.parent;
+                next = element;
             } else {
-                element = element.children[element._child++];
+                next = element.children[element._child++];
 
-                if(element._flags & Graph.FLAG.IS_VISIBLE) {
-                    element._screenX = element.parent._screenX + element.positionX;
-                    element._screenY = element.parent._screenY + element.positionY;
+                if(next._flags & Graph.FLAG.IS_VISIBLE) {
+                    next._screenX = element._screenX + next.positionX;
+                    next._screenY = element._screenY + next.positionY;
+                    element = next;
                     break;
                 }
             }
@@ -184,28 +199,16 @@ Graph.prototype.getID = function() {
 Graph.prototype.updatePosition = function(deltaX, deltaY) {
     this.positionX += deltaX;
     this.positionY += deltaY;
-
-    if(this.collider) {
-        this.collider.updatePosition(deltaX, deltaY);
-    }
 }
 
 Graph.prototype.setSize = function(width, height) {
     this.width = width;
     this.height = height;
-
-    if(this.collider) {
-        this.collider.setSize(width, height);
-    }
 } 
 
 Graph.prototype.setPosition = function(positionX, positionY) {
     this.positionX = positionX;
     this.positionY = positionY;
-
-    if(this.collider) {
-        this.collider.setPosition(positionX, positionY);
-    }
 }
 
 Graph.prototype.hide = function() {
@@ -293,39 +296,61 @@ Graph.prototype.setParent = function(parent) {
     this.parent = parent;
 }
 
-Graph.prototype.mGetCollisions = function(collisions, mouseX, mouseY, mouseRange) {
-    if(!this.collider || (this._flags & Graph.FLAG.IS_VISIBLE) === 0) {
-        return;
+Graph.prototype.getCollision = function(mouseX, mouseY, mouseRange) {
+    let element = this;
+    let collision = null;
+
+    if(this.collider === Graph.COLLIDER.NONE || (this._flags & Graph.FLAG.IS_VISIBLE) === 0) {
+        return collision;
     }
 
-    const stack = [this];
-    const positions = [mouseX, mouseY];
+    this._screenX = this.positionX;
+    this._screenY = this.positionY;
 
-    while(stack.length !== 0) {
-        const positionY = positions.pop();
-        const positionX = positions.pop();
-        const graph = stack.pop();
-        const isColliding = graph.collider.isColliding(positionX, positionY, mouseRange);
+    while(element) {
+        const { _screenX, _screenY, width, height, collider } = element;
+        let isColliding = false;
+        let next = element;
 
-        if(!isColliding) {
-            continue;
-        }
-
-        const nextX = positionX - graph.positionX;
-        const nextY = positionY - graph.positionY;
-        const children = graph.children;
-
-        for(let i = 0; i < children.length; i++) {
-            const child = children[i];
-            const { _flags, collider } = child;
-
-            if((_flags & Graph.FLAG.IS_VISIBLE) !== 0 && collider) {
-                stack.push(child);
-                positions.push(nextX);
-                positions.push(nextY);
+        switch(collider) {
+            case Graph.COLLIDER.RECTANGLE: {
+                isColliding = isRectangleRectangleIntersect(_screenX, _screenY, width, height, mouseX, mouseY, mouseRange, mouseRange);
+                break;
+            }
+            case Graph.COLLIDER.CIRCLE: {
+                isColliding = isCircleCicleIntersect(_screenX, _screenY, width, mouseX, mouseY, mouseRange);
+                break;
             }
         }
 
-        collisions.push(graph);
+        if(isColliding) {
+            collision = element;
+
+            //Disallows checking siblings as there can only be one collision branch.
+            if(element.parent) {
+                element.parent._child = element.parent.children.length;
+            }
+        } else {
+            element = element.parent;
+        }
+
+        while(next) {
+            if(element._child >= element.children.length) {
+                element._child = 0;
+                element = element.parent;
+                next = element;
+            } else {
+                next = element.children[element._child++];
+
+                if(next.collider !== Graph.COLLIDER.NONE && (next._flags & Graph.FLAG.IS_VISIBLE)) {
+                    next._screenX = element._screenX + next.positionX;
+                    next._screenY = element._screenY + next.positionY;
+                    element = next;
+                    break;
+                }
+            }
+        }
     }
+
+    return collision;
 }
