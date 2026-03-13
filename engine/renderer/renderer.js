@@ -79,7 +79,6 @@ Renderer.prototype.destroyContext = function(contextID) {
 Renderer.prototype.update = function(gameContext) {
     const { timer, uiManager } = gameContext; 
     const deltaTime = timer.getDeltaTime();
-    const realTime = timer.getRealTime();
 
     this.display.clear();
     this.effectManager.update(this.display, deltaTime);
@@ -96,7 +95,7 @@ Renderer.prototype.update = function(gameContext) {
 
     this.display.save();
 
-    uiManager.draw(this.display, realTime, deltaTime);
+    uiManager.update(gameContext, this.display);
 
     this.display.reset();
 

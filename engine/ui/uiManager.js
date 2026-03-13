@@ -1,3 +1,5 @@
+import { UIContext } from "./uiContext.js";
+
 export const UIManager = function(textureLoader) {
     this.resources = textureLoader;
     this.textureMap = {};
@@ -31,27 +33,33 @@ UIManager.prototype.debug = function(display) {
     }
 }
 
-UIManager.prototype.draw = function(display, realTime, deltaTime) {
-    for(let i = this.interfaces.length - 1; i >= 0; i--) {
-        const element = this.interfaces[i];
-
-        if(element.isVisible()) {
-            element.update(realTime, deltaTime);
-            element.draw(display, 0, 0);
-        }
-    }
-}
-
-UIManager.prototype.update = function(gameContext) {
-    const { client } = gameContext;
+UIManager.prototype.update = function(gameContext, display) {
+    const { client, timer } = gameContext;
     const { cursor } = client;
     const { positionX, positionY, radius } = cursor;
+    const { deltaTime, realTime } = timer;
+    let isCollided = false;
 
     for(let i = this.interfaces.length - 1; i >= 0; i--) {
-        const isCollided = this.interfaces[i].updateCollisions(positionX, positionY, radius);
+        const context = this.interfaces[i];
 
-        if(isCollided) {
-            break;
+        switch(context.mode) {
+            case UIContext.MODE.IMMEDIATE: {
+                context.updateImmediate(gameContext, display);
+                break;
+            }
+            case UIContext.MODE.RETAINED: {
+                if(context.isVisible()) {
+                    if(!isCollided) {
+                        isCollided = context.updateCollisions(positionX, positionY, radius);
+                    }
+
+                    context.update(realTime, deltaTime);
+                    context.draw(display, 0, 0);
+                }
+
+                break;
+            }
         }
     }
 }

@@ -28,7 +28,6 @@ export const BattalionContext = function() {
 
     this.timer.input = (deltaTime) => {
         this.client.update();
-        this.uiManager.update(this);
     }
 
     this.timer.update = (fDeltaTime) => {

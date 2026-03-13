@@ -1,0 +1,41 @@
+export const Widget = function() {
+    this.id = Widget.ID++;
+    this.anchor = Widget.ANCHOR_TYPE.TOP_LEFT;
+    this.positionX = 0;
+    this.positionY = 0;
+    this.width = 0;
+    this.height = 0;
+}
+
+Widget.ID = 0;
+
+Widget.ANCHOR_TYPE = {
+    TOP_CENTER: 0,
+    TOP_LEFT: 1,
+    TOP_RIGHT: 2,
+    BOTTOM_CENTER: 3,
+    BOTTOM_LEFT: 4,
+    BOTTOM_RIGHT: 5,
+    CENTER: 6,
+    LEFT: 7,
+    RIGHT: 8,
+    _COUNT: 9,
+};
+
+export const ANCHOR_TABLE_X = new Float16Array(Widget.ANCHOR_TYPE._COUNT);
+
+ANCHOR_TABLE_X[Widget.ANCHOR_TYPE.TOP_CENTER] = 0.5;
+ANCHOR_TABLE_X[Widget.ANCHOR_TYPE.TOP_RIGHT] = 1;
+ANCHOR_TABLE_X[Widget.ANCHOR_TYPE.BOTTOM_CENTER] = 0.5;
+ANCHOR_TABLE_X[Widget.ANCHOR_TYPE.BOTTOM_RIGHT] = 1;
+ANCHOR_TABLE_X[Widget.ANCHOR_TYPE.CENTER] = 0.5;
+ANCHOR_TABLE_X[Widget.ANCHOR_TYPE.RIGHT] = 1;
+
+export const ANCHOR_TABLE_Y = new Float16Array(Widget.ANCHOR_TYPE._COUNT);
+
+ANCHOR_TABLE_Y[Widget.ANCHOR_TYPE.BOTTOM_LEFT] = 1;
+ANCHOR_TABLE_Y[Widget.ANCHOR_TYPE.BOTTOM_CENTER] = 1;
+ANCHOR_TABLE_Y[Widget.ANCHOR_TYPE.BOTTOM_RIGHT] = 1;
+ANCHOR_TABLE_Y[Widget.ANCHOR_TYPE.LEFT] = 0.5;
+ANCHOR_TABLE_Y[Widget.ANCHOR_TYPE.CENTER] = 0.5;
+ANCHOR_TABLE_Y[Widget.ANCHOR_TYPE.RIGHT] = 0.5;

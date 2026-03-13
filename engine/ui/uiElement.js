@@ -19,6 +19,7 @@ UIElement.ANCHOR_TYPE = {
     CENTER: 6,
     LEFT: 7,
     RIGHT: 8,
+    _COUNT: 9,
     PERCENT: 9
 };
 

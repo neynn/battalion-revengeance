@@ -1,5 +1,7 @@
 import { Graph } from "../graphics/graph.js";
+import { isRectangleRectangleIntersect } from "../math/math.js";
 import { UIElement } from "./uiElement.js";
+import { ANCHOR_TABLE_X, ANCHOR_TABLE_Y } from "./widgets/widget.js";
 
 export const UIContext = function() {
     Graph.call(this);
@@ -8,12 +10,65 @@ export const UIContext = function() {
     this.collisions = 0;
     this.nameMap = new Map();
     this.elements = new Map();
+
+    //Starts at 2 so the first layout is always 0, 0!
+    this.layoutIndex = 2;
+    this.layout = new Float32Array(1000);
+    this.mode = UIContext.MODE.RETAINED;
 }
+
+UIContext.MODE = {
+    RETAINED: 0,
+    IMMEDIATE: 1
+};
 
 UIContext.EMPTY_ELEMENT = new UIElement("EMPTY");
 
 UIContext.prototype = Object.create(Graph.prototype);
 UIContext.prototype.constructor = UIContext;
+
+UIContext.prototype.updateImmediate = function(gameContext, display) {}
+
+UIContext.prototype.beginLayout = function(gameContext, widget) {
+    const { applicationWindow } = gameContext;
+    const windowWidth = applicationWindow.width;
+    const windowHeight = applicationWindow.height;
+
+    const { width, height, anchor, positionX, positionY } = widget;
+    const layoutX = (windowWidth - width) * ANCHOR_TABLE_X[anchor] + positionX;
+    const layoutY = (windowHeight - height) * ANCHOR_TABLE_Y[anchor] + positionY;
+
+    this.layout[this.layoutIndex++] = layoutX;
+    this.layout[this.layoutIndex++] = layoutY;
+}
+
+UIContext.prototype.endLayout = function() {
+    this.layoutIndex -= 2;
+}
+
+UIContext.prototype.doButton = function(gameContext, display, widget) {
+    const { client } = gameContext;
+    const { cursor } = client;
+    const cursorX = cursor.positionX;
+    const cursorY = cursor.positionY;
+    const radius = cursor.radius;
+
+    const { deltaX, deltaY, width, height } = widget;
+    const widgetX = this.layout[this.layoutIndex - 2] + deltaX;
+    const widgetY = this.layout[this.layoutIndex - 1] + deltaY;
+    const isHovered = isRectangleRectangleIntersect(widgetX, widgetY, width, height, cursorX, cursorY, radius, radius);
+    let color = "#333333";
+
+    if(isHovered) {
+        console.log("Collided!");
+        color = "#eeeeee"
+    } else {
+
+    }
+
+    display.context.fillStyle = color;
+    display.context.fillRect(widgetX, widgetY, width, height);
+}
 
 UIContext.prototype.onWindowResize = function(width, height) {
     for(let i = 0; i < this.children.length; i++) {
