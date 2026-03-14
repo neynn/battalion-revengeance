@@ -5,12 +5,12 @@ import { BattalionMap } from "../../map/battalionMap.js";
 import { clampValue, loopValue } from "../../../engine/math/math.js";
 import { ButtonHandler } from "../../../engine/map/editor/buttonHandler.js";
 import { getCursorTile } from "../../../engine/camera/contextHelper.js";
-import { TileManager } from "../../../engine/tile/tileManager.js";
 import { Cursor } from "../../../engine/client/cursor/cursor.js";
-import { TILE_WIDTH } from "../../../engine/engine_constants.js";
 import { BrushSet } from "../../../engine/map/editor/brushSet.js";
 import { TILE_ID } from "../../enums.js";
 import { EditorConfigurator } from "../../../engine/map/editor/configurator.js";
+import { TileManager } from "../../../engine/tile/tileManager.js";
+import { TILE_WIDTH } from "../../../engine/engine_constants.js";
 
 export const EditorController = function(mapEditor, userInterface, camera2D) {
     this.editor = mapEditor;
@@ -20,7 +20,7 @@ export const EditorController = function(mapEditor, userInterface, camera2D) {
     this.maxWidth = 100;
     this.maxHeight = 100;
     this.buttonHandler = new ButtonHandler();
-    this.buttonCount = -1;
+    this.buttonCount = 49;
     this.pageIndex = 0;
     this.defaultWidth = 20;
     this.defaultHeight = 20;
@@ -101,40 +101,6 @@ EditorController.prototype.initConfigurator = function() {
     this.configurator.addBrushSize(4, 4);
 }
 
-EditorController.prototype.initCursorEvents = function(gameContext) {
-    const { client } = gameContext;
-    const { cursor } = client;
-
-    cursor.events.on(Cursor.EVENT.SCROLL, ({ direction }) => {
-        switch(direction) {
-            case Cursor.SCROLL.UP: {
-                this.updateBrushSize(gameContext, 1);
-                break;
-            }
-            case Cursor.SCROLL.DOWN: {
-                this.updateBrushSize(gameContext, -1);
-                break;
-            }
-        }
-    });
-
-    cursor.events.on(Cursor.EVENT.DRAG, ({ button }) => {
-        if(button === Cursor.BUTTON.RIGHT) {
-            const { x, y } = getCursorTile(gameContext);
-
-            this.editor.paint(gameContext, x, y);
-        }
-    });
-
-    cursor.events.on(Cursor.EVENT.BUTTON_CLICK, ({ button }) => {
-        if(button === Cursor.BUTTON.RIGHT) {
-            const { x, y } = getCursorTile(gameContext);
-
-            this.editor.paint(gameContext, x, y);
-        }
-    });
-}
-
 EditorController.prototype.initPalletButtons = function(gameContext, buttons, camera) {
     const { tileManager } = gameContext;
     const slotButtonSize = this.userInterface.slotButtonSize;
@@ -171,6 +137,40 @@ EditorController.prototype.initPalletButtons = function(gameContext, buttons, ca
     } else {
         this.buttonCount = buttons.length;
     }
+}
+
+EditorController.prototype.initCursorEvents = function(gameContext) {
+    const { client } = gameContext;
+    const { cursor } = client;
+
+    cursor.events.on(Cursor.EVENT.SCROLL, ({ direction }) => {
+        switch(direction) {
+            case Cursor.SCROLL.UP: {
+                this.updateBrushSize(gameContext, 1);
+                break;
+            }
+            case Cursor.SCROLL.DOWN: {
+                this.updateBrushSize(gameContext, -1);
+                break;
+            }
+        }
+    });
+
+    cursor.events.on(Cursor.EVENT.DRAG, ({ button }) => {
+        if(button === Cursor.BUTTON.RIGHT) {
+            const { x, y } = getCursorTile(gameContext);
+
+            this.editor.paint(gameContext, x, y);
+        }
+    });
+
+    cursor.events.on(Cursor.EVENT.BUTTON_CLICK, ({ button }) => {
+        if(button === Cursor.BUTTON.RIGHT) {
+            const { x, y } = getCursorTile(gameContext);
+
+            this.editor.paint(gameContext, x, y);
+        }
+    });
 }
 
 EditorController.prototype.updatePage = function(gameContext, delta) {

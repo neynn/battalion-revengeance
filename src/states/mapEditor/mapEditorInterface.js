@@ -23,7 +23,6 @@ export const MapEditorInterface = function() {
     this.palletButton = new ButtonWidget();
     this.palletButton.width = this.slotButtonSize;
     this.palletButton.height = this.slotButtonSize;
-    this.palletButton.flags |= ButtonWidget.FLAG.DRAW_BACKGROUND;
     this.palletButton.flags |= ButtonWidget.FLAG.DRAW_HIGHLIGHT;
     this.palletButton.flags |= ButtonWidget.FLAG.DRAW_OUTLINE;
 }
@@ -91,35 +90,55 @@ MapEditorInterface.prototype.updateEraserText = function(isErasing) {
 
 MapEditorInterface.prototype.updateImmediate = function(gameContext, display) {
     const { tileManager } = gameContext;
+    const { context } = display;
     const container = this.getElement("CONTAINER_TILES");
     const startY = container._screenY;
     const startX = container._screenX;
     const scale = this.slotButtonSize / TILE_WIDTH;
-    let index = 0;
 
     const SLOT_START_Y = 100;
     const BUTTON_ROWS = 7;
     const BUTTON_COLUMNS = 7;
 
-    for(let i = 0; i < BUTTON_ROWS; i++) {
-        const positionY = startY + SLOT_START_Y + this.slotButtonSize * i;
+    context.fillStyle = "#000000";
+    context.fillRect(
+        startX, 
+        startY + SLOT_START_Y, 
+        this.slotButtonSize * BUTTON_COLUMNS, 
+        this.slotButtonSize * BUTTON_ROWS
+    );
 
+    let positionY = startY + SLOT_START_Y;
+    let positionX = startX;
+    let index = 0;
+
+    for(let i = 0; i < BUTTON_ROWS; i++) {
         for(let j = 0; j < BUTTON_COLUMNS; j++) {
-            const positionX = startX + this.slotButtonSize * j;
-            const palletIndex = this.controller.getPalletIndex(index++);
+            const palletIndex = this.controller.getPalletIndex(index);
             const tileID = this.controller.configurator.getCurrentSet().getTileID(palletIndex); 
+
+            if(tileID !== TileManager.TILE_ID.INVALID) {
+                this.camera.drawTile(tileManager, tileID, context, positionX, positionY, scale);
+            }
 
             this.palletButton.deltaX = positionX;
             this.palletButton.deltaY = positionY;
 
-            if(tileID !== TileManager.TILE_ID.INVALID) {
-                this.camera.drawTile(tileManager, tileID, display.context, positionX, positionY, scale);
+            if(this.doButton(display, this.palletButton, index)) {
+                if(tileID !== TileManager.TILE_ID.INVALID) {
+                    this.controller.resetBrush();
+                    this.controller.editor.setBrush(tileID, `${tileID}`);
+                } else {
+                    this.controller.resetBrush();
+                }
             }
 
-            if(this.doButton(gameContext, display, this.palletButton)) {
-
-            }
+            positionX += this.slotButtonSize;
+            index++;
         }
+
+        positionX = startX;
+        positionY += this.slotButtonSize;
     }
 }
 
@@ -134,15 +153,13 @@ MapEditorInterface.prototype.createPalletButtons = function() {
     const SLOT_START_Y = 100;
     const BUTTON_ROWS = 7;
     const BUTTON_COLUMNS = 7;
+    let positionX = 0;
+    let positionY = SLOT_START_Y;
     let index = 0;
 
     for(let i = 0; i < BUTTON_ROWS; i++) {
-        const positionY = this.slotButtonSize * i + SLOT_START_Y;
-
         for(let j = 0; j < BUTTON_COLUMNS; j++) {
-            const nextIndex = index++;
-            const button = new PalletButton(nextIndex, `BUTTON_${nextIndex}`);
-            const positionX = this.slotButtonSize * j;
+            const button = new PalletButton(index, `BUTTON_${index}`);
 
             button.setShape(SHAPE.RECTANGLE);
             button.setSize(this.slotButtonSize, this.slotButtonSize);
@@ -151,7 +168,13 @@ MapEditorInterface.prototype.createPalletButtons = function() {
 
             container.addChild(button);
             buttons.push(button);
+
+            positionX += this.slotButtonSize;
+            index++;
         }
+
+        positionX = 0;
+        positionY += this.slotButtonSize;
     }
 
     return buttons;

@@ -45,6 +45,7 @@ UIManager.prototype.update = function(gameContext, display) {
 
         switch(context.mode) {
             case UIContext.MODE.IMMEDIATE: {
+                context.updateCursor(cursor);
                 context.updateImmediate(gameContext, display);
                 break;
             }
@@ -70,6 +71,7 @@ UIManager.prototype.update = function(gameContext, display) {
                     context.draw(display, 0, 0);
                 }
 
+                context.updateCursor(cursor);
                 context.updateImmediate(gameContext, display);
                 break;
             }

@@ -10,7 +10,8 @@ MouseButton.FLAG = {
     DRAG: 1 << 0,
     UP: 1 << 1,
     DOWN: 1 << 2,
-    HELD: 1 << 3
+    HELD: 1 << 3,
+    CLICK: 1 << 4
 };
 
 MouseButton.STATE = {
@@ -19,12 +20,18 @@ MouseButton.STATE = {
 };
 
 MouseButton.prototype.update = function() {
-    this.flags &= ~(MouseButton.FLAG.UP | MouseButton.FLAG.DOWN);
+    this.flags &= ~(MouseButton.FLAG.UP | MouseButton.FLAG.DOWN | MouseButton.FLAG.CLICK);
 
     switch(this.state) {
         case MouseButton.STATE.UP: {
             if(this.previous === MouseButton.STATE.DOWN) {
                 this.flags |= MouseButton.FLAG.UP;
+
+                if(!(this.flags & MouseButton.FLAG.DRAG)) {
+                    this.flags |= MouseButton.FLAG.CLICK;
+                }
+
+                this.flags &= ~MouseButton.FLAG.DRAG;
             }
 
             this.flags &= ~MouseButton.FLAG.HELD;
@@ -46,7 +53,6 @@ MouseButton.prototype.update = function() {
 MouseButton.prototype.onMouseUp = function() {
     if(this.state !== MouseButton.STATE.UP) {
         this.state = MouseButton.STATE.UP;
-        this.flags &= ~MouseButton.FLAG.DRAG;
         this.downStartTime = 0;
     }
 }

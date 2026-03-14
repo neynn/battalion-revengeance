@@ -61,7 +61,7 @@ Cursor.SCROLL = {
 };
 
 Cursor.prototype.getFlags = function(button) {
-    if(index < 0 || index >= Cursor.BUTTON._COUNT) {
+    if(button < 0 || button >= Cursor.BUTTON._COUNT) {
         return 0;
     } 
 

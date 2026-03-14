@@ -7,10 +7,10 @@ export const ButtonWidget = function() {
     this.shape = 0;
     this.deltaX = 0;
     this.deltaY = 0;
+    this.thickness = 1;
     this.background = getRGBAString(0, 0, 0, 0);
     this.highlight = getRGBAString(200, 200, 200, 64);
     this.outline = getRGBAString(255, 255, 255, 255);
-    this.thickness = 1;
     this.flags = ButtonWidget.FLAG.NONE;
 }
 

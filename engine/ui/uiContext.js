@@ -1,5 +1,8 @@
+import { Cursor } from "../client/cursor/cursor.js";
+import { MouseButton } from "../client/cursor/mouseButton.js";
 import { Graph } from "../graphics/graph.js";
-import { isRectangleRectangleIntersect } from "../math/math.js";
+import { SHAPE } from "../math/constants.js";
+import { isCircleCicleIntersect, isRectangleRectangleIntersect } from "../math/math.js";
 import { drawShape, strokeShape } from "../util/drawHelper.js";
 import { UIElement } from "./uiElement.js";
 import { ButtonWidget } from "./widgets/button.js";
@@ -17,6 +20,15 @@ export const UIContext = function() {
     this.layoutIndex = 2;
     this.layout = new Float32Array(1000);
     this.mode = UIContext.MODE.RETAINED;
+
+    //Snapshot of cursor state.
+    this.cursorX = 0;
+    this.cursorY = 0;
+    this.cursorR = 0;
+    this.cursorFlags = 0;
+
+    this.hotWidget = null;
+    this.activeWidget = null;
 }
 
 UIContext.MODE = {
@@ -31,6 +43,16 @@ UIContext.prototype = Object.create(Graph.prototype);
 UIContext.prototype.constructor = UIContext;
 
 UIContext.prototype.updateImmediate = function(gameContext, display) {}
+
+UIContext.prototype.updateCursor = function(cursor) {
+    const { positionX, positionY, radius } = cursor;
+    const flags = cursor.getFlags(Cursor.BUTTON.LEFT);
+
+    this.cursorX = positionX;
+    this.cursorY = positionY;
+    this.cursorR = radius;
+    this.flags = flags;
+}
 
 UIContext.prototype.beginLayout = function(gameContext, widget) {
     const { applicationWindow } = gameContext;
@@ -49,17 +71,24 @@ UIContext.prototype.endLayout = function() {
     this.layoutIndex -= 2;
 }
 
-UIContext.prototype.doButton = function(gameContext, display, widget) {
-    const { client } = gameContext;
-    const { cursor } = client;
-    const cursorX = cursor.positionX;
-    const cursorY = cursor.positionY;
-    const radius = cursor.radius;
-
+//TODO(neyn): Use widgetID to properly implement imgui.
+UIContext.prototype.doButton = function(display, widget, widgetID) {
     const { deltaX, deltaY, width, height, thickness, outline, background, highlight, shape, flags } = widget;
     const widgetX = this.layout[this.layoutIndex - 2] + deltaX;
     const widgetY = this.layout[this.layoutIndex - 1] + deltaY;
-    const isHovered = isRectangleRectangleIntersect(widgetX, widgetY, width, height, cursorX, cursorY, radius, radius);
+    let isHovered = false;
+    let isClicked = false;
+
+    switch(shape) {
+        case SHAPE.RECTANGLE: {
+            isHovered = isRectangleRectangleIntersect(widgetX, widgetY, width, height, this.cursorX, this.cursorY, this.cursorR, this.cursorR);
+            break;
+        }
+        case SHAPE.CIRCLE: {
+            isHovered = isCircleCicleIntersect(widgetX, widgetY, width, this.cursorX, this.cursorY, this.cursorR);
+            break;
+        }
+    }
 
     if(flags & ButtonWidget.FLAG.DRAW_BACKGROUND) {
         drawShape(display, shape, background, widgetX, widgetY, width, height);
@@ -69,13 +98,17 @@ UIContext.prototype.doButton = function(gameContext, display, widget) {
         if(flags & ButtonWidget.FLAG.DRAW_HIGHLIGHT) {
             drawShape(display, shape, highlight, widgetX, widgetY, width, height);
         }
-    } else {
 
+        if(this.cursorFlags & MouseButton.FLAG.CLICK) {
+            isClicked = true;
+        }
     }
 
     if(flags & ButtonWidget.FLAG.DRAW_OUTLINE) {
         strokeShape(display, shape, outline, thickness, widgetX, widgetY, width, height);
     }
+
+    return isClicked;
 }
 
 UIContext.prototype.onWindowResize = function(width, height) {
