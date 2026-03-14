@@ -7,7 +7,7 @@ export const UncloakTween = function(cloakable, maxOpacity = 1) {
     this.cloakable = cloakable;
     this.opacity = 0;
     this.maxOpacity = maxOpacity;
-    this.waitType = Tween.WAIT_TYPE.SEQUENTIAL;
+    this.waitType = Tween.WAIT_TYPE.SEQUENTIAL_ALL;
 }
 
 UncloakTween.prototype = Object.create(Tween.prototype);

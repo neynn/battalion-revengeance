@@ -1,6 +1,6 @@
 import { Display } from "./display.js";
 import { isRectangleRectangleIntersect } from "../math/math.js";
-import { Cursor } from "../client/cursor.js";
+import { Cursor } from "../client/cursor/cursor.js";
 import { EventEmitter } from "../events/eventEmitter.js";
 
 export const CameraContext = function(id, renderer, camera) {
@@ -10,7 +10,7 @@ export const CameraContext = function(id, renderer, camera) {
     this.positionX = 0;
     this.positionY = 0;
     this.flags = CameraContext.FLAG.NONE;
-    this.dragButton = Cursor.BUTTON.NONE;
+    this.dragButton = Cursor.BUTTON._INVALID;
 
     this.display = new Display();
     this.display.init(1, 1, Display.TYPE.BUFFER);

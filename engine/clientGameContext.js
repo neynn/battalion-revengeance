@@ -1,5 +1,5 @@
 import { Client } from "./client/client.js";
-import { Cursor } from "./client/cursor.js";
+import { Cursor } from "./client/cursor/cursor.js";
 import { SpriteManager } from "./sprite/spriteManager.js";
 import { UIManager } from "./ui/uiManager.js";
 import { StateMachine } from "./state/stateMachine.js";
@@ -53,7 +53,7 @@ export const ClientGameContext = function() {
         this.renderer.onDragStart(button, x, y, radius);
     }, { permanent: true });
 
-    this.client.cursor.events.on(Cursor.EVENT.BUTTON_DRAG, ({ button, deltaX, deltaY }) => {
+    this.client.cursor.events.on(Cursor.EVENT.DRAG, ({ button, deltaX, deltaY }) => {
         this.renderer.onDragUpdate(button, deltaX, deltaY);
     }, { permanent: true });
 

@@ -6,7 +6,7 @@ import { clampValue, loopValue } from "../../../engine/math/math.js";
 import { ButtonHandler } from "../../../engine/map/editor/buttonHandler.js";
 import { getCursorTile } from "../../../engine/camera/contextHelper.js";
 import { TileManager } from "../../../engine/tile/tileManager.js";
-import { Cursor } from "../../../engine/client/cursor.js";
+import { Cursor } from "../../../engine/client/cursor/cursor.js";
 import { TILE_WIDTH } from "../../../engine/engine_constants.js";
 import { BrushSet } from "../../../engine/map/editor/brushSet.js";
 import { TILE_ID } from "../../enums.js";
@@ -118,7 +118,7 @@ EditorController.prototype.initCursorEvents = function(gameContext) {
         }
     });
 
-    cursor.events.on(Cursor.EVENT.BUTTON_DRAG, ({ button }) => {
+    cursor.events.on(Cursor.EVENT.DRAG, ({ button }) => {
         if(button === Cursor.BUTTON.RIGHT) {
             const { x, y } = getCursorTile(gameContext);
 

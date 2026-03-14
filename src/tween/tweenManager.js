@@ -7,7 +7,6 @@ export const TweenManager = function() {
 TweenManager.prototype.update = function(gameContext) {
     const { timer } = gameContext;
     const { deltaTime } = timer;
-
     let isTweened = false;
 
     for(let i = 0; i < this.tweens.length; i++) {
@@ -25,10 +24,15 @@ TweenManager.prototype.update = function(gameContext) {
 
                     break;
                 }
-                case Tween.WAIT_TYPE.PARALLEL: {
+                case Tween.WAIT_TYPE.SEQUENTIAL_ALL: {
                     tween.timePassed += deltaTime;
                     tween.update(gameContext);
                     isTweened = true;
+                    break;
+                }
+                case Tween.WAIT_TYPE.PARALLEL: {
+                    tween.timePassed += deltaTime;
+                    tween.update(gameContext);
                     break;
                 }
             }

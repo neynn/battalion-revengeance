@@ -6,7 +6,7 @@ export const DeathTween = function(cloakables) {
 
     this.cloakables = cloakables;
     this.opacity = 1;
-    this.waitType = Tween.WAIT_TYPE.PARALLEL;
+    this.waitType = Tween.WAIT_TYPE.SEQUENTIAL_ALL;
 }
 
 DeathTween.prototype = Object.create(Tween.prototype);

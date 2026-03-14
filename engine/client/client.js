@@ -1,10 +1,10 @@
-import { Cursor } from "./cursor.js";
+import { Cursor } from "./cursor/cursor.js";
 import { Keyboard } from "./keyboard.js";
 import { Socket } from "../network/socket.js";
 import { SoundPlayer } from "./sound/soundPlayer.js";
 import { InputRouter } from "./inputRouter.js";
 import { MusicPlayer } from "./music/musicPlayer.js";
-import { MouseButton } from "./mouseButton.js";
+import { MouseButton } from "./cursor/mouseButton.js";
 
 export const Client = function() {
     this.router = new InputRouter();
@@ -60,7 +60,9 @@ Client.prototype.update = function() {
     for(let i = 0; i < this.cursor.buttons.length; i++) {
         const button = this.cursor.buttons[i];
 
-        if(button.state !== MouseButton.STATE.UP) {
+        button.update();
+
+        if(button.flags & MouseButton.FLAG.HELD) {
             this.router.handleInput(InputRouter.PREFIX.HOLD, Client.BUTTON_MAP[i]);
         }
     }

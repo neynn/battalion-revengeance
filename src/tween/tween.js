@@ -10,8 +10,9 @@ Tween.STATE = {
 };
 
 Tween.WAIT_TYPE = {
-    PARALLEL: 0,
-    SEQUENTIAL: 1
+    PARALLEL: 0, //Always runs.
+    SEQUENTIAL: 1, //Runs only if no SEQUENTIAL or SEQUENTIAL_ALL has run.
+    SEQUENTIAL_ALL: 2  //Always runs but blocks the next SEQUENTIAL.
 };
 
 Tween.prototype.update = function(gameContext) {}
