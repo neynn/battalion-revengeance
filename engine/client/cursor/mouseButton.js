@@ -18,11 +18,6 @@ MouseButton.STATE = {
     DOWN: 1
 };
 
-MouseButton.DRAG = {
-    DISTANCE_THRESHOLD_SQUARED: 36,
-    DELAY_THRESHOLD_MILLISECONDS: 120
-};
-
 MouseButton.prototype.update = function() {
     this.flags &= ~(MouseButton.FLAG.UP | MouseButton.FLAG.DOWN);
 
@@ -78,13 +73,15 @@ MouseButton.prototype.onMouseMove = function(deltaX, deltaY) {
 }
 
 MouseButton.prototype.isDragging = function(deltaX, deltaY) {
+    const DISTANCE_THRESHOLD_SQUARED = 36;
+    const DELAY_THRESHOLD_MILLISECONDS = 120;
     const elapsedTime = Date.now() - this.downStartTime;
 
-    if(elapsedTime >= MouseButton.DRAG.DELAY_THRESHOLD_MILLISECONDS) {
+    if(elapsedTime >= DELAY_THRESHOLD_MILLISECONDS) {
         return true;
     }
 
     const distance = deltaX * deltaX + deltaY * deltaY;
 
-    return distance >= MouseButton.DRAG.DISTANCE_THRESHOLD_SQUARED;
+    return distance >= DISTANCE_THRESHOLD_SQUARED;
 }

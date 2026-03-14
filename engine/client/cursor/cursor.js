@@ -10,7 +10,7 @@ export const Cursor = function() {
     this.positionX = 0;
     this.positionY = 0;
     this.radius = 0;
-    this.isLocked = false;
+    this.isPointerLocked = false;
     this.buttons = [];
 
     for(let i = 0; i < Cursor.BUTTON._COUNT; i++) {
@@ -21,7 +21,6 @@ export const Cursor = function() {
     this.addEventHandler("mouseup", event => this.eventMouseUp(event));
     this.addEventHandler("mousemove", event => this.eventMouseMove(event)); 
     this.addEventHandler("wheel", event => this.eventMouseScroll(event));
-    this.addEventHandler("pointerlockchange", event => this.eventPointerLockChange(event));
     this.addEventHandler("contextmenu", event => event);
 
     this.events = new EventEmitter();
@@ -86,8 +85,8 @@ Cursor.prototype.addEventHandler = function(type, onEvent) {
 
 Cursor.prototype.eventMouseMove = function(event) {
     const { pageX, pageY, movementX, movementY } = event;
-    const deltaX = this.isLocked ? - movementX : this.positionX - pageX;
-    const deltaY = this.isLocked ? - movementY : this.positionY - pageY;
+    const deltaX = this.isPointerLocked ? - movementX : this.positionX - pageX;
+    const deltaY = this.isPointerLocked ? - movementY : this.positionY - pageY;
 
     for(let i = 0; i < this.buttons.length; i++) {
         const button = this.buttons[i];
@@ -145,20 +144,4 @@ Cursor.prototype.eventMouseScroll = function(event) {
 
     this.scrollEvent.update(direction, deltaY);
     this.events.emit(Cursor.EVENT.SCROLL, this.scrollEvent);
-}
-
-Cursor.prototype.eventPointerLockChange = function(event) {}
-
-Cursor.prototype.lock = function(target) {
-    if(!this.isLocked) {
-        target.requestPointerLock();
-        this.isLocked = true;
-    }
-}
-
-Cursor.prototype.unlock = function() {
-    if(this.isLocked) {
-        document.exitPointerLock();
-        this.isLocked = false;
-    }
 }

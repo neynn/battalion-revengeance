@@ -29,10 +29,6 @@ export const Client = function() {
     this.cursor.events.on(Cursor.EVENT.BUTTON_CLICK, ({ button }) => {
         this.router.handleInput(InputRouter.PREFIX.UP, Client.BUTTON_MAP[button]);
     }, { permanent: true });
-
-    this.cursor.events.on(Cursor.EVENT.BUTTON_HOLD, ({ button }) => {
-        this.router.handleInput(InputRouter.PREFIX.HOLD, Client.BUTTON_MAP[button]);
-    }, { permanent: true });
 }
 
 Client.BUTTON_MAP = {
