@@ -23,21 +23,21 @@ export const Client = function() {
     }, { permanent: true });
 
     this.cursor.events.on(Cursor.EVENT.BUTTON_DOWN, ({ button }) => {
-        this.router.handleInput(InputRouter.PREFIX.DOWN, Client.BUTTON_MAP[button]);
+        this.router.handleInput(InputRouter.PREFIX.DOWN, Client.BUTTON_TABLE[button]);
     }, { permanent: true });
 
     this.cursor.events.on(Cursor.EVENT.BUTTON_CLICK, ({ button }) => {
-        this.router.handleInput(InputRouter.PREFIX.UP, Client.BUTTON_MAP[button]);
+        this.router.handleInput(InputRouter.PREFIX.UP, Client.BUTTON_TABLE[button]);
     }, { permanent: true });
 }
 
-Client.BUTTON_MAP = {
-    [Cursor.BUTTON.LEFT]: InputRouter.CURSOR_INPUT.M1,
-    [Cursor.BUTTON.MIDDLE]: InputRouter.CURSOR_INPUT.M3,
-    [Cursor.BUTTON.RIGHT]: InputRouter.CURSOR_INPUT.M2,
-    [Cursor.BUTTON.MOUSE_4]: InputRouter.CURSOR_INPUT.M1,
-    [Cursor.BUTTON.MOUSE_5]: InputRouter.CURSOR_INPUT.M1
-};
+Client.BUTTON_TABLE = [
+    InputRouter.CURSOR_INPUT.M1,
+    InputRouter.CURSOR_INPUT.M3,
+    InputRouter.CURSOR_INPUT.M2,
+    InputRouter.CURSOR_INPUT.M1,
+    InputRouter.CURSOR_INPUT.M1
+];
 
 Client.prototype.exit = function(gameContext) {
     this.router.clear(gameContext);
@@ -59,7 +59,7 @@ Client.prototype.update = function() {
         button.update();
 
         if(button.flags & MouseButton.FLAG.HELD) {
-            this.router.handleInput(InputRouter.PREFIX.HOLD, Client.BUTTON_MAP[i]);
+            this.router.handleInput(InputRouter.PREFIX.HOLD, Client.BUTTON_TABLE[i]);
         }
     }
 }

@@ -60,21 +60,13 @@ Cursor.SCROLL = {
     DOWN: 1
 };
 
-Cursor.prototype.isPressed = function(index) {
+Cursor.prototype.getFlags = function(button) {
     if(index < 0 || index >= Cursor.BUTTON._COUNT) {
-        return false;
-    }
+        return 0;
+    } 
 
-    return (this.buttons[index].flags & MouseButton.FLAG.DOWN) !== 0;
+    return this.buttons[button].flags;
 }
-
-Cursor.prototype.isReleased = function(index) {
-    if(index < 0 || index >= Cursor.BUTTON._COUNT) {
-        return false;
-    }
-
-    return (this.buttons[index].flags & MouseButton.FLAG.UP) !== 0;
-} 
 
 Cursor.prototype.addEventHandler = function(type, onEvent) {
     document.addEventListener(type, (event) => {

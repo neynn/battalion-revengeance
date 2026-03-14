@@ -60,6 +60,19 @@ UIManager.prototype.update = function(gameContext, display) {
 
                 break;
             }
+            case UIContext.MODE.HYBRID: {
+                if(context.isVisible()) {
+                    if(!isCollided) {
+                        isCollided = context.updateCollisions(positionX, positionY, radius);
+                    }
+
+                    context.update(realTime, deltaTime);
+                    context.draw(display, 0, 0);
+                }
+
+                context.updateImmediate(gameContext, display);
+                break;
+            }
         }
     }
 }

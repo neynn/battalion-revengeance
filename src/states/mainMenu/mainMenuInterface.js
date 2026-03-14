@@ -1,36 +1,13 @@
 import { parseInterfaceByID } from "../../../engine/ui/parser.js";
 import { UIContext } from "../../../engine/ui/uiContext.js";
-import { UIElement } from "../../../engine/ui/uiElement.js";
-import { ButtonWidget } from "../../../engine/ui/widgets/button.js";
-import { TextWidget } from "../../../engine/ui/widgets/text.js";
 import { BattalionContext } from "../../battalionContext.js";
 
 export const MainMenuInterface = function() {
     UIContext.call(this);
-
-    this.versusButton = new ButtonWidget();
-    this.versusButton.anchor = UIElement.ANCHOR_TYPE.CENTER;
-    this.versusButton.positionX = 175;
-    this.versusButton.width = 300;
-    this.versusButton.height = 100;
-
-    this.versusText = new TextWidget();
-    this.versusText.deltaX = 150;
-    this.versusText.deltaY = 50;
 }
 
 MainMenuInterface.prototype = Object.create(UIContext.prototype);
 MainMenuInterface.prototype.constructor = MainMenuInterface;
-
-MainMenuInterface.prototype.updateImmediate = function(gameContext, display) {
-    this.beginLayout(gameContext, this.versusButton);
-
-    if(this.doButton(gameContext, display, this.versusButton)) {
-
-    }
-
-    this.endLayout();
-}
 
 MainMenuInterface.prototype.load = function(gameContext, stateMachine) {
     const { spriteManager, client } = gameContext;

@@ -1,6 +1,8 @@
 import { Graph } from "../graphics/graph.js";
 import { isRectangleRectangleIntersect } from "../math/math.js";
+import { drawShape, strokeShape } from "../util/drawHelper.js";
 import { UIElement } from "./uiElement.js";
+import { ButtonWidget } from "./widgets/button.js";
 import { ANCHOR_TABLE_X, ANCHOR_TABLE_Y } from "./widgets/widget.js";
 
 export const UIContext = function() {
@@ -19,7 +21,8 @@ export const UIContext = function() {
 
 UIContext.MODE = {
     RETAINED: 0,
-    IMMEDIATE: 1
+    IMMEDIATE: 1,
+    HYBRID: 2
 };
 
 UIContext.EMPTY_ELEMENT = new UIElement("EMPTY");
@@ -53,21 +56,26 @@ UIContext.prototype.doButton = function(gameContext, display, widget) {
     const cursorY = cursor.positionY;
     const radius = cursor.radius;
 
-    const { deltaX, deltaY, width, height } = widget;
+    const { deltaX, deltaY, width, height, thickness, outline, background, highlight, shape, flags } = widget;
     const widgetX = this.layout[this.layoutIndex - 2] + deltaX;
     const widgetY = this.layout[this.layoutIndex - 1] + deltaY;
     const isHovered = isRectangleRectangleIntersect(widgetX, widgetY, width, height, cursorX, cursorY, radius, radius);
-    let color = "#333333";
+
+    if(flags & ButtonWidget.FLAG.DRAW_BACKGROUND) {
+        drawShape(display, shape, background, widgetX, widgetY, width, height);
+    }
 
     if(isHovered) {
-        console.log("Collided!");
-        color = "#eeeeee"
+        if(flags & ButtonWidget.FLAG.DRAW_HIGHLIGHT) {
+            drawShape(display, shape, highlight, widgetX, widgetY, width, height);
+        }
     } else {
 
     }
 
-    display.context.fillStyle = color;
-    display.context.fillRect(widgetX, widgetY, width, height);
+    if(flags & ButtonWidget.FLAG.DRAW_OUTLINE) {
+        strokeShape(display, shape, outline, thickness, widgetX, widgetY, width, height);
+    }
 }
 
 UIContext.prototype.onWindowResize = function(width, height) {

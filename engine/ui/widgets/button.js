@@ -1,3 +1,4 @@
+import { getRGBAString } from "../../graphics/colorHelper.js";
 import { Widget } from "./widget.js";
 
 export const ButtonWidget = function() {
@@ -6,4 +7,16 @@ export const ButtonWidget = function() {
     this.shape = 0;
     this.deltaX = 0;
     this.deltaY = 0;
+    this.background = getRGBAString(0, 0, 0, 0);
+    this.highlight = getRGBAString(200, 200, 200, 64);
+    this.outline = getRGBAString(255, 255, 255, 255);
+    this.thickness = 1;
+    this.flags = ButtonWidget.FLAG.NONE;
 }
+
+ButtonWidget.FLAG = {
+    NONE: 0,
+    DRAW_BACKGROUND: 1 << 0,
+    DRAW_HIGHLIGHT: 1 << 1,
+    DRAW_OUTLINE: 1 << 2
+};

@@ -20,6 +20,8 @@ MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
     const controller = new EditorController(mapEditor, userInterface, camera);
 
     userInterface.load(gameContext);
+    userInterface.camera = camera;
+    userInterface.controller = controller;
 
     const palletButtons = userInterface.createPalletButtons();
 
