@@ -15,20 +15,22 @@ export const UIContext = function() {
     this.collisions = 0;
     this.nameMap = new Map();
     this.elements = new Map();
-
-    //Starts at 2 so the first layout is always 0, 0!
-    this.layoutIndex = 2;
-    this.layout = new Float32Array(1000);
     this.mode = UIContext.MODE.RETAINED;
 
     //Snapshot of cursor state.
     this.cursorX = 0;
     this.cursorY = 0;
     this.cursorR = 0;
-    this.cursorFlags = 0;
+    this.cursorUp = false;
+    this.cursorDown = false;
+    this.cursorClick = false;
 
     this.hotWidget = null;
     this.activeWidget = null;
+
+    //Starts at 2 so the first layout is always 0, 0!
+    this.layoutIndex = 2;
+    this.layout = new Float32Array(10);
 }
 
 UIContext.MODE = {
@@ -51,7 +53,9 @@ UIContext.prototype.updateCursor = function(cursor) {
     this.cursorX = positionX;
     this.cursorY = positionY;
     this.cursorR = radius;
-    this.flags = flags;
+    this.cursorUp = (flags & MouseButton.FLAG.UP) !== 0;
+    this.cursorDown = (flags & MouseButton.FLAG.DOWN) !== 0;
+    this.cursorClick = (flags & MouseButton.FLAG.CLICK) !== 0;
 }
 
 UIContext.prototype.beginLayout = function(gameContext, widget) {
@@ -71,7 +75,6 @@ UIContext.prototype.endLayout = function() {
     this.layoutIndex -= 2;
 }
 
-//TODO(neyn): Use widgetID to properly implement imgui.
 UIContext.prototype.doButton = function(display, widget, widgetID) {
     const { deltaX, deltaY, width, height, thickness, outline, background, highlight, shape, flags } = widget;
     const widgetX = this.layout[this.layoutIndex - 2] + deltaX;
@@ -90,17 +93,29 @@ UIContext.prototype.doButton = function(display, widget, widgetID) {
         }
     }
 
+    if(this.activeWidget === widgetID) {
+        if(this.cursorUp) {
+            if(this.hotWidget === widgetID) {
+                isClicked = true;
+            }
+
+            this.activeWidget = null;
+        }
+    } else if(this.hotWidget === widgetID) {
+        if(this.cursorDown) {
+            this.activeWidget = widgetID;
+        }
+    }
+
     if(flags & ButtonWidget.FLAG.DRAW_BACKGROUND) {
         drawShape(display, shape, background, widgetX, widgetY, width, height);
     }
 
     if(isHovered) {
+        this.hotWidget = widgetID;
+
         if(flags & ButtonWidget.FLAG.DRAW_HIGHLIGHT) {
             drawShape(display, shape, highlight, widgetX, widgetY, width, height);
-        }
-
-        if(this.cursorFlags & MouseButton.FLAG.CLICK) {
-            isClicked = true;
         }
     }
 
