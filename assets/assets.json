@@ -1,6 +1,6 @@
 {
     "autotilers": { "directory": ["assets", "config"], "source": "autotilers.json" },
-    "interfaces": { "directory": ["assets", "config"], "source": "interfaces.json" },
+    "layouts": { "directory": ["assets", "config"], "source": "layouts.json" },
     "network": { "directory": ["assets", "config"], "source": "network.json" },
     "tileMeta": { "directory": ["assets", "config"], "source": "tileMeta.json" },
     "keybinds": { "directory": ["assets", "config"], "source": "keybinds.json" },

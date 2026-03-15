@@ -1,27 +1,10 @@
 import { Cursor } from "../client/cursor/cursor.js";
 import { MouseButton } from "../client/cursor/mouseButton.js";
+import { SHAPE } from "../math/constants.js";
 import { isCircleCicleIntersect, isRectangleRectangleIntersect } from "../math/math.js";
 import { drawShape, strokeShape } from "../util/drawHelper.js";
+import { ANCHOR_TABLE_X, ANCHOR_TABLE_Y } from "./constants.js";
 import { ButtonWidget } from "./widgets/button.js";
-import { Widget } from "./widgets/widget.js";
-
-const ANCHOR_TABLE_X = new Float16Array(Widget.ANCHOR_TYPE._COUNT);
-
-ANCHOR_TABLE_X[Widget.ANCHOR_TYPE.TOP_CENTER] = 0.5;
-ANCHOR_TABLE_X[Widget.ANCHOR_TYPE.TOP_RIGHT] = 1;
-ANCHOR_TABLE_X[Widget.ANCHOR_TYPE.BOTTOM_CENTER] = 0.5;
-ANCHOR_TABLE_X[Widget.ANCHOR_TYPE.BOTTOM_RIGHT] = 1;
-ANCHOR_TABLE_X[Widget.ANCHOR_TYPE.CENTER] = 0.5;
-ANCHOR_TABLE_X[Widget.ANCHOR_TYPE.RIGHT] = 1;
-
-const ANCHOR_TABLE_Y = new Float16Array(Widget.ANCHOR_TYPE._COUNT);
-
-ANCHOR_TABLE_Y[Widget.ANCHOR_TYPE.BOTTOM_LEFT] = 1;
-ANCHOR_TABLE_Y[Widget.ANCHOR_TYPE.BOTTOM_CENTER] = 1;
-ANCHOR_TABLE_Y[Widget.ANCHOR_TYPE.BOTTOM_RIGHT] = 1;
-ANCHOR_TABLE_Y[Widget.ANCHOR_TYPE.LEFT] = 0.5;
-ANCHOR_TABLE_Y[Widget.ANCHOR_TYPE.CENTER] = 0.5;
-ANCHOR_TABLE_Y[Widget.ANCHOR_TYPE.RIGHT] = 0.5;
 
 export const IMContext = function() {
     //Snapshot of cursor state.

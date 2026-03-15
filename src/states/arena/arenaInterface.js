@@ -1,4 +1,4 @@
-import { parseInterfaceByID } from "../../../engine/ui/parser.js";
+import { parseLayout } from "../../../engine/ui/parser.js";
 import { UIContext } from "../../../engine/ui/uiContext.js";
 import { BattalionContext } from "../../battalionContext.js";
 import { GAME_EVENT } from "../../enums.js";
@@ -14,7 +14,7 @@ ArenaInterface.prototype.load = function(gameContext, stateMachine) {
     const { client } = gameContext;
     const { socket } = client;
 
-    parseInterfaceByID(gameContext, this, "ARENA");
+    parseLayout(gameContext, this, "ARENA");
 
     this.getElement("BUTTON_BACK").setClick(() => stateMachine.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));
 

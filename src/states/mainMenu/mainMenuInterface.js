@@ -1,4 +1,4 @@
-import { parseInterfaceByID } from "../../../engine/ui/parser.js";
+import { parseLayout } from "../../../engine/ui/parser.js";
 import { UIContext } from "../../../engine/ui/uiContext.js";
 import { BattalionContext } from "../../battalionContext.js";
 
@@ -13,7 +13,7 @@ MainMenuInterface.prototype.load = function(gameContext, stateMachine) {
     const { spriteManager, client } = gameContext;
     const { musicPlayer } = client;
 
-    parseInterfaceByID(gameContext, this, "MAIN_MENU");
+    parseLayout(gameContext, this, "MAIN_MENU");
 
     this.getElement("BUTTON_PLAY").setClick(() => stateMachine.setNextState(gameContext, BattalionContext.STATE.PLAY));
     this.getElement("BUTTON_EDIT").setClick(() => stateMachine.setNextState(gameContext, BattalionContext.STATE.MAP_EDITOR));

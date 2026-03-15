@@ -1,8 +1,8 @@
 export const UIManager = function(textureLoader) {
     this.textureLoader = textureLoader;
     this.textureMap = {};
-    this.rawInterfaces = {};
-    this.interfaces = [];
+    this.layouts = {};
+    this.contexts = [];
 }
 
 UIManager.prototype.getIconTexture = function(iconID) {
@@ -15,9 +15,9 @@ UIManager.prototype.getIconTexture = function(iconID) {
     return this.textureLoader.getTexture(textureID);
 }
 
-UIManager.prototype.load = function(interfaceTypes, iconTypes) {
-    if(interfaceTypes) {
-        this.rawInterfaces = interfaceTypes;
+UIManager.prototype.load = function(layouts, iconTypes) {
+    if(layouts) {
+        this.layouts = layouts;
     }
 
     if(iconTypes) {
@@ -26,8 +26,8 @@ UIManager.prototype.load = function(interfaceTypes, iconTypes) {
 }
 
 UIManager.prototype.debug = function(display) {
-    for(let i = this.interfaces.length - 1; i >= 0; i--) {
-        this.interfaces[i].debug(display, 0, 0);
+    for(let i = this.contexts.length - 1; i >= 0; i--) {
+        this.contexts[i].debug(display, 0, 0);
     }
 }
 
@@ -38,8 +38,8 @@ UIManager.prototype.update = function(gameContext, display) {
     const { deltaTime, realTime } = timer;
     let isCollided = false;
 
-    for(let i = this.interfaces.length - 1; i >= 0; i--) {
-        const context = this.interfaces[i];
+    for(let i = this.contexts.length - 1; i >= 0; i--) {
+        const context = this.contexts[i];
 
         if(context.isRetained) {
             if(context.isVisible()) {
@@ -58,27 +58,27 @@ UIManager.prototype.update = function(gameContext, display) {
 }
 
 UIManager.prototype.exit = function() {
-    this.interfaces.length = 0;
+    this.contexts.length = 0;
 }
 
-UIManager.prototype.destroyInterface = function(id) {
-    for(let i = 0; i < this.interfaces.length; i++) {
-        const element = this.interfaces[i];
+UIManager.prototype.destroyContext = function(id) {
+    for(let i = 0; i < this.contexts.length; i++) {
+        const context = this.contexts[i];
 
-        if(element.id === id) {
-            element.clear();
-            this.interfaces.splice(i, 1);
+        if(context.id === id) {
+            context.clear();
+            this.contexts.splice(i, 1);
             break;
         }
     }
 }
 
-UIManager.prototype.getInterfaceByID = function(id) {
-    for(let i = 0; i < this.interfaces.length; i++) {
-        const element = this.interfaces[i];
+UIManager.prototype.getContextByID = function(id) {
+    for(let i = 0; i < this.contexts.length; i++) {
+        const context = this.contexts[i];
 
-        if(element.id === id) {
-            return element;
+        if(context.id === id) {
+            return context;
         }
     }
 
@@ -86,8 +86,8 @@ UIManager.prototype.getInterfaceByID = function(id) {
 }
 
 UIManager.prototype.handleClick = function(event) {
-    for(let i = this.interfaces.length - 1; i >= 0; i--) {
-        const { previousHot } = this.interfaces[i];
+    for(let i = this.contexts.length - 1; i >= 0; i--) {
+        const { previousHot } = this.contexts[i];
 
         if(previousHot !== null) {
             previousHot.onClick(event);
@@ -97,25 +97,25 @@ UIManager.prototype.handleClick = function(event) {
 }
 
 UIManager.prototype.onWindowResize = function(windowWidth, windowHeight) {
-    for(let i = 0; i < this.interfaces.length; i++) {
-        this.interfaces[i].onWindowResize(windowWidth, windowHeight);
+    for(let i = 0; i < this.contexts.length; i++) {
+        this.contexts[i].onWindowResize(windowWidth, windowHeight);
     }
 }
 
-UIManager.prototype.addInterface = function(element) {
-    const interfaceID = element.getID();
+UIManager.prototype.addContext = function(context) {
+    const contextID = context.getID();
 
-    for(let i = 0; i < this.interfaces.length; i++) {
-        if(this.interfaces[i].id === interfaceID) {
+    for(let i = 0; i < this.contexts.length; i++) {
+        if(this.contexts[i].id === contextID) {
             return;
         }
     }
 
-    this.interfaces.push(element);
+    this.contexts.push(context);
 }
 
-UIManager.prototype.getInterfaceType = function(typeID) {
-    const type = this.rawInterfaces[typeID];
+UIManager.prototype.getLayout = function(typeID) {
+    const type = this.layouts[typeID];
 
     if(type === undefined) {
         return null;

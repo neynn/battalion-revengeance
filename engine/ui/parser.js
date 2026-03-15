@@ -1,5 +1,6 @@
 import { TextStyle } from "../graphics/textStyle.js";
 import { SHAPE } from "../math/constants.js";
+import { ANCHOR_TYPE } from "./constants.js";
 import { Button } from "./elements/button.js";
 import { Container } from "./elements/container.js";
 import { Icon } from "./elements/icon.js";
@@ -26,7 +27,7 @@ const getTypeID = function(name) {
     }
 }
 
-const parseElement = function(uiManager, config, DEBUG_NAME) {
+const createElement = function(uiManager, config, DEBUG_NAME) {
     const {
         type,
         position = { x: 0, y: 0 },
@@ -38,6 +39,7 @@ const parseElement = function(uiManager, config, DEBUG_NAME) {
 
     const { x, y } = position;
     const typeID = getTypeID(type);
+    const anchorID = ANCHOR_TYPE[anchor] ?? ANCHOR_TYPE.TOP_LEFT;
 
     switch(typeID) {
         case ELEMENT_TYPE.BUTTON: {
@@ -47,7 +49,7 @@ const parseElement = function(uiManager, config, DEBUG_NAME) {
             element.setPosition(x, y);
             element.setOpacity(opacity);
             element.setOrigin(x, y);
-            element.setAnchor(anchor);
+            element.setAnchor(anchorID);
 
             switch(shape) {
                 case SHAPE.RECTANGLE: {
@@ -70,7 +72,7 @@ const parseElement = function(uiManager, config, DEBUG_NAME) {
             element.setPosition(x, y);
             element.setOpacity(opacity);
             element.setOrigin(x, y);
-            element.setAnchor(anchor);
+            element.setAnchor(anchorID);
 
             element.setSize(width, height);
 
@@ -89,7 +91,7 @@ const parseElement = function(uiManager, config, DEBUG_NAME) {
             element.setPosition(x, y);
             element.setOpacity(opacity);
             element.setOrigin(x, y);
-            element.setAnchor(anchor);
+            element.setAnchor(anchorID);
             element.setSize(width, height);
             element.setHandle(handle);
             element.setScale(scale);
@@ -102,7 +104,7 @@ const parseElement = function(uiManager, config, DEBUG_NAME) {
             element.setPosition(x, y);
             element.setOpacity(opacity);
             element.setOrigin(x, y);
-            element.setAnchor(anchor);
+            element.setAnchor(anchorID);
 
             return element;
         }
@@ -119,7 +121,7 @@ const parseElement = function(uiManager, config, DEBUG_NAME) {
             element.setPosition(x, y);
             element.setOpacity(opacity);
             element.setOrigin(x, y);
-            element.setAnchor(anchor);
+            element.setAnchor(anchorID);
 
             element.setText(text);
             element.style.setFontType(fontType);
@@ -132,20 +134,20 @@ const parseElement = function(uiManager, config, DEBUG_NAME) {
     }
 }
 
-const parseInterface = function(gameContext, userInterface, rawInterface) {
+const createLayout = function(gameContext, uiContext, layout) {
     const { uiManager, renderer } = gameContext;
     const { effectManager, windowWidth, windowHeight } = renderer;
 
-    for(const elementID in rawInterface) {
-        const config = rawInterface[elementID];
-        const element = parseElement(uiManager, config, elementID);
+    for(const elementName in layout) {
+        const config = layout[elementName];
+        const element = createElement(uiManager, config, elementName);
 
-        userInterface.addNamedElement(element, elementID);   
+        uiContext.addNamedElement(element, elementName);   
     }
     
-    for(const elementID in rawInterface) {
-        const config = rawInterface[elementID];
-        const element = userInterface.getElement(elementID);
+    for(const elementName in layout) {
+        const config = layout[elementName];
+        const element = uiContext.getElement(elementName);
         const { children = [], effects } = config;
 
         if(effects) {
@@ -153,7 +155,7 @@ const parseInterface = function(gameContext, userInterface, rawInterface) {
         }
 
         for(const childID of children) {
-            const child = userInterface.getElement(childID);
+            const child = uiContext.getElement(childID);
 
             if(child) {
                 element.addChild(child);
@@ -161,17 +163,17 @@ const parseInterface = function(gameContext, userInterface, rawInterface) {
         }
     }
 
-    userInterface.refreshRoots();
-    userInterface.onWindowResize(windowWidth, windowHeight);
+    uiContext.refreshRoots();
+    uiContext.onWindowResize(windowWidth, windowHeight);
 }
 
-export const parseInterfaceByID = function(gameContext, userInterface, interfaceID) {
+export const parseLayout = function(gameContext, uiContext, layoutID) {
     const { uiManager } = gameContext;
-    const config = uiManager.getInterfaceType(interfaceID);
+    const layout = uiManager.getLayout(layoutID);
 
-    if(config) {
-        parseInterface(gameContext, userInterface, config);
+    if(layout) {
+        createLayout(gameContext, uiContext, layout);
     }
 
-    uiManager.addInterface(userInterface);
+    uiManager.addContext(uiContext);
 }

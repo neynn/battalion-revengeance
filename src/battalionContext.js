@@ -59,7 +59,7 @@ BattalionContext.prototype.constructor = BattalionContext;
 BattalionContext.prototype.init = function(resources) {
     this.tileManager.loadClient(this.textureLoader, resources.tiles, resources.tileMeta, resources.autotilers, resolveTileType);
     this.spriteManager.load(resources.spriteTextures, resources.sprites);
-    this.uiManager.load(resources.interfaces, resources.icons);
+    this.uiManager.load(resources.layouts, resources.icons);
     this.fonts.load(resources.fonts);
     this.client.musicPlayer.load(resources.music, resources.playlists);
     this.client.soundPlayer.load(resources.sounds);

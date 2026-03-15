@@ -34,7 +34,7 @@ MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
 MapEditorState.prototype.onExit = function(gameContext, stateMachine) {
     const { uiManager, renderer } = gameContext;
 
-    uiManager.destroyInterface(this.controller.userInterface.getID());
+    uiManager.destroyContext(this.controller.userInterface.getID());
     renderer.destroyContext(this.contextID);
 
     this.controller = null;

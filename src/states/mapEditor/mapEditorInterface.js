@@ -2,7 +2,7 @@ import { getRGBAString } from "../../../engine/graphics/colorHelper.js";
 import { PalletButton } from "../../../engine/map/editor/palletButton.js";
 import { SHAPE } from "../../../engine/math/constants.js";
 import { Container } from "../../../engine/ui/elements/container.js";
-import { parseInterfaceByID } from "../../../engine/ui/parser.js";
+import { parseLayout } from "../../../engine/ui/parser.js";
 import { UIContext } from "../../../engine/ui/uiContext.js";
 
 export const MapEditorInterface = function() {
@@ -20,7 +20,7 @@ MapEditorInterface.prototype.constructor = MapEditorInterface;
 MapEditorInterface.prototype.load = function(gameContext) {
     const CONTAINERS = ["CONTAINER_FILE", "CONTAINER_LAYERS", "CONTAINER_TILES", "CONTAINER_TOOLS"];
 
-    parseInterfaceByID(gameContext, this, "MAP_EDITOR");
+    parseLayout(gameContext, this, "MAP_EDITOR");
 
     for(const elementID of CONTAINERS) {
         const element = this.getElement(elementID);
