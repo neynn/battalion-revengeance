@@ -2,8 +2,8 @@ import { Action } from "../../../engine/action/action.js";
 import { SOUND_TYPE } from "../../enums.js";
 import { playEntitySound } from "../../systems/sound.js";
 import { updateEntitySprite } from "../../systems/sprite.js";
-import { CloakTween } from "../../tween/types/cloakTween.js";
-import { UncloakTween } from "../../tween/types/uncloakTween.js";
+import { CloakTween } from "../../tween/cloakTween.js";
+import { UncloakTween } from "../../tween/uncloakTween.js";
 
 export const ToTransportAction = function() {
     Action.call(this);

@@ -135,8 +135,10 @@ const createElement = function(uiManager, config, DEBUG_NAME) {
 }
 
 const createLayout = function(gameContext, uiContext, layout) {
-    const { uiManager, renderer } = gameContext;
-    const { effectManager, windowWidth, windowHeight } = renderer;
+    const { uiManager, renderer, applicationWindow } = gameContext;
+    const { effectManager } = renderer;
+    const windowWidth = applicationWindow.width;
+    const windowHeight = applicationWindow.height;
 
     for(const elementName in layout) {
         const config = layout[elementName];

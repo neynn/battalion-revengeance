@@ -1,7 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
 import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { playUncloakSound } from "../../systems/sound.js";
-import { UncloakTween } from "../../tween/types/uncloakTween.js";
+import { UncloakTween } from "../../tween/uncloakTween.js";
 import { createTrackingIntent } from "../actionHelper.js";
 
 export const UncloakAction = function() {

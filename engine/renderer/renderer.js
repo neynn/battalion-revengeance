@@ -1,8 +1,5 @@
-import { Display } from "../camera/display.js";
 import { EffectManager } from "../effects/effectManager.js";
 import { CameraContext } from "../camera/cameraContext.js";
-import { Camera2D } from "../camera/camera2D.js";
-import { getCursorTile } from "../camera/contextHelper.js";
 import { DEBUG } from "../debug.js";
 
 export const Renderer = function(windowWidth, windowHeight) {
@@ -11,16 +8,7 @@ export const Renderer = function(windowWidth, windowHeight) {
     this.windowWidth = windowWidth;
     this.windowHeight = windowHeight;
     this.effectManager = new EffectManager();
-    this.display = new Display();
-    this.display.init(this.windowWidth, this.windowHeight, Display.TYPE.DISPLAY);
-    this.display.toDocument();
 }
-
-Renderer.FPS_COLOR = {
-    LOW: "#ff0000",
-    MEDIUM: "#ffff00",
-    HIGH: "#00ff00"
-};
 
 Renderer.prototype.exit = function() {
     this.nextID = 0;
@@ -77,72 +65,41 @@ Renderer.prototype.destroyContext = function(contextID) {
 }
 
 Renderer.prototype.update = function(gameContext) {
-    const { timer, uiManager } = gameContext; 
+    const { timer, uiManager, applicationWindow } = gameContext; 
     const deltaTime = timer.getDeltaTime();
-
-    this.display.clear();
-    this.effectManager.update(this.display, deltaTime);
+    const display = applicationWindow.display;
+    
+    display.clear();
+    this.effectManager.update(deltaTime);
 
     for(let i = 0; i < this.contexts.length; i++) {
-        this.contexts[i].draw(gameContext, this.display);
+        this.contexts[i].draw(gameContext, display);
     }
 
     if(DEBUG.CONTEXT) {
+        const context = display.context;
+
         for(let i = 0; i < this.contexts.length; i++) {
-            this.contexts[i].debug(this.display.context);
+            this.contexts[i].debug(context);
         }
     }
 
-    this.display.save();
-
-    uiManager.update(gameContext, this.display);
-
-    this.display.reset();
+    display.save();
+    uiManager.update(gameContext, display);
+    display.reset();
 
     if(DEBUG.UI) {
-        uiManager.debug(this.display);
+        uiManager.debug(display);
     }
 
     if(DEBUG.SHOW_INFO) {
-        this.drawInfo(gameContext);
+        applicationWindow.drawDebug(gameContext);
     }
-}
-
-Renderer.prototype.drawInfo = function(gameContext) {
-    const { context } = this.display;
-    const { timer } = gameContext;
-    const { x, y } = getCursorTile(gameContext);
-    const fps = Math.round(timer.getFPS());
-
-    if(fps >= 120) {
-        context.fillStyle = Renderer.FPS_COLOR.HIGH;
-    } else if(fps >= 60) {
-        context.fillStyle = Renderer.FPS_COLOR.MEDIUM;
-    } else {
-        context.fillStyle = Renderer.FPS_COLOR.LOW;
-    }
-    
-    const TEXT_SIZE = 10;
-    const WINDOW_Y = 0;
-    const DEBUG_Y = TEXT_SIZE * 5;
-
-    context.globalAlpha = 1;
-    context.font = `${TEXT_SIZE}px Arial`;
-
-    context.fillText(`FPS: ${fps}`, 0, WINDOW_Y + TEXT_SIZE);
-    context.fillText(`WindowX: ${this.windowWidth}, WindowY: ${this.windowHeight}`, 0, WINDOW_Y + TEXT_SIZE * 2);
-    context.fillText(`MouseX: ${x}, MouseY: ${y}`, 0, WINDOW_Y + TEXT_SIZE * 3);
-
-    context.fillText(`World: ${DEBUG.WORLD}`, 0, DEBUG_Y);
-    context.fillText(`Context: ${DEBUG.CONTEXT}`, 0, DEBUG_Y + TEXT_SIZE);
-    context.fillText(`Sprites: ${DEBUG.SPRITES}`, 0, DEBUG_Y + TEXT_SIZE * 2);
-    context.fillText(`UI: ${DEBUG.UI}`, 0, DEBUG_Y + TEXT_SIZE * 3);
 }
 
 Renderer.prototype.onWindowResize = function(width, height) {
     this.windowWidth = width;
     this.windowHeight = height;
-    this.display.resize(width, height);
 
     for(let i = 0; i < this.contexts.length; i++) {
         this.contexts[i].onWindowResize(width, height);
@@ -154,10 +111,7 @@ Renderer.prototype.onMapSizeUpdate = function(mapWidth, mapHeight) {
         const context = this.contexts[i];
         const camera = context.getCamera();
 
-        if(camera instanceof Camera2D) {
-            camera.setMapSize(mapWidth, mapHeight);
-        }
-
+        camera.setMapSize(mapWidth, mapHeight);
         context.refresh();
     }
 }

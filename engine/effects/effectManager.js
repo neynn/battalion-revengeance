@@ -11,13 +11,13 @@ EffectManager.EFFECT_TYPE = {
     FADE_OUT: "FADE_OUT"
 };
 
-EffectManager.prototype.update = function(display, deltaTime) {
+EffectManager.prototype.update = function(deltaTime) {
     const finishedEffects = [];
 
     for(let i = 0; i < this.effects.length; i++) {
         const effect = this.effects[i];
 
-        effect.update(display, deltaTime);
+        effect.update(deltaTime);
 
         if(effect.isFinished()) {
             finishedEffects.push(i);

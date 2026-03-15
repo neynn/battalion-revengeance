@@ -12,7 +12,7 @@ export const FadeOutEffect = function(id, target, rate = 1, limit = 1) {
 FadeOutEffect.prototype = Object.create(Effect.prototype);
 FadeOutEffect.prototype.constructor = FadeOutEffect;
 
-FadeOutEffect.prototype.update = function(display, deltaTime) {
+FadeOutEffect.prototype.update = function(deltaTime) {
     const currentOpactiy = this.target.getOpacity();
     const nextOpacity = currentOpactiy - (this.rate * deltaTime);
     const clampedOpactiy = clampValue(nextOpacity, 1, this.limit);

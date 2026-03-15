@@ -13,7 +13,6 @@ import { UICore } from "./ui/uiCore.js";
 import { ClientActionRouter } from "./client/actionRouter.js";
 import { addDebug, registerClientActions } from "./systems/context.js";
 import { resolveTileType } from "./enumHelpers.js";
-import { TweenManager } from "./tween/tweenManager.js";
 
 export const BattalionContext = function() {
     ClientGameContext.call(this);
@@ -24,7 +23,7 @@ export const BattalionContext = function() {
     this.dialogueHandler = new DialogueHandler();
     this.uiCore = new UICore();
     this.actionRouter = new ClientActionRouter();
-    this.tweenManager = new TweenManager();
+
 
     this.timer.input = (deltaTime) => {
         this.client.update();
@@ -91,6 +90,5 @@ BattalionContext.prototype.onExit = function() {
     this.portraitHandler.exit();
     this.dialogueHandler.exit();
     this.uiCore.exit();
-    this.tweenManager.exit();
     addDebug(this);
 }

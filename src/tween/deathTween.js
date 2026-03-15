@@ -1,5 +1,5 @@
-import { DEATH_FADE_RATE } from "../../constants.js";
-import { Tween } from "../tween.js";
+import { DEATH_FADE_RATE } from "../constants.js";
+import { Tween } from "../../engine/tween/tween.js";
 
 export const DeathTween = function(cloakables) {
     Tween.call(this);

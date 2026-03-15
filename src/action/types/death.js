@@ -3,7 +3,7 @@ import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { SOUND_TYPE } from "../../enums.js";
 import { playEntitySound } from "../../systems/sound.js";
 import { playDeathEffect } from "../../systems/sprite.js";
-import { DeathTween } from "../../tween/types/deathTween.js";
+import { DeathTween } from "../../tween/deathTween.js";
 
 export const DeathAction = function(despawn) {
     Action.call(this);

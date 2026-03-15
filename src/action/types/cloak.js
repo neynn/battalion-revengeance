@@ -1,7 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
 import { SOUND_TYPE } from "../../enums.js";
 import { playEntitySound } from "../../systems/sound.js";
-import { CloakTween } from "../../tween/types/cloakTween.js";
+import { CloakTween } from "../../tween/cloakTween.js";
 
 export const CloakAction = function() {
     Action.call(this);

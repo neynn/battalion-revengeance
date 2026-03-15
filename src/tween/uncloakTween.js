@@ -1,5 +1,5 @@
-import { FADE_RATE } from "../../constants.js";
-import { Tween } from "../tween.js";
+import { FADE_RATE } from "../constants.js";
+import { Tween } from "../../engine/tween/tween.js";
 
 export const UncloakTween = function(cloakable, maxOpacity = 1) {
     Tween.call(this);

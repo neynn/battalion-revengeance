@@ -13,6 +13,8 @@ import { MapManager } from "./map/mapManager.js";
 import { TextureLoader } from "./resources/texture/textureLoader.js";
 import { ApplicationWindow } from "./applicationWindow.js";
 import { PathHandler } from "./resources/pathHandler.js";
+import { TweenManager } from "./tween/tweenManager.js";
+
 import { MapRegistry } from "../src/map/mapRegistry.js";
 
 export const ClientGameContext = function() {
@@ -30,6 +32,7 @@ export const ClientGameContext = function() {
     this.states = new StateMachine(this);
     this.timer = new Timer();
     this.mapRegistry = new MapRegistry();
+    this.tweenManager = new TweenManager();
 
     this.client.cursor.events.on(Cursor.EVENT.BUTTON_CLICK, (event) => {
         const { button } = event;
@@ -71,5 +74,6 @@ ClientGameContext.prototype.exit = function() {
     this.spriteManager.exit();
     this.uiManager.exit();
     this.language.exit();
+    this.tweenManager.exit();
     this.onExit();
 }
