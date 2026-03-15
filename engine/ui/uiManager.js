@@ -1,7 +1,5 @@
-import { UIContext } from "./uiContext.js";
-
 export const UIManager = function(textureLoader) {
-    this.resources = textureLoader;
+    this.textureLoader = textureLoader;
     this.textureMap = {};
     this.rawInterfaces = {};
     this.interfaces = [];
@@ -11,10 +9,10 @@ UIManager.prototype.getIconTexture = function(iconID) {
     const textureID = this.textureMap[iconID];
 
     if(textureID) {
-        this.resources.loadTexture(textureID);
+        this.textureLoader.loadTexture(textureID);
     }
 
-    return this.resources.getTexture(textureID);
+    return this.textureLoader.getTexture(textureID);
 }
 
 UIManager.prototype.load = function(interfaceTypes, iconTypes) {
@@ -23,7 +21,7 @@ UIManager.prototype.load = function(interfaceTypes, iconTypes) {
     }
 
     if(iconTypes) {
-        this.textureMap = this.resources.createTextures(iconTypes);
+        this.textureMap = this.textureLoader.createTextures(iconTypes);
     }
 }
 
@@ -43,38 +41,18 @@ UIManager.prototype.update = function(gameContext, display) {
     for(let i = this.interfaces.length - 1; i >= 0; i--) {
         const context = this.interfaces[i];
 
-        switch(context.mode) {
-            case UIContext.MODE.IMMEDIATE: {
-                context.updateCursor(cursor);
-                context.updateImmediate(gameContext, display);
-                break;
-            }
-            case UIContext.MODE.RETAINED: {
-                if(context.isVisible()) {
-                    if(!isCollided) {
-                        isCollided = context.updateCollisions(positionX, positionY, radius);
-                    }
-
-                    context.update(realTime, deltaTime);
-                    context.draw(display, 0, 0);
+        if(context.isRetained) {
+            if(context.isVisible()) {
+                if(!isCollided) {
+                    isCollided = context.updateCollisions(positionX, positionY, radius);
                 }
 
-                break;
+                context.update(realTime, deltaTime);
+                context.draw(display, 0, 0);
             }
-            case UIContext.MODE.HYBRID: {
-                if(context.isVisible()) {
-                    if(!isCollided) {
-                        isCollided = context.updateCollisions(positionX, positionY, radius);
-                    }
-
-                    context.update(realTime, deltaTime);
-                    context.draw(display, 0, 0);
-                }
-
-                context.updateCursor(cursor);
-                context.updateImmediate(gameContext, display);
-                break;
-            }
+        } else {
+            context.updateCursor(cursor);
+            context.update(gameContext, display);
         }
     }
 }

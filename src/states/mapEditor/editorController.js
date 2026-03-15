@@ -104,6 +104,11 @@ EditorController.prototype.initConfigurator = function() {
 EditorController.prototype.initPalletButtons = function(gameContext, buttons, camera) {
     const { tileManager } = gameContext;
     const slotButtonSize = this.userInterface.slotButtonSize;
+    const container = this.userInterface.getElement("CONTAINER_TILES");
+
+    if(!container) {
+        return;
+    }
 
     for(const button of buttons) {
         const { palletID } = button;
@@ -130,6 +135,8 @@ EditorController.prototype.initPalletButtons = function(gameContext, buttons, ca
                 camera.drawTile(tileManager, tileID, display.context, localX, localY, scale);
             }
         });
+
+        container.addChild(button);
     }
 
     if(buttons.length === 0) {

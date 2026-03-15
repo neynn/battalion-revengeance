@@ -5,8 +5,6 @@ export const ButtonWidget = function() {
     Widget.call(this);
 
     this.shape = 0;
-    this.deltaX = 0;
-    this.deltaY = 0;
     this.thickness = 1;
     this.background = getRGBAString(0, 0, 0, 0);
     this.highlight = getRGBAString(200, 200, 200, 64);

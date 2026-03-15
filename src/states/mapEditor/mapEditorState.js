@@ -18,13 +18,9 @@ MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
     const context = createEditCamera(gameContext, mapEditor.brush);
     const camera = context.getCamera();
     const controller = new EditorController(mapEditor, userInterface, camera);
-
-    userInterface.load(gameContext);
-    userInterface.camera = camera;
-    userInterface.controller = controller;
-
     const palletButtons = userInterface.createPalletButtons();
 
+    userInterface.load(gameContext);
     controller.initPalletButtons(gameContext, palletButtons, camera);
     controller.initCursorEvents(gameContext);
     controller.initUIEvents(gameContext);
