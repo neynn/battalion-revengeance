@@ -1,4 +1,3 @@
-import { EffectManager } from "../effects/effectManager.js";
 import { CameraContext } from "../camera/cameraContext.js";
 import { DEBUG } from "../debug.js";
 
@@ -7,7 +6,6 @@ export const Renderer = function(windowWidth, windowHeight) {
     this.contexts = [];
     this.windowWidth = windowWidth;
     this.windowHeight = windowHeight;
-    this.effectManager = new EffectManager();
 }
 
 Renderer.prototype.exit = function() {
@@ -70,7 +68,6 @@ Renderer.prototype.update = function(gameContext) {
     const display = applicationWindow.display;
     
     display.clear();
-    this.effectManager.update(deltaTime);
 
     for(let i = 0; i < this.contexts.length; i++) {
         this.contexts[i].draw(gameContext, display);

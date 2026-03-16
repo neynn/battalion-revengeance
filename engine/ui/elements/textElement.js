@@ -56,6 +56,8 @@ TextElement.prototype.onDraw = function(display, localX, localY) {
 }
 
 TextElement.prototype.onUpdate = function(timestamp, deltaTime) {
+    this.updateEffect(timestamp, deltaTime);
+
     if(this.isRevealing) {
         this.timeElapsed += deltaTime;
         const revealCount = Math.floor(this.lettersPerSecond * this.timeElapsed);

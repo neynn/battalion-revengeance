@@ -6,6 +6,7 @@ import { Container } from "./elements/container.js";
 import { Icon } from "./elements/icon.js";
 import { Scrollbar } from "./elements/scrollbar.js";
 import { TextElement } from "./elements/textElement.js";
+import { UIElement } from "./uiElement.js";
 
 const ELEMENT_TYPE = {
     NONE: 0,
@@ -135,8 +136,7 @@ const createElement = function(uiManager, config, DEBUG_NAME) {
 }
 
 const createLayout = function(gameContext, uiContext, layout) {
-    const { uiManager, renderer, applicationWindow } = gameContext;
-    const { effectManager } = renderer;
+    const { uiManager, applicationWindow } = gameContext;
     const windowWidth = applicationWindow.width;
     const windowHeight = applicationWindow.height;
 
@@ -150,10 +150,16 @@ const createLayout = function(gameContext, uiContext, layout) {
     for(const elementName in layout) {
         const config = layout[elementName];
         const element = uiContext.getElement(elementName);
-        const { children = [], effects } = config;
+        const { children = [], effects = [] } = config;
 
-        if(effects) {
-            effectManager.addEffects(element, effects);
+        //TODO(neyn): Rewrite effects.
+        if(effects.length !== 0) {
+            const effect = effects[0];
+            const effectID = UIElement.EFFECT[effect.type];
+
+            if(effectID !== undefined) {
+                element.setEffect(effectID);
+            }
         }
 
         for(const childID of children) {

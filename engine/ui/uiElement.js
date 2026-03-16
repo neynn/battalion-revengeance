@@ -4,10 +4,17 @@ import { ANCHOR_TABLE_X, ANCHOR_TABLE_Y, ANCHOR_TYPE } from "./constants.js";
 export const UIElement = function(DEBUG_NAME) {
     Graph.call(this, DEBUG_NAME);
 
+    this.effect = UIElement.EFFECT.NONE;
     this.anchor = ANCHOR_TYPE.TOP_LEFT;
     this.originX = 0;
     this.originY = 0;
 }
+
+UIElement.EFFECT = {
+    NONE: 0,
+    FADE_IN: 1,
+    FADE_OUT: 2
+};
 
 UIElement.prototype = Object.create(Graph.prototype);
 UIElement.prototype.constructor = UIElement;
@@ -32,4 +39,41 @@ UIElement.prototype.onWindowResize = function(windowWidth, windowHeight) {
     const positionY = anchorY + this.originY;
 
     this.setPosition(positionX, positionY);
+}
+
+UIElement.prototype.setEffect = function(effectID) {
+    this.effect = effectID;
+}
+
+UIElement.prototype.updateEffect = function(timestamp, deltaTime) {
+    switch(this.effect) {
+        case UIElement.EFFECT.FADE_IN: {
+            const nextOpacity = this.opacity + (0.3 * deltaTime);
+
+            if(nextOpacity >= 1) {
+                this.opacity = 1;
+                this.effect = UIElement.EFFECT.NONE;
+            } else {
+                this.opacity = nextOpacity;
+            }
+
+            break;
+        }
+        case UIElement.EFFECT.FADE_OUT: {
+            const nextOpacity = this.opacity - (0.3 * deltaTime);
+
+            if(nextOpacity <= 0) {
+                this.opacity = 0;
+                this.effect = UIElement.EFFECT.NONE;
+            } else {
+                this.opacity = nextOpacity;
+            }
+
+            break;
+        }
+    }
+}
+
+UIElement.prototype.onUpdate = function(timestamp, deltaTime) {
+    this.updateEffect(timestamp, deltaTime);
 }
