@@ -48,6 +48,7 @@ export const BattalionCamera = function() {
     this.inspectX = -1;
     this.inspectY = -1;
 
+    this.isCurrentActor = false;
     this.markerSprite = SpriteManager.EMPTY_SPRITE;
     this.weakMarkerSprite = SpriteManager.EMPTY_SPRITE;
     this.shadeTexture = TextureRegistry.EMPTY_TEXTURE;
@@ -244,16 +245,15 @@ BattalionCamera.prototype.drawEntity = function(display, entity, sprite, realTim
             sprite.update(realTime, deltaTime);
         }
 
-        //markers ONLY get drawn when its MY turn (on the camera)
-        //TODO(neyn): WeakMarkerSprite only gets drawn for NON_TURN entities
-        //it only gets drawn when the actionqueue is empty
         //Todo(neyn): Can act should have more options: Barricades NEVER have a marker for example.
-        if(state === BattalionEntity.STATE.IDLE && canAct) {
+        if(this.isCurrentActor && state === BattalionEntity.STATE.IDLE) {
             if(teamID === this.mainPerspective) {
-                marker = this.markerSprite;
+                if(canAct) {
+                    marker = this.markerSprite;
+                }
             } else {
                 marker = this.weakMarkerSprite;
-            }   
+            }
         }
     } else {
         if((flags & BattalionEntity.FLAG.IS_CLOAKED) && opacity < BattalionCamera.STEALTH_THRESHOLD) {

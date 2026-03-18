@@ -36,6 +36,11 @@ Player.prototype.constructor = Player;
 
 Player.prototype.onTurnStart = function(gameContext) {
     this.camera.setMainPerspective(this.teamID);
+    this.camera.isCurrentActor = true;
+}
+
+Player.prototype.onTurnEnd = function(gameContext) {
+    this.camera.isCurrentActor = false;
 }
 
 Player.prototype.onClick = function(gameContext, tileX, tileY) {
