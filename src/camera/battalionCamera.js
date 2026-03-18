@@ -7,12 +7,13 @@ import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { drawShape, shadeScreen } from "../../engine/util/drawHelper.js";
 import { TILE_HEIGHT, TILE_WIDTH } from "../../engine/engine_constants.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { LAYER_TYPE, PLAYER_PREFERENCE, TILE_ID } from "../enums.js";
+import { DIRECTION, ENTITY_TYPE, LAYER_TYPE, PLAYER_PREFERENCE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { Mine } from "../entity/mine.js";
 import { TeamManager } from "../team/teamManager.js";
 import { TextureRegistry } from "../../engine/resources/texture/textureRegistry.js";
+import { TextureHandle } from "../../engine/resources/texture/textureHandle.js";
 
 const BLOCK = { COUNT: 4, WIDTH: 4, HEIGHT: 8, GAP: 1 };
 const WIDTH = (BLOCK.GAP * (BLOCK.COUNT + 1)) + BLOCK.WIDTH * BLOCK.COUNT;
@@ -33,6 +34,7 @@ export const BattalionCamera = function() {
 
     //Maximum number of tiles a jammer can cover, using the Manhattan distance.
     const JAMMER_MAX_USED_TILES = 1 + 2 * EntityType.MAX_JAMMER_RANGE * (EntityType.MAX_JAMMER_RANGE + 1);
+    const MAX_SHADES = ENTITY_TYPE._COUNT * DIRECTION._COUNT;
 
     //Each tile has a minCost of 1, which means there will NEVER be more than MAX_MOVE_COST tiles.
     this.pathOverlay = new TileOverlay(EntityType.MAX_MOVE_COST);
@@ -49,6 +51,11 @@ export const BattalionCamera = function() {
     this.markerSprite = SpriteManager.EMPTY_SPRITE;
     this.weakMarkerSprite = SpriteManager.EMPTY_SPRITE;
     this.shadeTexture = TextureRegistry.EMPTY_TEXTURE;
+    this.shadeRegions = new Int16Array(MAX_SHADES);
+
+    for(let i = 0; i < MAX_SHADES; i++) {
+        this.shadeRegions[i] = -1;
+    }
 }
 
 //TODO(neyn): Increase the size if ever needed.
@@ -67,13 +74,43 @@ BattalionCamera.prototype = Object.create(Camera2D.prototype);
 BattalionCamera.prototype.constructor = BattalionCamera;
 
 BattalionCamera.prototype.loadSprites = function(gameContext) {
-    const { spriteManager, textureLoader } = gameContext;
+    const { spriteManager, textureLoader, typeRegistry } = gameContext;
     const shadeIndex = spriteManager.getTextureIndex("shade");
 
     this.markerSprite = spriteManager.createSprite("marker");
     this.shadeTexture = textureLoader.getTexture(shadeIndex);
 
     textureLoader.loadTexture(shadeIndex);
+
+    for(let i = 0; i < ENTITY_TYPE._COUNT; i++) {
+        for(let j = 0; j < DIRECTION._COUNT; j++) {
+            const { shade } = typeRegistry.getEntityType(i);
+            let shadeRegion = null;
+
+            switch(j) {
+                case DIRECTION.NORTH: {
+                    shadeRegion = shade["up"];
+                    break;
+                }
+                case DIRECTION.EAST: {
+                    shadeRegion = shade["right"];
+                    break;
+                }
+                case DIRECTION.SOUTH: {
+                    shadeRegion = shade["down"];
+                    break;
+                }
+                case DIRECTION.WEST: {
+                    shadeRegion = shade["left"];
+                    break;
+                }
+            }
+
+            if(shadeRegion) {
+                this.shadeRegions[i * DIRECTION._COUNT + j] = this.shadeTexture.getRegionIndex(shadeRegion);
+            }
+        }
+    }
 }
 
 BattalionCamera.prototype.addPerspective = function(teamID) {
@@ -148,6 +185,27 @@ BattalionCamera.prototype.drawEntityBlock = function(display, entity, sprite, sc
     }
 }
 
+BattalionCamera.prototype.drawShade = function(display, entity, screenX, screenY) {
+    const { regions, handle } = this.shadeTexture;
+    const { state, bitmap } = handle;
+
+    if(state === TextureHandle.STATE.LOADED) {
+        //TODO(neyn): This bugs out if config.id < 0!
+        const shadeIndex = entity.config.id * DIRECTION._COUNT + entity.direction;
+        const regionIndex = this.shadeRegions[shadeIndex];
+
+        if(regionIndex !== -1) {
+            const { x, y, w, h } = regions[regionIndex];
+
+            display.context.drawImage(
+                bitmap,
+                x, y, w, h,
+                screenX, screenY, w, h
+            );
+        }
+    }
+}
+
 BattalionCamera.prototype.drawEntity = function(display, entity, sprite, realTime, deltaTime) {
     const { tileX, tileY, offsetX, offsetY, state, teamID, flags, opacity } = entity;
     const screenX = this.getScreenX(tileX) + offsetX;
@@ -176,26 +234,27 @@ BattalionCamera.prototype.drawEntity = function(display, entity, sprite, realTim
         }
 
         //Do not update sprite if entity cannot act!
-        if(state !== BattalionEntity.STATE.IDLE || canAct) {
+        //TODO(neyn): Maybe don't update if its not the entities turn?
+        if(state !== BattalionEntity.STATE.IDLE || canAct || !(flags & BattalionEntity.FLAG.IS_TURN)) {
             sprite.update(realTime, deltaTime);
         }
 
         this.drawEntityBlock(display, entity, sprite, screenX, screenY, alpha);
 
-        //Todo(neyn): Can act should have more options: Barricades NEVER have a marker for example.
-        if(canAct) {
-            if(state === BattalionEntity.STATE.IDLE) {
+        if(state === BattalionEntity.STATE.IDLE) {
+            if(canAct) {
                 display.setAlpha(1);
 
+                //Todo(neyn): Can act should have more options: Barricades NEVER have a marker for example.
                 if(teamID === this.mainPerspective) {
                     this.markerSprite.onDraw(display, screenX, screenY);
                 } else {
-                    //Todo(neyn): Only draw this if IS_MY_TURN!
+                    //Todo(neyn): Only draw this if IS_MY_TURN (on the camera)!
                     this.weakMarkerSprite.onDraw(display, screenX, screenY);
                 }   
+            } else if(flags & BattalionEntity.FLAG.IS_TURN) {
+                this.drawShade(display, entity, screenX, screenY);
             }
-        } else {
-            //Todo(neyn): Draw shade!
         }
     } else {
         if((flags & BattalionEntity.FLAG.IS_CLOAKED) && opacity < BattalionCamera.STEALTH_THRESHOLD) {

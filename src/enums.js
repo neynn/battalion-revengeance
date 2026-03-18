@@ -607,10 +607,11 @@ export const TILE_ID = {
 };
 
 export const DIRECTION = {
-    NORTH: 1 << 0,
-    EAST: 1 << 1,
-    SOUTH: 1 << 2,
-    WEST: 1 << 3
+    NORTH: 0,
+    EAST: 1,
+    SOUTH: 2,
+    WEST: 3,
+    _COUNT: 4
 };
 
 export const RANGE_TYPE = {

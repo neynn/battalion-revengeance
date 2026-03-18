@@ -72,6 +72,16 @@ Texture.COPY_TYPE = {
     REGIONAL: 1
 };
 
+Texture.prototype.getRegionIndex = function(name) {
+    const index = this.regionMap[name];
+
+    if(index === undefined) {
+        return -1;
+    }
+
+    return index;
+}
+
 Texture.prototype.getSizeBytes = function() {
     let bytes = this.handle.getBytes();
 

@@ -1,6 +1,6 @@
 import { MAX_TRAITS } from "../../constants.js";
 import { mapMovementToCategory } from "../../enumHelpers.js";
-import { ARMOR_TYPE, ATTACK_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../../enums.js";
+import { ARMOR_TYPE, ATTACK_TYPE, DIRECTION, ENTITY_CATEGORY, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../../enums.js";
 
 const ENABLE_HYBRID = false;
 
@@ -40,6 +40,7 @@ export const EntityType = function(id) {
     this.cost = 0;
     this.sounds = {};
     this.sprites = {};
+    this.shade = {};
     this.effects = {};
     this.traits = [];
     this.category = mapMovementToCategory(this.movementType);
@@ -74,6 +75,7 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
         traits = [],
         sounds = {},
         sprites = {},
+        shade = {},
         effects = {}
     } = config;
 
@@ -96,6 +98,7 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
     this.maxRange = maxRange;
     this.sounds = sounds;
     this.sprites = sprites;
+    this.shade = shade;
     this.effects = effects;
 
     if(this.maxRange < this.minRange) {

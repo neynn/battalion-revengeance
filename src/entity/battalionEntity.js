@@ -44,7 +44,8 @@ BattalionEntity.FLAG = {
     CAN_MOVE: 1 << 4,
     CAN_ACT: 1 << 5,
     BEWEGUNGSKRIEG_TRIGGERED: 1 << 7,
-    ELUSIVE_TRIGGERED: 1 << 8
+    ELUSIVE_TRIGGERED: 1 << 8,
+    IS_TURN: 1 << 9
 };
 
 BattalionEntity.STATE = {
@@ -1307,7 +1308,7 @@ BattalionEntity.prototype.setLastAttacker = function(entityID) {
 BattalionEntity.prototype.onTurnStart = function(gameContext) {
     this.clearFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ACTED);
     this.clearFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
-    this.setFlag(BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT);
+    this.setFlag(BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT | BattalionEntity.FLAG.IS_TURN);
     this.clearLastAttacker();
 
     //Entities are immune to taking damage/proccing on their first turn.
@@ -1321,7 +1322,7 @@ BattalionEntity.prototype.onTurnStart = function(gameContext) {
 
 BattalionEntity.prototype.onTurnEnd = function() {
     this.setFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ACTED);
-    this.clearFlag(BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT);
+    this.clearFlag(BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT | BattalionEntity.FLAG.IS_TURN);
     this.clearLastAttacker();
     this.turns++;
 }
