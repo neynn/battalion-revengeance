@@ -121,7 +121,7 @@ BattalionCamera.prototype.drawEntityHealth = function(display, drawX, drawY, hea
     }
 }
 
-BattalionCamera.prototype.drawEntityBlock = function(display, entity, sprite, screenX, screenY, alpha, realTime, deltaTime) {
+BattalionCamera.prototype.drawEntityBlock = function(display, entity, sprite, screenX, screenY, alpha) {
     let healthFactor = entity.getHealthFactor();
 
     if(healthFactor > 1) {
@@ -130,7 +130,6 @@ BattalionCamera.prototype.drawEntityBlock = function(display, entity, sprite, sc
 
     sprite.setPosition(screenX, screenY);
     sprite.setOpacity(alpha);
-    sprite.update(realTime, deltaTime);
     sprite.draw(display, 0, 0);
 
     if(PLAYER_PREFERENCE.FORCE_HEALTH_DRAW || healthFactor > 0 && healthFactor < 1) {
@@ -146,6 +145,7 @@ BattalionCamera.prototype.drawEntity = function(display, entity, sprite, realTim
     const { tileX, tileY, offsetX, offsetY, state, teamID, flags, opacity } = entity;
     const screenX = this.getScreenX(tileX) + offsetX;
     const screenY = this.getScreenY(tileY) + offsetY;
+    const canAct = entity.canAct();
     let alpha = 1;
 
     if(this.flags & BattalionCamera.FLAG.USE_PERSPECTIVES) {
@@ -162,16 +162,27 @@ BattalionCamera.prototype.drawEntity = function(display, entity, sprite, realTim
             alpha = opacity;
         }
 
-        this.drawEntityBlock(display, entity, sprite, screenX, screenY, alpha, realTime, deltaTime);
+        //Do not update sprite if entity cannot act!
+        if(canAct || state !== BattalionEntity.STATE.IDLE) {
+            sprite.update(realTime, deltaTime);
+        }
 
-        if(state === BattalionEntity.STATE.IDLE && entity.canAct()) {
-            display.setAlpha(1);
+        this.drawEntityBlock(display, entity, sprite, screenX, screenY, alpha);
 
-            if(teamID === this.mainPerspective) {
-                this.markerSprite.onDraw(display, screenX, screenY);
-            } else {
-                this.weakMarkerSprite.onDraw(display, screenX, screenY);
+        //Todo(neyn): Can act should have more options: Barricades NEVER have a marker for example.
+        if(canAct) {
+            if(state === BattalionEntity.STATE.IDLE) {
+                display.setAlpha(1);
+
+                if(teamID === this.mainPerspective) {
+                    this.markerSprite.onDraw(display, screenX, screenY);
+                } else {
+                    //Todo(neyn): Only draw this if IS_MY_TURN!
+                    this.weakMarkerSprite.onDraw(display, screenX, screenY);
+                }   
             }
+        } else {
+            //Todo(neyn): Draw shade!
         }
     } else {
         if((flags & BattalionEntity.FLAG.IS_CLOAKED) && opacity < BattalionCamera.STEALTH_THRESHOLD) {
@@ -180,7 +191,9 @@ BattalionCamera.prototype.drawEntity = function(display, entity, sprite, realTim
             alpha = opacity;
         }
 
-        this.drawEntityBlock(display, entity, sprite, screenX, screenY, alpha, realTime, deltaTime);
+        sprite.update(realTime, deltaTime);
+
+        this.drawEntityBlock(display, entity, sprite, screenX, screenY, alpha);
     }
 }
 

@@ -40,7 +40,7 @@ BattalionEntity.FLAG = {
     IS_CLOAKED: 1 << 0,
     IS_SUBMERGED: 1 << 1,
     HAS_MOVED: 1 << 2,
-    HAS_FIRED: 1 << 3,
+    HAS_ACTED: 1 << 3,
     CAN_MOVE: 1 << 4,
     BEWEGUNGSKRIEG_TRIGGERED: 1 << 5,
     ELUSIVE_TRIGGERED: 1 << 6
@@ -393,7 +393,7 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
 }
 
 BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
-    if(this.isDead() || !this.canMove()) {
+    if(this.isDead() || !this.isMoveable()) {
         return;
     }
 
@@ -1099,7 +1099,7 @@ BattalionEntity.prototype.canCloakAt = function(gameContext, tileX, tileY) {
     return true;
 }
 
-BattalionEntity.prototype.canAttack = function() {
+BattalionEntity.prototype.hasWeapon = function() {
     return this.config.weaponType !== WEAPON_TYPE.NONE;
 }
 
@@ -1107,16 +1107,12 @@ BattalionEntity.prototype.canCloakAtSelf = function(gameContext) {
     return this.canCloakAt(gameContext, this.tileX, this.tileY);
 }
 
-BattalionEntity.prototype.canMove = function() {
+BattalionEntity.prototype.isMoveable = function() {
     return this.config.movementRange !== 0 && this.config.movementType !== MOVEMENT_TYPE.STATIONARY;
 }
 
 BattalionEntity.prototype.canAct = function() {
-    return (this.flags & BattalionEntity.FLAG.CAN_MOVE) && !(this.flags & BattalionEntity.FLAG.HAS_FIRED);
-}
-
-BattalionEntity.prototype.canExtract = function() {
-    return this.hasTrait(TRAIT_TYPE.EXTRACTOR);
+    return (this.flags & BattalionEntity.FLAG.CAN_MOVE) && !(this.flags & BattalionEntity.FLAG.HAS_ACTED);
 }
 
 BattalionEntity.prototype.getUncloakedEntities = function(gameContext) {
@@ -1225,7 +1221,7 @@ BattalionEntity.prototype.getUncloakedMines = function(gameContext) {
 }
 
 BattalionEntity.prototype.isSelectable = function() {
-    return !this.isDead() && !this.hasFlag(BattalionEntity.FLAG.HAS_FIRED) && this.hasFlag(BattalionEntity.FLAG.CAN_MOVE);
+    return !this.isDead() && !this.hasFlag(BattalionEntity.FLAG.HAS_ACTED) && this.hasFlag(BattalionEntity.FLAG.CAN_MOVE);
 }
 
 BattalionEntity.prototype.getMaxRange = function(gameContext) {
@@ -1303,7 +1299,7 @@ BattalionEntity.prototype.setLastAttacker = function(entityID) {
 }
 
 BattalionEntity.prototype.onTurnStart = function(gameContext) {
-    this.clearFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_FIRED);
+    this.clearFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ACTED);
     this.clearFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
     this.setFlag(BattalionEntity.FLAG.CAN_MOVE);
     this.clearLastAttacker();
@@ -1318,7 +1314,7 @@ BattalionEntity.prototype.onTurnStart = function(gameContext) {
 } 
 
 BattalionEntity.prototype.onTurnEnd = function() {
-    this.setFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_FIRED);
+    this.setFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ACTED);
     this.clearFlag(BattalionEntity.FLAG.CAN_MOVE);
     this.clearLastAttacker();
     this.turns++;
@@ -1326,8 +1322,8 @@ BattalionEntity.prototype.onTurnEnd = function() {
 
 BattalionEntity.prototype.triggerBewegungskrieg = function() {
     if(!this.hasFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED)) {
-        //Clear HAS_FIRED and HAS_MOVED to allow MoveAction to potentially queue again.
-        this.clearFlag(BattalionEntity.FLAG.HAS_FIRED | BattalionEntity.FLAG.HAS_MOVED);
+        //Clear HAS_ACTED and HAS_MOVED to allow MoveAction to potentially queue again.
+        this.clearFlag(BattalionEntity.FLAG.HAS_ACTED | BattalionEntity.FLAG.HAS_MOVED);
         this.setFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.CAN_MOVE);
     }
 }

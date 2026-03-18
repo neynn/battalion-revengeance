@@ -1,6 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
-import { TEAM_STAT } from "../../enums.js";
+import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 
 export const ExtractAction = function() {
     Action.call(this);
@@ -25,7 +25,7 @@ ExtractAction.prototype.execute = function(gameContext, data) {
     const team = entity.getTeam(gameContext);
 
     entity.addCash(value);
-    entity.setFlag(BattalionEntity.FLAG.HAS_FIRED);
+    entity.setFlag(BattalionEntity.FLAG.HAS_ACTED);
     entity.extractOre(gameContext);
     team.addStatistic(TEAM_STAT.ORE_EXTRACTED, value);
 }
@@ -36,7 +36,7 @@ ExtractAction.prototype.fillExecutionPlan = function(gameContext, executionPlan,
     const { entityID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
 
-    if(entity && !entity.isDead() && entity.canAct() && entity.canExtract()) {
+    if(entity && !entity.isDead() && entity.canAct() && entity.hasTrait(TRAIT_TYPE.EXTRACTOR)) {
         const oreValue = entity.getOreValue(gameContext);
 
         if(oreValue > 0) {

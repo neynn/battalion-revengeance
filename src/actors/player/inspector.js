@@ -45,7 +45,7 @@ MapInspector.prototype.showEntity = function(gameContext, entity) {
     const worldMap = mapManager.getActiveMap();
     const rangeType = entity.getRangeType();
     const { tileX, tileY } = entity;
-    const canAttack = entity.canAttack();
+    const hasWeapon = entity.hasWeapon();
     const minRange = entity.config.minRange;
     const maxRange = entity.getMaxRange(gameContext);
     const isJammer = entity.isJammer();
@@ -59,7 +59,7 @@ MapInspector.prototype.showEntity = function(gameContext, entity) {
 
                 if((flags & PATH_FLAG.UNREACHABLE) === 0) {
                     this.camera.selectOverlay.add(TILE_ID.OVERLAY_MOVE, x, y);
-                } else if(canAttack) {
+                } else if(hasWeapon) {
                     this.camera.selectOverlay.add(TILE_ID.OVERLAY_ATTACK_LIGHT, x, y);
                 }
             }
