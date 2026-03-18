@@ -12,6 +12,7 @@ import { BattalionMap } from "../map/battalionMap.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { Mine } from "../entity/mine.js";
 import { TeamManager } from "../team/teamManager.js";
+import { TextureRegistry } from "../../engine/resources/texture/textureRegistry.js";
 
 const BLOCK = { COUNT: 4, WIDTH: 4, HEIGHT: 8, GAP: 1 };
 const WIDTH = (BLOCK.GAP * (BLOCK.COUNT + 1)) + BLOCK.WIDTH * BLOCK.COUNT;
@@ -38,14 +39,16 @@ export const BattalionCamera = function() {
     this.jammerOverlay = new TileOverlay(JAMMER_MAX_USED_TILES);
     this.selectOverlay = new TileOverlay(1000);
     this.flags = BattalionCamera.FLAG.NONE;
-    this.markerSprite = SpriteManager.EMPTY_SPRITE;
-    this.weakMarkerSprite = SpriteManager.EMPTY_SPRITE;
     this.perspectives = new Set();
     this.mainPerspective = TeamManager.INVALID_ID;
     this.deferred = new Int32Array(BattalionCamera.MAX_DEFERRED);
     this.deferredCount = 0;
     this.inspectX = -1;
     this.inspectY = -1;
+
+    this.markerSprite = SpriteManager.EMPTY_SPRITE;
+    this.weakMarkerSprite = SpriteManager.EMPTY_SPRITE;
+    this.shadeTexture = TextureRegistry.EMPTY_TEXTURE;
 }
 
 //TODO(neyn): Increase the size if ever needed.
@@ -64,9 +67,13 @@ BattalionCamera.prototype = Object.create(Camera2D.prototype);
 BattalionCamera.prototype.constructor = BattalionCamera;
 
 BattalionCamera.prototype.loadSprites = function(gameContext) {
-    const { spriteManager } = gameContext;
+    const { spriteManager, textureLoader } = gameContext;
+    const shadeIndex = spriteManager.getTextureIndex("shade");
 
     this.markerSprite = spriteManager.createSprite("marker");
+    this.shadeTexture = textureLoader.getTexture(shadeIndex);
+
+    textureLoader.loadTexture(shadeIndex);
 }
 
 BattalionCamera.prototype.addPerspective = function(teamID) {
@@ -145,8 +152,14 @@ BattalionCamera.prototype.drawEntity = function(display, entity, sprite, realTim
     const { tileX, tileY, offsetX, offsetY, state, teamID, flags, opacity } = entity;
     const screenX = this.getScreenX(tileX) + offsetX;
     const screenY = this.getScreenY(tileY) + offsetY;
-    const canAct = entity.canAct();
     let alpha = 1;
+    let canAct = true;
+
+    if(flags & BattalionEntity.FLAG.HAS_ACTED) {
+        canAct = false;
+    } else if((flags & BattalionEntity.FLAG.HAS_MOVED) && !(flags & BattalionEntity.FLAG.CAN_MOVE)) {
+        canAct = false;
+    }
 
     if(this.flags & BattalionCamera.FLAG.USE_PERSPECTIVES) {
         if(opacity < BattalionCamera.STEALTH_THRESHOLD) {
@@ -163,7 +176,7 @@ BattalionCamera.prototype.drawEntity = function(display, entity, sprite, realTim
         }
 
         //Do not update sprite if entity cannot act!
-        if(canAct || state !== BattalionEntity.STATE.IDLE) {
+        if(state !== BattalionEntity.STATE.IDLE || canAct) {
             sprite.update(realTime, deltaTime);
         }
 

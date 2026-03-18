@@ -77,7 +77,7 @@ HealAction.prototype.execute = function(gameContext, data) {
         targetObject.setHealth(health);
     }
 
-    entity.setFlag(BattalionEntity.FLAG.HAS_ACTED);
+    entity.setActed();
 }
 
 HealAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
@@ -97,7 +97,7 @@ HealAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
         resolveHeal(gameContext, entity, target, resolver);
     } else {
         //Melee healers.
-        if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && !entity.hasFlag(BattalionEntity.FLAG.HAS_ACTED) && entity.isNextToEntity(target)) {
+        if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && entity.hasFlag(BattalionEntity.FLAG.CAN_ACT) && entity.isNextToEntity(target)) {
             resolveHeal(gameContext, entity, target, resolver);
         } 
     }

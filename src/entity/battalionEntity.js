@@ -42,8 +42,9 @@ BattalionEntity.FLAG = {
     HAS_MOVED: 1 << 2,
     HAS_ACTED: 1 << 3,
     CAN_MOVE: 1 << 4,
-    BEWEGUNGSKRIEG_TRIGGERED: 1 << 5,
-    ELUSIVE_TRIGGERED: 1 << 6
+    CAN_ACT: 1 << 5,
+    BEWEGUNGSKRIEG_TRIGGERED: 1 << 7,
+    ELUSIVE_TRIGGERED: 1 << 8
 };
 
 BattalionEntity.STATE = {
@@ -1111,8 +1112,13 @@ BattalionEntity.prototype.isMoveable = function() {
     return this.config.movementRange !== 0 && this.config.movementType !== MOVEMENT_TYPE.STATIONARY;
 }
 
+BattalionEntity.prototype.setActed = function() {
+    this.setFlag(BattalionEntity.FLAG.HAS_ACTED);
+    this.clearFlag(BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT);
+}
+
 BattalionEntity.prototype.canAct = function() {
-    return (this.flags & BattalionEntity.FLAG.CAN_MOVE) && !(this.flags & BattalionEntity.FLAG.HAS_ACTED);
+    return (this.flags & BattalionEntity.FLAG.CAN_MOVE) && (this.flags & BattalionEntity.FLAG.CAN_ACT);
 }
 
 BattalionEntity.prototype.getUncloakedEntities = function(gameContext) {
@@ -1221,7 +1227,7 @@ BattalionEntity.prototype.getUncloakedMines = function(gameContext) {
 }
 
 BattalionEntity.prototype.isSelectable = function() {
-    return !this.isDead() && !this.hasFlag(BattalionEntity.FLAG.HAS_ACTED) && this.hasFlag(BattalionEntity.FLAG.CAN_MOVE);
+    return !this.isDead() && this.canAct();
 }
 
 BattalionEntity.prototype.getMaxRange = function(gameContext) {
@@ -1301,7 +1307,7 @@ BattalionEntity.prototype.setLastAttacker = function(entityID) {
 BattalionEntity.prototype.onTurnStart = function(gameContext) {
     this.clearFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ACTED);
     this.clearFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
-    this.setFlag(BattalionEntity.FLAG.CAN_MOVE);
+    this.setFlag(BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT);
     this.clearLastAttacker();
 
     //Entities are immune to taking damage/proccing on their first turn.
@@ -1315,7 +1321,7 @@ BattalionEntity.prototype.onTurnStart = function(gameContext) {
 
 BattalionEntity.prototype.onTurnEnd = function() {
     this.setFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ACTED);
-    this.clearFlag(BattalionEntity.FLAG.CAN_MOVE);
+    this.clearFlag(BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT);
     this.clearLastAttacker();
     this.turns++;
 }
@@ -1323,8 +1329,8 @@ BattalionEntity.prototype.onTurnEnd = function() {
 BattalionEntity.prototype.triggerBewegungskrieg = function() {
     if(!this.hasFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED)) {
         //Clear HAS_ACTED and HAS_MOVED to allow MoveAction to potentially queue again.
-        this.clearFlag(BattalionEntity.FLAG.HAS_ACTED | BattalionEntity.FLAG.HAS_MOVED);
-        this.setFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.CAN_MOVE);
+        this.clearFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ACTED);
+        this.setFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT);
     }
 }
 

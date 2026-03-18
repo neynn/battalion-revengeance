@@ -25,7 +25,7 @@ ExtractAction.prototype.execute = function(gameContext, data) {
     const team = entity.getTeam(gameContext);
 
     entity.addCash(value);
-    entity.setFlag(BattalionEntity.FLAG.HAS_ACTED);
+    entity.setActed();
     entity.extractOre(gameContext);
     team.addStatistic(TEAM_STAT.ORE_EXTRACTED, value);
 }

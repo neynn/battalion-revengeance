@@ -131,8 +131,7 @@ AttackAction.prototype.execute = function(gameContext, data) {
         entity.clearLastAttacker();
     } else {
         target.setLastAttacker(attackerID);
-
-        entity.setFlag(BattalionEntity.FLAG.HAS_ACTED);
+        entity.setActed();
 
         if(flags & AttackAction.FLAG.BEWEGUNGSKRIEG) {
             entity.triggerBewegungskrieg();
@@ -162,7 +161,7 @@ AttackAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, 
             if(entity.canAct()) {
                resolveFirstAttack(gameContext, entity, target, resolver);
             } else {
-                if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && !entity.hasFlag(BattalionEntity.FLAG.HAS_ACTED) && entity.isNextToEntity(target)) {
+                if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && entity.hasFlag(BattalionEntity.FLAG.CAN_ACT) && entity.isNextToEntity(target)) {
                     resolveFirstAttack(gameContext, entity, target, resolver);
                 }
             }

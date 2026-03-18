@@ -36,10 +36,9 @@ ProduceEntityAction.prototype.execute = function(gameContext, data) {
     }
 
     //TODO: Apply morale
-
     entity.setPurchased();
-    spawnerEntity.setFlag(BattalionEntity.FLAG.HAS_ACTED);
     spawnerEntity.reduceCash(cost);
+    spawnerEntity.setActed();
     team.addStatistic(TEAM_STAT.UNITS_BUILT, 1);
     team.addStatistic(TEAM_STAT.RESOURCES_SPENT, cost);
     team.addStatistic(mapCategoryToStat(entity.config.category), 1);

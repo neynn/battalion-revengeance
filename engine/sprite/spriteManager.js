@@ -14,6 +14,7 @@ export const SpriteManager = function(textureLoader) {
     this.nextCleanup = 0;
     this.pool = new ObjectPool(1024, (index) => new Sprite(index, "EMPTY_SPRITE"));
     this.layers = [];
+    this.textureMap = {};
 }
 
 SpriteManager.INVALID_ID = -1;
@@ -72,6 +73,12 @@ SpriteManager.prototype.load = function(textures, sprites) {
             console.warn(`Sprite ${spriteID} has no frames!`);
         }
     }
+
+    this.textureMap = textureMap;
+}
+
+SpriteManager.prototype.getTextureIndex = function(name) {
+    return this.textureMap[name] ?? -1;
 }
 
 SpriteManager.prototype.forEachSprite = function(onCall) {
