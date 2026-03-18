@@ -190,7 +190,7 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
     const { entityID, path, command, targetID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
 
-    if(!entity || !entity.hasFlag(BattalionEntity.FLAG.CAN_MOVE) || entity.hasFlag(BattalionEntity.FLAG.HAS_ACTED)) {
+    if(!entity || !entity.hasFlag(BattalionEntity.FLAG.CAN_MOVE)) {
         return;
     }
 
