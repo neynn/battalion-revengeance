@@ -1117,8 +1117,12 @@ BattalionEntity.prototype.setActed = function() {
     this.clearFlag(BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT);
 }
 
-BattalionEntity.prototype.canAct = function() {
+BattalionEntity.prototype.canActAndMove = function() {
     return (this.flags & BattalionEntity.FLAG.CAN_MOVE) && (this.flags & BattalionEntity.FLAG.CAN_ACT);
+}
+
+BattalionEntity.prototype.isSelectable = function() {
+    return !this.isDead() && this.canActAndMove();
 }
 
 BattalionEntity.prototype.getUncloakedEntities = function(gameContext) {
@@ -1224,10 +1228,6 @@ BattalionEntity.prototype.getUncloakedMines = function(gameContext) {
     });
 
     return uncloakedMines;
-}
-
-BattalionEntity.prototype.isSelectable = function() {
-    return !this.isDead() && this.canAct();
 }
 
 BattalionEntity.prototype.getMaxRange = function(gameContext) {

@@ -36,7 +36,7 @@ ExtractAction.prototype.fillExecutionPlan = function(gameContext, executionPlan,
     const { entityID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
 
-    if(entity && !entity.isDead() && entity.canAct() && entity.hasTrait(TRAIT_TYPE.EXTRACTOR)) {
+    if(entity && !entity.isDead() && entity.canActAndMove() && entity.hasTrait(TRAIT_TYPE.EXTRACTOR)) {
         const oreValue = entity.getOreValue(gameContext);
 
         if(oreValue > 0) {

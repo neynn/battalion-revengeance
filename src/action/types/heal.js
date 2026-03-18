@@ -93,7 +93,7 @@ HealAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
 
     const resolver = new InteractionResolver();
 
-    if(entity.canAct()) {
+    if(entity.canActAndMove()) {
         resolveHeal(gameContext, entity, target, resolver);
     } else {
         //Melee healers.

@@ -158,7 +158,7 @@ AttackAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, 
 
     switch(command) {
         case COMMAND_TYPE.ATTACK: {
-            if(entity.canAct()) {
+            if(entity.canActAndMove()) {
                resolveFirstAttack(gameContext, entity, target, resolver);
             } else {
                 if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && entity.hasFlag(BattalionEntity.FLAG.CAN_ACT) && entity.isNextToEntity(target)) {

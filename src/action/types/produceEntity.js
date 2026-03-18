@@ -51,7 +51,7 @@ ProduceEntityAction.prototype.fillExecutionPlan = function(gameContext, executio
     const entity = entityManager.getEntity(entityID);
     const worldMap = mapManager.getActiveMap();
 
-    if(!entity || entity.isDead() || !entity.canAct() || !entity.hasTrait(TRAIT_TYPE.TANK_POOPER)) {
+    if(!entity || entity.isDead() || !entity.canActAndMove() || !entity.hasTrait(TRAIT_TYPE.TANK_POOPER)) {
         return;
     }
 
