@@ -294,19 +294,12 @@ ClientMatchLoader.prototype.createActors = function(gameContext, camera) {
     }
 
     teamManager.forEachTeam((team) => {
-        const { id, allies } = team;
+        const { id } = team;
 
         if(id === clientTeamID) {
             //Each client SHOULD have a team.
             //If not, the client camera renders with no perspective.
             ActorFactory.createPlayer(gameContext, id, camera);
-
-            camera.addPerspective(id);
-
-            //Adds all allies as perspective. This allows the client to see allied stealth units.
-            for(const allyID of allies) {
-                camera.addPerspective(allyID)
-            }
         } else {
             ActorFactory.createActor(gameContext, id);
         }

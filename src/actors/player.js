@@ -35,7 +35,7 @@ Player.prototype = Object.create(BattalionActor.prototype);
 Player.prototype.constructor = Player;
 
 Player.prototype.onTurnStart = function(gameContext) {
-    this.camera.setMainPerspective(this.teamID);
+    this.camera.teamID = this.teamID;
     this.camera.isCurrentActor = true;
 }
 

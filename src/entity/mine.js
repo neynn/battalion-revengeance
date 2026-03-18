@@ -26,6 +26,17 @@ Mine.prototype.save = function() {
     }
 }
 
+Mine.prototype.isVisibleTo = function(gameContext, teamID) {
+    if(this.state === Mine.STATE.VISIBLE) {
+        return true;
+    }
+
+    const { teamManager } = gameContext;
+    const isAlly = teamManager.isAlly(this.teamID, teamID);
+
+    return isAlly;
+}
+
 Mine.prototype.setOpacity = function(opacity) {
     this.opacity = opacity;
 }

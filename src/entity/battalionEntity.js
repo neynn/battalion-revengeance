@@ -115,7 +115,7 @@ BattalionEntity.prototype.setCustomInfo = function(id, name, desc) {
     this.customDesc = desc;
 }
 
-BattalionEntity.prototype.getHealthFactor = function() {
+BattalionEntity.prototype.getVitality = function() {
     return this.health / this.maxHealth;
 }
 
@@ -981,7 +981,7 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
             otherFactor *= TRAIT_CONFIG.STEALTH_MULTIPLIER;
         }
 
-        const isExecutable = target.getHealthFactor() < TRAIT_CONFIG.EXECUTIONER_THRESHOLD;
+        const isExecutable = target.getVitality() < TRAIT_CONFIG.EXECUTIONER_THRESHOLD;
 
         if(isExecutable && this.hasTrait(TRAIT_TYPE.EXECUTIONER)) {
             otherFactor *= TRAIT_CONFIG.EXECUTIONER_DAMAGE;
@@ -1532,6 +1532,7 @@ BattalionEntity.prototype.setPurchased = function() {
     //Set this.turns to 0, because it is the entities first turn.
     //It will be set to 1 when onTurnEnd is called from the EndTurnAction!
     this.onTurnEnd();
+    this.flags |= BattalionEntity.FLAG.IS_TURN;
     this.turns = 0;
 }
 
