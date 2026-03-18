@@ -185,33 +185,39 @@ BattalionCamera.prototype.drawEntityBlock = function(display, entity, sprite, sc
     }
 }
 
-BattalionCamera.prototype.drawShade = function(display, entity, screenX, screenY) {
-    const { regions, handle } = this.shadeTexture;
-    const { state, bitmap } = handle;
+BattalionCamera.prototype.drawShade = function(display, screenX, screenY, index) {
+    if(index >= 0) {
+        const { regions, handle } = this.shadeTexture;
+        const { state, bitmap } = handle;
 
-    if(state === TextureHandle.STATE.LOADED) {
-        //TODO(neyn): This bugs out if config.id < 0!
-        const shadeIndex = entity.config.id * DIRECTION._COUNT + entity.direction;
-        const regionIndex = this.shadeRegions[shadeIndex];
+        if(state === TextureHandle.STATE.LOADED) {
+            const regionIndex = this.shadeRegions[index];
 
-        if(regionIndex !== -1) {
-            const { x, y, w, h } = regions[regionIndex];
+            if(regionIndex !== -1) {
+                const { x, y, w, h } = regions[regionIndex];
 
-            display.context.drawImage(
-                bitmap,
-                x, y, w, h,
-                screenX, screenY, w, h
-            );
+                display.context.drawImage(
+                    bitmap,
+                    x, y, w, h,
+                    screenX, screenY, w, h
+                );
+            }
         }
     }
 }
 
 BattalionCamera.prototype.drawEntity = function(display, entity, sprite, realTime, deltaTime) {
-    const { tileX, tileY, offsetX, offsetY, state, teamID, flags, opacity } = entity;
+    const { tileX, tileY, offsetX, offsetY, state, teamID, flags, opacity, config, direction } = entity;
     const screenX = this.getScreenX(tileX) + offsetX;
     const screenY = this.getScreenY(tileY) + offsetY;
+    let healthFactor = entity.getHealthFactor();
     let alpha = 1;
     let canAct = true;
+    let marker = null;
+
+    if(healthFactor > 1) {
+        healthFactor = 1;
+    }
 
     if(flags & BattalionEntity.FLAG.HAS_ACTED) {
         canAct = false;
@@ -234,27 +240,20 @@ BattalionCamera.prototype.drawEntity = function(display, entity, sprite, realTim
         }
 
         //Do not update sprite if entity cannot act!
-        //TODO(neyn): Maybe don't update if its not the entities turn?
         if(state !== BattalionEntity.STATE.IDLE || canAct || !(flags & BattalionEntity.FLAG.IS_TURN)) {
             sprite.update(realTime, deltaTime);
         }
 
-        this.drawEntityBlock(display, entity, sprite, screenX, screenY, alpha);
-
-        if(state === BattalionEntity.STATE.IDLE) {
-            if(canAct) {
-                display.setAlpha(1);
-
-                //Todo(neyn): Can act should have more options: Barricades NEVER have a marker for example.
-                if(teamID === this.mainPerspective) {
-                    this.markerSprite.onDraw(display, screenX, screenY);
-                } else {
-                    //Todo(neyn): Only draw this if IS_MY_TURN (on the camera)!
-                    this.weakMarkerSprite.onDraw(display, screenX, screenY);
-                }   
-            } else if(flags & BattalionEntity.FLAG.IS_TURN) {
-                this.drawShade(display, entity, screenX, screenY);
-            }
+        //markers ONLY get drawn when its MY turn (on the camera)
+        //TODO(neyn): WeakMarkerSprite only gets drawn for NON_TURN entities
+        //it only gets drawn when the actionqueue is empty
+        //Todo(neyn): Can act should have more options: Barricades NEVER have a marker for example.
+        if(state === BattalionEntity.STATE.IDLE && canAct) {
+            if(teamID === this.mainPerspective) {
+                marker = this.markerSprite;
+            } else {
+                marker = this.weakMarkerSprite;
+            }   
         }
     } else {
         if((flags & BattalionEntity.FLAG.IS_CLOAKED) && opacity < BattalionCamera.STEALTH_THRESHOLD) {
@@ -264,8 +263,34 @@ BattalionCamera.prototype.drawEntity = function(display, entity, sprite, realTim
         }
 
         sprite.update(realTime, deltaTime);
+    }
 
-        this.drawEntityBlock(display, entity, sprite, screenX, screenY, alpha);
+    //Only draw if visible.
+    if(alpha > 0) {
+        sprite.setPosition(screenX, screenY);
+        sprite.setOpacity(alpha);
+        sprite.draw(display, 0, 0);
+
+        if((flags & BattalionEntity.FLAG.IS_TURN) && state === BattalionEntity.STATE.IDLE && !canAct) {
+            const shadeIndex = config.id * DIRECTION._COUNT + direction;
+
+            this.drawShade(display, screenX, screenY, shadeIndex);
+        }
+
+        if(PLAYER_PREFERENCE.FORCE_HEALTH_DRAW || healthFactor > 0 && healthFactor < 1) {
+            this.drawEntityHealth(display, screenX, screenY, healthFactor);
+        }
+
+        if(marker) {
+            display.setAlpha(1);
+            marker.onUpdate(realTime, deltaTime);
+            marker.onDraw(display, screenX, screenY);
+        }
+    } else {
+        if(DEBUG.SPRITES) {
+            sprite.setPosition(screenX, screenY);
+            sprite.debug(display, 0, 0);
+        }
     }
 }
 
