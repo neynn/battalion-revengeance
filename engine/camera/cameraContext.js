@@ -256,6 +256,11 @@ CameraContext.prototype.draw = function(gameContext, display) {
         this.camera.update(gameContext, display);
     }
 
+    if(this.camera.doUpdate) {
+        this.camera.doUpdate = false;
+        this.refresh();
+    }
+
     display.reset();
 }
 

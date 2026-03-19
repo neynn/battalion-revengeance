@@ -15,8 +15,6 @@ import { ApplicationWindow } from "./applicationWindow.js";
 import { PathHandler } from "./resources/pathHandler.js";
 import { TweenManager } from "./tween/tweenManager.js";
 
-import { MapRegistry } from "../src/map/mapRegistry.js";
-
 export const ClientGameContext = function() {
     this.client = new Client();
     this.world = new World();
@@ -31,8 +29,25 @@ export const ClientGameContext = function() {
     this.fonts = new FontHandler();
     this.states = new StateMachine(this);
     this.timer = new Timer();
-    this.mapRegistry = new MapRegistry();
     this.tweenManager = new TweenManager();
+
+    this.timer.input = (deltaTime) => {
+        this.client.update();
+    }
+
+    this.timer.update = (fDeltaTime) => {
+        this.states.update(this);
+        this.world.update(this);
+    }
+
+    this.timer.render = (deltaTime) => {
+        this.textureLoader.update();
+        this.applicationWindow.update(this);
+        this.tweenManager.update(this);
+        this.spriteManager.update(this);
+        this.tileManager.update(this);
+        this.renderer.update(this);
+    }
 
     this.client.cursor.events.on(Cursor.EVENT.BUTTON_CLICK, (event) => {
         const { button } = event;
@@ -40,12 +55,6 @@ export const ClientGameContext = function() {
         if(button === Cursor.BUTTON.LEFT) {
             this.uiManager.handleClick(event);
         }
-    }, { permanent: true });
-
-    this.world.mapManager.events.on(MapManager.EVENT.MAP_ENABLE, ({ map }) => {
-        const { width, height } = map;
-
-        this.renderer.onMapSizeUpdate(width, height);
     }, { permanent: true });
 
     this.world.mapManager.events.on(MapManager.EVENT.MAP_DISABLE, ({ id, map }) => {

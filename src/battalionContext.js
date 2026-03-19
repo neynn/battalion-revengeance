@@ -14,6 +14,7 @@ import { ClientActionRouter } from "./client/actionRouter.js";
 import { addDebug, registerClientActions } from "./systems/context.js";
 import { resolveTileType } from "./enumHelpers.js";
 import { ShadeCache } from "./shadeCache.js";
+import { MapRegistry } from "./map/mapRegistry.js";
 
 export const BattalionContext = function() {
     ClientGameContext.call(this);
@@ -25,25 +26,7 @@ export const BattalionContext = function() {
     this.uiCore = new UICore();
     this.actionRouter = new ClientActionRouter();
     this.shadeCache = new ShadeCache();
-
-    this.timer.input = (deltaTime) => {
-        this.client.update();
-    }
-
-    this.timer.update = (fDeltaTime) => {
-        this.states.update(this);
-        this.world.update(this);
-    }
-
-    this.timer.render = (deltaTime) => {
-        this.textureLoader.update();
-        this.applicationWindow.update(this);
-        this.tweenManager.update(this);
-        this.dialogueHandler.update(this);
-        this.spriteManager.update(this);
-        this.tileManager.update(this);
-        this.renderer.update(this);
-    }
+    this.mapRegistry = new MapRegistry();
 }
 
 BattalionContext.STATE = {

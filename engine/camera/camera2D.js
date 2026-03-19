@@ -33,6 +33,8 @@ export const Camera2D = function() {
     this.viewportMode = Camera2D.VIEWPORT_MODE.DRAG;
     this.viewportType = Camera2D.VIEWPORT_TYPE.BOUND;
     this.currentFrame = 0;
+
+    this.doUpdate = false;
 }
 
 Camera2D.VIEWPORT_TYPE = {
@@ -56,7 +58,6 @@ Camera2D.MAP_OUTLINE = {
     COLOR: "#dddddd"
 };
 
-Camera2D.prototype.onMapSizeUpdate = function(oldWidth, oldHeight) {}
 Camera2D.prototype.update = function(gameContext, renderContext) {}
 
 Camera2D.prototype.getWorldX = function() {
@@ -498,17 +499,14 @@ Camera2D.prototype.setTileSize = function(tileWidth, tileHeight) {
     this.applyBounds();
 }
 
-Camera2D.prototype.setMapSize = function(mapWidth, mapHeight) {
-    const oldWidth = this.mapWidth;
-    const oldHeight = this.mapHeight;
+Camera2D.prototype.updateWorldBounds = function(width, height) {
+    if(this.mapWidth !== width || this.mapHeight !== height) {
+        this.mapWidth = width;
+        this.mapHeight = height;
+        this.applyBounds();
+        this.doUpdate = true;
+    }
 
-    this.mapWidth = mapWidth;
-    this.mapHeight = mapHeight;
-    this.onMapSizeUpdate(oldWidth, oldHeight);
-    this.applyBounds();
-}
-
-Camera2D.prototype.updateWorldBounds = function() {
     const startX = this.tileX - 1;
     const startY = this.tileY - 1;
     const endX = Math.floor(this.wViewportWidth / this.tileWidth) + this.tileX + 1;
@@ -518,16 +516,4 @@ Camera2D.prototype.updateWorldBounds = function() {
     this.startY = clampValue(startY, this.mapHeight - 1, 0);
     this.endX = clampValue(endX, this.mapWidth - 1, 0);
     this.endY = clampValue(endY, this.mapHeight - 1, 0);
-}
-
-Camera2D.prototype.tryLoadingWorldSize = function(gameContext) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const activeMap = mapManager.getActiveMap();
-
-    if(activeMap) {
-        const { width, height } = activeMap;
-
-        this.setMapSize(width, height);
-    }
 }

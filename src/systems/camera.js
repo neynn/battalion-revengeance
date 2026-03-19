@@ -36,7 +36,6 @@ export const createEditCamera = function(gameContext, brush) {
 
     camera.freeViewport();
     camera.setTileSize(TILE_WIDTH, TILE_HEIGHT);
-    camera.tryLoadingWorldSize(gameContext);
 
     context.setDragButton(Cursor.BUTTON.LEFT);
     context.enableBuffer();
@@ -57,7 +56,6 @@ export const createPlayCamera = function(gameContext) {
     camera.bindViewport();
     camera.setTileSize(TILE_WIDTH, TILE_HEIGHT);
     camera.loadSprites(gameContext);
-    camera.tryLoadingWorldSize(gameContext);
 
     context.setDragButton(Cursor.BUTTON.LEFT);
     context.enableBuffer();

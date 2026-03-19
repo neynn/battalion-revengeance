@@ -168,6 +168,7 @@ BattalionCamera.prototype.drawEntity = function(gameContext, display, entity, sp
             const shadeIndex = config.id * DIRECTION._COUNT + direction;
             const { state, bitmap, width, height } = shadeCache.getShade(shadeIndex);
 
+            sprite.setFrame(0);
             sprite.draw(display, 0, 0);
 
             if(state === TextureHandle.STATE.LOADED) {
@@ -399,7 +400,7 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     let overlays = 0;
     let other = 0;
 
-    this.updateWorldBounds();
+    this.updateWorldBounds(worldMap.width, worldMap.height);
     tiles += this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.GROUND));
     tiles += this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
     tiles += this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.CLOUD));

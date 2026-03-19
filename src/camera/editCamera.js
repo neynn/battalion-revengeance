@@ -25,7 +25,7 @@ EditCamera.prototype.update = function(gameContext, display) {
         return;
     }
 
-    this.updateWorldBounds();
+    this.updateWorldBounds(worldMap.width, worldMap.height);
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.GROUND));
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
     this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.CLOUD));

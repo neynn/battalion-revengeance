@@ -103,16 +103,6 @@ Renderer.prototype.onWindowResize = function(width, height) {
     }
 }
 
-Renderer.prototype.onMapSizeUpdate = function(mapWidth, mapHeight) {
-    for(let i = 0; i < this.contexts.length; i++) {
-        const context = this.contexts[i];
-        const camera = context.getCamera();
-
-        camera.setMapSize(mapWidth, mapHeight);
-        context.refresh();
-    }
-}
-
 Renderer.prototype.getCollidedContext = function(mouseX, mouseY, mouseRange) {
     for(let i = this.contexts.length - 1; i >= 0; i--) {
         const context = this.contexts[i];

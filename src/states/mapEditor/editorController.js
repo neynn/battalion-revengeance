@@ -280,7 +280,6 @@ EditorController.prototype.resizeCurrentMap = function(gameContext) {
     const newHeight = clampValue(parsedHeight, this.maxHeight, 1);
 
     worldMap.resize(newWidth, newHeight);
-    renderer.onMapSizeUpdate(newWidth, newHeight);
 
     this.editor.autofillMap();
     this.camera2D.jumpToTile(0, 0);
