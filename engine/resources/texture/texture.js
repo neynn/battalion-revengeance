@@ -1,60 +1,6 @@
 import { TextureHandle } from "./textureHandle.js";
 import { TextureRegion } from "./region.js";
 
-const recolorRect = function(buffer, bufferWidth, colorMap, frameX, frameY, frameW, frameH) {
-    for(let i = 0; i < frameH; i++) {
-        const rowStart = (frameY + i) * bufferWidth + frameX;
-
-        for(let j = 0; j < frameW; j++) {
-            const index = (rowStart + j) * 4;
-
-            const r = buffer[index];
-            const g = buffer[index + 1];
-            const b = buffer[index + 2];
-            
-            const colorKey = (r << 16) | (g << 8) | b;
-            const mappedColor = colorMap[colorKey];
-
-            if(mappedColor) {
-                const [nr, ng, nb] = mappedColor;
-
-                buffer[index] = nr;
-                buffer[index + 1] = ng;
-                buffer[index + 2] = nb;
-            }
-        }
-    }
-}
-
-const recolorImage = function(imageData, colorMap) {
-    const { data, width, height } = imageData;
-
-    recolorRect(data, width, colorMap, 0, 0, width, height);
-}
-
-const recolorImageWithRegions = function(imageData, colorMap, regions) {
-    const { data, width } = imageData;
-
-    for(let i = 0; i < regions.length; i++) {
-        const { x, y, w, h } = regions[i];
-
-        recolorRect(data, width, colorMap, x, y, w, h);
-    }
-}
-
-const createImageData = function(bitmap) {
-    const { width, height } = bitmap;
-    const canvas = new OffscreenCanvas(width, height);
-    const context = canvas.getContext("2d");
-
-    context.imageSmoothingEnabled = false;
-    context.drawImage(bitmap, 0, 0);
-
-    const imageData = context.getImageData(0, 0, width, height);
-
-    return imageData;
-}
-
 export const Texture = function(id, name, path) {
     this.id = id;
     this.name = name;
@@ -66,11 +12,6 @@ export const Texture = function(id, name, path) {
 }
 
 Texture.EMPTY_HANDLE = new TextureHandle(-1);
-
-Texture.COPY_TYPE = {
-    FULL: 0,
-    REGIONAL: 1
-};
 
 Texture.prototype.getRegionIndex = function(name) {
     const index = this.regionMap[name];
@@ -150,35 +91,6 @@ Texture.prototype.createHandle = function(handleID) {
     this.variants.push(handle);
 
     return handle;
-}
-
-Texture.prototype.loadHandle = function(handleID, schema, copyType) {
-    const handle = this.getHandle(handleID);
-
-    if(handle === this.handle) {
-        return;
-    }
-
-    if(handle.state === TextureHandle.STATE.EMPTY) {
-        handle.state = TextureHandle.STATE.LOADING;
-
-        const imageData = createImageData(this.handle.bitmap);
-
-        switch(copyType) {
-            case Texture.COPY_TYPE.FULL: {
-                recolorImage(imageData, schema);
-                break;
-            }
-            case Texture.COPY_TYPE.REGIONAL: {
-                recolorImageWithRegions(imageData, schema, this.regions);
-                break;
-            }
-        }
-
-        createImageBitmap(imageData)
-        .then(bitmap => handle.setImage(bitmap))
-        .catch(error => handle.clear());
-    }
 }
 
 Texture.prototype.initRegions = function(regions) {

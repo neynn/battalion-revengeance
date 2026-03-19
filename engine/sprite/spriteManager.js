@@ -2,7 +2,6 @@ import { Sprite } from "./sprite.js";
 import { ObjectPool } from "../util/objectPool.js";
 import { SpriteContainer } from "./spriteContainer.js";
 import { TextureHandle } from "../resources/texture/textureHandle.js";
-import { Texture } from "../resources/texture/texture.js";
 
 export const SpriteManager = function(textureLoader) {
     this.resources = textureLoader;
@@ -77,6 +76,20 @@ SpriteManager.prototype.load = function(textures, sprites) {
     this.textureMap = textureMap;
 }
 
+SpriteManager.prototype.createShadeTask = function(spriteID, handle) {
+    const spriteEntry = this.spriteMap.get(spriteID);
+
+    if(!spriteEntry) {
+        return;
+    }
+
+    const { containerID, textureID } = spriteEntry;
+    const container = this.containers[containerID];
+    const { frames } = container;
+
+    this.resources.addShadeTask(textureID, frames[0], handle);
+}
+
 SpriteManager.prototype.getTextureIndex = function(name) {
     return this.textureMap[name] ?? -1;
 }
@@ -117,27 +130,8 @@ SpriteManager.prototype.createCopyTexture = function(spriteID, variantID, colorM
     }
 
     const { textureID } = spriteEntry;
-    const texture = this.resources.getTexture(textureID);
-    const handle = texture.createHandle(variantID);
 
-    //TODO: Unnecessary state checks.
-    if(handle.state === TextureHandle.STATE.EMPTY) {
-        switch(texture.handle.state) {
-            case TextureHandle.STATE.EMPTY: {
-                this.resources.loadTexture(textureID);
-                this.resources.addRecolorTask(textureID, variantID, colorMap, Texture.COPY_TYPE.REGIONAL);
-                break;
-            }
-            case TextureHandle.STATE.LOADING: {
-                this.resources.addRecolorTask(textureID, variantID, colorMap, Texture.COPY_TYPE.REGIONAL);
-                break;
-            }
-            case TextureHandle.STATE.LOADED: {
-                this.resources.addRecolorTask(textureID, variantID, colorMap, Texture.COPY_TYPE.REGIONAL);
-                break;
-            }
-        }
-    }
+    this.resources.addRecolorTask(textureID, variantID, colorMap);
 }
 
 SpriteManager.prototype.update = function(gameContext) {

@@ -1548,15 +1548,5 @@
             "rows": 7,
             "columns": 7
         }
-    },
-    "shade": {
-        "directory": ["assets","sprites"],
-        "source": "shade.png",
-        "regions": {
-            "assault_infantry_up": {"x":0,"y":0,"w":56,"h":56},
-            "assault_infantry_right": {"x":0,"y":56,"w":56,"h":56},
-            "assault_infantry_down": {"x":0,"y":112,"w":56,"h":56},
-            "assault_infantry_left": {"x":0,"y":168,"w":56,"h":56}
-        }
     }
 }

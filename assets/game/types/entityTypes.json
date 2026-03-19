@@ -63,12 +63,6 @@
         "name": "ENTITY_NAME_ASSAULT_INFANTRY",
         "desc": "ENTITY_DESC_ASSAULT_INFANTRY",
         "traits": ["CONQUEROR", "SCHWERPUNKT"],
-        "shade": {
-            "up": "assault_infantry_up",
-            "right": "assault_infantry_right",
-            "down": "assault_infantry_down",
-            "left": "assault_infantry_left"
-        },
         "sprites": {
             "idle_right": "assault_infantry_idle_right",
             "idle_left": "assault_infantry_idle_left",

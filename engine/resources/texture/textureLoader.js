@@ -1,11 +1,20 @@
 import { TextureRegistry } from "./textureRegistry.js";
 import { TextureHandle } from "./textureHandle.js";
+import { RecolorRegionTask } from "../textureTask/recolorRegionTask.js";
+import { ShadeTask } from "../textureTask/shadeTask.js";
+import { TextureTask } from "../textureTask/textureTask.js";
 
 export const TextureLoader = function() {
     this.textureRegistry = new TextureRegistry();
     this.toResolve = new Map();
     this.tasks = [];
 }
+
+TextureLoader.TASK_TYPE = {
+    FULL: 0,
+    REGIONAL: 1,
+    SHADE: 2
+};
 
 TextureLoader.prototype.clearTexture = function(index) {
     const texture = this.textureRegistry.getTexture(index);
@@ -29,21 +38,20 @@ TextureLoader.prototype.getTexture = function(index) {
 
 TextureLoader.prototype.update = function() {
     if(this.tasks.length !== 0) {
-        const { textureID, handleID, colorMap, type } = this.tasks[0];
-        const texture = this.getTexture(textureID);
+        const task = this.tasks[0];
 
-        if(texture.handle.state !== TextureHandle.STATE.LOADED) {
-            return;
-        }
+        switch(task.state) {
+            case TextureTask.STATE.RUNNING: {
+                task.run();
 
-        const handle = texture.getHandle(handleID);
+                if(task.handle.state === TextureHandle.STATE.LOADED) {
+                    this.tasks[0] = this.tasks[this.tasks.length - 1];
+                    this.tasks.pop();
+                }
 
-        switch(handle.state) {
-            case TextureHandle.STATE.EMPTY: {
-                texture.loadHandle(handleID, colorMap, type);
                 break;
             }
-            case TextureHandle.STATE.LOADED: {
+            case TextureTask.STATE.FINISHED: {
                 this.tasks[0] = this.tasks[this.tasks.length - 1];
                 this.tasks.pop();
                 break;
@@ -52,22 +60,54 @@ TextureLoader.prototype.update = function() {
     }
 }
 
-TextureLoader.prototype.addRecolorTask = function(textureID, handleID, colorMap, taskType) {
-    //Allow only one task per texture variant.
+TextureLoader.prototype.addShadeTask = function(textureID, rect, handle) {
+    const texture = this.getTexture(textureID);
+
+    if(!texture) {
+        return;
+    }
+
+    if(texture.handle.state === TextureHandle.STATE.EMPTY) {
+        this.loadTexture(textureID);
+    }
+
+    const task = new ShadeTask(texture, handle);
+
+    task.rect = rect;
+
+    this.tasks.push(task);
+}
+
+TextureLoader.prototype.addRecolorTask = function(textureID, colorID, colorMap) {
+    //TODO(neyn): Not needed!
     for(let i = 0; i < this.tasks.length; i++) {
         const task = this.tasks[i];
 
-        if(task.textureID === textureID && task.handleID === handleID) {
+        if(task.textureID === textureID && task.colorID === colorID) {
             return;
         }
     }
 
-    this.tasks.push({
-        "textureID": textureID,
-        "handleID": handleID,
-        "colorMap": colorMap,
-        "type": taskType
-    });
+    const texture = this.getTexture(textureID);
+
+    if(!texture) {
+        return;
+    }
+
+    const handle = texture.createHandle(colorID);
+
+    if(handle.state === TextureHandle.STATE.EMPTY) {
+        if(texture.handle.state === TextureHandle.STATE.EMPTY) {
+            this.loadTexture(textureID);
+        }
+
+        const task = new RecolorRegionTask(texture, handle);
+
+        task.colorID = colorID;
+        task.colorMap = colorMap;
+
+        this.tasks.push(task);
+    }
 }
 
 TextureLoader.prototype.addLoadResolver = function(textureID, onLoad) {

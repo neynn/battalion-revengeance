@@ -40,7 +40,6 @@ export const EntityType = function(id) {
     this.cost = 0;
     this.sounds = {};
     this.sprites = {};
-    this.shade = {};
     this.effects = {};
     this.traits = [];
     this.category = mapMovementToCategory(this.movementType);
@@ -75,7 +74,6 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
         traits = [],
         sounds = {},
         sprites = {},
-        shade = {},
         effects = {}
     } = config;
 
@@ -98,7 +96,6 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
     this.maxRange = maxRange;
     this.sounds = sounds;
     this.sprites = sprites;
-    this.shade = shade;
     this.effects = effects;
 
     if(this.maxRange < this.minRange) {

@@ -12,7 +12,6 @@ import { BattalionMap } from "../map/battalionMap.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { Mine } from "../entity/mine.js";
 import { TeamManager } from "../team/teamManager.js";
-import { TextureRegistry } from "../../engine/resources/texture/textureRegistry.js";
 import { TextureHandle } from "../../engine/resources/texture/textureHandle.js";
 
 const BLOCK = { COUNT: 4, WIDTH: 4, HEIGHT: 8, GAP: 1 };
@@ -50,11 +49,10 @@ export const BattalionCamera = function() {
     this.isCurrentActor = false;
     this.markerSprite = SpriteManager.EMPTY_SPRITE;
     this.weakMarkerSprite = SpriteManager.EMPTY_SPRITE;
-    this.shadeTexture = TextureRegistry.EMPTY_TEXTURE;
-    this.shadeRegions = new Int16Array(MAX_SHADES);
+    this.shadeHandles = [];
 
     for(let i = 0; i < MAX_SHADES; i++) {
-        this.shadeRegions[i] = -1;
+        this.shadeHandles[i] = new TextureHandle(i);
     }
 }
 
@@ -74,40 +72,37 @@ BattalionCamera.prototype = Object.create(Camera2D.prototype);
 BattalionCamera.prototype.constructor = BattalionCamera;
 
 BattalionCamera.prototype.loadSprites = function(gameContext) {
-    const { spriteManager, textureLoader, typeRegistry } = gameContext;
-    const shadeIndex = spriteManager.getTextureIndex("shade");
+    const { spriteManager, typeRegistry } = gameContext;
 
     this.markerSprite = spriteManager.createSprite("marker");
-    this.shadeTexture = textureLoader.getTexture(shadeIndex);
-
-    textureLoader.loadTexture(shadeIndex);
 
     for(let i = 0; i < ENTITY_TYPE._COUNT; i++) {
+        const { sprites } = typeRegistry.getEntityType(i);
+
         for(let j = 0; j < DIRECTION._COUNT; j++) {
-            const { shade } = typeRegistry.getEntityType(i);
-            let shadeRegion = null;
+            let idleSprite = null;
 
             switch(j) {
                 case DIRECTION.NORTH: {
-                    shadeRegion = shade["up"];
+                    idleSprite = sprites["idle_up"];
                     break;
                 }
                 case DIRECTION.EAST: {
-                    shadeRegion = shade["right"];
+                    idleSprite = sprites["idle_right"];
                     break;
                 }
                 case DIRECTION.SOUTH: {
-                    shadeRegion = shade["down"];
+                    idleSprite = sprites["idle_down"];
                     break;
                 }
                 case DIRECTION.WEST: {
-                    shadeRegion = shade["left"];
+                    idleSprite = sprites["idle_left"];
                     break;
                 }
             }
 
-            if(shadeRegion) {
-                this.shadeRegions[i * DIRECTION._COUNT + j] = this.shadeTexture.getRegionIndex(shadeRegion);
+            if(idleSprite) {
+                spriteManager.createShadeTask(idleSprite, this.shadeHandles[i * DIRECTION._COUNT + j]);
             }
         }
     }
@@ -159,26 +154,20 @@ BattalionCamera.prototype.drawEntityHealth = function(display, drawX, drawY, vit
 
 BattalionCamera.prototype.drawShade = function(display, screenX, screenY, index) {
     if(index >= 0) {
-        const { regions, handle } = this.shadeTexture;
-        const { state, bitmap } = handle;
+        const { state, bitmap, width, height } = this.shadeHandles[index];
 
         if(state === TextureHandle.STATE.LOADED) {
-            const regionIndex = this.shadeRegions[index];
-
-            if(regionIndex !== -1) {
-                const { x, y, w, h } = regions[regionIndex];
-
-                display.context.drawImage(
-                    bitmap,
-                    x, y, w, h,
-                    screenX, screenY, w, h
-                );
-            }
+            display.context.drawImage(
+                bitmap,
+                0, 0, width, height,
+                screenX, screenY, width, height
+            );
         }
     }
 }
 
 BattalionCamera.prototype.drawEntity = function(gameContext, display, entity, sprite, realTime, deltaTime) {
+    const { teamManager } = gameContext;
     const { tileX, tileY, offsetX, offsetY, state, teamID, flags, opacity, config, direction } = entity;
     const screenX = this.getScreenX(tileX) + offsetX;
     const screenY = this.getScreenY(tileY) + offsetY;
@@ -194,7 +183,7 @@ BattalionCamera.prototype.drawEntity = function(gameContext, display, entity, sp
     }
 
     if(this.flags & BattalionCamera.FLAG.USE_PERSPECTIVES) {
-        if(opacity < BattalionCamera.STEALTH_THRESHOLD && entity.isVisibleTo(gameContext, this.teamID)) {
+        if(opacity < BattalionCamera.STEALTH_THRESHOLD && (flags & BattalionEntity.FLAG.IS_CLOAKED) && teamManager.isAlly(teamID, this.teamID)) {
             alpha = BattalionCamera.STEALTH_THRESHOLD;
         }
 
@@ -227,11 +216,12 @@ BattalionCamera.prototype.drawEntity = function(gameContext, display, entity, sp
         sprite.setOpacity(alpha);
 
         if(isInactive) {
+            const shadeX = screenX + sprite.offsetX;
+            const shadeY = screenY + sprite.offsetY;
             const shadeIndex = config.id * DIRECTION._COUNT + direction;
 
             sprite.draw(display, 0, 0);
-
-            this.drawShade(display, screenX, screenY, shadeIndex);
+            this.drawShade(display, shadeX, shadeY, shadeIndex);
         } else {
             sprite.update(realTime, deltaTime);
             sprite.draw(display, 0, 0);
