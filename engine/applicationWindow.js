@@ -45,6 +45,7 @@ ApplicationWindow.prototype.queueResize = function() {
 }
 
 ApplicationWindow.prototype.drawDebug = function(gameContext) {
+    const { textureLoader } = gameContext;
     const { context } = this.display;
     const { timer } = gameContext;
     const { x, y } = getCursorTile(gameContext);
@@ -60,7 +61,7 @@ ApplicationWindow.prototype.drawDebug = function(gameContext) {
     
     const TEXT_SIZE = 10;
     const WINDOW_Y = 0;
-    const DEBUG_Y = TEXT_SIZE * 5;
+    const DEBUG_Y = TEXT_SIZE * 6;
 
     context.globalAlpha = 1;
     context.font = `${TEXT_SIZE}px Arial`;
@@ -68,6 +69,7 @@ ApplicationWindow.prototype.drawDebug = function(gameContext) {
     context.fillText(`FPS: ${fps}`, 0, WINDOW_Y + TEXT_SIZE);
     context.fillText(`WindowX: ${this.width}, WindowY: ${this.height}`, 0, WINDOW_Y + TEXT_SIZE * 2);
     context.fillText(`MouseX: ${x}, MouseY: ${y}`, 0, WINDOW_Y + TEXT_SIZE * 3);
+    context.fillText(`Task: ${textureLoader.getCompletedTasks()}/${textureLoader.totalTasks}`, 0, WINDOW_Y + TEXT_SIZE * 4);
 
     context.fillText(`World: ${DEBUG.WORLD}`, 0, DEBUG_Y);
     context.fillText(`Context: ${DEBUG.CONTEXT}`, 0, DEBUG_Y + TEXT_SIZE);

@@ -1,5 +1,4 @@
-import { TextureHandle } from "../texture/textureHandle.js";
-import { createImageData, recolorImageWithRegions, TextureTask } from "./textureTask.js";
+import { createImageData, recolorRect, TextureTask } from "./textureTask.js";
 
 export const RecolorRegionTask = function(texture, handle) {
     TextureTask.call(this, texture, handle);
@@ -11,24 +10,23 @@ export const RecolorRegionTask = function(texture, handle) {
 RecolorRegionTask.prototype = Object.create(TextureTask.prototype);
 RecolorRegionTask.prototype.constructor = RecolorRegionTask;
 
-RecolorRegionTask.prototype.run = function() {
-    if(this.texture.handle.state === TextureHandle.STATE.LOADED) {
-        if(this.handle.state === TextureHandle.STATE.EMPTY) {
-            this.handle.state = TextureHandle.STATE.LOADING;
-                
-            const imageData = createImageData(this.texture.handle.bitmap);
+RecolorRegionTask.prototype.execute = function() {        
+    const imageData = createImageData(this.texture.handle.bitmap);
+    const { data, width } = imageData;
 
-            recolorImageWithRegions(imageData, this.colorMap, this.texture.regions);
+    for(let i = 0; i < this.texture.regions.length; i++) {
+        const { x, y, w, h } = this.texture.regions[i];
 
-            createImageBitmap(imageData)
-            .then(bitmap => {
-                this.handle.setImage(bitmap);
-                this.state = TextureTask.STATE.FINISHED;
-            })
-            .catch(error => {
-                this.handle.clear();
-                this.state = TextureTask.STATE.FINISHED;
-            });
-        }
+        recolorRect(data, width, this.colorMap, x, y, w, h);
     }
+
+    createImageBitmap(imageData)
+    .then(bitmap => {
+        this.handle.setImage(bitmap);
+        this.state = TextureTask.STATE.FINISHED;
+    })
+    .catch(error => {
+        this.handle.clear();
+        this.state = TextureTask.STATE.FINISHED;
+    });
 }

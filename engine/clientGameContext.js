@@ -75,5 +75,6 @@ ClientGameContext.prototype.exit = function() {
     this.uiManager.exit();
     this.language.exit();
     this.tweenManager.exit();
+    this.textureLoader.exit();
     this.onExit();
 }

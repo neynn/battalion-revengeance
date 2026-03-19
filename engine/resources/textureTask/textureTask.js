@@ -1,10 +1,13 @@
+import { TextureHandle } from "../texture/textureHandle.js";
+
 export const recolorRect = function(buffer, bufferWidth, colorMap, frameX, frameY, frameW, frameH) {
+    let rowStart = frameY * bufferWidth + frameX;
+    let index = 0;
+
     for(let i = 0; i < frameH; i++) {
-        const rowStart = (frameY + i) * bufferWidth + frameX;
+        index = rowStart * 4;
 
         for(let j = 0; j < frameW; j++) {
-            const index = (rowStart + j) * 4;
-
             const r = buffer[index];
             const g = buffer[index + 1];
             const b = buffer[index + 2];
@@ -19,23 +22,11 @@ export const recolorRect = function(buffer, bufferWidth, colorMap, frameX, frame
                 buffer[index + 1] = ng;
                 buffer[index + 2] = nb;
             }
+
+            index += 4;
         }
-    }
-}
 
-export const recolorImage = function(imageData, colorMap) {
-    const { data, width, height } = imageData;
-
-    recolorRect(data, width, colorMap, 0, 0, width, height);
-}
-
-export const recolorImageWithRegions = function(imageData, colorMap, regions) {
-    const { data, width } = imageData;
-
-    for(let i = 0; i < regions.length; i++) {
-        const { x, y, w, h } = regions[i];
-
-        recolorRect(data, width, colorMap, x, y, w, h);
+        rowStart += bufferWidth;
     }
 }
 
@@ -71,14 +62,30 @@ export const createEmptyImageData = function(width, height, bitmap, copyX, copyY
 export const TextureTask = function(texture, handle) {
     this.texture = texture;
     this.handle = handle;
-    this.state = TextureTask.STATE.RUNNING;
+    this.state = TextureTask.STATE.NOT_STARTED;
 }
 
 TextureTask.STATE = {
-    RUNNING: 0,
-    FINISHED: 1
+    NOT_STARTED: 0,
+    RUNNING: 1,
+    FINISHED: 2
 };
 
-TextureTask.prototype.run = function() {
+TextureTask.prototype.execute = function() {
     this.state = TextureTask.STATE.FINISHED;
+}
+
+TextureTask.prototype.run = function() {
+    if(this.state === TextureTask.STATE.NOT_STARTED) {
+        if(this.texture.handle.state === TextureHandle.STATE.LOADED) {
+            if(this.handle.state === TextureHandle.STATE.EMPTY) {
+                this.state = TextureTask.STATE.RUNNING;
+                this.execute();
+            }
+        }
+    }
+}
+
+TextureTask.prototype.isFinished = function() {
+    return this.state === TextureTask.STATE.FINISHED || this.handle.state === TextureHandle.STATE.LOADED;
 }

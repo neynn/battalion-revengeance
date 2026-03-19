@@ -2,19 +2,26 @@ import { TextureRegistry } from "./textureRegistry.js";
 import { TextureHandle } from "./textureHandle.js";
 import { RecolorRegionTask } from "../textureTask/recolorRegionTask.js";
 import { ShadeTask } from "../textureTask/shadeTask.js";
-import { TextureTask } from "../textureTask/textureTask.js";
 
 export const TextureLoader = function() {
     this.textureRegistry = new TextureRegistry();
     this.toResolve = new Map();
     this.tasks = [];
+    this.totalTasks = 0;
 }
 
-TextureLoader.TASK_TYPE = {
-    FULL: 0,
-    REGIONAL: 1,
-    SHADE: 2
-};
+TextureLoader.prototype.exit = function() {
+    this.tasks.length = 0;
+    this.totalTasks = 0;
+}
+
+TextureHandle.prototype.isDone = function() {
+    return this.tasks.length === 0;
+}
+
+TextureLoader.prototype.getCompletedTasks = function() {
+    return this.totalTasks - this.tasks.length;
+}
 
 TextureLoader.prototype.clearTexture = function(index) {
     const texture = this.textureRegistry.getTexture(index);
@@ -38,27 +45,14 @@ TextureLoader.prototype.getTexture = function(index) {
 
 TextureLoader.prototype.update = function() {
     //TODO(neyn): Create a proper task counter!
-    for(let i = 0; i < 3; i++) {
-        if(this.tasks.length !== 0) {
-            const task = this.tasks[0];
+    for(let i = 0; i < 3 && this.tasks.length !== 0; i++) {
+        const task = this.tasks[0];
 
-            switch(task.state) {
-                case TextureTask.STATE.RUNNING: {
-                    task.run();
+        task.run();
 
-                    if(task.handle.state === TextureHandle.STATE.LOADED) {
-                        this.tasks[0] = this.tasks[this.tasks.length - 1];
-                        this.tasks.pop();
-                    }
-
-                    break;
-                }
-                case TextureTask.STATE.FINISHED: {
-                    this.tasks[0] = this.tasks[this.tasks.length - 1];
-                    this.tasks.pop();
-                    break;
-                }
-            }
+        if(task.isFinished()) {
+            this.tasks[0] = this.tasks[this.tasks.length - 1];
+            this.tasks.pop();
         }
     }
 }
@@ -79,6 +73,7 @@ TextureLoader.prototype.addShadeTask = function(textureID, rect, handle) {
     task.rect = rect;
 
     this.tasks.push(task);
+    this.totalTasks++;
 }
 
 TextureLoader.prototype.addRecolorTask = function(textureID, colorID, colorMap) {
@@ -110,6 +105,7 @@ TextureLoader.prototype.addRecolorTask = function(textureID, colorID, colorMap) 
         task.colorMap = colorMap;
 
         this.tasks.push(task);
+        this.totalTasks++;
     }
 }
 
