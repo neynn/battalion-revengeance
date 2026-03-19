@@ -115,7 +115,9 @@ WorldMap.prototype.removeEntity = function(tileX, tileY, rangeX, rangeY, entityI
             const index = this.getIndex(locationX, locationY);
 
             if(index !== WorldMap.OUT_OF_BOUNDS) {
-                this.entities[index] = EntityManager.INVALID_INDEX;
+                if(this.entities[index] === entityIndex) {
+                    this.entities[index] = EntityManager.INVALID_INDEX;
+                }
             }
         }
     }
