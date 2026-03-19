@@ -423,8 +423,6 @@ BattalionCamera.prototype.update = function(gameContext, display) {
         this.debugMap(display, worldMap);
         this.drawInfo(gameContext, display, tiles, sprites, overlays, other);
     }
-
-    this.currentFrame++;
 }
 
 BattalionCamera.prototype.shadeScreen = function(display, color, alpha) {

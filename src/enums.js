@@ -603,7 +603,10 @@ export const TILE_ID = {
     RAIL_0: 168,
     RAIL_15: 183,
 
-    _COUNT: 184
+    MINE_LAND: 184,
+    MINE_SEA: 185,
+
+    _COUNT: 186
 };
 
 export const DIRECTION = {

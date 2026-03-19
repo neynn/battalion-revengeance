@@ -516,4 +516,5 @@ Camera2D.prototype.updateWorldBounds = function(width, height) {
     this.startY = clampValue(startY, this.mapHeight - 1, 0);
     this.endX = clampValue(endX, this.mapWidth - 1, 0);
     this.endY = clampValue(endY, this.mapHeight - 1, 0);
+    this.currentFrame++;
 }

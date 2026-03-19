@@ -70,9 +70,9 @@ Mine.prototype.getJammerFlag = function() {
 
 Mine.prototype.getTileSprite = function() {
     switch(this.config.id) {
-        case MINE_TYPE.LAND: return TILE_ID.VOLANO;
-        case MINE_TYPE.SEA: return TILE_ID.VOLANO;
-        default: return TILE_ID.VOLANO;
+        case MINE_TYPE.LAND: return TILE_ID.MINE_LAND;
+        case MINE_TYPE.SEA: return TILE_ID.MINE_SEA;
+        default: return TILE_ID.JAMMER;
     }
 }
 
