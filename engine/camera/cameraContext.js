@@ -68,8 +68,12 @@ CameraContext.prototype.disableBuffer = function() {
     this.refresh();
 }
 
-CameraContext.prototype.fixBuffer = function() {
-    this.flags |= CameraContext.FLAG.FIX_BUFFER;
+CameraContext.prototype.fixBuffer = function(width, height) {
+    if(this.flags & CameraContext.FLAG.USE_BUFFER) {
+        this.flags |= CameraContext.FLAG.FIX_BUFFER;
+        this.display.resize(width, height);
+        this.camera.setViewportSize(width, height);
+    }
 }
 
 CameraContext.prototype.freeBuffer = function() {
@@ -208,23 +212,16 @@ CameraContext.prototype.forceReload = function() {
 
 CameraContext.prototype.onWindowResize = function(windowWidth, windowHeight) {
     if(this.flags & CameraContext.FLAG.USE_BUFFER) {
-        if(this.flags & CameraContext.FLAG.FIX_BUFFER) {
-            this.refresh();
-        } else {
-            this.setResolution(windowWidth, windowHeight);
+        if(!(this.flags & CameraContext.FLAG.FIX_BUFFER)) {
+            this.display.resize(windowWidth, windowHeight);
+            this.camera.setViewportSize(windowWidth, windowHeight);
         }
     } else {
         this.camera.setViewportSize(windowWidth, windowHeight);
         this.refresh();
     }
-}
 
-CameraContext.prototype.setResolution = function(width, height) {
-    if((this.flags & CameraContext.FLAG.USE_BUFFER)) {
-        this.display.resize(width, height);
-        this.camera.setViewportSize(width, height);
-        this.refresh();
-    }
+    this.refresh();
 }
 
 CameraContext.prototype.draw = function(gameContext, display) {
