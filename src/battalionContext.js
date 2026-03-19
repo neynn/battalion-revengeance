@@ -13,6 +13,7 @@ import { UICore } from "./ui/uiCore.js";
 import { ClientActionRouter } from "./client/actionRouter.js";
 import { addDebug, registerClientActions } from "./systems/context.js";
 import { resolveTileType } from "./enumHelpers.js";
+import { ShadeCache } from "./shadeCache.js";
 
 export const BattalionContext = function() {
     ClientGameContext.call(this);
@@ -23,7 +24,7 @@ export const BattalionContext = function() {
     this.dialogueHandler = new DialogueHandler();
     this.uiCore = new UICore();
     this.actionRouter = new ClientActionRouter();
-
+    this.shadeCache = new ShadeCache();
 
     this.timer.input = (deltaTime) => {
         this.client.update();
@@ -90,5 +91,6 @@ BattalionContext.prototype.onExit = function() {
     this.portraitHandler.exit();
     this.dialogueHandler.exit();
     this.uiCore.exit();
+    this.shadeCache.exit();
     addDebug(this);
 }

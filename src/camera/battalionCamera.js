@@ -7,7 +7,7 @@ import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { drawShape, shadeScreen } from "../../engine/util/drawHelper.js";
 import { TILE_HEIGHT, TILE_WIDTH } from "../../engine/engine_constants.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { DIRECTION, ENTITY_TYPE, LAYER_TYPE, PLAYER_PREFERENCE, TILE_ID } from "../enums.js";
+import { DIRECTION, LAYER_TYPE, PLAYER_PREFERENCE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { Mine } from "../entity/mine.js";
@@ -33,7 +33,6 @@ export const BattalionCamera = function() {
 
     //Maximum number of tiles a jammer can cover, using the Manhattan distance.
     const JAMMER_MAX_USED_TILES = 1 + 2 * EntityType.MAX_JAMMER_RANGE * (EntityType.MAX_JAMMER_RANGE + 1);
-    const MAX_SHADES = ENTITY_TYPE._COUNT * DIRECTION._COUNT;
 
     //Each tile has a minCost of 1, which means there will NEVER be more than MAX_MOVE_COST tiles.
     this.pathOverlay = new TileOverlay(EntityType.MAX_MOVE_COST);
@@ -49,11 +48,6 @@ export const BattalionCamera = function() {
     this.isCurrentActor = false;
     this.markerSprite = SpriteManager.EMPTY_SPRITE;
     this.weakMarkerSprite = SpriteManager.EMPTY_SPRITE;
-    this.shadeHandles = [];
-
-    for(let i = 0; i < MAX_SHADES; i++) {
-        this.shadeHandles[i] = new TextureHandle(i);
-    }
 }
 
 //TODO(neyn): Increase the size if ever needed.
@@ -72,40 +66,9 @@ BattalionCamera.prototype = Object.create(Camera2D.prototype);
 BattalionCamera.prototype.constructor = BattalionCamera;
 
 BattalionCamera.prototype.loadSprites = function(gameContext) {
-    const { spriteManager, typeRegistry } = gameContext;
+    const { spriteManager } = gameContext;
 
     this.markerSprite = spriteManager.createSprite("marker");
-
-    for(let i = 0; i < ENTITY_TYPE._COUNT; i++) {
-        const { sprites } = typeRegistry.getEntityType(i);
-
-        for(let j = 0; j < DIRECTION._COUNT; j++) {
-            let idleSprite = null;
-
-            switch(j) {
-                case DIRECTION.NORTH: {
-                    idleSprite = sprites["idle_up"];
-                    break;
-                }
-                case DIRECTION.EAST: {
-                    idleSprite = sprites["idle_right"];
-                    break;
-                }
-                case DIRECTION.SOUTH: {
-                    idleSprite = sprites["idle_down"];
-                    break;
-                }
-                case DIRECTION.WEST: {
-                    idleSprite = sprites["idle_left"];
-                    break;
-                }
-            }
-
-            if(idleSprite) {
-                spriteManager.createShadeTask(idleSprite, this.shadeHandles[i * DIRECTION._COUNT + j]);
-            }
-        }
-    }
 }
 
 BattalionCamera.prototype.setInspect = function(inspectX, inspectY) {
@@ -152,22 +115,8 @@ BattalionCamera.prototype.drawEntityHealth = function(display, drawX, drawY, vit
     }
 }
 
-BattalionCamera.prototype.drawShade = function(display, screenX, screenY, index) {
-    if(index >= 0) {
-        const { state, bitmap, width, height } = this.shadeHandles[index];
-
-        if(state === TextureHandle.STATE.LOADED) {
-            display.context.drawImage(
-                bitmap,
-                0, 0, width, height,
-                screenX, screenY, width, height
-            );
-        }
-    }
-}
-
 BattalionCamera.prototype.drawEntity = function(gameContext, display, entity, sprite, realTime, deltaTime) {
-    const { teamManager } = gameContext;
+    const { teamManager, shadeCache } = gameContext;
     const { tileX, tileY, offsetX, offsetY, state, teamID, flags, opacity, config, direction } = entity;
     const screenX = this.getScreenX(tileX) + offsetX;
     const screenY = this.getScreenY(tileY) + offsetY;
@@ -216,12 +165,21 @@ BattalionCamera.prototype.drawEntity = function(gameContext, display, entity, sp
         sprite.setOpacity(alpha);
 
         if(isInactive) {
-            const shadeX = screenX + sprite.offsetX;
-            const shadeY = screenY + sprite.offsetY;
             const shadeIndex = config.id * DIRECTION._COUNT + direction;
+            const { state, bitmap, width, height } = shadeCache.getShade(shadeIndex);
 
             sprite.draw(display, 0, 0);
-            this.drawShade(display, shadeX, shadeY, shadeIndex);
+
+            if(state === TextureHandle.STATE.LOADED) {
+                const shadeX = screenX + sprite.offsetX;
+                const shadeY = screenY + sprite.offsetY;
+
+                display.context.drawImage(
+                    bitmap,
+                    0, 0, width, height,
+                    shadeX, shadeY, width, height
+                );
+            }
         } else {
             sprite.update(realTime, deltaTime);
             sprite.draw(display, 0, 0);

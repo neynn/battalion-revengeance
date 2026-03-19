@@ -37,24 +37,27 @@ TextureLoader.prototype.getTexture = function(index) {
 }
 
 TextureLoader.prototype.update = function() {
-    if(this.tasks.length !== 0) {
-        const task = this.tasks[0];
+    //TODO(neyn): Create a proper task counter!
+    for(let i = 0; i < 3; i++) {
+        if(this.tasks.length !== 0) {
+            const task = this.tasks[0];
 
-        switch(task.state) {
-            case TextureTask.STATE.RUNNING: {
-                task.run();
+            switch(task.state) {
+                case TextureTask.STATE.RUNNING: {
+                    task.run();
 
-                if(task.handle.state === TextureHandle.STATE.LOADED) {
+                    if(task.handle.state === TextureHandle.STATE.LOADED) {
+                        this.tasks[0] = this.tasks[this.tasks.length - 1];
+                        this.tasks.pop();
+                    }
+
+                    break;
+                }
+                case TextureTask.STATE.FINISHED: {
                     this.tasks[0] = this.tasks[this.tasks.length - 1];
                     this.tasks.pop();
+                    break;
                 }
-
-                break;
-            }
-            case TextureTask.STATE.FINISHED: {
-                this.tasks[0] = this.tasks[this.tasks.length - 1];
-                this.tasks.pop();
-                break;
             }
         }
     }

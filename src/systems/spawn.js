@@ -84,7 +84,7 @@ export const createServerEntityObject = function(gameContext, entityID, teamID, 
 }
 
 export const createClientEntityObject = function(gameContext, entityID, teamID, typeID, tileX, tileY) {
-    const { teamManager, world, spriteManager, typeRegistry } = gameContext;
+    const { teamManager, world, spriteManager, typeRegistry, shadeCache } = gameContext;
     const { entityManager } = world;
     const team = teamManager.getTeam(teamID);
 
@@ -108,6 +108,7 @@ export const createClientEntityObject = function(gameContext, entityID, teamID, 
     bufferEntitySounds(gameContext, entityObject);
     bufferEntitySprites(gameContext, entityObject, schema);
     updateEntitySprite(gameContext, entityObject);
+    shadeCache.loadShades(gameContext, typeID);
 
     return entityObject;
 }
