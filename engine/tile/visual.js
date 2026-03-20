@@ -8,7 +8,7 @@ export const TileVisual = function(id) {
     this.framePtr = 0;
     this.frameCount = 0;
     this.frameTimeTotal = 1;
-    this.frameData = new Int16Array(TILE_FRAME_SIZE * TILE_MAX_FRAMES);
+    this.frameData = new Float32Array(TILE_FRAME_SIZE * TILE_MAX_FRAMES);
     this.jumpTable = new Uint8Array(TILE_MAX_FRAMES);
 }
 
