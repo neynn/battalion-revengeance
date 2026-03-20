@@ -1,5 +1,5 @@
 import { DEBUG } from "../debug.js";
-import { TILE_HEIGHT, TILE_WIDTH } from "../engine_constants.js";
+import { TILE_FRAME_SIZE, TILE_HEIGHT, TILE_WIDTH } from "../engine_constants.js";
 import { clampValue } from "../math/math.js";
 import { TextureHandle } from "../resources/texture/textureHandle.js";
 
@@ -257,13 +257,32 @@ Camera2D.prototype.drawFrame = function(context, bitmap, frame, screenX, screenY
 }
 
 Camera2D.prototype.drawTile = function(tileManager, tileID, context, screenX, screenY, scale = 1) {
-    const { handle, frames, frameIndex } = tileManager.getVisual(tileID);
+    const { handle, frameData, framePtr } = tileManager.getVisual(tileID);
     const { state, bitmap } = handle;
 
     if(state !== TextureHandle.STATE.LOADED) {
         this.drawEmptyTile(context, screenX, screenY, scale);
     } else {
-        this.drawFrame(context, bitmap, frames[frameIndex], screenX, screenY, scale);
+        const count = frameData[framePtr]; 
+        let frame_ptr = framePtr;
+
+        for(let i = 0; i < count; i++) {
+            const frameX = frameData[frame_ptr + 1];
+            const frameY = frameData[frame_ptr + 2];
+            const width = frameData[frame_ptr + 3];
+            const height = frameData[frame_ptr + 4];
+            const offsetX = frameData[frame_ptr + 5];
+            const offsetY = frameData[frame_ptr + 6];
+
+            context.drawImage(
+                bitmap,
+                frameX, frameY, width, height,
+                Math.floor(screenX + offsetX * scale), Math.floor(screenY + offsetY * scale),
+                Math.floor(width * scale), Math.floor(height * scale)
+            );
+
+            frame_ptr += TILE_FRAME_SIZE;
+        }
     }
 }
 

@@ -1,70 +1,20 @@
+import { TILE_MAX_FRAMES, TILE_FRAME_SIZE, TILE_WRITE_PTR_MAX } from "../engine_constants.js";
 import { Texture } from "../resources/texture/texture.js";
 
 export const TileVisual = function(id) {
     this.id = id;
     this.handle = Texture.EMPTY_HANDLE;
-    this.frames = [];
     this.frameTime = TileVisual.DEFAULT.FRAME_TIME;
-    this.frameIndex = 0;
+    this.framePtr = 0;
     this.frameCount = 0;
     this.frameTimeTotal = 1;
+    this.frameData = new Int16Array(TILE_FRAME_SIZE * TILE_MAX_FRAMES);
+    this.jumpTable = new Uint8Array(TILE_MAX_FRAMES);
 }
 
 TileVisual.DEFAULT = {
     FRAME_TIME: 1
 };
-
-TileVisual.createComponent = function(x, y, w, h, offsetX, offsetY) {
-    return {
-        "frameX": x,
-        "frameY": y,
-        "frameW": w,
-        "frameH": h,
-        "shiftX": offsetX,
-        "shiftY": offsetY 
-    }
-}
-
-TileVisual.createFrame = function(frameData) {
-    if(!frameData) {
-        console.warn("FrameData does not exist!");
-        return [];
-    }
-
-    const { x, y, w, h, offset } = frameData;
-    const offsetX = (offset?.x ?? 0);
-    const offsetY = (offset?.y ?? 0);
-    const component = TileVisual.createComponent(x, y, w, h, offsetX, offsetY);
-    
-    return [component];
-}
-
-TileVisual.createPatternFrame = function(pattern, frames) {
-    const frame = [];
-
-    if(!pattern) {
-        return frame;
-    }
-
-    for(let i = 0; i < pattern.length; i++) {
-        const { id, shiftX, shiftY } = pattern[i];
-        const frameData = frames[id];
-
-        if(!frameData) {
-            console.warn(`Frame ${id} does not exist!`);
-            continue;
-        }
-
-        const { x, y, w, h, offset } = frameData;
-        const offsetX = (offset?.x ?? 0) + (shiftX ?? 0);
-        const offsetY = (offset?.y ?? 0) + (shiftY ?? 0);
-        const component = TileVisual.createComponent(x, y, w, h, offsetX, offsetY);
-
-        frame.push(component);
-    }
-
-    return frame;
-}
 
 TileVisual.prototype.setHandle = function(handle) {
     this.handle = handle;
@@ -79,99 +29,124 @@ TileVisual.prototype.getFrameCount = function() {
 }
 
 TileVisual.prototype.reset = function() {
-    this.frameIndex = 0;
+    this.framePtr = 0;
 }
 
-TileVisual.prototype.updateFrameIndex = function(timestamp) {
+TileVisual.prototype.update = function(timestamp) {
     const currentFrameTime = timestamp % this.frameTimeTotal;
     const frameIndex = Math.floor(currentFrameTime / this.frameTime);
+    const framePtr = this.jumpTable[frameIndex] * TILE_FRAME_SIZE;
 
-    this.frameIndex = frameIndex;
+    this.framePtr = framePtr;
 }
 
 TileVisual.prototype.setFrameTime = function(frameTime) {
     if(frameTime && frameTime > 0) {
+        const frameTimeTotal = frameTime * this.frameCount;
+
+        if(frameTimeTotal <= 0) {
+            this.frameTimeTotal = 1;
+        } else {
+            this.frameTimeTotal = frameTimeTotal;
+        }
+
         this.frameTime = frameTime;
-        this.updateTotalFrameTime();
     }
 }
 
-TileVisual.prototype.addFrame = function(frame) {
-    if(frame && frame.length > 0) {
-        this.frames.push(frame);
-        this.frameCount++;
-        this.updateTotalFrameTime();
+TileVisual.prototype.pushElement = function(fp, x, y, w, h, ox, oy) {
+    const element_count = this.frameData[fp];
+    const begin_write_ptr = fp + element_count * TILE_FRAME_SIZE;
+    let next_frame_ptr = fp;
+
+    //Allows write only if in bounds.
+    if(begin_write_ptr <= TILE_WRITE_PTR_MAX) {
+        //begin_write_ptr is the count, which is 0 in multi-frames.
+        this.frameData[begin_write_ptr + 1] = x;
+        this.frameData[begin_write_ptr + 2] = y;
+        this.frameData[begin_write_ptr + 3] = w;
+        this.frameData[begin_write_ptr + 4] = h;
+        this.frameData[begin_write_ptr + 5] = ox;
+        this.frameData[begin_write_ptr + 6] = oy;
+
+        //Updates the count of the current frame's element by 1.
+        this.frameData[fp]++;
+        next_frame_ptr = begin_write_ptr + TILE_FRAME_SIZE;
     }
+
+    return next_frame_ptr;
 }
 
-TileVisual.prototype.getFrame = function(index) {
-    if(index < 0 || index >= this.frames.length) {
-        return null;
-    }
+TileVisual.prototype.createFrame = function(fp, frameData) {
+    const { x = 0, y = 0, w = 0, h = 0, offset } = frameData;
+    const offsetX = (offset?.x ?? 0);
+    const offsetY = (offset?.y ?? 0);
+    const next_frame_ptr = this.pushElement(fp, x, y, w, h, offsetX, offsetY);
 
-    return this.frames[index];
+    return next_frame_ptr;
 }
 
-TileVisual.prototype.updateTotalFrameTime = function() {
-    const frameTimeTotal = this.frameTime * this.frameCount;
+TileVisual.prototype.createPattern = function(fp, patternData, regions) {
+    let next_frame_ptr = fp;
 
-    if(frameTimeTotal <= 0) {
-        this.frameTimeTotal = 1;
-    } else {
-        this.frameTimeTotal = frameTimeTotal;
+    for(const { id, shiftX = 0, shiftY = 0 } of patternData) {
+        const frameData = regions[id];
+
+        if(frameData) {
+            next_frame_ptr = this.createFrame(fp, frameData);
+
+            //Updates the offset of the last element.
+            this.frameData[next_frame_ptr - TILE_FRAME_SIZE + 5] += shiftX;
+            this.frameData[next_frame_ptr - TILE_FRAME_SIZE + 6] += shiftY;
+        }
     }
+
+    return next_frame_ptr;
 }
 
-//TODO: get frames from texture.
-TileVisual.prototype.init = function(texture, regionID) {
+TileVisual.prototype.generate = function(texture, regionID) {
     const { regions = {}, patterns = {}, animations = {} } = texture;
     const frameData = regions[regionID];
+    const patternData = patterns[regionID];
+    const animationData = animations[regionID];
+    let fp = 0;
 
     if(frameData) {
-        const frame = TileVisual.createFrame(frameData);
-
+        this.createFrame(fp, frameData);
+        this.frameCount++;
         this.setFrameTime(TileVisual.DEFAULT.FRAME_TIME);
-        this.addFrame(frame);
-        return;
-    } 
-
-    const patternData = patterns[regionID];
-
-    if(patternData) {
-        const frame = TileVisual.createPatternFrame(patternData, regions);
-
-        this.setFrameTime(TileVisual.DEFAULT.FRAME_TIME);
-        this.addFrame(frame);
         return;
     }
 
-    const animationData = animations[regionID];
+    if(patternData) {
+        this.createPattern(fp, patternData, regions);
+        this.frameCount++;
+        this.setFrameTime(TileVisual.DEFAULT.FRAME_TIME);
+        return;
+    }
 
     if(animationData) {
         const frameTime = animationData.frameTime ?? TileVisual.DEFAULT.FRAME_TIME;
         const animationFrames = animationData.frames ?? [];
 
-        this.setFrameTime(frameTime);
+        for(const frameID of animationFrames) {
+            let next_frame_ptr = fp;
 
-        for(let i = 0; i < animationFrames.length; i++) {
-            const frameID = animationFrames[i];
-            const frameData = regions[frameID];
-
-            if(frameData) {
-                const frame = TileVisual.createFrame(frameData);
-
-                this.addFrame(frame);
-                continue;
+            if(regions[frameID]) {
+                next_frame_ptr = this.createFrame(fp, regions[frameID]);
+            } else if(patterns[frameID]) {
+                next_frame_ptr = this.createPattern(fp, patterns[frameID], regions);
             }
 
-            const patternData = patterns[frameID];
+            //A frame was created if the pointers do not match!
+            if(fp !== next_frame_ptr) {
+                this.frameCount++;
+                this.jumpTable[this.frameCount] = this.jumpTable[this.frameCount - 1] + this.frameData[fp];
 
-            if(patternData) {
-                const frame = TileVisual.createPatternFrame(patternData, regions);
-
-                this.addFrame(frame);
-                continue;
+                fp = next_frame_ptr;
             }
         }
+
+        this.setFrameTime(frameTime);
     }
 }

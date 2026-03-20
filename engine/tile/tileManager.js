@@ -23,13 +23,13 @@ TileManager.prototype.update = function(gameContext) {
     const realTime = timer.getRealTime();
 
     for(let i = 0; i < this.activeVisuals.length; i++) {
-        this.activeVisuals[i].updateFrameIndex(realTime);
+        this.activeVisuals[i].update(realTime);
     }
 }
 
 TileManager.prototype.createTiles = function(tileMeta, resolveType) {
     const visualMap = {};
-    let mapID = 1;
+    let mapID = 0;
 
     //0 is treated as an empty visual => counting begins at 1.
     //Table maps a visual tile to logical tile.
@@ -49,25 +49,22 @@ TileManager.prototype.createTiles = function(tileMeta, resolveType) {
                     const tileName = id + j;
 
                     if(visualMap[tileName] === undefined) {
-                        visualMap[tileName] = mapID;
+                        visualMap[tileName] = mapID + 1;
                     }
 
-                    this.tileTable[mapID - 1] = i;
-                    mapID++;
+                    this.tileTable[mapID++] = i;
                 }
             } else {
                 for(let j = 0; j < count; j++) {
-                    this.tileTable[mapID - 1] = i;
-                    mapID++;
+                    this.tileTable[mapID++] = i;
                 }
             }
         } else {
             if(id !== null && visualMap[id] === undefined) {
-                visualMap[id] = mapID;
+                visualMap[id] = mapID + 1;
             }
 
-            this.tileTable[mapID - 1] = i;
-            mapID++;
+            this.tileTable[mapID++] = i;
         }
     }
 
@@ -87,6 +84,30 @@ TileManager.prototype.createTileVisuals = function(textureLoader, tileAtlases, t
     const generatedVisuals = new Set();
     let mapID = 1;
 
+    const createVisual = (textureName, regionID) => {
+        const visual = new TileVisual(mapID++);
+        const textureConfig = tileAtlases[textureName];
+
+        if(textureConfig) {
+            visual.generate(textureConfig, regionID);
+        }
+
+        const textureID = textureMap[textureName];
+        const frameCount = visual.getFrameCount();
+
+        if(frameCount > 0 && textureID !== undefined) {
+            const textureObject = textureLoader.getTexture(textureID);
+            const { handle } = textureObject;
+
+            visual.setHandle(handle);
+            handle.addReference();
+
+            textureLoader.loadTexture(textureID);
+        }
+
+        this.visuals.push(visual);
+    }
+
     for(let i = 0; i < tileMeta.length; i++) {
         const { variants, texture, tile } = tileMeta[i];
 
@@ -94,32 +115,10 @@ TileManager.prototype.createTileVisuals = function(textureLoader, tileAtlases, t
             const { count, prefix } = variants;
 
             for(let j = 0; j < count; j++) {
-                const regionID = prefix + j;
-                const visualID = texture + "::" + regionID;
+                const visualID = texture + "::" + prefix + j;
 
                 if(!generatedVisuals.has(visualID)) {
-                    const visual = new TileVisual(mapID++);
-                    const textureConfig = tileAtlases[texture];
-
-                    if(textureConfig) {
-                        visual.init(textureConfig, regionID);
-                    }
-
-                    const textureID = textureMap[texture];
-                    const frameCount = visual.getFrameCount();
-
-                    if(frameCount > 0 && textureID !== undefined) {
-                        const textureObject = textureLoader.getTexture(textureID);
-                        const { handle } = textureObject;
-
-                        visual.setHandle(handle);
-                        handle.addReference();
-
-                        textureLoader.loadTexture(textureID);
-                    }
-
-                    this.visuals.push(visual);
-
+                    createVisual(texture, prefix + j);
                     generatedVisuals.add(visualID);
                 }
             }
@@ -127,28 +126,7 @@ TileManager.prototype.createTileVisuals = function(textureLoader, tileAtlases, t
             const visualID = texture + "::" + tile;
 
             if(!generatedVisuals.has(visualID)) {
-                const visual = new TileVisual(mapID++);
-                const textureConfig = tileAtlases[texture];
-
-                if(textureConfig) {
-                    visual.init(textureConfig, tile);
-                }
-
-                const textureID = textureMap[texture];
-                const frameCount = visual.getFrameCount();
-
-                if(frameCount > 0 && textureID !== undefined) {
-                    const textureObject = textureLoader.getTexture(textureID);
-                    const { handle } = textureObject;
-
-                    visual.setHandle(handle);
-                    handle.addReference();
-
-                    textureLoader.loadTexture(textureID);
-                }
-
-                this.visuals.push(visual);
-
+                createVisual(texture, tile);
                 generatedVisuals.add(visualID);
             }
         }
