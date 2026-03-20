@@ -260,28 +260,35 @@ Camera2D.prototype.drawTile = function(tileManager, tileID, context, screenX, sc
     const { handle, frameData, framePtr } = tileManager.getVisual(tileID);
     const { state, bitmap } = handle;
 
-    if(state !== TextureHandle.STATE.LOADED) {
-        this.drawEmptyTile(context, screenX, screenY, scale);
-    } else {
-        const count = frameData[framePtr]; 
-        let frame_ptr = framePtr;
+    switch(state) {
+        case TextureHandle.STATE.EMPTY:
+        case TextureHandle.STATE.LOADING: {
+            this.drawEmptyTile(context, screenX, screenY, scale);
+            break;
+        }
+        case TextureHandle.STATE.LOADED: {
+            const count = frameData[framePtr]; 
+            let frame_ptr = framePtr;
 
-        for(let i = 0; i < count; i++) {
-            const frameX = frameData[frame_ptr + 1];
-            const frameY = frameData[frame_ptr + 2];
-            const width = frameData[frame_ptr + 3];
-            const height = frameData[frame_ptr + 4];
-            const offsetX = frameData[frame_ptr + 5];
-            const offsetY = frameData[frame_ptr + 6];
+            for(let i = 0; i < count; i++) {
+                const frameX = frameData[frame_ptr + 1];
+                const frameY = frameData[frame_ptr + 2];
+                const width = frameData[frame_ptr + 3];
+                const height = frameData[frame_ptr + 4];
+                const offsetX = frameData[frame_ptr + 5];
+                const offsetY = frameData[frame_ptr + 6];
 
-            context.drawImage(
-                bitmap,
-                frameX, frameY, width, height,
-                Math.floor(screenX + offsetX * scale), Math.floor(screenY + offsetY * scale),
-                Math.floor(width * scale), Math.floor(height * scale)
-            );
+                context.drawImage(
+                    bitmap,
+                    frameX, frameY, width, height,
+                    Math.floor(screenX + offsetX * scale), Math.floor(screenY + offsetY * scale),
+                    Math.floor(width * scale), Math.floor(height * scale)
+                );
 
-            frame_ptr += TILE_FRAME_SIZE;
+                frame_ptr += TILE_FRAME_SIZE;
+            }
+
+            break;
         }
     }
 }
