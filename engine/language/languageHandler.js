@@ -66,7 +66,9 @@ LanguageHandler.prototype.clear = function() {
     this.currentLanguage = LanguageHandler.STUB_LANGUAGE;
 }
 
-LanguageHandler.prototype.exit = function() {}
+LanguageHandler.prototype.exit = function() {
+    this.mapTranslations = {};
+}
 
 LanguageHandler.prototype.selectLanguage = function(languageID) {
     if(this.currentLanguage.getID() !== languageID) {

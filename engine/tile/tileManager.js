@@ -93,9 +93,8 @@ TileManager.prototype.createTileVisuals = function(textureLoader, tileAtlases, t
         }
 
         const textureID = textureMap[textureName];
-        const frameCount = visual.getFrameCount();
-
-        if(frameCount > 0 && textureID !== undefined) {
+        
+        if(visual.frameCount > 0 && textureID !== undefined) {
             const textureObject = textureLoader.getTexture(textureID);
             const { handle } = textureObject;
 

@@ -9,7 +9,6 @@ import { Renderer } from "./renderer/renderer.js";
 import { World } from "./world/world.js";
 import { LanguageHandler } from "./language/languageHandler.js";
 import { FontHandler } from "./fontHandler.js";
-import { MapManager } from "./map/mapManager.js";
 import { TextureLoader } from "./resources/texture/textureLoader.js";
 import { ApplicationWindow } from "./applicationWindow.js";
 import { PathHandler } from "./resources/pathHandler.js";
@@ -55,10 +54,6 @@ export const ClientGameContext = function() {
         if(button === Cursor.BUTTON.LEFT) {
             this.uiManager.handleClick(event);
         }
-    }, { permanent: true });
-
-    this.world.mapManager.events.on(MapManager.EVENT.MAP_DISABLE, ({ id, map }) => {
-        this.language.clearMapTranslations();
     }, { permanent: true });
 
     this.client.cursor.events.on(Cursor.EVENT.BUTTON_DOWN, ({ button, x, y, radius }) => {

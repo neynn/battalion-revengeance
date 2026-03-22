@@ -651,6 +651,7 @@ export const createClientMapLoader = async function(gameContext, sourceID) {
     const worldMap = new BattalionMap(nextID, width, height, sourceID);
 
     worldMap.decodeLayers(data);
+    language.clearMapTranslations();
 
     if(translations !== null) {
         language.registerMapTranslations(translations);

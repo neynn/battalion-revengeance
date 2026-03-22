@@ -20,14 +20,6 @@ TileVisual.prototype.setHandle = function(handle) {
     this.handle = handle;
 }
 
-TileVisual.prototype.getFrameTime = function() {
-    return this.frameTime;
-}
-
-TileVisual.prototype.getFrameCount = function() {
-    return this.frameCount;
-}
-
 TileVisual.prototype.reset = function() {
     this.framePtr = 0;
 }
