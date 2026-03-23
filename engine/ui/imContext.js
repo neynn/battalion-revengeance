@@ -24,7 +24,7 @@ export const IMContext = function() {
     this.isRetained = false;
 }
 
-IMContext.prototype.update = function(gameContext, display) {}
+IMContext.prototype.draw = function(display, screenX, screenY) {}
 
 IMContext.prototype.updateCursor = function(cursor) {
     const { positionX, positionY, radius } = cursor;

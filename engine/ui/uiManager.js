@@ -31,7 +31,7 @@ UIManager.prototype.debug = function(display) {
     }
 }
 
-UIManager.prototype.update = function(gameContext, display) {
+UIManager.prototype.update = function(gameContext) {
     const { client, timer } = gameContext;
     const { cursor } = client;
     const { positionX, positionY, radius } = cursor;
@@ -48,12 +48,16 @@ UIManager.prototype.update = function(gameContext, display) {
                 }
 
                 context.update(realTime, deltaTime);
-                context.draw(display, 0, 0);
             }
         } else {
             context.updateCursor(cursor);
-            context.update(gameContext, display);
         }
+    }
+}
+
+UIManager.prototype.draw = function(display) {
+    for(let i = this.contexts.length - 1; i >= 0; i--) {
+        this.contexts[i].draw(display, 0, 0);
     }
 }
 
@@ -85,12 +89,18 @@ UIManager.prototype.getContextByID = function(id) {
     return null;
 }
 
-UIManager.prototype.handleClick = function(event) {
+UIManager.prototype.onClick = function(event) {
     for(let i = this.contexts.length - 1; i >= 0; i--) {
-        const { previousHot } = this.contexts[i];
+        const { previousHot, clickCallbacks } = this.contexts[i];
 
         if(previousHot !== null) {
-            previousHot.onClick(event);
+            const elementID = previousHot.getID();
+            const callback = clickCallbacks.get(elementID);
+
+            if(callback) {
+                callback(event);
+            }
+
             break;
         }
     }

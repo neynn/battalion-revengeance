@@ -24,11 +24,11 @@ Container.prototype = Object.create(UIElement.prototype);
 Container.prototype.constructor = Container;
 
 Container.prototype.onDraw = function(display, localX, localY) {
-    if((this.drawFlags & Container.DRAW_FLAG.BACKGROUND) !== 0) {
+    if(this.drawFlags & Container.DRAW_FLAG.BACKGROUND) {
         drawShape(display, SHAPE.RECTANGLE, this.backgroundColor, localX, localY, this.width, this.height);
     }
 
-    if((this.drawFlags & Container.DRAW_FLAG.OUTLINE) !== 0) {
+    if(this.drawFlags & Container.DRAW_FLAG.OUTLINE) {
         strokeShape(display, SHAPE.RECTANGLE, this.outlineColor, this.outlineSize, localX, localY, this.width, this.height);
     }
 }

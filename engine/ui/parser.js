@@ -144,7 +144,8 @@ const createLayout = function(gameContext, uiContext, layout) {
         const config = layout[elementName];
         const element = createElement(uiManager, config, elementName);
 
-        uiContext.addNamedElement(element, elementName);   
+        uiContext.addElement(element);
+        uiContext.registerName(elementName, element);   
     }
     
     for(const elementName in layout) {

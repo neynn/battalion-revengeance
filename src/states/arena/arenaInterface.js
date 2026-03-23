@@ -16,23 +16,25 @@ ArenaInterface.prototype.load = function(gameContext, stateMachine) {
 
     parseLayout(gameContext, this, "ARENA");
 
-    this.getElement("BUTTON_BACK").setClick(() => stateMachine.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));
+    this.addClickByName("BUTTON_BACK", (e) => {
+        stateMachine.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU);
+    });
 
-    this.getElement("BUTTON_CREATE_ROOM").setClick(() => {
+    this.addClickByName("BUTTON_CREATE_ROOM", (e) => {
         socket.createRoom(0);
     });
 
-    this.getElement("BUTTON_JOIN_ROOM").setClick(() => {
+    this.addClickByName("BUTTON_JOIN_ROOM", (e) => {
         const roomID = parseInt(prompt("Room-ID?"));
 
         socket.joinRoom(roomID);
     });
 
-    this.getElement("BUTTON_LEAVE_ROOM").setClick(() => {
+    this.addClickByName("BUTTON_LEAVE_ROOM", (e) => {
         socket.leaveRoom();
     });
 
-    this.getElement("BUTTON_START_INSTANCE").setClick(() => {
+    this.addClickByName("BUTTON_START_INSTANCE", (e) => {
         socket.messageRoom(GAME_EVENT.MP_CLIENT_START_MATCH, {
             //map-id
         });

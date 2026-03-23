@@ -6,8 +6,9 @@ export const UIContext = function() {
 
     this.previousHot = null;
     this.collisions = 0;
-    this.nameMap = new Map();
+    this.names = new Map();
     this.elements = new Map();
+    this.clickCallbacks = new Map();
     this.isRetained = true;
 }
 
@@ -15,6 +16,32 @@ UIContext.EMPTY_ELEMENT = new UIElement("EMPTY");
 
 UIContext.prototype = Object.create(Graph.prototype);
 UIContext.prototype.constructor = UIContext;
+
+UIContext.prototype.getElementID = function(name) {
+    const elementID = this.names.get(name);
+
+    if(elementID === undefined) {
+        return Graph.INVALID_ID;
+    }
+
+    return elementID;
+}
+
+UIContext.prototype.addClick = function(elementID, onClick) {
+    if(!this.clickCallbacks.has(elementID)) {
+        this.clickCallbacks.set(elementID, onClick);
+    } else {
+        console.warn("Click has already been registered!");
+    }
+}
+
+UIContext.prototype.addClickByName = function(name, onClick) {
+    const elementID = this.getElementID(name);
+
+    if(elementID !== Graph.INVALID_ID) {
+        this.addClick(elementID, onClick);
+    }
+}
 
 UIContext.prototype.onWindowResize = function(width, height) {
     for(let i = 0; i < this.children.length; i++) {
@@ -25,18 +52,9 @@ UIContext.prototype.onWindowResize = function(width, height) {
 UIContext.prototype.clear = function() {
     this.elements.forEach(element => element.close());
     this.elements.clear();
-    this.nameMap.clear();
+    this.names.clear();
+    this.clickCallbacks.clear();
     this.close();
-}
-
-UIContext.prototype.destroyNamedElement = function(name) {
-    const elementID = this.nameMap.get(name);
-
-    if(elementID !== undefined) {
-        this.destroyElement(elementID);
-
-        this.nameMap.delete(name);
-    }
 }
 
 UIContext.prototype.destroyElement = function(elementID) {
@@ -50,7 +68,7 @@ UIContext.prototype.destroyElement = function(elementID) {
 }
 
 UIContext.prototype.getElement = function(name) {
-    const elementID = this.nameMap.get(name);
+    const elementID = this.getElementID(name);
     const element = this.elements.get(elementID);
 
     if(!element) {
@@ -103,14 +121,9 @@ UIContext.prototype.addElement = function(element) {
     }
 }
 
-UIContext.prototype.addNamedElement = function(element, name) {
-    if(!this.nameMap.has(name)) {
-        const elementID = element.getID();
-
-        if(!this.elements.has(elementID)) {
-            this.nameMap.set(name, elementID);
-            this.elements.set(elementID, element);
-        }
+UIContext.prototype.registerName = function(name, element) {
+    if(!this.names.has(name)) {
+        this.names.set(name, element.getID());
     }
 }
 

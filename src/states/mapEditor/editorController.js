@@ -112,8 +112,9 @@ EditorController.prototype.initPalletButtons = function(gameContext, buttons, ca
 
     for(const button of buttons) {
         const { palletID } = button;
+        const buttonID = button.getID();
 
-        button.setClick((event) => {
+        this.userInterface.addClick(buttonID, (e) => {
             const palletIndex = this.getPalletIndex(palletID);
             const tileID = this.configurator.getCurrentSet().getTileID(palletIndex);
 
@@ -375,41 +376,41 @@ EditorController.prototype.initCommands = function(gameContext) {
 EditorController.prototype.initUIEvents = function(gameContext) {
     const { states } = gameContext;
 
-    this.userInterface.getElement("BUTTON_INVERT").setClick(() => this.toggleInversion());
-    this.userInterface.getElement("BUTTON_BACK").setClick(() => states.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));
-    this.userInterface.getElement("BUTTON_AUTO").setClick(() => this.toggleAutotiler());
+    this.userInterface.addClickByName("BUTTON_INVERT", (e) => this.toggleInversion());
+    this.userInterface.addClickByName("BUTTON_BACK", (e) => states.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));
+    this.userInterface.addClickByName("BUTTON_AUTO", (e) => this.toggleAutotiler());
 
-    this.userInterface.getElement("BUTTON_TILESET_MODE").setClick(() => {
+    this.userInterface.addClickByName("BUTTON_TILESET_MODE", (e) => {
         this.editor.scrollMode(1);
         this.pageIndex = 0;
         this.updateMenuText(gameContext);
     });
 
-    this.userInterface.getElement("BUTTON_TILESET_LEFT").setClick(() => {
+    this.userInterface.addClickByName("BUTTON_TILESET_LEFT", (e) => {
         this.configurator.scrollBrushSet(-1);
         this.pageIndex = 0;
         this.updateMenuText(gameContext);
     });
 
-    this.userInterface.getElement("BUTTON_TILESET_RIGHT").setClick(() => {
+    this.userInterface.addClickByName("BUTTON_TILESET_RIGHT", (e) => {
         this.configurator.scrollBrushSet(1);
         this.pageIndex = 0;
         this.updateMenuText(gameContext);
     });
 
-    this.userInterface.getElement("BUTTON_PERMUTATION").setClick(() => this.togglePermutation());
-    this.userInterface.getElement("BUTTON_PAGE_LAST").setClick(() => this.updatePage(gameContext, -1)); 
-    this.userInterface.getElement("BUTTON_PAGE_NEXT").setClick(() => this.updatePage(gameContext, 1));  
-    this.userInterface.getElement("BUTTON_SCROLL_SIZE").setClick(() => this.updateBrushSize(gameContext, 1));
-    this.userInterface.getElement("BUTTON_SAVE").setClick(() => this.saveMap());
-    this.userInterface.getElement("BUTTON_CREATE").setClick(() => this.createMap(gameContext));
-    this.userInterface.getElement("BUTTON_LOAD").setClick(() => this.loadMap(gameContext));
-    this.userInterface.getElement("BUTTON_RESIZE").setClick(() => this.resizeCurrentMap(gameContext)); 
-    this.userInterface.getElement("BUTTON_UNDO").setClick(() => this.editor.undo(gameContext)); 
-    this.userInterface.getElement("BUTTON_ERASER").setClick(() => this.toggleEraser());
-    this.userInterface.getElement("BUTTON_VIEW_ALL").setClick(() => this.viewAllLayers());
+    this.userInterface.addClickByName("BUTTON_PERMUTATION", (e) => this.togglePermutation());
+    this.userInterface.addClickByName("BUTTON_PAGE_LAST", (e) => this.updatePage(gameContext, -1)); 
+    this.userInterface.addClickByName("BUTTON_PAGE_NEXT", (e) => this.updatePage(gameContext, 1));  
+    this.userInterface.addClickByName("BUTTON_SCROLL_SIZE", (e) => this.updateBrushSize(gameContext, 1));
+    this.userInterface.addClickByName("BUTTON_SAVE", (e) => this.saveMap());
+    this.userInterface.addClickByName("BUTTON_CREATE", (e) => this.createMap(gameContext));
+    this.userInterface.addClickByName("BUTTON_LOAD", (e) => this.loadMap(gameContext));
+    this.userInterface.addClickByName("BUTTON_RESIZE", (e) => this.resizeCurrentMap(gameContext)); 
+    this.userInterface.addClickByName("BUTTON_UNDO", (e) => this.editor.undo(gameContext)); 
+    this.userInterface.addClickByName("BUTTON_ERASER", (e) => this.toggleEraser());
+    this.userInterface.addClickByName("BUTTON_VIEW_ALL", (e) => this.viewAllLayers());
 
-    this.userInterface.getElement("BUTTON_L1").setClick(() => this.clickLayerButton(EditorController.LAYER_BUTTON.L1));
-    this.userInterface.getElement("BUTTON_L2").setClick(() => this.clickLayerButton(EditorController.LAYER_BUTTON.L2));
-    this.userInterface.getElement("BUTTON_L3").setClick(() => this.clickLayerButton(EditorController.LAYER_BUTTON.L3));
+    this.userInterface.addClickByName("BUTTON_L1", (e) => this.clickLayerButton(EditorController.LAYER_BUTTON.L1));
+    this.userInterface.addClickByName("BUTTON_L2", (e) => this.clickLayerButton(EditorController.LAYER_BUTTON.L2));
+    this.userInterface.addClickByName("BUTTON_L3", (e) => this.clickLayerButton(EditorController.LAYER_BUTTON.L3));
 }

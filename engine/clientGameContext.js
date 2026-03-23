@@ -32,6 +32,7 @@ export const ClientGameContext = function() {
 
     this.timer.input = (deltaTime) => {
         this.client.update();
+        this.uiManager.update(this);
     }
 
     this.timer.update = (fDeltaTime) => {
@@ -52,7 +53,7 @@ export const ClientGameContext = function() {
         const { button } = event;
 
         if(button === Cursor.BUTTON.LEFT) {
-            this.uiManager.handleClick(event);
+            this.uiManager.onClick(event);
         }
     }, { permanent: true });
 

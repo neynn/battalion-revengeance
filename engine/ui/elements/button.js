@@ -68,19 +68,19 @@ Button.prototype.onDebug = function(display, localX, localY) {
 }
 
 Button.prototype.drawBackground = function(display, localX, localY) {
-    if((this.drawFlags & Button.DRAW_FLAG.BACKGROUND) !== 0) {
+    if(this.drawFlags & Button.DRAW_FLAG.BACKGROUND) {
         drawShape(display, this.shape, this.backgroundColor, localX, localY, this.width, this.height);
     }
 }
 
 Button.prototype.drawHighlight = function(display, localX, localY) {
-    if((this.drawFlags & Button.DRAW_FLAG.HIGHLIGHT) !== 0) {
+    if(this.drawFlags & Button.DRAW_FLAG.HIGHLIGHT) {
         drawShape(display, this.shape, this.highlightColor, localX, localY, this.width, this.height);
     }
 }
 
 Button.prototype.drawOutline = function(display, localX, localY) {
-    if((this.drawFlags & Button.DRAW_FLAG.OUTLINE) !== 0) {
+    if(this.drawFlags & Button.DRAW_FLAG.OUTLINE) {
         strokeShape(display, this.shape, this.outlineColor, this.outlineSize, localX, localY, this.width, this.height);
     }
 }

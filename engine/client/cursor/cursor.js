@@ -62,7 +62,7 @@ Cursor.SCROLL = {
 
 Cursor.prototype.getFlags = function(button) {
     if(button < 0 || button >= Cursor.BUTTON._COUNT) {
-        return 0;
+        return MouseButton.FLAG.NONE;
     } 
 
     return this.buttons[button].flags;

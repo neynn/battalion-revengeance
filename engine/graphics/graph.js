@@ -41,7 +41,6 @@ Graph.prototype.onWindowResize = function(width, height) {}
 Graph.prototype.onDraw = function(display, screenX, screenY) {}
 Graph.prototype.onDebug = function(display, screenX, screenY) {}
 Graph.prototype.onUpdate = function(timestamp, deltaTime) {}
-Graph.prototype.onClick = function(event) {}
 
 Graph.prototype.clear = function() {
     this._child = 0;
@@ -51,12 +50,6 @@ Graph.prototype.clear = function() {
 
 Graph.prototype.isVisible = function() {
     return (this._flags & Graph.FLAG.IS_VISIBLE) !== 0;
-}
-
-Graph.prototype.setClick = function(onClick) {
-    if(this.collider !== Graph.COLLIDER.NONE) {
-        this.onClick = onClick;
-    }
 }
 
 Graph.prototype.find = function(childID) {
