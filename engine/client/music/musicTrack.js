@@ -1,11 +1,15 @@
 import { clampValue } from "../../math/math.js";
+import { MockAudio } from "./mockAudio.js";
 
-export const MusicTrack = function(audio, volume, isLooping) {
-    this.audio = audio;
+export const MusicTrack = function(volume, isLooping, path) {
+    this.audio = MusicTrack.MOCK_AUDIO;
     this.volume = volume;
     this.isLooping = isLooping;
+    this.path = path;
     this.state = MusicTrack.STATE.NONE;
 }
+
+MusicTrack.MOCK_AUDIO = new MockAudio();
 
 MusicTrack.VOLUME = {
     MIN: 0,
@@ -18,24 +22,24 @@ MusicTrack.STATE = {
     PLAYING: 2
 };
 
-MusicTrack.prototype.playSilent = function() {
+MusicTrack.prototype.play = function(masterVolume) {
     if(this.state !== MusicTrack.STATE.PLAYING) {
         this.state = MusicTrack.STATE.PLAYING;
-        this.audio.volume = 0;
+        this.updateVolume(masterVolume);
+        this.audio.currentTime = 0;
         this.audio.play();
     }
 }
 
-MusicTrack.prototype.play = function(masterVolume) {
-    if(this.state !== MusicTrack.STATE.PLAYING) {
+MusicTrack.prototype.resume = function() {
+    if(this.state === MusicTrack.STATE.PAUSED) {
         this.state = MusicTrack.STATE.PLAYING;
-        this.setVolume(masterVolume);
         this.audio.play();
     }
 }
 
 MusicTrack.prototype.pause = function() {
-    if(this.state !== MusicTrack.STATE.PAUSED) {
+    if(this.state === MusicTrack.STATE.PLAYING) {
         this.state = MusicTrack.STATE.PAUSED;
         this.audio.pause();
     }
@@ -57,11 +61,11 @@ MusicTrack.prototype.mute = function() {
 
 MusicTrack.prototype.unmute = function(masterVolume) {
     if(this.state === MusicTrack.STATE.PLAYING) {
-        this.setVolume(masterVolume);
+        this.updateVolume(masterVolume);
     }
 }
 
-MusicTrack.prototype.setVolume = function(masterVolume) {
+MusicTrack.prototype.updateVolume = function(masterVolume) {
     this.audio.volume = clampValue(this.volume * masterVolume, MusicTrack.VOLUME.MAX, MusicTrack.VOLUME.MIN);
 }
 

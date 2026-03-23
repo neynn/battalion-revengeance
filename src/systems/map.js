@@ -367,7 +367,7 @@ ClientMatchLoader.prototype.loadMusic = function(gameContext) {
     if(this.playlist) {
         musicPlayer.playPlaylist(this.playlist);
     } else {
-        musicPlayer.play(this.music);
+        musicPlayer.playTrack(this.music);
     }
 }
 

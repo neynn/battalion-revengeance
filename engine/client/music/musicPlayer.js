@@ -1,14 +1,12 @@
 import { DEBUG } from "../../debug.js";
 import { clampValue } from "../../math/math.js";
 import { PathHandler } from "../../resources/pathHandler.js";
-import { MockAudio } from "./mockAudio.js";
 import { MusicTrack } from "./musicTrack.js";
 
 export const MusicPlayer = function() {
     this.masterVolume = 0.5;
-    this.tracks = {};
+    this.tracks = new Map();
     this.playlists = {};
-    this.loadedTracks = new Map();
     this.previousTrack = null;
     this.currentTrack = null;
     this.playlistIndex = 0;
@@ -17,7 +15,7 @@ export const MusicPlayer = function() {
     this.mode = MusicPlayer.MODE.SINGLE;
 }
 
-MusicPlayer.EMPTY_TRACK = new MusicTrack(new MockAudio(), 0, false);
+MusicPlayer.EMPTY_TRACK = new MusicTrack(0, false, "");
 
 MusicPlayer.MODE = {
     SINGLE: 0,
@@ -30,43 +28,17 @@ MusicPlayer.STATE = {
 };
 
 MusicPlayer.prototype.load = function(tracks, playlists) {
-    if(tracks) {
-        this.tracks = tracks;
+    for(const trackID in tracks) {
+        const { directory, source, volume = MusicTrack.VOLUME.MAX, isLooping = false } = tracks[trackID];
+        const path = PathHandler.getPath(directory, source);
+        const track = new MusicTrack(volume, isLooping, path);
+
+        this.tracks.set(trackID, track);
     }
 
     if(playlists) {
         this.playlists = playlists;
     }
-}
-
-MusicPlayer.prototype.loadTrack = function(trackID) {
-    if(this.loadedTracks.has(trackID)) {
-        return this.loadedTracks.get(trackID);
-    }
-
-    const meta = this.tracks[trackID];
-
-    if(!meta) {
-        if(DEBUG.MUSIC) {
-            console.warn(`Track ${trackID} does not exist!`);
-        }
-
-        return null;
-    }
-
-    const { directory, source, volume = MusicTrack.VOLUME.MAX, isLooping = false } = meta;
-    const path = PathHandler.getPath(directory, source);
-    const audio = new Audio(path);
-    const track = new MusicTrack(audio, volume, isLooping);
-
-    audio.onended = () => {
-        track.reset();
-        this.onTrackFinish(trackID);
-    }
-
-    this.loadedTracks.set(trackID, track);
-    
-    return track;
 }
 
 MusicPlayer.prototype.play = function(trackID) {
@@ -76,10 +48,14 @@ MusicPlayer.prototype.play = function(trackID) {
 
     this.forceStopCurrentTrack();
 
-    const track = this.loadTrack(trackID);
+    const track = this.tracks.get(trackID);
 
-    if(!track) {
-        return;
+    if(track.audio === MusicTrack.MOCK_AUDIO) {
+        track.audio = new Audio(track.path);
+        track.audio.onended = () => {
+            track.reset();
+            this.onTrackFinish(trackID);
+        }
     }
 
     switch(this.state) {
@@ -88,7 +64,7 @@ MusicPlayer.prototype.play = function(trackID) {
             break;
         }
         case MusicPlayer.STATE.MUTED: {
-            track.playSilent();
+            track.play(0);
             break;
         }
     }
@@ -120,7 +96,6 @@ MusicPlayer.prototype.getShuffledPlaylist = function(playlist) {
 
 MusicPlayer.prototype.forceStopCurrentTrack = function() {
     this.getTrack(this.currentTrack).reset();
-
     this.previousTrack = this.currentTrack;
     this.currentTrack = null;
 }
@@ -148,7 +123,10 @@ MusicPlayer.prototype.runPlaylist = function() {
         const trackID = this.currentPlaylist[this.playlistIndex];
 
         this.playlistIndex++;
-        this.play(trackID);
+
+        if(this.tracks.has(trackID)) {
+            this.play(trackID);
+        }
 
         if(this.currentTrack === trackID) {
             break;
@@ -157,7 +135,7 @@ MusicPlayer.prototype.runPlaylist = function() {
 }
 
 MusicPlayer.prototype.onTrackFinish = function(trackID) {
-    if(trackID !== this.currentTrack) {
+    if(this.currentTrack !== trackID) {
         return;
     }
 
@@ -176,7 +154,7 @@ MusicPlayer.prototype.onTrackFinish = function(trackID) {
         }
         case MusicPlayer.MODE.PLAYLIST: {
             if(this.isCurrentPlaylistTrack(trackID)) {
-                if(this.currentPlaylist.length !== 0 && this.playlistIndex === this.currentPlaylist.length) {        
+                if(this.currentPlaylist.length !== 0 && this.playlistIndex >= this.currentPlaylist.length) {        
                     this.playlistIndex = 0;
                     this.currentPlaylist = this.getShuffledPlaylist(this.currentPlaylist);
                 }
@@ -196,33 +174,27 @@ MusicPlayer.prototype.stop = function() {
 }
 
 MusicPlayer.prototype.playTrack = function(musicID) {
-    if(!this.tracks[musicID]) {
-        if(DEBUG.MUSIC) {
-            console.warn(`Track ${trackID} does not exist!`);
-        }
-        return;
+    if(this.tracks.has(musicID)) {
+        this.mode = MusicPlayer.MODE.SINGLE;
+        this.play(musicID);
+    } else if(DEBUG.MUSIC) {
+        console.warn(`Track ${trackID} does not exist!`);
     }
-
-    this.mode = MusicPlayer.MODE.SINGLE;
-    this.play(musicID);
 }
 
 MusicPlayer.prototype.playPlaylist = function(playlistID) {
     const playlist = this.playlists[playlistID];
 
-    if(!playlist) {
-        if(DEBUG.MUSIC) {
-            console.warn(`Playlist ${playlistID} does not exist!`);
-        }
-        return;
+    if(playlist) {
+        const shuffledPlaylist = this.getShuffledPlaylist(playlist);
+
+        this.stop();
+        this.playlistIndex = 0;
+        this.currentPlaylist = shuffledPlaylist;
+        this.runPlaylist();
+    } else if(DEBUG.MUSIC) {
+        console.warn(`Playlist ${playlistID} does not exist!`);
     }
-
-    const shuffledPlaylist = this.getShuffledPlaylist(playlist);
-
-    this.stop();
-    this.playlistIndex = 0;
-    this.currentPlaylist = shuffledPlaylist;
-    this.runPlaylist();
 }
 
 MusicPlayer.prototype.playPrevious = function() {
@@ -247,7 +219,7 @@ MusicPlayer.prototype.toggleMute = function() {
 }
 
 MusicPlayer.prototype.getTrack = function(trackID) {
-    const track = this.loadedTracks.get(trackID);
+    const track = this.tracks.get(trackID);
 
     if(!track) {
         return MusicPlayer.EMPTY_TRACK;
@@ -283,7 +255,7 @@ MusicPlayer.prototype.pause = function() {
 } 
 
 MusicPlayer.prototype.resume = function() {
-    this.getTrack(this.currentTrack).play(this.masterVolume);
+    this.getTrack(this.currentTrack).resume();
 }
 
 MusicPlayer.prototype.skip = function() {
@@ -297,15 +269,15 @@ MusicPlayer.prototype.setMasterVolume = function(volume) {
     this.masterVolume = clampValue(volume, MusicTrack.VOLUME.MAX, MusicTrack.VOLUME.MIN);
 
     if(this.state !== MusicPlayer.STATE.MUTED) {
-        this.getTrack(this.currentTrack).setVolume(this.masterVolume);
+        this.getTrack(this.currentTrack).updateVolume(this.masterVolume);
     }
 }
 
 MusicPlayer.prototype.getNotInPlaylist = function() {
     const audio = new Set();
 
-    for(const audioID in this.tracks) {
-        audio.add(audioID);
+    for(const [name, track] of this.tracks) {
+        audio.add(name);
     }
 
     for(const playlistID in this.playlists) {
