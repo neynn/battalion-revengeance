@@ -16,3 +16,6 @@ export const SCORE_BONUS = {
 };
 
 export const VICTORY_BONUS = 5000;
+
+//TODO(neyn): Implement
+export const MAX_TEAMS = 8;

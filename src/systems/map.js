@@ -138,6 +138,17 @@ const ObjectiveFactory = {
     }
 };
 
+const createCustomSchema = function(gameContext, team, color) {
+    const { typeRegistry } = gameContext;
+    const { id, name } = team;
+    const schemaID = SCHEMA_TYPE.CUSTOM_1 + id; //TeamID from 0 to n (max 8).
+    const schema = typeRegistry.getSchemaType(schemaID);
+
+    schema.reset();
+    schema.loadCustom(name, "SCHEMA_DESC_CUSTOM", color);
+    team.schema = schema;
+}
+
 export const ClientMatchLoader = function(worldMap, mapFile) {
     this.worldMap = worldMap;
     this.music = mapFile.music ?? "rivers_of_steel";
@@ -264,14 +275,14 @@ ClientMatchLoader.prototype.createTeams = function(gameContext, overrides) {
         const teamObject = teamManager.getTeam(teamID);
 
         if(teamObject) {
-            if(color !== null) {
-                //Colors can always be overridden!
-                teamObject.createCustomSchema(color);
-            }
-
             if(name !== null) {
                 //Names can always be overridden!
                 teamObject.setCustomName(name);
+            }
+
+            if(color !== null) {
+                //Colors can always be overridden!
+                createCustomSchema(gameContext, teamObject, color);
             }
 
             //In dynamic PvP games, the allies are set by the overrides.
@@ -506,14 +517,14 @@ ServerMatchLoader.prototype.createTeams = function(gameContext, overrides) {
         const teamObject = teamManager.getTeam(teamID);
 
         if(teamObject) {
-            if(color !== null) {
-                //Colors can always be overridden!
-                teamObject.createCustomSchema(color);
-            }
-
             if(name !== null) {
                 //Names can always be overridden!
                 teamObject.setCustomName(name);
+            }
+
+            if(color !== null) {
+                //Colors can always be overridden!
+                createCustomSchema(gameContext, teamObject, color);
             }
 
             //In dynamic PvP games, the allies are set by the overrides.

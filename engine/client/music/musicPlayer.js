@@ -27,6 +27,16 @@ MusicPlayer.STATE = {
     MUTED: 1
 };
 
+MusicPlayer.prototype.update = function() {
+    if(!this.currentTrack && this.previousTrack && this.mode === MusicPlayer.MODE.SINGLE) {
+        const track = this.getTrack(this.previousTrack);
+
+        if(track.isLooping) {
+            this.play(this.previousTrack);
+        }
+    }
+}
+
 MusicPlayer.prototype.load = function(tracks, playlists) {
     for(const trackID in tracks) {
         const { directory, source, volume = MusicTrack.VOLUME.MAX, isLooping = false } = tracks[trackID];
@@ -165,6 +175,11 @@ MusicPlayer.prototype.onTrackFinish = function(trackID) {
             break;
         }
     }
+}
+
+MusicPlayer.prototype.exit = function() {
+    this.stop();
+    this.previousTrack = null;
 }
 
 MusicPlayer.prototype.stop = function() {

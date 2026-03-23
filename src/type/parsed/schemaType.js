@@ -5,6 +5,23 @@ export const SchemaType = function(id) {
     this.colorMap = {};
 }
 
+SchemaType.prototype.reset = function() {
+    this.name = "MISSING_NAME_SCHEMA";
+    this.desc = "MISSING_DESC_SCHEMA";
+    this.colorMap = {};
+}
+
+SchemaType.prototype.loadCustom = function(name, desc, colors) {
+    this.name = name;
+    this.desc = desc;
+
+    for(const colorHex in colors) {
+        const colorVal = Number(colorHex);
+
+        this.colorMap[colorVal] = colors[colorHex];
+    }
+}
+
 SchemaType.prototype.load = function(config, DEBUG_NAME) {
     const {
         name = "MISSING_NAME_SCHEMA",

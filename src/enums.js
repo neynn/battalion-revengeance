@@ -293,7 +293,15 @@ export const SCHEMA_TYPE = {
     GRAY: 14,
     CREAM: 15,
     LIME: 16,
-    _COUNT: 17
+    CUSTOM_1: 17,
+    CUSTOM_2: 18,
+    CUSTOM_3: 19,
+    CUSTOM_4: 20,
+    CUSTOM_5: 21,
+    CUSTOM_6: 22,
+    CUSTOM_7: 23,
+    CUSTOM_8: 24,
+    _COUNT: 25
 };
 
 export const POWER_TYPE = {

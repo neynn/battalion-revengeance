@@ -44,11 +44,13 @@ Client.prototype.exit = function(gameContext) {
     this.keyboard.exit();
     this.cursor.events.muteAll();
     this.socket.events.muteAll();
-    this.musicPlayer.stop();
+    this.musicPlayer.exit();
     this.soundPlayer.exit();
 }
 
 Client.prototype.update = function() {
+    this.musicPlayer.update();
+
     for(const key of this.keyboard.activeKeys) {
         this.router.handleInput(InputRouter.PREFIX.HOLD, key);
     }

@@ -2,9 +2,8 @@ import { createDeathIntent, createUncloakIntent } from "../action/actionHelper.j
 import { Objective } from "./objective/objective.js";
 import { UnitSurviveObjective } from "./objective/types/unitSurvive.js";
 import { LynchpinObjective } from "./objective/types/lynchpin.js";
-import { SCHEMA_TYPE, TEAM_STAT, TRAIT_TYPE } from "../enums.js";
+import { TEAM_STAT, TRAIT_TYPE } from "../enums.js";
 import { SCORE_BONUS, VICTORY_BONUS } from "../constants.js";
-import { SchemaType } from "../type/parsed/schemaType.js";
 
 export const Team = function(id) {
     this.id = id;
@@ -179,24 +178,6 @@ Team.prototype.onEntityDeath = function(entity) {
     for(const objective of this.objectives) {
         objective.onEntityDeath(entity);
     }
-}
-
-Team.prototype.createCustomSchema = function(colorMap) {
-    const config = {
-        "colors": colorMap,
-        "name": this.name,
-        "desc": "SCHEMA_DESC_CUSTOM"
-    };
-
-    //Ensures it's always ABOVE all predefined schemas
-    const schemaID = SCHEMA_TYPE._COUNT + this.id;
-    const schemaType = new SchemaType(schemaID);
-
-    schemaType.load(config, "CUSTOM");
-
-    this.schema = schemaType;
-
-    return schemaType;
 }
 
 Team.prototype.isAlly = function(teamID) {
