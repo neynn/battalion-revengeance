@@ -20,6 +20,9 @@ import { ErrorObjective } from "../team/objective/types/error.js";
 import { TeamManager } from "../team/teamManager.js";
 import { getLoaderRules } from "../enumHelpers.js";
 
+//TODO: Loader rule AS STORY, AS PVP!
+//PVP loads ally configuration based on settings, PVE loads them based on teams.
+
 const MP_SERVER_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.EXPLODE_TILE, COMPONENT_TYPE.SPAWN_ENTITY]);
 const MP_CLIENT_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.DIALOGUE, COMPONENT_TYPE.PLAY_EFFECT]);
 const CLIENT_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.DIALOGUE, COMPONENT_TYPE.PLAY_EFFECT, COMPONENT_TYPE.SPAWN_ENTITY, COMPONENT_TYPE.EXPLODE_TILE]);
@@ -138,17 +141,6 @@ const ObjectiveFactory = {
     }
 };
 
-const createCustomSchema = function(gameContext, team, color) {
-    const { typeRegistry } = gameContext;
-    const { id, name } = team;
-    const schemaID = SCHEMA_TYPE.CUSTOM_1 + id; //TeamID from 0 to n (max 8).
-    const schema = typeRegistry.getSchemaType(schemaID);
-
-    schema.reset();
-    schema.loadCustom(name, "SCHEMA_DESC_CUSTOM", color);
-    team.schema = schema;
-}
-
 export const ClientMatchLoader = function(worldMap, mapFile) {
     this.worldMap = worldMap;
     this.music = mapFile.music ?? "rivers_of_steel";
@@ -193,6 +185,18 @@ ClientMatchLoader.prototype.setMode = function(mode) {
             break;
         }
     }
+}
+
+ClientMatchLoader.prototype.createCustomSchema = function(gameContext, team, color) {
+    const { typeRegistry } = gameContext;
+    const { id, name } = team;
+    const schemaID = SCHEMA_TYPE.CUSTOM_1 + id; //TeamID from 0 to n (max 8).
+    const schema = typeRegistry.getSchemaType(schemaID);
+
+    schema.reset();
+    schema.loadCustom(name, "SCHEMA_DESC_CUSTOM", color);
+
+    team.schema = schema;
 }
 
 ClientMatchLoader.prototype.createTeams = function(gameContext, overrides) {
@@ -282,7 +286,7 @@ ClientMatchLoader.prototype.createTeams = function(gameContext, overrides) {
 
             if(color !== null) {
                 //Colors can always be overridden!
-                createCustomSchema(gameContext, teamObject, color);
+                this.createCustomSchema(gameContext, teamObject, color);
             }
 
             //In dynamic PvP games, the allies are set by the overrides.
@@ -511,8 +515,9 @@ ServerMatchLoader.prototype.createTeams = function(gameContext, overrides) {
         }
     }
 
+    //Custom colors are NOT modified on the server as each instance shares types.
     for(const override of overrides) {
-        const { team, color, name, allies } = override;
+        const { team, name, allies } = override;
         const teamID = teamManager.getTeamID(team);
         const teamObject = teamManager.getTeam(teamID);
 
@@ -520,11 +525,6 @@ ServerMatchLoader.prototype.createTeams = function(gameContext, overrides) {
             if(name !== null) {
                 //Names can always be overridden!
                 teamObject.setCustomName(name);
-            }
-
-            if(color !== null) {
-                //Colors can always be overridden!
-                createCustomSchema(gameContext, teamObject, color);
             }
 
             //In dynamic PvP games, the allies are set by the overrides.
