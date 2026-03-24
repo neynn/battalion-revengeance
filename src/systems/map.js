@@ -155,7 +155,6 @@ export const ClientMatchLoader = function(worldMap, mapFile) {
     this.defeat = mapFile.defeat ?? [];
     this.clientTeam = mapFile.client ?? null;
     this.rules = LOADER_RULE.NONE;
-    this.allowedComponents = CLIENT_EVENT_COMPONENTS;
 }
 
 ClientMatchLoader.prototype.setMode = function(mode) {
@@ -163,25 +162,21 @@ ClientMatchLoader.prototype.setMode = function(mode) {
         case LOADER_MODE.SP_FIXED: {
             this.rules |= LOADER_RULE.FIXED_ALLIES;
             this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
-            this.allowedComponents = CLIENT_EVENT_COMPONENTS;
             break;
         }
         case LOADER_MODE.SP_CUSTOM: {
             this.rules |= LOADER_RULE.FIXED_ALLIES;
             this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
-            this.allowedComponents = CLIENT_EVENT_COMPONENTS;
             break;
         }
         case LOADER_MODE.MP_FIXED: {
             this.rules |= LOADER_RULE.ALLOW_SPECTATOR;
             this.rules |= LOADER_RULE.FIXED_ALLIES;
             this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
-            this.allowedComponents = MP_CLIENT_EVENT_COMPONENTS;
             break;
         }
         case LOADER_MODE.MP_CUSTOM: {
             this.rules |= LOADER_RULE.ALLOW_SPECTATOR;
-            this.allowedComponents = MP_CLIENT_EVENT_COMPONENTS;
             break;
         }
         default: {
@@ -424,7 +419,7 @@ ClientMatchLoader.prototype.loadInitialServerSnapshot = function(gameContext, sn
     this.loadMusic(gameContext);
     this.worldMap.loadLocalization(this.localization);
 
-    EventFactory.createWorldEvents(gameContext, this.events, this.allowedComponents);
+    EventFactory.createWorldEvents(gameContext, this.events, MP_CLIENT_EVENT_COMPONENTS);
     dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);
     teamManager.updateStatus(); //TODO(neyn): Really necessary?
 
@@ -476,7 +471,7 @@ ClientMatchLoader.prototype.loadMapFromSnapshot = function(gameContext, snapshot
     this.worldMap.loadLocalization(this.localization);
     this.worldMap.loadEdits(edits);
 
-    EventFactory.createWorldEvents(gameContext, this.events, this.allowedComponents);
+    EventFactory.createWorldEvents(gameContext, this.events, CLIENT_EVENT_COMPONENTS);
     eventHandler.loadTriggeredEvents(events);
     dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);
     teamManager.updateStatus();
@@ -500,7 +495,7 @@ ClientMatchLoader.prototype.loadMapFromFile = function(gameContext, overrides) {
     this.loadMusic(gameContext);
     this.worldMap.loadLocalization(this.localization);
 
-    EventFactory.createWorldEvents(gameContext, this.events, this.allowedComponents);
+    EventFactory.createWorldEvents(gameContext, this.events, CLIENT_EVENT_COMPONENTS);
     dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);
     teamManager.updateStatus();
     teamManager.setTurnOrder(gameContext);
@@ -518,7 +513,6 @@ export const ServerMatchLoader = function(worldMap, mapFile) {
     this.buildings = mapFile.buildings ?? [];
     this.mines = mapFile.mines ?? [];
     this.rules = LOADER_RULE.NONE;
-    this.allowedComponents = MP_SERVER_EVENT_COMPONENTS;
 }
 
 ServerMatchLoader.prototype.setMode = function(mode) {
@@ -699,7 +693,7 @@ ServerMatchLoader.prototype.loadMap = function(gameContext, overrides) {
     this.createBuildings(gameContext);
     this.createMines(gameContext);
 
-    EventFactory.createWorldEvents(gameContext, this.events, this.allowedComponents);
+    EventFactory.createWorldEvents(gameContext, this.events, MP_SERVER_EVENT_COMPONENTS);
 
     teamManager.updateStatus();
     teamManager.setTurnOrder(gameContext);

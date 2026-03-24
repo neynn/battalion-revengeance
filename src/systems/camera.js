@@ -59,8 +59,8 @@ export const createPlayCamera = function(gameContext) {
 
     context.setDragButton(Cursor.BUTTON.LEFT);
     context.enableBuffer();
-    //context.enableAutoCenter();
-    //context.fixBuffer(560, 560);
+    context.enableAutoCenter();
+    context.fixBuffer(560, 560);
     context.setScale(1);
     context.forceReload();
     camera.reloadViewport();
