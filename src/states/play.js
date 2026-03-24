@@ -3,7 +3,6 @@ import { createStartTurnIntent } from "../action/actionHelper.js";
 import { BattalionContext } from "../battalionContext.js";
 import { LOADER_MODE } from "../enums.js";
 import { TeamOverride } from "../map/override.js";
-import { MapSettings } from "../map/settings.js";
 import { createClientMapLoader } from "../systems/map.js";
 
 export const PlayState = function() {}
@@ -15,7 +14,6 @@ PlayState.prototype.onEnter = async function(gameContext, stateMachine, transiti
     const { client, world, actionRouter } = gameContext;
     const { eventHandler } = world;
     const { router } = client;
-    const settings = new MapSettings();
 
     eventHandler.toAuthority();
     actionRouter.toSelf();
@@ -28,12 +26,11 @@ PlayState.prototype.onEnter = async function(gameContext, stateMachine, transiti
         "0xFF9085": [71, 75, 136]
     };
 
-    settings.overrides.push(over);
     const matchLoader = await createClientMapLoader(gameContext, "presus");
 
     if(matchLoader) {
-        matchLoader.setMode(LOADER_MODE.SP_FIXED);
-        matchLoader.loadMap(gameContext, settings);
+        matchLoader.setMode(LOADER_MODE.SP_CUSTOM);
+        matchLoader.loadMapFromFile(gameContext, [over]);
         actionRouter.forceEnqueue(gameContext, createStartTurnIntent());
     }
 

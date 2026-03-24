@@ -9,6 +9,7 @@ import { mpIsPlayerIntentValid } from "../action/actionValidator.js";
 import { ServerActionRouter } from "./actionRouter.js";
 import { ActionIntent } from "../../engine/action/actionIntent.js";
 import { MapMaster } from "../map/mapMaster.js";
+import { getTurnData } from "../systems/save.js";
 
 export const ServerGameContext = function(serverApplication, id) {
     Room.call(this, id);
@@ -75,6 +76,34 @@ ServerGameContext.prototype.mpSelectMap = function(mapID) {
     }
 }
 
+ServerGameContext.prototype.createInitialSnapshot = function() {
+    const { world, teamManager } = this;
+    const { mapManager, entityManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const entities = [];
+    const teams = [];
+
+    entityManager.forEachEntity((entity) => {
+        entities.push({
+            "id": entity.getID(),
+            "data": entity.save()
+        });
+    });
+
+    teamManager.forEachTeam((team) => teams.push(team.save()));
+
+    return {
+        "mapID": worldMap.sourceID,
+        "turn": getTurnData(this),
+        "entities": entities,
+        "teams": teams
+    };
+}
+
+ServerGameContext.prototype.createRejoinSnapshot = function() {
+
+}
+
 ServerGameContext.prototype.processMessage = function(messengerID, message) {
     const { type, payload } = message;
 
@@ -115,19 +144,16 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
                     mapLoader.setMode(LOADER_MODE.MP_FIXED)
                     mapLoader.loadMap(this, overrides);
 
-                    const json = {
-                        "entities": mapLoader.entityIDList,
-                        "overrides": overrides
-                    };
+                    const snapshot = this.createInitialSnapshot();
 
                     for(let i = 0; i < this.members.length; i++) {
                         const memberID = this.members[i].getID();
                         const teamID = this.mapMaster.getTeamID(memberID);
 
                         this.sendMessage(GAME_EVENT.MP_SERVER_LOAD_MAP, {
-                            "mapID": sourceID,
-                            "settings": json,
-                            "client": teamID
+                            "snapshot": snapshot,
+                            "client": teamID,
+                            "overrides": overrides
                         }, memberID);
                     }
                 }

@@ -16,13 +16,9 @@ export const SOUND_TYPE = {
 
 export const LOADER_RULE = {
     NONE: 0,
-    SPAWN_BUILDINGS: 1 << 0,
-    SPAWN_ENTITIES: 1 << 1,
-    SPAWN_MINES: 1 << 2,
-    ENTITY_ID_OVERRIDE: 1 << 3,
-    ALLOW_SPECTATOR: 1 << 4,
-    FIXED_ALLIES: 1 << 5,
-    LOAD_OBJECTIVES: 1 << 6
+    ALLOW_SPECTATOR: 1 << 0,
+    FIXED_ALLIES: 1 << 1,
+    LOAD_OBJECTIVES: 1 << 2
 };
 
 export const LOADER_MODE = {
@@ -60,9 +56,8 @@ export const GAME_EVENT = {
     MP_CLIENT_ACTION_INTENT: 10,
     MP_CLIENT_MAP_LOADED: 11,
     MP_SERVER_LOAD_MAP: 12,
-    MP_SERVER_LOAD_MAP_CUSTOM: 13,
-    MP_SERVER_START_MAP: 14,
-    MP_SERVER_STATE_UPDATE: 15
+    MP_SERVER_START_MAP: 13,
+    MP_SERVER_STATE_UPDATE: 14
 };
 
 export const TEAM_STAT = {

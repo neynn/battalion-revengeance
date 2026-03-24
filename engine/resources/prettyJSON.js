@@ -11,6 +11,24 @@ PrettyJSON.LIST_TYPE = {
     ARRAY: 1
 };
 
+PrettyJSON.download = function(string, filename) {
+    const blob = new Blob([string], { type: "text/json" });
+    const link = document.createElement("a");
+  
+    link.download = `${filename}.json`;
+    link.href = window.URL.createObjectURL(blob);
+    link.dataset.downloadurl = ["text/json", link.download, link.href].join(":");
+  
+    const evt = new MouseEvent("click", {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+    });
+  
+    link.dispatchEvent(evt);
+    link.remove();
+}
+
 PrettyJSON.prototype.pad = function(depth) {
     const whitespace = depth * this.spacing;
 
@@ -174,19 +192,5 @@ PrettyJSON.prototype.reset = function() {
 }
 
 PrettyJSON.prototype.download = function(filename) {
-    const blob = new Blob([this.jsonString], { type: "text/json" });
-    const link = document.createElement("a");
-  
-    link.download = `${filename}.json`;
-    link.href = window.URL.createObjectURL(blob);
-    link.dataset.downloadurl = ["text/json", link.download, link.href].join(":");
-  
-    const evt = new MouseEvent("click", {
-        view: window,
-        bubbles: true,
-        cancelable: true,
-    });
-  
-    link.dispatchEvent(evt);
-    link.remove();
+    PrettyJSON.download(this.jsonString, filename);
 }

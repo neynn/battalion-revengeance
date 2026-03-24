@@ -1,5 +1,5 @@
 import { BattalionMap } from "../map/battalionMap.js";
-import { createMineObject, spawnClientBuilding, spawnClientEntity, spawnServerBuilding, spawnServerEntity } from "./spawn.js";
+import { createClientBuildingObject, createClientEntityObject, createMineObject, spawnClientBuilding, spawnClientEntity, spawnServerBuilding, spawnServerEntity } from "./spawn.js";
 import { COMMANDER_TYPE, COMPONENT_TYPE, CURRENCY_TYPE, FACTION_TYPE, LAYER_TYPE, LOADER_MODE, LOADER_RULE, MINE_TYPE, OBJECTIVE_TYPE, SCHEMA_TYPE } from "../enums.js";
 import { DialogueComponent } from "../event/components/dialogue.js";
 import { ExplodeTileComponent } from "../event/components/explodeTile.js";
@@ -18,10 +18,8 @@ import { SurviveObjective } from "../team/objective/types/survive.js";
 import { TimeLimitObjective } from "../team/objective/types/timeLimit.js";
 import { ErrorObjective } from "../team/objective/types/error.js";
 import { TeamManager } from "../team/teamManager.js";
-import { getLoaderRules } from "../enumHelpers.js";
-
-//TODO: Loader rule AS STORY, AS PVP!
-//PVP loads ally configuration based on settings, PVE loads them based on teams.
+import { BattalionEntity } from "../entity/battalionEntity.js";
+import { updateEntitySprite } from "./sprite.js";
 
 const MP_SERVER_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.EXPLODE_TILE, COMPONENT_TYPE.SPAWN_ENTITY]);
 const MP_CLIENT_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.DIALOGUE, COMPONENT_TYPE.PLAY_EFFECT]);
@@ -161,26 +159,33 @@ export const ClientMatchLoader = function(worldMap, mapFile) {
 }
 
 ClientMatchLoader.prototype.setMode = function(mode) {
-    this.rules = getLoaderRules(mode);
-
     switch(mode) {
         case LOADER_MODE.SP_FIXED: {
+            this.rules |= LOADER_RULE.FIXED_ALLIES;
+            this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
             this.allowedComponents = CLIENT_EVENT_COMPONENTS;
             break;
         }
         case LOADER_MODE.SP_CUSTOM: {
+            this.rules |= LOADER_RULE.FIXED_ALLIES;
+            this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
             this.allowedComponents = CLIENT_EVENT_COMPONENTS;
             break;
         }
         case LOADER_MODE.MP_FIXED: {
+            this.rules |= LOADER_RULE.ALLOW_SPECTATOR;
+            this.rules |= LOADER_RULE.FIXED_ALLIES;
+            this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
             this.allowedComponents = MP_CLIENT_EVENT_COMPONENTS;
             break;
         }
         case LOADER_MODE.MP_CUSTOM: {
+            this.rules |= LOADER_RULE.ALLOW_SPECTATOR;
             this.allowedComponents = MP_CLIENT_EVENT_COMPONENTS;
             break;
         }
         default: {
+            this.rules = LOADER_RULE.NONE;
             console.error("Unsupported mode!");
             break;
         }
@@ -322,55 +327,41 @@ ClientMatchLoader.prototype.createActors = function(gameContext, camera) {
 }
 
 ClientMatchLoader.prototype.createBuildings = function(gameContext) {
-    if(this.rules & LOADER_RULE.SPAWN_BUILDINGS) {
-        for(const building of this.buildings) {
-            spawnClientBuilding(gameContext, this.worldMap, building); 
-        }
+    for(const building of this.buildings) {
+        spawnClientBuilding(gameContext, this.worldMap, building); 
     }
 }
 
-ClientMatchLoader.prototype.createEntities = function(gameContext, entityIDList) {
-    if(this.rules & LOADER_RULE.SPAWN_ENTITIES) {
-        if(this.rules & LOADER_RULE.ENTITY_ID_OVERRIDE) {
-            if(entityIDList.length === this.entities.length) {
-                for(let i = 0; i < this.entities.length; i++) {
-                    spawnClientEntity(gameContext, this.entities[i], entityIDList[i]);
-                }
-            }
-        } else {
-            for(const entity of this.entities) {
-                spawnClientEntity(gameContext, entity);
-            }
-        }
+ClientMatchLoader.prototype.createEntities = function(gameContext) {
+    for(const entity of this.entities) {
+        spawnClientEntity(gameContext, entity);
     }
 }
 
 ClientMatchLoader.prototype.createMines = function(gameContext) {
     const { teamManager, typeRegistry } = gameContext;
 
-    if(this.rules & LOADER_RULE.SPAWN_MINES) {
-        for(const mine of this.mines) {
-            const { 
-                x = -1, 
-                y = -1,
-                team = null,
-                type = "NONE",
-                visible = false
-            } = mine;
+    for(const mine of this.mines) {
+        const { 
+            x = -1, 
+            y = -1,
+            team = null,
+            type = "NONE",
+            visible = false
+        } = mine;
 
-            const teamID = teamManager.getTeamID(team);
-            const typeID = MINE_TYPE[type] ?? MINE_TYPE.LAND;
-            const { category } = typeRegistry.getMineType(typeID);
+        const teamID = teamManager.getTeamID(team);
+        const typeID = MINE_TYPE[type] ?? MINE_TYPE.LAND;
+        const { category } = typeRegistry.getMineType(typeID);
 
-            if(this.worldMap.isMinePlaceable(gameContext, x, y, category)) {
-                const mineObject = createMineObject(gameContext, teamID, typeID, x, y);
+        if(this.worldMap.isMinePlaceable(gameContext, x, y, category)) {
+            const mineObject = createMineObject(gameContext, teamID, typeID, x, y);
 
-                if(visible) {
-                    mineObject.show();
-                }
-                
-                this.worldMap.addMine(mineObject);
+            if(visible) {
+                mineObject.show();
             }
+            
+            this.worldMap.addMine(mineObject);
         }
     }
 }
@@ -386,18 +377,126 @@ ClientMatchLoader.prototype.loadMusic = function(gameContext) {
     }
 }
 
-ClientMatchLoader.prototype.loadMap = function(gameContext, settings) {
+ClientMatchLoader.prototype.createEntityFromSnapshot = function(gameContext, data, id) {
+    const { type, tileX, tileY, teamID } = data;
+    const entity = createClientEntityObject(gameContext, id, teamID, type, tileX, tileY);
+
+    if(entity) {
+        entity.load(data);
+
+        if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+            entity.setOpacity(0);
+        }
+
+        updateEntitySprite(gameContext, entity);
+    }
+}
+
+ClientMatchLoader.prototype.loadTurnFromSnapshot = function(gameContext, turn) {
+    const { teamManager, world } = gameContext;
+    const { turnManager } = world;
+    const { team, rounds, turns } = turn;
+    const actor = teamManager.findActorByTeam(gameContext, team);
+
+    turnManager.globalRound = rounds;
+    teamManager.globalTurn = turns;
+
+    if(actor) {
+        turnManager.setCurrentActor(gameContext, actor.getID());
+    }
+}
+
+ClientMatchLoader.prototype.loadInitialServerSnapshot = function(gameContext, snapshot, overrides) {
     const { dialogueHandler, teamManager, spriteManager } = gameContext;
-    const { overrides, entities } = settings;
+    const { mapID, turn, entities, teams } = snapshot; //TODO(neyn): Colors to team overrides!
     const cContext = createPlayCamera(gameContext);
     const camera = cContext.getCamera();
 
     this.createTeams(gameContext, overrides);
     this.createActors(gameContext, camera);
-    this.createEntities(gameContext, entities);
+
+    for(const { id, data } of entities) {
+        this.createEntityFromSnapshot(gameContext, data, id);
+    }
+
     this.createBuildings(gameContext);
     this.createMines(gameContext);
+    this.loadMusic(gameContext);
+    this.worldMap.loadLocalization(this.localization);
 
+    EventFactory.createWorldEvents(gameContext, this.events, this.allowedComponents);
+    dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);
+    teamManager.updateStatus(); //TODO(neyn): Really necessary?
+
+    this.loadTurnFromSnapshot(gameContext, turn);
+
+    //Sort buildings once after all are created!
+    spriteManager.sortLayer(LAYER_TYPE.BUILDING);
+}
+
+ClientMatchLoader.prototype.loadMapFromSnapshot = function(gameContext, snapshot, overrides) {
+    const { world, dialogueHandler, teamManager, spriteManager } = gameContext;
+    const { entityManager, eventHandler } = world;
+    const { mapID, turn, events, edits, entities, teams, mines, buildings } = snapshot;
+    const cContext = createPlayCamera(gameContext);
+    const camera = cContext.getCamera();
+
+    this.createTeams(gameContext, overrides);
+    this.createActors(gameContext, camera);
+
+    for(let i = 0; i < teams.length; i++) {
+        teamManager.teams[i].load(teams[i]);
+    }
+
+    for(const blob of mines) {
+        const { type, tileX, tileY, teamID } = blob;
+        const mine = createMineObject(gameContext, teamID, type, tileX, tileY);
+
+        mine.load(blob);
+        this.worldMap.addMine(mine);
+    }
+
+    for(const blob of buildings) {
+        const { type, tileX, tileY, teamID } = blob;
+        const building = createClientBuildingObject(gameContext, teamID, type, tileX, tileY);
+
+        if(building) {
+            building.load(blob);
+            this.worldMap.addBuilding(building);
+        }
+    }
+
+    for(const blob of entities) {
+        const nextID = entityManager.getNextID();
+
+        this.createEntityFromSnapshot(gameContext, blob, nextID);
+    }
+
+    this.loadMusic(gameContext);
+    this.worldMap.loadLocalization(this.localization);
+    this.worldMap.loadEdits(edits);
+
+    EventFactory.createWorldEvents(gameContext, this.events, this.allowedComponents);
+    eventHandler.loadTriggeredEvents(events);
+    dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);
+    teamManager.updateStatus();
+
+    this.loadTurnFromSnapshot(gameContext, turn);
+
+    //Sort buildings once after all are created!
+    spriteManager.sortLayer(LAYER_TYPE.BUILDING);
+}
+
+ClientMatchLoader.prototype.loadMapFromFile = function(gameContext, overrides) {
+    const { dialogueHandler, teamManager, spriteManager } = gameContext;
+    const cContext = createPlayCamera(gameContext);
+    const camera = cContext.getCamera();
+
+    this.createTeams(gameContext, overrides);
+    this.createActors(gameContext, camera);
+    this.createEntities(gameContext);
+    this.createBuildings(gameContext);
+    this.createMines(gameContext);
     this.loadMusic(gameContext);
     this.worldMap.loadLocalization(this.localization);
 
@@ -419,18 +518,18 @@ export const ServerMatchLoader = function(worldMap, mapFile) {
     this.buildings = mapFile.buildings ?? [];
     this.mines = mapFile.mines ?? [];
     this.rules = LOADER_RULE.NONE;
-    this.entityIDList = [];
     this.allowedComponents = MP_SERVER_EVENT_COMPONENTS;
 }
 
 ServerMatchLoader.prototype.setMode = function(mode) {
-    this.rules = getLoaderRules(mode);
-
     switch(mode) {
         case LOADER_MODE.MP_FIXED: {
+            this.rules |= LOADER_RULE.FIXED_ALLIES;
+            this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
             break;
         }
         case LOADER_MODE.MP_FIXED: {
+            this.rules |= LOADER_RULE.ALLOW_SPECTATOR;
             break;
         }
         default: {
@@ -546,10 +645,8 @@ ServerMatchLoader.prototype.createActors = function(gameContext) {
 }
 
 ServerMatchLoader.prototype.createBuildings = function(gameContext) {
-    if(this.rules & LOADER_RULE.SPAWN_BUILDINGS) {
-        for(const building of this.buildings) {
-            spawnServerBuilding(gameContext, this.worldMap, building); 
-        }
+    for(const building of this.buildings) {
+        spawnServerBuilding(gameContext, this.worldMap, building); 
     }
 }
 
@@ -558,43 +655,37 @@ ServerMatchLoader.prototype.createEntities = function(gameContext) {
     const { entityManager } = world; 
 
     //Override is irrelevant as the server is the authority for ids.
-    if(this.rules & LOADER_RULE.SPAWN_ENTITIES) {
-        for(let i = 0; i < this.entities.length; i++) {
-            const entityID = entityManager.getNextID();
-            
-            spawnServerEntity(gameContext, this.entities[i], entityID);
-
-            this.entityIDList.push(entityID);
-        }
+    for(let i = 0; i < this.entities.length; i++) {
+        const entityID = entityManager.getNextID();
+        
+        spawnServerEntity(gameContext, this.entities[i], entityID);
     }
 }
 
 ServerMatchLoader.prototype.createMines = function(gameContext) {
     const { teamManager, typeRegistry } = gameContext;
 
-    if(this.rules & LOADER_RULE.SPAWN_MINES) {
-        for(const mine of this.mines) {
-            const { 
-                x = -1, 
-                y = -1,
-                team = null,
-                type = "NONE",
-                hidden = false
-            } = mine;
+    for(const mine of this.mines) {
+        const { 
+            x = -1, 
+            y = -1,
+            team = null,
+            type = "NONE",
+            hidden = false
+        } = mine;
 
-            const teamID = teamManager.getTeamID(team);
-            const typeID = MINE_TYPE[type] ?? MINE_TYPE.LAND;
-            const { category } = typeRegistry.getMineType(typeID);
+        const teamID = teamManager.getTeamID(team);
+        const typeID = MINE_TYPE[type] ?? MINE_TYPE.LAND;
+        const { category } = typeRegistry.getMineType(typeID);
 
-            if(this.worldMap.isMinePlaceable(gameContext, x, y, category)) {
-                const mineObject = createMineObject(gameContext, teamID, typeID, x, y);
+        if(this.worldMap.isMinePlaceable(gameContext, x, y, category)) {
+            const mineObject = createMineObject(gameContext, teamID, typeID, x, y);
 
-                if(hidden) {
-                    mineObject.hide();
-                }
-
-                this.worldMap.addMine(mineObject);
+            if(hidden) {
+                mineObject.hide();
             }
+
+            this.worldMap.addMine(mineObject);
         }
     }
 }

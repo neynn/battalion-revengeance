@@ -28,40 +28,7 @@ const getBuildingID = function(name) {
     return index;
 }
 
-const destroyEntity = function(gameContext, entity) {
-    const { teamManager, world } = gameContext;
-    const { entityManager } = world;
-    const { activeTeams } = teamManager;
-    const team = entity.getTeam(gameContext);
-
-    entity.removeFromMap(gameContext);
-    entity.isMarkedForDestroy = true;
-    
-    team.addStatistic(TEAM_STAT.UNITS_LOST, 1);
-
-    for(const teamID of activeTeams) {
-        const team = teamManager.getTeam(teamID);
-
-        team.onEntityDeath(entity);
-    }
-
-    entityManager.destroyEntity(entity.index);
-    teamManager.updateStatus();
-}
-
-export const despawnClientEntity = function(gameContext, entity) {
-    const { spriteManager } = gameContext;
-
-    spriteManager.destroySprite(entity.spriteID);
-    entity.spriteID = SpriteManager.INVALID_ID;
-    destroyEntity(gameContext, entity);
-}
-
-export const despawnServerEntity = function(gameContext, entity) {
-    destroyEntity(gameContext, entity);
-}
-
-export const createServerEntityObject = function(gameContext, entityID, teamID, typeID, tileX, tileY) {
+const createEntity = function(gameContext, entityID, teamID, typeID, tileX, tileY) {
     const { teamManager, typeRegistry, world } = gameContext;
     const { entityManager } = world;
     const team = teamManager.getTeam(teamID);
@@ -83,37 +50,28 @@ export const createServerEntityObject = function(gameContext, entityID, teamID, 
     return entityObject;
 }
 
-export const createClientEntityObject = function(gameContext, entityID, teamID, typeID, tileX, tileY) {
-    const { teamManager, world, spriteManager, typeRegistry, shadeCache } = gameContext;
+const destroyEntity = function(gameContext, entity) {
+    const { teamManager, world } = gameContext;
     const { entityManager } = world;
-    const team = teamManager.getTeam(teamID);
+    const { activeTeams } = teamManager;
+    const team = entity.getTeam(gameContext);
 
-    if(!team) {
-        return null;
+    entity.removeFromMap(gameContext);
+    entity.isMarkedForDestroy = true;
+    
+    team.addStatistic(TEAM_STAT.UNITS_LOST, 1);
+
+    for(const teamID of activeTeams) {
+        const team = teamManager.getTeam(teamID);
+
+        team.onEntityDeath(entity);
     }
 
-    const { schema } = team;
-    const entityType = typeRegistry.getEntityType(typeID);
-    const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
-    const entityObject = new BattalionEntity(entityID);
-
-    entityObject.spriteID = visualSprite.getIndex();
-    entityObject.loadConfig(entityType);
-    entityObject.setTeam(teamID);
-    team.addEntity(entityObject);
-    entityManager.addEntity(entityObject);
-    entityObject.setTile(tileX, tileY);
-    entityObject.placeOnMap(gameContext);
-
-    bufferEntitySounds(gameContext, entityObject);
-    bufferEntitySprites(gameContext, entityObject, schema);
-    updateEntitySprite(gameContext, entityObject);
-    shadeCache.loadShades(gameContext, typeID);
-
-    return entityObject;
+    entityManager.destroyEntity(entity.index);
+    teamManager.updateStatus();
 }
 
-export const createServerBuildingObject = function(gameContext, teamID, typeID, tileX, tileY) {
+const createBuilding = function(gameContext, teamID, typeID, tileX, tileY) {
     const { teamManager, typeRegistry } = gameContext;
     const team = teamManager.getTeam(teamID);
 
@@ -130,26 +88,63 @@ export const createServerBuildingObject = function(gameContext, teamID, typeID, 
     return building;
 }
 
-export const createClientBuildingObject = function(gameContext, teamID, typeID, tileX, tileY) {
-    const { teamManager, typeRegistry } = gameContext;
-    const team = teamManager.getTeam(teamID);
+export const despawnClientEntity = function(gameContext, entity) {
+    const { spriteManager } = gameContext;
 
-    if(!team) {
+    spriteManager.destroySprite(entity.spriteID);
+    entity.spriteID = SpriteManager.INVALID_ID;
+    destroyEntity(gameContext, entity);
+}
+
+export const despawnServerEntity = function(gameContext, entity) {
+    destroyEntity(gameContext, entity);
+}
+
+export const createClientEntityObject = function(gameContext, entityID, teamID, typeID, tileX, tileY) {
+    const { teamManager, spriteManager, shadeCache } = gameContext;
+    const entity = createEntity(gameContext, entityID, teamID, typeID, tileX, tileY);
+
+    if(!entity) {
         return null;
     }
 
-    const buildingType = typeRegistry.getBuildingType(typeID);
+    const { schema } = teamManager.getTeam(teamID);
+    const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
 
-    const { schema } = team;
-    const { sprite } = buildingType;
+    entity.spriteID = visualSprite.getIndex();
+
+    bufferEntitySounds(gameContext, entity);
+    bufferEntitySprites(gameContext, entity, schema);
+    updateEntitySprite(gameContext, entity);
+    shadeCache.loadShades(gameContext, typeID);
+
+    return entity;
+}
+
+export const createServerEntityObject = function(gameContext, entityID, teamID, typeID, tileX, tileY) {
+    return createEntity(gameContext, entityID, teamID, typeID, tileX, tileY);
+}
+
+export const createServerBuildingObject = function(gameContext, teamID, typeID, tileX, tileY) {
+    return createBuilding(gameContext, teamID, typeID, tileX, tileY);
+}
+
+export const createClientBuildingObject = function(gameContext, teamID, typeID, tileX, tileY) {
+    const { teamManager } = gameContext;
+    const building = createBuilding(gameContext, teamID, typeID, tileX, tileY);
+
+    if(!building) {
+        return null;
+    }
+
+    const { schema } = teamManager.getTeam(teamID);
+    const { config } = building;
+    const { sprite } = config;
 
     const position = transformTileToWorld(tileX, tileY);
     const visualSprite = createSchematicSprite(gameContext, sprite, schema, LAYER_TYPE.BUILDING);
-    const building = new Building(buildingType);
 
     building.spriteID = visualSprite.getIndex();
-    building.setTile(tileX, tileY);
-    building.setTeam(teamID);
     visualSprite.setPosition(position.x, position.y);
 
     return building;
