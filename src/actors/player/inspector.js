@@ -266,5 +266,10 @@ MapInspector.prototype.update = function(gameContext) {
     this.lastHoverY = y;
     this.camera.setInspect(x, y);
 
+    if(this.state === MapInspector.STATE.ENTITY && this.getLastEntity(gameContext) === null) {
+        this.state = MapInspector.STATE.NONE;
+        this.clearOverlays();
+    }
+
     return hoverChanged;
 }
