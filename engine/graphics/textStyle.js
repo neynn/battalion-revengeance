@@ -17,7 +17,8 @@ TextStyle.DEFAULT = {
 };
 
 TextStyle.TEXT_BASELINE = {
-    MIDDLE: "middle"
+    MIDDLE: "middle",
+    TOP: "top"
 };
 
 TextStyle.TEXT_ALIGNMENT = {

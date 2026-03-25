@@ -1,12 +1,14 @@
 import { PathHandler } from "../pathHandler.js";
 import { Texture } from "./texture.js";
 
+const DEFAULT_TEXTURE_TYPE = ".png";
+
 export const TextureRegistry = function() {
     this.textures = [];
 }
 
-TextureRegistry.EMPTY_TEXTURE = new Texture(-1, "EMPTY_TEXTURE", "");
-TextureRegistry.DEFAULT_TEXTURE_TYPE = ".png";
+TextureRegistry.INVALID_ID = -1;
+TextureRegistry.EMPTY_TEXTURE = new Texture(TextureRegistry.INVALID_ID, "EMPTY_TEXTURE", "");
 
 TextureRegistry.prototype.getSizeBytes = function() {
     let bytes = 0;
@@ -23,7 +25,7 @@ TextureRegistry.prototype.createTextures = function(textures) {
 
     for(const textureName in textures) {
         const { directory, source, autoRegions, regions } = textures[textureName];
-        const fileName = source ? source : `${textureName}${TextureRegistry.DEFAULT_TEXTURE_TYPE}`;
+        const fileName = source ? source : `${textureName}${DEFAULT_TEXTURE_TYPE}`;
         const filePath = PathHandler.getPath(directory, fileName);
         const textureID = this.textures.length;
         const texture = new Texture(textureID, textureName, filePath);
@@ -44,6 +46,14 @@ TextureRegistry.prototype.createTextures = function(textures) {
     }
 
     return textureMap;
+}
+
+TextureRegistry.prototype.getTextureWithFallback = function(index) {
+    if(index < 0 || index >= this.textures.length) {
+        return TextureRegistry.EMPTY_TEXTURE;
+    }
+
+    return this.textures[index];
 }
 
 TextureRegistry.prototype.getTexture = function(index) {

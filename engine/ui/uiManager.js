@@ -1,3 +1,5 @@
+import { TextureRegistry } from "../resources/texture/textureRegistry.js";
+
 export const UIManager = function(textureLoader) {
     this.textureLoader = textureLoader;
     this.textureMap = {};
@@ -5,14 +7,22 @@ export const UIManager = function(textureLoader) {
     this.contexts = [];
 }
 
-UIManager.prototype.getUITexture = function(name) {
+UIManager.prototype.getTextureID = function(name) {
     const textureID = this.textureMap[name];
 
-    if(textureID) {
-        this.textureLoader.loadTexture(textureID);
+    if(textureID === undefined) {
+        return TextureRegistry.INVALID_ID;
     }
 
-    return this.textureLoader.getTexture(textureID);
+    return textureID;
+}
+
+UIManager.prototype.getUITexture = function(name) {
+    const textureID = this.getTextureID(name);
+
+    this.textureLoader.loadTexture(textureID);
+
+    return this.textureLoader.getTextureWithFallback(textureID);
 }
 
 UIManager.prototype.load = function(layouts, textures) {

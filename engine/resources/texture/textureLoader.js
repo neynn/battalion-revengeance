@@ -39,6 +39,10 @@ TextureLoader.prototype.createTextures = function(textures) {
     return this.textureRegistry.createTextures(textures);
 }
 
+TextureLoader.prototype.getTextureWithFallback = function(index) {
+    return this.textureRegistry.getTextureWithFallback(index);
+}
+
 TextureLoader.prototype.getTexture = function(index) {
     return this.textureRegistry.getTexture(index);
 }
