@@ -6,7 +6,7 @@
     "keybinds": { "directory": ["assets", "config"], "source": "keybinds.json" },
 
     "fonts": { "directory": ["assets", "fonts"], "source": "fonts.json" },
-    "icons": { "directory": ["assets", "icons"], "source": "icons.json" },
+    "gui": { "directory": ["assets", "gui"], "source": "textures.json" },
     "languages": { "directory": ["assets", "language"], "source": "languages.json" },
     "maps": { "directory": ["assets", "maps"], "source": "maps.json" },
     "music": { "directory": ["assets", "music"], "source": "music.json" },

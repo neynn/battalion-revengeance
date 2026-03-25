@@ -86,7 +86,7 @@ const createElement = function(uiManager, config, DEBUG_NAME) {
                 scale = 1
             } = config;
 
-            const texture = uiManager.getIconTexture(image);
+            const texture = uiManager.getUITexture(image);
             const { handle } = texture;
 
             element.setPosition(x, y);

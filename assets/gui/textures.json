@@ -1,0 +1,6 @@
+{
+    "pvp_icon": { "directory": ["assets", "gui"], "source": "pvp_icon.png" },
+    "recon_mainframe": { "directory": ["assets", "gui", "recon"], "source": "recon_mainframe.png" },
+    "recon_terrain": { "directory": ["assets", "gui", "recon"], "source": "recon_terrain.png" },
+    "recon_unit": { "directory": ["assets", "gui", "recon"], "source": "recon_unit.png" }
+}

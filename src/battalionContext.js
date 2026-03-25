@@ -43,7 +43,7 @@ BattalionContext.prototype.init = function(resources) {
     this.tileManager.loadClient(this.textureLoader, resources.tiles, resources.tileMeta, resources.autotilers, resolveTileType);
     this.tileManager.addCustomTile(TILE_ID.RIVER_10, TILE_TYPE.SEA);
     this.spriteManager.load(resources.spriteTextures, resources.sprites);
-    this.uiManager.load(resources.layouts, resources.icons);
+    this.uiManager.load(resources.layouts, resources.gui);
     this.fonts.load(resources.fonts);
     this.client.musicPlayer.load(resources.music, resources.playlists);
     this.client.soundPlayer.load(resources.sounds);

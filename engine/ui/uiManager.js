@@ -5,8 +5,8 @@ export const UIManager = function(textureLoader) {
     this.contexts = [];
 }
 
-UIManager.prototype.getIconTexture = function(iconID) {
-    const textureID = this.textureMap[iconID];
+UIManager.prototype.getUITexture = function(name) {
+    const textureID = this.textureMap[name];
 
     if(textureID) {
         this.textureLoader.loadTexture(textureID);
@@ -15,13 +15,13 @@ UIManager.prototype.getIconTexture = function(iconID) {
     return this.textureLoader.getTexture(textureID);
 }
 
-UIManager.prototype.load = function(layouts, iconTypes) {
+UIManager.prototype.load = function(layouts, textures) {
     if(layouts) {
         this.layouts = layouts;
     }
 
-    if(iconTypes) {
-        this.textureMap = this.textureLoader.createTextures(iconTypes);
+    if(textures) {
+        this.textureMap = this.textureLoader.createTextures(textures);
     }
 }
 

@@ -20,6 +20,7 @@ import { ErrorObjective } from "../team/objective/types/error.js";
 import { TeamManager } from "../team/teamManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { updateEntitySprite } from "./sprite.js";
+import { PlayUI } from "../ui/playUI.js";
 
 const MP_SERVER_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.EXPLODE_TILE, COMPONENT_TYPE.SPAWN_ENTITY]);
 const MP_CLIENT_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.DIALOGUE, COMPONENT_TYPE.PLAY_EFFECT]);
@@ -101,24 +102,30 @@ const ActorFactory = {
         actor.setTeam(teamID);
         actor.setName("NPC");
     },
-    createPlayer: function(gameContext, teamID, clientCamera) {
+    createPlayer: function(gameContext, teamID) {
         const { world } = gameContext;
         const { turnManager } = world;
+        const context = createPlayCamera(gameContext);
         const actorID = turnManager.getNextID();
-        const actor = new Player(actorID, clientCamera);
+        const actor = new Player(actorID, context.getCamera());
+        const playUI = new PlayUI(actor.inspector, context);
 
+        playUI.load(gameContext);
         turnManager.addActor(actor);
         actor.setTeam(teamID);
         actor.loadKeybinds(gameContext);
         actor.states.setNextState(gameContext, Player.STATE.IDLE);
         actor.setName("PLAYER");
     },
-    createSpectator: function(gameContext, clientCamera) {
+    createSpectator: function(gameContext) {
         const { world } = gameContext;
         const { turnManager } = world;
+        const context = createPlayCamera(gameContext);
         const actorID = turnManager.getNextID();
-        const actor = new Spectator(actorID, clientCamera);
+        const actor = new Spectator(actorID, context.getCamera());
+        const playUI = new PlayUI(actor.inspector, context);
 
+        playUI.load(gameContext);
         turnManager.addActor(actor);
         actor.loadKeybinds(gameContext);
         actor.setName("SPECTATOR");
@@ -267,14 +274,14 @@ ClientMatchLoader.prototype.createTeams = function(gameContext, overrides) {
     }
 }
 
-ClientMatchLoader.prototype.createActors = function(gameContext, camera) {
+ClientMatchLoader.prototype.createActors = function(gameContext) {
     const { teamManager } = gameContext;
     const clientTeamID = teamManager.getTeamID(this.clientTeam);
 
     if(this.rules & LOADER_RULE.ALLOW_SPECTATOR) {
         //If no client team is found, assume they're a spectator.
         if(clientTeamID === TeamManager.INVALID_ID) {
-            ActorFactory.createSpectator(gameContext, camera);
+            ActorFactory.createSpectator(gameContext);
         }
     }
 
@@ -284,7 +291,7 @@ ClientMatchLoader.prototype.createActors = function(gameContext, camera) {
         if(id === clientTeamID) {
             //Each client SHOULD have a team.
             //If not, the client camera renders with no perspective.
-            ActorFactory.createPlayer(gameContext, id, camera);
+            ActorFactory.createPlayer(gameContext, id);
         } else {
             ActorFactory.createActor(gameContext, id);
         }
@@ -374,13 +381,11 @@ ClientMatchLoader.prototype.loadTurnFromSnapshot = function(gameContext, turn) {
 ClientMatchLoader.prototype.loadInitialServerSnapshot = function(gameContext, snapshot, overrides) {
     const { dialogueHandler, teamManager, spriteManager } = gameContext;
     const { mapID, turn, entities, teams } = snapshot; //TODO(neyn): Colors to team overrides!
-    const cContext = createPlayCamera(gameContext);
-    const camera = cContext.getCamera();
 
     this.rules |= LOADER_RULE.ALLOW_SPECTATOR;
 
     this.createTeams(gameContext, overrides);
-    this.createActors(gameContext, camera);
+    this.createActors(gameContext);
 
     for(const { id, data } of entities) {
         this.createEntityFromSnapshot(gameContext, data, id);
@@ -405,14 +410,12 @@ ClientMatchLoader.prototype.loadMapFromSnapshot = function(gameContext, snapshot
     const { world, dialogueHandler, teamManager, spriteManager } = gameContext;
     const { entityManager, eventHandler } = world;
     const { mapID, turn, events, edits, entities, teams, mines, buildings } = snapshot;
-    const cContext = createPlayCamera(gameContext);
-    const camera = cContext.getCamera();
 
     this.rules |= LOADER_RULE.FIXED_ALLIES;
     this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
 
     this.createTeams(gameContext, overrides);
-    this.createActors(gameContext, camera);
+    this.createActors(gameContext);
 
     for(let i = 0; i < teams.length; i++) {
         teamManager.teams[i].load(teams[i]);
@@ -457,14 +460,12 @@ ClientMatchLoader.prototype.loadMapFromSnapshot = function(gameContext, snapshot
 
 ClientMatchLoader.prototype.loadMapFromFile = function(gameContext, overrides) {
     const { dialogueHandler, teamManager, spriteManager } = gameContext;
-    const cContext = createPlayCamera(gameContext);
-    const camera = cContext.getCamera();
 
     this.rules |= LOADER_RULE.FIXED_ALLIES;
     this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
 
     this.createTeams(gameContext, overrides);
-    this.createActors(gameContext, camera);
+    this.createActors(gameContext);
     this.createEntities(gameContext);
     this.createBuildings(gameContext);
     this.createMines(gameContext);

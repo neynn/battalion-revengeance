@@ -162,3 +162,31 @@ Texture.prototype.getHandle = function(handleID) {
 
     return this.handle;
 }
+
+Texture.prototype.drawOffset = function(display, screenX, screenY) {
+    const { state, width, height, bitmap } = this.handle;
+
+    if(state === TextureHandle.STATE.LOADED) {
+        const { context } = display;
+
+        context.drawImage(
+            bitmap,
+            0, 0, width, height,
+            screenX - width, screenY - height, width, height
+        );
+    }
+}
+
+Texture.prototype.draw = function(display, screenX, screenY) {
+    const { state, width, height, bitmap } = this.handle;
+
+    if(state === TextureHandle.STATE.LOADED) {
+        const { context } = display;
+
+        context.drawImage(
+            bitmap,
+            0, 0, width, height,
+            screenX, screenY, width, height
+        );
+    }
+}
