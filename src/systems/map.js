@@ -427,13 +427,11 @@ ClientMatchLoader.prototype.loadMapFromSnapshot = function(gameContext, snapshot
     }
 
     for(const blob of buildings) {
-        const { type, tileX, tileY, teamID } = blob;
-        const building = createClientBuildingObject(gameContext, teamID, type, tileX, tileY);
+        const { type, tileX, tileY, teamID, color } = blob;
+        const building = createClientBuildingObject(gameContext, teamID, type, tileX, tileY, color);
 
-        if(building) {
-            building.load(blob);
-            this.worldMap.addBuilding(building);
-        }
+        building.load(blob);
+        this.worldMap.addBuilding(building);
     }
 
     for(const blob of entities) {

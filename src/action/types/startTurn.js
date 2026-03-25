@@ -32,10 +32,12 @@ StartTurnAction.prototype.execute = function(gameContext, data) {
         const cash = building.generateCash(gameContext);
         
         if(cash !== 0) {
-            const team = building.getTeam(gameContext);
-            const totalCash = team.addGeneratedCash(cash);
+            const team = building.getTeam(gameContext)
 
-            //TODO: Display total cash?
+            if(team) {
+                const totalCash = team.addGeneratedCash(cash);
+                //TODO(neyn): Display total cash?
+            }
         }
     }
 

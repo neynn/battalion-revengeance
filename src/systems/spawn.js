@@ -1,12 +1,13 @@
 import { EntityManager } from "../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { BUILDING_TYPE, DIRECTION, ENTITY_TYPE, LAYER_TYPE, TEAM_STAT } from "../enums.js";
+import { BUILDING_TYPE, DIRECTION, ENTITY_TYPE, LAYER_TYPE, SCHEMA_TYPE, TEAM_STAT } from "../enums.js";
 import { Building } from "../entity/building.js";
 import { Mine } from "../entity/mine.js";
 import { bufferEntitySprites, createSchematicSprite, updateEntitySprite } from "./sprite.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { bufferEntitySounds } from "./sound.js";
 import { transformTileToWorld } from "../../engine/math/transform2D.js";
+import { TeamManager } from "../team/teamManager.js";
 
 const getEntityID = function(name) {
     const index = ENTITY_TYPE[name];
@@ -72,13 +73,7 @@ const destroyEntity = function(gameContext, entity) {
 }
 
 const createBuilding = function(gameContext, teamID, typeID, tileX, tileY) {
-    const { teamManager, typeRegistry } = gameContext;
-    const team = teamManager.getTeam(teamID);
-
-    if(!team) {
-        return null;
-    }
-
+    const { typeRegistry } = gameContext;
     const buildingType = typeRegistry.getBuildingType(typeID);
     const building = new Building(buildingType);
 
@@ -125,27 +120,18 @@ export const createServerEntityObject = function(gameContext, entityID, teamID, 
     return createEntity(gameContext, entityID, teamID, typeID, tileX, tileY);
 }
 
-export const createServerBuildingObject = function(gameContext, teamID, typeID, tileX, tileY) {
-    return createBuilding(gameContext, teamID, typeID, tileX, tileY);
-}
-
-export const createClientBuildingObject = function(gameContext, teamID, typeID, tileX, tileY) {
-    const { teamManager } = gameContext;
+export const createClientBuildingObject = function(gameContext, teamID, typeID, tileX, tileY, color) {
+    const { typeRegistry } = gameContext;
     const building = createBuilding(gameContext, teamID, typeID, tileX, tileY);
-
-    if(!building) {
-        return null;
-    }
-
-    const { schema } = teamManager.getTeam(teamID);
     const { config } = building;
     const { sprite } = config;
-
     const position = transformTileToWorld(tileX, tileY);
+    const schema = typeRegistry.getSchemaType(color);
     const visualSprite = createSchematicSprite(gameContext, sprite, schema, LAYER_TYPE.BUILDING);
 
-    building.spriteID = visualSprite.getIndex();
     visualSprite.setPosition(position.x, position.y);
+    building.spriteID = visualSprite.getIndex();
+    building.color = color;
 
     return building;
 }
@@ -248,12 +234,10 @@ export const spawnServerBuilding = function(gameContext, worldMap, config) {
 
     if(isPlaceable) {
         const typeID = getBuildingID(type);
-        const building = createServerBuildingObject(gameContext, teamID, typeID, x, y);
+        const building = createBuilding(gameContext, teamID, typeID, x, y);
 
-        if(building) {
-            building.setCustomInfo(id, name, desc);
-            worldMap.addBuilding(building);
-        }
+        building.setCustomInfo(id, name, desc);
+        worldMap.addBuilding(building);
     }
 }
 
@@ -265,7 +249,8 @@ export const spawnClientBuilding = function(gameContext, worldMap, config) {
         x = -1,
         y = -1,
         type = "NONE",
-        team = null
+        team = null,
+        color = "NONE"
     } = config;
 
     const { teamManager } = gameContext;
@@ -273,12 +258,18 @@ export const spawnClientBuilding = function(gameContext, worldMap, config) {
     const isPlaceable = worldMap.isBuildingPlaceable(x, y);
 
     if(isPlaceable) {
-        const typeID = getBuildingID(type);
-        const building = createClientBuildingObject(gameContext, teamID, typeID, x, y);
+        let buildingColor = SCHEMA_TYPE[color] ?? SCHEMA_TYPE.RED;
 
-        if(building) {
-            building.setCustomInfo(id, name, desc);
-            worldMap.addBuilding(building);
+        if(teamID !== TeamManager.INVALID_ID) {
+            const { schema } = teamManager.getTeam(teamID);
+    
+            buildingColor = schema.id;
         }
+
+        const typeID = getBuildingID(type);
+        const building = createClientBuildingObject(gameContext, teamID, typeID, x, y, buildingColor);
+
+        building.setCustomInfo(id, name, desc);
+        worldMap.addBuilding(building);
     }
 }

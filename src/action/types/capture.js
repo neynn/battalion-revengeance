@@ -34,6 +34,7 @@ CaptureAction.prototype.execute = function(gameContext, data) {
 
     nextTeam.addStatistic(TEAM_STAT.STRUCTURES_CAPTURED, 1);
     building.setTeam(entity.teamID);
+    building.setColor(nextTeam.schema.id);
 
     updateBuildingSprite(gameContext, building);
 }

@@ -104,15 +104,18 @@ export const createSchematicSprite = function(gameContext, spriteID, schema, lay
 }
 
 export const updateBuildingSprite = function(gameContext, building) {
-    const { spriteManager } = gameContext;
-    const { schema } = building.getTeam(gameContext);
-    const { id, colorMap } = schema;
+    const { spriteManager, typeRegistry } = gameContext;
+    const color = building.color;
+    const spriteType = building.config.sprite;
+    const spriteID = building.spriteID;
 
-    if(id !== SCHEMA_TYPE.RED) {
-        spriteManager.createCopyTexture(building.config.sprite, id, colorMap);
+    if(color !== SCHEMA_TYPE.RED) {
+        const { colorMap } = typeRegistry.getSchemaType(color);
+
+        spriteManager.createCopyTexture(spriteType, color, colorMap);
     }
 
-    spriteManager.updateSprite(building.spriteID, building.config.sprite, id);
+    spriteManager.updateSprite(spriteID, spriteType, color);
 }
 
 export const updateEntitySprite = function(gameContext, entity) {

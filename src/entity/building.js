@@ -1,3 +1,4 @@
+import { SCHEMA_TYPE } from "../enums.js";
 import { StaticObject } from "./staticObject.js";
 
 export const Building = function(config) {
@@ -7,6 +8,7 @@ export const Building = function(config) {
     this.customName = null;
     this.customDesc = null;
     this.totalGeneratedCash = 0;
+    this.color = SCHEMA_TYPE.RED;
 }
 
 Building.prototype = Object.create(StaticObject.prototype);
@@ -21,8 +23,13 @@ Building.prototype.save = function() {
         "id": this.customID,
         "desc": this.customDesc,
         "name": this.customName,
-        "totalGeneratedCash": this.totalGeneratedCash
+        "totalGeneratedCash": this.totalGeneratedCash,
+        "color": this.color
     }
+}
+
+Building.prototype.setColor = function(color) {
+    this.color = color;
 }
 
 Building.prototype.load = function(data) {
