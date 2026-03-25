@@ -190,12 +190,34 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             context.fillText(entity.getName(this.gameContext), beginX + 41, drawY + 4);
 
             const description = generateLines(context, entity.getDescription(this.gameContext), 215);
-            const length = description.length > 2 ? 2 : description.length;
 
             context.fillStyle = "#ffffff";
 
-            for(let i = 0; i < length; i++) {
-                context.fillText(description[i], beginX + 39, drawY + 20 + 10 * i);
+            switch(description.length) {
+                case 0: {
+                    break;
+                }
+                case 1: {
+                    context.fillText(description[0], beginX + 39, drawY + 20);
+                    break;
+                }
+                case 2: {
+                    context.fillText(description[0], beginX + 39, drawY + 20);
+                    context.fillText(description[1], beginX + 39, drawY + 20 + 10);
+                    break;
+                }
+                default: {
+                    const currentFrameTime = this.gameContext.timer.realTime % (2 * description.length);
+                    const frameIndex = Math.floor(currentFrameTime / 2);
+
+                    context.fillText(description[frameIndex], beginX + 39, drawY + 20);
+
+                    if(frameIndex < description.length - 1) {
+                        context.fillText(description[frameIndex + 1], beginX + 39, drawY + 20 + 10);
+                    }
+
+                    break;
+                }
             }
 
             break;
