@@ -1,7 +1,7 @@
 import { getRandomElement } from "../../../engine/math/math.js";
 import { Socket } from "../../../engine/network/socket.js";
 import { State } from "../../../engine/state/state.js";
-import { GAME_EVENT, LOADER_MODE } from "../../enums.js";
+import { GAME_EVENT } from "../../enums.js";
 import { createClientMapLoader } from "../../systems/map.js";
 
 export const ArenaState = function() {}
@@ -35,7 +35,6 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
                 createClientMapLoader(gameContext, mapID)
                 .then((mapLoader) => {
                     if(mapLoader) {
-                        mapLoader.setMode(LOADER_MODE.MP_CUSTOM);
                         mapLoader.clientTeam = client;
                         mapLoader.loadInitialServerSnapshot(gameContext, snapshot, overrides);
                         socket.messageRoom(GAME_EVENT.MP_CLIENT_MAP_LOADED, {});

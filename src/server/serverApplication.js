@@ -6,6 +6,8 @@ import { TypeRegistry } from "../type/typeRegistry.js";
 import { MapRegistry } from "../map/mapRegistry.js";
 import { registerServerActions } from "../systems/context.js";
 import { resolveTileType } from "../enumHelpers.js";
+import { MAX_TEAMS } from "../constants.js";
+import { TILE_ID, TILE_TYPE } from "../enums.js";
 
 export const ServerApplication = function(io) {
     SocketServer.call(this, io);
@@ -21,6 +23,7 @@ ServerApplication.prototype.constructor = ServerApplication;
 
 ServerApplication.prototype.init = function(resources) {
     this.tileManager.loadServer(resources.tileMeta, resources.autotilers, resolveTileType);
+    this.tileManager.addCustomTile(TILE_ID.RIVER_10, TILE_TYPE.SEA);
     this.mapRegistry.load(resources.maps);
     this.typeRegistry.load(resources);
 }
@@ -29,7 +32,7 @@ ServerApplication.prototype.createRoom = function(roomID, roomType) {
     const gameContext = new ServerGameContext(this, roomID);
 
     //All rooms have a maximum of 8 players.
-    gameContext.maxClients = 8;
+    gameContext.maxClients = MAX_TEAMS;
 
     registerServerActions(gameContext);
 

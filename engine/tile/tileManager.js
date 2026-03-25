@@ -27,6 +27,21 @@ TileManager.prototype.update = function(gameContext) {
     }
 }
 
+TileManager.prototype.addCustomTile = function(mapID, typeID) {
+    const oldTile = this.getTile(mapID);
+    const tileID = this.tiles.length;
+    const tileObject = new Tile(tileID, typeID, oldTile.autotiler);
+    const index = mapID - 1;
+
+    if(index >= 0 && index < this.tileTable.length) {
+        this.tileTable[index] = tileID;
+    }
+
+    this.tiles.push(tileObject);
+
+    return tileObject;
+}
+
 TileManager.prototype.createTiles = function(tileMeta, resolveType) {
     const visualMap = {};
     let mapID = 0;

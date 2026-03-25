@@ -2,7 +2,7 @@ import { Room } from "../../engine/network/room/room.js";
 import { StateMachine } from "../../engine/state/stateMachine.js";
 import { World } from "../../engine/world/world.js";
 import { TeamManager } from "../team/teamManager.js";
-import { GAME_EVENT, LOADER_MODE } from "../enums.js";
+import { GAME_EVENT } from "../enums.js";
 import { createServerMapLoader } from "../systems/map.js";
 import { createStartTurnIntent } from "../action/actionHelper.js";
 import { mpIsPlayerIntentValid } from "../action/actionValidator.js";
@@ -141,7 +141,6 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
             createServerMapLoader(this, sourceID)
             .then((mapLoader) => {
                 if(mapLoader) {
-                    mapLoader.setMode(LOADER_MODE.MP_FIXED)
                     mapLoader.loadMap(this, overrides);
 
                     const snapshot = this.createInitialSnapshot();

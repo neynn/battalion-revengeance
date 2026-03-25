@@ -2,7 +2,7 @@ import { ClientGameContext } from "../engine/clientGameContext.js";
 import { LanguageHandler } from "../engine/language/languageHandler.js";
 import { PortraitHandler } from "./client/portraitHandler.js";
 import { DialogueHandler } from "./client/dialogueHandler.js";
-import { LAYER_TYPE } from "./enums.js";
+import { LAYER_TYPE, TILE_ID, TILE_TYPE } from "./enums.js";
 import { MainMenuState } from "./states/mainMenu/mainMenu.js";
 import { MapEditorState } from "./states/mapEditor/mapEditorState.js";
 import { PlayState } from "./states/play.js";
@@ -41,6 +41,7 @@ BattalionContext.prototype.constructor = BattalionContext;
 
 BattalionContext.prototype.init = function(resources) {
     this.tileManager.loadClient(this.textureLoader, resources.tiles, resources.tileMeta, resources.autotilers, resolveTileType);
+    this.tileManager.addCustomTile(TILE_ID.RIVER_10, TILE_TYPE.SEA);
     this.spriteManager.load(resources.spriteTextures, resources.sprites);
     this.uiManager.load(resources.layouts, resources.icons);
     this.fonts.load(resources.fonts);

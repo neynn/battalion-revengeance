@@ -1,7 +1,6 @@
 import { State } from "../../engine/state/state.js";
 import { createStartTurnIntent } from "../action/actionHelper.js";
 import { BattalionContext } from "../battalionContext.js";
-import { LOADER_MODE } from "../enums.js";
 import { TeamOverride } from "../map/override.js";
 import { createClientMapLoader } from "../systems/map.js";
 
@@ -29,7 +28,6 @@ PlayState.prototype.onEnter = async function(gameContext, stateMachine, transiti
     const matchLoader = await createClientMapLoader(gameContext, "presus");
 
     if(matchLoader) {
-        matchLoader.setMode(LOADER_MODE.SP_CUSTOM);
         matchLoader.loadMapFromFile(gameContext, [over]);
         actionRouter.forceEnqueue(gameContext, createStartTurnIntent());
     }

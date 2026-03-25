@@ -1,5 +1,4 @@
 import { PrettyJSON } from "../../engine/resources/prettyJSON.js";
-import { LOADER_MODE } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
 import { createClientMapLoader } from "./map.js";
 
@@ -121,7 +120,6 @@ export const loadStoryMap = async function(gameContext, data) {
     const matchLoader = await createClientMapLoader(gameContext, data.mapID);
 
     if(matchLoader) {
-        matchLoader.setMode(LOADER_MODE.SP_CUSTOM);
         matchLoader.loadMapFromSnapshot(gameContext, []);
     }
 }

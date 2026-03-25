@@ -1,6 +1,6 @@
 import { BattalionMap } from "../map/battalionMap.js";
 import { createClientBuildingObject, createClientEntityObject, createMineObject, spawnClientBuilding, spawnClientEntity, spawnServerBuilding, spawnServerEntity } from "./spawn.js";
-import { COMMANDER_TYPE, COMPONENT_TYPE, CURRENCY_TYPE, FACTION_TYPE, LAYER_TYPE, LOADER_MODE, LOADER_RULE, MINE_TYPE, OBJECTIVE_TYPE, SCHEMA_TYPE } from "../enums.js";
+import { COMMANDER_TYPE, COMPONENT_TYPE, CURRENCY_TYPE, FACTION_TYPE, LAYER_TYPE, LOADER_RULE, MINE_TYPE, OBJECTIVE_TYPE, SCHEMA_TYPE } from "../enums.js";
 import { DialogueComponent } from "../event/components/dialogue.js";
 import { ExplodeTileComponent } from "../event/components/explodeTile.js";
 import { PlayEffectComponent } from "../event/components/playEffect.js";
@@ -155,36 +155,6 @@ export const ClientMatchLoader = function(worldMap, mapFile) {
     this.defeat = mapFile.defeat ?? [];
     this.clientTeam = mapFile.client ?? null;
     this.rules = LOADER_RULE.NONE;
-}
-
-ClientMatchLoader.prototype.setMode = function(mode) {
-    switch(mode) {
-        case LOADER_MODE.SP_FIXED: {
-            this.rules |= LOADER_RULE.FIXED_ALLIES;
-            this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
-            break;
-        }
-        case LOADER_MODE.SP_CUSTOM: {
-            this.rules |= LOADER_RULE.FIXED_ALLIES;
-            this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
-            break;
-        }
-        case LOADER_MODE.MP_FIXED: {
-            this.rules |= LOADER_RULE.ALLOW_SPECTATOR;
-            this.rules |= LOADER_RULE.FIXED_ALLIES;
-            this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
-            break;
-        }
-        case LOADER_MODE.MP_CUSTOM: {
-            this.rules |= LOADER_RULE.ALLOW_SPECTATOR;
-            break;
-        }
-        default: {
-            this.rules = LOADER_RULE.NONE;
-            console.error("Unsupported mode!");
-            break;
-        }
-    }
 }
 
 ClientMatchLoader.prototype.createCustomSchema = function(gameContext, team, color) {
@@ -407,6 +377,8 @@ ClientMatchLoader.prototype.loadInitialServerSnapshot = function(gameContext, sn
     const cContext = createPlayCamera(gameContext);
     const camera = cContext.getCamera();
 
+    this.rules |= LOADER_RULE.ALLOW_SPECTATOR;
+
     this.createTeams(gameContext, overrides);
     this.createActors(gameContext, camera);
 
@@ -435,6 +407,9 @@ ClientMatchLoader.prototype.loadMapFromSnapshot = function(gameContext, snapshot
     const { mapID, turn, events, edits, entities, teams, mines, buildings } = snapshot;
     const cContext = createPlayCamera(gameContext);
     const camera = cContext.getCamera();
+
+    this.rules |= LOADER_RULE.FIXED_ALLIES;
+    this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
 
     this.createTeams(gameContext, overrides);
     this.createActors(gameContext, camera);
@@ -487,6 +462,9 @@ ClientMatchLoader.prototype.loadMapFromFile = function(gameContext, overrides) {
     const cContext = createPlayCamera(gameContext);
     const camera = cContext.getCamera();
 
+    this.rules |= LOADER_RULE.FIXED_ALLIES;
+    this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
+
     this.createTeams(gameContext, overrides);
     this.createActors(gameContext, camera);
     this.createEntities(gameContext);
@@ -513,25 +491,6 @@ export const ServerMatchLoader = function(worldMap, mapFile) {
     this.buildings = mapFile.buildings ?? [];
     this.mines = mapFile.mines ?? [];
     this.rules = LOADER_RULE.NONE;
-}
-
-ServerMatchLoader.prototype.setMode = function(mode) {
-    switch(mode) {
-        case LOADER_MODE.MP_FIXED: {
-            this.rules |= LOADER_RULE.FIXED_ALLIES;
-            this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
-            break;
-        }
-        case LOADER_MODE.MP_FIXED: {
-            this.rules |= LOADER_RULE.ALLOW_SPECTATOR;
-            break;
-        }
-        default: {
-            this.rules = LOADER_RULE.NONE;
-            console.error("Unsupported mode!");
-            break;
-        }
-    }
 }
 
 ServerMatchLoader.prototype.createTeams = function(gameContext, overrides) {
@@ -686,6 +645,11 @@ ServerMatchLoader.prototype.createMines = function(gameContext) {
 
 ServerMatchLoader.prototype.loadMap = function(gameContext, overrides) {
     const { teamManager } = gameContext;
+
+    //TODO(neyn): Split into PvP and COOP.
+    //COOP has fixed allies, PvP does not.
+    this.rules |= LOADER_RULE.FIXED_ALLIES;
+    this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
 
     this.createTeams(gameContext, overrides);
     this.createActors(gameContext);

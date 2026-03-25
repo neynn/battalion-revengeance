@@ -21,13 +21,6 @@ export const LOADER_RULE = {
     LOAD_OBJECTIVES: 1 << 2
 };
 
-export const LOADER_MODE = {
-    SP_FIXED: 0,
-    SP_CUSTOM: 1,
-    MP_FIXED: 2,
-    MP_CUSTOM: 3
-};
-
 export const TRAIT_CONFIG = {
     CEMENTED_STEEL_ARMOR_REDUCTION: 20,
     SHRAPNEL_RANGE: 1,
@@ -548,8 +541,9 @@ export const TILE_ID = {
 
     VOLANO: 20,
 
-    RIVER_0: 21,
     //21-68: RIVER
+    RIVER_0: 21,
+    RIVER_10: 31,
     RIVER_47: 68,
 
     SHORE_0: 69,
