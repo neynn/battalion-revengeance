@@ -6,6 +6,31 @@ import { MapInspector } from "../actors/player/inspector.js";
 import { TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 
+const generateLines = function(context, text, maxWidth) {
+    const words = text.split(' ');
+    const lines = [];
+    let line = '';
+
+    for(let i = 0; i < words.length; i++) {
+        const testLine = line + words[i] + ' ';
+        const metrics = context.measureText(testLine);
+        const testWidth = metrics.width;
+        
+        if(testWidth > maxWidth && line !== '') {
+            lines.push(line.trim());
+            line = words[i] + ' ';
+        } else {
+            line = testLine;
+        }
+    }
+
+    if(line) {
+        lines.push(line.trim());
+    }
+
+    return lines;
+}
+
 const TILE_DRAW_ORDER = [
     BattalionMap.LAYER.GROUND,
     BattalionMap.LAYER.DECORATION,
@@ -84,28 +109,6 @@ PlayUI.prototype.drawTile = function(display, tileX, tileY, screenX, screenY) {
     }
 }
 
-//INFO(neyn): AI aaah function.
-const wrapText = function(ctx, text, x, y, maxWidth, lineHeight) {
-    const words = text.split(' ');
-    let line = '';
-    let currentY = y;
-
-    for (let n = 0; n < words.length; n++) {
-        const testLine = line + words[n] + ' ';
-        const metrics = ctx.measureText(testLine);
-        const testWidth = metrics.width;
-
-        if (testWidth > maxWidth && n > 0) {
-            ctx.fillText(line, x, currentY);
-            line = words[n] + ' ';
-            currentY += lineHeight;
-        } else {
-            line = testLine;
-        }
-    }
-    ctx.fillText(line, x, currentY);
-}
-
 PlayUI.prototype.onDraw = function(display, screenX, screenY) {
     const { world, language, timer, textureLoader } = this.gameContext;
     const { mapManager } = world;
@@ -126,7 +129,7 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             break;
         }
         case MapInspector.STATE.TILE: {
-            const { name, desc } = worldMap.getTileType(this.gameContext, tileX, tileY);
+            const { terrain } = worldMap.getTileType(this.gameContext, tileX, tileY);
             const climateType = worldMap.getClimateType(this.gameContext, tileX, tileY);
             const beginX = drawX - 565;
 
@@ -138,8 +141,16 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             this.style.apply(context);
             context.fillText("Modifiers:", beginX + 478, drawY + 4);
             context.fillText(worldMap.getTileName(this.gameContext, tileX, tileY), beginX + 41, drawY + 4);
+
+            const description = generateLines(context, worldMap.getTileDesc(this.gameContext, tileX, tileY), 421);
+            const length = description.length > 2 ? 2 : description.length;
+
             context.fillStyle = "#ffffff";
-            wrapText(context, worldMap.getTileDesc(this.gameContext, tileX, tileY), beginX + 39, drawY + 20, 421, 10);
+
+            for(let i = 0; i < length; i++) {
+                context.fillText(description[i], beginX + 39, drawY + 20 + 10 * i);
+            }
+
             break;
         }
         case MapInspector.STATE.BUILDING: {
@@ -148,8 +159,6 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_TERRAIN]).draw(display, beginX, drawY);
             break;
         }
-
-        //Elements are 20x20px
         case MapInspector.STATE.ENTITY: {
             const beginX = drawX - 565;
             const entity = world.getEntityAt(tileX, tileY);
@@ -172,8 +181,6 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
 
             const traitX = beginX + 476;
             const traitY = drawY + 20;
-
-            //215x20 is the size of the text box.
     
             this.style.apply(context);
             context.fillText("Health:", armorX, drawY + 4);
@@ -181,8 +188,16 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             context.fillText("Move:", moveX, drawY + 4);
             context.fillText("Modifiers:", beginX + 478, drawY + 4);
             context.fillText(entity.getName(this.gameContext), beginX + 41, drawY + 4);
+
+            const description = generateLines(context, entity.getDescription(this.gameContext), 215);
+            const length = description.length > 2 ? 2 : description.length;
+
             context.fillStyle = "#ffffff";
-            wrapText(context, entity.getDescription(this.gameContext), beginX + 39, drawY + 20, 215, 10);
+
+            for(let i = 0; i < length; i++) {
+                context.fillText(description[i], beginX + 39, drawY + 20 + 10 * i);
+            }
+
             break;
         }
     }
