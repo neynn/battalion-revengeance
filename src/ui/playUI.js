@@ -17,6 +17,7 @@ export const PlayUI = function(inspector, cContext, gameContext) {
     this.reconUnitTexture = TextureRegistry.EMPTY_TEXTURE;
     this.reconTerrainTexture = TextureRegistry.EMPTY_TEXTURE;
     this.reconMainframeTexture = TextureRegistry.EMPTY_TEXTURE;
+    this.reconNoneTexture = TextureRegistry.EMPTY_TEXTURE;
     this.inspector = inspector;
     this.cContext = cContext;
     this.gameContext = gameContext;
@@ -32,6 +33,7 @@ PlayUI.prototype.load = function(gameContext) {
     this.reconUnitTexture = uiManager.getUITexture("recon_unit");
     this.reconTerrainTexture = uiManager.getUITexture("recon_terrain");
     this.reconMainframeTexture = uiManager.getUITexture("recon_mainframe");
+    this.reconNoneTexture = uiManager.getUITexture("recon_none");
     this.entitySprite = spriteManager.createEmptySprite();
     this.entitySprite.scale = 0.6;
 
@@ -62,8 +64,7 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
         case MapInspector.STATE.NONE: {
             const beginX = drawX - 565;
 
-            //TODO(neyn): Add "NONE" recon.
-            this.reconTerrainTexture.draw(display, beginX, drawY);
+            this.reconNoneTexture.draw(display, beginX, drawY);
             break;
         }
         case MapInspector.STATE.TILE: {
