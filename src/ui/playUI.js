@@ -59,19 +59,25 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
     const tileY = this.inspector.lastY;
 
     switch(this.inspector.state) {
+        case MapInspector.STATE.NONE: {
+            const beginX = drawX - 565;
+
+            //TODO(neyn): Add "NONE" recon.
+            this.reconTerrainTexture.draw(display, beginX, drawY);
+            break;
+        }
         case MapInspector.STATE.TILE: {
             const tileType = worldMap.getTileType(this.gameContext, tileX, tileY);
             const climateType = worldMap.getClimateType(this.gameContext, tileX, tileY);
             const beginX = drawX - 565;
-            const beginY = drawY - 42;
 
-            this.reconTerrainTexture.draw(display, beginX, beginY);
+            this.reconTerrainTexture.draw(display, beginX, drawY);
 
             for(const layerID of TILE_DRAW_ORDER) {
                 const tileID = worldMap.getTile(layerID, tileX, tileY);
 
                 if(tileID > TILE_ID.NONE) {
-                    this.cContext.camera.drawTile(tileManager, tileID, display.context, beginX + 4, beginY + 11, 0.5);
+                    this.cContext.camera.drawTile(tileManager, tileID, display.context, beginX + 4, drawY + 11, 0.5);
                 }
             }
 
@@ -80,23 +86,21 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
         }
         case MapInspector.STATE.BUILDING: {
             const beginX = drawX - 565;
-            const beginY = drawY - 42;
 
             this.reconTerrainTexture.drawOffset(display, drawX, drawY);
             break;
         }
         case MapInspector.STATE.ENTITY: {
             const beginX = drawX - 565;
-            const beginY = drawY - 42;
             const entity = world.getEntityAt(tileX, tileY);
 
             this.updateInspectSprite(entity);
-            this.reconUnitTexture.draw(display, beginX, beginY);
+            this.reconUnitTexture.draw(display, beginX, drawY);
             this.entitySprite.onUpdate(realTime, deltaTime);
-            this.entitySprite.onDraw(display, beginX + 1, beginY + 5);
+            this.entitySprite.onDraw(display, beginX + 1, drawY + 5);
             break;
         }
     }
 
-    this.reconMainframeTexture.draw(display, drawX - 16, this.cContext.positionY - 40);
+    this.reconMainframeTexture.draw(display, drawX - 16, this.cContext.positionY);
 }
