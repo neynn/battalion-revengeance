@@ -28,6 +28,10 @@ const HEALTH_THRESHOLDS = [
     { "above": 0, "color": "#ff0000" }
 ];
 
+//TODO(neyn): Increase the size if ever needed.
+//Maybe do not let DEAD be a deferred state?
+const MAX_DEFERRED = 64;
+
 export const BattalionCamera = function() {
     Camera2D.call(this);
 
@@ -39,20 +43,17 @@ export const BattalionCamera = function() {
     this.jammerOverlay = new TileOverlay(JAMMER_MAX_USED_TILES);
     this.selectOverlay = new TileOverlay(1000);
     this.flags = BattalionCamera.FLAG.NONE;
-    this.deferred = new Int32Array(BattalionCamera.MAX_DEFERRED);
+    this.deferred = new Int32Array(MAX_DEFERRED);
     this.deferredCount = 0;
     this.inspectX = -1;
     this.inspectY = -1;
 
     this.teamID = TeamManager.INVALID_ID;
     this.isCurrentActor = false;
+
     this.markerSprite = SpriteManager.EMPTY_SPRITE;
     this.weakMarkerSprite = SpriteManager.EMPTY_SPRITE;
 }
-
-//TODO(neyn): Increase the size if ever needed.
-//Maybe do not let DEAD be a deferred state?
-BattalionCamera.MAX_DEFERRED = 64;
 
 BattalionCamera.FLAG = {
     NONE: 0,
@@ -66,7 +67,7 @@ BattalionCamera.prototype = Object.create(Camera2D.prototype);
 BattalionCamera.prototype.constructor = BattalionCamera;
 
 BattalionCamera.prototype.loadSprites = function(gameContext) {
-    const { spriteManager } = gameContext;
+    const { spriteManager, textureLoader } = gameContext;
 
     this.markerSprite = spriteManager.createSprite("marker");
 }
@@ -322,7 +323,7 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
 }
 
 BattalionCamera.prototype.addDeferred = function(index) {
-    if(this.deferredCount < BattalionCamera.MAX_DEFERRED) {
+    if(this.deferredCount < MAX_DEFERRED) {
         this.deferred[this.deferredCount++] = index;
     }
 }

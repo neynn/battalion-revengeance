@@ -605,7 +605,6 @@ ServerMatchLoader.prototype.createEntities = function(gameContext) {
     const { world } = gameContext;
     const { entityManager } = world; 
 
-    //Override is irrelevant as the server is the authority for ids.
     for(let i = 0; i < this.entities.length; i++) {
         const entityID = entityManager.getNextID();
         

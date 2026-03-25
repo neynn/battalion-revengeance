@@ -989,7 +989,7 @@
         "traits": ["STEALTH"],
         "sounds": {
             "move": "tracked_move",
-            "fire": "tank_fire"
+            "fire": "stealth_tank_fire"
         },
         "sprites": {
             "idle_right": "stealth_tank_idle_right",
