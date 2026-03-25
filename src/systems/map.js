@@ -108,7 +108,7 @@ const ActorFactory = {
         const context = createPlayCamera(gameContext);
         const actorID = turnManager.getNextID();
         const actor = new Player(actorID, context.getCamera());
-        const playUI = new PlayUI(actor.inspector, context);
+        const playUI = new PlayUI(actor.inspector, context, gameContext);
 
         playUI.load(gameContext);
         turnManager.addActor(actor);
@@ -123,7 +123,7 @@ const ActorFactory = {
         const context = createPlayCamera(gameContext);
         const actorID = turnManager.getNextID();
         const actor = new Spectator(actorID, context.getCamera());
-        const playUI = new PlayUI(actor.inspector, context);
+        const playUI = new PlayUI(actor.inspector, context, gameContext);
 
         playUI.load(gameContext);
         turnManager.addActor(actor);

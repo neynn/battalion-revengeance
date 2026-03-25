@@ -20,6 +20,7 @@ export const Sprite = function(index, DEBUG_NAME) {
     this.offsetX = 0;
     this.offsetY = 0;
     this.flags = Sprite.FLAG.NONE;
+    this.scale = 1;
 }
 
 Sprite.DEBUG = {
@@ -52,12 +53,12 @@ Sprite.prototype.onDraw = function(display, localX, localY) {
     let renderY = 0;
 
     if(isFlipped) {
-        renderX = Math.floor(this.offsetX - localX);
-        renderY = Math.floor(this.offsetY + localY);
+        renderX = Math.floor(this.offsetX * this.scale - localX);
+        renderY = Math.floor(this.offsetY * this.scale + localY);
         display.flip();
     } else {
-        renderX = Math.floor(this.offsetX + localX);
-        renderY = Math.floor(this.offsetY + localY);
+        renderX = Math.floor(this.offsetX * this.scale + localX);
+        renderY = Math.floor(this.offsetY * this.scale + localY);
         display.unflip();
     }
 
@@ -68,14 +69,14 @@ Sprite.prototype.onDraw = function(display, localX, localY) {
             context.drawImage(
                 this.handle.bitmap,
                 x, y, w, h,
-                renderX, renderY, w, h
+                renderX, renderY, w * this.scale, h * this.scale
             );
             break;
         }
         default: {
             if(Sprite.DEBUG.RENDER_PLACEHOLDER) {
                 context.fillStyle = Sprite.DEBUG.PLACEHOLDER;
-                context.fillRect(renderX, renderY, this.width, this.height);
+                context.fillRect(renderX, renderY, this.width * this.scale, this.height * this.scale);
             }
 
             break;
@@ -144,6 +145,7 @@ Sprite.prototype.reset = function() {
     this.flags = Sprite.FLAG.NONE;
     this.opacity = 1;
     this.lastFrame = 0;
+    this.scale = 1;
     this.setPosition(0, 0);
     this.show();
     this.clear();
@@ -267,6 +269,13 @@ Sprite.prototype.lock = function() {
 
 Sprite.prototype.unlock = function() {
     this.flags &= ~Sprite.FLAG.LOOP_LOCK;
+}
+
+Sprite.prototype.getFrame = function(realTime) {
+    const currentFrameTime = realTime % (this.frameCount * this.frameTime);
+    const frameIndex = Math.floor(currentFrameTime / this.frameTime);
+
+    return frameIndex;
 }
 
 Sprite.prototype.updateFrame = function(floatFrames) {
