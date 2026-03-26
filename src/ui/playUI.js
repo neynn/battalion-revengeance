@@ -186,7 +186,7 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             this.style.apply(context);
 
             context.fillText(worldMap.getTileName(this.gameContext, tileX, tileY), beginX + 41, headY);
-            context.fillText("Modifiers:", traitX + 2, headY);
+            context.fillText(language.getSystemTranslation("RECON_TRAIT"), traitX + 2, headY);
 
             if(this.lastIndex !== index) {
                 this.regenerateLines(context, worldMap.getTileDesc(this.gameContext, tileX, tileY), DESCRIPTION_BOX_WIDTH_TILE);
@@ -222,7 +222,7 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             this.inspectSprite.onDraw(display, beginX + 1, drawY + 5);
 
             context.fillText(building.getName(this.gameContext), beginX + 41, headY);
-            context.fillText("Modifiers:", traitX + 2, headY);
+            context.fillText(language.getSystemTranslation("RECON_TRAIT"), traitX + 2, headY);
 
             for(let i = 0; i < building.config.traits.length; i++) {
                 const { icon } = typeRegistry.getTraitType(building.config.traits[i]);
@@ -257,10 +257,10 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             const weaponType = typeRegistry.getWeaponType(entity.config.weaponType);
 
             context.fillText(entity.getName(this.gameContext), beginX + 41, headY);
-            context.fillText("Health:", armorX, headY);
-            context.fillText("Damage:", weaponX, headY);
-            context.fillText("Move:", moveX, headY);
-            context.fillText("Modifiers:", traitX + 2, headY);
+            context.fillText(language.getSystemTranslation("RECON_HEALTH"), armorX, headY);
+            context.fillText(language.getSystemTranslation("RECON_DAMAGE"), weaponX, headY);
+            context.fillText(language.getSystemTranslation("RECON_MOVE"), moveX, headY);
+            context.fillText(language.getSystemTranslation("RECON_TRAIT"), traitX + 2, headY);
 
             context.fillStyle = "#ffffff";
 

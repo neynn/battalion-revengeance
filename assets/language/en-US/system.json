@@ -9,5 +9,10 @@
     "MAP_EDITOR_SET_NAME_SEA": "Sea Decoration",
     "MAP_EDITOR_SET_NAME_RAIL": "Railway",
 
-    "SCHEMA_DESC_CUSTOM": "Custom scheme"
+    "SCHEMA_DESC_CUSTOM": "Custom scheme",
+    
+    "RECON_HEALTH": "Health:",
+    "RECON_DAMAGE": "Damage:",
+    "RECON_MOVE": "Move:",
+    "RECON_TRAIT": "Modifiers:"
 }
