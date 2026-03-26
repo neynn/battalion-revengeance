@@ -137,7 +137,7 @@ export const ICON_TYPE = {
     CONQUEROR: 98,
     COURAGE: 99,
     CRAB: 100,
-    DANGEROUS: 101,
+    DANGEROUS: 101, //TODO(neyn): Dangerous is also a terrain icon!
     DEPTH_CHARGE: 102,
     DESTRUCTION: 103,
     DEVASTATING: 104,
@@ -156,7 +156,7 @@ export const ICON_TYPE = {
     NAVAL_TRANSPORT: 117,
     RADAR: 118,
     SEABOUND: 119,
-    REINFORCED_ARMOR: 120,
+    REINFORCED_ARMOR: 120, //TODO(neyn): This may be the "protected" icon.
     SCHWERPUNKT: 121,
     SELF_DESTRUCT: 122,
     ARMOR_PIERCE: 123,

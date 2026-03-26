@@ -2,7 +2,7 @@
     "UNEVEN": {
         "name": "TERRAIN_NAME_UNEVEN",
         "desc": "TERRAIN_DESC_UNEVEN",
-        "icon": "Assets/Traits/Uneven.png",
+        "icon": "UNEVEN",
         "damage": {},
         "protection": {},
         "cost": {
@@ -12,7 +12,7 @@
     "RUGGED": {
         "name": "TERRAIN_NAME_RUGGED",
         "desc": "TERRAIN_DESC_RUGGED",
-        "icon": "Assets/Traits/Rugged.png",
+        "icon": "RUGGED",
         "protection": {},
         "cost": {
             "TRACKED": 0.2,
@@ -22,7 +22,7 @@
     "PRECIPITOUS": {
         "name": "TERRAIN_NAME_PRECIPITOUS",
         "desc": "TERRAIN_DESC_PRECIPITOUS",
-        "icon": "Assets/Traits/Precipitous.png",
+        "icon": "PRECIPITOUS",
         "protection": {},
         "cost": {
             "FOOT": 0.4,
@@ -33,6 +33,7 @@
     "EXTRACTABLE": {
         "name": "TERRAIN_NAME_EXTRACTABLE",
         "desc": "TERRAIN_DESC_EXTRACTABLE",
+        "icon": "NONE",
         "note": "This terrain is purely cosmetic. Ore extraction is defined by TileID.",
         "protection": {},
         "cost": {}
@@ -40,35 +41,35 @@
     "IMPASSABLE": {
         "name": "TERRAIN_NAME_IMPASSABLE",
         "desc": "TERRAIN_DESC_IMPASSABLE",
-        "icon": "Assets/Traits/Impassable.png",
+        "icon": "IMPASSABLE",
         "protection": {},
         "cost": {}
     },
     "TRICKY_WATERS": {
         "name": "TERRAIN_NAME_TRICKY_WATERS",
         "desc": "TERRAIN_DESC_TRICKY_WATERS",
-        "icon": "Assets/Traits/Tricky Waters.png",
+        "icon": "TRICKY_WATERS",
         "protection": {},
         "cost": {}
     },
     "CONCEALMENT": {
         "name": "TERRAIN_NAME_CONCEALMENT",
         "desc": "TERRAIN_DESC_CONCEALMENT",
-        "icon": "Assets/Traits/Concealment.png",
+        "icon": "CONCEALMENT",
         "protection": {},
         "cost": {}
     },
     "NAVAL_CONCEALMENT": {
         "name": "TERRAIN_NAME_NAVAL_CONCEALMENT",
         "desc": "TERRAIN_DESC_NAVAL_CONCEALMENT",
-        "icon": "Assets/Traits/Naval Concealment.png",
+        "icon": "NAVAL_CONCEALMENT",
         "protection": {},
         "cost": {}
     },
     "BUNKER": {
         "name": "TERRAIN_NAME_BUNKER",
         "desc": "TERRAIN_DESC_BUNKER",
-        "icon": "Assets/Traits/Bunker.png",
+        "icon": "BUNKER",
         "protection": {
             "FOOT": 0.4
         },
@@ -77,7 +78,7 @@
     "SHALLOW": {
         "name": "TERRAIN_NAME_SHALLOW",
         "desc": "TERRAIN_DESC_SHALLOW",
-        "icon": "Assets/Traits/Shallow.png",
+        "icon": "SHALLOW",
         "protection": {},
         "cost": {
             "HEAVY_RUDDER": -1
@@ -86,7 +87,7 @@
     "VANTAGE": {
         "name": "TERRAIN_NAME_VANTAGE",
         "desc": "TERRAIN_DESC_VANTAGE",
-        "icon": "Assets/Traits/Vantage.png",
+        "icon": "VANTAGE",
         "rangeBoost": 1,
         "protection": {},
         "cost": {}
@@ -94,7 +95,7 @@
     "DANGEROUS": {
         "name": "TERRAIN_NAME_DANGEROUS",
         "desc": "TERRAIN_DESC_DANGEROUS",
-        "icon": "Assets/Traits/Dangerous.png",
+        "icon": "DANGEROUS",
         "damage": {
             "*": 20,
             "FLIGHT": 0
@@ -105,7 +106,7 @@
     "SHIELDED": {
         "name": "TERRAIN_NAME_SHIELDED",
         "desc": "TERRAIN_DESC_SHIELDED",
-        "icon": null,
+        "icon": "REINFORCED_ARMOR",
         "rangeGuard": true,
         "protection": {},
         "cost": {}

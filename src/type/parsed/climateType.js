@@ -1,8 +1,10 @@
+import { ICON_TYPE } from "../../enums.js";
+
 export const ClimateType = function(id) {
     this.id = id;
     this.name = "MISSING_NAME_CLIMATE";
     this.desc = "MISSING_DESC_CLIMATE";
-    this.icon = null;
+    this.icon = ICON_TYPE.NONE;
     this.logisticFactor = 1;
 }
 
@@ -10,12 +12,12 @@ ClimateType.prototype.load = function(config, DEBUG_NAME) {
     const {
         name = "MISSING_NAME_CLIMATE",
         desc = "MISSING_DESC_CLIMATE",
-        icon = null,
+        icon = "NONE",
         logisticFactor = 1
     } = config;
 
     this.name = name;
     this.desc = desc;
-    this.icon = icon;
+    this.icon = ICON_TYPE[icon] ?? ICON_TYPE.NONE;
     this.logisticFactor = logisticFactor;
 }

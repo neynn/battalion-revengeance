@@ -1,10 +1,10 @@
-import { MOVEMENT_TYPE } from "../../enums.js";
+import { ICON_TYPE, MOVEMENT_TYPE } from "../../enums.js";
 
 export const TerrainType = function(id) {
     this.id = id;
     this.name = "MISSING_NAME_TERRAIN";
     this.desc = "MISSING_DESC_TERRAIN";
-    this.icon = null;
+    this.icon = ICON_TYPE.NONE;
     this.rangeGuard = false;
     this.rangeBoost = 0;
     this.damage = [];
@@ -28,7 +28,7 @@ TerrainType.prototype.load = function(config, DEBUG_NAME) {
     const { 
         name = "MISSING_NAME_TERRAIN",
         desc = "MISSING_DESC_TERRAIN",
-        icon = null,
+        icon = "NONE",
         rangeGuard = false,
         rangeBoost = 0,
         damage = {},
@@ -38,7 +38,7 @@ TerrainType.prototype.load = function(config, DEBUG_NAME) {
 
     this.name = name;
     this.desc = desc;
-    this.icon = icon;
+    this.icon = ICON_TYPE[icon] ?? ICON_TYPE.NONE;
     this.rangeGuard = rangeGuard;
     this.rangeBoost = rangeBoost;
 

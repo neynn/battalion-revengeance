@@ -125,8 +125,10 @@ PlayUI.prototype.drawTile = function(display, tileX, tileY, screenX, screenY) {
     }
 }
 
-const DESCRIPTION_BOX_WIDTH_TILE = 421;
+const DESCRIPTION_BOX_WIDTH_TILE_VANILLA = 421;
+const DESCRIPTION_BOX_WIDTH_TILE = 381;
 const DESCRIPTION_BOX_WIDTH_ENTITY = 215;
+const ICON_WIDTH = 20;
 
 PlayUI.prototype.onDraw = function(display, screenX, screenY) {
     const { world, language, timer, textureLoader, typeRegistry } = this.gameContext;
@@ -161,6 +163,7 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
         case MapInspector.STATE.TILE: {
             const { terrain } = worldMap.getTileType(this.gameContext, tileX, tileY);
             const climateType = worldMap.getClimateType(this.gameContext, tileX, tileY);
+            const climateX = beginX + 439;
 
             textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_TERRAIN]).draw(display, beginX, drawY);
 
@@ -173,6 +176,15 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             if(this.lastIndex !== index) {
                 this.regenerateLines(context, worldMap.getTileDesc(this.gameContext, tileX, tileY), DESCRIPTION_BOX_WIDTH_TILE);
                 this.lastIndex = index;
+            }
+
+            //INFO: Climate has no text!
+            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.ICONS]).drawRegion(climateType.icon, display, climateX, bodyY);
+
+            for(let i = 0; i < terrain.length; i++) {
+                const { icon } = typeRegistry.getTerrainType(terrain[i]);
+
+                textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.ICONS]).drawRegion(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY);
             }
 
             break;
@@ -194,6 +206,13 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
 
             context.fillText(building.getName(this.gameContext), beginX + 41, headY);
             context.fillText("Modifiers:", traitX + 2, headY);
+
+            for(let i = 0; i < building.config.traits.length; i++) {
+                const { icon } = typeRegistry.getTraitType(building.config.traits[i]);
+
+                textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.ICONS]).drawRegion(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY);
+            }
+
             break;
         }
         case MapInspector.STATE.ENTITY: {
@@ -217,6 +236,8 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             const minRange = entity.config.minRange;
             const maxRange = entity.getMaxRange(this.gameContext);
             const armorType = typeRegistry.getArmorType(entity.config.armorType);
+            const movementType = typeRegistry.getMovementType(entity.config.movementType);
+            const weaponType = typeRegistry.getWeaponType(entity.config.weaponType);
 
             context.fillText(entity.getName(this.gameContext), beginX + 41, headY);
             context.fillText("Health:", armorX, headY);
@@ -225,15 +246,26 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             context.fillText("Modifiers:", traitX + 2, headY);
 
             context.fillStyle = "#ffffff";
+
             textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.ICONS]).drawRegion(armorType.icon, display, armorX, bodyY);
-            context.fillText(`${entity.health}/${entity.maxHealth}`, armorX, bodyY);
-            context.fillText(`${entity.damage}`, weaponX, bodyY);
+            context.fillText(`${entity.health}/${entity.maxHealth}`, armorX + ICON_WIDTH + 2, bodyY);
+
+            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.ICONS]).drawRegion(weaponType.icon, display, weaponX, bodyY);
+            context.fillText(`${entity.damage}`, weaponX + ICON_WIDTH + 2, bodyY);
 
             if(maxRange > 1) {
-                context.fillText(`(${minRange}-${maxRange})`, weaponX, bodyY + 10);
+                context.fillText(`(${minRange}-${maxRange})`, weaponX + ICON_WIDTH + 2, bodyY + 10);
             }
 
-            context.fillText(`${entity.config.movementRange}`, moveX, bodyY);
+            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.ICONS]).drawRegion(movementType.icon, display, moveX, bodyY);
+            context.fillText(`${entity.config.movementRange}`, moveX + ICON_WIDTH + 2, bodyY);
+
+            for(let i = 0; i < entity.config.traits.length; i++) {
+                const { icon } = typeRegistry.getTraitType(entity.config.traits[i]);
+
+                textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.ICONS]).drawRegion(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY);
+            }
+
             break;
         }
     }
