@@ -1,35 +1,11 @@
+import { EntityManager } from "../../engine/entity/entityManager.js";
 import { TextStyle } from "../../engine/graphics/textStyle.js";
 import { TextureRegistry } from "../../engine/resources/texture/textureRegistry.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { UIContext } from "../../engine/ui/uiContext.js";
 import { MapInspector } from "../actors/player/inspector.js";
-import { TILE_ID } from "../enums.js";
+import { RANGE_TYPE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
-
-const generateLines = function(context, text, maxWidth) {
-    const words = text.split(' ');
-    const lines = [];
-    let line = '';
-
-    for(let i = 0; i < words.length; i++) {
-        const testLine = line + words[i] + ' ';
-        const metrics = context.measureText(testLine);
-        const testWidth = metrics.width;
-        
-        if(testWidth > maxWidth && line !== '') {
-            lines.push(line.trim());
-            line = words[i] + ' ';
-        } else {
-            line = testLine;
-        }
-    }
-
-    if(line) {
-        lines.push(line.trim());
-    }
-
-    return lines;
-}
 
 const TILE_DRAW_ORDER = [
     BattalionMap.LAYER.GROUND,
@@ -62,6 +38,9 @@ export const PlayUI = function(inspector, cContext, gameContext) {
 
     this.style.baseline = TextStyle.TEXT_BASELINE.TOP;
     this.style.font = "10px arial";
+    this.lastEntity = EntityManager.INVALID_ID;
+    this.lines = [];
+    this.lineTime = 0;
 }
 
 PlayUI.prototype = Object.create(UIContext.prototype);
@@ -83,6 +62,31 @@ PlayUI.prototype.load = function(gameContext) {
     }
 
     uiManager.addContext(this);
+}
+
+PlayUI.prototype.regenerateLines = function(context, text, maxWidth) {
+    this.lines.length = 0;
+    this.lineTime = 0;
+
+    const words = text.split(' ');
+    let line = '';
+
+    for(let i = 0; i < words.length; i++) {
+        const testLine = line + words[i] + ' ';
+        const metrics = context.measureText(testLine);
+        const testWidth = metrics.width;
+        
+        if(testWidth > maxWidth && line !== '') {
+            this.lines.push(line.trim());
+            line = words[i] + ' ';
+        } else {
+            line = testLine;
+        }
+    }
+
+    if(line) {
+        this.lines.push(line.trim());
+    }
 }
 
 //TODO(neyn): Create a 28x28 ICON for each entity!
@@ -120,48 +124,44 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
     const drawY = this.cContext.positionY + this.cContext.camera.viewportHeight;
     const tileX = this.inspector.lastX;
     const tileY = this.inspector.lastY;
-
+    const beginX = drawX - 565;
+        
     switch(this.inspector.state) {
         case MapInspector.STATE.NONE: {
-            const beginX = drawX - 565;
-
+            this.lastEntity = EntityManager.INVALID_ID;
+            this.lines.length = 0;
             textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_NONE]).draw(display, beginX, drawY);
             break;
         }
         case MapInspector.STATE.TILE: {
+            this.lastEntity = EntityManager.INVALID_ID;
+
             const { terrain } = worldMap.getTileType(this.gameContext, tileX, tileY);
             const climateType = worldMap.getClimateType(this.gameContext, tileX, tileY);
-            const beginX = drawX - 565;
 
             textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_TERRAIN]).draw(display, beginX, drawY);
 
             this.drawTile(display, tileX, tileY, beginX, drawY);
-
-
             this.style.apply(context);
+
             context.fillText("Modifiers:", beginX + 478, drawY + 4);
             context.fillText(worldMap.getTileName(this.gameContext, tileX, tileY), beginX + 41, drawY + 4);
 
-            const description = generateLines(context, worldMap.getTileDesc(this.gameContext, tileX, tileY), 421);
-            const length = description.length > 2 ? 2 : description.length;
-
-            context.fillStyle = "#ffffff";
-
-            for(let i = 0; i < length; i++) {
-                context.fillText(description[i], beginX + 39, drawY + 20 + 10 * i);
-            }
-
+            this.regenerateLines(context, worldMap.getTileDesc(this.gameContext, tileX, tileY), 421);
             break;
         }
         case MapInspector.STATE.BUILDING: {
-            const beginX = drawX - 565;
-
+            this.lastEntity = EntityManager.INVALID_ID;
             textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_TERRAIN]).draw(display, beginX, drawY);
             break;
         }
         case MapInspector.STATE.ENTITY: {
-            const beginX = drawX - 565;
             const entity = world.getEntityAt(tileX, tileY);
+
+            if(this.lastEntity !== entity.getID()) {
+                this.regenerateLines(context, entity.getDescription(this.gameContext), 215);
+                this.lastEntity = entity.getID();
+            }
 
             textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_UNIT]).draw(display, beginX, drawY);
 
@@ -171,55 +171,55 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             this.entitySprite.onDraw(display, beginX + 1, drawY + 5);
 
             const armorX = beginX + 273;
-            const armorY = drawY + 20;
-
             const weaponX = beginX + 351;
-            const weaponY = drawY + 20;
-
             const moveX = beginX + 429;
-            const moveY = drawY + 20;
-
             const traitX = beginX + 476;
-            const traitY = drawY + 20;
-    
+            const minRange = entity.config.minRange;
+            const maxRange = entity.getMaxRange(this.gameContext);
+
             this.style.apply(context);
             context.fillText("Health:", armorX, drawY + 4);
+            context.fillText(`${entity.health}/${entity.maxHealth}`, armorX, drawY + 20);
             context.fillText("Damage:", weaponX, drawY + 4);
-            context.fillText("Move:", moveX, drawY + 4);
-            context.fillText("Modifiers:", beginX + 478, drawY + 4);
-            context.fillText(entity.getName(this.gameContext), beginX + 41, drawY + 4);
+            context.fillText(`${entity.damage}`, weaponX, drawY + 20);
 
-            const description = generateLines(context, entity.getDescription(this.gameContext), 215);
-
-            context.fillStyle = "#ffffff";
-
-            switch(description.length) {
-                case 0: {
-                    break;
-                }
-                case 1: {
-                    context.fillText(description[0], beginX + 39, drawY + 20);
-                    break;
-                }
-                case 2: {
-                    context.fillText(description[0], beginX + 39, drawY + 20);
-                    context.fillText(description[1], beginX + 39, drawY + 20 + 10);
-                    break;
-                }
-                default: {
-                    const currentFrameTime = this.gameContext.timer.realTime % (2 * description.length);
-                    const frameIndex = Math.floor(currentFrameTime / 2);
-
-                    context.fillText(description[frameIndex], beginX + 39, drawY + 20);
-
-                    if(frameIndex < description.length - 1) {
-                        context.fillText(description[frameIndex + 1], beginX + 39, drawY + 20 + 10);
-                    }
-
-                    break;
-                }
+            if(maxRange > 1) {
+                context.fillText(`(${minRange}-${maxRange})`, weaponX, drawY + 30);
             }
 
+            context.fillText("Move:", moveX, drawY + 4);
+            context.fillText(`${entity.config.movementRange}`, moveX, drawY + 20);
+            context.fillText("Modifiers:", beginX + 478, drawY + 4);
+            context.fillText(entity.getName(this.gameContext), beginX + 41, drawY + 4);
+            break;
+        }
+    }
+
+    context.fillStyle = "#ffffff";
+        
+    switch(this.lines.length) {
+        case 0: {
+            break;
+        }
+        case 1: {
+            context.fillText(this.lines[0], beginX + 39, drawY + 20);
+            break;
+        }
+        case 2: {
+            context.fillText(this.lines[0], beginX + 39, drawY + 20);
+            context.fillText(this.lines[1], beginX + 39, drawY + 20 + 10);
+            break;
+        }
+        default: {
+            const frameIndex = Math.floor(this.lineTime % this.lines.length);
+
+            context.fillText(this.lines[frameIndex], beginX + 39, drawY + 20);
+
+            if(frameIndex < this.lines.length - 1) {
+                context.fillText(this.lines[frameIndex + 1], beginX + 39, drawY + 20 + 10);
+            }
+
+            this.lineTime += this.gameContext.timer.deltaTime * 0.7;
             break;
         }
     }
