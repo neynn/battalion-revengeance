@@ -1,10 +1,11 @@
 import { EntityManager } from "../../engine/entity/entityManager.js";
 import { TextStyle } from "../../engine/graphics/textStyle.js";
+import { WorldMap } from "../../engine/map/worldMap.js";
 import { TextureRegistry } from "../../engine/resources/texture/textureRegistry.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { UIContext } from "../../engine/ui/uiContext.js";
 import { MapInspector } from "../actors/player/inspector.js";
-import { RANGE_TYPE, TILE_ID } from "../enums.js";
+import { TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 
 const TILE_DRAW_ORDER = [
@@ -18,7 +19,8 @@ const TEXTURE_ID = {
     RECON_TERRAIN: 1,
     RECON_NONE: 2,
     RECON_MAIN: 3,
-    _COUNT: 4
+    ICONS: 4,
+    _COUNT: 5
 };
 
 const TEXTURES = new Int16Array(TEXTURE_ID._COUNT);
@@ -33,14 +35,16 @@ export const PlayUI = function(inspector, cContext, gameContext) {
     this.inspector = inspector;
     this.cContext = cContext;
     this.gameContext = gameContext;
-    this.entitySprite = SpriteManager.EMPTY_SPRITE;
+    this.inspectSprite = SpriteManager.EMPTY_SPRITE;
     this.style = new TextStyle();
 
     this.style.baseline = TextStyle.TEXT_BASELINE.TOP;
     this.style.font = "10px arial";
-    this.lastEntity = EntityManager.INVALID_ID;
     this.lines = [];
     this.lineTime = 0;
+
+    this.lastInspect = MapInspector.STATE.NONE;
+    this.lastIndex = -1;
 }
 
 PlayUI.prototype = Object.create(UIContext.prototype);
@@ -53,9 +57,10 @@ PlayUI.prototype.load = function(gameContext) {
     TEXTURES[TEXTURE_ID.RECON_TERRAIN] = uiManager.getTextureID("recon_terrain");
     TEXTURES[TEXTURE_ID.RECON_NONE] = uiManager.getTextureID("recon_none");
     TEXTURES[TEXTURE_ID.RECON_MAIN] = uiManager.getTextureID("recon_mainframe");
+    TEXTURES[TEXTURE_ID.ICONS] = uiManager.getTextureID("icons");
 
-    this.entitySprite = spriteManager.createEmptySprite();
-    this.entitySprite.scale = 0.6;
+    this.inspectSprite = spriteManager.createEmptySprite();
+    this.inspectSprite.scale = 0.6;
 
     for(let i = 0; i < TEXTURE_ID._COUNT; i++) {
         textureLoader.loadTexture(TEXTURES[i]);
@@ -65,6 +70,7 @@ PlayUI.prototype.load = function(gameContext) {
 }
 
 PlayUI.prototype.regenerateLines = function(context, text, maxWidth) {
+    console.log("regged!")
     this.lines.length = 0;
     this.lineTime = 0;
 
@@ -95,7 +101,13 @@ PlayUI.prototype.updateInspectSprite = function(entity) {
     const { spriteManager } = this.gameContext;
     const team = entity.getTeam(this.gameContext);
 
-    spriteManager.updateSprite(this.entitySprite.index, entity.config.sprites.idle_right, team.schema.id);
+    spriteManager.updateSprite(this.inspectSprite.index, entity.config.sprites.idle_right, team.schema.id);
+}
+
+PlayUI.prototype.updateBuilding = function(building) {
+    const { spriteManager } = this.gameContext;
+
+    spriteManager.updateSprite(this.inspectSprite.index, building.config.sprite, building.color);
 }
 
 PlayUI.prototype.drawTile = function(display, tileX, tileY, screenX, screenY) {
@@ -113,29 +125,40 @@ PlayUI.prototype.drawTile = function(display, tileX, tileY, screenX, screenY) {
     }
 }
 
+const DESCRIPTION_BOX_WIDTH_TILE = 421;
+const DESCRIPTION_BOX_WIDTH_ENTITY = 215;
+
 PlayUI.prototype.onDraw = function(display, screenX, screenY) {
-    const { world, language, timer, textureLoader } = this.gameContext;
+    const { world, language, timer, textureLoader, typeRegistry } = this.gameContext;
     const { mapManager } = world;
     const { realTime, deltaTime } = timer;
     const { context } = display;
-    const worldMap = mapManager.getActiveMap();
 
     const drawX = this.cContext.positionX + this.cContext.camera.viewportWidth;
     const drawY = this.cContext.positionY + this.cContext.camera.viewportHeight;
     const tileX = this.inspector.lastX;
     const tileY = this.inspector.lastY;
     const beginX = drawX - 565;
-        
-    switch(this.inspector.state) {
+    const traitX = beginX + 476;
+    const headY = drawY + 4;
+    const bodyY = drawY + 20;
+    const worldMap = mapManager.getActiveMap();
+    const index = worldMap.getIndex(tileX, tileY);
+
+    if(this.lastInspect !== this.inspector.state) {
+        this.lastIndex = -1;
+        this.lastInspect = this.inspector.state;
+        this.lines.length = 0;
+    }
+
+    this.style.apply(context);
+
+    switch(this.lastInspect) {
         case MapInspector.STATE.NONE: {
-            this.lastEntity = EntityManager.INVALID_ID;
-            this.lines.length = 0;
             textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_NONE]).draw(display, beginX, drawY);
             break;
         }
         case MapInspector.STATE.TILE: {
-            this.lastEntity = EntityManager.INVALID_ID;
-
             const { terrain } = worldMap.getTileType(this.gameContext, tileX, tileY);
             const climateType = worldMap.getClimateType(this.gameContext, tileX, tileY);
 
@@ -144,82 +167,103 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             this.drawTile(display, tileX, tileY, beginX, drawY);
             this.style.apply(context);
 
-            context.fillText("Modifiers:", beginX + 478, drawY + 4);
-            context.fillText(worldMap.getTileName(this.gameContext, tileX, tileY), beginX + 41, drawY + 4);
+            context.fillText(worldMap.getTileName(this.gameContext, tileX, tileY), beginX + 41, headY);
+            context.fillText("Modifiers:", traitX + 2, headY);
 
-            this.regenerateLines(context, worldMap.getTileDesc(this.gameContext, tileX, tileY), 421);
+            if(this.lastIndex !== index) {
+                this.regenerateLines(context, worldMap.getTileDesc(this.gameContext, tileX, tileY), DESCRIPTION_BOX_WIDTH_TILE);
+                this.lastIndex = index;
+            }
+
             break;
         }
         case MapInspector.STATE.BUILDING: {
-            this.lastEntity = EntityManager.INVALID_ID;
+            const building = worldMap.getBuilding(tileX, tileY);
+
+            if(this.lastIndex !== index) {
+                this.regenerateLines(context, building.getDescription(this.gameContext), DESCRIPTION_BOX_WIDTH_TILE);
+                this.updateBuilding(building);
+                this.lastIndex = index;
+            }
+
             textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_TERRAIN]).draw(display, beginX, drawY);
+
+            this.drawTile(display, tileX, tileY, beginX, drawY);
+            this.inspectSprite.onUpdate(realTime, deltaTime);
+            this.inspectSprite.onDraw(display, beginX + 1, drawY + 5);
+
+            context.fillText(building.getName(this.gameContext), beginX + 41, headY);
+            context.fillText("Modifiers:", traitX + 2, headY);
             break;
         }
         case MapInspector.STATE.ENTITY: {
             const entity = world.getEntityAt(tileX, tileY);
 
-            if(this.lastEntity !== entity.getID()) {
-                this.regenerateLines(context, entity.getDescription(this.gameContext), 215);
-                this.lastEntity = entity.getID();
+            if(this.lastIndex !== index) {
+                this.regenerateLines(context, entity.getDescription(this.gameContext), DESCRIPTION_BOX_WIDTH_ENTITY);
+                this.updateInspectSprite(entity);
+                this.lastIndex = index;
             }
 
             textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_UNIT]).draw(display, beginX, drawY);
 
             this.drawTile(display, tileX, tileY, beginX, drawY);
-            this.updateInspectSprite(entity);
-            this.entitySprite.onUpdate(realTime, deltaTime);
-            this.entitySprite.onDraw(display, beginX + 1, drawY + 5);
+            this.inspectSprite.onUpdate(realTime, deltaTime);
+            this.inspectSprite.onDraw(display, beginX + 1, drawY + 5);
 
             const armorX = beginX + 273;
             const weaponX = beginX + 351;
             const moveX = beginX + 429;
-            const traitX = beginX + 476;
             const minRange = entity.config.minRange;
             const maxRange = entity.getMaxRange(this.gameContext);
+            const armorType = typeRegistry.getArmorType(entity.config.armorType);
 
-            this.style.apply(context);
-            context.fillText("Health:", armorX, drawY + 4);
-            context.fillText(`${entity.health}/${entity.maxHealth}`, armorX, drawY + 20);
-            context.fillText("Damage:", weaponX, drawY + 4);
-            context.fillText(`${entity.damage}`, weaponX, drawY + 20);
+            context.fillText(entity.getName(this.gameContext), beginX + 41, headY);
+            context.fillText("Health:", armorX, headY);
+            context.fillText("Damage:", weaponX, headY);
+            context.fillText("Move:", moveX, headY);
+            context.fillText("Modifiers:", traitX + 2, headY);
+
+            context.fillStyle = "#ffffff";
+            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.ICONS]).drawRegion(armorType.icon, display, armorX, bodyY);
+            context.fillText(`${entity.health}/${entity.maxHealth}`, armorX, bodyY);
+            context.fillText(`${entity.damage}`, weaponX, bodyY);
 
             if(maxRange > 1) {
-                context.fillText(`(${minRange}-${maxRange})`, weaponX, drawY + 30);
+                context.fillText(`(${minRange}-${maxRange})`, weaponX, bodyY + 10);
             }
 
-            context.fillText("Move:", moveX, drawY + 4);
-            context.fillText(`${entity.config.movementRange}`, moveX, drawY + 20);
-            context.fillText("Modifiers:", beginX + 478, drawY + 4);
-            context.fillText(entity.getName(this.gameContext), beginX + 41, drawY + 4);
+            context.fillText(`${entity.config.movementRange}`, moveX, bodyY);
             break;
         }
     }
 
     context.fillStyle = "#ffffff";
-        
+    
     switch(this.lines.length) {
         case 0: {
             break;
         }
         case 1: {
-            context.fillText(this.lines[0], beginX + 39, drawY + 20);
+            context.fillText(this.lines[0], beginX + 39, bodyY);
             break;
         }
         case 2: {
-            context.fillText(this.lines[0], beginX + 39, drawY + 20);
-            context.fillText(this.lines[1], beginX + 39, drawY + 20 + 10);
+            context.fillText(this.lines[0], beginX + 39, bodyY);
+            context.fillText(this.lines[1], beginX + 39, bodyY + 10);
             break;
         }
         default: {
-            const frameIndex = Math.floor(this.lineTime % this.lines.length);
+            const SECONDS_PER_LINE = 2;
+            const frameIndex = Math.floor(this.lineTime / SECONDS_PER_LINE) % this.lines.length;
 
-            context.fillText(this.lines[frameIndex], beginX + 39, drawY + 20);
+            context.fillText(this.lines[frameIndex], beginX + 39, bodyY);
 
             if(frameIndex < this.lines.length - 1) {
-                context.fillText(this.lines[frameIndex + 1], beginX + 39, drawY + 20 + 10);
+                context.fillText(this.lines[frameIndex + 1], beginX + 39, bodyY + 10);
             }
 
-            this.lineTime += this.gameContext.timer.deltaTime * 0.7;
+            this.lineTime += this.gameContext.timer.deltaTime;
             break;
         }
     }

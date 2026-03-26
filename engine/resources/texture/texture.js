@@ -177,6 +177,23 @@ Texture.prototype.drawOffset = function(display, screenX, screenY) {
     }
 }
 
+Texture.prototype.drawRegion = function(region, display, screenX, screenY) {
+    const { state, bitmap } = this.handle;
+
+    if(state === TextureHandle.STATE.LOADED) {
+        if(region >= 0 && region < this.regions.length) {
+            const { x, y, w, h } = this.regions[region];
+            const { context } = display;
+
+            context.drawImage(
+                bitmap,
+                x, y, w, h,
+                screenX, screenY, w, h
+            );
+        }
+    } 
+}
+
 Texture.prototype.draw = function(display, screenX, screenY) {
     const { state, width, height, bitmap } = this.handle;
 

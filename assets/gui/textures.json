@@ -3,5 +3,17 @@
     "recon_mainframe": { "directory": ["assets", "gui", "recon"], "source": "recon_mainframe.png" },
     "recon_terrain": { "directory": ["assets", "gui", "recon"], "source": "recon_terrain.png" },
     "recon_unit": { "directory": ["assets", "gui", "recon"], "source": "recon_unit.png" },
-    "recon_none": { "directory": ["assets", "gui", "recon"], "source": "recon_none.png" }
+    "recon_none": { "directory": ["assets", "gui", "recon"], "source": "recon_none.png" },
+    "icons": {
+        "directory": ["assets", "gui"],
+        "source": "icons.png",
+        "autoRegions": {
+            "startX": 0,
+            "startY": 0,
+            "frameWidth": 20,
+            "frameHeight": 20, 
+            "rows": 7,
+            "columns": 20
+        }
+    }
 }

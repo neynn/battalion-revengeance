@@ -2,7 +2,7 @@
     "NONE": {
         "name": "ARMOR_NAME_NONE",
         "desc": "ARMOR_DESC_NONE",
-        "icon": "Assets/Traits/.png",
+        "icon": "NONE",
         "resistance": {
             "*": -0.5    
         }
@@ -10,7 +10,7 @@
     "LIGHT": {
         "name": "ARMOR_NAME_LIGHT",
         "desc": "ARMOR_DESC_LIGHT",
-        "icon": "Assets/Traits/.png",
+        "icon": "ARMOR_LIGHT",
         "resistance": {
             "LIGHT": -0.5,
             "MEDIUM": 0,
@@ -20,7 +20,7 @@
     "MEDIUM": {
         "name": "ARMOR_NAME_MEDIUM",
         "desc": "ARMOR_DESC_MEDIUM",
-        "icon": "Assets/Traits/.png",
+        "icon": "ARMOR_MEDIUM",
         "resistance": {
             "*": 0
         }
@@ -28,7 +28,7 @@
     "HEAVY": {
         "name": "ARMOR_NAME_HEAVY",
         "desc": "ARMOR_DESC_HEAVY",
-        "icon": "Assets/Traits/.png",
+        "icon": "ARMOR_HEAVY",
         "resistance": {
             "LIGHT": 0.5,
             "MEDIUM": 0,
@@ -38,7 +38,7 @@
     "OMEGA": {
         "name": "ARMOR_NAME_OMEGA",
         "desc": "ARMOR_DESC_OMEGA",
-        "icon": "Assets/Traits/.png",
+        "icon": "NONE",
         "resistance": {
             "*": 0.5
         }
