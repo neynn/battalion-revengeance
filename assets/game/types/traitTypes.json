@@ -2,32 +2,32 @@
     "ENGINEER": {
         "name": "TRAIT_NAME_ENGINEER",
         "desc": "TRAIT_DESC_ENGINEER",
-        "icon": null
+        "icon": "ENGINEER"
     },
     "COUNTER_BATTERY": {
         "name": "TRAIT_NAME_COUNTER_BATTERY",
         "desc": "TRAIT_DESC_COUNTER_BATTERY",
-        "icon": null
+        "icon": "STUN"
     },
     "STUN": {
         "name": "TRAIT_NAME_STUN",
         "desc": "TRAIT_DESC_STUN",
-        "icon": null
+        "icon": "STUN"
     },
     "IRREPARABLE": {
         "name": "TRAIT_NAME_IRREPARABLE",
         "desc": "TRAIT_DESC_IRREPARABLE",
-        "icon": null
+        "icon": "DANGEROUS"
     },
     "EXECUTIONER": {
         "name": "TRAIT_NAME_EXECUTIONER",
         "desc": "TRAIT_DESC_EXECUTIONER",
-        "icon": null
+        "icon": "EXECUTIONER"
     },
     "SPAWNER": {
         "name": "TRAIT_NAME_SPAWNER",
         "desc": "TRAIT_DESC_SPAWNER",
-        "icon": null
+        "icon": "TANK_POOPER"
     },
     "EXTRACTOR": {
         "name": "TRAIT_NAME_EXTRACTOR",
@@ -62,7 +62,7 @@
     "BLITZ": {
         "name": "TRAIT_NAME_BLITZ",
         "desc": "TRAIT_DESC_BLITZ",
-        "icon": null
+        "icon": "BLITZ"
     },
     "SHRAPNEL": {
         "name": "TRAIT_NAME_SHRAPNEL",
@@ -77,7 +77,7 @@
     "ARMOR_PIERCE": {
         "name": "TRAIT_NAME_ARMOR_PIERCE",
         "desc": "TRAIT_DESC_ARMOR_PIERCE",
-        "icon": null
+        "icon": "ARMOR_PIERCE"
     },
     "OVERHEAT": {
         "name": "TRAIT_NAME_OVERHEAT",
@@ -102,7 +102,7 @@
     "JAMMER": {
         "name": "TRAIT_NAME_JAMMER",
         "desc": "TRAIT_DESC_JAMMER",
-        "icon": null
+        "icon": "RADAR"
     },
     "ELUSIVE": {
         "name": "TRAIT_NAME_ELUSIVE",
@@ -112,22 +112,22 @@
     "SKYSWEEPER": {
         "name": "TRAIT_NAME_SKYSWEEPER",
         "desc": "TRAIT_DESC_SKYSWEEPER",
-        "icon": "Assets/Traits/Skysweeper.png"
+        "icon": "SKYSWEEPER"
     },
     "DEPTH_CHARGE": {
         "name": "TRAIT_NAME_DEPTH_CHARGE",
         "desc": "TRAIT_DESC_DEPTH_CHARGE",
-        "icon": "Assets/Traits/Depth Charge.png"
+        "icon": "DEPTH_CHARGE"
     },
     "SONAR": {
         "name": "TRAIT_NAME_SONAR",
         "desc": "TRAIT_DESC_SONAR",
-        "icon": "Assets/Traits/Sonar.png"
+        "icon": "SONAR"
     },
     "ANTI_INFANTRY": {
         "name": "TRAIT_NAME_ANTI_INFANTRY",
         "desc": "TRAIT_DESC_ANTI_INFANTRY",
-        "icon": "Assets/Traits/Anti-Infantry.png",
+        "icon": "ANTI_INFANTRY",
         "moveDamage": {
             "FOOT": 0.5
         }
@@ -135,7 +135,7 @@
     "ANTI_TANK": {
         "name": "TRAIT_NAME_ANTI_TANK",
         "desc": "TRAIT_DESC_ANTI_TANK",
-        "icon": "Assets/Traits/Anti-Tank.png",
+        "icon": "ANTI_TANK",
         "moveDamage": {
             "TRACKED": 0.5
         }
@@ -143,7 +143,7 @@
     "ANTI_AIR": {
         "name": "TRAIT_NAME_ANTI_AIR",
         "desc": "TRAIT_DESC_ANTI_AIR",
-        "icon": "Assets/Traits/Anti-Air.png",
+        "icon": "ANTI_AIR",
         "moveDamage": {
             "FLIGHT": 0.5
         }
@@ -151,7 +151,7 @@
     "ANTI_SHIP": {
         "name": "TRAIT_NAME_ANTI_SHIP",
         "desc": "TRAIT_DESC_ANTI_SHIP",
-        "icon": "Assets/Traits/Anti-Ship.png",
+        "icon": "ANTI_SHIP",
         "moveDamage": {
             "RUDDER": 0.5,
             "HEAVY_RUDDER": 0.5
@@ -160,7 +160,7 @@
     "ANTI_STRUCTURE": {
         "name": "TRAIT_NAME_ANTI_STRUCTURE",
         "desc": "TRAIT_DESC_ANTI_STRUCTURE",
-        "icon": "Assets/Traits/Anti-Structure.png",
+        "icon": "ANTI_STRUCTURE",
         "moveDamage": {
             "STATIONARY": 0.5
         }
@@ -168,177 +168,175 @@
     "STEALTH": {
         "name": "TRAIT_NAME_STEALTH",
         "desc": "TRAIT_DESC_STEALTH",
-        "icon": "Assets/Traits/Stealth.png"
+        "icon": "STEALTH"
     },
     "SUBMERGED": {
         "name": "TRAIT_NAME_SUBMERGED",
         "desc": "TRAIT_DESC_SUBMERGED",
-        "icon": "Assets/Traits/Submerged.png"
+        "icon": "SUBMERGED"
     },
     "COMMANDO": {
         "name": "TRAIT_NAME_COMMANDO",
         "desc": "TRAIT_DESC_COMMANDO",
-        "icon": "Assets/Traits/Commando.png"
+        "icon": "COMMANDO"
     },
     "INDOMITABLE": {
         "name": "TRAIT_NAME_INDOMITABLE",
         "desc": "TRAIT_DESC_INDOMITABLE",
-        "icon": "Assets/Traits/Indomitable.png"
+        "icon": "INDOMITABLE"
     },
     "SCHWERPUNKT": {
         "name": "TRAIT_NAME_SCHWERPUNKT",
         "desc": "TRAIT_DESC_SCHWERPUNKT",
-        "icon": "Assets/Traits/Schwerpunkt.png"
+        "icon": "SCHWERPUNKT"
     },
     "BEWEGUNGSKRIEG": {
         "name": "TRAIT_NAME_BEWEGUNGSKRIEG",
         "desc": "TRAIT_DESC_BEWEGUNGSKRIEG",
-        "icon": "Assets/Traits/Bewegungskrieg.png"
+        "icon": "BEWEGUNGSKRIEG"
     },
     "CEMENTED_STEEL_ARMOR": {
         "name": "TRAIT_NAME_CEMENTED_STEEL_ARMOR",
         "desc": "TRAIT_DESC_CEMENTED_STEEL_ARMOR",
-        "icon": "Assets/Traits/Cemented Steel Armor.png"
+        "icon": "CEMENTED_STEEL_ARMOR"
     },
     "CAVITATION_EXPLOSION": {
         "name": "TRAIT_NAME_CAVITATION_EXPLOSION",
         "desc": "TRAIT_DESC_CAVITATION_EXPLOSION",
-        "icon": "Assets/Traits/Cavitation Explosion.png"
+        "icon": "CAVITATION_EXPLOSION"
     },
     "SEABOUND": {
         "name": "TRAIT_NAME_SEABOUND",
         "desc": "TRAIT_DESC_SEABOUND",
-        "icon": "Assets/Traits/Seabound.png"
+        "icon": "SEABOUND"
     },
     "SELF_DESTRUCT": {
         "name": "TRAIT_NAME_SELF_DESTRUCT",
         "desc": "TRAIT_DESC_SELF_DESTRUCT",
-        "icon": "Assets/Traits/Self-Destruct.png"
+        "icon": "SELF_DESTRUCT"
     },
     "JUDGEMENT": {
         "name": "TRAIT_NAME_JUDGEMENT",
         "desc": "TRAIT_DESC_JUDGEMENT",
-        "icon": "Assets/Traits/JUDGEMENT.png"
+        "icon": "JUDGEMENT"
     },
     "STEER": {
         "name": "TRAIT_NAME_STEER",
         "desc": "TRAIT_DESC_STEER",
-        "icon": "Assets/Traits/Steer.png"
+        "icon": "STEER"
     },
     "DISPERSION": {
         "name": "TRAIT_NAME_DISPERSION",
         "desc": "TRAIT_DESC_DISPERSION",
-        "icon": "Assets/Traits/Dispersion.png"
+        "icon": "DISPERSION"
     },
     "LYNCHPIN": {
         "name": "TRAIT_NAME_LYNCHPIN",
         "desc": "TRAIT_DESC_LYNCHPIN",
-        "icon": "Assets/Traits/Lynchpin.png"
+        "icon": "LYNCHPIN"
     },
     "FIXED": {
         "name": "TRAIT_NAME_FIXED",
         "desc": "TRAIT_DESC_FIXED",
-        "icon": "Assets/Traits/FIXED.png"
+        "icon": "FIXED"
     },
     "STREAMBLAST": {
         "name": "TRAIT_NAME_STREAMBLAST",
         "desc": "TRAIT_DESC_STREAMBLAST",
-        "icon": "Assets/Traits/Streamblast.png"
+        "icon": "STREAMBLAST"
     },
     "HEROIC": {
         "name": "TRAIT_NAME_HEROIC",
         "desc": "TRAIT_DESC_HEROIC",
-        "icon": "Assets/Traits/Heroic.png"
+        "icon": "HEROIC"
     },
     "TANK_HUNTER": {
         "name": "TRAIT_NAME_TANK_HUNTER",
         "desc": "TRAIT_DESC_TANK_HUNTER",
-        "icon": "Assets/Traits/Tank-Hunter.png"
+        "icon": "TANK_HUNTER"
     },
     "ABSORBER": {
         "name": "TRAIT_NAME_ABSORBER",
         "desc": "TRAIT_DESC_ABSORBER",
-        "icon": "Assets/Traits/Absorber.png"
+        "icon": "ABSORBER"
     },
     "SUPPLY_DISTRIBUTION": {
         "name": "TRAIT_NAME_SUPPLY_DISTRIBUTION",
         "desc": "TRAIT_DESC_SUPPLY_DISTRIBUTION",
-        "icon": "Assets/Traits/Supply Distribution.png"
+        "icon": "SUPPLY_DISTRIBUTION"
     },
     "RADAR": {
         "name": "TRAIT_NAME_RADAR",
         "desc": "TRAIT_DESC_RADAR",
-        "icon": "Assets/Traits/Radar.png"
+        "icon": "RADAR"
     },
     "FINANCIAL_CENTER": {
         "name": "TRAIT_NAME_FINANCIAL_CENTER",
         "desc": "TRAIT_DESC_FINANCIAL_CENTER",
-        "icon": "Assets/Traits/Financial Center.png",
+        "icon": "FINANCIAL_CENTER",
         "cashPerTurn": 100
     },
     "FISCAL_CENTER": {
         "name": "TRAIT_NAME_FISCAL_CENTER",
         "desc": "TRAIT_DESC_FISCAL_CENTER",
-        "icon": "Assets/Traits/Fiscal Center.png",
+        "icon": "FISCAL_CENTER",
         "cashPerTurn": 200
     },
     "FIDUCIARY_CENTER": {
         "name": "TRAIT_NAME_FIDUCIARY_CENTER",
         "desc": "TRAIT_DESC_FIDUCIARY_CENTER",
-        "icon": "Assets/Traits/Fiduciary Center.png",
+        "icon": "FIDUCIARY_CENTER",
         "cashPerTurn": 300
     },
     "CONQUEROR": {
         "name": "TRAIT_NAME_CONQUEROR",
         "desc": "TRAIT_DESC_CONQUEROR",
-        "icon": "Assets/Traits/Conqueror.png"
+        "icon": "CONQUEROR"
     },
     "CRAB": {
         "name": "TRAIT_NAME_CRAB",
         "desc": "TRAIT_DESC_CRAB",
-        "icon": "Assets/Traits/Crab.png",
+        "icon": "CRAB",
         "note": "This trait is purely cosmetic."
     },
     "NAVAL_TRANSPORT": {
         "name": "TRAIT_NAME_NAVAL_TRANSPORT",
         "desc": "TRAIT_DESC_NAVAL_TRANSPORT",
-        "icon": "Assets/Traits/Naval Transport.png",
+        "icon": "NAVAL_TRANSPORT",
         "note": "This trait is purely cosmetic."
     },
     "AIR_TRANSPORT": {
         "name": "TRAIT_NAME_AIR_TRANSPORT",
         "desc": "TRAIT_DESC_AIR_TRANSPORT",
-        "icon": "Assets/Traits/Air Transport.png",
+        "icon": "AIR_TRANSPORT",
         "note": "This trait is purely cosmetic."
     },
     "UNBUILT": {
         "name": "TRAIT_NAME_UNBUILT",
         "desc": "TRAIT_DESC_UNBUILT",
-        "icon": "Assets/Traits/Unbuilt.png",
+        "icon": null,
         "note": "This trait is purely cosmetic."
     },
     "TANK_POOPER": {
         "name": "TRAIT_NAME_TANK_POOPER",
         "desc": "TRAIT_DESC_TANK_POOPER",
-        "icon": "Assets/Traits/Tank Pooper.png",
-        "note": "This trait is purely cosmetic. (WarMachine)"
+        "icon": "TANK_POOPER"
     },
     "STREAMLINED": {
         "name": "TRAIT_NAME_STREAMLINED",
         "desc": "TRAIT_DESC_STREAMLINED",
-        "icon": "Assets/Traits/Streamlined.png",
-        "note": "This trait is not implemented."
+        "icon": "STREAMLINED"
     },
     "TERRIFYING": {
         "name": "TRAIT_NAME_TERRIFYING",
         "desc": "TRAIT_DESC_TERRIFYING",
-        "icon": "Assets/Traits/Terrifying.png",
+        "icon": "TERRIFYING",
         "note": "This trait is not implemented."
     },
     "INFLAMING": {
         "name": "TRAIT_NAME_INFLAMING",
         "desc": "TRAIT_DESC_INFLAMING",
-        "icon": "Assets/Traits/Inflaming.png",
+        "icon": "COURAGE",
         "note": "This trait is not implemented."
     }
 }

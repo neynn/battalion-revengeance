@@ -128,7 +128,7 @@ export const ICON_TYPE = {
     ANTI_SHIP: 89,
     ANTI_STRUCTURE: 90,
     ANTI_TANK: 91,
-    AUFTRAGSTAKTIK: 92,
+    BLITZ: 92,
     BEWEGUNGSKRIEG: 93,
     BROADSIDE: 94,
     CAVITATION_EXPLOSION: 95,
@@ -142,7 +142,7 @@ export const ICON_TYPE = {
     DESTRUCTION: 103,
     DEVASTATING: 104,
     DISPERSION: 105,
-    STUN: 106,
+    STUN: 106, //TODO(neyn): Add COUNTER_BATTERY icon!
     EAGLE: 107,
     ENGINEER: 108,
     FINANCIAL_CENTER: 109,
@@ -172,7 +172,7 @@ export const ICON_TYPE = {
     TANK_HUNTER: 133,
     TERRIFYING: 134,
     VANGUARD: 135,
-
+    EXECUTIONER: 136
 };
 
 export const JAMMER_FLAG = {
