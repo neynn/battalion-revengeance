@@ -1,6 +1,7 @@
 import { EntityManager } from "../../engine/entity/entityManager.js";
 import { TextStyle } from "../../engine/graphics/textStyle.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
+import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { TextureRegistry } from "../../engine/resources/texture/textureRegistry.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { UIContext } from "../../engine/ui/uiContext.js";
@@ -70,7 +71,6 @@ PlayUI.prototype.load = function(gameContext) {
 }
 
 PlayUI.prototype.regenerateLines = function(context, text, maxWidth) {
-    console.log("regged!")
     this.lines.length = 0;
     this.lineTime = 0;
 
@@ -129,6 +129,21 @@ const DESCRIPTION_BOX_WIDTH_TILE_VANILLA = 421;
 const DESCRIPTION_BOX_WIDTH_TILE = 381;
 const DESCRIPTION_BOX_WIDTH_ENTITY = 215;
 const ICON_WIDTH = 20;
+const ICON_HEIGHT = 20;
+
+PlayUI.prototype.doIcon = function(iconID, display, screenX, screenY) {
+    const { client, textureLoader } = this.gameContext;
+    const { cursor } = client;
+    const { positionX, positionY, radius } = cursor;
+
+    //TODO return is collided 
+    textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.ICONS]).drawRegion(iconID, display, screenX, screenY);
+
+    return isRectangleRectangleIntersect(
+        positionX, positionY, radius, radius,
+        screenX, screenY, ICON_WIDTH, ICON_HEIGHT
+    );
+}
 
 PlayUI.prototype.onDraw = function(display, screenX, screenY) {
     const { world, language, timer, textureLoader, typeRegistry } = this.gameContext;
@@ -179,12 +194,14 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             }
 
             //INFO: Climate has no text!
-            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.ICONS]).drawRegion(climateType.icon, display, climateX, bodyY);
+            if(this.doIcon(climateType.icon, display, climateX, bodyY)) {
+                //TODO(neyn): draw infobox
+            }
 
             for(let i = 0; i < terrain.length; i++) {
                 const { icon } = typeRegistry.getTerrainType(terrain[i]);
 
-                textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.ICONS]).drawRegion(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY);
+                this.doIcon(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY);
             }
 
             break;
@@ -210,7 +227,7 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             for(let i = 0; i < building.config.traits.length; i++) {
                 const { icon } = typeRegistry.getTraitType(building.config.traits[i]);
 
-                textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.ICONS]).drawRegion(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY);
+                this.doIcon(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY);
             }
 
             break;
@@ -247,23 +264,23 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
 
             context.fillStyle = "#ffffff";
 
-            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.ICONS]).drawRegion(armorType.icon, display, armorX, bodyY);
+            this.doIcon(armorType.icon, display, armorX, bodyY);
             context.fillText(`${entity.health}/${entity.maxHealth}`, armorX + ICON_WIDTH + 2, bodyY);
 
-            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.ICONS]).drawRegion(weaponType.icon, display, weaponX, bodyY);
+            this.doIcon(weaponType.icon, display, weaponX, bodyY);
             context.fillText(`${entity.damage}`, weaponX + ICON_WIDTH + 2, bodyY);
 
             if(maxRange > 1) {
                 context.fillText(`(${minRange}-${maxRange})`, weaponX + ICON_WIDTH + 2, bodyY + 10);
             }
 
-            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.ICONS]).drawRegion(movementType.icon, display, moveX, bodyY);
+            this.doIcon(movementType.icon, display, moveX, bodyY);
             context.fillText(`${entity.config.movementRange}`, moveX + ICON_WIDTH + 2, bodyY);
 
             for(let i = 0; i < entity.config.traits.length; i++) {
                 const { icon } = typeRegistry.getTraitType(entity.config.traits[i]);
 
-                textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.ICONS]).drawRegion(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY);
+                this.doIcon(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY);
             }
 
             break;
