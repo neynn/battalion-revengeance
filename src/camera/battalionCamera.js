@@ -13,6 +13,7 @@ import { EntityType } from "../type/parsed/entityType.js";
 import { Mine } from "../entity/mine.js";
 import { TeamManager } from "../team/teamManager.js";
 import { TextureHandle } from "../../engine/resources/texture/textureHandle.js";
+import { getHealthColor } from "../entity/helpers.js";
 
 const BLOCK = { COUNT: 4, WIDTH: 4, HEIGHT: 8, GAP: 1 };
 const WIDTH = (BLOCK.GAP * (BLOCK.COUNT + 1)) + BLOCK.WIDTH * BLOCK.COUNT;
@@ -20,13 +21,6 @@ const HEIGHT = BLOCK.GAP * 2 + BLOCK.HEIGHT;
 const OFFSET_X = TILE_WIDTH - 5 - WIDTH;
 const OFFSET_Y = TILE_HEIGHT - 5 - HEIGHT;
 const BACKGROUND_COLOR = "#000000";
-const DEFAULT_HEALTH_COLOR = "#ffffff";
-const HEALTH_THRESHOLDS = [
-    { "above": 0.75, "color": "#00ff00" },
-    { "above": 0.5, "color": "#ffff00"},
-    { "above": 0.25, "color": "#ff8800"},
-    { "above": 0, "color": "#ff0000" }
-];
 
 //TODO(neyn): Increase the size if ever needed.
 //Maybe do not let DEAD be a deferred state?
@@ -81,16 +75,7 @@ BattalionCamera.prototype.drawEntityHealth = function(display, drawX, drawY, vit
     const { context } = display;
     const healthX = drawX + OFFSET_X;
     const healthY = drawY + OFFSET_Y;
-    let healthColor = DEFAULT_HEALTH_COLOR;
-
-    for(let i = 0; i < HEALTH_THRESHOLDS.length; i++) {
-        const { above, color } = HEALTH_THRESHOLDS[i];
-
-        if(vitality >= above) {
-            healthColor = color;
-            break;
-        }
-    }
+    const healthColor = getHealthColor(vitality);
 
     context.fillStyle = BACKGROUND_COLOR;
     context.fillRect(healthX, healthY, WIDTH, HEIGHT);

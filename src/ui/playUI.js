@@ -1,11 +1,12 @@
 import { EntityManager } from "../../engine/entity/entityManager.js";
 import { TextStyle } from "../../engine/graphics/textStyle.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
-import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
+import { clampValue, isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { TextureRegistry } from "../../engine/resources/texture/textureRegistry.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { UIContext } from "../../engine/ui/uiContext.js";
 import { MapInspector } from "../actors/player/inspector.js";
+import { getHealthColor } from "../entity/helpers.js";
 import { TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 
@@ -21,7 +22,8 @@ const TEXTURE_ID = {
     RECON_NONE: 2,
     RECON_MAIN: 3,
     ICONS: 4,
-    _COUNT: 5
+    RECON_HEALTH: 5,
+    _COUNT: 6
 };
 
 const TEXTURES = new Int16Array(TEXTURE_ID._COUNT);
@@ -59,6 +61,7 @@ PlayUI.prototype.load = function(gameContext) {
     TEXTURES[TEXTURE_ID.RECON_NONE] = uiManager.getTextureID("recon_none");
     TEXTURES[TEXTURE_ID.RECON_MAIN] = uiManager.getTextureID("recon_mainframe");
     TEXTURES[TEXTURE_ID.ICONS] = uiManager.getTextureID("icons");
+    TEXTURES[TEXTURE_ID.RECON_HEALTH] = uiManager.getTextureID("recon_health");
 
     this.inspectSprite = spriteManager.createEmptySprite();
     this.inspectSprite.scale = 0.6;
@@ -125,6 +128,8 @@ PlayUI.prototype.drawTile = function(display, tileX, tileY, screenX, screenY) {
     }
 }
 
+const RECON_VITALITY_HEALTH_WIDTH = 33;
+const RECON_VITALITY_HEALTH_HEIGHT = 6;
 const DESCRIPTION_BOX_WIDTH_TILE_VANILLA = 421;
 const DESCRIPTION_BOX_WIDTH_TILE = 381;
 const DESCRIPTION_BOX_WIDTH_ENTITY = 215;
@@ -255,6 +260,8 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             const armorType = typeRegistry.getArmorType(entity.config.armorType);
             const movementType = typeRegistry.getMovementType(entity.config.movementType);
             const weaponType = typeRegistry.getWeaponType(entity.config.weaponType);
+            const vitality = clampValue(entity.getVitality(), 1, 0);
+            const healthColor = getHealthColor(vitality);
 
             context.fillText(entity.getName(this.gameContext), beginX + 41, headY);
             context.fillText(language.getSystemTranslation("RECON_HEALTH"), armorX, headY);
@@ -262,20 +269,23 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             context.fillText(language.getSystemTranslation("RECON_MOVE"), moveX, headY);
             context.fillText(language.getSystemTranslation("RECON_TRAIT"), traitX + 2, headY);
 
+            context.fillStyle = healthColor;
+            context.fillRect(armorX + ICON_WIDTH + 5, bodyY, Math.floor(vitality * RECON_VITALITY_HEALTH_WIDTH), RECON_VITALITY_HEALTH_HEIGHT);
             context.fillStyle = "#ffffff";
 
             this.doIcon(armorType.icon, display, armorX, bodyY);
-            context.fillText(`${entity.health}/${entity.maxHealth}`, armorX + ICON_WIDTH + 2, bodyY);
+            context.fillText(`${entity.health}/${entity.maxHealth}`, armorX + ICON_WIDTH + 2, bodyY + 10);
+            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_HEALTH]).draw(display, armorX + ICON_WIDTH + 2, bodyY);
 
             this.doIcon(weaponType.icon, display, weaponX, bodyY);
-            context.fillText(`${entity.damage}`, weaponX + ICON_WIDTH + 2, bodyY);
+            context.fillText(`${entity.damage}`, weaponX + ICON_WIDTH + 2, bodyY + 10);
 
             if(maxRange > 1) {
-                context.fillText(`(${minRange}-${maxRange})`, weaponX + ICON_WIDTH + 2, bodyY + 10);
+                context.fillText(`[${minRange}-${maxRange}]`, weaponX + ICON_WIDTH + 2 + 15, bodyY + 10);
             }
 
             this.doIcon(movementType.icon, display, moveX, bodyY);
-            context.fillText(`${entity.config.movementRange}`, moveX + ICON_WIDTH + 2, bodyY);
+            context.fillText(`${entity.config.movementRange}`, moveX + ICON_WIDTH + 2, bodyY + 10);
 
             for(let i = 0; i < entity.config.traits.length; i++) {
                 const { icon } = typeRegistry.getTraitType(entity.config.traits[i]);

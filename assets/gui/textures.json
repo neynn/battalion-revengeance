@@ -4,6 +4,7 @@
     "recon_terrain": { "directory": ["assets", "gui", "recon"], "source": "recon_terrain.png" },
     "recon_unit": { "directory": ["assets", "gui", "recon"], "source": "recon_unit.png" },
     "recon_none": { "directory": ["assets", "gui", "recon"], "source": "recon_none.png" },
+    "recon_health": { "directory": ["assets", "gui", "recon"], "source": "recon_health.png" },
     "icons": {
         "directory": ["assets", "gui"],
         "source": "icons.png",
