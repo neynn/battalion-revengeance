@@ -5,6 +5,8 @@
     "recon_unit": { "directory": ["assets", "gui", "recon"], "source": "recon_unit.png" },
     "recon_none": { "directory": ["assets", "gui", "recon"], "source": "recon_none.png" },
     "recon_health": { "directory": ["assets", "gui", "recon"], "source": "recon_health.png" },
+    "recon_tooltip": { "directory": ["assets", "gui", "recon"], "source": "recon_tooltip.png" },
+    "recon_tooltip_plus": { "directory": ["assets", "gui", "recon"], "source": "recon_tooltip_plus.png" },
     "icons": {
         "directory": ["assets", "gui"],
         "source": "icons.png",

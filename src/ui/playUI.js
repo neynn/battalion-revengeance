@@ -8,6 +8,18 @@ import { getHealthColor } from "../entity/helpers.js";
 import { TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 
+const RECON_TOOLTIP_BOX_WIDTH = 154;
+const RECON_TOOLTIP_WIDTH = 160;
+const RECON_TOOLTIP_HEIGHT = 42;
+const RECON_TOOLTIP_PLUS_HEIGHT = 56;
+const RECON_VITALITY_HEALTH_WIDTH = 33;
+const RECON_VITALITY_HEALTH_HEIGHT = 6;
+const DESCRIPTION_BOX_WIDTH_TILE_VANILLA = 421;
+const DESCRIPTION_BOX_WIDTH_TILE = 381;
+const DESCRIPTION_BOX_WIDTH_ENTITY = 215;
+const ICON_WIDTH = 20;
+const ICON_HEIGHT = 20;
+
 const TILE_DRAW_ORDER = [
     BattalionMap.LAYER.GROUND,
     BattalionMap.LAYER.DECORATION,
@@ -21,13 +33,37 @@ const TEXTURE_ID = {
     RECON_MAIN: 3,
     ICONS: 4,
     RECON_HEALTH: 5,
-    _COUNT: 6
+    TOOLTIP: 6,
+    TOOLTIP_PLUS: 7,
+    _COUNT: 8
 };
 
 const TEXTURES = new Int16Array(TEXTURE_ID._COUNT);
 
 for(let i = 0; i < TEXTURE_ID._COUNT; i++) {
     TEXTURES[i] = TextureRegistry.INVALID_ID;
+}
+
+const mRegenerateLines = function(lines, context, text, maxWidth) {
+    const words = text.split(' ');
+    let line = '';
+
+    for(let i = 0; i < words.length; i++) {
+        const testLine = line + words[i] + ' ';
+        const metrics = context.measureText(testLine);
+        const testWidth = metrics.width;
+        
+        if(testWidth > maxWidth && line !== '') {
+            lines.push(line.trim());
+            line = words[i] + ' ';
+        } else {
+            line = testLine;
+        }
+    }
+
+    if(line) {
+        lines.push(line.trim());
+    }
 }
 
 export const PlayUI = function(inspector, cContext, gameContext) {
@@ -42,6 +78,7 @@ export const PlayUI = function(inspector, cContext, gameContext) {
     this.style.baseline = TextStyle.TEXT_BASELINE.TOP;
     this.style.font = "10px arial";
     this.lines = [];
+    this.tooltipLines = [];
     this.lineTime = 0;
 
     this.lastInspect = MapInspector.STATE.NONE;
@@ -62,6 +99,8 @@ PlayUI.prototype.load = function(gameContext) {
     TEXTURES[TEXTURE_ID.RECON_MAIN] = uiManager.getTextureID("recon_mainframe");
     TEXTURES[TEXTURE_ID.ICONS] = uiManager.getTextureID("icons");
     TEXTURES[TEXTURE_ID.RECON_HEALTH] = uiManager.getTextureID("recon_health");
+    TEXTURES[TEXTURE_ID.TOOLTIP] = uiManager.getTextureID("recon_tooltip");
+    TEXTURES[TEXTURE_ID.TOOLTIP_PLUS] = uiManager.getTextureID("recon_tooltip_plus");
 
     this.inspectSprite = spriteManager.createEmptySprite();
     this.inspectSprite.scale = 0.6;
@@ -77,25 +116,7 @@ PlayUI.prototype.regenerateLines = function(context, text, maxWidth) {
     this.lines.length = 0;
     this.lineTime = 0;
 
-    const words = text.split(' ');
-    let line = '';
-
-    for(let i = 0; i < words.length; i++) {
-        const testLine = line + words[i] + ' ';
-        const metrics = context.measureText(testLine);
-        const testWidth = metrics.width;
-        
-        if(testWidth > maxWidth && line !== '') {
-            this.lines.push(line.trim());
-            line = words[i] + ' ';
-        } else {
-            line = testLine;
-        }
-    }
-
-    if(line) {
-        this.lines.push(line.trim());
-    }
+    mRegenerateLines(this.lines, context, text, maxWidth);
 }
 
 //TODO(neyn): Create a 28x28 ICON for each entity!
@@ -128,14 +149,6 @@ PlayUI.prototype.drawTile = function(display, tileX, tileY, screenX, screenY) {
     }
 }
 
-const RECON_VITALITY_HEALTH_WIDTH = 33;
-const RECON_VITALITY_HEALTH_HEIGHT = 6;
-const DESCRIPTION_BOX_WIDTH_TILE_VANILLA = 421;
-const DESCRIPTION_BOX_WIDTH_TILE = 381;
-const DESCRIPTION_BOX_WIDTH_ENTITY = 215;
-const ICON_WIDTH = 20;
-const ICON_HEIGHT = 20;
-
 PlayUI.prototype.doIcon = function(iconID, display, screenX, screenY) {
     const { client, textureLoader } = this.gameContext;
     const { cursor } = client;
@@ -154,6 +167,8 @@ PlayUI.prototype.doIcon = function(iconID, display, screenX, screenY) {
     return isCollided;
 }
 
+//TODO(neyn): Add tooltip(mini) for length 1!
+
 PlayUI.prototype.onDraw = function(display, screenX, screenY) {
     const { world, language, timer, textureLoader, typeRegistry } = this.gameContext;
     const { mapManager } = world;
@@ -170,8 +185,9 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
     const bodyY = drawY + 20;
     const worldMap = mapManager.getActiveMap();
     const index = worldMap.getIndex(tileX, tileY);
-    let tooltipHead = null;
-    let tooltip = null;
+    let tooltipX = 0;
+    let tooltipHead = "";
+    let tooltip = "";
 
     if(this.lastInspect !== this.inspector.state) {
         this.lastIndex = -1;
@@ -181,6 +197,12 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
 
     this.isCollided = false;
     this.style.apply(context);
+
+    const updateTooltip = (name, desc, x, y) => {
+        tooltipHead = name;
+        tooltip = desc;
+        tooltipX = x;
+    }
 
     switch(this.lastInspect) {
         case MapInspector.STATE.NONE: {
@@ -205,18 +227,15 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
                 this.lastIndex = index;
             }
 
-            //INFO: Climate has no text!
             if(this.doIcon(climateType.icon, display, climateX, bodyY)) {
-                tooltipHead = climateType.name;
-                tooltip = climateType.desc;
+                updateTooltip(climateType.name, climateType.desc, climateX, bodyY);
             }
 
             for(let i = 0; i < terrain.length; i++) {
                 const { icon, name, desc } = typeRegistry.getTerrainType(terrain[i]);
 
                 if(this.doIcon(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
-                    tooltipHead = name;
-                    tooltip = desc;
+                    updateTooltip(name, desc, traitX + (ICON_WIDTH + 1) * i, bodyY);
                 }
             }
 
@@ -244,8 +263,7 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
                 const { icon, name, desc } = typeRegistry.getTraitType(building.config.traits[i]);
 
                 if(this.doIcon(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
-                    tooltipHead = name;
-                    tooltip = desc;
+                    updateTooltip(name, desc, traitX + (ICON_WIDTH + 1) * i, bodyY);
                 }
             }
 
@@ -288,16 +306,14 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             context.fillStyle = "#ffffff";
 
             if(this.doIcon(armorType.icon, display, armorX, bodyY)) {
-                tooltipHead = armorType.name;
-                tooltip = armorType.desc;
+                updateTooltip(armorType.name, armorType.desc, armorX, bodyY);
             }
 
             context.fillText(`${entity.health}/${entity.maxHealth}`, armorX + ICON_WIDTH + 2, bodyY + 10);
             textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_HEALTH]).draw(display, armorX + ICON_WIDTH + 2, bodyY);
 
             if(this.doIcon(weaponType.icon, display, weaponX, bodyY)) {
-                tooltipHead = weaponType.name;
-                tooltip = weaponType.desc;
+                updateTooltip(weaponType.name, weaponType.desc, weaponX, bodyY);
             }
 
             context.fillText(`${entity.damage}`, weaponX + ICON_WIDTH + 2, bodyY + 10);
@@ -307,8 +323,7 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             }
 
             if(this.doIcon(movementType.icon, display, moveX, bodyY)) {
-                tooltipHead = movementType.name;
-                tooltip = movementType.desc;
+                updateTooltip(movementType.name, movementType.desc, moveX, bodyY);
             }
 
             context.fillText(`${entity.config.movementRange}`, moveX + ICON_WIDTH + 2, bodyY + 10);
@@ -317,8 +332,7 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
                 const { icon, name, desc } = typeRegistry.getTraitType(entity.config.traits[i]);
 
                 if(this.doIcon(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
-                    tooltipHead = name;
-                    tooltip = desc;
+                    updateTooltip(name, desc, traitX + (ICON_WIDTH + 1) * i, bodyY);
                 }
             }
 
@@ -357,16 +371,44 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
     }
 
     if(this.tooltip !== tooltip) {
-        if(tooltip !== null) {
-            console.log(language.getSystemTranslation(tooltip));
-        }
-
+        this.tooltipLines.length = 0;
         this.tooltip = tooltip;
+
+        if(tooltip.length !== 0) {
+            const text = language.getSystemTranslation(tooltip);
+
+            mRegenerateLines(this.tooltipLines, context, text, RECON_TOOLTIP_BOX_WIDTH);
+        }
     }
 
+    if(this.isCollided) {
+        let tooltipTexture = TEXTURE_ID.TOOLTIP;
+        let tooltipY = drawY;
 
-    if(tooltipHead !== null) {
-        console.log(language.getSystemTranslation(tooltipHead));
+        if(this.tooltipLines.length > 2) {
+            tooltipTexture = TEXTURE_ID.TOOLTIP_PLUS;
+            tooltipY -= RECON_TOOLTIP_PLUS_HEIGHT;
+        } else {
+            tooltipY -= RECON_TOOLTIP_HEIGHT;
+        }
+
+        if(tooltipX + RECON_TOOLTIP_WIDTH > drawX) {
+            tooltipX = drawX - RECON_TOOLTIP_WIDTH;
+        }
+
+        textureLoader.getTextureWithFallback(TEXTURES[tooltipTexture]).draw(display, tooltipX, tooltipY);
+
+        if(tooltipHead.length !== 0) {
+            context.textAlign = TextStyle.TEXT_ALIGNMENT.MIDDLE;
+            context.fillText(language.getSystemTranslation(tooltipHead), tooltipX + (RECON_TOOLTIP_WIDTH / 2), tooltipY + 4);
+            context.textAlign = TextStyle.TEXT_ALIGNMENT.LEFT;
+        }
+
+        context.fillStyle = "#000000";
+
+        for(let i = 0; i < this.tooltipLines.length && i < 3; i++) {
+            context.fillText(this.tooltipLines[i], tooltipX + 3, tooltipY + 19 + 10 * i);
+        }
     }
 
     textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_MAIN]).draw(display, drawX - 16, this.cContext.positionY);
