@@ -1,6 +1,4 @@
-import { EntityManager } from "../../engine/entity/entityManager.js";
 import { TextStyle } from "../../engine/graphics/textStyle.js";
-import { WorldMap } from "../../engine/map/worldMap.js";
 import { clampValue, isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { TextureRegistry } from "../../engine/resources/texture/textureRegistry.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
@@ -29,7 +27,7 @@ const TEXTURE_ID = {
 const TEXTURES = new Int16Array(TEXTURE_ID._COUNT);
 
 for(let i = 0; i < TEXTURE_ID._COUNT; i++) {
-    TEXTURES[i] = TextureRegistry.INVALID_ID
+    TEXTURES[i] = TextureRegistry.INVALID_ID;
 }
 
 export const PlayUI = function(inspector, cContext, gameContext) {
@@ -48,6 +46,7 @@ export const PlayUI = function(inspector, cContext, gameContext) {
 
     this.lastInspect = MapInspector.STATE.NONE;
     this.lastIndex = -1;
+    this.isCollided = false;
 }
 
 PlayUI.prototype = Object.create(UIContext.prototype);
@@ -140,14 +139,18 @@ PlayUI.prototype.doIcon = function(iconID, display, screenX, screenY) {
     const { client, textureLoader } = this.gameContext;
     const { cursor } = client;
     const { positionX, positionY, radius } = cursor;
-
-    //TODO return is collided 
-    textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.ICONS]).drawRegion(iconID, display, screenX, screenY);
-
-    return isRectangleRectangleIntersect(
+    const isCollided = !this.isCollided && isRectangleRectangleIntersect(
         positionX, positionY, radius, radius,
         screenX, screenY, ICON_WIDTH, ICON_HEIGHT
     );
+
+    if(isCollided) {
+        this.isCollided = true;
+    }
+
+    textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.ICONS]).drawRegion(iconID, display, screenX, screenY);
+
+    return isCollided;
 }
 
 PlayUI.prototype.onDraw = function(display, screenX, screenY) {
@@ -173,6 +176,7 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
         this.lines.length = 0;
     }
 
+    this.isCollided = false;
     this.style.apply(context);
 
     switch(this.lastInspect) {
@@ -206,7 +210,9 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             for(let i = 0; i < terrain.length; i++) {
                 const { icon } = typeRegistry.getTerrainType(terrain[i]);
 
-                this.doIcon(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY);
+                if(this.doIcon(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
+
+                }
             }
 
             break;
@@ -290,7 +296,9 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             for(let i = 0; i < entity.config.traits.length; i++) {
                 const { icon } = typeRegistry.getTraitType(entity.config.traits[i]);
 
-                this.doIcon(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY);
+                if(this.doIcon(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
+
+                }
             }
 
             break;
