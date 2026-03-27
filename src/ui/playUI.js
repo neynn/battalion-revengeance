@@ -46,6 +46,7 @@ export const PlayUI = function(inspector, cContext, gameContext) {
 
     this.lastInspect = MapInspector.STATE.NONE;
     this.lastIndex = -1;
+    this.lastTooltip = null;
     this.isCollided = false;
 }
 
@@ -169,6 +170,8 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
     const bodyY = drawY + 20;
     const worldMap = mapManager.getActiveMap();
     const index = worldMap.getIndex(tileX, tileY);
+    let tooltipHead = null;
+    let tooltip = null;
 
     if(this.lastInspect !== this.inspector.state) {
         this.lastIndex = -1;
@@ -204,14 +207,16 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
 
             //INFO: Climate has no text!
             if(this.doIcon(climateType.icon, display, climateX, bodyY)) {
-                //TODO(neyn): draw infobox
+                tooltipHead = climateType.name;
+                tooltip = climateType.desc;
             }
 
             for(let i = 0; i < terrain.length; i++) {
-                const { icon } = typeRegistry.getTerrainType(terrain[i]);
+                const { icon, name, desc } = typeRegistry.getTerrainType(terrain[i]);
 
                 if(this.doIcon(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
-
+                    tooltipHead = name;
+                    tooltip = desc;
                 }
             }
 
@@ -236,9 +241,12 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             context.fillText(language.getSystemTranslation("RECON_TRAIT"), traitX + 2, headY);
 
             for(let i = 0; i < building.config.traits.length; i++) {
-                const { icon } = typeRegistry.getTraitType(building.config.traits[i]);
+                const { icon, name, desc } = typeRegistry.getTraitType(building.config.traits[i]);
 
-                this.doIcon(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY);
+                if(this.doIcon(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
+                    tooltipHead = name;
+                    tooltip = desc;
+                }
             }
 
             break;
@@ -279,25 +287,38 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             context.fillRect(armorX + ICON_WIDTH + 5, bodyY, Math.floor(vitality * RECON_VITALITY_HEALTH_WIDTH), RECON_VITALITY_HEALTH_HEIGHT);
             context.fillStyle = "#ffffff";
 
-            this.doIcon(armorType.icon, display, armorX, bodyY);
+            if(this.doIcon(armorType.icon, display, armorX, bodyY)) {
+                tooltipHead = armorType.name;
+                tooltip = armorType.desc;
+            }
+
             context.fillText(`${entity.health}/${entity.maxHealth}`, armorX + ICON_WIDTH + 2, bodyY + 10);
             textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_HEALTH]).draw(display, armorX + ICON_WIDTH + 2, bodyY);
 
-            this.doIcon(weaponType.icon, display, weaponX, bodyY);
+            if(this.doIcon(weaponType.icon, display, weaponX, bodyY)) {
+                tooltipHead = weaponType.name;
+                tooltip = weaponType.desc;
+            }
+
             context.fillText(`${entity.damage}`, weaponX + ICON_WIDTH + 2, bodyY + 10);
 
             if(maxRange > 1) {
                 context.fillText(`[${minRange}-${maxRange}]`, weaponX + ICON_WIDTH + 2 + 15, bodyY + 10);
             }
 
-            this.doIcon(movementType.icon, display, moveX, bodyY);
+            if(this.doIcon(movementType.icon, display, moveX, bodyY)) {
+                tooltipHead = movementType.name;
+                tooltip = movementType.desc;
+            }
+
             context.fillText(`${entity.config.movementRange}`, moveX + ICON_WIDTH + 2, bodyY + 10);
 
             for(let i = 0; i < entity.config.traits.length; i++) {
-                const { icon } = typeRegistry.getTraitType(entity.config.traits[i]);
+                const { icon, name, desc } = typeRegistry.getTraitType(entity.config.traits[i]);
 
                 if(this.doIcon(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
-
+                    tooltipHead = name;
+                    tooltip = desc;
                 }
             }
 
@@ -333,6 +354,19 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             this.lineTime += this.gameContext.timer.deltaTime;
             break;
         }
+    }
+
+    if(this.tooltip !== tooltip) {
+        if(tooltip !== null) {
+            console.log(language.getSystemTranslation(tooltip));
+        }
+
+        this.tooltip = tooltip;
+    }
+
+
+    if(tooltipHead !== null) {
+        console.log(language.getSystemTranslation(tooltipHead));
     }
 
     textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_MAIN]).draw(display, drawX - 16, this.cContext.positionY);
