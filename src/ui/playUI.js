@@ -167,8 +167,6 @@ PlayUI.prototype.doIcon = function(iconID, display, screenX, screenY) {
     return isCollided;
 }
 
-//TODO(neyn): Add tooltip(mini) for length 1!
-
 PlayUI.prototype.onDraw = function(display, screenX, screenY) {
     const { world, language, timer, textureLoader, typeRegistry } = this.gameContext;
     const { mapManager } = world;
@@ -201,7 +199,7 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
     const updateTooltip = (name, desc, x, y) => {
         tooltipHead = name;
         tooltip = desc;
-        tooltipX = x;
+        tooltipX = x + ICON_WIDTH - RECON_TOOLTIP_WIDTH;
     }
 
     switch(this.lastInspect) {
@@ -383,13 +381,25 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
 
     if(this.isCollided) {
         let tooltipTexture = TEXTURE_ID.TOOLTIP;
-        let tooltipY = drawY;
+        let tooltipY = drawY + 17;
 
-        if(this.tooltipLines.length > 2) {
-            tooltipTexture = TEXTURE_ID.TOOLTIP_PLUS;
-            tooltipY -= RECON_TOOLTIP_PLUS_HEIGHT;
-        } else {
-            tooltipY -= RECON_TOOLTIP_HEIGHT;
+        switch(this.tooltipLines.length) {
+            case 1: {
+                //TODO(neyn): Add tooltip_mini for length 1!
+                tooltipTexture = TEXTURE_ID.TOOLTIP;
+                tooltipY -= RECON_TOOLTIP_HEIGHT;
+                break;
+            }
+            case 2: {
+                tooltipTexture = TEXTURE_ID.TOOLTIP;
+                tooltipY -= RECON_TOOLTIP_HEIGHT;
+                break;
+            }
+            case 3: {
+                tooltipTexture = TEXTURE_ID.TOOLTIP_PLUS;
+                tooltipY -= RECON_TOOLTIP_PLUS_HEIGHT;
+                break;
+            }
         }
 
         if(tooltipX + RECON_TOOLTIP_WIDTH > drawX) {
