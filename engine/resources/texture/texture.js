@@ -6,12 +6,24 @@ export const Texture = function(id, name, path) {
     this.name = name;
     this.path = path;
     this.handle = new TextureHandle(id);
+    this.gridWidth = 0;
+    this.gridHeight = 0;
     this.variants = [];
     this.regions = [];
     this.regionMap = {};
 }
 
 Texture.EMPTY_HANDLE = new TextureHandle(-1);
+
+Texture.prototype.getRegionByName = function(name) {
+    const index = this.getRegionIndex(name);
+
+    if(index === -1) {
+        return null;
+    }
+
+    return this.regions[index];
+}
 
 Texture.prototype.getRegionIndex = function(name) {
     const index = this.regionMap[name];
@@ -93,6 +105,16 @@ Texture.prototype.createHandle = function(handleID) {
     return handle;
 }
 
+Texture.prototype.initGrid = function(grid) {
+    for(const regionID in grid) {
+        const { u, v } = grid[regionID];
+        const region = new TextureRegion(u * this.gridWidth, v * this.gridHeight, this.gridWidth, this.gridHeight);
+
+        this.regions.push(region);
+        this.regionMap[regionID] = this.regions.length - 1;
+    }
+}
+
 Texture.prototype.initRegions = function(regions) {
     for(const regionID in regions) {
         const { x = 0, y = 0, w = 0, h = 0 } = regions[regionID];
@@ -103,14 +125,14 @@ Texture.prototype.initRegions = function(regions) {
     }
 }
 
-Texture.prototype.autoCalcRegions = function(startX, startY, frameWidth, frameHeight, rows, columns) {
+Texture.prototype.autoCalcRegions = function(startX, startY, rows, columns) {
     let id = 1;
 
     for(let i = 0; i < rows; i++) {
         for(let j = 0; j < columns; j++) {
-            const regionX = startX + j * frameWidth;
-            const regionY = startY + i * frameHeight;
-            const region = new TextureRegion(regionX, regionY, frameWidth, frameHeight);
+            const regionX = startX + j * this.gridWidth;
+            const regionY = startY + i * this.gridHeight;
+            const region = new TextureRegion(regionX, regionY, this.gridWidth, this.gridHeight);
 
             this.regions.push(region);
             this.regionMap[id++] = this.regions.length - 1;

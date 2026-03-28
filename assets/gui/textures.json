@@ -14,11 +14,13 @@
     "icons": {
         "directory": ["assets", "gui"],
         "source": "icons.png",
-        "autoRegions": {
+        "gridWidth": 20,
+        "gridHeight": 20,
+        "autoGrid": {
             "startX": 0,
             "startY": 0,
             "frameWidth": 20,
-            "frameHeight": 20, 
+            "frameHeight": 20,
             "rows": 7,
             "columns": 20
         }

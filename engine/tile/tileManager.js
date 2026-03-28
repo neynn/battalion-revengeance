@@ -102,21 +102,22 @@ TileManager.prototype.createTileVisuals = function(textureLoader, tileAtlases, t
     const createVisual = (textureName, regionID) => {
         const visual = new TileVisual(mapID++);
         const textureConfig = tileAtlases[textureName];
-
-        if(textureConfig) {
-            visual.generate(textureConfig, regionID);
-        }
-
         const textureID = textureMap[textureName];
-        
-        if(visual.frameCount > 0 && textureID !== undefined) {
+
+        if(textureID !== undefined) {
             const textureObject = textureLoader.getTexture(textureID);
             const { handle } = textureObject;
 
-            visual.setHandle(handle);
-            handle.addReference();
+            if(textureConfig) {
+                visual.generate(textureObject, textureConfig, regionID);
+            }
 
-            textureLoader.loadTexture(textureID);
+            if(visual.frameCount > 0) {
+                visual.setHandle(handle);
+                handle.addReference();
+
+                textureLoader.loadTexture(textureID);
+            }
         }
 
         this.visuals.push(visual);

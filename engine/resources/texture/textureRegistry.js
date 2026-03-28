@@ -24,19 +24,24 @@ TextureRegistry.prototype.createTextures = function(textures) {
     const textureMap = {};
 
     for(const textureName in textures) {
-        const { directory, source, autoRegions, regions } = textures[textureName];
+        const { directory, source, grid, autoGrid, regions, gridWidth = 0, gridHeight = 0 } = textures[textureName];
         const fileName = source ? source : `${textureName}${DEFAULT_TEXTURE_TYPE}`;
         const filePath = PathHandler.getPath(directory, fileName);
         const textureID = this.textures.length;
         const texture = new Texture(textureID, textureName, filePath);
 
-        if(autoRegions) {
-            const { startX, startY, frameWidth, frameHeight, rows, columns } = autoRegions;
+        texture.gridWidth = gridWidth;
+        texture.gridHeight = gridHeight;
 
-            texture.autoCalcRegions(startX, startY, frameWidth, frameHeight, rows, columns);
-        }
-        
-        if(regions) {
+        if(grid) {
+            texture.initGrid(grid);
+        } else if(autoGrid) {
+            const { startX = 0, startY = 0, rows = 0, columns = 0, frameWidth = 0, frameHeight = 0 } = autoGrid;
+
+            texture.gridWidth = frameWidth;
+            texture.gridHeight = frameHeight;
+            texture.autoCalcRegions(startX, startY, rows, columns);
+        } else if(regions) {
             texture.initRegions(regions);
         }
 
