@@ -12,6 +12,7 @@ const DIALOGUE_BOX_WIDTH = 560;
 const DIALOGUE_BOX_HEIGHT = 150;
 const RECON_TOOLTIP_BOX_WIDTH = 154;
 const RECON_TOOLTIP_WIDTH = 160;
+const RECON_TOOLTIP_MINI_HEIGHT = 32;
 const RECON_TOOLTIP_HEIGHT = 42;
 const RECON_TOOLTIP_PLUS_HEIGHT = 56;
 const RECON_VITALITY_HEALTH_WIDTH = 33;
@@ -37,10 +38,11 @@ const TEXTURE_ID = {
     RECON_HEALTH: 5,
     TOOLTIP: 6,
     TOOLTIP_PLUS: 7,
-    DIALOGUE_NEXT: 8,
-    DIALOGUE_SKIP: 9,
-    DIALOGUE_BOX: 10,
-    _COUNT: 11
+    TOOLTIP_MINI: 8,
+    DIALOGUE_NEXT: 9,
+    DIALOGUE_SKIP: 10,
+    DIALOGUE_BOX: 11,
+    _COUNT: 12
 };
 
 const TEXTURES = new Int16Array(TEXTURE_ID._COUNT);
@@ -106,6 +108,7 @@ PlayUI.prototype.load = function(gameContext) {
     TEXTURES[TEXTURE_ID.RECON_HEALTH] = uiManager.getTextureID("recon_health");
     TEXTURES[TEXTURE_ID.TOOLTIP] = uiManager.getTextureID("recon_tooltip");
     TEXTURES[TEXTURE_ID.TOOLTIP_PLUS] = uiManager.getTextureID("recon_tooltip_plus");
+    TEXTURES[TEXTURE_ID.TOOLTIP_MINI] = uiManager.getTextureID("recon_tooltip_mini");
     TEXTURES[TEXTURE_ID.DIALOGUE_NEXT] = uiManager.getTextureID("dialogue_next_arrow");
     TEXTURES[TEXTURE_ID.DIALOGUE_SKIP] = uiManager.getTextureID("dialogue_skip_button");
     TEXTURES[TEXTURE_ID.DIALOGUE_BOX] = uiManager.getTextureID("dialogue_text_box");
@@ -404,9 +407,8 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
 
         switch(this.tooltipLines.length) {
             case 1: {
-                //TODO(neyn): Add tooltip_mini for length 1!
-                tooltipTexture = TEXTURE_ID.TOOLTIP;
-                tooltipY -= RECON_TOOLTIP_HEIGHT;
+                tooltipTexture = TEXTURE_ID.TOOLTIP_MINI;
+                tooltipY -= RECON_TOOLTIP_MINI_HEIGHT;
                 tooltipSize = 1;
                 break;
             }
