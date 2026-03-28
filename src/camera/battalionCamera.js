@@ -44,9 +44,6 @@ export const BattalionCamera = function() {
 
     this.teamID = TeamManager.INVALID_ID;
     this.isCurrentActor = false;
-
-    this.markerSprite = SpriteManager.EMPTY_SPRITE;
-    this.weakMarkerSprite = SpriteManager.EMPTY_SPRITE;
 }
 
 BattalionCamera.FLAG = {
@@ -60,11 +57,7 @@ BattalionCamera.STEALTH_THRESHOLD = 0.5;
 BattalionCamera.prototype = Object.create(Camera2D.prototype);
 BattalionCamera.prototype.constructor = BattalionCamera;
 
-BattalionCamera.prototype.loadSprites = function(gameContext) {
-    const { spriteManager, textureLoader } = gameContext;
-
-    this.markerSprite = spriteManager.createSprite("marker");
-}
+BattalionCamera.prototype.loadSprites = function(gameContext) {}
 
 BattalionCamera.prototype.setInspect = function(inspectX, inspectY) {
     this.inspectX = inspectX;
@@ -102,14 +95,14 @@ BattalionCamera.prototype.drawEntityHealth = function(display, drawX, drawY, vit
 }
 
 BattalionCamera.prototype.drawEntity = function(gameContext, display, entity, sprite, realTime, deltaTime) {
-    const { teamManager, shadeCache } = gameContext;
+    const { teamManager, shadeCache, tileManager } = gameContext;
     const { tileX, tileY, offsetX, offsetY, state, teamID, flags, opacity, config, direction } = entity;
     const screenX = this.getScreenX(tileX) + offsetX;
     const screenY = this.getScreenY(tileY) + offsetY;
     let alpha = opacity;
     let hasActed = false;
     let isInactive = false;
-    let marker = null;
+    let marker = TILE_ID.NONE;
 
     if(flags & BattalionEntity.FLAG.HAS_ACTED) {
         hasActed = true;
@@ -128,10 +121,10 @@ BattalionCamera.prototype.drawEntity = function(gameContext, display, entity, sp
         if(this.isCurrentActor && state === BattalionEntity.STATE.IDLE) {
             if(teamID === this.teamID) {
                 if(!hasActed) {
-                    marker = this.markerSprite;
+                    marker = TILE_ID.MARKER;
                 }
             } else {
-                marker = this.weakMarkerSprite;
+                marker = TILE_ID.MARKER_WEAK;
             }
         }
     } else {
@@ -176,10 +169,14 @@ BattalionCamera.prototype.drawEntity = function(gameContext, display, entity, sp
             this.drawEntityHealth(display, screenX, screenY, vitality);
         }
 
-        if(marker) {
+        if(marker !== TILE_ID.NONE) {
             display.setAlpha(1);
-            marker.onUpdate(realTime, deltaTime);
-            marker.onDraw(display, screenX, screenY);
+
+            this.drawTile(tileManager, marker, display.context, screenX, screenY);
+        }
+
+        if(flags & BattalionEntity.FLAG.IS_PROTECTED) {
+            this.drawTile(tileManager, TILE_ID.MARKER_PROTECTED, display.context, screenX, screenY);
         }
     } else {
         if(DEBUG.SPRITES) {

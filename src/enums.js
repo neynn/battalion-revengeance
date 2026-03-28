@@ -703,7 +703,11 @@ export const TILE_ID = {
     MINE_LAND: 184,
     MINE_SEA: 185,
 
-    _COUNT: 186
+    MARKER_WEAK: 186,
+    MARKER: 187,
+    MARKER_PROTECTED: 188,
+
+    _COUNT: 189
 };
 
 export const DIRECTION = {

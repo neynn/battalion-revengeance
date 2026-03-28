@@ -45,7 +45,8 @@ BattalionEntity.FLAG = {
     CAN_ACT: 1 << 5,
     BEWEGUNGSKRIEG_TRIGGERED: 1 << 7,
     ELUSIVE_TRIGGERED: 1 << 8,
-    IS_TURN: 1 << 9
+    IS_TURN: 1 << 9,
+    IS_PROTECTED: 1 << 10
 };
 
 BattalionEntity.STATE = {
@@ -609,7 +610,7 @@ BattalionEntity.prototype.isAttackPositionValid = function(gameContext, target) 
     switch(this.config.rangeType) {
         case RANGE_TYPE.RANGE: {
             //Protected targets cannot be shot.
-            if(target.isProtectedFromRange(gameContext)) {
+            if(target.hasFlag(BattalionEntity.FLAG.IS_PROTECTED)) {
                 return false;
             }
 
@@ -617,7 +618,7 @@ BattalionEntity.prototype.isAttackPositionValid = function(gameContext, target) 
         }
         case RANGE_TYPE.HYBRID: {
             //Special case for entities with MIN_RANGE of 1 and MAX_RANGE of n.
-            if(!this.isNextToEntity(target) && target.isProtectedFromRange(gameContext)) {
+            if(!this.isNextToEntity(target) && target.hasFlag(BattalionEntity.FLAG.IS_PROTECTED)) {
                 return false;
             }
 
@@ -721,9 +722,11 @@ BattalionEntity.prototype.isHealValid = function(gameContext, target) {
     return true;
 }
 
-BattalionEntity.prototype.isProtectedFromRange = function(gameContext) {
+BattalionEntity.prototype.updateRangeGuard = function(gameContext) {
     //Air units are never protected by tiles/canyons!
     if(this.config.category === ENTITY_CATEGORY.AIR) {
+        this.flags &= ~BattalionEntity.FLAG.IS_PROTECTED;
+
         return false;
     }
 
@@ -744,11 +747,15 @@ BattalionEntity.prototype.isProtectedFromRange = function(gameContext) {
                 const { rangeGuard } = typeRegistry.getTerrainType(terrainID);
 
                 if(rangeGuard) {
+                    this.flags |= BattalionEntity.FLAG.IS_PROTECTED;
+
                     return true;
                 }
             }
         }
     }
+
+    this.flags &= ~BattalionEntity.FLAG.IS_PROTECTED;
 
     return false;
 }
@@ -1489,6 +1496,8 @@ BattalionEntity.prototype.placeOnMap = function(gameContext) {
             worldMap.addJammer(nextX, nextY, this.teamID, jammerFlags);
         });
     }
+
+    this.updateRangeGuard(gameContext);
 }
 
 BattalionEntity.prototype.removeFromMap = function(gameContext) {

@@ -565,18 +565,6 @@
             "columns": 4
         }
     },
-    "marker": {
-        "directory": ["assets","sprites","textures","effects"],
-        "source": "marker.png",
-        "autoRegions": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
-            "rows": 1,
-            "columns": 1
-        }
-    },
     "aleph_down": {
         "directory": ["assets","sprites","textures","aleph"],
         "source": "aleph_down.png",

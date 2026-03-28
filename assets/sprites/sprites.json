@@ -1087,11 +1087,6 @@
         "frameTime": 0.1,
         "autoFrames": {"start": 1,"jump": 1,"repeat": 8}
     },
-    "marker": {
-        "texture": "marker",
-        "frameTime": 0.1,
-        "autoFrames": {"start": 1,"jump": 1,"repeat": 1}
-    },
     "aleph_idle_right": {
         "texture": "aleph_right",
         "frameTime": 0.2,

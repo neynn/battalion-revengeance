@@ -20,5 +20,8 @@
     { "id": "ore_5", "type": "DEPLETED_ORE", "texture": "ore_deposit", "tile": "RIGHT_DEPLETED" },
     { "id": "canyon_", "type": "CANYON", "autotiler": "battalion_canyon", "texture": "canyon", "variants": { "prefix": "", "count": 48 } },
     { "id": "rail_", "type": "RAIL", "autotiler": "battalion_rail", "texture": "rail", "variants": { "prefix": "", "count": 16 } },
-    { "id": "mine_", "type": "NONE", "texture": "other", "variants": { "prefix": "mine_", "count": 2 } }
+    { "id": "mine_", "type": "NONE", "texture": "other", "variants": { "prefix": "mine_", "count": 2 } },
+    { "type": "NONE", "texture": "other", "tile": "marker_weak" },
+    { "type": "NONE", "texture": "other", "tile": "marker" },
+    { "type": "NONE", "texture": "other", "tile": "marker_protected" }
 ]
