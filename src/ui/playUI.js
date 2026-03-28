@@ -5,9 +5,11 @@ import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { UIContext } from "../../engine/ui/uiContext.js";
 import { MapInspector } from "../actors/player/inspector.js";
 import { getHealthColor } from "../entity/helpers.js";
-import { TILE_ID } from "../enums.js";
+import { COMMANDER_TYPE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 
+const DIALOGUE_BOX_WIDTH = 560;
+const DIALOGUE_BOX_HEIGHT = 150;
 const RECON_TOOLTIP_BOX_WIDTH = 154;
 const RECON_TOOLTIP_WIDTH = 160;
 const RECON_TOOLTIP_HEIGHT = 42;
@@ -35,7 +37,10 @@ const TEXTURE_ID = {
     RECON_HEALTH: 5,
     TOOLTIP: 6,
     TOOLTIP_PLUS: 7,
-    _COUNT: 8
+    DIALOGUE_NEXT: 8,
+    DIALOGUE_SKIP: 9,
+    DIALOGUE_BOX: 10,
+    _COUNT: 11
 };
 
 const TEXTURES = new Int16Array(TEXTURE_ID._COUNT);
@@ -101,6 +106,9 @@ PlayUI.prototype.load = function(gameContext) {
     TEXTURES[TEXTURE_ID.RECON_HEALTH] = uiManager.getTextureID("recon_health");
     TEXTURES[TEXTURE_ID.TOOLTIP] = uiManager.getTextureID("recon_tooltip");
     TEXTURES[TEXTURE_ID.TOOLTIP_PLUS] = uiManager.getTextureID("recon_tooltip_plus");
+    TEXTURES[TEXTURE_ID.DIALOGUE_NEXT] = uiManager.getTextureID("dialogue_next_arrow");
+    TEXTURES[TEXTURE_ID.DIALOGUE_SKIP] = uiManager.getTextureID("dialogue_skip_button");
+    TEXTURES[TEXTURE_ID.DIALOGUE_BOX] = uiManager.getTextureID("dialogue_text_box");
 
     this.inspectSprite = spriteManager.createEmptySprite();
     this.inspectSprite.scale = 0.6;
@@ -168,21 +176,33 @@ PlayUI.prototype.doIcon = function(iconID, display, screenX, screenY) {
 }
 
 PlayUI.prototype.onDraw = function(display, screenX, screenY) {
-    const { world, language, timer, textureLoader, typeRegistry } = this.gameContext;
+    const { world, language, timer, textureLoader, typeRegistry, dialogueHandler, portraitHandler } = this.gameContext;
     const { mapManager } = world;
     const { realTime, deltaTime } = timer;
     const { context } = display;
-
-    const drawX = this.cContext.positionX + this.cContext.camera.viewportWidth;
-    const drawY = this.cContext.positionY + this.cContext.camera.viewportHeight;
     const tileX = this.inspector.lastX;
     const tileY = this.inspector.lastY;
-    const beginX = drawX - 565;
-    const traitX = beginX + 476;
-    const headY = drawY + 4;
-    const bodyY = drawY + 20;
     const worldMap = mapManager.getActiveMap();
     const index = worldMap.getIndex(tileX, tileY);
+
+    const mainX = this.cContext.positionX + this.cContext.camera.viewportWidth;
+    const mainY = this.cContext.positionY;
+    const reconX = this.cContext.positionX;
+    const reconY = this.cContext.positionY + this.cContext.camera.viewportHeight;
+
+    //In all recons.
+    const headY = reconY + 4;
+    const bodyY = reconY + 20;
+    const traitX = reconX + 476;
+
+    //In tile recon.
+    const climateX = reconX + 439;
+
+    //In entity recon.
+    const armorX = reconX + 273; 
+    const weaponX = reconX + 351;
+    const moveX = reconX + 429;
+
     let tooltipX = 0;
     let tooltipHead = "";
     let tooltip = "";
@@ -202,22 +222,23 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
         tooltipX = x + ICON_WIDTH - RECON_TOOLTIP_WIDTH;
     }
 
+    textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_MAIN]).draw(display, mainX - 14, mainY);
+
     switch(this.lastInspect) {
         case MapInspector.STATE.NONE: {
-            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_NONE]).draw(display, beginX, drawY);
+            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_NONE]).draw(display, reconX, reconY);
             break;
         }
         case MapInspector.STATE.TILE: {
             const { terrain } = worldMap.getTileType(this.gameContext, tileX, tileY);
             const climateType = worldMap.getClimateType(this.gameContext, tileX, tileY);
-            const climateX = beginX + 439;
 
-            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_TERRAIN]).draw(display, beginX, drawY);
+            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_TERRAIN]).draw(display, reconX, reconY);
 
-            this.drawTile(display, tileX, tileY, beginX, drawY);
+            this.drawTile(display, tileX, tileY, reconX, reconY);
             this.style.apply(context);
 
-            context.fillText(worldMap.getTileName(this.gameContext, tileX, tileY), beginX + 41, headY);
+            context.fillText(worldMap.getTileName(this.gameContext, tileX, tileY), reconX + 41, headY);
             context.fillText(language.getSystemTranslation("RECON_TRAIT"), traitX + 2, headY);
 
             if(this.lastIndex !== index) {
@@ -248,13 +269,13 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
                 this.lastIndex = index;
             }
 
-            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_TERRAIN]).draw(display, beginX, drawY);
+            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_TERRAIN]).draw(display, reconX, reconY);
 
-            this.drawTile(display, tileX, tileY, beginX, drawY);
+            this.drawTile(display, tileX, tileY, reconX, reconY);
             this.inspectSprite.onUpdate(realTime, deltaTime);
-            this.inspectSprite.onDraw(display, beginX + 1, drawY + 5);
+            this.inspectSprite.onDraw(display, reconX + 1, reconY + 5);
 
-            context.fillText(building.getName(this.gameContext), beginX + 41, headY);
+            context.fillText(building.getName(this.gameContext), reconX + 41, headY);
             context.fillText(language.getSystemTranslation("RECON_TRAIT"), traitX + 2, headY);
 
             for(let i = 0; i < building.config.traits.length; i++) {
@@ -276,15 +297,12 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
                 this.lastIndex = index;
             }
 
-            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_UNIT]).draw(display, beginX, drawY);
+            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_UNIT]).draw(display, reconX, reconY);
 
-            this.drawTile(display, tileX, tileY, beginX, drawY);
+            this.drawTile(display, tileX, tileY, reconX, reconY);
             this.inspectSprite.onUpdate(realTime, deltaTime);
-            this.inspectSprite.onDraw(display, beginX + 1, drawY + 5);
+            this.inspectSprite.onDraw(display, reconX + 1, reconY + 5);
 
-            const armorX = beginX + 273;
-            const weaponX = beginX + 351;
-            const moveX = beginX + 429;
             const minRange = entity.config.minRange;
             const maxRange = entity.getMaxRange(this.gameContext);
             const armorType = typeRegistry.getArmorType(entity.config.armorType);
@@ -293,7 +311,7 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             const vitality = clampValue(entity.getVitality(), 1, 0);
             const healthColor = getHealthColor(vitality);
 
-            context.fillText(entity.getName(this.gameContext), beginX + 41, headY);
+            context.fillText(entity.getName(this.gameContext), reconX + 41, headY);
             context.fillText(language.getSystemTranslation("RECON_HEALTH"), armorX, headY);
             context.fillText(language.getSystemTranslation("RECON_DAMAGE"), weaponX, headY);
             context.fillText(language.getSystemTranslation("RECON_MOVE"), moveX, headY);
@@ -345,22 +363,22 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             break;
         }
         case 1: {
-            context.fillText(this.lines[0], beginX + 39, bodyY);
+            context.fillText(this.lines[0], reconX + 39, bodyY);
             break;
         }
         case 2: {
-            context.fillText(this.lines[0], beginX + 39, bodyY);
-            context.fillText(this.lines[1], beginX + 39, bodyY + 10);
+            context.fillText(this.lines[0], reconX + 39, bodyY);
+            context.fillText(this.lines[1], reconX + 39, bodyY + 10);
             break;
         }
         default: {
             const SECONDS_PER_LINE = 2;
             const frameIndex = Math.floor(this.lineTime / SECONDS_PER_LINE) % this.lines.length;
 
-            context.fillText(this.lines[frameIndex], beginX + 39, bodyY);
+            context.fillText(this.lines[frameIndex], reconX + 39, bodyY);
 
             if(frameIndex < this.lines.length - 1) {
-                context.fillText(this.lines[frameIndex + 1], beginX + 39, bodyY + 10);
+                context.fillText(this.lines[frameIndex + 1], reconX + 39, bodyY + 10);
             }
 
             this.lineTime += this.gameContext.timer.deltaTime;
@@ -381,29 +399,33 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
 
     if(this.isCollided) {
         let tooltipTexture = TEXTURE_ID.TOOLTIP;
-        let tooltipY = drawY + 17;
+        let tooltipY = reconY + 17;
+        let tooltipSize = 0;
 
         switch(this.tooltipLines.length) {
             case 1: {
                 //TODO(neyn): Add tooltip_mini for length 1!
                 tooltipTexture = TEXTURE_ID.TOOLTIP;
                 tooltipY -= RECON_TOOLTIP_HEIGHT;
+                tooltipSize = 1;
                 break;
             }
             case 2: {
                 tooltipTexture = TEXTURE_ID.TOOLTIP;
                 tooltipY -= RECON_TOOLTIP_HEIGHT;
+                tooltipSize = 2;
                 break;
             }
             case 3: {
                 tooltipTexture = TEXTURE_ID.TOOLTIP_PLUS;
                 tooltipY -= RECON_TOOLTIP_PLUS_HEIGHT;
+                tooltipSize = 3;
                 break;
             }
         }
 
-        if(tooltipX + RECON_TOOLTIP_WIDTH > drawX) {
-            tooltipX = drawX - RECON_TOOLTIP_WIDTH;
+        if(tooltipX + RECON_TOOLTIP_WIDTH > mainX) {
+            tooltipX = mainX - RECON_TOOLTIP_WIDTH;
         }
 
         textureLoader.getTextureWithFallback(TEXTURES[tooltipTexture]).draw(display, tooltipX, tooltipY);
@@ -416,10 +438,22 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
 
         context.fillStyle = "#000000";
 
-        for(let i = 0; i < this.tooltipLines.length && i < 3; i++) {
+        for(let i = 0; i < tooltipSize; i++) {
             context.fillText(this.tooltipLines[i], tooltipX + 3, tooltipY + 19 + 10 * i);
         }
     }
 
-    textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_MAIN]).draw(display, drawX - 16, this.cContext.positionY);
+    const { currentDialogue, currentText, currentIndex } = dialogueHandler;
+
+    if(currentDialogue.length !== 0) {
+        const { narrator } = currentDialogue[currentIndex];
+        const commanderID = COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE;
+        const { portrait, name } = typeRegistry.getCommanderType(commanderID);
+        const commanderName = language.getSystemTranslation(name);
+        //const portraitTexture = portraitHandler.getPortraitTexture(portrait);
+        const dialogueX = mainX - DIALOGUE_BOX_WIDTH;
+        const dialogueY = reconY - DIALOGUE_BOX_HEIGHT;
+
+        textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.DIALOGUE_BOX]).draw(display, dialogueX, dialogueY);
+    }
 }

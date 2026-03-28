@@ -1,7 +1,7 @@
 {
     "NONE": {
         "name": "WEAPON_NAME_NONE",
-        "desc": "TRAIT_DESC_NO_WEAPON",
+        "desc": "WEAPON_DESC_NONE",
         "icon": "WEAPON_NONE"
     },
     "LIGHT": {

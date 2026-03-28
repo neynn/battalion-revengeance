@@ -13,6 +13,7 @@ import { TextureLoader } from "./resources/texture/textureLoader.js";
 import { ApplicationWindow } from "./applicationWindow.js";
 import { PathHandler } from "./resources/pathHandler.js";
 import { TweenManager } from "./tween/tweenManager.js";
+import { DialogueHandler } from "./dialogueHandler.js";
 
 export const ClientGameContext = function() {
     this.client = new Client();
@@ -29,6 +30,7 @@ export const ClientGameContext = function() {
     this.states = new StateMachine(this);
     this.timer = new Timer();
     this.tweenManager = new TweenManager();
+    this.dialogueHandler = new DialogueHandler();
 
     this.timer.input = (deltaTime) => {
         this.client.update();
@@ -43,6 +45,7 @@ export const ClientGameContext = function() {
     this.timer.render = (deltaTime) => {
         this.textureLoader.update();
         this.applicationWindow.update(this);
+        this.dialogueHandler.update(this);
         this.tweenManager.update(this);
         this.spriteManager.update(this);
         this.tileManager.update(this);
@@ -81,5 +84,6 @@ ClientGameContext.prototype.exit = function() {
     this.language.exit();
     this.tweenManager.exit();
     this.textureLoader.exit();
+    this.dialogueHandler.exit();
     this.onExit();
 }

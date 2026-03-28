@@ -7,6 +7,9 @@
     "recon_health": { "directory": ["assets", "gui", "recon"], "source": "recon_health.png" },
     "recon_tooltip": { "directory": ["assets", "gui", "recon"], "source": "recon_tooltip.png" },
     "recon_tooltip_plus": { "directory": ["assets", "gui", "recon"], "source": "recon_tooltip_plus.png" },
+    "dialogue_next_arrow": { "directory": ["assets", "gui", "dialogue"], "source": "next_arrow.png" },
+    "dialogue_skip_button": { "directory": ["assets", "gui", "dialogue"], "source": "skip_button.png" },
+    "dialogue_text_box": { "directory": ["assets", "gui", "dialogue"], "source": "text_box.png" },
     "icons": {
         "directory": ["assets", "gui"],
         "source": "icons.png",
