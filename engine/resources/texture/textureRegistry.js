@@ -30,17 +30,12 @@ TextureRegistry.prototype.createTextures = function(textures) {
         const textureID = this.textures.length;
         const texture = new Texture(textureID, textureName, filePath);
 
-        texture.gridWidth = gridWidth;
-        texture.gridHeight = gridHeight;
-
         if(grid) {
-            texture.initGrid(grid);
+            texture.initGrid(grid, gridWidth, gridHeight);
         } else if(autoGrid) {
-            const { startX = 0, startY = 0, rows = 0, columns = 0, frameWidth = 0, frameHeight = 0 } = autoGrid;
+            const { startX = 0, startY = 0, rows = 0, columns = 0, first = 1 } = autoGrid;
 
-            texture.gridWidth = frameWidth;
-            texture.gridHeight = frameHeight;
-            texture.autoCalcRegions(startX, startY, rows, columns);
+            texture.autoGrid(startX, startY, rows, columns, first, gridWidth, gridHeight);
         } else if(regions) {
             texture.initRegions(regions);
         }

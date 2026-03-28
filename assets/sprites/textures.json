@@ -2,11 +2,11 @@
     "scorpion_tank": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "scorpion_tank.png",
+        "gridWidth": 56,
+        "gridHeight": 56, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 56, 
             "rows": 4,
             "columns": 4
         }
@@ -14,11 +14,11 @@
     "scorpion_tank_fire": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "scorpion_tank_fire.png",
+        "gridWidth": 144,
+        "gridHeight": 144, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 144,
-            "frameHeight": 144, 
             "rows": 8,
             "columns": 4
         }
@@ -26,11 +26,11 @@
     "blimp": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "condor_bomber.png",
+        "gridWidth": 56,
+        "gridHeight": 112,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 112,
             "rows": 4,
             "columns": 4
         }
@@ -38,11 +38,11 @@
     "blimp_fire": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "condor_bomber_fire.png",
+        "gridWidth": 144,
+        "gridHeight": 144, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 144,
-            "frameHeight": 144, 
             "rows": 12,
             "columns": 4
         }
@@ -50,11 +50,11 @@
     "annihilator_tank": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "annihilator_tank.png",
+        "gridWidth": 56,
+        "gridHeight": 112,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 112,
             "rows": 4,
             "columns": 4
         }
@@ -62,11 +62,11 @@
     "annihilator_tank_fire": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "annihilator_tank_fire.png",
+        "gridWidth": 144,
+        "gridHeight": 144, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 144,
-            "frameHeight": 144, 
             "rows": 12,
             "columns": 4
         }
@@ -74,11 +74,11 @@
     "battle_cruiser": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "battle_cruiser.png",
+        "gridWidth": 56,
+        "gridHeight": 112,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 112,
             "rows": 4,
             "columns": 4
         }
@@ -86,11 +86,11 @@
     "battle_cruiser_fire": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "battle_cruiser_fire.png",
+        "gridWidth": 144,
+        "gridHeight": 144, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 144,
-            "frameHeight": 144, 
             "rows": 8,
             "columns": 4
         }
@@ -98,11 +98,11 @@
     "corvette_fighter": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "corvette_fighter.png",
+        "gridWidth": 56,
+        "gridHeight": 112,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 112,
             "rows": 4,
             "columns": 4
         }
@@ -110,11 +110,11 @@
     "corvette_fighter_fire": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "corvette_fighter_fire.png",
+        "gridWidth": 144,
+        "gridHeight": 144, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 144,
-            "frameHeight": 144, 
             "rows": 8,
             "columns": 4
         }
@@ -122,11 +122,11 @@
     "flak_tank": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "flak_tank.png",
+        "gridWidth": 56,
+        "gridHeight": 112,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 112,
             "rows": 4,
             "columns": 4
         }
@@ -134,11 +134,11 @@
     "flak_tank_fire": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "flak_tank_fire.png",
+        "gridWidth": 144,
+        "gridHeight": 144, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 144,
-            "frameHeight": 144, 
             "rows": 10,
             "columns": 4
         }
@@ -146,11 +146,11 @@
     "heavy_commando": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "heavy_commando.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 4
         }
@@ -158,11 +158,11 @@
     "heavy_commando_fire": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "heavy_commando_fire.png",
+        "gridWidth": 144,
+        "gridHeight": 144, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 144,
-            "frameHeight": 144, 
             "rows": 14,
             "columns": 4
         }
@@ -170,11 +170,11 @@
     "hunter_support": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "hunter_support.png",
+        "gridWidth": 56,
+        "gridHeight": 112,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 112,
             "rows": 4,
             "columns": 4
         }
@@ -182,11 +182,11 @@
     "hunter_support_fire": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "hunter_support_fire.png",
+        "gridWidth": 144,
+        "gridHeight": 144, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 144,
-            "frameHeight": 144, 
             "rows": 16,
             "columns": 4
         }
@@ -194,11 +194,11 @@
     "intrepid": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "intrepid.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 4
         }
@@ -206,11 +206,11 @@
     "intrepid_fire": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "intrepid_fire.png",
+        "gridWidth": 144,
+        "gridHeight": 144, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 144,
-            "frameHeight": 144, 
             "rows": 10,
             "columns": 4
         }
@@ -218,11 +218,11 @@
     "lancer_tank": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "lancer_tank.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 4
         }
@@ -230,11 +230,11 @@
     "lancer_tank_fire": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "lancer_tank_fire.png",
+        "gridWidth": 144,
+        "gridHeight": 144, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 144,
-            "frameHeight": 144, 
             "rows": 8,
             "columns": 4
         }
@@ -242,11 +242,11 @@
     "mortar_truck": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "mortar_truck.png",
+        "gridWidth": 56,
+        "gridHeight": 112,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 112,
             "rows": 4,
             "columns": 4
         }
@@ -254,11 +254,11 @@
     "mortar_truck_fire": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "mortar_truck_fire.png",
+        "gridWidth": 144,
+        "gridHeight": 144, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 144,
-            "frameHeight": 144, 
             "rows": 8,
             "columns": 4
         }
@@ -266,11 +266,11 @@
     "raptor_fighter": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "raptor_fighter.png",
+        "gridWidth": 56,
+        "gridHeight": 112,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 112,
             "rows": 4,
             "columns": 4
         }
@@ -278,11 +278,11 @@
     "raptor_fighter_fire": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "raptor_fighter_fire.png",
+        "gridWidth": 144,
+        "gridHeight": 144, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 144,
-            "frameHeight": 144, 
             "rows": 12,
             "columns": 4
         }
@@ -290,11 +290,11 @@
     "rocket_truck": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "rocket_truck.png",
+        "gridWidth": 56,
+        "gridHeight": 112,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 112,
             "rows": 4,
             "columns": 4
         }
@@ -302,11 +302,11 @@
     "rocket_truck_fire": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "rocket_truck_fire.png",
+        "gridWidth": 144,
+        "gridHeight": 144, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 144,
-            "frameHeight": 144, 
             "rows": 14,
             "columns": 4
         }
@@ -314,11 +314,11 @@
     "spider_tank": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "spider_tank.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 4
         }
@@ -326,11 +326,11 @@
     "spider_tank_fire": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "spider_tank_fire.png",
+        "gridWidth": 144,
+        "gridHeight": 144, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 144,
-            "frameHeight": 144, 
             "rows": 8,
             "columns": 4
         }
@@ -338,11 +338,11 @@
     "stealth_tank": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "stealth_tank.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 4
         }
@@ -350,11 +350,11 @@
     "stealth_tank_fire": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "stealth_tank_fire.png",
+        "gridWidth": 144,
+        "gridHeight": 144, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 144,
-            "frameHeight": 144, 
             "rows": 8,
             "columns": 4
         }
@@ -362,11 +362,11 @@
     "strike_commando": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "strike_commando.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 4
         }
@@ -374,11 +374,11 @@
     "strike_commando_fire": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "strike_commando_fire.png",
+        "gridWidth": 144,
+        "gridHeight": 144, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 144,
-            "frameHeight": 144, 
             "rows": 14,
             "columns": 4
         }
@@ -386,11 +386,11 @@
     "turret": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "turret.png",
+        "gridWidth": 56,
+        "gridHeight": 112,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 112,
             "rows": 4,
             "columns": 4
         }
@@ -398,11 +398,11 @@
     "turret_fire": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "turret_fire.png",
+        "gridWidth": 144,
+        "gridHeight": 144, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 144,
-            "frameHeight": 144, 
             "rows": 8,
             "columns": 4
         }
@@ -410,11 +410,11 @@
     "u_boat": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "u_boat.png",
+        "gridWidth": 56,
+        "gridHeight": 112,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 112,
             "rows": 4,
             "columns": 4
         }
@@ -422,11 +422,11 @@
     "u_boat_fire": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "u_boat_fire.png",
+        "gridWidth": 144,
+        "gridHeight": 144, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 144,
-            "frameHeight": 144, 
             "rows": 10,
             "columns": 4
         }
@@ -434,11 +434,11 @@
     "vulture_drone": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "vulture_drone.png",
+        "gridWidth": 56,
+        "gridHeight": 112,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 112,
             "rows": 4,
             "columns": 4
         }
@@ -446,11 +446,11 @@
     "vulture_drone_fire": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "vulture_drone_fire.png",
+        "gridWidth": 144,
+        "gridHeight": 144, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 144,
-            "frameHeight": 144, 
             "rows": 12,
             "columns": 4
         }
@@ -458,11 +458,11 @@
     "warmachine": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "warmachine.png",
+        "gridWidth": 56,
+        "gridHeight": 112,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 112,
             "rows": 4,
             "columns": 4
         }
@@ -470,11 +470,11 @@
     "warmachine_fire": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "warmachine_fire.png",
+        "gridWidth": 144,
+        "gridHeight": 144, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 144,
-            "frameHeight": 144, 
             "rows": 14,
             "columns": 4
         }
@@ -482,11 +482,11 @@
     "albatross_transport": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "albatross_transport.png",
+        "gridWidth": 56,
+        "gridHeight": 112, 
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 112, 
             "rows": 4,
             "columns": 4
         }
@@ -494,11 +494,11 @@
     "leviathan_barge": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "leviathan_barge.png",
+        "gridWidth": 56,
+        "gridHeight": 112,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 112,
             "rows": 4,
             "columns": 4
         }
@@ -506,11 +506,11 @@
     "jammer_truck": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "jammer_truck.png",
+        "gridWidth": 56,
+        "gridHeight": 112,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 112,
             "rows": 4,
             "columns": 4
         }
@@ -518,11 +518,11 @@
     "blockade": {
         "directory":  ["assets","sprites","textures","classic"],
         "source": "blockade.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
             "startX": 1,
             "startY": 1,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 4
         }
@@ -544,11 +544,9 @@
     "explosion": {
         "directory": ["assets","sprites","textures","effects"],
         "source": "explosion.png",
+        "gridWidth": 56,
+        "gridHeight": 96,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 96,
             "rows": 3,
             "columns": 4
         }
@@ -556,11 +554,9 @@
     "small_attack": {
         "directory": ["assets","sprites","textures","effects"],
         "source": "small_attack.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 2,
             "columns": 4
         }
@@ -568,11 +564,9 @@
     "aleph_down": {
         "directory": ["assets","sprites","textures","aleph"],
         "source": "aleph_down.png",
+        "gridWidth": 57,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 57,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -580,11 +574,9 @@
     "aleph_left": {
         "directory": ["assets","sprites","textures","aleph"],
         "source": "aleph_left.png",
+        "gridWidth": 59,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 59,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -592,11 +584,9 @@
     "aleph_right": {
         "directory": ["assets","sprites","textures","aleph"],
         "source": "aleph_right.png",
+        "gridWidth": 59,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 59,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -604,11 +594,9 @@
     "aleph_up": {
         "directory": ["assets","sprites","textures","aleph"],
         "source": "aleph_up.png",
+        "gridWidth": 59,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 59,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -616,11 +604,9 @@
     "aleph_fire_down": {
         "directory": ["assets","sprites","textures","aleph"],
         "source": "aleph_fire_down.png",
+        "gridWidth": 57,
+        "gridHeight": 112,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 57,
-            "frameHeight": 112,
             "rows": 16,
             "columns": 1
         }
@@ -628,11 +614,9 @@
     "aleph_fire_left": {
         "directory": ["assets","sprites","textures","aleph"],
         "source": "aleph_fire_left.png",
+        "gridWidth": 112,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 112,
-            "frameHeight": 56,
             "rows": 16,
             "columns": 1
         }
@@ -640,11 +624,9 @@
     "aleph_fire_right": {
         "directory": ["assets","sprites","textures","aleph"],
         "source": "aleph_fire_right.png",
+        "gridWidth": 112,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 112,
-            "frameHeight": 56,
             "rows": 16,
             "columns": 1
         }
@@ -652,11 +634,9 @@
     "aleph_fire_up": {
         "directory": ["assets","sprites","textures","aleph"],
         "source": "aleph_fire_up.png",
+        "gridWidth": 59,
+        "gridHeight": 112,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 59,
-            "frameHeight": 112,
             "rows": 16,
             "columns": 1
         }
@@ -664,11 +644,9 @@
     "condor_fire_down": {
         "directory": ["assets","sprites","textures","condor"],
         "source": "condor_fire_down.png",
+        "gridWidth": 56,
+        "gridHeight": 112,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 112,
             "rows": 12,
             "columns": 1
         }
@@ -676,11 +654,9 @@
     "condor_left": {
         "directory": ["assets","sprites","textures","condor"],
         "source": "condor_left.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -688,11 +664,9 @@
     "condor_right": {
         "directory": ["assets","sprites","textures","condor"],
         "source": "condor_right.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -700,11 +674,9 @@
     "condor_up": {
         "directory": ["assets","sprites","textures","condor"],
         "source": "condor_up.png",
+        "gridWidth": 57,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 57,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -712,11 +684,9 @@
     "condor_down": {
         "directory": ["assets","sprites","textures","condor"],
         "source": "condor_down.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -724,11 +694,9 @@
     "condor_fire_left": {
         "directory": ["assets","sprites","textures","condor"],
         "source": "condor_fire_left.png",
+        "gridWidth": 112,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 112,
-            "frameHeight": 56,
             "rows": 12,
             "columns": 1
         }
@@ -736,11 +704,9 @@
     "condor_fire_right": {
         "directory": ["assets","sprites","textures","condor"],
         "source": "condor_fire_right.png",
+        "gridWidth": 112,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 112,
-            "frameHeight": 56,
             "rows": 12,
             "columns": 1
         }
@@ -748,11 +714,9 @@
     "condor_fire_up": {
         "directory": ["assets","sprites","textures","condor"],
         "source": "condor_fire_up.png",
+        "gridWidth": 57,
+        "gridHeight": 112,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 57,
-            "frameHeight": 112,
             "rows": 12,
             "columns": 1
         }
@@ -760,11 +724,9 @@
     "cockroach_down": {
         "directory": ["assets","sprites","textures","cockroach"],
         "source": "cockroach_down.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -772,11 +734,9 @@
     "cockroach_left": {
         "directory": ["assets","sprites","textures","cockroach"],
         "source": "cockroach_left.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -784,11 +744,9 @@
     "cockroach_right": {
         "directory": ["assets","sprites","textures","cockroach"],
         "source": "cockroach_right.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -796,11 +754,9 @@
     "cockroach_up": {
         "directory": ["assets","sprites","textures","cockroach"],
         "source": "cockroach_up.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -808,11 +764,9 @@
     "cockroach_fire_down": {
         "directory": ["assets","sprites","textures","cockroach"],
         "source": "cockroach_fire_down.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 8,
             "columns": 1
         }
@@ -820,11 +774,9 @@
     "cockroach_fire_left": {
         "directory": ["assets","sprites","textures","cockroach"],
         "source": "cockroach_fire_left.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 8,
             "columns": 1
         }
@@ -832,11 +784,9 @@
     "cockroach_fire_right": {
         "directory": ["assets","sprites","textures","cockroach"],
         "source": "cockroach_fire_right.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 8,
             "columns": 1
         }
@@ -844,11 +794,9 @@
     "cockroach_fire_up": {
         "directory": ["assets","sprites","textures","cockroach"],
         "source": "cockroach_fire_up.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 8,
             "columns": 1
         }
@@ -856,11 +804,9 @@
     "ampac_down": {
         "directory": ["assets","sprites","textures","ampac"],
         "source": "ampac_down.png",
+        "gridWidth": 63,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 63,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -868,11 +814,9 @@
     "ampac_left": {
         "directory": ["assets","sprites","textures","ampac"],
         "source": "ampac_left.png",
+        "gridWidth": 63,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 63,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -880,11 +824,9 @@
     "ampac_right": {
         "directory": ["assets","sprites","textures","ampac"],
         "source": "ampac_right.png",
+        "gridWidth": 63,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 63,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -892,11 +834,9 @@
     "ampac_up": {
         "directory": ["assets","sprites","textures","ampac"],
         "source": "ampac_up.png",
+        "gridWidth": 63,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 63,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -904,11 +844,9 @@
     "ampac_fire_down": {
         "directory": ["assets","sprites","textures","ampac"],
         "source": "ampac_fire_down.png",
+        "gridWidth": 80,
+        "gridHeight": 60,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 80,
-            "frameHeight": 60,
             "rows": 8,
             "columns": 1
         }
@@ -916,11 +854,9 @@
     "ampac_fire_left": {
         "directory": ["assets","sprites","textures","ampac"],
         "source": "ampac_fire_left.png",
+        "gridWidth": 80,
+        "gridHeight": 60,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 80,
-            "frameHeight": 60,
             "rows": 8,
             "columns": 1
         }
@@ -928,11 +864,9 @@
     "ampac_fire_right": {
         "directory": ["assets","sprites","textures","ampac"],
         "source": "ampac_fire_right.png",
+        "gridWidth": 80,
+        "gridHeight": 60,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 80,
-            "frameHeight": 60,
             "rows": 8,
             "columns": 1
         }
@@ -940,11 +874,9 @@
     "ampac_fire_up": {
         "directory": ["assets","sprites","textures","ampac"],
         "source": "ampac_fire_up.png",
+        "gridWidth": 80,
+        "gridHeight": 60,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 80,
-            "frameHeight": 60,
             "rows": 8,
             "columns": 1
         }
@@ -952,11 +884,9 @@
     "entwicklung_down": {
         "directory": ["assets","sprites","textures","entwicklung"],
         "source": "entwicklung_down.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -964,11 +894,9 @@
     "entwicklung_left": {
         "directory": ["assets","sprites","textures","entwicklung"],
         "source": "entwicklung_left.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -976,11 +904,9 @@
     "entwicklung_right": {
         "directory": ["assets","sprites","textures","entwicklung"],
         "source": "entwicklung_right.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -988,11 +914,9 @@
     "entwicklung_up": {
         "directory": ["assets","sprites","textures","entwicklung"],
         "source": "entwicklung_up.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -1000,11 +924,9 @@
     "entwicklung_fire_down": {
         "directory": ["assets","sprites","textures","entwicklung"],
         "source": "entwicklung_fire_down.png",
+        "gridWidth": 95,
+        "gridHeight": 83,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 95,
-            "frameHeight": 83,
             "rows": 8,
             "columns": 1
         }
@@ -1012,11 +934,9 @@
     "entwicklung_fire_left": {
         "directory": ["assets","sprites","textures","entwicklung"],
         "source": "entwicklung_fire_left.png",
+        "gridWidth": 95,
+        "gridHeight": 83,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 95,
-            "frameHeight": 83,
             "rows": 8,
             "columns": 1
         }
@@ -1024,11 +944,9 @@
     "entwicklung_fire_right": {
         "directory": ["assets","sprites","textures","entwicklung"],
         "source": "entwicklung_fire_right.png",
+        "gridWidth": 95,
+        "gridHeight": 83,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 95,
-            "frameHeight": 83,
             "rows": 8,
             "columns": 1
         }
@@ -1036,11 +954,9 @@
     "entwicklung_fire_up": {
         "directory": ["assets","sprites","textures","entwicklung"],
         "source": "entwicklung_fire_up.png",
+        "gridWidth": 95,
+        "gridHeight": 83,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 95,
-            "frameHeight": 83,
             "rows": 8,
             "columns": 1
         }
@@ -1048,11 +964,9 @@
     "gas_attack": {
         "directory": ["assets","sprites","textures","effects"],
         "source": "gas_attack.png",
+        "gridWidth": 215,
+        "gridHeight": 134,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 215,
-            "frameHeight": 134,
             "rows": 8,
             "columns": 1
         }
@@ -1060,11 +974,9 @@
     "gorlitz_down": {
         "directory": ["assets","sprites","textures","gorlitz"],
         "source": "gorlitz_down.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -1072,11 +984,9 @@
     "gorlitz_left": {
         "directory": ["assets","sprites","textures","gorlitz"],
         "source": "gorlitz_left.png",
+        "gridWidth": 63,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 63,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -1084,11 +994,9 @@
     "gorlitz_right": {
         "directory": ["assets","sprites","textures","gorlitz"],
         "source": "gorlitz_right.png",
+        "gridWidth": 63,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 63,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -1096,11 +1004,9 @@
     "gorlitz_up": {
         "directory": ["assets","sprites","textures","gorlitz"],
         "source": "gorlitz_up.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 1
         }
@@ -1108,11 +1014,9 @@
     "gorlitz_fire_down": {
         "directory": ["assets","sprites","textures","gorlitz"],
         "source": "gorlitz_fire_down.png",
+        "gridWidth": 56,
+        "gridHeight": 70,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 70,
             "rows": 8,
             "columns": 1
         }
@@ -1120,11 +1024,9 @@
     "gorlitz_fire_left": {
         "directory": ["assets","sprites","textures","gorlitz"],
         "source": "gorlitz_fire_left.png",
+        "gridWidth": 84,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 84,
-            "frameHeight": 56,
             "rows": 8,
             "columns": 1
         }
@@ -1132,11 +1034,9 @@
     "gorlitz_fire_right": {
         "directory": ["assets","sprites","textures","gorlitz"],
         "source": "gorlitz_fire_right.png",
+        "gridWidth": 84,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 84,
-            "frameHeight": 56,
             "rows": 8,
             "columns": 1
         }
@@ -1144,11 +1044,9 @@
     "gorlitz_fire_up": {
         "directory": ["assets","sprites","textures","gorlitz"],
         "source": "gorlitz_fire_up.png",
+        "gridWidth": 56,
+        "gridHeight": 70,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 70,
             "rows": 8,
             "columns": 1
         }
@@ -1156,11 +1054,9 @@
     "guards": {
         "directory": ["assets","sprites","textures"],
         "source": "guards.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 8,
             "columns": 8
         }
@@ -1168,11 +1064,9 @@
     "assault_infantry": {
         "directory": ["assets","sprites","textures"],
         "source": "assault_infantry.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 8,
             "columns": 8
         }
@@ -1180,11 +1074,9 @@
     "bolt_tank": {
         "directory": ["assets","sprites","textures"],
         "source": "bolt_tank.png",
+        "gridWidth": 80,
+        "gridHeight": 80,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 80,
-            "frameHeight": 80,
             "rows": 8,
             "columns": 8
         }
@@ -1192,11 +1084,9 @@
     "bertha_battery": {
         "directory": ["assets","sprites","textures"],
         "source": "bertha_battery.png",
+        "gridWidth": 100,
+        "gridHeight": 100,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 100,
-            "frameHeight": 100,
             "rows": 8,
             "columns": 8
         }
@@ -1204,11 +1094,9 @@
     "infantry": {
         "directory": ["assets","sprites","textures"],
         "source": "infantry.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 8,
             "columns": 8
         }
@@ -1216,11 +1104,9 @@
     "suicide": {
         "directory": ["assets","sprites","textures","suicide"],
         "source": "suicide.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 4
         }
@@ -1228,11 +1114,9 @@
     "suicide_fire_up": {
         "directory": ["assets","sprites","textures","suicide"],
         "source": "suicide_fire_up.png",
+        "gridWidth": 56,
+        "gridHeight": 112,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 112,
             "rows": 1,
             "columns": 12
         }
@@ -1240,11 +1124,9 @@
     "suicide_fire_right": {
         "directory": ["assets","sprites","textures","suicide"],
         "source": "suicide_fire_right.png",
+        "gridWidth": 112,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 112,
-            "frameHeight": 56,
             "rows": 1,
             "columns": 12
         }
@@ -1252,11 +1134,9 @@
     "suicide_fire_down": {
         "directory": ["assets","sprites","textures","suicide"],
         "source": "suicide_fire_down.png",
+        "gridWidth": 56,
+        "gridHeight": 112,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 112,
             "rows": 1,
             "columns": 12
         }
@@ -1264,11 +1144,9 @@
     "suicide_fire_left": {
         "directory": ["assets","sprites","textures","suicide"],
         "source": "suicide_fire_left.png",
+        "gridWidth": 112,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 112,
-            "frameHeight": 56,
             "rows": 1,
             "columns": 12
         }
@@ -1276,11 +1154,9 @@
     "infantry_truck_move": {
         "directory": ["assets","sprites","textures","infantry_truck"],
         "source": "infantry_truck_move.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 4
         }
@@ -1288,11 +1164,9 @@
     "infantry_truck_fire_up": {
         "directory": ["assets","sprites","textures","infantry_truck"],
         "source": "infantry_truck_fire_up.png",
+        "gridWidth": 56,
+        "gridHeight": 112,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 112,
             "rows": 1,
             "columns": 8
         }
@@ -1300,11 +1174,9 @@
     "infantry_truck_fire_right": {
         "directory": ["assets","sprites","textures","infantry_truck"],
         "source": "infantry_truck_fire_right.png",
+        "gridWidth": 70,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 70,
-            "frameHeight": 56,
             "rows": 1,
             "columns": 8
         }
@@ -1312,11 +1184,9 @@
     "infantry_truck_fire_down": {
         "directory": ["assets","sprites","textures","infantry_truck"],
         "source": "infantry_truck_fire_down.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 1,
             "columns": 8
         }
@@ -1324,11 +1194,9 @@
     "infantry_truck_fire_left": {
         "directory": ["assets","sprites","textures","infantry_truck"],
         "source": "infantry_truck_fire_left.png",
+        "gridWidth": 70,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 70,
-            "frameHeight": 56,
             "rows": 1,
             "columns": 8
         }
@@ -1336,11 +1204,9 @@
     "light_infantry": {
         "directory": ["assets","sprites","textures"],
         "source": "light_infantry.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 8,
             "columns": 8
         }
@@ -1348,11 +1214,9 @@
     "snipers": {
         "directory": ["assets","sprites","textures"],
         "source": "snipers.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 8,
             "columns": 8
         }
@@ -1360,11 +1224,9 @@
     "marines": {
         "directory": ["assets","sprites","textures"],
         "source": "marines.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 8,
             "columns": 8
         }
@@ -1372,11 +1234,9 @@
     "stormtroopers": {
         "directory": ["assets","sprites","textures"],
         "source": "stormtroopers.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 8,
             "columns": 8
         }
@@ -1384,11 +1244,9 @@
     "supply_truck": {
         "directory": ["assets","sprites","textures"],
         "source": "supply_truck.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 4,
             "columns": 4
         }
@@ -1396,11 +1254,9 @@
     "spec_ops": {
         "directory": ["assets","sprites","textures"],
         "source": "spec_ops.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 8,
             "columns": 8
         }
@@ -1408,11 +1264,9 @@
     "imper_move": {
         "directory": ["assets","sprites","textures","imperterritus"],
         "source": "imper_move.png",
+        "gridWidth": 100,
+        "gridHeight": 70,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 100,
-            "frameHeight": 70,
             "rows": 4,
             "columns": 4
         }
@@ -1420,11 +1274,9 @@
     "imper_fire": {
         "directory": ["assets","sprites","textures","imperterritus"],
         "source": "imper_fire.png",
+        "gridWidth": 120,
+        "gridHeight": 80,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 120,
-            "frameHeight": 80,
             "rows": 4,
             "columns": 8
         }
@@ -1432,11 +1284,9 @@
     "anti_tank_idle": {
         "directory": ["assets","sprites","textures","anti_tank"],
         "source": "anti_tank_idle.png",
+        "gridWidth": 65,
+        "gridHeight": 65,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 65,
-            "frameHeight": 65,
             "rows": 4,
             "columns": 4
         }
@@ -1444,11 +1294,9 @@
     "anti_tank_fire": {
         "directory": ["assets","sprites","textures","anti_tank"],
         "source": "anti_tank_fire.png",
+        "gridWidth": 84,
+        "gridHeight": 77,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 84,
-            "frameHeight": 77,
             "rows": 4,
             "columns": 8
         }
@@ -1456,11 +1304,9 @@
     "zeus": {
         "directory": ["assets","sprites","textures"],
         "source": "zeus.png",
+        "gridWidth": 60,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 60,
-            "frameHeight": 56,
             "rows": 8,
             "columns": 8
         }
@@ -1468,11 +1314,9 @@
     "akontio": {
         "directory": ["assets","sprites","textures"],
         "source": "akontio.png",
+        "gridWidth": 60,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 60,
-            "frameHeight": 56,
             "rows": 8,
             "columns": 8
         }
@@ -1480,11 +1324,9 @@
     "eagle_striker": {
         "directory": ["assets","sprites","textures"],
         "source": "eagle_striker.png",
+        "gridWidth": 60,
+        "gridHeight": 60,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 60,
-            "frameHeight": 60,
             "rows": 8,
             "columns": 8
         }
@@ -1492,11 +1334,9 @@
     "bastion": {
         "directory": ["assets","sprites","textures"],
         "source": "bastion.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 1,
             "columns": 1
         }
@@ -1504,11 +1344,9 @@
     "supply_attack": {
         "directory": ["assets","sprites","textures","effects"],
         "source": "supply_attack.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 1,
             "columns": 8
         }
@@ -1516,11 +1354,9 @@
     "depot": {
         "directory": ["assets","sprites","textures"],
         "source": "depot.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 56,
-            "frameHeight": 56,
             "rows": 1,
             "columns": 1
         }
@@ -1528,11 +1364,9 @@
     "nuke": {
         "directory": ["assets","sprites","textures"],
         "source": "nuke.png",
+        "gridWidth": 755,
+        "gridHeight": 424,
         "autoGrid": {
-            "startX": 0,
-            "startY": 0,
-            "frameWidth": 755,
-            "frameHeight": 424,
             "rows": 7,
             "columns": 7
         }

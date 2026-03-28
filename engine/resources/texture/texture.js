@@ -6,8 +6,6 @@ export const Texture = function(id, name, path) {
     this.name = name;
     this.path = path;
     this.handle = new TextureHandle(id);
-    this.gridWidth = 0;
-    this.gridHeight = 0;
     this.variants = [];
     this.regions = [];
     this.regionMap = {};
@@ -105,10 +103,10 @@ Texture.prototype.createHandle = function(handleID) {
     return handle;
 }
 
-Texture.prototype.initGrid = function(grid) {
+Texture.prototype.initGrid = function(grid, width, height) {
     for(const regionID in grid) {
         const { u, v } = grid[regionID];
-        const region = new TextureRegion(u * this.gridWidth, v * this.gridHeight, this.gridWidth, this.gridHeight);
+        const region = new TextureRegion(u * width, v * height, width, height);
 
         this.regions.push(region);
         this.regionMap[regionID] = this.regions.length - 1;
@@ -125,14 +123,14 @@ Texture.prototype.initRegions = function(regions) {
     }
 }
 
-Texture.prototype.autoCalcRegions = function(startX, startY, rows, columns) {
-    let id = 1;
+Texture.prototype.autoGrid = function(startX, startY, rows, columns, firstID, width, height) {
+    let id = firstID;
 
     for(let i = 0; i < rows; i++) {
         for(let j = 0; j < columns; j++) {
-            const regionX = startX + j * this.gridWidth;
-            const regionY = startY + i * this.gridHeight;
-            const region = new TextureRegion(regionX, regionY, this.gridWidth, this.gridHeight);
+            const regionX = startX + j * width;
+            const regionY = startY + i * height;
+            const region = new TextureRegion(regionX, regionY, width, height);
 
             this.regions.push(region);
             this.regionMap[id++] = this.regions.length - 1;
