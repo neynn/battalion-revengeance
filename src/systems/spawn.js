@@ -1,6 +1,5 @@
-import { EntityManager } from "../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { BUILDING_TYPE, DIRECTION, ENTITY_TYPE, LAYER_TYPE, SCHEMA_TYPE, TEAM_STAT } from "../enums.js";
+import { BUILDING_TYPE, LAYER_TYPE, SCHEMA_TYPE, TEAM_STAT } from "../enums.js";
 import { Building } from "../entity/building.js";
 import { Mine } from "../entity/mine.js";
 import { bufferEntitySprites, createSchematicSprite, updateEntitySprite } from "./sprite.js";
@@ -8,17 +7,6 @@ import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { bufferEntitySounds } from "./sound.js";
 import { transformTileToWorld } from "../../engine/math/transform2D.js";
 import { TeamManager } from "../team/teamManager.js";
-import { createEntitySnapshotFromJSON } from "../snapshot/entitySnapshot.js";
-
-const getEntityID = function(name) {
-    const index = ENTITY_TYPE[name];
-
-    if(index === undefined) {
-        return ENTITY_TYPE._INVALID;
-    }
-
-    return index;
-}
 
 const getBuildingID = function(name) {
     const index = BUILDING_TYPE[name];
@@ -30,25 +18,27 @@ const getBuildingID = function(name) {
     return index;
 }
 
-const createEntity = function(gameContext, entityID, teamID, typeID, tileX, tileY) {
+const createEntity = function(gameContext, entityID, snapshot) {
     const { teamManager, typeRegistry, world } = gameContext;
     const { entityManager } = world;
+    const { teamID, type, tileX, tileY } = snapshot;
     const team = teamManager.getTeam(teamID);
 
     if(!team) {
         return null;
     }
 
-    const entityType = typeRegistry.getEntityType(typeID);
+    const entityType = typeRegistry.getEntityType(type);
     const entityObject = new BattalionEntity(entityID);
 
     entityObject.loadConfig(entityType);
+    entityObject.load(snapshot);
     entityObject.setTeam(teamID);
+    entityObject.setTile(tileX, tileY);
     team.addEntity(entityObject);
     entityManager.addEntity(entityObject);
-    entityObject.setTile(tileX, tileY);
     entityObject.placeOnMap(gameContext);
-
+    
     return entityObject;
 }
 
@@ -96,9 +86,10 @@ export const despawnServerEntity = function(gameContext, entity) {
     destroyEntity(gameContext, entity);
 }
 
-export const createClientEntityObject = function(gameContext, entityID, teamID, typeID, tileX, tileY) {
+export const createClientEntityObject = function(gameContext, entityID, snapshot) {
     const { teamManager, spriteManager, shadeCache } = gameContext;
-    const entity = createEntity(gameContext, entityID, teamID, typeID, tileX, tileY);
+    const { type, teamID } = snapshot;
+    const entity = createEntity(gameContext, entityID, snapshot);
 
     if(!entity) {
         return null;
@@ -112,13 +103,17 @@ export const createClientEntityObject = function(gameContext, entityID, teamID, 
     bufferEntitySounds(gameContext, entity);
     bufferEntitySprites(gameContext, entity, schema);
     updateEntitySprite(gameContext, entity);
-    shadeCache.loadShades(gameContext, typeID);
+    shadeCache.loadShades(gameContext, type);
+
+    if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+        entity.setOpacity(0);
+    }
 
     return entity;
 }
 
-export const createServerEntityObject = function(gameContext, entityID, teamID, typeID, tileX, tileY) {
-    return createEntity(gameContext, entityID, teamID, typeID, tileX, tileY);
+export const createServerEntityObject = function(gameContext, entityID, snapshot) {
+    return createEntity(gameContext, entityID, snapshot);
 }
 
 export const createClientBuildingObject = function(gameContext, teamID, typeID, tileX, tileY, color) {
@@ -146,20 +141,6 @@ export const createMineObject = function(gameContext, teamID, typeID, tileX, til
     mine.setTeam(teamID);
 
     return mine;
-}
-
-export const parseEntityJSON = function(gameContext, json, entityID, createEntity) {
-    const snapshot = createEntitySnapshotFromJSON(gameContext, json);
-    const { teamID, tileX, tileY, type } = snapshot;
-    const entity = createEntity(gameContext, entityID, teamID, type, tileX, tileY);
-
-    if(!entity) {
-        return null;
-    }
-
-    entity.load(snapshot);
-
-    return entity;
 }
 
 export const spawnServerBuilding = function(gameContext, worldMap, config) {

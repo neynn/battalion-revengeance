@@ -1,5 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
-import { createEntitySnapshot, createEntitySnapshotFromJSON } from "../../snapshot/entitySnapshot.js";
+import { createEntitySnapshotFromJSON } from "../../snapshot/entitySnapshot.js";
 
 export const EntitySpawnAction = function(createEntity) {
     Action.call(this);
@@ -22,9 +22,7 @@ EntitySpawnAction.prototype.execute = function(gameContext, data) {
     const { spawns } = data;
 
     for(const { id, snapshot } of spawns) {
-        const { type, tileX, tileY, teamID } = snapshot; 
-
-        this._createEntity(gameContext, id, teamID, type, tileX, tileY);
+        this._createEntity(gameContext, id, snapshot);
     }
 }
 

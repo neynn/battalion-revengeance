@@ -24,9 +24,9 @@ PurchaseEntityAction.prototype.onEnd = function(gameContext, data) {
 PurchaseEntityAction.prototype.execute = function(gameContext, data) {
     const { teamManager } = gameContext;
     const { cost, id, snapshot } = data;
-    const { tileX, tileY, teamID, type, morale } = snapshot;
+    const { teamID } = snapshot;
     const team = teamManager.getTeam(teamID);
-    const entity = this._createEntity(gameContext, id, teamID, type, tileX, tileY);
+    const entity = this._createEntity(gameContext, id, snapshot);
 
     if(!entity) {
         console.error("Critical Error: Entity could not be spawned!");

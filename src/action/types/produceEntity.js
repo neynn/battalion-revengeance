@@ -25,10 +25,10 @@ ProduceEntityAction.prototype.execute = function(gameContext, data) {
     const { world, teamManager } = gameContext;
     const { entityManager } = world;
     const { entityID, cost, id, snapshot } = data;
-    const { tileX, tileY, type, teamID, morale } = snapshot;
+    const { teamID } = snapshot;
     const team = teamManager.getTeam(teamID);
     const spawnerEntity = entityManager.getEntity(entityID);
-    const entity = this._createEntity(gameContext, id, teamID, type, tileX, tileY);
+    const entity = this._createEntity(gameContext, id, snapshot);
 
     if(!entity) {
         console.error("Critical Error: Entity could not be spawned!");

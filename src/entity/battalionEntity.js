@@ -96,10 +96,6 @@ BattalionEntity.prototype.load = function(data) {
     this.setDirection(data.direction);
     this.setHealth(data.health);
     this.setCustomInfo(data.id, data.name, data.desc);
-
-    if(this.flags & BattalionEntity.FLAG.IS_CLOAKED) {
-        this.setOpacity(0);
-    }
 }
 
 BattalionEntity.prototype.setState = function(stateID) {

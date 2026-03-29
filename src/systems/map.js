@@ -1,5 +1,5 @@
 import { BattalionMap } from "../map/battalionMap.js";
-import { createClientBuildingObject, createClientEntityObject, createMineObject, createServerEntityObject, parseEntityJSON, spawnClientBuilding, spawnServerBuilding } from "./spawn.js";
+import { createClientBuildingObject, createClientEntityObject, createMineObject, createServerEntityObject, spawnClientBuilding, spawnServerBuilding } from "./spawn.js";
 import { COMMANDER_TYPE, COMPONENT_TYPE, CURRENCY_TYPE, FACTION_TYPE, LAYER_TYPE, LOADER_RULE, MINE_TYPE, OBJECTIVE_TYPE, SCHEMA_TYPE } from "../enums.js";
 import { DialogueComponent } from "../event/components/dialogue.js";
 import { ExplodeTileComponent } from "../event/components/explodeTile.js";
@@ -18,9 +18,8 @@ import { SurviveObjective } from "../team/objective/types/survive.js";
 import { TimeLimitObjective } from "../team/objective/types/timeLimit.js";
 import { ErrorObjective } from "../team/objective/types/error.js";
 import { TeamManager } from "../team/teamManager.js";
-import { BattalionEntity } from "../entity/battalionEntity.js";
-import { updateEntitySprite } from "./sprite.js";
 import { PlayUI } from "../ui/playUI.js";
+import { createEntitySnapshotFromJSON } from "../snapshot/entitySnapshot.js";
 
 const MP_SERVER_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.EXPLODE_TILE, COMPONENT_TYPE.SPAWN_ENTITY]);
 const MP_CLIENT_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.DIALOGUE, COMPONENT_TYPE.PLAY_EFFECT]);
@@ -310,10 +309,11 @@ ClientMatchLoader.prototype.createEntities = function(gameContext) {
 
     for(const config of this.entities) {
         const entityID = entityManager.getNextID();
-        const entity = parseEntityJSON(gameContext, config, entityID, createClientEntityObject);
+        const snapshot = createEntitySnapshotFromJSON(gameContext, config);
+        const entity = createClientEntityObject(gameContext, entityID, snapshot);
 
         if(entity) {
-            updateEntitySprite(gameContext, entity);
+            //...
         }
     }
 }
@@ -357,17 +357,6 @@ ClientMatchLoader.prototype.loadMusic = function(gameContext) {
     }
 }
 
-ClientMatchLoader.prototype.createEntityFromSnapshot = function(gameContext, data, id) {
-    const { type, tileX, tileY, teamID } = data;
-    const entity = createClientEntityObject(gameContext, id, teamID, type, tileX, tileY);
-
-    if(entity) {
-        entity.load(data);
-
-        updateEntitySprite(gameContext, entity);
-    }
-}
-
 ClientMatchLoader.prototype.loadTurnFromSnapshot = function(gameContext, turn) {
     const { teamManager, world } = gameContext;
     const { turnManager } = world;
@@ -392,7 +381,7 @@ ClientMatchLoader.prototype.loadInitialServerSnapshot = function(gameContext, sn
     this.createActors(gameContext);
 
     for(const { id, data } of entities) {
-        this.createEntityFromSnapshot(gameContext, data, id);
+        createClientEntityObject(gameContext, id, data);
     }
 
     this.createBuildings(gameContext);
@@ -444,7 +433,7 @@ ClientMatchLoader.prototype.loadMapFromSnapshot = function(gameContext, snapshot
     for(const blob of entities) {
         const nextID = entityManager.getNextID();
 
-        this.createEntityFromSnapshot(gameContext, blob, nextID);
+        createClientEntityObject(gameContext, nextID, blob);
     }
 
     this.loadMusic(gameContext);
@@ -612,7 +601,8 @@ ServerMatchLoader.prototype.createEntities = function(gameContext) {
 
     for(let i = 0; i < this.entities.length; i++) {
         const entityID = entityManager.getNextID();
-        const entity = parseEntityJSON(gameContext, this.entities[i], entityID, createServerEntityObject);
+        const snapshot = createEntitySnapshotFromJSON(gameContext, this.entities[i]);
+        const entity = createServerEntityObject(gameContext, entityID, snapshot);
 
         if(entity) {
             //...
