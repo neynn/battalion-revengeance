@@ -1,6 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
 import { mapCategoryToStat } from "../../enumHelpers.js";
 import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { createEntitySnapshot } from "../../snapshot/entitySnapshot.js";
 import { createUncloakIntent } from "../actionHelper.js";
 
 export const PurchaseEntityAction = function(createEntity) {
@@ -22,9 +23,10 @@ PurchaseEntityAction.prototype.onEnd = function(gameContext, data) {
 
 PurchaseEntityAction.prototype.execute = function(gameContext, data) {
     const { teamManager } = gameContext;
-    const { id, tileX, tileY, teamID, typeID, cost, morale } = data;
+    const { cost, id, snapshot } = data;
+    const { tileX, tileY, teamID, type, morale } = snapshot;
     const team = teamManager.getTeam(teamID);
-    const entity = this._createEntity(gameContext, id, teamID, typeID, tileX, tileY);
+    const entity = this._createEntity(gameContext, id, teamID, type, tileX, tileY);
 
     if(!entity) {
         console.error("Critical Error: Entity could not be spawned!");
@@ -32,7 +34,6 @@ PurchaseEntityAction.prototype.execute = function(gameContext, data) {
     }
 
     //TODO: Apply morale
-
     entity.setPurchased();
     team.reduceCash(cost);
     team.addStatistic(TEAM_STAT.UNITS_BUILT, 1);
@@ -78,17 +79,19 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
     }
 
     //TODO: Add morale calculation.
-    const entityID = entityManager.getNextID();
+    const nextID = entityManager.getNextID();
+    const snapshot = createEntitySnapshot();
 
-    executionPlan.addNext(createUncloakIntent(entityID));
+    snapshot.tileX = tileX;
+    snapshot.tileY = tileY;
+    snapshot.type = typeID;
+    snapshot.teamID = teamID;
+
+    executionPlan.addNext(createUncloakIntent(nextID));
 
     executionPlan.setData({
-        "id": entityID,
-        "teamID": teamID,
-        "tileX": tileX,
-        "tileY": tileY,
-        "typeID": typeID,
         "cost": adjustedCost,
-        "morale": 0
+        "id": nextID,
+        "snapshot": snapshot
     });
 }

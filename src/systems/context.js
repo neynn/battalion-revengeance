@@ -15,7 +15,7 @@ import { PurchaseEntityAction } from "../action/types/purchaseEntity.js";
 import { StartTurnAction } from "../action/types/startTurn.js";
 import { UncloakAction } from "../action/types/uncloak.js";
 import { ACTION_TYPE } from "../enums.js";
-import { createClientEntityObject, createServerEntityObject, despawnClientEntity, despawnServerEntity, spawnClientEntity, spawnServerEntity } from "./spawn.js";
+import { createClientEntityObject, createServerEntityObject, despawnClientEntity, despawnServerEntity } from "./spawn.js";
 
 export const registerClientActions = function(gameContext) {
     const { world } = gameContext;
@@ -25,7 +25,7 @@ export const registerClientActions = function(gameContext) {
     actionQueue.registerAction(ACTION_TYPE.PRODUCE_ENTITY, new ProduceEntityAction(createClientEntityObject));
     actionQueue.registerAction(ACTION_TYPE.PURCHASE_ENTITY, new PurchaseEntityAction(createClientEntityObject));
     actionQueue.registerAction(ACTION_TYPE.EXTRACT, new ExtractAction());
-    actionQueue.registerAction(ACTION_TYPE.ENTITY_SPAWN, new EntitySpawnAction(spawnClientEntity));
+    actionQueue.registerAction(ACTION_TYPE.ENTITY_SPAWN, new EntitySpawnAction(createClientEntityObject));
     actionQueue.registerAction(ACTION_TYPE.START_TURN, new StartTurnAction());
     actionQueue.registerAction(ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction(despawnClientEntity));
     actionQueue.registerAction(ACTION_TYPE.CAPTURE, new CaptureAction());
@@ -46,7 +46,7 @@ export const registerServerActions = function(gameContext) {
     actionQueue.registerAction(ACTION_TYPE.PRODUCE_ENTITY, new ProduceEntityAction(createServerEntityObject));
     actionQueue.registerAction(ACTION_TYPE.PURCHASE_ENTITY, new PurchaseEntityAction(createServerEntityObject));
     actionQueue.registerAction(ACTION_TYPE.EXTRACT, new ExtractAction());
-    actionQueue.registerAction(ACTION_TYPE.ENTITY_SPAWN, new EntitySpawnAction(spawnServerEntity));
+    actionQueue.registerAction(ACTION_TYPE.ENTITY_SPAWN, new EntitySpawnAction(createServerEntityObject));
     actionQueue.registerAction(ACTION_TYPE.START_TURN, new StartTurnAction());
     actionQueue.registerAction(ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction(despawnServerEntity));
     actionQueue.registerAction(ACTION_TYPE.CAPTURE, new CaptureAction());

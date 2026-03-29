@@ -1,5 +1,5 @@
 import { BattalionMap } from "../map/battalionMap.js";
-import { createClientBuildingObject, createClientEntityObject, createMineObject, spawnClientBuilding, spawnClientEntity, spawnServerBuilding, spawnServerEntity } from "./spawn.js";
+import { createClientBuildingObject, createClientEntityObject, createMineObject, createServerEntityObject, parseEntityJSON, spawnClientBuilding, spawnServerBuilding } from "./spawn.js";
 import { COMMANDER_TYPE, COMPONENT_TYPE, CURRENCY_TYPE, FACTION_TYPE, LAYER_TYPE, LOADER_RULE, MINE_TYPE, OBJECTIVE_TYPE, SCHEMA_TYPE } from "../enums.js";
 import { DialogueComponent } from "../event/components/dialogue.js";
 import { ExplodeTileComponent } from "../event/components/explodeTile.js";
@@ -305,8 +305,16 @@ ClientMatchLoader.prototype.createBuildings = function(gameContext) {
 }
 
 ClientMatchLoader.prototype.createEntities = function(gameContext) {
-    for(const entity of this.entities) {
-        spawnClientEntity(gameContext, entity);
+    const { world } = gameContext;
+    const { entityManager } = world;
+
+    for(const config of this.entities) {
+        const entityID = entityManager.getNextID();
+        const entity = parseEntityJSON(gameContext, config, entityID, createClientEntityObject);
+
+        if(entity) {
+            updateEntitySprite(gameContext, entity);
+        }
     }
 }
 
@@ -355,10 +363,6 @@ ClientMatchLoader.prototype.createEntityFromSnapshot = function(gameContext, dat
 
     if(entity) {
         entity.load(data);
-
-        if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-            entity.setOpacity(0);
-        }
 
         updateEntitySprite(gameContext, entity);
     }
@@ -608,8 +612,11 @@ ServerMatchLoader.prototype.createEntities = function(gameContext) {
 
     for(let i = 0; i < this.entities.length; i++) {
         const entityID = entityManager.getNextID();
-        
-        spawnServerEntity(gameContext, this.entities[i], entityID);
+        const entity = parseEntityJSON(gameContext, this.entities[i], entityID, createServerEntityObject);
+
+        if(entity) {
+            //...
+        }
     }
 }
 

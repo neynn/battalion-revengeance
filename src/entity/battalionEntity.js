@@ -10,6 +10,7 @@ import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLA
 import { mapTransportToEntity } from "../enumHelpers.js";
 import { getLineEntities } from "../systems/targeting.js";
 import { TeamManager } from "../team/teamManager.js";
+import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 
 export const BattalionEntity = function(id) {
     Entity.call(this, id);
@@ -60,25 +61,27 @@ BattalionEntity.prototype = Object.create(Entity.prototype);
 BattalionEntity.prototype.constructor = BattalionEntity;
 
 BattalionEntity.prototype.save = function() {
-    return {
-        "type": this.config.id,
-        "flags": this.flags,
-        "health": this.health,
-        "maxHealth": this.maxHealth,
-        "morale": this.moraleType,
-        "id": this.customID,
-        "tileX": this.tileX,
-        "tileY": this.tileY,
-        "tileZ": this.tileZ,
-        "teamID": this.teamID,
-        "transport": this.transportID,
-        "direction": this.direction,
-        "state": this.state,
-        "name": this.customName,
-        "desc": this.customDesc,
-        "turns": this.turns,
-        "cash": this.cash
-    };
+    const snapshot = createEntitySnapshot();
+
+    snapshot.type = this.config.id;
+    snapshot.flags = this.flags;
+    snapshot.health = this.health;
+    snapshot.maxHealth = this.maxHealth;
+    snapshot.morale = this.moraleType;
+    snapshot.tileX = this.tileX;
+    snapshot.tileY = this.tileY;
+    snapshot.tileZ = this.tileZ;
+    snapshot.teamID = this.teamID;
+    snapshot.transport = this.transportID;
+    snapshot.direction = this.direction;
+    snapshot.state = this.state;
+    snapshot.turns = this.turns;
+    snapshot.cash = this.cash;
+    snapshot.id = this.customID;
+    snapshot.name = this.customName;
+    snapshot.desc = this.customDesc;
+
+    return snapshot;
 }
 
 BattalionEntity.prototype.load = function(data) {
@@ -93,6 +96,10 @@ BattalionEntity.prototype.load = function(data) {
     this.setDirection(data.direction);
     this.setHealth(data.health);
     this.setCustomInfo(data.id, data.name, data.desc);
+
+    if(this.flags & BattalionEntity.FLAG.IS_CLOAKED) {
+        this.setOpacity(0);
+    }
 }
 
 BattalionEntity.prototype.setState = function(stateID) {

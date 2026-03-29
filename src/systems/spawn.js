@@ -8,6 +8,7 @@ import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { bufferEntitySounds } from "./sound.js";
 import { transformTileToWorld } from "../../engine/math/transform2D.js";
 import { TeamManager } from "../team/teamManager.js";
+import { createEntitySnapshotFromJSON } from "../snapshot/entitySnapshot.js";
 
 const getEntityID = function(name) {
     const index = ENTITY_TYPE[name];
@@ -147,74 +148,18 @@ export const createMineObject = function(gameContext, teamID, typeID, tileX, til
     return mine;
 }
 
-const parseEntityJSON = function(gameContext, json, entityID, createEntity) {
-    const { 
-        x = -1,
-        y = -1,
-        id = null,
-        name = null,
-        desc = null,
-        type = null,
-        team = null,
-        direction = null,
-        health = -1,
-        stealth = false,
-        cash = 0
-    } = json;
-
-    const { teamManager } = gameContext;
-    const teamID = teamManager.getTeamID(team);
-    const typeID = getEntityID(type);
-    const entity = createEntity(gameContext, entityID, teamID, typeID, x, y);
+export const parseEntityJSON = function(gameContext, json, entityID, createEntity) {
+    const snapshot = createEntitySnapshotFromJSON(gameContext, json);
+    const { teamID, tileX, tileY, type } = snapshot;
+    const entity = createEntity(gameContext, entityID, teamID, type, tileX, tileY);
 
     if(!entity) {
         return null;
     }
 
-    entity.setCustomInfo(id, name, desc);
-
-    if(direction !== null) {
-        entity.setDirection(DIRECTION[direction] ?? DIRECTION.EAST);
-    }
-
-    if(health > 0) {
-        entity.setHealth(health);
-    }
-
-    if(stealth && entity.canCloak()) {
-        entity.setCloaked();
-    }
-
-    entity.addCash(cash);
+    entity.load(snapshot);
 
     return entity;
-}
-
-export const spawnServerEntity = function(gameContext, config, entityID) {
-    const entity = parseEntityJSON(gameContext, config, entityID, createServerEntityObject);
-
-    if(entity) {
-        //Post-Parsing
-    }
-}
-
-export const spawnClientEntity = function(gameContext, config, externalID = EntityManager.INVALID_ID) {
-    const { world } = gameContext;
-    const { entityManager } = world;
-
-    if(externalID === EntityManager.INVALID_ID) {
-        externalID = entityManager.getNextID();
-    }
-
-    const entity = parseEntityJSON(gameContext, config, externalID, createClientEntityObject);
-
-    if(entity) {
-        updateEntitySprite(gameContext, entity);
-
-        if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-            entity.setOpacity(0);
-        }
-    }
 }
 
 export const spawnServerBuilding = function(gameContext, worldMap, config) {

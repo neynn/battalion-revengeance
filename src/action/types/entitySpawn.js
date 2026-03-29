@@ -1,9 +1,10 @@
 import { Action } from "../../../engine/action/action.js";
+import { createEntitySnapshot, createEntitySnapshotFromJSON } from "../../snapshot/entitySnapshot.js";
 
-export const EntitySpawnAction = function(spawnEntity) {
+export const EntitySpawnAction = function(createEntity) {
     Action.call(this);
 
-    this._spawnEntity = spawnEntity;
+    this._createEntity = createEntity;
 }
 
 EntitySpawnAction.prototype = Object.create(Action.prototype);
@@ -18,14 +19,12 @@ EntitySpawnAction.prototype.onEnd = function(gameContext, data) {
 }
 
 EntitySpawnAction.prototype.execute = function(gameContext, data) {
-    const { setups, entityMap } = data;
-    const count = setups.length;
+    const { spawns } = data;
 
-    for(let i = 0; i < count; i++) {
-        const setup = setups[i];
-        const entityID = entityMap[i];
+    for(const { id, snapshot } of spawns) {
+        const { type, tileX, tileY, teamID } = snapshot; 
 
-        this._spawnEntity(gameContext, setup, entityID);
+        this._createEntity(gameContext, id, teamID, type, tileX, tileY);
     }
 }
 
@@ -33,18 +32,19 @@ EntitySpawnAction.prototype.fillExecutionPlan = function(gameContext, executionP
     const { world } = gameContext;
     const { entityManager } = world;
     const { entities } = actionIntent;
-    const setups = [];
-    const entityMap = [];
+    const spawns = [];
 
     for(let i = 0; i < entities.length; i++) {
         const nextID = entityManager.getNextID();
+        const snapshot = createEntitySnapshotFromJSON(gameContext, entities[i]);
 
-        setups.push(entities[i]);
-        entityMap.push(nextID);
+        spawns.push({
+            "id": nextID,
+            "snapshot": snapshot
+        });
     }
 
     executionPlan.setData({
-        "setups": setups,
-        "entityMap": entityMap
+        "spawns": spawns
     });
 }

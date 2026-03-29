@@ -1,7 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
-import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { mapCategoryToStat } from "../../enumHelpers.js";
 import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { createEntitySnapshot } from "../../snapshot/entitySnapshot.js";
 import { createMineTriggerIntent, createUncloakIntent } from "../actionHelper.js";
 
 export const ProduceEntityAction = function(createEntity) {
@@ -22,13 +22,13 @@ ProduceEntityAction.prototype.onEnd = function(gameContext, data) {
 }
 
 ProduceEntityAction.prototype.execute = function(gameContext, data) {
-    const { world } = gameContext;
+    const { world, teamManager } = gameContext;
     const { entityManager } = world;
-    const { id, entityID, tileX, tileY, typeID, cost, morale } = data;
+    const { entityID, cost, id, snapshot } = data;
+    const { tileX, tileY, type, teamID, morale } = snapshot;
+    const team = teamManager.getTeam(teamID);
     const spawnerEntity = entityManager.getEntity(entityID);
-    const team = spawnerEntity.getTeam(gameContext);
-    const teamID = team.getID();
-    const entity = this._createEntity(gameContext, id, teamID, typeID, tileX, tileY);
+    const entity = this._createEntity(gameContext, id, teamID, type, tileX, tileY);
 
     if(!entity) {
         console.error("Critical Error: Entity could not be spawned!");
@@ -78,18 +78,20 @@ ProduceEntityAction.prototype.fillExecutionPlan = function(gameContext, executio
 
     //TODO: Add morale calculation.
     const nextID = entityManager.getNextID();
+    const snapshot = createEntitySnapshot();
+
+    snapshot.tileX = x;
+    snapshot.tileY = y;
+    snapshot.type = typeID;
+    snapshot.teamID = team.getID();
 
     executionPlan.addNext(createMineTriggerIntent(nextID));
-
     executionPlan.addNext(createUncloakIntent(nextID));
 
     executionPlan.setData({
-        "id": nextID,
         "entityID": entityID,
-        "tileX": x,
-        "tileY": y,
-        "typeID": typeID,
         "cost": adjustedCost,
-        "morale": 0
+        "id": nextID,
+        "snapshot": snapshot
     });
 }
