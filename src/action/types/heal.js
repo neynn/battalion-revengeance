@@ -1,6 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
-import { COMMAND_TYPE, SOUND_TYPE } from "../../enums.js";
+import { SOUND_TYPE } from "../../enums.js";
 import { playEntitySound } from "../../systems/sound.js";
 import { getAnimationDuration, playHealEffect, updateEntitySprite } from "../../systems/sprite.js";
 import { createDeathIntent } from "../actionHelper.js";

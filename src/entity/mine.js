@@ -1,4 +1,5 @@
 import { JAMMER_FLAG, MINE_CATEGORY, MINE_TYPE, TILE_ID, TRAIT_TYPE } from "../enums.js";
+import { createMineSnapshot } from "../snapshot/mineSnapshot.js";
 import { StaticObject } from "./staticObject.js";
 
 export const Mine = function(config) {
@@ -17,13 +18,15 @@ Mine.prototype = Object.create(StaticObject.prototype);
 Mine.prototype.constructor = Mine;
 
 Mine.prototype.save = function() {
-    return {
-        "type": this.config.id,
-        "tileX": this.tileX,
-        "tileY": this.tileY,
-        "teamID": this.teamID,
-        "state": this.state
-    }
+    const snapshot = createMineSnapshot();
+
+    snapshot.type = this.config.id;
+    snapshot.tileX = this.tileX;
+    snapshot.tileY = this.tileY;
+    snapshot.teamID = this.teamID;
+    snapshot.state = this.state;
+
+    return snapshot;
 }
 
 Mine.prototype.isVisibleTo = function(gameContext, teamID) {

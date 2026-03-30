@@ -1,4 +1,5 @@
 import { SCHEMA_TYPE } from "../enums.js";
+import { createBuildingSnapshot } from "../snapshot/buildingSnapshot.js";
 import { StaticObject } from "./staticObject.js";
 
 export const Building = function(config) {
@@ -15,17 +16,19 @@ Building.prototype = Object.create(StaticObject.prototype);
 Building.prototype.constructor = Building;
 
 Building.prototype.save = function() {
-    return {
-        "type": this.config.id,
-        "teamID": this.teamID,
-        "tileX": this.tileX,
-        "tileY": this.tileY,
-        "id": this.customID,
-        "desc": this.customDesc,
-        "name": this.customName,
-        "totalGeneratedCash": this.totalGeneratedCash,
-        "color": this.color
-    }
+    const snapshot = createBuildingSnapshot();
+
+    snapshot.type = this.config.id;
+    snapshot.teamID = this.teamID;
+    snapshot.tileX = this.tileX;
+    snapshot.tileY = this.tileY;
+    snapshot.id = this.customID;
+    snapshot.desc = this.customDesc;
+    snapshot.name = this.customName;
+    snapshot.totalGeneratedCash = this.totalGeneratedCash;
+    snapshot.color = this.color;
+
+    return snapshot;
 }
 
 Building.prototype.setColor = function(color) {
