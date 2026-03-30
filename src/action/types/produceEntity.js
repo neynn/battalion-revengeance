@@ -55,7 +55,7 @@ ProduceEntityAction.prototype.fillExecutionPlan = function(gameContext, executio
         return;
     }
 
-    const { cost, movementType } = typeRegistry.getEntityType(typeID);
+    const { health, cost, movementType } = typeRegistry.getEntityType(typeID);
     const { x, y } = entity.getTileByDirection(direction);
     const tileType = worldMap.getTileType(gameContext, x, y);
 
@@ -83,6 +83,8 @@ ProduceEntityAction.prototype.fillExecutionPlan = function(gameContext, executio
     snapshot.tileX = x;
     snapshot.tileY = y;
     snapshot.type = typeID;
+    snapshot.health = health;
+    snapshot.maxHealth = health;
     snapshot.teamID = team.getID();
 
     executionPlan.addNext(createMineTriggerIntent(nextID));

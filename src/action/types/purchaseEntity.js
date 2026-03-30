@@ -71,7 +71,7 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
         return;
     }
 
-    const { cost } = typeRegistry.getEntityType(typeID);
+    const { health, cost } = typeRegistry.getEntityType(typeID);
     const adjustedCost = team.getAdjustedCost(cost);
 
     if(!team.hasEnoughCash(adjustedCost)) {
@@ -85,6 +85,8 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
     snapshot.tileX = tileX;
     snapshot.tileY = tileY;
     snapshot.type = typeID;
+    snapshot.health = health;
+    snapshot.maxHealth = health;
     snapshot.teamID = teamID;
 
     executionPlan.addNext(createUncloakIntent(nextID));
