@@ -163,16 +163,16 @@ export const ClientMatchLoader = function(worldMap, mapFile) {
     this.rules = LOADER_RULE.NONE;
 }
 
-ClientMatchLoader.prototype.createCustomSchema = function(gameContext, team, color) {
+ClientMatchLoader.prototype.createCustomSchema = function(gameContext, team, colorMap) {
     const { typeRegistry } = gameContext;
-    const { id, name } = team;
-    const schemaID = SCHEMA_TYPE.CUSTOM_1 + id; //TeamID from 0 to n (max 8).
-    const schema = typeRegistry.getSchemaType(schemaID);
+    const { id } = team;
+    const colorID = SCHEMA_TYPE.CUSTOM_1 + id; //TeamID from 0 to n (max 8).
+    const schema = typeRegistry.getSchemaType(colorID);
 
     schema.reset();
-    schema.loadCustom(name, "SCHEMA_DESC_CUSTOM", color);
+    schema.loadCustom(colorMap);
 
-    team.schema = schema;
+    team.color = colorID;
 }
 
 ClientMatchLoader.prototype.createTeams = function(gameContext, overrides) {
@@ -203,17 +203,7 @@ ClientMatchLoader.prototype.createTeams = function(gameContext, overrides) {
         }
 
         if(color !== null) {
-            const colorID = SCHEMA_TYPE[color] ?? SCHEMA_TYPE.RED;
-            const schemaType = typeRegistry.getSchemaType(colorID);
-
-            team.schema = schemaType;
-        }
-
-        //Assume that schema is always not null after this point.
-        if(!team.schema) {
-            const schemaType = typeRegistry.getSchemaType(SCHEMA_TYPE.RED);
-
-            team.schema = schemaType;
+            team.color = SCHEMA_TYPE[color] ?? SCHEMA_TYPE.RED;
         }
 
         //Assume that currency is always not null after this point.
@@ -513,17 +503,7 @@ ServerMatchLoader.prototype.createTeams = function(gameContext, overrides) {
         }
 
         if(color !== null) {
-            const colorID = SCHEMA_TYPE[color] ?? SCHEMA_TYPE.RED;
-            const schemaType = typeRegistry.getSchemaType(colorID);
-
-            team.schema = schemaType;
-        }
-
-        //Assume that schema is always not null after this point.
-        if(!team.schema) {
-            const schemaType = typeRegistry.getSchemaType(SCHEMA_TYPE.RED);
-
-            team.schema = schemaType;
+            team.color = SCHEMA_TYPE[color] ?? SCHEMA_TYPE.RED;
         }
 
         //Assume that currency is always not null after this point.

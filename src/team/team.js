@@ -2,14 +2,14 @@ import { createDeathIntent, createUncloakIntent } from "../action/actionHelper.j
 import { Objective } from "./objective/objective.js";
 import { UnitSurviveObjective } from "./objective/types/unitSurvive.js";
 import { LynchpinObjective } from "./objective/types/lynchpin.js";
-import { TEAM_STAT, TRAIT_TYPE } from "../enums.js";
+import { SCHEMA_TYPE, TEAM_STAT, TRAIT_TYPE } from "../enums.js";
 import { SCORE_BONUS, VICTORY_BONUS } from "../constants.js";
 
 export const Team = function(id) {
     this.id = id;
     this.allies = [];
     this.entities = [];
-    this.schema = null;
+    this.color = SCHEMA_TYPE.RED;
     this.currency = null;
     this.commander = null;
     this.name = "MISSING_NAME_TEAM";
@@ -142,12 +142,11 @@ Team.prototype.loadAsFaction = function(gameContext, factionID) {
     const { typeRegistry } = gameContext;
     const { color, name, desc, currency } = typeRegistry.getFactionType(factionID);
     const currencyType = typeRegistry.getCurrencyType(currency);
-    const schemaType = typeRegistry.getSchemaType(color);
 
     this.name = name;
     this.desc = desc;
     this.currency = currencyType;
-    this.schema = schemaType;
+    this.color = color;
 }
 
 Team.prototype.getDisplayDesc = function(gameContext) {

@@ -134,9 +134,9 @@ PlayUI.prototype.regenerateLines = function(context, text, maxWidth) {
 //This icon gets drawn instead of a full sprite!
 PlayUI.prototype.updateInspectSprite = function(entity) {
     const { spriteManager } = this.gameContext;
-    const team = entity.getTeam(this.gameContext);
+    const { color } = entity.getTeam(this.gameContext);
 
-    spriteManager.updateSprite(this.inspectSprite.index, entity.config.sprites.idle_right, team.schema.id);
+    spriteManager.updateSprite(this.inspectSprite.index, entity.config.sprites.idle_right, color);
 }
 
 PlayUI.prototype.updateBuilding = function(building) {

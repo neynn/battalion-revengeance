@@ -95,13 +95,13 @@ export const createClientEntityObject = function(gameContext, entityID, snapshot
         return null;
     }
 
-    const { schema } = teamManager.getTeam(teamID);
+    const { color } = teamManager.getTeam(teamID);
     const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
 
     entity.spriteID = visualSprite.getIndex();
 
     bufferEntitySounds(gameContext, entity);
-    bufferEntitySprites(gameContext, entity, schema);
+    bufferEntitySprites(gameContext, entity, color);
     updateEntitySprite(gameContext, entity);
     shadeCache.loadShades(gameContext, type);
 
@@ -117,13 +117,11 @@ export const createServerEntityObject = function(gameContext, entityID, snapshot
 }
 
 export const createClientBuildingObject = function(gameContext, teamID, typeID, tileX, tileY, color) {
-    const { typeRegistry } = gameContext;
     const building = createBuilding(gameContext, teamID, typeID, tileX, tileY);
     const { config } = building;
     const { sprite } = config;
     const position = transformTileToWorld(tileX, tileY);
-    const schema = typeRegistry.getSchemaType(color);
-    const visualSprite = createSchematicSprite(gameContext, sprite, schema, LAYER_TYPE.BUILDING);
+    const visualSprite = createSchematicSprite(gameContext, sprite, color, LAYER_TYPE.BUILDING);
 
     visualSprite.setPosition(position.x, position.y);
     building.spriteID = visualSprite.getIndex();
@@ -187,9 +185,9 @@ export const spawnClientBuilding = function(gameContext, worldMap, config) {
         let buildingColor = SCHEMA_TYPE[color] ?? SCHEMA_TYPE.RED;
 
         if(teamID !== TeamManager.INVALID_ID) {
-            const { schema } = teamManager.getTeam(teamID);
+            const { color } = teamManager.getTeam(teamID);
     
-            buildingColor = schema.id;
+            buildingColor = color;
         }
 
         const typeID = getBuildingID(type);

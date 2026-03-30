@@ -92,9 +92,9 @@ export const playExplosion = function(gameContext, tileX, tileY) {
     playSprite(gameContext, "explosion", tileX, tileY);
 }
 
-export const createSchematicSprite = function(gameContext, spriteID, schema, layerID) {
-    const { spriteManager } = gameContext;
-    const { id, colorMap } = schema;
+export const createSchematicSprite = function(gameContext, spriteID, color, layerID) {
+    const { spriteManager, typeRegistry } = gameContext;
+    const { id, colorMap } = typeRegistry.getSchemaType(color);
 
     if(id !== SCHEMA_TYPE.RED) {
         spriteManager.createCopyTexture(spriteID, id, colorMap);
@@ -119,19 +119,20 @@ export const updateBuildingSprite = function(gameContext, building) {
 }
 
 export const updateEntitySprite = function(gameContext, entity) {
-    const { spriteManager } = gameContext;
+    const { spriteManager, typeRegistry } = gameContext;
     const { spriteID, state, direction, config } = entity;
     const sprite = spriteManager.getSprite(spriteID);
     const spriteKey = getSpriteKey(state, direction);
     const spriteName = config.sprites[spriteKey];
 
     if(spriteName !== undefined) {
-        const { schema } = entity.getTeam(gameContext);;
-        const { id, colorMap } = schema;
+        const { color } = entity.getTeam(gameContext);
 
-        if(id !== SCHEMA_TYPE.RED) {
-            spriteManager.createCopyTexture(spriteName, id, colorMap);
-            spriteManager.updateSprite(spriteID, spriteName, id);
+        if(color !== SCHEMA_TYPE.RED) {
+            const { colorMap } = typeRegistry.getSchemaType(color);
+
+            spriteManager.createCopyTexture(spriteName, color, colorMap);
+            spriteManager.updateSprite(spriteID, spriteName, color);
         } else {
             spriteManager.updateSprite(spriteID, spriteName, SpriteManager.NO_VARIANT);
         }
@@ -187,14 +188,13 @@ export const playAttackEffect = function(gameContext, entity, target, resolution
     }
 }
 
-export const bufferEntitySprites = function(gameContext, entity, schema) {
-    const { spriteManager } = gameContext;
-    const { id, colorMap } = schema;
-
-    if(id === SCHEMA_TYPE.RED) {
+export const bufferEntitySprites = function(gameContext, entity, colorID) {
+    if(colorID === SCHEMA_TYPE.RED) {
         return;
     }
 
+    const { spriteManager, typeRegistry } = gameContext;
+    const { id, colorMap } = typeRegistry.getSchemaType(colorID);
     const spriteKeys = Object.values(SPRITE_KEY);
 
     for(const spriteKey of spriteKeys) {
