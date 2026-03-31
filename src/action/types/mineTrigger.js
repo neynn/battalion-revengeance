@@ -1,9 +1,20 @@
 import { Action } from "../../../engine/action/action.js";
+import { EntityManager } from "../../../engine/entity/entityManager.js";
+import { WorldMap } from "../../../engine/map/worldMap.js";
 import { playExplosion } from "../../systems/sprite.js";
 import { createDeathIntent } from "../actionHelper.js";
 
 export const MineTriggerAction = function() {
     Action.call(this);
+}
+
+MineTriggerAction.createData = function() {
+    return {
+        "entityID": EntityManager.INVALID_ID,
+        "health": 0,
+        "tileX": WorldMap.OUT_OF_BOUNDS,
+        "tileY": WorldMap.OUT_OF_BOUNDS
+    }
 }
 
 MineTriggerAction.prototype = Object.create(Action.prototype);
@@ -72,10 +83,12 @@ MineTriggerAction.prototype.fillExecutionPlan = function(gameContext, executionP
         executionPlan.addNext(createDeathIntent([entityID]));
     }
 
-    executionPlan.setData({
-        "entityID": entityID,
-        "health": health,
-        "tileX": tileX,
-        "tileY": tileY
-    });
+    const data = MineTriggerAction.createData();
+
+    data.entityID = entityID;
+    data.health = health;
+    data.tileX = tileX;
+    data.tileY = tileY;
+
+    executionPlan.setData(data);
 }

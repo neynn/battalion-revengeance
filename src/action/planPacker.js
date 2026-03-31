@@ -1,5 +1,7 @@
 import { ACTION_TYPE } from "../enums.js";
 import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
+import { createStep } from "../systems/pathfinding.js";
+import { ENTITY_RESOLUTION_SIZE, ENTITY_SNAPSHOT_SIZE, MOVE_STEP_SIZE } from "./packer_constants.js";
 import { AttackAction } from "./types/attack.js";
 import { CaptureAction } from "./types/capture.js";
 import { CloakAction } from "./types/cloak.js";
@@ -8,8 +10,66 @@ import { EndTurnAction } from "./types/endTurn.js";
 import { ExplodeTileAction } from "./types/explodeTile.js";
 import { ExtractAction } from "./types/extract.js";
 import { HealAction } from "./types/heal.js";
+import { MineTriggerAction } from "./types/mineTrigger.js";
+import { MoveAction } from "./types/move.js";
 
-const ENTITY_RESOLUTION_SIZE = 6;
+/*
+    0x00 -> type,
+    0x01 -> flags,
+    0x02 -> entityID,
+    0x04 -> count
+*/
+const MOVE_HEADER_SIZE = 6;
+
+export const packMovePlan = function(data) {
+    const { entityID, flags, path } = data;
+    const BUFFER_SIZE = MOVE_HEADER_SIZE + MOVE_STEP_SIZE * path.length;
+    const buffer = new ArrayBuffer(BUFFER_SIZE);
+    const view = new DataView(buffer);
+
+    view.setUint8(0, ACTION_TYPE.MOVE);
+    view.setUint8(1, flags);
+    view.setInt16(2, entityID, true);
+    view.setUint16(4, path.length, true);
+
+    let byteOffset = MOVE_HEADER_SIZE;
+
+    for(let i = 0; i < path.length; i++) {
+        const { deltaX, deltaY, tileX, tileY } = path[i];
+
+        view.setInt8(byteOffset, deltaX);
+        view.setInt8(byteOffset + 1, deltaY);
+        view.setInt16(byteOffset + 2, tileX, true);
+        view.setInt16(byteOffset + 4, tileY, true);
+
+        byteOffset += MOVE_STEP_SIZE;
+    }
+
+    return buffer;
+}
+
+/*
+    0x00 -> type,
+    0x01 -> entityID,
+    0x03 -> health,
+    0x05 -> tileX,
+    0x07 -> tileY
+*/
+const MINE_TRIGGER_HEADER_SIZE = 9;
+
+export const packMineTriggerPlan = function(data) {
+    const { entityID, health, tileX, tileY } = data;
+    const buffer = new ArrayBuffer(MINE_TRIGGER_HEADER_SIZE);
+    const view = new DataView(buffer);
+
+    view.setUint8(0, ACTION_TYPE.MINE_TRIGGER);
+    view.setInt16(1, entityID, true);
+    view.setUint16(3, health, true);
+    view.setInt16(5, tileX, true);
+    view.setInt16(7, tileY, true);
+
+    return buffer;
+}
 
 /*
     0x00 -> type,
@@ -92,11 +152,10 @@ export const packExplodeTilePlan = function(data) {
     0x01 -> count
 */
 const ENTITY_SPAWN_HEADER_SIZE = 3;
-const ENTITY_SPAWN_BLOCK_SIZE = 2 + 0; //0 -> snapshot_size
 
 export const packEntitySpawnPlan = function(data) {
     const { spawns } = data;
-    const BUFFER_SIZE = ENTITY_SPAWN_HEADER_SIZE + ENTITY_SPAWN_BLOCK_SIZE * spawns.length;
+    const BUFFER_SIZE = ENTITY_SPAWN_HEADER_SIZE + ENTITY_SNAPSHOT_SIZE * spawns.length;
     const buffer = new ArrayBuffer(BUFFER_SIZE);
     const view = new DataView(buffer);
 
@@ -110,7 +169,7 @@ export const packEntitySpawnPlan = function(data) {
         const s = createEntitySnapshot();
         view.setInt16(byteOffset, id, true);
 
-        byteOffset += ENTITY_SPAWN_BLOCK_SIZE;
+        byteOffset += ENTITY_SNAPSHOT_SIZE;
     }
 
     return buffer;
@@ -238,6 +297,37 @@ export const unpackPlan = function(data) {
     const type = view.getUint8(0);
 
     switch(type) {
+        case ACTION_TYPE.MOVE: {
+            const plan = MoveAction.createData();
+
+            plan.flags = view.getUint8(1);
+            plan.entityID = view.getInt16(2, true);
+
+            const count = view.getUint16(4, true);
+            let byteOffset = MOVE_HEADER_SIZE;
+
+            for(let i = 0; i < count; i++) {
+                const deltaX = view.getInt8(byteOffset);
+                const deltaY = view.getInt8(byteOffset + 1);
+                const tileX = view.getInt16(byteOffset + 2, true);
+                const tileY = view.getInt16(byteOffset + 4, true);
+
+                plan.path.push(createStep(deltaX, deltaY, tileX, tileY));
+                byteOffset += MOVE_STEP_SIZE;
+            }
+
+            return plan;
+        }
+        case ACTION_TYPE.MINE_TRIGGER: {
+            const plan = MineTriggerAction.createData();
+
+            plan.entityID = view.getInt16(1, true);
+            plan.health = view.getUint16(3, true);
+            plan.tileX = view.getInt16(5, true);
+            plan.tileY = view.getInt16(7, true);
+
+            return plan;
+        }
         case ACTION_TYPE.HEAL: {
             const plan = HealAction.createData();
 

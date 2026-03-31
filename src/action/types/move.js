@@ -1,5 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
 import { TILE_HEIGHT, TILE_WIDTH } from "../../../engine/engine_constants.js";
+import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { FADE_RATE } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { COMMAND_TYPE, MOVE_COMMAND, PATH_INTERCEPT, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
@@ -29,6 +30,14 @@ MoveAction.FLAG = {
     ELUSIVE: 1 << 0,
     MINE_DISCOVERED: 1 << 1
 };
+
+MoveAction.createData = function() {
+    return {
+        "entityID": EntityManager.INVALID_ID,
+        "flags": MoveAction.FLAG.NONE,
+        "path": []
+    }
+}
 
 MoveAction.prototype = Object.create(Action.prototype);
 MoveAction.prototype.constructor = MoveAction;
@@ -277,9 +286,11 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
         flags |= MoveAction.FLAG.ELUSIVE;
     }
     
-    executionPlan.setData({
-        "entityID": entityID,
-        "path": path,
-        "flags": flags
-    });
+    const data = MoveAction.createData();
+
+    data.entityID = entityID;
+    data.flags = flags;
+    data.path = path;
+
+    executionPlan.setData(data);
 }

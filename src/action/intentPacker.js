@@ -1,6 +1,7 @@
 import { ACTION_TYPE } from "../enums.js";
 import { createStep } from "../systems/pathfinding.js";
 import { createAttackRequest, createEndTurnIntent, createMoveRequest, createPurchseEntityIntent } from "./actionHelper.js";
+import { MOVE_STEP_SIZE } from "./packer_constants.js";
 
 /*
     0x00 -> type
@@ -67,7 +68,6 @@ export const packAttackIntent = function(data) {
     0x08 -> path [deltaX, deltaY, tileX, tileY]
 */
 const MOVE_HEADER_SIZE = 8;
-const MOVE_STEP_SIZE = 8;
 
 export const packMoveIntent = function(data) {
     const { entityID, targetID, command, path } = data;
@@ -76,7 +76,7 @@ export const packMoveIntent = function(data) {
     const view = new DataView(buffer);
 
     view.setUint8(0, ACTION_TYPE.MOVE);
-    view.setUint8(1, command, true);
+    view.setUint8(1, command);
     view.setInt16(2, entityID, true);
     view.setInt16(4, targetID, true);
     view.setUint16(6, path.length, true);
@@ -86,10 +86,10 @@ export const packMoveIntent = function(data) {
     for(let i = 0; i < path.length; i++) {
         const { deltaX, deltaY, tileX, tileY } = path[i];
 
-        view.setInt16(byteOffset, deltaX, true);
-        view.setInt16(byteOffset + 2, deltaY, true);
-        view.setInt16(byteOffset + 4, tileX, true);
-        view.setInt16(byteOffset + 6, tileY, true);
+        view.setInt8(byteOffset, deltaX);
+        view.setInt8(byteOffset + 1, deltaY);
+        view.setInt16(byteOffset + 2, tileX, true);
+        view.setInt16(byteOffset + 4, tileY, true);
 
         byteOffset += MOVE_STEP_SIZE;
     }
@@ -120,7 +120,7 @@ export const unpackIntent = function(data) {
             return createAttackRequest(entityID, targetID, command);
         }
         case ACTION_TYPE.MOVE: {
-            const command = view.getUint8(1, true);
+            const command = view.getUint8(1);
             const entityID = view.getInt16(2, true);
             const targetID = view.getInt16(4, true);
             const pathLength = view.getUint16(6, true);
@@ -128,10 +128,10 @@ export const unpackIntent = function(data) {
             let byteOffset = MOVE_HEADER_SIZE;
 
             for(let i = 0; i < pathLength; i++) {
-                const deltaX = view.getInt16(byteOffset, true);
-                const deltaY = view.getInt16(byteOffset + 2, true);
-                const tileX = view.getInt16(byteOffset + 4, true);
-                const tileY = view.getInt16(byteOffset + 6, true);
+                const deltaX = view.getInt8(byteOffset);
+                const deltaY = view.getInt8(byteOffset + 1);
+                const tileX = view.getInt16(byteOffset + 2, true);
+                const tileY = view.getInt16(byteOffset + 4, true);
 
                 path.push(createStep(deltaX, deltaY, tileX, tileY));
                 byteOffset += MOVE_STEP_SIZE;
