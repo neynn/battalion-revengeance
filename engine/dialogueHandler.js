@@ -135,10 +135,13 @@ DialogueHandler.prototype.showNextEntry = function(gameContext) {
         return;
     }
 
-    const { client, language } = gameContext;
-    const { soundPlayer } = client;
     const { text, voice } = this.currentDialogue[this.currentIndex];
-    const translation = language.getMapTranslation(text);
+    const { world, client, language } = gameContext;
+    const { soundPlayer } = client;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const textID = worldMap.getTextID(text);
+    const translation = language.getMapTranslation(textID);
 
     this.fullCurrentText = translation;
     this.currentText = this.skipUnveiling ? translation : "";

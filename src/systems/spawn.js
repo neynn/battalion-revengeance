@@ -160,7 +160,18 @@ export const spawnServerBuilding = function(gameContext, worldMap, config) {
         const typeID = getBuildingID(type);
         const building = createBuilding(gameContext, teamID, typeID, x, y);
 
-        building.setCustomInfo(id, name, desc);
+        if(id !== null) {
+            building.customID = worldMap.getCustomID(id);
+        }
+
+        if(name !== null) {
+            building.customName = worldMap.getTextID(name);
+        }
+
+        if(desc !== null) {
+            building.customDesc = worldMap.getTextID(desc);
+        }
+
         worldMap.addBuilding(building);
     }
 }
@@ -193,7 +204,18 @@ export const spawnClientBuilding = function(gameContext, worldMap, config) {
         const typeID = getBuildingID(type);
         const building = createClientBuildingObject(gameContext, teamID, typeID, x, y, buildingColor);
 
-        building.setCustomInfo(id, name, desc);
+        if(id !== null) {
+            building.customID = worldMap.getCustomID(id);
+        }
+
+        if(name !== null) {
+            building.customName = worldMap.getTextID(name);
+        }
+
+        if(desc !== null) {
+            building.customDesc = worldMap.getTextID(desc);
+        }
+        
         worldMap.addBuilding(building);
     }
 }

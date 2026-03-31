@@ -11,14 +11,16 @@ import { mapTransportToEntity } from "../enumHelpers.js";
 import { getLineEntities } from "../systems/targeting.js";
 import { TeamManager } from "../team/teamManager.js";
 import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
+import { LanguageHandler } from "../../engine/language/languageHandler.js";
+import { BattalionMap } from "../map/battalionMap.js";
 
 export const BattalionEntity = function(id) {
     Entity.call(this, id);
 
     this.config = null;
-    this.customID = null;
-    this.customName = null;
-    this.customDesc = null;
+    this.customID = BattalionMap.INVALID_CUSTOM_ID;
+    this.customName = LanguageHandler.INVALID_ID;
+    this.customDesc = LanguageHandler.INVALID_ID;
     this.health = 1;
     this.maxHealth = 1;
     this.damage = 0;
@@ -93,9 +95,11 @@ BattalionEntity.prototype.load = function(data) {
     this.state = data.state;
     this.turns = data.turns;
     this.cash = data.cash;
+    this.customID = data.id;
+    this.customName = data.name;
+    this.customDesc = data.desc;
     this.setDirection(data.direction);
     this.setHealth(data.health);
-    this.setCustomInfo(data.id, data.name, data.desc);
 }
 
 BattalionEntity.prototype.setState = function(stateID) {
@@ -111,12 +115,6 @@ BattalionEntity.prototype.loadConfig = function(config) {
     this.damage = damage;
 
     this.setHealth(this.health);
-}
-
-BattalionEntity.prototype.setCustomInfo = function(id, name, desc) {
-    this.customID = id;
-    this.customName = name;
-    this.customDesc = desc;
 }
 
 BattalionEntity.prototype.getVitality = function() {
@@ -1605,7 +1603,7 @@ BattalionEntity.prototype.canPlaceMine = function(gameContext) {
 BattalionEntity.prototype.getDescription = function(gameContext) {
     const { language } = gameContext;
     
-    if(this.customDesc !== null) {
+    if(this.customDesc !== LanguageHandler.INVALID_ID) {
         return language.getMapTranslation(this.customDesc);
     }
 
@@ -1615,7 +1613,7 @@ BattalionEntity.prototype.getDescription = function(gameContext) {
 BattalionEntity.prototype.getName = function(gameContext) {
     const { language } = gameContext;
     
-    if(this.customName !== null) {
+    if(this.customName !== LanguageHandler.INVALID_ID) {
         return language.getMapTranslation(this.customName);
     }
 

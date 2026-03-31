@@ -7,6 +7,12 @@ export const EntitySpawnAction = function(createEntity) {
     this._createEntity = createEntity;
 }
 
+EntitySpawnAction.createData = function() {
+    return {
+        "spawns": []
+    }
+}
+
 EntitySpawnAction.prototype = Object.create(Action.prototype);
 EntitySpawnAction.prototype.constructor = EntitySpawnAction;
 
@@ -28,21 +34,20 @@ EntitySpawnAction.prototype.execute = function(gameContext, data) {
 
 EntitySpawnAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
-    const { entityManager } = world;
+    const { entityManager, mapManager } = world;
     const { entities } = actionIntent;
-    const spawns = [];
+    const worldMap = mapManager.getActiveMap();
+    const data = EntitySpawnAction.createData();
 
     for(let i = 0; i < entities.length; i++) {
         const nextID = entityManager.getNextID();
-        const snapshot = createEntitySnapshotFromJSON(gameContext, entities[i]);
+        const snapshot = createEntitySnapshotFromJSON(gameContext, worldMap, entities[i]);
 
-        spawns.push({
+        data.spawns.push({
             "id": nextID,
             "snapshot": snapshot
         });
     }
 
-    executionPlan.setData({
-        "spawns": spawns
-    });
+    executionPlan.setData(data);
 }

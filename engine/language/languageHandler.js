@@ -5,13 +5,14 @@ import { Language } from "./language.js";
 export const LanguageHandler = function() {
     this.languages = new Map();
     this.currentLanguage = LanguageHandler.STUB_LANGUAGE;
-    this.mapTranslations = {};
+    this.mapText = [];
     this.flags = LanguageHandler.FLAG.IS_STRICT;
 
     this.events = new EventEmitter();
     this.events.register(LanguageHandler.EVENT.LANGUAGE_CHANGE);
 }
 
+LanguageHandler.INVALID_ID = -1;
 LanguageHandler.STUB_LANGUAGE = new Language("??-??", "", []);
 
 LanguageHandler.TEST_CODE = {
@@ -50,11 +51,20 @@ LanguageHandler.prototype.load = function(languages) {
 }
 
 LanguageHandler.prototype.clearMapTranslations = function() {
-    this.mapTranslations = {};
+    this.mapText.length = 0;
 }
 
-LanguageHandler.prototype.registerMapTranslations = function(mapTranslations) {
-    this.mapTranslations = mapTranslations;
+LanguageHandler.prototype.registerMapText = function(translations, text) {
+    for(let i = 0; i < text.length; i++) {
+        const textID = text[i];
+        const translation = translations[textID];
+
+        if(translation === undefined) {
+            this.mapText.push({});
+        } else {
+            this.mapText.push(translation);
+        }
+    }
 }
 
 LanguageHandler.prototype.getCurrent = function() {
@@ -67,7 +77,7 @@ LanguageHandler.prototype.clear = function() {
 }
 
 LanguageHandler.prototype.exit = function() {
-    this.mapTranslations = {};
+    this.mapText.length = 0;
 }
 
 LanguageHandler.prototype.selectLanguage = function(languageID) {
@@ -127,13 +137,12 @@ LanguageHandler.prototype.getSystemTranslation = function(key) {
     return translation;
 }
 
-LanguageHandler.prototype.getMapTranslation = function(tag) {
-    const translations = this.mapTranslations[tag];
-    
-    if(!translations) {
-        return tag;
+LanguageHandler.prototype.getMapTranslation = function(index) {
+    if(index < 0 || index >= this.mapText.length) {
+        return "";
     }
 
+    const translations = this.mapText[index];
     const translation = translations[this.currentLanguage.getID()];
 
     if(!translation) {
@@ -143,11 +152,11 @@ LanguageHandler.prototype.getMapTranslation = function(tag) {
             if(fallback) {
                 return fallback;
             } else {
-                return tag;
+                return "";
             }
         }
 
-        return tag;
+        return "";
     }
 
     return translation;

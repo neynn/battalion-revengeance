@@ -304,7 +304,7 @@ ClientMatchLoader.prototype.createEntities = function(gameContext) {
 
     for(const config of this.entities) {
         const entityID = entityManager.getNextID();
-        const snapshot = createEntitySnapshotFromJSON(gameContext, config);
+        const snapshot = createEntitySnapshotFromJSON(gameContext, this.worldMap, config);
         const entity = createClientEntityObject(gameContext, entityID, snapshot);
 
         if(entity) {
@@ -590,7 +590,7 @@ ServerMatchLoader.prototype.createEntities = function(gameContext) {
 
     for(let i = 0; i < this.entities.length; i++) {
         const entityID = entityManager.getNextID();
-        const snapshot = createEntitySnapshotFromJSON(gameContext, this.entities[i]);
+        const snapshot = createEntitySnapshotFromJSON(gameContext, this.worldMap, this.entities[i]);
         const entity = createServerEntityObject(gameContext, entityID, snapshot);
 
         if(entity) {
@@ -690,15 +690,17 @@ export const createClientMapLoader = async function(gameContext, sourceID) {
         return null;
     }
 
-    const { width, height, data } = file;
+    const { width, height, data, text = [], custom = [] } = file;
     const nextID = mapManager.getNextID();
     const worldMap = new BattalionMap(nextID, width, height, sourceID);
 
+    worldMap.createTextMapping(text);
+    worldMap.createCustomMapping(custom);
     worldMap.decodeLayers(data);
     language.clearMapTranslations();
 
     if(translations !== null) {
-        language.registerMapTranslations(translations);
+        language.registerMapText(translations, text);
     }
 
     mapManager.addMap(worldMap);
@@ -717,10 +719,12 @@ export const createServerMapLoader = async function(gameContext, sourceID) {
         return null;
     }
 
-    const { width, height, data } = file;
+    const { width, height, data, text = [], custom = [] } = file;
     const nextID = mapManager.getNextID();
     const worldMap = new BattalionMap(nextID, width, height, sourceID);
 
+    worldMap.createTextMapping(text);
+    worldMap.createCustomMapping(custom);
     worldMap.decodeLayers(data);
     mapManager.addMap(worldMap);
     mapManager.enableMap(nextID);

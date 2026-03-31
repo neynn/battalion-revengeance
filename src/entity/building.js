@@ -1,13 +1,15 @@
+import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { SCHEMA_TYPE } from "../enums.js";
+import { BattalionMap } from "../map/battalionMap.js";
 import { createBuildingSnapshot } from "../snapshot/buildingSnapshot.js";
 import { StaticObject } from "./staticObject.js";
 
 export const Building = function(config) {
     StaticObject.call(this, config);
 
-    this.customID = null;
-    this.customName = null;
-    this.customDesc = null;
+    this.customID = BattalionMap.INVALID_CUSTOM_ID;
+    this.customName = LanguageHandler.INVALID_ID;
+    this.customDesc = LanguageHandler.INVALID_ID;
     this.totalGeneratedCash = 0;
     this.color = SCHEMA_TYPE.RED;
 }
@@ -57,16 +59,10 @@ Building.prototype.generateCash = function(gameContext) {
     return generatedCash;
 }
 
-Building.prototype.setCustomInfo = function(id, name, desc) {
-    this.customID = id;
-    this.customName = name;
-    this.customDesc = desc
-}
-
 Building.prototype.getDescription = function(gameContext) {
     const { language } = gameContext;
     
-    if(this.customDesc !== null) {
+    if(this.customDesc !== LanguageHandler.INVALID_ID) {
         return language.getMapTranslation(this.customDesc);
     }
 
@@ -76,7 +72,7 @@ Building.prototype.getDescription = function(gameContext) {
 Building.prototype.getName = function(gameContext) {
     const { language } = gameContext;
     
-    if(this.customName !== null) {
+    if(this.customName !== LanguageHandler.INVALID_ID) {
         return language.getMapTranslation(this.customName);
     }
 
