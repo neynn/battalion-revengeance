@@ -1,7 +1,6 @@
 import { ACTION_TYPE } from "../enums.js";
-import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 import { createStep } from "../systems/pathfinding.js";
-import { ENTITY_RESOLUTION_SIZE, ENTITY_SNAPSHOT_SIZE, MOVE_STEP_SIZE } from "./packer_constants.js";
+import { ENTITY_RESOLUTION_SIZE, ENTITY_SNAPSHOT_SIZE, MOVE_STEP_SIZE, packEntitySnapshot, unpackEntitySnapshot } from "./packer_constants.js";
 import { AttackAction } from "./types/attack.js";
 import { CaptureAction } from "./types/capture.js";
 import { CloakAction } from "./types/cloak.js";
@@ -12,6 +11,30 @@ import { ExtractAction } from "./types/extract.js";
 import { HealAction } from "./types/heal.js";
 import { MineTriggerAction } from "./types/mineTrigger.js";
 import { MoveAction } from "./types/move.js";
+import { ProduceEntityAction } from "./types/produceEntity.js";
+
+/*
+    0x00 -> type,
+    0x01 -> entityID,
+    0x03 -> nextID,
+    0x05 -> cost,
+    0x07 -> snapshot
+*/
+const PRODUCE_HEADER_SIZE = 7 + ENTITY_SNAPSHOT_SIZE;
+
+export const packProducePlan = function(data) {
+    const { entityID, nextID, cost, snapshot } = data;
+    const buffer = new ArrayBuffer(PRODUCE_HEADER_SIZE);
+    const view = new DataView(buffer);
+
+    view.setUint8(0, ACTION_TYPE.PRODUCE_ENTITY);
+    view.setInt16(1, entityID, true);
+    view.setInt16(3, nextID, true);
+    view.setUint16(5, cost, true);
+    packEntitySnapshot(snapshot, view, 7);
+
+    return buffer;
+}
 
 /*
     0x00 -> type,
@@ -110,7 +133,7 @@ export const packHealPlan = function(data) {
     0x01 -> entityID
     0x03 -> value
 */
-const EXTRACT_ORE_HEADER_SIZE = 7;
+const EXTRACT_ORE_HEADER_SIZE = 5;
 
 export const packExtractOrePlan = function(data) {
     const { entityID, value } = data;
@@ -119,7 +142,7 @@ export const packExtractOrePlan = function(data) {
 
     view.setUint8(0, ACTION_TYPE.EXTRACT);
     view.setInt16(1, entityID, true);
-    view.setUint32(3, value, true);
+    view.setUint16(3, value, true);
 
     return buffer;
 }
@@ -153,9 +176,10 @@ export const packExplodeTilePlan = function(data) {
 */
 const ENTITY_SPAWN_HEADER_SIZE = 3;
 
+//Each spawn has a snapshot and an id!
 export const packEntitySpawnPlan = function(data) {
     const { spawns } = data;
-    const BUFFER_SIZE = ENTITY_SPAWN_HEADER_SIZE + ENTITY_SNAPSHOT_SIZE * spawns.length;
+    const BUFFER_SIZE = ENTITY_SPAWN_HEADER_SIZE + (ENTITY_SNAPSHOT_SIZE + 2) * spawns.length;
     const buffer = new ArrayBuffer(BUFFER_SIZE);
     const view = new DataView(buffer);
 
@@ -166,10 +190,9 @@ export const packEntitySpawnPlan = function(data) {
 
     for(let i = 0; i < spawns.length; i++) {
         const { id, snapshot } = spawns[i];
-        const s = createEntitySnapshot();
         view.setInt16(byteOffset, id, true);
 
-        byteOffset += ENTITY_SNAPSHOT_SIZE;
+        byteOffset = packEntitySnapshot(snapshot, view, byteOffset + 2);
     }
 
     return buffer;
@@ -297,6 +320,17 @@ export const unpackPlan = function(data) {
     const type = view.getUint8(0);
 
     switch(type) {
+        case ACTION_TYPE.PRODUCE_ENTITY: {
+            const plan = ProduceEntityAction.createData();
+
+            plan.entityID = view.getInt16(1, true);
+            plan.nextID = view.getInt16(3, true);
+            plan.cost = view.getUint16(5, true);
+
+            unpackEntitySnapshot(plan.snapshot, view, 7);
+
+            return plan;
+        }
         case ACTION_TYPE.MOVE: {
             const plan = MoveAction.createData();
 
@@ -353,7 +387,7 @@ export const unpackPlan = function(data) {
             const plan = ExtractAction.createData();
 
             plan.entityID = view.getInt16(1, true);
-            plan.value = view.getUint32(3, true);
+            plan.value = view.getUint16(3, true);
 
             return plan;
         }

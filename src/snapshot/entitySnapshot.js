@@ -4,24 +4,22 @@ import { DIRECTION, ENTITY_TYPE, MORALE_TYPE, TRAIT_TYPE } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { TeamManager } from "../team/teamManager.js";
 
-export const ENTITY_SNAPSHOT_SIZE = 0;
-
 export const createEntitySnapshot = function() {
     return {
-        "type": ENTITY_TYPE._INVALID, //INT16
+        "direction": DIRECTION.EAST, //UINT8
+        "state": BattalionEntity.STATE.IDLE, //UINT8
+        "morale": MORALE_TYPE.NORMAL, //UINT8
+        "teamID": TeamManager.INVALID_ID, //INT8
+        "turns": 0, //UINT16
+        "cash": 0, //UINT16
         "flags": BattalionEntity.FLAG.NONE, //UINT16
         "health": 1, //UINT16
         "maxHealth": 1, //UINT16
-        "morale": MORALE_TYPE.NORMAL, //UINT8
+        "type": ENTITY_TYPE._INVALID, //INT16
         "tileX": -1, //INT16
         "tileY": -1, //INT16
         "tileZ": -1, //INT16
-        "teamID": TeamManager.INVALID_ID, //INT8
         "transport": ENTITY_TYPE._INVALID, //INT16
-        "direction": DIRECTION.EAST, //UINT8
-        "state": BattalionEntity.STATE.IDLE, //UINT8
-        "turns": 0, //UINT16
-        "cash": 0, //UINT16
         "id": BattalionMap.INVALID_CUSTOM_ID, //INT16
         "name": LanguageHandler.INVALID_ID, //INT16
         "desc": LanguageHandler.INVALID_ID, //INT16

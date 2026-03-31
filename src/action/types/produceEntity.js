@@ -1,4 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
+import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { mapCategoryToStat } from "../../enumHelpers.js";
 import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { createEntitySnapshot } from "../../snapshot/entitySnapshot.js";
@@ -8,6 +9,15 @@ export const ProduceEntityAction = function(createEntity) {
     Action.call(this);
 
     this._createEntity = createEntity;
+}
+
+ProduceEntityAction.createData = function() {
+    return {
+        "entityID": EntityManager.INVALID_ID,
+        "cost": 0,
+        "nextID": EntityManager.INVALID_ID,
+        "snapshot": createEntitySnapshot()
+    }
 }
 
 ProduceEntityAction.prototype = Object.create(Action.prototype);
@@ -24,11 +34,11 @@ ProduceEntityAction.prototype.onEnd = function(gameContext, data) {
 ProduceEntityAction.prototype.execute = function(gameContext, data) {
     const { world, teamManager } = gameContext;
     const { entityManager } = world;
-    const { entityID, cost, id, snapshot } = data;
+    const { entityID, cost, nextID, snapshot } = data;
     const { teamID } = snapshot;
     const team = teamManager.getTeam(teamID);
     const spawnerEntity = entityManager.getEntity(entityID);
-    const entity = this._createEntity(gameContext, id, snapshot);
+    const entity = this._createEntity(gameContext, nextID, snapshot);
 
     if(!entity) {
         console.error("Critical Error: Entity could not be spawned!");
@@ -78,22 +88,19 @@ ProduceEntityAction.prototype.fillExecutionPlan = function(gameContext, executio
 
     //TODO: Add morale calculation.
     const nextID = entityManager.getNextID();
-    const snapshot = createEntitySnapshot();
+    const data = ProduceEntityAction.createData();
 
-    snapshot.tileX = x;
-    snapshot.tileY = y;
-    snapshot.type = typeID;
-    snapshot.health = health;
-    snapshot.maxHealth = health;
-    snapshot.teamID = team.getID();
+    data.entityID = entityID;
+    data.nextID = nextID;
+    data.cost = cost;
+    data.snapshot.tileX = x;
+    data.snapshot.tileY = y;
+    data.snapshot.type = typeID;
+    data.snapshot.health = health;
+    data.snapshot.maxHealth = health;
+    data.snapshot.teamID = team.getID();
 
     executionPlan.addNext(createMineTriggerIntent(nextID));
     executionPlan.addNext(createUncloakIntent(nextID));
-
-    executionPlan.setData({
-        "entityID": entityID,
-        "cost": adjustedCost,
-        "id": nextID,
-        "snapshot": snapshot
-    });
+    executionPlan.setData(data);
 }
