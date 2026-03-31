@@ -6,7 +6,6 @@ import { playEntitySound } from "../../systems/sound.js";
 import { getAnimationDuration, playAttackEffect, updateEntitySprite } from "../../systems/sprite.js";
 import { createAttackRequest, createDeathIntent } from "../actionHelper.js";
 import { InteractionResolver } from "../interactionResolver.js";
-import { packAttackPlan, unpackPlan } from "../planPacker.js";
 
 const resolveCounterAttack = function(gameContext, entity, target, resolver) {
     if(entity.isCounterValid(target) && entity.isAttackValid(gameContext, target) && entity.isAttackPositionValid(gameContext, target)) {

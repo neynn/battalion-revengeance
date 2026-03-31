@@ -1,5 +1,45 @@
 import { ACTION_TYPE } from "../enums.js";
 import { AttackAction } from "./types/attack.js";
+import { CaptureAction } from "./types/capture.js";
+import { CloakAction } from "./types/cloak.js";
+
+/*
+    0x00 -> type,
+    0x01 -> entityID
+*/
+const CLOAK_HEADER_SIZE = 3;
+
+export const packCloakPlan = function(data) {
+    const { entityID } = data;
+    const buffer = new ArrayBuffer(CLOAK_HEADER_SIZE);
+    const view = new DataView(buffer);
+
+    view.setUint8(0, ACTION_TYPE.CLOAK);
+    view.setInt16(1, entityID, true);
+
+    return buffer;
+}
+
+/*
+    0x00 -> type,
+    0x01 -> entityID
+    0x03 -> targetX
+    0x05 -> targetY
+*/
+const CAPTURE_HEADER_SIZE = 7;
+
+export const packCapturePlan = function(data) {
+    const { entityID, targetX, targetY } = data;
+    const buffer = new ArrayBuffer(CAPTURE_HEADER_SIZE);
+    const view = new DataView(buffer);
+
+    view.setUint8(0, ACTION_TYPE.CAPTURE);
+    view.setInt16(1, entityID, true);
+    view.setInt16(3, targetX, true);
+    view.setInt16(5, targetY, true);
+
+    return buffer;
+}
 
 /*
     0x00 -> type,
@@ -45,6 +85,22 @@ export const unpackPlan = function(data) {
     const type = view.getUint8(0);
 
     switch(type) {
+        case ACTION_TYPE.CLOAK: {
+            const plan = CloakAction.createData();
+
+            plan.entityID = view.getInt16(1, true);
+
+            return plan;
+        }
+        case ACTION_TYPE.CAPTURE: {
+            const plan = CaptureAction.createData();
+
+            plan.entityID = view.getInt16(1, true);
+            plan.targetX = view.getInt16(3, true);
+            plan.targetY = view.getInt16(5, true);
+
+            return plan;
+        }
         case ACTION_TYPE.ATTACK: {
             const plan = AttackAction.createData();
 

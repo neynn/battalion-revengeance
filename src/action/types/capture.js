@@ -1,10 +1,19 @@
 import { Action } from "../../../engine/action/action.js";
+import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { TEAM_STAT } from "../../enums.js";
 import { updateBuildingSprite } from "../../systems/sprite.js";
 
 export const CaptureAction = function() {
     Action.call(this);
+}
+
+CaptureAction.createData = function() {
+    return {
+        "entityID": EntityManager.INVALID_ID,
+        "targetX": -1,
+        "targetY": -1
+    }
 }
 
 CaptureAction.prototype = Object.create(Action.prototype);
@@ -45,14 +54,23 @@ CaptureAction.prototype.fillExecutionPlan = function(gameContext, executionPlan,
     const { entityID, targetX, targetY } = actionIntent;
     const entity = entityManager.getEntity(entityID);
 
-    //Only allow capture if entity landed on tile.
-    if(entity && !entity.isDead() && entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && entity.getDistanceToTile(targetX, targetY) === 0) {
-        if(entity.canCapture(gameContext, targetX, targetY)) {
-            executionPlan.setData({
-                "entityID": entityID,
-                "targetX": targetX,
-                "targetY": targetY
-            });
-        }
+    if(!entity || entity.isDead()) {
+        return;
     }
+
+    if(!entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) || entity.getDistanceToTile(targetX, targetY) !== 0) {
+        return;
+    }
+
+    if(!entity.canCapture(gameContext, targetX, targetY)) {
+        return;
+    }
+
+    const data = CaptureAction.createData();
+
+    data.entityID = entityID;
+    data.targetX = targetX;
+    data.targetY = targetY;
+
+    executionPlan.setData(data);
 }

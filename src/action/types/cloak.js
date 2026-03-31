@@ -1,10 +1,17 @@
 import { Action } from "../../../engine/action/action.js";
+import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { SOUND_TYPE } from "../../enums.js";
 import { playEntitySound } from "../../systems/sound.js";
 import { CloakTween } from "../../tween/cloakTween.js";
 
 export const CloakAction = function() {
     Action.call(this);
+}
+
+CloakAction.createData = function() {
+    return {
+        "entityID": EntityManager.INVALID_ID
+    }
 }
 
 CloakAction.prototype = Object.create(Action.prototype);
@@ -44,9 +51,13 @@ CloakAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, a
     const { entityID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
 
-    if(entity && entity.canCloakAtSelf(gameContext)) {
-        executionPlan.setData({
-            "entityID": entityID
-        });
+    if(!entity || !entity.canCloakAtSelf(gameContext)) {
+        return;
     }
+
+    const data = CloakAction.createData();
+
+    data.entityID = entity;
+
+    executionPlan.setData(data);
 }
