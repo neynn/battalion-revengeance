@@ -1,6 +1,6 @@
-import { ExecutionPlan } from "../../engine/action/executionPlan.js";
-import { ActionRouter } from "../../engine/action/actionRouter.js";
-import { ACTION_TYPE, GAME_EVENT } from "../enums.js";
+import { ExecutionPlan } from "../../../engine/action/executionPlan.js";
+import { ActionRouter } from "../../../engine/action/actionRouter.js";
+import { ACTION_TYPE, GAME_EVENT } from "../../enums.js";
 
 export const ClientActionRouter = function() {
     ActionRouter.call(this);

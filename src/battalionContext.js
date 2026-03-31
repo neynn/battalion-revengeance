@@ -9,11 +9,11 @@ import { TeamManager } from "./team/teamManager.js";
 import { TypeRegistry } from "./type/typeRegistry.js";
 import { ArenaState } from "./states/arena/arena.js";
 import { UICore } from "./ui/uiCore.js";
-import { ClientActionRouter } from "./client/actionRouter.js";
 import { addDebug, registerClientActions } from "./systems/context.js";
 import { resolveTileType } from "./enumHelpers.js";
 import { ShadeCache } from "./shadeCache.js";
 import { MapRegistry } from "./map/mapRegistry.js";
+import { ClientActionRouter } from "./action/router/clientActionRouter.js";
 
 export const BattalionContext = function() {
     ClientGameContext.call(this);

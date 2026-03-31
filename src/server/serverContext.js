@@ -6,10 +6,10 @@ import { GAME_EVENT } from "../enums.js";
 import { createServerMapLoader } from "../systems/map.js";
 import { createStartTurnIntent } from "../action/actionHelper.js";
 import { mpIsPlayerIntentValid } from "../action/actionValidator.js";
-import { ServerActionRouter } from "./actionRouter.js";
 import { ActionIntent } from "../../engine/action/actionIntent.js";
 import { MapMaster } from "../map/mapMaster.js";
 import { getTurnData } from "../systems/save.js";
+import { ServerActionRouter } from "../action/router/serverActionRouter.js";
 
 export const ServerGameContext = function(serverApplication, id) {
     Room.call(this, id);

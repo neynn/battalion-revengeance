@@ -1,5 +1,5 @@
-import { ActionRouter } from "../../engine/action/actionRouter.js";
-import { GAME_EVENT } from "../enums.js";
+import { ActionRouter } from "../../../engine/action/actionRouter.js";
+import { GAME_EVENT } from "../../enums.js";
 
 export const ServerActionRouter = function() {
     ActionRouter.call(this);
