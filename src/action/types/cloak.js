@@ -57,7 +57,7 @@ CloakAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, a
 
     const data = CloakAction.createData();
 
-    data.entityID = entity;
+    data.entityID = entityID;
 
     executionPlan.setData(data);
 }

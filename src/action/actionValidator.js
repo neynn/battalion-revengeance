@@ -1,34 +1,18 @@
 import { ACTION_TYPE } from "../enums.js";
 
 export const isClientTurn = function(gameContext, messengerID) {
-    const { teamManager, mapMaster, world } = gameContext;
+    const { world } = gameContext;
     const { turnManager } = world;
-    const { slots } = mapMaster;
     const { currentActor } = turnManager;
 
     if(!currentActor) {
         return false;
     }
 
-    //TODO: Create a ServerActor that has clientID and check currentActor.clientID === clientID. O(1)!
-    for(const slot of slots) {
-        const { clientID, teamID } = slot;
-        //TODO: This is a hack because slots SHOULD transform their teamID to the runtime id/index.
-        const tTeamID = teamManager.getTeamID(teamID);
-
-        if(clientID === messengerID && currentActor.teamID === tTeamID) {
-            return true;
-        }
-    }
-
-    return false;
+    return currentActor.clientID === messengerID;
 }
 
 export const mpIsPlayerIntentValid = function(gameContext, intent, clientID) {
-    if(!isClientTurn(gameContext, clientID)) {
-        return false;
-    } 
-
     const { type, data } = intent;
     
     switch(type) {

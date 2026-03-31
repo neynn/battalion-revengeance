@@ -9,3 +9,7 @@ Maintenance trait that heals 5HP every ROUND. StartTurn -> query entities -> fil
 new blend property that links and draws a second sprite as a child to one.
 
 train as transport.
+
+TODO: add quick game message -> no json packing
+TODO: add more validation in the intent unpacker! (e.g. does the entity belong to the actor?)
+    Just call currentActor.getTeam! (Also add ServerActor) so the lookup loop is gone!

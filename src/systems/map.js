@@ -20,6 +20,7 @@ import { ErrorObjective } from "../team/objective/types/error.js";
 import { TeamManager } from "../team/teamManager.js";
 import { PlayUI } from "../ui/playUI.js";
 import { createEntitySnapshotFromJSON } from "../snapshot/entitySnapshot.js";
+import { ServerActor } from "../actors/serverActor.js";
 
 const MP_SERVER_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.EXPLODE_TILE, COMPONENT_TYPE.SPAWN_ENTITY]);
 const MP_CLIENT_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.DIALOGUE, COMPONENT_TYPE.PLAY_EFFECT]);
@@ -91,6 +92,17 @@ const EventFactory = {
 };
 
 const ActorFactory = {
+    createServerActor: function(gameContext, teamID, clientID) {
+        const { world } = gameContext;
+        const { turnManager } = world;
+        const actorID = turnManager.getNextID();
+        const actor = new ServerActor(actorID);
+
+        turnManager.addActor(actor);
+        actor.setTeam(teamID);
+        actor.setName("Server");
+        actor.clientID = clientID;
+    },
     createActor: function(gameContext, teamID) {
         const { world } = gameContext;
         const { turnManager } = world;
@@ -546,12 +558,23 @@ ServerMatchLoader.prototype.createTeams = function(gameContext, overrides) {
 }
 
 ServerMatchLoader.prototype.createActors = function(gameContext) {
-    const { teamManager } = gameContext;
+    const { teamManager, mapMaster } = gameContext;
+    const { slots } = mapMaster;
 
     teamManager.forEachTeam((team) => {
         const { id } = team;
+        let client = null;
 
-        ActorFactory.createActor(gameContext, id);
+        for(const { teamID, clientID } of slots) {
+            const tTeamID = teamManager.getTeamID(teamID);
+
+            if(tTeamID === id) {
+                client = clientID;
+                break;
+            }
+        }
+
+        ActorFactory.createServerActor(gameContext, id, client);
     })
 }
 

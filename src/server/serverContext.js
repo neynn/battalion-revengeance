@@ -5,7 +5,7 @@ import { TeamManager } from "../team/teamManager.js";
 import { GAME_EVENT } from "../enums.js";
 import { createServerMapLoader } from "../systems/map.js";
 import { createStartTurnIntent } from "../action/actionHelper.js";
-import { mpIsPlayerIntentValid } from "../action/actionValidator.js";
+import { isClientTurn } from "../action/actionValidator.js";
 import { MapMaster } from "../map/mapMaster.js";
 import { getTurnData } from "../systems/save.js";
 import { ServerActionRouter } from "../action/router/serverActionRouter.js";
@@ -170,13 +170,13 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
             break;
         }
         case GAME_EVENT.MP_CLIENT_ACTION_INTENT: {
-            if(this.state === ServerGameContext.STATE.STARTED) {
+            if(this.state === ServerGameContext.STATE.STARTED && isClientTurn(this, messengerID)) {
                 const arrayBuffer = payload.buffer.slice(payload.byteOffset, payload.byteOffset + payload.byteLength);
                 const intent = unpackIntent(arrayBuffer);
 
                 console.log("RECEIVED BYTES:", arrayBuffer.byteLength);
 
-                if(intent && mpIsPlayerIntentValid(this, intent, messengerID)) {
+                if(intent) {
                     this.actionRouter.forceEnqueue(this, intent);
                 }
             }
