@@ -9,7 +9,7 @@ import { mpIsPlayerIntentValid } from "../action/actionValidator.js";
 import { MapMaster } from "../map/mapMaster.js";
 import { getTurnData } from "../systems/save.js";
 import { ServerActionRouter } from "../action/router/serverActionRouter.js";
-import { unpackIntent } from "../action/packer.js";
+import { unpackIntent } from "../action/intentPacker.js";
 
 export const ServerGameContext = function(serverApplication, id) {
     Room.call(this, id);
@@ -33,8 +33,6 @@ export const ServerGameContext = function(serverApplication, id) {
     this.mapMaster = new MapMaster();
     this.state = ServerGameContext.STATE.NONE;
     this.readyClients = 0;
-
-    this.world.entityManager.nextID = 1000;
 }
 
 ServerGameContext.STATE = {

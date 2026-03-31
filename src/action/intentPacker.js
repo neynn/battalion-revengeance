@@ -67,10 +67,11 @@ export const packAttackIntent = function(data) {
     0x08 -> path [deltaX, deltaY, tileX, tileY]
 */
 const MOVE_HEADER_SIZE = 8;
+const MOVE_STEP_SIZE = 8;
 
 export const packMoveIntent = function(data) {
     const { entityID, targetID, command, path } = data;
-    const BUFFER_SIZE = MOVE_HEADER_SIZE + path.length * 4 * 2;
+    const BUFFER_SIZE = MOVE_HEADER_SIZE + MOVE_STEP_SIZE * path.length;
     const buffer = new ArrayBuffer(BUFFER_SIZE);
     const view = new DataView(buffer);
 
@@ -90,7 +91,7 @@ export const packMoveIntent = function(data) {
         view.setInt16(byteOffset + 4, tileX, true);
         view.setInt16(byteOffset + 6, tileY, true);
 
-        byteOffset += 8;
+        byteOffset += MOVE_STEP_SIZE;
     }
 
     return buffer;
@@ -133,7 +134,7 @@ export const unpackIntent = function(data) {
                 const tileY = view.getInt16(byteOffset + 6, true);
 
                 path.push(createStep(deltaX, deltaY, tileX, tileY));
-                byteOffset += 8;
+                byteOffset += MOVE_STEP_SIZE;
             }
 
             return createMoveRequest(entityID, path, command, targetID);

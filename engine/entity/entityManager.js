@@ -15,7 +15,7 @@ EntityManager.INVALID_INDEX = -1;
 EntityManager.INVALID_ID = -1;
 
 EntityManager.prototype.exit = function() {
-    this.nextID = 1000;
+    this.nextID = 0;
     this.entities.length = 0;
     this.openSlots.length = 0;
     this.entityMap.clear();
