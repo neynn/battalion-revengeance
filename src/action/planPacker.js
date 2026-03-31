@@ -12,6 +12,28 @@ import { HealAction } from "./types/heal.js";
 import { MineTriggerAction } from "./types/mineTrigger.js";
 import { MoveAction } from "./types/move.js";
 import { ProduceEntityAction } from "./types/produceEntity.js";
+import { PurchaseEntityAction } from "./types/purchaseEntity.js";
+
+/*
+    0x00 -> type,
+    0x01 -> nextID,
+    0x03 -> cost,
+    0x05 -> snapshot
+*/
+const PURCHASE_HEADER_SIZE = 5 + ENTITY_SNAPSHOT_SIZE;
+
+export const packPurchasePlan = function(data) {
+    const { nextID, cost, snapshot } = data;
+    const buffer = new ArrayBuffer(PURCHASE_HEADER_SIZE);
+    const view = new DataView(buffer);
+
+    view.setUint8(0, ACTION_TYPE.PURCHASE_ENTITY);
+    view.setInt16(1, nextID, true);
+    view.setUint16(3, cost, true);
+    packEntitySnapshot(snapshot, view, 5);
+
+    return buffer;
+}
 
 /*
     0x00 -> type,
@@ -320,6 +342,16 @@ export const unpackPlan = function(data) {
     const type = view.getUint8(0);
 
     switch(type) {
+        case ACTION_TYPE.PURCHASE_ENTITY: {
+            const plan = PurchaseEntityAction.createData();
+
+            plan.nextID = view.getInt16(1, true);
+            plan.cost = view.getUint16(3, true);
+
+            unpackEntitySnapshot(plan.snapshot, view, 5);
+
+            return plan;
+        }
         case ACTION_TYPE.PRODUCE_ENTITY: {
             const plan = ProduceEntityAction.createData();
 

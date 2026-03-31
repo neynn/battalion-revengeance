@@ -1,4 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
+import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { mapCategoryToStat } from "../../enumHelpers.js";
 import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { createEntitySnapshot } from "../../snapshot/entitySnapshot.js";
@@ -8,6 +9,14 @@ export const PurchaseEntityAction = function(createEntity) {
     Action.call(this);
 
     this._createEntity = createEntity;
+}
+
+PurchaseEntityAction.createData = function() {
+    return {
+        "nextID": EntityManager.INVALID_ID,
+        "cost": 0,
+        "snapshot": createEntitySnapshot()
+    }
 }
 
 PurchaseEntityAction.prototype = Object.create(Action.prototype);
@@ -23,10 +32,10 @@ PurchaseEntityAction.prototype.onEnd = function(gameContext, data) {
 
 PurchaseEntityAction.prototype.execute = function(gameContext, data) {
     const { teamManager } = gameContext;
-    const { cost, id, snapshot } = data;
+    const { cost, nextID, snapshot } = data;
     const { teamID } = snapshot;
     const team = teamManager.getTeam(teamID);
-    const entity = this._createEntity(gameContext, id, snapshot);
+    const entity = this._createEntity(gameContext, nextID, snapshot);
 
     if(!entity) {
         console.error("Critical Error: Entity could not be spawned!");
@@ -80,20 +89,17 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
 
     //TODO: Add morale calculation.
     const nextID = entityManager.getNextID();
-    const snapshot = createEntitySnapshot();
+    const data = PurchaseEntityAction.createData();
 
-    snapshot.tileX = tileX;
-    snapshot.tileY = tileY;
-    snapshot.type = typeID;
-    snapshot.health = health;
-    snapshot.maxHealth = health;
-    snapshot.teamID = teamID;
+    data.nextID = nextID;
+    data.cost = adjustedCost;
+    data.snapshot.tileX = tileX;
+    data.snapshot.tileY = tileY;
+    data.snapshot.type = typeID;
+    data.snapshot.health = health;
+    data.snapshot.maxHealth = health;
+    data.snapshot.teamID = teamID;
 
     executionPlan.addNext(createUncloakIntent(nextID));
-
-    executionPlan.setData({
-        "cost": adjustedCost,
-        "id": nextID,
-        "snapshot": snapshot
-    });
+    executionPlan.setData(data);
 }
