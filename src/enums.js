@@ -18,7 +18,8 @@ export const LOADER_RULE = {
     NONE: 0,
     ALLOW_SPECTATOR: 1 << 0,
     FIXED_ALLIES: 1 << 1,
-    LOAD_OBJECTIVES: 1 << 2
+    LOAD_OBJECTIVES: 1 << 2,
+    CUSTOM_COLOR: 1 << 3
 };
 
 export const TRAIT_CONFIG = {
