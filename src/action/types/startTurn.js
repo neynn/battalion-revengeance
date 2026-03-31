@@ -35,7 +35,6 @@ StartTurnAction.prototype.execute = function(gameContext, data) {
         }
     }
 
-    console.log(resolutions)
     for(const { id, health } of resolutions) {
         const entity = entityManager.getEntity(id);
 
