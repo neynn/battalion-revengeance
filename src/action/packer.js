@@ -1,12 +1,35 @@
 import { ACTION_TYPE } from "../enums.js";
 import { createStep } from "../systems/pathfinding.js";
-import { createAttackRequest, createEndTurnIntent, createMoveRequest } from "./actionHelper.js";
+import { createAttackRequest, createEndTurnIntent, createMoveRequest, createPurchseEntityIntent } from "./actionHelper.js";
+
+/*
+    0x00 -> type
+    0x01 -> typeID
+    0x03 -> tileX
+    0x05 -> tileY
+*/
+const PURCHASE_HEADER_SIZE = 7;
+
+export const packPurchaseIntent = function(data) {
+    const { tileX, tileY, typeID } = data;
+    const buffer = new ArrayBuffer(PURCHASE_HEADER_SIZE);
+    const view = new DataView(buffer);
+
+    view.setUint8(0, ACTION_TYPE.PURCHASE_ENTITY);
+    view.setInt16(1, typeID, true);
+    view.setInt16(3, tileX, true);
+    view.setInt16(5, tileY, true);
+
+    return buffer; 
+}
 
 /*
     0x00 -> type
 */
+const END_TURN_HEADER_SIZE = 1;
+
 export const packEndTurnIntent = function(data) {
-    const buffer = new ArrayBuffer(1);
+    const buffer = new ArrayBuffer(END_TURN_HEADER_SIZE);
     const view = new DataView(buffer);
 
     view.setUint8(0, ACTION_TYPE.END_TURN);
@@ -20,9 +43,11 @@ export const packEndTurnIntent = function(data) {
     0x03 -> targetID
     0x05 -> command
 */
+const ATTACK_HEADER_SIZE = 6;
+
 export const packAttackIntent = function(data) {
     const { entityID, targetID, command } = data;
-    const buffer = new ArrayBuffer(6);
+    const buffer = new ArrayBuffer(ATTACK_HEADER_SIZE);
     const view = new DataView(buffer);
 
     view.setUint8(0, ACTION_TYPE.ATTACK);
@@ -41,9 +66,11 @@ export const packAttackIntent = function(data) {
     0x06 -> path length
     0x08 -> path [deltaX, deltaY, tileX, tileY]
 */
+const MOVE_HEADER_SIZE = 8;
+
 export const packMoveIntent = function(data) {
     const { entityID, targetID, command, path } = data;
-    const BUFFER_SIZE = 8 + path.length * 4 * 2;
+    const BUFFER_SIZE = MOVE_HEADER_SIZE + path.length * 4 * 2;
     const buffer = new ArrayBuffer(BUFFER_SIZE);
     const view = new DataView(buffer);
 
@@ -53,7 +80,7 @@ export const packMoveIntent = function(data) {
     view.setInt16(4, targetID, true);
     view.setUint16(6, path.length, true);
 
-    let byteOffset = 8;
+    let byteOffset = MOVE_HEADER_SIZE;
 
     for(let i = 0; i < path.length; i++) {
         const { deltaX, deltaY, tileX, tileY } = path[i];
@@ -74,6 +101,13 @@ export const unpackIntent = function(data) {
     const type = view.getUint8(0);
 
     switch(type) {
+        case ACTION_TYPE.PURCHASE_ENTITY: {
+            const typeID = view.getInt16(1, true);
+            const tileX = view.getInt16(3, true);
+            const tileY = view.getInt16(5, true);
+
+            return createPurchseEntityIntent(tileX, tileY, typeID);
+        }
         case ACTION_TYPE.END_TURN: {
             return createEndTurnIntent();
         }
@@ -90,7 +124,7 @@ export const unpackIntent = function(data) {
             const targetID = view.getInt16(4, true);
             const pathLength = view.getUint16(6, true);
             const path = [];
-            let byteOffset = 8;
+            let byteOffset = MOVE_HEADER_SIZE;
 
             for(let i = 0; i < pathLength; i++) {
                 const deltaX = view.getInt16(byteOffset, true);

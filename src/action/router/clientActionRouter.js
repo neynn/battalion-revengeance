@@ -1,7 +1,7 @@
 import { ExecutionPlan } from "../../../engine/action/executionPlan.js";
 import { ActionRouter } from "../../../engine/action/actionRouter.js";
 import { ACTION_TYPE, GAME_EVENT } from "../../enums.js";
-import { packAttackIntent, packEndTurnIntent, packMoveIntent } from "../packer.js";
+import { packAttackIntent, packEndTurnIntent, packMoveIntent, packPurchaseIntent } from "../packer.js";
 
 export const ClientActionRouter = function() {
     ActionRouter.call(this);
@@ -9,6 +9,18 @@ export const ClientActionRouter = function() {
 
 ClientActionRouter.prototype = Object.create(ActionRouter.prototype);
 ClientActionRouter.prototype.constructor = ClientActionRouter;
+
+ClientActionRouter.prototype.packIntent = function(actionIntent) {
+    const { type, data } = actionIntent;
+
+    switch(type) {
+        case ACTION_TYPE.PURCHASE_ENTITY: return packPurchaseIntent(data);
+        case ACTION_TYPE.MOVE: return packMoveIntent(data);
+        case ACTION_TYPE.ATTACK: return packAttackIntent(data);
+        case ACTION_TYPE.END_TURN: return packEndTurnIntent(data);
+        default: return null;
+    }
+}
 
 ClientActionRouter.prototype.dispatch = function(gameContext, executionPlan, actionIntent) {
     const { world, client } = gameContext;
@@ -21,27 +33,7 @@ ClientActionRouter.prototype.dispatch = function(gameContext, executionPlan, act
             break;
         }
         case ActionRouter.TARGET.OTHER: {
-            const { type } = executionPlan;
-            let packed = null;
-
-            switch(type) {
-                case ACTION_TYPE.PURCHASE_ENTITY: {
-
-                    break;
-                }
-                case ACTION_TYPE.MOVE: {
-                    packed = packMoveIntent(actionIntent.data);
-                    break;
-                }
-                case ACTION_TYPE.ATTACK: {
-                    packed = packAttackIntent(actionIntent.data);
-                    break;
-                }
-                case ACTION_TYPE.END_TURN: {
-                    packed = packEndTurnIntent(actionIntent.data);
-                    break;
-                }
-            }
+            const packed = this.packIntent(actionIntent);
 
             if(packed) {
                 socket.messageRoom(GAME_EVENT.MP_CLIENT_ACTION_INTENT, packed);
