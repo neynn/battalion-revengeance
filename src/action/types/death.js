@@ -11,6 +11,12 @@ export const DeathAction = function(despawn) {
     this._despawn = despawn;
 }
 
+DeathAction.createData = function() {
+    return {
+        "entities": []
+    }
+}
+
 DeathAction.prototype = Object.create(Action.prototype);
 DeathAction.prototype.constructor = DeathAction;
 
@@ -63,19 +69,17 @@ DeathAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, a
     const { world } = gameContext;
     const { entityManager } = world;
     const { entities } = actionIntent;
-    const deadEntities = [];
+    const data = DeathAction.createData();
 
     for(let i = 0; i < entities.length; i++) {
         const entity = entityManager.getEntity(entities[i]);
 
         if(entity) {
-            deadEntities.push(entities[i]);
+            data.entities.push(entities[i]);
         }
     }
 
-    if(deadEntities.length !== 0) {
-        executionPlan.setData({
-            "entities": deadEntities
-        });
+    if(data.entities.length !== 0) {
+        executionPlan.setData(data);
     }
 }

@@ -2,6 +2,49 @@ import { ACTION_TYPE } from "../enums.js";
 import { AttackAction } from "./types/attack.js";
 import { CaptureAction } from "./types/capture.js";
 import { CloakAction } from "./types/cloak.js";
+import { DeathAction } from "./types/death.js";
+import { EndTurnAction } from "./types/endTurn.js";
+
+/*
+    0x00 -> type
+*/
+const END_TURN_HEADER_SIZE = 1;
+
+export const packEndTurnPlan = function(data) {
+    const buffer = new ArrayBuffer(END_TURN_HEADER_SIZE);
+    const view = new DataView(buffer);
+
+    view.setUint8(ACTION_TYPE.END_TURN);
+
+    return buffer;
+}
+
+/*
+    0x00 -> type,
+    0x01 -> count
+*/
+const DEATH_HEADER_SIZE = 3;
+const DEATH_BLOCK_SIZE = 2;
+
+export const packDeathPlan = function(data) {
+    const { entities } = data;
+    const BUFFER_SIZE = DEATH_HEADER_SIZE + DEATH_BLOCK_SIZE * entities.length;
+    const buffer = new ArrayBuffer(BUFFER_SIZE);
+    const view = new DataView(buffer);
+
+    view.setUint8(0, ACTION_TYPE.DEATH);
+    view.setUint16(1, entities.length, true);
+
+    let byteOffset = DEATH_HEADER_SIZE;
+
+    for(let i = 0; i < entities.length; i++) {
+        view.setInt16(byteOffset, entities[i], true);
+
+        byteOffset += DEATH_BLOCK_SIZE;
+    }
+
+    return buffer;
+}
 
 /*
     0x00 -> type,
@@ -85,6 +128,24 @@ export const unpackPlan = function(data) {
     const type = view.getUint8(0);
 
     switch(type) {
+        case ACTION_TYPE.END_TURN: {
+            const plan = EndTurnAction.createData();
+
+            return plan;
+        }
+        case ACTION_TYPE.DEATH: {
+            const plan = DeathAction.createData();
+            const count = view.getUint16(1, true);
+            let byteOffset = DEATH_HEADER_SIZE;
+
+            for(let i = 0; i < count; i++) {
+                plan.entities.push(view.getInt16(byteOffset, true));
+
+                byteOffset += DEATH_BLOCK_SIZE;
+            }
+
+            return plan;
+        }
         case ACTION_TYPE.CLOAK: {
             const plan = CloakAction.createData();
 

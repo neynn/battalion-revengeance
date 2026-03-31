@@ -6,6 +6,12 @@ export const EndTurnAction = function() {
     Action.call(this);
 }
 
+EndTurnAction.createData = function() {
+    return {
+
+    }
+}
+
 EndTurnAction.prototype = Object.create(Action.prototype);
 EndTurnAction.prototype.constructor = EndTurnAction;
 
@@ -47,7 +53,7 @@ EndTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPlan,
     const { currentActor } = turnManager;
 
     if(currentActor !== null) {
-        executionPlan.setData({});
+        executionPlan.setData(EndTurnAction.createData());
         executionPlan.addNext(createStartTurnIntent());
     }
 }
