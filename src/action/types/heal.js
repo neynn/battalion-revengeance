@@ -1,4 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
+import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { SOUND_TYPE } from "../../enums.js";
 import { playEntitySound } from "../../systems/sound.js";
@@ -17,6 +18,14 @@ export const HealAction = function() {
 
     this.duration = 0;
     this.passedTime = 0;
+}
+
+HealAction.createData = function() {
+    return {
+        "entityID": EntityManager.INVALID_ID,
+        "targetID": EntityManager.INVALID_ID,
+        "resolutions": []
+    }
 }
 
 HealAction.prototype = Object.create(Action.prototype);
@@ -110,10 +119,12 @@ HealAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
             executionPlan.addNext(createDeathIntent(deadEntities));
         }
 
-        executionPlan.setData({
-            "entityID": entityID,
-            "targetID": targetID,
-            "resolutions": hitEntities
-        });
+        const data = HealAction.createData();
+
+        data.entityID = entityID;
+        data.targetID = targetID;
+        data.resolutions = hitEntities;
+
+        executionPlan.setData(data);
     }
 }

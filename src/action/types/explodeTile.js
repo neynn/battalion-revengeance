@@ -1,4 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
+import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { WorldMap } from "../../../engine/map/worldMap.js";
 import { TILE_ID } from "../../enums.js";
 import { BattalionMap } from "../../map/battalionMap.js";
@@ -8,6 +9,15 @@ export const ExplodeTileAction = function(despawn) {
     Action.call(this);
 
     this._despawn = despawn;
+}
+
+ExplodeTileAction.createData = function() {
+    return {
+        "entityID": EntityManager.INVALID_ID,
+        "layer": WorldMap.INVALID_LAYER_ID,
+        "tileX": WorldMap.OUT_OF_BOUNDS,
+        "tileY": WorldMap.OUT_OF_BOUNDS
+    }
 }
 
 ExplodeTileAction.prototype = Object.create(Action.prototype);
@@ -35,16 +45,16 @@ ExplodeTileAction.prototype.onEnd = function(gameContext, data) {
 ExplodeTileAction.prototype.execute = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager, mapManager } = world;
-    const { entities, tileX, tileY, layerIndex } = data;
+    const { entityID, tileX, tileY, layer } = data;
     const worldMap = mapManager.getActiveMap();
 
-    for(let i = 0; i < entities.length; i++) {
-        const entity = entityManager.getEntity(entities[i]);
+    if(entityID !== EntityManager.INVALID_ID) {
+        const entity = entityManager.getEntity(entityID);
 
         this._despawn(gameContext, entity);
     }
 
-    worldMap.editTile(layerIndex, tileX, tileY, TILE_ID.NONE);
+    worldMap.editTile(layer, tileX, tileY, TILE_ID.NONE);
 }
 
 ExplodeTileAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
@@ -56,17 +66,19 @@ ExplodeTileAction.prototype.fillExecutionPlan = function(gameContext, executionP
         return;
     }
 
-    const entities = [];
     const entity = world.getEntityAt(tileX, tileY);
+    let entityID = EntityManager.INVALID_ID;
 
     if(entity) {
-        entities.push(entity.getID());
+        entityID = entity.getID();
     }
 
-    executionPlan.setData({
-        "entities": entities,
-        "layerIndex": index,
-        "tileX": tileX,
-        "tileY": tileY
-    });
+    const data = ExplodeTileAction.createData();
+
+    data.entityID = entityID;
+    data.layer = index;
+    data.tileX = tileX;
+    data.tileY = tileY;
+
+    executionPlan.setData(data);
 }

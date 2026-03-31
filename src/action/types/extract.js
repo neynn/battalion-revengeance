@@ -1,9 +1,16 @@
 import { Action } from "../../../engine/action/action.js";
-import { BattalionEntity } from "../../entity/battalionEntity.js";
+import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 
 export const ExtractAction = function() {
     Action.call(this);
+}
+
+ExtractAction.createData = function() {
+    return {
+        "entityID": EntityManager.INVALID_ID,
+        "value": 0
+    }
 }
 
 ExtractAction.prototype = Object.create(Action.prototype);
@@ -36,14 +43,20 @@ ExtractAction.prototype.fillExecutionPlan = function(gameContext, executionPlan,
     const { entityID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
 
-    if(entity && !entity.isDead() && entity.canActAndMove() && entity.hasTrait(TRAIT_TYPE.EXTRACTOR)) {
-        const oreValue = entity.getOreValue(gameContext);
-
-        if(oreValue > 0) {
-            executionPlan.setData({
-                "entityID": entityID,
-                "value": oreValue
-            });
-        }
+    if(!entity || entity.isDead() || !entity.canActAndMove() || !entity.hasTrait(TRAIT_TYPE.EXTRACTOR)) {
+        return;
     }
+
+    const oreValue = entity.getOreValue(gameContext);
+
+    if(oreValue <= 0) {
+        return;
+    }
+
+    const data = ExtractAction.createData();
+
+    data.entityID = entityID;
+    data.value = Math.floor(oreValue);
+
+    executionPlan.setData(data);
 }
