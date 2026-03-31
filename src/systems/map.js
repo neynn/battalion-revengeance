@@ -144,10 +144,31 @@ const ActorFactory = {
 };
 
 const ObjectiveFactory = {
-    createObjective: function(config) {
+    createObjective: function(config, worldMap) {
         switch(config.type) {
-            case OBJECTIVE_TYPE.DEFEAT: return new DefeatObjective(config.target);
-            case OBJECTIVE_TYPE.PROTECT: return new ProtectObjective(config.targets);
+            case OBJECTIVE_TYPE.DEFEAT: {
+                const objective = new DefeatObjective();
+                const targetID = worldMap.getCustomID(config.target);
+
+                if(targetID !== BattalionMap.INVALID_CUSTOM_ID) {
+                    objective.targetID = targetID;
+                }
+
+                return objective;
+            }
+            case OBJECTIVE_TYPE.PROTECT: {
+                const objective = new ProtectObjective();
+
+                for(const targetName of config.targets) {
+                    const targetID = worldMap.getCustomID(targetName);
+
+                    if(targetID !== BattalionMap.INVALID_CUSTOM_ID) {
+                        objective.addTarget(targetID);
+                    }
+                }
+
+                return objective;
+            }
             case OBJECTIVE_TYPE.CAPTURE: return new CaptureObjective(config.tiles);
             case OBJECTIVE_TYPE.DEFEND: return new DefendObjective(config.tiles);
             case OBJECTIVE_TYPE.SURVIVE: return new SurviveObjective(config.turn);
@@ -225,7 +246,7 @@ ClientMatchLoader.prototype.createTeams = function(gameContext, overrides) {
                 const config = this.objectives[objectiveID];
 
                 if(config) {
-                    const objective = ObjectiveFactory.createObjective(config);
+                    const objective = ObjectiveFactory.createObjective(config, this.worldMap);
 
                     team.addObjective(objective);
                 }
@@ -518,7 +539,7 @@ ServerMatchLoader.prototype.createTeams = function(gameContext, overrides) {
                 const config = this.objectives[objectiveID];
 
                 if(config) {
-                    const objective = ObjectiveFactory.createObjective(config);
+                    const objective = ObjectiveFactory.createObjective(config, this.worldMap);
 
                     team.addObjective(objective);
                 }

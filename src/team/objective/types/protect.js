@@ -1,14 +1,18 @@
 import { Objective } from "../objective.js";
 
-export const ProtectObjective = function(targets) {
+export const ProtectObjective = function() {
     Objective.call(this, "PROTECT");
 
-    this.targets = targets;
+    this.targets = [];
     this.status = Objective.STATUS.IDLE;
 }
 
 ProtectObjective.prototype = Object.create(Objective.prototype);
 ProtectObjective.prototype.constructor = ProtectObjective;
+
+ProtectObjective.prototype.addTarget = function(targetID) {
+    this.targets.push(targetID);
+}
 
 ProtectObjective.prototype.onEntityDeath = function(entity) {
     const { customID } = entity;
