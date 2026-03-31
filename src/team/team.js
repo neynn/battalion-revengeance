@@ -1,8 +1,7 @@
-import { createDeathIntent, createUncloakIntent } from "../action/actionHelper.js";
 import { Objective } from "./objective/objective.js";
 import { UnitSurviveObjective } from "./objective/types/unitSurvive.js";
 import { LynchpinObjective } from "./objective/types/lynchpin.js";
-import { SCHEMA_TYPE, TEAM_STAT, TRAIT_TYPE } from "../enums.js";
+import { COMMANDER_TYPE, CURRENCY_TYPE, SCHEMA_TYPE, TEAM_STAT, TRAIT_TYPE } from "../enums.js";
 import { SCORE_BONUS, VICTORY_BONUS } from "../constants.js";
 
 export const Team = function(id) {
@@ -10,8 +9,8 @@ export const Team = function(id) {
     this.allies = [];
     this.entities = [];
     this.color = SCHEMA_TYPE.RED;
-    this.currency = null;
-    this.commander = null;
+    this.currency = CURRENCY_TYPE.NONE;
+    this.commander = COMMANDER_TYPE.NONE;
     this.name = "MISSING_NAME_TEAM";
     this.desc = "MISSING_DESC_TEAM";
     this.cash = 0;
@@ -83,6 +82,14 @@ Team.prototype.setCustomName = function(name) {
     this.flags |= Team.FLAG.CUSTOM_NAME;
 }
 
+Team.prototype.getStatistic = function(statID) {
+    if(statID < 0 || statID >= this.stats.length) {
+        return 0;
+    }
+
+    return this.stats[statID]
+}
+
 Team.prototype.addStatistic = function(statID, value) {
     if(statID < 0 || statID >= this.stats.length) {
         return;
@@ -123,29 +130,24 @@ Team.prototype.reduceCash = function(cash) {
     this.cash -= cash;
 }
 
-Team.prototype.getAdjustedCost = function(cost) {
-    return cost * this.currency.exchangeRate;
+Team.prototype.getAdjustedCost = function(gameContext, cost) {
+    const { typeRegistry } = gameContext;
+    const { exchangeRate } = typeRegistry.getCurrencyType(this.currency);
+
+    return cost * exchangeRate;
 }
 
 Team.prototype.hasEnoughCash = function(cost) {
     return this.cash >= cost;
 }
 
-Team.prototype.loadCommander = function(gameContext, commanderID) {
-    const { typeRegistry } = gameContext;
-    const commanderType = typeRegistry.getCommanderType(commanderID);
-
-    this.commander = commanderType;
-}
-
 Team.prototype.loadAsFaction = function(gameContext, factionID) {
     const { typeRegistry } = gameContext;
     const { color, name, desc, currency } = typeRegistry.getFactionType(factionID);
-    const currencyType = typeRegistry.getCurrencyType(currency);
 
     this.name = name;
     this.desc = desc;
-    this.currency = currencyType;
+    this.currency = currency;
     this.color = color;
 }
 
@@ -259,55 +261,11 @@ Team.prototype.addObjective = function(objective) {
     this.objectives.push(objective);
 }
 
-Team.prototype.endTurn = function(gameContext) {
-    const { world } = gameContext;
-    const { entityManager } = world;
-    const turn = this.stats[TEAM_STAT.ROUNDS_TAKEN];
-
-    for(const entityID of this.entities) {
-        const entity = entityManager.getEntity(entityID);
-
-        if(entity) {
-            entity.onTurnEnd(gameContext);
-        }
-    }
-
-    for(const objective of this.objectives) {
-        objective.onTurnEnd(gameContext, turn, this.id);
-    }
-}
-
 Team.prototype.addGeneratedCash = function(cash) {
     this.cash += cash;
     this.addStatistic(TEAM_STAT.RESOURCES_COLLECTED, cash);
 
     return this.cash;
-}
-
-Team.prototype.startTurn = function(gameContext) {
-    const { world, actionRouter } = gameContext;
-    const { entityManager } = world;
-    const deadEntities = [];
-
-    for(const entityID of this.entities) {
-        const entity = entityManager.getEntity(entityID);
-
-        if(entity) {
-            entity.onTurnStart(gameContext);  
-
-            if(entity.isDead()) {
-                deadEntities.push(entityID);
-            } else {
-                if(entity.hasTrait(TRAIT_TYPE.RADAR)) {
-                    actionRouter.forceEnqueue(gameContext, createUncloakIntent(entityID));
-                }
-            }
-        }
-    }
-
-    if(deadEntities.length !== 0) {
-        actionRouter.forceEnqueue(gameContext, createDeathIntent(deadEntities));
-    }
 }
 
 Team.prototype.addEntity = function(entity) {

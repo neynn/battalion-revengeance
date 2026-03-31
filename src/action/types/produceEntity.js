@@ -69,7 +69,7 @@ ProduceEntityAction.prototype.fillExecutionPlan = function(gameContext, executio
     }
 
     const team = entity.getTeam(gameContext);
-    const adjustedCost = team.getAdjustedCost(cost);
+    const adjustedCost = team.getAdjustedCost(gameContext, cost);
 
     //Entities purchase produced units, not the team.
     if(!entity.canPurchase(gameContext, typeID, adjustedCost)) {

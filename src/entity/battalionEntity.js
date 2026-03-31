@@ -297,9 +297,10 @@ BattalionEntity.prototype.isAllyWith = function(gameContext, entity) {
     return teamManager.isAlly(this.teamID, teamID);
 }
 
-BattalionEntity.prototype.getTerrainDamage = function(gameContext, tileX, tileY) {
+BattalionEntity.prototype.getTerrainDamage = function(gameContext) {
     //Commandos take NO damage from terrains.
-    if(this.hasTrait(TRAIT_TYPE.COMMANDO)) {
+    //Entities also do not take damage their first turn.
+    if(this.turns <= 0 || this.hasTrait(TRAIT_TYPE.COMMANDO)) {
         return 0;
     }
 
@@ -307,8 +308,8 @@ BattalionEntity.prototype.getTerrainDamage = function(gameContext, tileX, tileY)
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
 
-    const startX = tileX;
-    const startY = tileY;
+    const startX = this.tileX;
+    const startY = this.tileY;
     const endX = startX + this.config.dimX;
     const endY = startY + this.config.dimY;
     let totalDamage = 0;
@@ -1315,19 +1316,11 @@ BattalionEntity.prototype.setLastAttacker = function(entityID) {
     }
 }
 
-BattalionEntity.prototype.onTurnStart = function(gameContext) {
+BattalionEntity.prototype.onTurnStart = function() {
     this.clearFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ACTED);
     this.clearFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
     this.setFlag(BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT | BattalionEntity.FLAG.IS_TURN);
     this.clearLastAttacker();
-
-    //Entities are immune to taking damage/proccing on their first turn.
-    if(this.turns > 0) {
-        const terrainDamage = this.getTerrainDamage(gameContext, this.tileX, this.tileY);
-        const health = Math.floor(this.health - terrainDamage);
-
-        this.setHealth(health);
-    }
 } 
 
 BattalionEntity.prototype.onTurnEnd = function() {

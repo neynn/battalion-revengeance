@@ -81,10 +81,7 @@ export const getTurnData = function(gameContext) {
     };
 
     if(currentActor) {
-        const team = currentActor.getTeam(gameContext);
-        const teamID = team.getID();
-
-        turnData.team = teamID;
+        turnData.team = currentActor.teamID;
     }
 
     return turnData;

@@ -176,7 +176,7 @@ ClientMatchLoader.prototype.createCustomSchema = function(gameContext, team, col
 }
 
 ClientMatchLoader.prototype.createTeams = function(gameContext, overrides) {
-    const { typeRegistry, teamManager } = gameContext;
+    const { teamManager } = gameContext;
 
     for(let i = 0; i < this.teams.length; i++) {
         const { 
@@ -191,9 +191,7 @@ ClientMatchLoader.prototype.createTeams = function(gameContext, overrides) {
         const team = teamManager.createTeam(id);
 
         if(commander !== null) {
-            const commanderID = COMMANDER_TYPE[commander] ?? COMMANDER_TYPE.NONE;
-
-            team.loadCommander(gameContext, commanderID);
+            team.commander = COMMANDER_TYPE[commander] ?? COMMANDER_TYPE.NONE;
         }
 
         if(faction !== null) {
@@ -204,11 +202,6 @@ ClientMatchLoader.prototype.createTeams = function(gameContext, overrides) {
 
         if(color !== null) {
             team.color = SCHEMA_TYPE[color] ?? SCHEMA_TYPE.RED;
-        }
-
-        //Assume that currency is always not null after this point.
-        if(!team.currency) {
-            team.currency = typeRegistry.getCurrencyType(CURRENCY_TYPE.NONE);
         }
 
         //The map may have a preset cash for each team.
@@ -491,9 +484,7 @@ ServerMatchLoader.prototype.createTeams = function(gameContext, overrides) {
         const team = teamManager.createTeam(id);
 
         if(commander !== null) {
-            const commanderID = COMMANDER_TYPE[commander] ?? COMMANDER_TYPE.NONE;
-
-            team.loadCommander(gameContext, commanderID);
+            team.commander = COMMANDER_TYPE[commander] ?? COMMANDER_TYPE.NONE;
         }
 
         if(faction !== null) {
@@ -504,11 +495,6 @@ ServerMatchLoader.prototype.createTeams = function(gameContext, overrides) {
 
         if(color !== null) {
             team.color = SCHEMA_TYPE[color] ?? SCHEMA_TYPE.RED;
-        }
-
-        //Assume that currency is always not null after this point.
-        if(!team.currency) {
-            team.currency = typeRegistry.getCurrencyType(CURRENCY_TYPE.NONE);
         }
 
         //The map may have a preset cash for each team.

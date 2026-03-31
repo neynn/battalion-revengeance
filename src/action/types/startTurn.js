@@ -1,5 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
-import { TEAM_STAT } from "../../enums.js";
+import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { createDeathIntent, createUncloakIntent } from "../actionHelper.js";
 
 export const StartTurnAction = function() {
     Action.call(this);
@@ -18,13 +19,29 @@ StartTurnAction.prototype.onEnd = function(gameContext, data) {
 
 StartTurnAction.prototype.execute = function(gameContext, data) {
     const { world, teamManager } = gameContext;
-    const { turnManager, eventHandler, mapManager } = world;
-    const { teamID } = data;
-    const team = teamManager.getTeam(teamID);
+    const { entityManager, turnManager, eventHandler, mapManager } = world;
+    const { teamID, resolutions } = data;
     const actor = teamManager.findActorByTeam(gameContext, teamID);
     const worldMap = mapManager.getActiveMap();
 
-    team.startTurn(gameContext);
+    const team = teamManager.getTeam(teamID);
+    const { entities } = team;
+
+    for(const entityID of entities) {
+        const entity = entityManager.getEntity(entityID);
+
+        if(entity) {
+            entity.onTurnStart();  
+        }
+    }
+
+    console.log(resolutions)
+    for(const { id, health } of resolutions) {
+        const entity = entityManager.getEntity(id);
+
+        entity.setHealth(health);
+    }
+
     turnManager.setCurrentActor(gameContext, actor.getID());
     eventHandler.checkEventTriggers(gameContext);
 
@@ -55,15 +72,47 @@ StartTurnAction.prototype.execute = function(gameContext, data) {
 
 StartTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
-    const { turnManager } = world;
+    const { turnManager, entityManager } = world;
     const nextActorID = turnManager.getNextActor();
 
-    if(nextActorID !== null) {
-        const actor = turnManager.getActor(nextActorID);
-        const { teamID } = actor;
-
-        executionPlan.setData({
-            "teamID": teamID
-        });
+    if(nextActorID === null) {
+        return;
     }
+
+    const actor = turnManager.getActor(nextActorID);
+    const team = actor.getTeam(gameContext);
+    const { entities } = team;
+    const deadEntities = [];
+    const resolutions = [];
+
+    for(const entityID of entities) {
+        const entity = entityManager.getEntity(entityID);
+
+        if(entity) {
+            const damage = entity.getTerrainDamage(gameContext);
+            const health = entity.getHealthAfterDamage(damage);
+
+            if(health <= 0) {
+                deadEntities.push(entityID);
+            } else if(entity.hasTrait(TRAIT_TYPE.RADAR)) {
+                executionPlan.addNext(createUncloakIntent(entityID));
+            }
+
+            if(damage !== 0) {
+                resolutions.push({
+                    "id": entityID,
+                    "health": health
+                });
+            }
+        }
+    }
+
+    if(deadEntities.length !== 0) {
+        executionPlan.addNext(createDeathIntent(deadEntities));
+    }
+
+    executionPlan.setData({
+        "teamID": team.getID(),
+        "resolutions": resolutions
+    });
 }

@@ -54,9 +54,8 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
 
     const { currentActor } = turnManager;
     const { teamID } = currentActor;
-    const team = teamManager.getTeam(teamID);
     
-    if(!team || !building.isOwnedBy(teamID)) {
+    if(!building.isOwnedBy(teamID)) {
         return;
     }
 
@@ -72,7 +71,8 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
     }
 
     const { health, cost } = typeRegistry.getEntityType(typeID);
-    const adjustedCost = team.getAdjustedCost(cost);
+    const team = teamManager.getTeam(teamID);
+    const adjustedCost = team.getAdjustedCost(gameContext, cost);
 
     if(!team.hasEnoughCash(adjustedCost)) {
         return;
