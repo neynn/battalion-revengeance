@@ -24,11 +24,13 @@ export const isClientTurn = function(gameContext, messengerID) {
     return false;
 }
 
-export const mpIsPlayerIntentValid = function(gameContext, type, data, clientID) {
+export const mpIsPlayerIntentValid = function(gameContext, intent, clientID) {
     if(!isClientTurn(gameContext, clientID)) {
         return false;
     } 
 
+    const { type, data } = intent;
+    
     switch(type) {
         case ACTION_TYPE.PURCHASE_ENTITY: {
             //Does the building at x, y belong to the team?

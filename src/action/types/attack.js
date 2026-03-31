@@ -1,4 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
+import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ATTACK_TYPE, COMMAND_TYPE, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { playEntitySound } from "../../systems/sound.js";
@@ -49,6 +50,16 @@ AttackAction.FLAG = {
     UNCLOAK: 1 << 2,
     BEWEGUNGSKRIEG: 1 << 3
 };
+
+AttackAction.createData = function() {
+    return {
+        "attackerID": EntityManager.INVALID_ID,
+        "targetID": EntityManager.INVALID_ID,
+        "resolutions": [],
+        "resourceDamage": 0,
+        "flags": AttackAction.FLAG.NONE
+    }
+}
 
 AttackAction.prototype = Object.create(Action.prototype);
 AttackAction.prototype.constructor = AttackAction;
@@ -197,12 +208,14 @@ AttackAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, 
 
         executionPlan.addNext(createAttackRequest(targetID, entityID, COMMAND_TYPE.COUNTER));
 
-        executionPlan.setData({
-            "attackerID": entityID,
-            "targetID": targetID,
-            "resolutions": hitEntities,
-            "resourceDamage": Math.floor(resolver.resourceDamage),
-            "flags": flags
-        });
+        const data = AttackAction.createData();
+
+        data.attackerID = entityID;
+        data.targetID = targetID;
+        data.resolutions = hitEntities;
+        data.resourceDamage = Math.floor(resolver.resourceDamage);
+        data.flags = flags;
+
+        executionPlan.setData(data);
     }
 }

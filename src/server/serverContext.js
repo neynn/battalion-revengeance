@@ -6,10 +6,10 @@ import { GAME_EVENT } from "../enums.js";
 import { createServerMapLoader } from "../systems/map.js";
 import { createStartTurnIntent } from "../action/actionHelper.js";
 import { mpIsPlayerIntentValid } from "../action/actionValidator.js";
-import { ActionIntent } from "../../engine/action/actionIntent.js";
 import { MapMaster } from "../map/mapMaster.js";
 import { getTurnData } from "../systems/save.js";
 import { ServerActionRouter } from "../action/router/serverActionRouter.js";
+import { unpackIntent } from "../action/packer.js";
 
 export const ServerGameContext = function(serverApplication, id) {
     Room.call(this, id);
@@ -172,12 +172,13 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
             break;
         }
         case GAME_EVENT.MP_CLIENT_ACTION_INTENT: {
-            const { type, data } = payload;
-
             if(this.state === ServerGameContext.STATE.STARTED) {
-                if(mpIsPlayerIntentValid(this, type, data, messengerID)) {
-                    const intent = new ActionIntent(type, data);
+                const arrayBuffer = payload.buffer.slice(payload.byteOffset, payload.byteOffset + payload.byteLength);
+                const intent = unpackIntent(arrayBuffer);
 
+                console.log("RECEIVED BYTES:", arrayBuffer.byteLength);
+
+                if(intent && mpIsPlayerIntentValid(this, intent, messengerID)) {
                     this.actionRouter.forceEnqueue(this, intent);
                 }
             }

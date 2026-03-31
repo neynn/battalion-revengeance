@@ -1,6 +1,7 @@
 import { ExecutionPlan } from "../../../engine/action/executionPlan.js";
 import { ActionRouter } from "../../../engine/action/actionRouter.js";
 import { ACTION_TYPE, GAME_EVENT } from "../../enums.js";
+import { packAttackIntent, packEndTurnIntent, packMoveIntent } from "../packer.js";
 
 export const ClientActionRouter = function() {
     ActionRouter.call(this);
@@ -21,19 +22,31 @@ ClientActionRouter.prototype.dispatch = function(gameContext, executionPlan, act
         }
         case ActionRouter.TARGET.OTHER: {
             const { type } = executionPlan;
+            let packed = null;
 
             switch(type) {
-                case ACTION_TYPE.PURCHASE_ENTITY:
-                case ACTION_TYPE.MOVE:
-                case ACTION_TYPE.ATTACK:
+                case ACTION_TYPE.PURCHASE_ENTITY: {
+
+                    break;
+                }
+                case ACTION_TYPE.MOVE: {
+                    packed = packMoveIntent(actionIntent.data);
+                    break;
+                }
+                case ACTION_TYPE.ATTACK: {
+                    packed = packAttackIntent(actionIntent.data);
+                    break;
+                }
                 case ACTION_TYPE.END_TURN: {
-                    socket.messageRoom(GAME_EVENT.MP_CLIENT_ACTION_INTENT, actionIntent.toJSON());
+                    packed = packEndTurnIntent(actionIntent.data);
                     break;
                 }
-                default: {
-                    console.log("Unsupported ActionType!");
-                    break;
-                }
+            }
+
+            if(packed) {
+                socket.messageRoom(GAME_EVENT.MP_CLIENT_ACTION_INTENT, packed);
+            } else {
+                console.log("Unsupported ActionType!");
             }
 
             break;
