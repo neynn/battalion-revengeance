@@ -324,7 +324,7 @@ BattalionEntity.prototype.getTerrainDamage = function(gameContext) {
         }
     }
 
-    return totalDamage;
+    return Math.floor(totalDamage);
 }
 
 BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType, tileX, tileY) {

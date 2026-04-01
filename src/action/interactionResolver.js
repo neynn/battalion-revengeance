@@ -1,3 +1,11 @@
+export const createEntityResolution = function(entityID, delta, health) {
+    return {
+        "entityID": entityID,
+        "delta": delta,
+        "health": health
+    }
+}
+
 export const InteractionResolver = function() {
     this.hitEntities = [];
     this.deadEntities = [];
@@ -18,11 +26,7 @@ InteractionResolver.prototype.addAttack = function(entity, damage) {
 }
 
 InteractionResolver.prototype.add = function(entityID, delta, health) {
-    this.hitEntities.push({
-        "entityID": entityID,
-        "delta": delta,
-        "health": health
-    });
+    this.hitEntities.push(createEntityResolution(entityID, delta, health));
 }
 
 InteractionResolver.prototype.getDeadEntities = function() {

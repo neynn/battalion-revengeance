@@ -1,5 +1,6 @@
 import { ACTION_TYPE } from "../enums.js";
 import { createStep } from "../systems/pathfinding.js";
+import { createEntityResolution } from "./interactionResolver.js";
 import { ENTITY_RESOLUTION_SIZE, ENTITY_SNAPSHOT_SIZE, MOVE_STEP_SIZE, packEntitySnapshot, unpackEntitySnapshot } from "./packer_constants.js";
 import { AttackAction } from "./types/attack.js";
 import { CaptureAction } from "./types/capture.js";
@@ -13,6 +14,39 @@ import { MineTriggerAction } from "./types/mineTrigger.js";
 import { MoveAction } from "./types/move.js";
 import { ProduceEntityAction } from "./types/produceEntity.js";
 import { PurchaseEntityAction } from "./types/purchaseEntity.js";
+import { StartTurnAction } from "./types/startTurn.js";
+
+/*
+    0x00 -> type,
+    0x01 -> teamID,
+    0x02 -> count
+*/
+const START_TURN_HEADER_SIZE = 4;
+
+export const packStartTurnPlan = function(data) {
+    const { teamID, resolutions } = data;
+    const BUFFER_SIZE = START_TURN_HEADER_SIZE + ENTITY_RESOLUTION_SIZE * resolutions.length;
+    const buffer = new ArrayBuffer(BUFFER_SIZE);
+    const view = new DataView(buffer);
+    
+    view.setUint8(0, ACTION_TYPE.START_TURN);
+    view.setInt8(1, teamID);
+    view.setUint16(2, resolutions.length, true);
+
+    let byteOffset = START_TURN_HEADER_SIZE;
+
+    for(let i = 0; i < resolutions.length; i++) {
+        const { entityID, delta, health } = resolutions[i];
+
+        view.setInt16(byteOffset, entityID, true);
+        view.setInt16(byteOffset + 2, delta, true);
+        view.setUint16(byteOffset + 4, health, true);
+
+        byteOffset += ENTITY_RESOLUTION_SIZE;
+    }
+
+    return buffer;
+}
 
 /*
     0x00 -> type,
@@ -342,6 +376,26 @@ export const unpackPlan = function(data) {
     const type = view.getUint8(0);
 
     switch(type) {
+        case ACTION_TYPE.START_TURN: {
+            const plan = StartTurnAction.createData();
+
+            plan.teamID = view.getInt8(1);
+            
+            const count = view.getUint16(2, true);
+            let byteOffset = START_TURN_HEADER_SIZE;
+
+            for(let i = 0; i < count; i++) {
+                plan.resolutions.push(createEntityResolution(
+                    view.getInt16(byteOffset, true),
+                    view.getInt16(byteOffset + 2, true),
+                    view.getUint16(byteOffset + 4, true)
+                ));
+
+                byteOffset += ENTITY_RESOLUTION_SIZE;
+            }
+
+            return plan;
+        }
         case ACTION_TYPE.PURCHASE_ENTITY: {
             const plan = PurchaseEntityAction.createData();
 
@@ -400,15 +454,15 @@ export const unpackPlan = function(data) {
             plan.entityID = view.getInt16(1, true);
             plan.targetID = view.getInt16(3, true);
 
-            const length = view.getUint16(5, true);
+            const count = view.getUint16(5, true);
             let byteOffset = HEAL_HEADER_SIZE;
 
-            for(let i = 0; i < length; i++) {
-                plan.resolutions.push({
-                    "entityID": view.getInt16(byteOffset, true),
-                    "delta": view.getInt16(byteOffset + 2, true),
-                    "health": view.getUint16(byteOffset + 4, true)
-                });
+            for(let i = 0; i < count; i++) {
+                plan.resolutions.push(createEntityResolution(
+                    view.getInt16(byteOffset, true),
+                    view.getInt16(byteOffset + 2, true),
+                    view.getUint16(byteOffset + 4, true)
+                ));
 
                 byteOffset += ENTITY_RESOLUTION_SIZE;
             }
@@ -479,11 +533,11 @@ export const unpackPlan = function(data) {
             let byteOffset = ATTACK_HEADER_SIZE;
 
             for(let i = 0; i < length; i++) {
-                plan.resolutions.push({
-                    "entityID": view.getInt16(byteOffset, true),
-                    "delta": view.getInt16(byteOffset + 2, true),
-                    "health": view.getUint16(byteOffset + 4, true)
-                });
+                plan.resolutions.push(createEntityResolution(
+                    view.getInt16(byteOffset, true),
+                    view.getInt16(byteOffset + 2, true),
+                    view.getUint16(byteOffset + 4, true)
+                ));
 
                 byteOffset += ENTITY_RESOLUTION_SIZE;
             }

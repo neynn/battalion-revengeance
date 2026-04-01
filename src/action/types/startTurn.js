@@ -1,9 +1,18 @@
 import { Action } from "../../../engine/action/action.js";
 import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { TeamManager } from "../../team/teamManager.js";
 import { createDeathIntent, createUncloakIntent } from "../actionHelper.js";
+import { createEntityResolution } from "../interactionResolver.js";
 
 export const StartTurnAction = function() {
     Action.call(this);
+}
+
+StartTurnAction.createData = function() {
+    return {
+        "teamID": TeamManager.INVALID_ID,
+        "resolutions": []
+    }
 }
 
 StartTurnAction.prototype = Object.create(Action.prototype);
@@ -35,8 +44,8 @@ StartTurnAction.prototype.execute = function(gameContext, data) {
         }
     }
 
-    for(const { id, health } of resolutions) {
-        const entity = entityManager.getEntity(id);
+    for(const { entityID, delta, health } of resolutions) {
+        const entity = entityManager.getEntity(entityID);
 
         entity.setHealth(health);
     }
@@ -98,10 +107,7 @@ StartTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPla
             }
 
             if(damage !== 0) {
-                resolutions.push({
-                    "id": entityID,
-                    "health": health
-                });
+                resolutions.push(createEntityResolution(entityID, damage, health));
             }
         }
     }
@@ -110,8 +116,10 @@ StartTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPla
         executionPlan.addNext(createDeathIntent(deadEntities));
     }
 
-    executionPlan.setData({
-        "teamID": team.getID(),
-        "resolutions": resolutions
-    });
+    const data = StartTurnAction.createData();
+
+    data.teamID = team.getID();
+    data.resolutions = resolutions;
+
+    executionPlan.setData(data);
 }
