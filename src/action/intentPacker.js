@@ -1,7 +1,26 @@
 import { ACTION_TYPE, COMMAND_TYPE } from "../enums.js";
 import { createStep } from "../systems/pathfinding.js";
-import { createAttackRequest, createEndTurnIntent, createMoveRequest, createPurchseEntityIntent } from "./actionHelper.js";
+import { createAttackRequest, createEndTurnIntent, createHealRequest, createMoveRequest, createPurchseEntityIntent } from "./actionHelper.js";
 import { MOVE_STEP_SIZE } from "./packer_constants.js";
+
+/*
+    0x00 -> type,
+    0x01 -> entityID,
+    0x03 -> targetID
+*/
+const HEAL_HEADER_SIZE = 5;
+
+export const packHealIntent = function(data) {
+    const { entityID, targetID } = data;
+    const buffer = new ArrayBuffer(HEAL_HEADER_SIZE);
+    const view = new DataView(buffer);
+
+    view.setUint8(0, ACTION_TYPE.HEAL);
+    view.setInt16(1, entityID, true);
+    view.setInt16(3, targetID, true);
+
+    return buffer;
+}
 
 /*
     0x00 -> type
@@ -97,7 +116,6 @@ export const packMoveIntent = function(data) {
     return buffer;
 }
 
-//TODO(neyn): add heal intent!!!
 export const isIntentValid = function(gameContext, intent) {
     const { world, teamManager } = gameContext;
     const { currentTeam } = teamManager;
@@ -149,6 +167,12 @@ export const unpackIntent = function(data) {
         }
         case ACTION_TYPE.END_TURN: {
             return createEndTurnIntent();
+        }
+        case ACTION_TYPE.HEAL: {
+            const entityID = view.getInt16(1, true);
+            const targetID = view.getInt16(3, true);
+
+            return createHealRequest(entityID, targetID);
         }
         case ACTION_TYPE.ATTACK: {
             const entityID = view.getInt16(1, true);
