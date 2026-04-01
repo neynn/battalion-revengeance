@@ -1,4 +1,7 @@
+import { ExecutionPlan } from "../../engine/action/executionPlan.js";
+import { EntityManager } from "../../engine/entity/entityManager.js";
 import { ACTION_TYPE } from "../enums.js";
+import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 import { createStep } from "../systems/pathfinding.js";
 import { createEntityResolution } from "./interactionResolver.js";
 import { ENTITY_RESOLUTION_SIZE, ENTITY_SNAPSHOT_SIZE, MOVE_STEP_SIZE, packEntitySnapshot, unpackEntitySnapshot } from "./packer_constants.js";
@@ -7,6 +10,7 @@ import { CaptureAction } from "./types/capture.js";
 import { CloakAction } from "./types/cloak.js";
 import { DeathAction } from "./types/death.js";
 import { EndTurnAction } from "./types/endTurn.js";
+import { EntitySpawnAction } from "./types/entitySpawn.js";
 import { ExplodeTileAction } from "./types/explodeTile.js";
 import { ExtractAction } from "./types/extract.js";
 import { HealAction } from "./types/heal.js";
@@ -15,6 +19,46 @@ import { MoveAction } from "./types/move.js";
 import { ProduceEntityAction } from "./types/produceEntity.js";
 import { PurchaseEntityAction } from "./types/purchaseEntity.js";
 import { StartTurnAction } from "./types/startTurn.js";
+import { UncloakAction } from "./types/uncloak.js";
+
+/*
+    0x00 -> type,
+    0x01 -> entity_count
+    0x02 -> mine_count,
+    0x03 -> entityID
+*/
+const UNCLOAK_HEADER_SIZE = 5;
+
+export const packUncloakPlan = function(data) {
+    const { entityID, entities, mines } = data;
+    const BUFFER_SIZE = UNCLOAK_HEADER_SIZE + 2 * entities.length + 4 * mines.length;
+    const buffer = new ArrayBuffer(BUFFER_SIZE);
+    const view = new DataView(buffer);
+
+    view.setUint8(0, ACTION_TYPE.UNCLOAK);
+    view.setUint8(1, entities.length);
+    view.setUint8(2, mines.length);
+    view.setInt16(3, entityID, true);
+
+    let byteOffset = UNCLOAK_HEADER_SIZE;
+
+    for(let i = 0; i < entities.length; i++) {
+        view.setInt16(byteOffset, entities[i], true);
+
+        byteOffset += 2;
+    }
+
+    for(let i = 0; i < mines.length; i++) {
+        const { x, y } = mines[i];
+
+        view.setInt16(byteOffset, x, true);
+        view.setInt16(byteOffset + 2, y, true);
+
+        byteOffset += 4;
+    }
+
+    return buffer;
+}
 
 /*
     0x00 -> type,
@@ -242,7 +286,7 @@ export const packEntitySpawnPlan = function(data) {
     view.setUint8(0, ACTION_TYPE.ENTITY_SPAWN);
     view.setUint16(1, spawns.length, true);
 
-    let byteOffset = END_TURN_HEADER_SIZE;
+    let byteOffset = ENTITY_SPAWN_HEADER_SIZE;
 
     for(let i = 0; i < spawns.length; i++) {
         const { id, snapshot } = spawns[i];
@@ -263,7 +307,7 @@ export const packEndTurnPlan = function(data) {
     const buffer = new ArrayBuffer(END_TURN_HEADER_SIZE);
     const view = new DataView(buffer);
 
-    view.setUint8(ACTION_TYPE.END_TURN);
+    view.setUint8(0, ACTION_TYPE.END_TURN);
 
     return buffer;
 }
@@ -371,21 +415,53 @@ export const packAttackPlan = function(data) {
     return buffer;
 }
 
-export const unpackPlan = function(data) {
-    const view = new DataView(data);
+export const unpackPlan = function(buffer) {
+    const view = new DataView(buffer);
     const type = view.getUint8(0);
+    const plan = new ExecutionPlan(-1, type);
+    let data = null;
 
     switch(type) {
-        case ACTION_TYPE.START_TURN: {
-            const plan = StartTurnAction.createData();
+        case ACTION_TYPE.UNCLOAK: {
+            data = UncloakAction.createData();
 
-            plan.teamID = view.getInt8(1);
+            const entityCount = view.getUint8(1);
+            const mineCount = view.getUint8(2);
+            
+            data.entityID = view.getInt16(3, true);
+
+            let byteOffset = UNCLOAK_HEADER_SIZE;
+
+            for(let i = 0; i < entityCount; i++) {
+                data.entities.push(view.getInt16(byteOffset, true));
+                
+                byteOffset += 2;
+            }
+
+            for(let i = 0; i < mineCount; i++) {
+                const tileX = view.getInt16(byteOffset, true);
+                const tileY = view.getInt16(byteOffset + 2, true);
+
+                data.mines.push({
+                    "x": tileX,
+                    "y": tileY
+                });
+
+                byteOffset += 4;
+            }
+
+            break;
+        }
+        case ACTION_TYPE.START_TURN: {
+            data = StartTurnAction.createData();
+
+            data.teamID = view.getInt8(1);
             
             const count = view.getUint16(2, true);
             let byteOffset = START_TURN_HEADER_SIZE;
 
             for(let i = 0; i < count; i++) {
-                plan.resolutions.push(createEntityResolution(
+                data.resolutions.push(createEntityResolution(
                     view.getInt16(byteOffset, true),
                     view.getInt16(byteOffset + 2, true),
                     view.getUint16(byteOffset + 4, true)
@@ -394,34 +470,27 @@ export const unpackPlan = function(data) {
                 byteOffset += ENTITY_RESOLUTION_SIZE;
             }
 
-            return plan;
+            break;
         }
         case ACTION_TYPE.PURCHASE_ENTITY: {
-            const plan = PurchaseEntityAction.createData();
-
-            plan.nextID = view.getInt16(1, true);
-            plan.cost = view.getUint16(3, true);
-
-            unpackEntitySnapshot(plan.snapshot, view, 5);
-
-            return plan;
+            data = PurchaseEntityAction.createData();
+            data.nextID = view.getInt16(1, true);
+            data.cost = view.getUint16(3, true);
+            unpackEntitySnapshot(data.snapshot, view, 5);
+            break;
         }
         case ACTION_TYPE.PRODUCE_ENTITY: {
-            const plan = ProduceEntityAction.createData();
-
-            plan.entityID = view.getInt16(1, true);
-            plan.nextID = view.getInt16(3, true);
-            plan.cost = view.getUint16(5, true);
-
-            unpackEntitySnapshot(plan.snapshot, view, 7);
-
-            return plan;
+            data = ProduceEntityAction.createData();
+            data.entityID = view.getInt16(1, true);
+            data.nextID = view.getInt16(3, true);
+            data.cost = view.getUint16(5, true);
+            unpackEntitySnapshot(data.snapshot, view, 7);
+            break;
         }
         case ACTION_TYPE.MOVE: {
-            const plan = MoveAction.createData();
-
-            plan.flags = view.getUint8(1);
-            plan.entityID = view.getInt16(2, true);
+            data = MoveAction.createData();
+            data.flags = view.getUint8(1);
+            data.entityID = view.getInt16(2, true);
 
             const count = view.getUint16(4, true);
             let byteOffset = MOVE_HEADER_SIZE;
@@ -432,33 +501,30 @@ export const unpackPlan = function(data) {
                 const tileX = view.getInt16(byteOffset + 2, true);
                 const tileY = view.getInt16(byteOffset + 4, true);
 
-                plan.path.push(createStep(deltaX, deltaY, tileX, tileY));
+                data.path.push(createStep(deltaX, deltaY, tileX, tileY));
                 byteOffset += MOVE_STEP_SIZE;
             }
 
-            return plan;
+            break;
         }
         case ACTION_TYPE.MINE_TRIGGER: {
-            const plan = MineTriggerAction.createData();
-
-            plan.entityID = view.getInt16(1, true);
-            plan.health = view.getUint16(3, true);
-            plan.tileX = view.getInt16(5, true);
-            plan.tileY = view.getInt16(7, true);
-
-            return plan;
+            data = MineTriggerAction.createData();
+            data.entityID = view.getInt16(1, true);
+            data.health = view.getUint16(3, true);
+            data.tileX = view.getInt16(5, true);
+            data.tileY = view.getInt16(7, true);
+            break;
         }
         case ACTION_TYPE.HEAL: {
-            const plan = HealAction.createData();
-
-            plan.entityID = view.getInt16(1, true);
-            plan.targetID = view.getInt16(3, true);
+            data = HealAction.createData();
+            data.entityID = view.getInt16(1, true);
+            data.targetID = view.getInt16(3, true);
 
             const count = view.getUint16(5, true);
             let byteOffset = HEAL_HEADER_SIZE;
 
             for(let i = 0; i < count; i++) {
-                plan.resolutions.push(createEntityResolution(
+                data.resolutions.push(createEntityResolution(
                     view.getInt16(byteOffset, true),
                     view.getInt16(byteOffset + 2, true),
                     view.getUint16(byteOffset + 4, true)
@@ -467,73 +533,83 @@ export const unpackPlan = function(data) {
                 byteOffset += ENTITY_RESOLUTION_SIZE;
             }
 
-            return plan;
+            break;
         }
         case ACTION_TYPE.EXTRACT: {
-            const plan = ExtractAction.createData();
-
-            plan.entityID = view.getInt16(1, true);
-            plan.value = view.getUint16(3, true);
-
-            return plan;
+            data = ExtractAction.createData();
+            data.entityID = view.getInt16(1, true);
+            data.value = view.getUint16(3, true);
+            break;
         }
         case ACTION_TYPE.EXPLODE_TILE: {
-            const plan = ExplodeTileAction.createData();
+            data = ExplodeTileAction.createData();
+            data.layer = view.getUint8(1);
+            data.tileX = view.getInt16(2, true);
+            data.tileY = view.getInt16(4, true);
+            data.entityID = view.getInt16(6, true);
+            break;
+        }
+        case ACTION_TYPE.ENTITY_SPAWN: {
+            data = EntitySpawnAction.createData();
+            
+            const count = view.getUint16(1, true);
+            let byteOffset = ENTITY_SPAWN_HEADER_SIZE;
 
-            plan.layer = view.getUint8(1);
-            plan.tileX = view.getInt16(2, true);
-            plan.tileY = view.getInt16(4, true);
-            plan.entityID = view.getInt16(6, true);
+            for(let i = 0; i < count; i++) {
+                const entityID = view.getInt16(byteOffset, true);
+                const snapshot = createEntitySnapshot();
 
-            return plan;
+                byteOffset = unpackEntitySnapshot(snapshot, view, byteOffset + 2);
+                data.spawns.push({
+                    "id": entityID,
+                    "snapshot": snapshot
+                });
+            }
+
+            break;
         }
         case ACTION_TYPE.END_TURN: {
-            const plan = EndTurnAction.createData();
-
-            return plan;
+            data = EndTurnAction.createData();
+            break;
         }
         case ACTION_TYPE.DEATH: {
-            const plan = DeathAction.createData();
+            data = DeathAction.createData();
+
             const count = view.getUint16(1, true);
             let byteOffset = DEATH_HEADER_SIZE;
 
             for(let i = 0; i < count; i++) {
-                plan.entities.push(view.getInt16(byteOffset, true));
+                data.entities.push(view.getInt16(byteOffset, true));
 
                 byteOffset += DEATH_BLOCK_SIZE;
             }
 
-            return plan;
+            break;
         }
         case ACTION_TYPE.CLOAK: {
-            const plan = CloakAction.createData();
-
-            plan.entityID = view.getInt16(1, true);
-
-            return plan;
+            data = CloakAction.createData();
+            data.entityID = view.getInt16(1, true);
+            break;
         }
         case ACTION_TYPE.CAPTURE: {
-            const plan = CaptureAction.createData();
-
-            plan.entityID = view.getInt16(1, true);
-            plan.targetX = view.getInt16(3, true);
-            plan.targetY = view.getInt16(5, true);
-
-            return plan;
+            data = CaptureAction.createData();
+            data.entityID = view.getInt16(1, true);
+            data.targetX = view.getInt16(3, true);
+            data.targetY = view.getInt16(5, true);
+            break;
         }
         case ACTION_TYPE.ATTACK: {
-            const plan = AttackAction.createData();
-
-            plan.flags = view.getUint8(1);
-            plan.attackerID = view.getInt16(2, true);
-            plan.targetID = view.getInt16(4, true);
-            plan.resourceDamage = view.getInt32(6, true);
+            data = AttackAction.createData();
+            data.flags = view.getUint8(1);
+            data.attackerID = view.getInt16(2, true);
+            data.targetID = view.getInt16(4, true);
+            data.resourceDamage = view.getInt32(6, true);
             
             const length = view.getUint16(10, true);
             let byteOffset = ATTACK_HEADER_SIZE;
 
             for(let i = 0; i < length; i++) {
-                plan.resolutions.push(createEntityResolution(
+                data.resolutions.push(createEntityResolution(
                     view.getInt16(byteOffset, true),
                     view.getInt16(byteOffset + 2, true),
                     view.getUint16(byteOffset + 4, true)
@@ -542,9 +618,11 @@ export const unpackPlan = function(data) {
                 byteOffset += ENTITY_RESOLUTION_SIZE;
             }
 
-            return plan;
+            break;
         }
     }
 
-    return null;
+    plan.setData(data);
+
+    return plan;
 }

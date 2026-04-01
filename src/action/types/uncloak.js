@@ -1,4 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
+import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { playUncloakSound } from "../../systems/sound.js";
 import { UncloakTween } from "../../tween/uncloakTween.js";
@@ -6,6 +7,14 @@ import { createTrackingIntent } from "../actionHelper.js";
 
 export const UncloakAction = function() {
     Action.call(this);
+}
+
+UncloakAction.createData = function() {
+    return {
+        "entityID": EntityManager.INVALID_ID,
+        "entities": [],
+        "mines": []
+    }
 }
 
 UncloakAction.prototype = Object.create(Action.prototype);
@@ -44,20 +53,20 @@ UncloakAction.prototype.onEnd = function(gameContext, data) {
 }
 
 UncloakAction.prototype.execute = function(gameContext, data) {
-    const { world, teamManager } = gameContext;
+    const { world } = gameContext;
     const { entityManager, mapManager } = world;
-    const { entities, mines, teamID } = data;
+    const { entities, mines, entityID } = data;
     const worldMap = mapManager.getActiveMap();
-    const team = teamManager.getTeam(teamID);
+    const entity = entityManager.getEntity(entityID);
+    const team = entity.getTeam(gameContext);
 
-    for(let i = 0; i < entities.length; i++) {
-        const entity = entityManager.getEntity(entities[i]);
+    for(const entityID of entities) {
+        const entity = entityManager.getEntity(entityID);
 
         entity.setUncloaked();
     }
 
-    for(let i = 0; i < mines.length; i++) {
-        const { x, y } = mines[i];
+    for(const { x, y } of mines) {
         const mine = worldMap.getMine(x, y);
 
         mine.show();
@@ -76,21 +85,28 @@ UncloakAction.prototype.fillExecutionPlan = function(gameContext, executionPlan,
         return;
     }
 
-    const { teamID } = entity;
     const uncloakedMines = entity.getUncloakedMines(gameContext);
     const uncloakedEntities = entity.getUncloakedEntities(gameContext);
-
-    if(uncloakedEntities.length !== 0 && entity.hasTrait(TRAIT_TYPE.TRACKING)) {
-        executionPlan.addNext(createTrackingIntent(entity, uncloakedEntities));
-    }
 
     if(uncloakedEntities.length === 0 && uncloakedMines.length === 0) {
         return;
     }
 
-    executionPlan.setData({
-        "teamID": teamID,
-        "entities": uncloakedEntities.map(e => e.getID()),
-        "mines": uncloakedMines.map(m => m.positionToJSON())
-    });
+    if(uncloakedEntities.length !== 0 && entity.hasTrait(TRAIT_TYPE.TRACKING)) {
+        executionPlan.addNext(createTrackingIntent(entity, uncloakedEntities));
+    }
+
+    const data = UncloakAction.createData();
+
+    data.entityID = entityID;
+    
+    for(const entity of uncloakedEntities) {
+        data.entities.push(entity.getID());
+    }
+
+    for(const mine of uncloakedMines) {
+        data.mines.push(mine.positionToJSON());
+    }
+
+    executionPlan.setData(data);
 }

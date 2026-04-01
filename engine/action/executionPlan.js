@@ -31,11 +31,3 @@ ExecutionPlan.prototype.setState = function(stateID) {
 
     this.state = stateID;
 }
-
-ExecutionPlan.prototype.toJSON = function() {
-    return {
-        "id": this.id,
-        "type": this.type,
-        "data": this.data
-    }
-}

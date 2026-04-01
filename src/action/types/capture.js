@@ -25,6 +25,14 @@ CaptureAction.prototype.isFinished = function(gameContext, executionPlan) {
 
 CaptureAction.prototype.onEnd = function(gameContext, data) {
     this.execute(gameContext, data);
+
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const { targetX, targetY } = data;
+    const worldMap = mapManager.getActiveMap();
+    const building = worldMap.getBuilding(targetX, targetY);
+
+    updateBuildingSprite(gameContext, building);
 }
 
 CaptureAction.prototype.execute = function(gameContext, data) {
@@ -44,8 +52,6 @@ CaptureAction.prototype.execute = function(gameContext, data) {
     nextTeam.addStatistic(TEAM_STAT.STRUCTURES_CAPTURED, 1);
     building.setTeam(entity.teamID);
     building.setColor(nextTeam.color);
-
-    updateBuildingSprite(gameContext, building);
 }
 
 CaptureAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {

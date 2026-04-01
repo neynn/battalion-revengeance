@@ -1,5 +1,21 @@
 import { ActionRouter } from "../../../engine/action/actionRouter.js";
-import { GAME_EVENT } from "../../enums.js";
+import { ACTION_TYPE, GAME_EVENT } from "../../enums.js";
+import { 
+    packAttackPlan,
+    packCapturePlan,
+    packCloakPlan,
+    packDeathPlan,
+    packEndTurnPlan,
+    packEntitySpawnPlan,
+    packExplodeTilePlan,
+    packExtractOrePlan,
+    packHealPlan, packMineTriggerPlan, 
+    packMovePlan,
+    packProducePlan,
+    packPurchasePlan,
+    packStartTurnPlan,
+    packUncloakPlan
+} from "../planPacker.js";
 
 export const ServerActionRouter = function() {
     ActionRouter.call(this);
@@ -11,6 +27,29 @@ export const ServerActionRouter = function() {
 ServerActionRouter.prototype = Object.create(ActionRouter.prototype);
 ServerActionRouter.prototype.constructor = ServerActionRouter;
 
+ServerActionRouter.prototype.packPlan = function(plan) {
+    const { id, type, data } = plan;
+
+    switch(type) {
+        case ACTION_TYPE.ATTACK: return packAttackPlan(data);
+        case ACTION_TYPE.CAPTURE: return packCapturePlan(data);
+        case ACTION_TYPE.CLOAK: return packCloakPlan(data);
+        case ACTION_TYPE.DEATH: return packDeathPlan(data);
+        case ACTION_TYPE.END_TURN: return packEndTurnPlan(data);
+        case ACTION_TYPE.ENTITY_SPAWN: return packEntitySpawnPlan(data);
+        case ACTION_TYPE.EXPLODE_TILE: return packExplodeTilePlan(data);
+        case ACTION_TYPE.EXTRACT: return packExtractOrePlan(data);
+        case ACTION_TYPE.HEAL: return packHealPlan(data);
+        case ACTION_TYPE.MINE_TRIGGER: return packMineTriggerPlan(data);
+        case ACTION_TYPE.MOVE: return packMovePlan(data);
+        case ACTION_TYPE.PRODUCE_ENTITY: return packProducePlan(data);
+        case ACTION_TYPE.PURCHASE_ENTITY: return packPurchasePlan(data);
+        case ACTION_TYPE.START_TURN: return packStartTurnPlan(data);
+        case ACTION_TYPE.UNCLOAK: return packUncloakPlan(data);
+        default: return null;
+    }
+}
+
 ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
     if(this.isUpdating) {
         return;
@@ -20,6 +59,7 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
     const { actionQueue, eventHandler } = world;
     const executedPlans = [];
     let count = 0;
+    let sentBytes = 0;
 
     this.isUpdating = true;
 
@@ -30,7 +70,13 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
             break;
         }
 
-        executedPlans.push(plan.toJSON());
+        const packed = this.packPlan(plan);
+
+        if(packed) {
+            sentBytes += packed.byteLength;
+            executedPlans.push(packed);
+        }
+
         count++;
     }
 
@@ -42,6 +88,7 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
             "events": eventHandler.lastRecentlyTriggered
         });
 
+        console.log("SENT BYTES:", sentBytes);
         eventHandler.clearRecentTriggers();
     }
 }

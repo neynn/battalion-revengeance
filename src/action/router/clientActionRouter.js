@@ -2,6 +2,7 @@ import { ExecutionPlan } from "../../../engine/action/executionPlan.js";
 import { ActionRouter } from "../../../engine/action/actionRouter.js";
 import { ACTION_TYPE, GAME_EVENT } from "../../enums.js";
 import { packAttackIntent, packEndTurnIntent, packMoveIntent, packPurchaseIntent } from "../intentPacker.js";
+import { unpackPlan } from "../planPacker.js";
 
 export const ClientActionRouter = function() {
     ActionRouter.call(this);
@@ -66,12 +67,14 @@ ClientActionRouter.prototype.forceEnqueue = function(gameContext, actionIntent) 
     }
 }
 
-ClientActionRouter.prototype.onServerPlan = function(gameContext, planJSON) {
+ClientActionRouter.prototype.onServerPlan = function(gameContext, buffer) {
     const { world } = gameContext;
     const { actionQueue } = world;
-    const { id, type, data } = planJSON;
-    const executionPlan = new ExecutionPlan(id, type);
+    const executionPlan = unpackPlan(buffer);
 
-    executionPlan.setData(data);
-    actionQueue.enqueue(executionPlan);
+    if(executionPlan.isValid()) {
+        actionQueue.enqueue(executionPlan);
+    } else {
+        //...
+    }
 }

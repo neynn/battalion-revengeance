@@ -208,21 +208,28 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
     }
 
     const { teamID } = entity;
-    const intercept = mInterceptPath(gameContext, teamID, path);
+    const newPath = [];
 
-    if(path.length === 0 || intercept === PATH_INTERCEPT.ILLEGAL) {
+    //Copies the path, which is essential for keeping the intent valid!
+    for(let i = 0; i < path.length; i++) {
+        newPath.push(path[i]);
+    }
+
+    const intercept = mInterceptPath(gameContext, teamID, newPath);
+
+    if(newPath.length === 0 || intercept === PATH_INTERCEPT.ILLEGAL) {
         console.error("EDGE CASE: Stealth unit was too close!");
         return;
     }
 
-    const mineIntercept = mInterceptMine(gameContext, entity, path);
+    const mineIntercept = mInterceptMine(gameContext, entity, newPath);
 
     if(mineIntercept === PATH_INTERCEPT.MINE) {
         executionPlan.addNext(createMineTriggerIntent(entityID));
     } 
 
-    const targetX = path[0].tileX;
-    const targetY = path[0].tileY;
+    const targetX = newPath[0].tileX;
+    const targetY = newPath[0].tileY;
     const worldMap = mapManager.getActiveMap();
     const mine = worldMap.getMine(targetX, targetY);
     let flags = MoveAction.FLAG.NONE;
@@ -290,7 +297,7 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
 
     data.entityID = entityID;
     data.flags = flags;
-    data.path = path;
+    data.path = newPath;
 
     executionPlan.setData(data);
 }
