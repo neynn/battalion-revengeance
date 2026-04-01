@@ -5,11 +5,22 @@ import { TeamManager } from "../team/teamManager.js";
 import { GAME_EVENT } from "../enums.js";
 import { createServerMapLoader } from "../systems/map.js";
 import { createStartTurnIntent } from "../action/actionHelper.js";
-import { isClientTurn } from "../action/actionValidator.js";
 import { MapMaster } from "../map/mapMaster.js";
 import { getTurnData } from "../systems/save.js";
 import { ServerActionRouter } from "../action/router/serverActionRouter.js";
 import { unpackIntent } from "../action/intentPacker.js";
+
+const isClientTurn = function(gameContext, messengerID) {
+    const { world } = gameContext;
+    const { turnManager } = world;
+    const { currentActor } = turnManager;
+
+    if(!currentActor) {
+        return false;
+    }
+
+    return currentActor.clientID === messengerID;
+}
 
 export const ServerGameContext = function(serverApplication, id) {
     Room.call(this, serverApplication, id);

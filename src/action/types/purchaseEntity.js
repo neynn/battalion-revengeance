@@ -64,7 +64,7 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
     const { currentActor } = turnManager;
     const { teamID } = currentActor;
     
-    if(!building.isOwnedBy(teamID)) {
+    if(!building.belongsTo(teamID)) {
         return;
     }
 

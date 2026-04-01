@@ -2,6 +2,7 @@ import { getRandomElement } from "../../../engine/math/math.js";
 import { ROOM_EVENTS } from "../../../engine/network/events.js";
 import { Socket } from "../../../engine/network/socket.js";
 import { State } from "../../../engine/state/state.js";
+import { unpackPlan } from "../../action/planPacker.js";
 import { GAME_EVENT } from "../../enums.js";
 import { createClientMapLoader } from "../../systems/map.js";
 
@@ -14,7 +15,7 @@ ArenaState.prototype.constructor = ArenaState;
 
 ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
     const { client, actionRouter, world, uiCore } = gameContext;
-    const { eventHandler } = world;
+    const { eventHandler, actionQueue } = world;
     const { socket } = client;
 
     eventHandler.toReceiver();
@@ -49,14 +50,21 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
                 uiCore.arena.hide();
                 break;
             }
-            case GAME_EVENT.MP_SERVER_STATE_UPDATE: {
-                const { plans, events } = payload;
-                
-                for(const plan of plans) {
-                    actionRouter.onServerPlan(gameContext, plan);
+            case GAME_EVENT.MP_SERVER_PLAN_UPDATE: {
+                for(const plan of payload) {
+                    const executionPlan = unpackPlan(plan);
+
+                    if(executionPlan.isValid()) {
+                        actionQueue.enqueue(executionPlan);
+                    } else {
+                        //...
+                    }
                 }
 
-                for(const eventID of events) {
+                break;
+            }
+            case GAME_EVENT.MP_SERVER_EVENT_UPDATE: {
+                for(const eventID of payload) {
                     eventHandler.forceTrigger(gameContext, eventID);
                 }
 

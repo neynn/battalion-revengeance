@@ -55,7 +55,7 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
         return;
     }
 
-    const { world, application } = gameContext;
+    const { world } = gameContext;
     const { actionQueue, eventHandler } = world;
     const executedPlans = [];
     let count = 0;
@@ -82,13 +82,13 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
 
     this.isUpdating = false;
 
-    if(executedPlans.length !== 0 || eventHandler.lastRecentlyTriggered.length !== 0) {
-        gameContext.broadcast(GAME_EVENT.MP_SERVER_STATE_UPDATE, {
-            "plans": executedPlans,
-            "events": eventHandler.lastRecentlyTriggered
-        });
-
+    if(executedPlans.length !== 0) {
         console.log("SENT BYTES:", sentBytes);
+        gameContext.broadcast(GAME_EVENT.MP_SERVER_PLAN_UPDATE, executedPlans);
+    }
+
+    if(eventHandler.lastRecentlyTriggered.length !== 0) {
+        gameContext.broadcast(GAME_EVENT.MP_SERVER_EVENT_UPDATE, eventHandler.lastRecentlyTriggered);
         eventHandler.clearRecentTriggers();
     }
 }

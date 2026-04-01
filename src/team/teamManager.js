@@ -5,6 +5,7 @@ export const TeamManager = function() {
     this.teams = []
     this.nameMap = new Map();
     this.activeTeams = [];
+    this.currentTeam = TeamManager.INVALID_ID;
     this.isConcluded = false;
 
     this.events = new EventEmitter();
@@ -33,6 +34,14 @@ TeamManager.prototype.exit = function() {
     this.nameMap.clear();
     this.activeTeams.length = 0;
     this.isConcluded = false;
+}
+
+TeamManager.prototype.setActive = function(teamID) {
+    if(teamID < 0 || teamID >= this.teams.length) {
+        return;
+    }
+
+    this.currentTeam = teamID;
 }
 
 TeamManager.prototype.forEachTeam = function(onCall) {

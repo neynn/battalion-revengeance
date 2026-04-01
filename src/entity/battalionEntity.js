@@ -117,6 +117,10 @@ BattalionEntity.prototype.loadConfig = function(config) {
     this.setHealth(this.health);
 }
 
+BattalionEntity.prototype.belongsTo = function(teamID) {
+    return this.teamID !== TeamManager.INVALID_ID && this.teamID === teamID;
+}
+
 BattalionEntity.prototype.getVitality = function() {
     return this.health / this.maxHealth;
 }

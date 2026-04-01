@@ -97,6 +97,26 @@ export const packMoveIntent = function(data) {
     return buffer;
 }
 
+/*
+    switch(type) {
+        case ACTION_TYPE.PURCHASE_ENTITY: {
+            //Does the building at x, y belong to the team?
+            return true;
+        }
+        case ACTION_TYPE.ATTACK: {
+            //Does the entity belong to the team?
+            return true;
+        }
+        case ACTION_TYPE.MOVE: {
+            //Does the entity belong to the team?
+            return true;
+        }
+        case ACTION_TYPE.END_TURN: {
+            //All good.
+            return true;
+        }
+    }
+*/
 export const unpackIntent = function(data) {
     const view = new DataView(data);
     const type = view.getUint8(0);

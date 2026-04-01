@@ -19,8 +19,8 @@ StaticObject.prototype.getTeam = function(gameContext) {
     return teamManager.getTeam(this.teamID);
 }
 
-StaticObject.prototype.isOwnedBy = function(teamID) {
-    return this.teamID === teamID;
+StaticObject.prototype.belongsTo = function(teamID) {
+    return this.teamID !== TeamManager.INVALID_ID && this.teamID === teamID;
 }
 
 StaticObject.prototype.isBlocking = function(staticObject) {
