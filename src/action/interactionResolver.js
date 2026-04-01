@@ -1,9 +1,21 @@
-export const createEntityResolution = function(entityID, delta, health) {
+import { EntityManager } from "../../engine/entity/entityManager.js";
+
+export const createEntityResolution = function() {
     return {
-        "entityID": entityID,
-        "delta": delta,
-        "health": health
+        "entityID": EntityManager.INVALID_ID,
+        "delta": 0,
+        "health": 0
     }
+}
+
+export const fillEntityResolution = function(entityID, delta, health) {
+    const resolution = createEntityResolution();
+
+    resolution.entityID = entityID;
+    resolution.delta = delta;
+    resolution.health = health;
+
+    return resolution;
 }
 
 export const InteractionResolver = function() {
@@ -26,7 +38,7 @@ InteractionResolver.prototype.addAttack = function(entity, damage) {
 }
 
 InteractionResolver.prototype.add = function(entityID, delta, health) {
-    this.hitEntities.push(createEntityResolution(entityID, delta, health));
+    this.hitEntities.push(fillEntityResolution(entityID, delta, health));
 }
 
 InteractionResolver.prototype.getDeadEntities = function() {

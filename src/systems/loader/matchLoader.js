@@ -21,6 +21,7 @@ import { ExplodeTileComponent } from "../../event/components/explodeTile.js";
 import { PlayEffectComponent } from "../../event/components/playEffect.js";
 import { SpawnComponent } from "../../event/components/spawn.js";
 import { WorldEvent } from "../../../engine/world/event/worldEvent.js";
+import { createEntitySnapshotFromJSON } from "../../snapshot/entitySnapshot.js";
 
 const createCustomSchema = function(gameContext, team, colorMap) {
     const { typeRegistry } = gameContext;
@@ -46,7 +47,7 @@ export const MatchLoader = function(worldMap, mapFile) {
     this.mines = mapFile.mines ?? [];
 }
 
-MatchLoader.prototype.createComponents = function(components, allowedComponents) {
+MatchLoader.prototype.createComponents = function(gameContext, components, allowedComponents) {
     const componentObjects = [];
 
     for(let i = 0; i < components.length; i++) {
@@ -79,8 +80,9 @@ MatchLoader.prototype.createComponents = function(components, allowedComponents)
                 break;
             }
             case COMPONENT_TYPE.SPAWN_ENTITY: {
-                const { entities } = components[i];
-                const component = new SpawnComponent(entities);
+                const { entity } = components[i];
+                const snapshot = createEntitySnapshotFromJSON(gameContext, this.worldMap, entity);
+                const component = new SpawnComponent(snapshot);
 
                 componentObjects.push(component);
                 break;
@@ -101,7 +103,7 @@ MatchLoader.prototype.createWorldEvents = function(gameContext, allowedComponent
 
     for(const eventName in this.events) {
         const { turn, round, next = null, components = [] } = this.events[eventName];
-        const componentObjects = this.createComponents(components, allowedComponents);
+        const componentObjects = this.createComponents(gameContext, components, allowedComponents);
         const event = new WorldEvent(eventName, componentObjects);
 
         event.setTriggerTime(turn, round);

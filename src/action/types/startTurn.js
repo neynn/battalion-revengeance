@@ -2,7 +2,7 @@ import { Action } from "../../../engine/action/action.js";
 import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { TeamManager } from "../../team/teamManager.js";
 import { createDeathIntent, createUncloakIntent } from "../actionHelper.js";
-import { createEntityResolution } from "../interactionResolver.js";
+import { fillEntityResolution } from "../interactionResolver.js";
 
 export const StartTurnAction = function() {
     Action.call(this);
@@ -108,7 +108,7 @@ StartTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPla
             }
 
             if(damage !== 0) {
-                resolutions.push(createEntityResolution(entityID, damage, health));
+                resolutions.push(fillEntityResolution(entityID, damage, health));
             }
         }
     }

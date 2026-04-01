@@ -5,6 +5,28 @@ export const ENTITY_SNAPSHOT_SIZE = 30;
 const BIT_8 = 1;
 const BIT_16 = 2;
 
+export const packEntityResolution = function(resolution, view, byteOffset) {
+    view.setInt16(byteOffset, resolution.entityID, true);
+    byteOffset += BIT_16;
+    view.setUint16(byteOffset, resolution.delta, true);
+    byteOffset += BIT_16;
+    view.setUint16(byteOffset, resolution.health, true);
+    byteOffset += BIT_16;
+
+    return byteOffset;
+}
+
+export const unpackEntityResolution = function(resolution, view, byteOffset) {
+    resolution.entityID = view.getInt16(byteOffset, true);
+    byteOffset += BIT_16;
+    resolution.delta = view.getUint16(byteOffset, true);
+    byteOffset += BIT_16;
+    resolution.health = view.getUint16(byteOffset, true);
+    byteOffset += BIT_16;
+
+    return byteOffset;
+}
+
 export const packEntitySnapshot = function(snapshot, view, byteOffset) {
     view.setUint8(byteOffset, snapshot.direction);
     byteOffset += BIT_8;

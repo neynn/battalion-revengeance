@@ -148,9 +148,7 @@
             "components": [
                 {
                     "type": "SPAWN_ENTITY",
-                    "entities": [
-                        { "x": 0, "y": 9, "type": "STEALTH_TANK", "team": "SOMERTIN" }
-                    ]
+                    "entity": { "x": 0, "y": 9, "type": "STEALTH_TANK", "team": "SOMERTIN" }
                 },
                 { 
                     "type": "PLAY_EFFECT",

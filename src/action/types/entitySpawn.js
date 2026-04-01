@@ -1,5 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
-import { createEntitySnapshotFromJSON } from "../../snapshot/entitySnapshot.js";
+import { EntityManager } from "../../../engine/entity/entityManager.js";
+import { createEntitySnapshot } from "../../snapshot/entitySnapshot.js";
 
 export const EntitySpawnAction = function(createEntity) {
     Action.call(this);
@@ -9,7 +10,8 @@ export const EntitySpawnAction = function(createEntity) {
 
 EntitySpawnAction.createData = function() {
     return {
-        "spawns": []
+        "entityID": EntityManager.INVALID_ID,
+        "snapshot": createEntitySnapshot()
     }
 }
 
@@ -25,29 +27,25 @@ EntitySpawnAction.prototype.onEnd = function(gameContext, data) {
 }
 
 EntitySpawnAction.prototype.execute = function(gameContext, data) {
-    const { spawns } = data;
+    const { entityID, snapshot } = data;
+    const entity = this._createEntity(gameContext, entityID, snapshot);
 
-    for(const { id, snapshot } of spawns) {
-        this._createEntity(gameContext, id, snapshot);
+    //Should never fail...
+    if(entity) {
+        entity.onTurnStart();
     }
 }
 
 EntitySpawnAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
     const { entityManager, mapManager } = world;
-    const { entities } = actionIntent;
+    const { snapshot } = actionIntent;
     const worldMap = mapManager.getActiveMap();
     const data = EntitySpawnAction.createData();
 
-    for(let i = 0; i < entities.length; i++) {
-        const nextID = entityManager.getNextID();
-        const snapshot = createEntitySnapshotFromJSON(gameContext, worldMap, entities[i]);
-
-        data.spawns.push({
-            "id": nextID,
-            "snapshot": snapshot
-        });
-    }
+    //TODO(neyn): Verify!
+    data.entityID = entityManager.getNextID();
+    data.snapshot = snapshot;
 
     executionPlan.setData(data);
 }

@@ -29,9 +29,9 @@ export const createExtractIntent = function(entityID) {
     });
 }
 
-export const createSpawnIntent = function(entities) {
+export const createSpawnIntent = function(snapshot) {
     return new ActionIntent(ACTION_TYPE.ENTITY_SPAWN, {
-        "entities": entities
+        "snapshot": snapshot
     });
 }
 

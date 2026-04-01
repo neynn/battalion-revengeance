@@ -3,7 +3,7 @@ import { ACTION_TYPE } from "../enums.js";
 import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 import { createStep } from "../systems/pathfinding.js";
 import { createEntityResolution } from "./interactionResolver.js";
-import { ENTITY_RESOLUTION_SIZE, ENTITY_SNAPSHOT_SIZE, MOVE_STEP_SIZE, packEntitySnapshot, unpackEntitySnapshot } from "./packer_constants.js";
+import { ENTITY_RESOLUTION_SIZE, ENTITY_SNAPSHOT_SIZE, MOVE_STEP_SIZE, packEntityResolution, packEntitySnapshot, unpackEntityResolution, unpackEntitySnapshot } from "./packer_constants.js";
 import { AttackAction } from "./types/attack.js";
 import { CaptureAction } from "./types/capture.js";
 import { CloakAction } from "./types/cloak.js";
@@ -79,13 +79,7 @@ export const packStartTurnPlan = function(data) {
     let byteOffset = START_TURN_HEADER_SIZE;
 
     for(let i = 0; i < resolutions.length; i++) {
-        const { entityID, delta, health } = resolutions[i];
-
-        view.setInt16(byteOffset, entityID, true);
-        view.setInt16(byteOffset + 2, delta, true);
-        view.setUint16(byteOffset + 4, health, true);
-
-        byteOffset += ENTITY_RESOLUTION_SIZE;
+        byteOffset = packEntityResolution(resolutions[i], view, byteOffset);
     }
 
     return buffer;
@@ -215,13 +209,7 @@ export const packHealPlan = function(data) {
     let byteOffset = HEAL_HEADER_SIZE;
 
     for(let i = 0; i < resolutions.length; i++) {
-        const { entityID, delta, health } = resolutions[i];
-
-        view.setInt16(byteOffset, entityID, true);
-        view.setInt16(byteOffset + 2, delta, true);
-        view.setUint16(byteOffset + 4, health, true);
-
-        byteOffset += ENTITY_RESOLUTION_SIZE;
+        byteOffset = packEntityResolution(resolutions[i], view, byteOffset);
     }
 
     return buffer;
@@ -271,28 +259,20 @@ export const packExplodeTilePlan = function(data) {
 
 /*
     0x00 -> type,
-    0x01 -> count
+    0x01 -> entityID,
+    0x03 -> snapshot
 */
-const ENTITY_SPAWN_HEADER_SIZE = 3;
+const ENTITY_SPAWN_HEADER_SIZE = 3 + ENTITY_SNAPSHOT_SIZE;
 
-//Each spawn has a snapshot and an id!
 export const packEntitySpawnPlan = function(data) {
-    const { spawns } = data;
-    const BUFFER_SIZE = ENTITY_SPAWN_HEADER_SIZE + (ENTITY_SNAPSHOT_SIZE + 2) * spawns.length;
-    const buffer = new ArrayBuffer(BUFFER_SIZE);
+    const { entityID, snapshot } = data;
+    const buffer = new ArrayBuffer(ENTITY_SPAWN_HEADER_SIZE);
     const view = new DataView(buffer);
 
     view.setUint8(0, ACTION_TYPE.ENTITY_SPAWN);
-    view.setUint16(1, spawns.length, true);
+    view.setInt16(1, entityID, true);
 
-    let byteOffset = ENTITY_SPAWN_HEADER_SIZE;
-
-    for(let i = 0; i < spawns.length; i++) {
-        const { id, snapshot } = spawns[i];
-        view.setInt16(byteOffset, id, true);
-
-        byteOffset = packEntitySnapshot(snapshot, view, byteOffset + 2);
-    }
+    packEntitySnapshot(snapshot, view, 3);
 
     return buffer;
 }
@@ -402,13 +382,7 @@ export const packAttackPlan = function(data) {
     let byteOffset = ATTACK_HEADER_SIZE;
 
     for(let i = 0; i < resolutions.length; i++) {
-        const { entityID, health, delta } = resolutions[i];
-
-        view.setInt16(byteOffset, entityID, true);
-        view.setInt16(byteOffset + 2, delta, true);
-        view.setUint16(byteOffset + 4, health, true);
-
-        byteOffset += ENTITY_RESOLUTION_SIZE;
+        byteOffset = packEntityResolution(resolutions[i], view, byteOffset);
     }
 
     return buffer;
@@ -460,13 +434,10 @@ export const unpackPlan = function(buffer) {
             let byteOffset = START_TURN_HEADER_SIZE;
 
             for(let i = 0; i < count; i++) {
-                data.resolutions.push(createEntityResolution(
-                    view.getInt16(byteOffset, true),
-                    view.getInt16(byteOffset + 2, true),
-                    view.getUint16(byteOffset + 4, true)
-                ));
+                const resolution = createEntityResolution();
 
-                byteOffset += ENTITY_RESOLUTION_SIZE;
+                byteOffset = unpackEntityResolution(resolution, view, byteOffset);
+                data.resolutions.push(resolution);
             }
 
             break;
@@ -523,13 +494,10 @@ export const unpackPlan = function(buffer) {
             let byteOffset = HEAL_HEADER_SIZE;
 
             for(let i = 0; i < count; i++) {
-                data.resolutions.push(createEntityResolution(
-                    view.getInt16(byteOffset, true),
-                    view.getInt16(byteOffset + 2, true),
-                    view.getUint16(byteOffset + 4, true)
-                ));
+                const resolution = createEntityResolution();
 
-                byteOffset += ENTITY_RESOLUTION_SIZE;
+                byteOffset = unpackEntityResolution(resolution, view, byteOffset);
+                data.resolutions.push(resolution);
             }
 
             break;
@@ -550,21 +518,8 @@ export const unpackPlan = function(buffer) {
         }
         case ACTION_TYPE.ENTITY_SPAWN: {
             data = EntitySpawnAction.createData();
-            
-            const count = view.getUint16(1, true);
-            let byteOffset = ENTITY_SPAWN_HEADER_SIZE;
-
-            for(let i = 0; i < count; i++) {
-                const entityID = view.getInt16(byteOffset, true);
-                const snapshot = createEntitySnapshot();
-
-                byteOffset = unpackEntitySnapshot(snapshot, view, byteOffset + 2);
-                data.spawns.push({
-                    "id": entityID,
-                    "snapshot": snapshot
-                });
-            }
-
+            data.entityID = view.getInt16(1, true);
+            unpackEntitySnapshot(data.snapshot, view, 3);
             break;
         }
         case ACTION_TYPE.END_TURN: {
@@ -604,17 +559,14 @@ export const unpackPlan = function(buffer) {
             data.targetID = view.getInt16(4, true);
             data.resourceDamage = view.getInt32(6, true);
             
-            const length = view.getUint16(10, true);
+            const count = view.getUint16(10, true);
             let byteOffset = ATTACK_HEADER_SIZE;
 
-            for(let i = 0; i < length; i++) {
-                data.resolutions.push(createEntityResolution(
-                    view.getInt16(byteOffset, true),
-                    view.getInt16(byteOffset + 2, true),
-                    view.getUint16(byteOffset + 4, true)
-                ));
+            for(let i = 0; i < count; i++) {
+                const resolution = createEntityResolution();
 
-                byteOffset += ENTITY_RESOLUTION_SIZE;
+                byteOffset = unpackEntityResolution(resolution, view, byteOffset);
+                data.resolutions.push(resolution);
             }
 
             break;
