@@ -1,4 +1,4 @@
-import { ACTION_TYPE } from "../enums.js";
+import { ACTION_TYPE, COMMAND_TYPE } from "../enums.js";
 import { createStep } from "../systems/pathfinding.js";
 import { createAttackRequest, createEndTurnIntent, createMoveRequest, createPurchseEntityIntent } from "./actionHelper.js";
 import { MOVE_STEP_SIZE } from "./packer_constants.js";
@@ -97,26 +97,44 @@ export const packMoveIntent = function(data) {
     return buffer;
 }
 
-/*
+//TODO(neyn): add heal intent!!!
+export const isIntentValid = function(gameContext, intent) {
+    const { world, teamManager } = gameContext;
+    const { currentTeam } = teamManager;
+    const { entityManager } = world;
+    const { type, data } = intent;
+
     switch(type) {
         case ACTION_TYPE.PURCHASE_ENTITY: {
-            //Does the building at x, y belong to the team?
-            return true;
-        }
-        case ACTION_TYPE.ATTACK: {
-            //Does the entity belong to the team?
-            return true;
-        }
-        case ACTION_TYPE.MOVE: {
-            //Does the entity belong to the team?
             return true;
         }
         case ACTION_TYPE.END_TURN: {
-            //All good.
             return true;
         }
+        case ACTION_TYPE.HEAL: {
+            const { entityID } = data;
+            const entity = entityManager.getEntity(entityID);
+
+            return entity && entity.belongsTo(currentTeam);
+        }
+        case ACTION_TYPE.ATTACK: {
+            const { entityID, command } = data;
+            const entity = entityManager.getEntity(entityID);
+
+            return command === COMMAND_TYPE.ATTACK && entity && entity.belongsTo(currentTeam);
+        }
+        case ACTION_TYPE.MOVE: {
+            const { entityID } = data;
+            const entity = entityManager.getEntity(entityID);
+
+            return entity && entity.belongsTo(currentTeam);
+        }
+        default: {
+            return false;
+        }
     }
-*/
+}
+
 export const unpackIntent = function(data) {
     const view = new DataView(data);
     const type = view.getUint8(0);

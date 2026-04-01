@@ -8,7 +8,7 @@ import { createStartTurnIntent } from "../action/actionHelper.js";
 import { MapMaster } from "../map/mapMaster.js";
 import { getTurnData } from "../systems/save.js";
 import { ServerActionRouter } from "../action/router/serverActionRouter.js";
-import { unpackIntent } from "../action/intentPacker.js";
+import { isIntentValid, unpackIntent } from "../action/intentPacker.js";
 
 const isClientTurn = function(gameContext, messengerID) {
     const { world } = gameContext;
@@ -183,9 +183,9 @@ ServerGameContext.prototype.onMessage = async function(messengerID, type, payloa
                 const arrayBuffer = payload.buffer.slice(payload.byteOffset, payload.byteOffset + payload.byteLength);
                 const intent = unpackIntent(arrayBuffer);
 
-                console.log("RECEIVED BYTES:", arrayBuffer.byteLength);
+                if(intent && isIntentValid(this, intent)) {
+                    console.log("RECEIVED BYTES:", arrayBuffer.byteLength);
 
-                if(intent) {
                     this.actionRouter.forceEnqueue(this, intent);
                 }
             }

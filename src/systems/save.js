@@ -71,18 +71,14 @@ const saveEdits = function(worldMap) {
 }
 
 export const getTurnData = function(gameContext) {
-    const { world } = gameContext;
+    const { world, teamManager } = gameContext;
     const { turnManager } = world;
-    const { currentActor, globalTurn, globalRound } = turnManager;
+    const { globalTurn, globalRound } = turnManager;
     const turnData = {
-        "team": TeamManager.INVALID_ID,
+        "team": teamManager.currentTeam,
         "rounds": globalRound,
         "turns": globalTurn
     };
-
-    if(currentActor) {
-        turnData.team = currentActor.teamID;
-    }
 
     return turnData;
 }

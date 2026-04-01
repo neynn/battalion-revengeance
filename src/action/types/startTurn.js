@@ -30,9 +30,7 @@ StartTurnAction.prototype.execute = function(gameContext, data) {
     const { world, teamManager } = gameContext;
     const { entityManager, turnManager, eventHandler, mapManager } = world;
     const { teamID, resolutions } = data;
-    const actor = teamManager.findActorByTeam(gameContext, teamID);
     const worldMap = mapManager.getActiveMap();
-
     const team = teamManager.getTeam(teamID);
     const { entities } = team;
 
@@ -49,9 +47,6 @@ StartTurnAction.prototype.execute = function(gameContext, data) {
 
         entity.setHealth(health);
     }
-
-    turnManager.setCurrentActor(gameContext, actor.getID());
-    eventHandler.checkEventTriggers(gameContext);
 
     for(const building of worldMap.buildings) {
         const cash = building.generateCash(gameContext);
@@ -74,6 +69,12 @@ StartTurnAction.prototype.execute = function(gameContext, data) {
         team.addStatistic(TEAM_STAT.ROUNDS_TAKEN, 1);
     }
 
+    //TODO(neyn): Remove at best.
+    const actor = teamManager.findActorByTeam(gameContext, teamID);
+    turnManager.setCurrentActor(gameContext, actor.getID());
+
+    teamManager.setActive(teamID);
+    eventHandler.checkEventTriggers(gameContext);
     teamManager.updateStatus();
     //TODO: Get next turn, then check if any construction grows. Add that as next.
 }

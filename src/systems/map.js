@@ -112,10 +112,12 @@ ClientMatchLoader.prototype.loadTurnFromSnapshot = function(gameContext, turn) {
     const { teamManager, world } = gameContext;
     const { turnManager } = world;
     const { team, rounds, turns } = turn;
-    const actor = teamManager.findActorByTeam(gameContext, team);
 
+    teamManager.setActive(team);
     turnManager.globalRound = rounds;
-    teamManager.globalTurn = turns;
+    turnManager.globalTurn = turns;
+
+    const actor = teamManager.findActorByTeam(gameContext, team);
 
     if(actor) {
         turnManager.setCurrentActor(gameContext, actor.getID());

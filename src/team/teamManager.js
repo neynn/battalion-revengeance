@@ -36,6 +36,18 @@ TeamManager.prototype.exit = function() {
     this.isConcluded = false;
 }
 
+TeamManager.prototype.getCurrentTeam = function() {
+    if(this.currentTeam < 0 || this.currentTeam >= this.teams.length) {
+        return null;
+    }
+
+    return this.teams[this.currentTeam];
+}
+
+TeamManager.prototype.clearActive = function() {
+    this.currentTeam = TeamManager.INVALID_ID;
+}
+
 TeamManager.prototype.setActive = function(teamID) {
     if(teamID < 0 || teamID >= this.teams.length) {
         return;

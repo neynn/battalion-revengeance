@@ -52,19 +52,13 @@ PurchaseEntityAction.prototype.execute = function(gameContext, data) {
 
 PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { world, teamManager, typeRegistry } = gameContext;
-    const { turnManager, mapManager, entityManager } = world;
+    const { mapManager, entityManager } = world;
     const { tileX, tileY, typeID } = actionIntent;
+    const { currentTeam } = teamManager;
     const worldMap = mapManager.getActiveMap();
     const building = worldMap.getBuilding(tileX, tileY);
 
-    if(!building || !building.hasTrait(TRAIT_TYPE.SPAWNER)) {
-        return;
-    }
-
-    const { currentActor } = turnManager;
-    const { teamID } = currentActor;
-    
-    if(!building.belongsTo(teamID)) {
+    if(!building || !building.belongsTo(currentTeam) || !building.hasTrait(TRAIT_TYPE.SPAWNER)) {
         return;
     }
 
@@ -80,7 +74,7 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
     }
 
     const { health, cost } = typeRegistry.getEntityType(typeID);
-    const team = teamManager.getTeam(teamID);
+    const team = teamManager.getTeam(currentTeam);
     const adjustedCost = team.getAdjustedCost(gameContext, cost);
 
     if(!team.hasEnoughCash(adjustedCost)) {
@@ -98,7 +92,7 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
     data.snapshot.type = typeID;
     data.snapshot.health = health;
     data.snapshot.maxHealth = health;
-    data.snapshot.teamID = teamID;
+    data.snapshot.teamID = currentTeam;
 
     executionPlan.addNext(createUncloakIntent(nextID));
     executionPlan.setData(data);

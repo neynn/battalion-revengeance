@@ -1,5 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
 import { TEAM_STAT } from "../../enums.js";
+import { TeamManager } from "../../team/teamManager.js";
 import { createStartTurnIntent } from "../actionHelper.js";
 
 export const EndTurnAction = function() {
@@ -26,8 +27,7 @@ EndTurnAction.prototype.onEnd = function(gameContext, data) {
 EndTurnAction.prototype.execute = function(gameContext, data) {
     const { world, teamManager } = gameContext;
     const { turnManager, entityManager } = world;
-    const { currentActor } = turnManager;
-    const team = currentActor.getTeam(gameContext);
+    const team = teamManager.getCurrentTeam();
     const turn = team.getStatistic(TEAM_STAT.ROUNDS_TAKEN);
     const { id, entities, objectives } = team;
 
@@ -44,15 +44,15 @@ EndTurnAction.prototype.execute = function(gameContext, data) {
     }
 
     turnManager.clearCurrentActor(gameContext);
+    teamManager.clearActive();
     teamManager.updateStatus();
 }
 
 EndTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    const { world } = gameContext;
-    const { turnManager } = world;
-    const { currentActor } = turnManager;
+    const { teamManager } = gameContext;
+    const { currentTeam } = teamManager;
 
-    if(currentActor !== null) {
+    if(currentTeam !== TeamManager.INVALID_ID) {
         executionPlan.setData(EndTurnAction.createData());
         executionPlan.addNext(createStartTurnIntent());
     }
