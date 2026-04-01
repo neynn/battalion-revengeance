@@ -7,21 +7,13 @@ export const RoomManager = function() {
     this.events = new EventEmitter();
     this.events.register(RoomManager.EVENT.ROOM_OPENED);
     this.events.register(RoomManager.EVENT.ROOM_CLOSED);
-    this.events.register(RoomManager.EVENT.MESSAGE_RECEIVED);
-    this.events.register(RoomManager.EVENT.MESSAGE_LOST);
-    this.events.register(RoomManager.EVENT.MESSAGE_SEND);
-    this.events.register(RoomManager.EVENT.MESSAGE_BROADCAST);
 }
 
 RoomManager.INVALID_ID = -1;
 
 RoomManager.EVENT = {
     ROOM_OPENED: "ROOM_OPENED",
-    ROOM_CLOSED: "ROOM_CLOSED",
-    MESSAGE_RECEIVED: "MESSAGE_RECEIVED",
-    MESSAGE_LOST: "MESSAGE_LOST",
-    MESSAGE_SEND: "MESSAGE_SEND",
-    MESSAGE_BROADCAST: "MESSAGE_BROADCAST"
+    ROOM_CLOSED: "ROOM_CLOSED"
 };
 
 RoomManager.prototype.exit = function() {
@@ -46,41 +38,17 @@ RoomManager.prototype.getNextID = function() {
 RoomManager.prototype.processMessage = function(roomID, messengerID, message) {
     const room = this.rooms.get(roomID);
 
-    if(!room || typeof message !== "object") {
-        this.events.emit(RoomManager.EVENT.MESSAGE_LOST, {
-            "roomID": roomID,
-            "messengerID": messengerID,
-            "message": message
-        });
+    if(room && typeof message === "object") {
+        const { type, payload } = message;
 
-        return false;
+        room.onMessage(messengerID, type, payload);
     }
-
-    room.processMessage(messengerID, message);
-
-    this.events.emit(RoomManager.EVENT.MESSAGE_RECEIVED, {
-        "roomID": roomID,
-        "messengerID": messengerID,
-        "message": message
-    });
-
-    return true;
 }
 
 RoomManager.prototype.addRoom = function(room) {
     const roomID = room.getID();
 
     if(!this.rooms.has(roomID)) {
-        room.onMessageSend = (message, clientID) => this.events.emit(RoomManager.EVENT.MESSAGE_SEND, {
-            "clientID": clientID,
-            "message": message
-        });
-
-        room.onMessageBroadcast = (message) => this.events.emit(RoomManager.EVENT.MESSAGE_BROADCAST, {
-            "roomID": roomID,
-            "message": message
-        });
-
         this.rooms.set(roomID, room);
         this.events.emit(RoomManager.EVENT.ROOM_OPENED, {
             "id": roomID

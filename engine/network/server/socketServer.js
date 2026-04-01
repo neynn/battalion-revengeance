@@ -11,14 +11,24 @@ export const SocketServer = function(io) {
 
     this.roomManager.events.on(RoomManager.EVENT.ROOM_OPENED, ({ id }) => console.log(`Room ${id} has been opened!`), { permanent: true });
     this.roomManager.events.on(RoomManager.EVENT.ROOM_CLOSED, ({ id }) => console.log(`Room ${id} has been closed!`), { permanent: true });
-    this.roomManager.events.on(RoomManager.EVENT.MESSAGE_RECEIVED, ({ roomID, messengerID }) => console.log(`Message received! ${roomID, messengerID}`), { permanent: true });
-    this.roomManager.events.on(RoomManager.EVENT.MESSAGE_LOST, ({ roomID, messengerID }) => `Message lost! ${roomID, messengerID}`, { permanent: true });
-    this.roomManager.events.on(RoomManager.EVENT.MESSAGE_SEND, ({ clientID, message }) => this.io.to(clientID).emit(NETWORK_EVENTS.MESSAGE, message), { permanent: true });
-    this.roomManager.events.on(RoomManager.EVENT.MESSAGE_BROADCAST, ({ roomID, message }) => this.io.in(roomID).emit(NETWORK_EVENTS.MESSAGE, message), { permanent: true });
 
     this.clientManager.events.on(ClientManager.EVENT.CLIENT_CREATE, ({ id }) => console.log(`${id} has been created!`), { permanent: true });
     this.clientManager.events.on(ClientManager.EVENT.CLIENT_DESTROY, ({ id }) => console.log(`${id} has been removed!`), { permanent: true });
     this.clientManager.events.on(ClientManager.EVENT.USER_ID_ADDED, ({ clientID, userID }) => console.log(`${clientID} is now named ${userID}!`), { permanent: true });
+}
+
+SocketServer.prototype.send = function(clientID, messageType, payload) {
+    this.io.to(clientID).emit(NETWORK_EVENTS.MESSAGE, {
+        "type": messageType,
+        "payload": payload
+    });
+}
+
+SocketServer.prototype.broadcast = function(roomID, messageType, payload) {
+    this.io.in(roomID).emit(NETWORK_EVENTS.MESSAGE, {
+        "type": messageType,
+        "payload": payload
+    });
 }
 
 SocketServer.prototype.createRoom = function(roomID, roomType) {
@@ -28,10 +38,9 @@ SocketServer.prototype.createRoom = function(roomID, roomType) {
 
 SocketServer.prototype.sendRoomUpdate = function(roomID) {
     const information = this.roomManager.getRoomInformationMessage(roomID);
-    const message = { "type": ROOM_EVENTS.ROOM_UPDATE, "payload": information };
 
-    this.io.in(roomID).emit(NETWORK_EVENTS.MESSAGE, message);
-
+    this.broadcast(roomID, ROOM_EVENTS.ROOM_UPDATE, information);
+    
     console.log(information);
 }
 

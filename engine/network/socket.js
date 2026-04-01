@@ -70,16 +70,8 @@ Socket.prototype.connect = async function(address) {
     });
     
     socket.on(NETWORK_EVENTS.MESSAGE, (message) => {
-        if(typeof message !== "object") {
-            return;
-        }
-
-        const { type, payload } = message;
-
-        if(type && payload) {
-            this.events.emit(Socket.EVENT.MESSAGE_FROM_SERVER, {
-                "message": message
-            });
+        if(typeof message === "object") {
+            this.events.emit(Socket.EVENT.MESSAGE_FROM_SERVER, message);
         }
     });
 }

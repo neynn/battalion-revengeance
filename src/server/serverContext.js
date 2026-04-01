@@ -12,7 +12,7 @@ import { ServerActionRouter } from "../action/router/serverActionRouter.js";
 import { unpackIntent } from "../action/intentPacker.js";
 
 export const ServerGameContext = function(serverApplication, id) {
-    Room.call(this, id);
+    Room.call(this, serverApplication, id);
 
     const { 
         typeRegistry,
@@ -102,9 +102,7 @@ ServerGameContext.prototype.createRejoinSnapshot = function() {
 
 }
 
-ServerGameContext.prototype.processMessage = function(messengerID, message) {
-    const { type, payload } = message;
-
+ServerGameContext.prototype.onMessage = async function(messengerID, type, payload) {
     //Client sends GAME_EVENT.PICK_COLOR
     //mapSettings sets ClientID -> ColorPick
     switch(type) {
@@ -147,7 +145,7 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
                         const memberID = this.members[i].getID();
                         const teamID = this.mapMaster.getTeamID(memberID);
 
-                        this.sendMessage(GAME_EVENT.MP_SERVER_LOAD_MAP, {
+                        this.send(GAME_EVENT.MP_SERVER_LOAD_MAP, {
                             "snapshot": snapshot,
                             "client": teamID,
                             "overrides": overrides
@@ -162,7 +160,7 @@ ServerGameContext.prototype.processMessage = function(messengerID, message) {
             this.readyClients++;
 
             if(this.readyClients >= this.members.length && this.state === ServerGameContext.STATE.STARTING) {
-                this.broadcastMessage(GAME_EVENT.MP_SERVER_START_MAP, {});
+                this.broadcast(GAME_EVENT.MP_SERVER_START_MAP, 0);
                 this.actionRouter.forceEnqueue(this, createStartTurnIntent());
                 this.state = ServerGameContext.STATE.STARTED;
             }

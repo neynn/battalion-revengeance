@@ -1,5 +1,4 @@
 import { ExecutionPlan } from "../../engine/action/executionPlan.js";
-import { EntityManager } from "../../engine/entity/entityManager.js";
 import { ACTION_TYPE } from "../enums.js";
 import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 import { createStep } from "../systems/pathfinding.js";

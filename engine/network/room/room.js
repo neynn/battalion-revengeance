@@ -1,15 +1,24 @@
-export const Room = function(id) {
+export const Room = function(application, id) {
     this.id = id;
     this.members = [];
     this.leaderID = null;
     this.maxClients = 0;
+    this.application = application;
 }
 
 Room.prototype.onClientJoin = function(clientID) {}
 Room.prototype.onClientLeave = function(clientID) {}
-Room.prototype.processMessage = async function(messengerID, message) {}
-Room.prototype.onMessageSend = function(message, clientID) {}
-Room.prototype.onMessageBroadcast = function(message) {}
+Room.prototype.onMessage = async function(messengerID, type, payload) {}
+
+Room.prototype.send = function(type, payload, clientID) {
+    if(this.hasMember(clientID)) {
+        this.application.send(clientID, type, payload);
+    }
+}
+
+Room.prototype.broadcast = function(type, payload) {
+    this.application.broadcast(this.id, type, payload);
+}
 
 Room.prototype.getID = function() {
     return this.id;
@@ -131,24 +140,4 @@ Room.prototype.appointNextLeader = function() {
     this.leaderID = this.members[0].getID();
 
     return true;
-}
-
-Room.prototype.broadcastMessage = function(type, payload) {
-    const message = {
-        "type": type,
-        "payload": payload
-    };
-
-    this.onMessageBroadcast(message);
-}
-
-Room.prototype.sendMessage = function(type, payload, clientID) {
-    if(this.hasMember(clientID)) {
-        const message = {
-            "type": type,
-            "payload": payload
-        };
-
-        this.onMessageSend(message, clientID);
-    }
 }

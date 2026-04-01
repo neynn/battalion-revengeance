@@ -1,4 +1,5 @@
 import { getRandomElement } from "../../../engine/math/math.js";
+import { ROOM_EVENTS } from "../../../engine/network/events.js";
 import { Socket } from "../../../engine/network/socket.js";
 import { State } from "../../../engine/state/state.js";
 import { GAME_EVENT } from "../../enums.js";
@@ -24,9 +25,7 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
         socket.registerName(NAME);
     });
 
-    socket.events.on(Socket.EVENT.MESSAGE_FROM_SERVER, ({ message }) => {
-        const { type, payload } = message;
-
+    socket.events.on(Socket.EVENT.MESSAGE_FROM_SERVER, ({ type, payload }) => {
         switch(type) {
             case GAME_EVENT.MP_SERVER_LOAD_MAP: {
                 const { snapshot, client, overrides } = payload;
@@ -52,7 +51,7 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
             }
             case GAME_EVENT.MP_SERVER_STATE_UPDATE: {
                 const { plans, events } = payload;
-
+                
                 for(const plan of plans) {
                     actionRouter.onServerPlan(gameContext, plan);
                 }
@@ -61,6 +60,10 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
                     eventHandler.forceTrigger(gameContext, eventID);
                 }
 
+                break;
+            }
+            case ROOM_EVENTS.ROOM_UPDATE: {
+                console.log(payload);
                 break;
             }
             default: {
