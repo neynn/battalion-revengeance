@@ -110,19 +110,13 @@ ClientMatchLoader.prototype.loadMusic = function(gameContext) {
 }
 
 ClientMatchLoader.prototype.loadTurnFromSnapshot = function(gameContext, turn) {
-    const { teamManager, world } = gameContext;
-    const { turnManager } = world;
+    const { teamManager } = gameContext;
     const { team, rounds, turns } = turn;
 
     teamManager.setActive(team);
-    turnManager.globalRound = rounds;
-    turnManager.globalTurn = turns;
-
-    const actor = teamManager.findActorByTeam(gameContext, team);
-
-    if(actor) {
-        turnManager.setCurrentActor(gameContext, actor.getID());
-    }
+    teamManager.round = rounds;
+    teamManager.turn = turns;
+    teamManager.updateActor(gameContext);
 }
 
 ClientMatchLoader.prototype.unpackTotalEntityBuffer = function(gameContext, entities) {
@@ -236,7 +230,6 @@ ClientMatchLoader.prototype.loadMapFromFile = function(gameContext, overrides) {
 
     dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);
     teamManager.updateStatus();
-    teamManager.setTurnOrder(gameContext);
 
     //Sort buildings once after all are created!
     spriteManager.sortLayer(LAYER_TYPE.BUILDING);
@@ -335,7 +328,6 @@ ServerMatchLoader.prototype.loadMap = function(gameContext, overrides) {
     this.createWorldEvents(gameContext, MP_SERVER_EVENT_COMPONENTS);
 
     teamManager.updateStatus();
-    teamManager.setTurnOrder(gameContext);
 }
 
 export const createEditorMap = async function(gameContext, sourceID) {

@@ -6,7 +6,10 @@ export const TeamManager = function() {
     this.nameMap = new Map();
     this.activeTeams = [];
     this.currentTeam = TeamManager.INVALID_ID;
+    this.previousTeam = TeamManager.INVALID_ID;
     this.isConcluded = false;
+    this.round = 0;
+    this.turn = 0;
 
     this.events = new EventEmitter();
     this.events.register(TeamManager.EVENT.TEAM_LOST);
@@ -34,6 +37,10 @@ TeamManager.prototype.exit = function() {
     this.nameMap.clear();
     this.activeTeams.length = 0;
     this.isConcluded = false;
+    this.turn = 0;
+    this.round = 0;
+    this.currentTeam = TeamManager.INVALID_ID;
+    this.previousTeam = TeamManager.INVALID_ID;
 }
 
 TeamManager.prototype.getCurrentTeam = function() {
@@ -45,6 +52,7 @@ TeamManager.prototype.getCurrentTeam = function() {
 }
 
 TeamManager.prototype.clearActive = function() {
+    this.previousTeam = this.currentTeam;
     this.currentTeam = TeamManager.INVALID_ID;
 }
 
@@ -53,6 +61,15 @@ TeamManager.prototype.setActive = function(teamID) {
         return;
     }
 
+    if(!this.activeTeams.includes(teamID)) {
+        return;
+    }
+
+    if(this.previousTeam === this.activeTeams[this.activeTeams.length - 1]) {
+        this.round++;
+    }
+
+    this.turn++;
     this.currentTeam = teamID;
 }
 
@@ -139,6 +156,7 @@ TeamManager.prototype.isAlly = function(teamA, teamB) {
     return team.isAlly(teamB);
 }
 
+//TODO(neyn): Clear of currentTeam.
 TeamManager.prototype.removeActiveTeam = function(teamID) {
     for(let i = 0; i < this.activeTeams.length; i++) {
         if(this.activeTeams[i] === teamID) {
@@ -252,32 +270,34 @@ TeamManager.prototype.updateStatus = function() {
     this.checkWinner();
 }
 
-TeamManager.prototype.findActorByTeam = function(gameContext, teamID) {
-    const { world } = gameContext;
-    const { turnManager } = world;  
-    const { actors } = turnManager;
-
-    for(const actor of actors) {
-        if(actor.teamID === teamID) {
-            return actor;
-        }
+TeamManager.prototype.getNextTeam = function() {
+    if(this.activeTeams.length === 0) {
+        return TeamManager.INVALID_ID;
     }
 
-    return null;
+    const index = this.activeTeams.indexOf(this.previousTeam);
+    const nextIndex = (index + 1) % this.activeTeams.length;
+
+    return this.activeTeams[nextIndex];
 }
 
-TeamManager.prototype.setTurnOrder = function(gameContext) {
+TeamManager.prototype.updateActor = function(gameContext) {
     const { world } = gameContext;
     const { turnManager } = world;
-    const order = [];
+    const { actors } = turnManager;
+    let isFound = false;
 
-    for(const teamID of this.activeTeams) {
-        const actor = this.findActorByTeam(gameContext, teamID);
-
-        if(actor) {
-            order.push(actor.getID());
+    if(this.currentTeam !== TeamManager.INVALID_ID) {
+        for(const actor of actors) {
+            if(actor.teamID === this.currentTeam) {
+                turnManager.setCurrentActor(gameContext, actor.getID());
+                isFound = true;
+                break;
+            }
         }
     }
 
-    turnManager.setActorOrder(order);
+    if(!isFound) {
+        turnManager.clearCurrentActor(gameContext);
+    }
 }

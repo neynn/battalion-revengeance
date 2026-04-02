@@ -27,17 +27,13 @@ WorldEventHandler.prototype.clearRecentTriggers = function() {
     this.lastRecentlyTriggered.length = 0;
 }
 
-WorldEventHandler.prototype.checkEventTriggers = function(gameContext) {
+WorldEventHandler.prototype.triggerEvents = function(gameContext, turn, round) {
     if(!this.isAuthority) {
         return;
     }
 
-    const { world } = gameContext;
-    const { turnManager } = world;
-    const { globalTurn, globalRound } = turnManager;
-
     for(const event of this.worldEvents) {
-        if(event.isTriggeredByTurn(globalTurn) || event.isTriggeredByRound(globalRound)) {
+        if(event.isTriggeredByTurn(turn) || event.isTriggeredByRound(round)) {
             this.triggerEvent(gameContext, event);
         }
     }

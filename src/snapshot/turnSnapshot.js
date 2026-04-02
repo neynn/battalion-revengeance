@@ -9,14 +9,13 @@ export const createTurnSnapshot = function() {
 }
 
 export const fillTurnSnapshot = function(gameContext) {
-    const { world, teamManager } = gameContext;
-    const { turnManager } = world;
-    const { globalTurn, globalRound } = turnManager;
+    const { teamManager } = gameContext;
+    const { turn, round, currentTeam } = teamManager;
     const snapshot = createTurnSnapshot();
 
-    snapshot.rounds = globalRound;
-    snapshot.turns = globalTurn;
-    snapshot.team = teamManager.currentTeam;
+    snapshot.rounds = round;
+    snapshot.turns = turn;
+    snapshot.team = currentTeam;
 
     return snapshot;
 }

@@ -26,7 +26,7 @@ EndTurnAction.prototype.onEnd = function(gameContext, data) {
 
 EndTurnAction.prototype.execute = function(gameContext, data) {
     const { world, teamManager } = gameContext;
-    const { turnManager, entityManager } = world;
+    const { entityManager } = world;
     const team = teamManager.getCurrentTeam();
     const turn = team.getStatistic(TEAM_STAT.ROUNDS_TAKEN);
     const { id, entities, objectives } = team;
@@ -43,8 +43,8 @@ EndTurnAction.prototype.execute = function(gameContext, data) {
         objective.onTurnEnd(gameContext, turn, id);
     }
 
-    turnManager.clearCurrentActor(gameContext);
     teamManager.clearActive();
+    teamManager.updateActor(gameContext);
     teamManager.updateStatus();
 }
 

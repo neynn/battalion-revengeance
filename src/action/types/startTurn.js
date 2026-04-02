@@ -28,7 +28,7 @@ StartTurnAction.prototype.onEnd = function(gameContext, data) {
 
 StartTurnAction.prototype.execute = function(gameContext, data) {
     const { world, teamManager } = gameContext;
-    const { entityManager, turnManager, eventHandler, mapManager } = world;
+    const { entityManager, eventHandler, mapManager } = world;
     const { teamID, resolutions } = data;
     const worldMap = mapManager.getActiveMap();
     const team = teamManager.getTeam(teamID);
@@ -69,27 +69,23 @@ StartTurnAction.prototype.execute = function(gameContext, data) {
         team.addStatistic(TEAM_STAT.ROUNDS_TAKEN, 1);
     }
 
-    //TODO(neyn): Remove at best.
-    const actor = teamManager.findActorByTeam(gameContext, teamID);
-    turnManager.setCurrentActor(gameContext, actor.getID());
-
     teamManager.setActive(teamID);
-    eventHandler.checkEventTriggers(gameContext);
+    teamManager.updateActor(gameContext);
+    eventHandler.triggerEvents(gameContext, teamManager.turn, teamManager.round);
     teamManager.updateStatus();
     //TODO: Get next turn, then check if any construction grows. Add that as next.
 }
 
 StartTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    const { world } = gameContext;
-    const { turnManager, entityManager } = world;
-    const nextActorID = turnManager.getNextActor();
+    const { world, teamManager } = gameContext;
+    const { entityManager } = world;
+    const teamID = teamManager.getNextTeam();
 
-    if(nextActorID === null) {
+    if(teamID === TeamManager.INVALID_ID) {
         return;
     }
 
-    const actor = turnManager.getActor(nextActorID);
-    const team = actor.getTeam(gameContext);
+    const team = teamManager.getTeam(teamID);
     const { entities } = team;
     const deadEntities = [];
     const resolutions = [];
@@ -119,7 +115,7 @@ StartTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPla
 
     const data = StartTurnAction.createData();
 
-    data.teamID = team.getID();
+    data.teamID = teamID;
     data.resolutions = resolutions;
 
     executionPlan.setData(data);

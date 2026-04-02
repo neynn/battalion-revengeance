@@ -425,15 +425,14 @@ BattalionCamera.prototype.shadeScreen = function(display, color, alpha) {
 }
 
 BattalionCamera.prototype.drawInfo = function(gameContext, display, tiles, sprites, overlays, other) {
-    const { world } = gameContext;
-    const { turnManager } = world;
-    const { globalRound, globalTurn } = turnManager;
+    const { teamManager } = gameContext;
+    const { round, turn } = teamManager;
     const { context } = display;
     
     drawShape(display, SHAPE.RECTANGLE, "#222222", 0, 0, 100, 30);
 
     context.fillStyle = "#467fc9";
-    context.fillText(`Turn ${globalTurn} | Round ${globalRound}`, 0, 5);
+    context.fillText(`Turn ${turn} | Round ${round}`, 0, 5);
     context.fillText(`Tiles ${tiles} | Sprites ${sprites}`, 0, 15);
     context.fillText(`Overlays ${overlays} | Other ${other}`, 0, 25);
 }
