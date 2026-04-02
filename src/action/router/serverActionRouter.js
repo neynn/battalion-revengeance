@@ -61,10 +61,11 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
     const executedPlans = [];
     let count = 0;
     let sentBytes = 0;
+    let limitReached = false;
 
     this.isUpdating = true;
 
-    while(count < this.maxActionsPerTick && actionQueue.isRunning()) {
+    while(actionQueue.isRunning()) {
         const plan = actionQueue.mpFlushPlan(gameContext);
 
         if(plan === null) {
@@ -79,11 +80,18 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
         }
 
         count++;
+
+        if(count >= this.maxActionsPerTick) {
+            limitReached = true;
+            break;
+        }
     }
 
     this.isUpdating = false;
 
     if(executedPlans.length !== 0 || eventHandler.lastRecentlyTriggered.length !== 0) {
+        console.log("SENT BYTES:", sentBytes);
+
         gameContext.broadcast(GAME_EVENT.MP_SERVER_UPDATE, {
             "version": this.version++,
             "plans": executedPlans,
