@@ -22,6 +22,7 @@ export const ServerActionRouter = function() {
 
     this.maxActionsPerTick = 1000;
     this.isUpdating = false;
+    this.version = 0;
 }
 
 ServerActionRouter.prototype = Object.create(ActionRouter.prototype);
@@ -82,15 +83,15 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
 
     this.isUpdating = false;
 
-    if(executedPlans.length !== 0) {
-        console.log("SENT BYTES:", sentBytes);
-        gameContext.broadcast(GAME_EVENT.MP_SERVER_PLAN_UPDATE, executedPlans);
-    }
+    if(executedPlans.length !== 0 || eventHandler.lastRecentlyTriggered.length !== 0) {
+        gameContext.broadcast(GAME_EVENT.MP_SERVER_UPDATE, {
+            "version": this.version++,
+            "plans": executedPlans,
+            "events": eventHandler.lastRecentlyTriggered
+        });
 
-    if(eventHandler.lastRecentlyTriggered.length !== 0) {
-        gameContext.broadcast(GAME_EVENT.MP_SERVER_EVENT_UPDATE, eventHandler.lastRecentlyTriggered);
         eventHandler.clearRecentTriggers();
-    }
+    }   
 }
 
 ServerActionRouter.prototype.forceEnqueue = function(gameContext, actionIntent) {

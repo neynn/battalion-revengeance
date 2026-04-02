@@ -18,10 +18,11 @@ import { createPlayCamera } from "../camera.js";
 
 import { DialogueComponent } from "../../event/components/dialogue.js";
 import { ExplodeTileComponent } from "../../event/components/explodeTile.js";
-import { PlayEffectComponent } from "../../event/components/playEffect.js";
 import { SpawnComponent } from "../../event/components/spawn.js";
 import { WorldEvent } from "../../../engine/world/event/worldEvent.js";
 import { createEntitySnapshotFromJSON } from "../../snapshot/entitySnapshot.js";
+import { PlaySoundComponent } from "../../event/components/playSound.js";
+import { PlaySpriteComponent } from "../../event/components/playSprite.js";
 
 const createCustomSchema = function(gameContext, team, colorMap) {
     const { typeRegistry } = gameContext;
@@ -47,64 +48,67 @@ export const MatchLoader = function(worldMap, mapFile) {
     this.mines = mapFile.mines ?? [];
 }
 
-MatchLoader.prototype.createComponents = function(gameContext, components, allowedComponents) {
-    const componentObjects = [];
+MatchLoader.prototype.createEventComponents = function(gameContext, event, simulation, effects) {
+    if(this.rules & LOADER_RULE.CREATE_EVENT_SIMULATION) {
+        for(const sim of simulation) {
+            switch(sim.type) {
+                case COMPONENT_TYPE.EXPLODE_TILE: {
+                    const { layer, x, y } = sim;
+                    const component = new ExplodeTileComponent(layer, x, y);
 
-    for(let i = 0; i < components.length; i++) {
-        const { type } = components[i];
+                    event.addSimulation(component);
+                    break;
+                }
+                case COMPONENT_TYPE.SPAWN_ENTITY: {
+                    const { entity } = sim;
+                    const snapshot = createEntitySnapshotFromJSON(gameContext, this.worldMap, entity);
+                    const component = new SpawnComponent(snapshot);
 
-        if(!allowedComponents.has(type)) {
-            continue;
-        }
-
-        switch(type) {
-            case COMPONENT_TYPE.DIALOGUE: {
-                const { dialogue, target = null } = components[i];
-                const component = new DialogueComponent(dialogue, target);
-
-                componentObjects.push(component);
-                break;
-            }
-            case COMPONENT_TYPE.EXPLODE_TILE: {
-                const { layer, x, y } = components[i];
-                const component = new ExplodeTileComponent(layer, x, y);
-
-                componentObjects.push(component);
-                break;
-            }
-            case COMPONENT_TYPE.PLAY_EFFECT: {
-                const { effects } = components[i];
-                const component = new PlayEffectComponent(effects);
-
-                componentObjects.push(component);
-                break;
-            }
-            case COMPONENT_TYPE.SPAWN_ENTITY: {
-                const { entity } = components[i];
-                const snapshot = createEntitySnapshotFromJSON(gameContext, this.worldMap, entity);
-                const component = new SpawnComponent(snapshot);
-
-                componentObjects.push(component);
-                break;
-            }
-            default: {
-                console.error("Unsupported event component!", config[i]);
-                break;
+                    event.addSimulation(component);
+                    break;
+                }
             }
         }
     }
 
-    return componentObjects;
+    if(this.rules & LOADER_RULE.CREATE_EVENT_EFFECTS) {
+        for(const effect of effects) {
+            switch(effect.type) {
+                case COMPONENT_TYPE.PLAY_SOUND: {
+                    const { sound } = effect;
+                    const component = new PlaySoundComponent(sound);
+
+                    event.addEffect(component);
+                    break;
+                }
+                case COMPONENT_TYPE.PLAY_SPRITE: {
+                    const { sprite, x, y } = effect;
+                    const component = new PlaySpriteComponent(sprite, x, y);
+
+                    event.addEffect(component);
+                    break;
+                }
+                case COMPONENT_TYPE.DIALOGUE: {
+                    const { dialogue, target = null } = effect;
+                    const component = new DialogueComponent(dialogue, target);
+
+                    event.addEffect(component);
+                    break;
+                }
+            }
+        }
+    }
 }
 
-MatchLoader.prototype.createWorldEvents = function(gameContext, allowedComponents) {
+MatchLoader.prototype.createWorldEvents = function(gameContext) {
     const { world } = gameContext;
     const { eventHandler } = world;
 
     for(const eventName in this.events) {
-        const { turn, round, next = null, components = [] } = this.events[eventName];
-        const componentObjects = this.createComponents(gameContext, components, allowedComponents);
-        const event = new WorldEvent(eventName, componentObjects);
+        const { turn, round, next = null, simulation = [], effects = [] } = this.events[eventName];
+        const event = new WorldEvent(eventName);
+
+        this.createEventComponents(gameContext, event, simulation, effects);
 
         event.setTriggerTime(turn, round);
         event.setNext(next);

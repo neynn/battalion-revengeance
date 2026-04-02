@@ -30,18 +30,12 @@
     "events": {
         "BOOM": {
             "turn": 2,
-            "components": [
-                {
-                    "type": "SPAWN_ENTITY",
-                    "entity": { "x": 4, "y": 3, "type": "BOLT_TANK", "team": "TEST2" }
-                },
-                {
-                    "type": "PLAY_EFFECT",
-                    "effects": [
-                        { "type": "GFX", "gfx": "explosion", "x": 4, "y": 4 },
-                        { "type": "SFX", "sfx": "explosion" }
-                    ]
-                }
+            "simulation": [
+                { "type": "SPAWN_ENTITY", "entity": { "x": 4, "y": 3, "type": "BOLT_TANK", "team": "TEST2" } }
+            ],
+            "effects": [
+                { "type": "PLAY_SOUND", "sound": "explosion" },
+                { "type": "PLAY_SPRITE", "sprite": "explosion", "x": 4, "y": 4 }
             ]
         }
     },

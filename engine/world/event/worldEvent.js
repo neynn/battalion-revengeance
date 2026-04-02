@@ -1,16 +1,21 @@
-export const WorldEvent = function(id, components) {
+export const WorldEvent = function(id) {
     this.id = id;
     this.turn = WorldEvent.INVALID_TIME;
     this.round = WorldEvent.INVALID_TIME;
     this.next = null;
-    this.components = components;
+    this.simulation = [];
+    this.effects = [];
 }
 
 WorldEvent.INVALID_TIME = -1;
 
 WorldEvent.prototype.execute = function(gameContext) {
-    for(let i = 0; i < this.components.length; i++) {
-        this.components[i].execute(gameContext);
+    for(let i = 0; i < this.simulation.length; i++) {
+        this.simulation[i].execute(gameContext);
+    }
+
+    for(let i = 0; i < this.effects.length; i++) {
+        this.effects[i].execute(gameContext);
     }
 }
 
@@ -18,6 +23,14 @@ WorldEvent.prototype.setNext = function(next) {
     if(next !== undefined && next !== this.id) {
         this.next = next;
     }
+}
+
+WorldEvent.prototype.addEffect = function(effect) {
+    this.effects.push(effect);
+}
+
+WorldEvent.prototype.addSimulation = function(simulation) {
+    this.simulation.push(simulation);
 }
 
 WorldEvent.prototype.setTriggerTime = function(turn = WorldEvent.INVALID_TIME, round = WorldEvent.INVALID_TIME) {

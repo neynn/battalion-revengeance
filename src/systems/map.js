@@ -1,14 +1,10 @@
 import { BattalionMap } from "../map/battalionMap.js";
 import { createClientBuildingObject, createClientEntityObject, createMineObject, createServerEntityObject, spawnClientBuilding, spawnServerBuilding } from "./spawn.js";
-import { COMPONENT_TYPE, LAYER_TYPE, LOADER_RULE, MINE_TYPE } from "../enums.js";
+import { LAYER_TYPE, LOADER_RULE, MINE_TYPE } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
 import { createEntitySnapshot, createEntitySnapshotFromJSON } from "../snapshot/entitySnapshot.js";
 import { MatchLoader } from "./loader/matchLoader.js";
 import { unpackEntitySnapshot } from "../action/packer_constants.js";
-
-const MP_SERVER_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.EXPLODE_TILE, COMPONENT_TYPE.SPAWN_ENTITY]);
-const MP_CLIENT_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.DIALOGUE, COMPONENT_TYPE.PLAY_EFFECT]);
-const CLIENT_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.DIALOGUE, COMPONENT_TYPE.PLAY_EFFECT, COMPONENT_TYPE.SPAWN_ENTITY, COMPONENT_TYPE.EXPLODE_TILE]);
 
 export const ClientMatchLoader = function(worldMap, mapFile) {
     MatchLoader.call(this, worldMap, mapFile);
@@ -140,6 +136,7 @@ ClientMatchLoader.prototype.loadInitialServerSnapshot = function(gameContext, sn
 
     this.rules |= LOADER_RULE.ALLOW_SPECTATOR;
     this.rules |= LOADER_RULE.CUSTOM_COLOR;
+    this.rules |= LOADER_RULE.CREATE_EVENT_EFFECTS;
 
     this.createTeams(gameContext, overrides);
     this.createActors(gameContext);
@@ -147,7 +144,7 @@ ClientMatchLoader.prototype.loadInitialServerSnapshot = function(gameContext, sn
     this.createBuildings(gameContext);
     this.createMines(gameContext);
     this.loadMusic(gameContext);
-    this.createWorldEvents(gameContext, MP_CLIENT_EVENT_COMPONENTS);
+    this.createWorldEvents(gameContext);
     this.worldMap.loadLocalization(this.localization);
 
     dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);
@@ -167,6 +164,8 @@ ClientMatchLoader.prototype.loadMapFromSnapshot = function(gameContext, snapshot
     this.rules |= LOADER_RULE.FIXED_ALLIES;
     this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
     this.rules |= LOADER_RULE.CUSTOM_COLOR;
+    this.rules |= LOADER_RULE.CREATE_EVENT_EFFECTS;
+    this.rules |= LOADER_RULE.CREATE_EVENT_SIMULATION;
 
     this.createTeams(gameContext, overrides);
     this.createActors(gameContext);
@@ -198,7 +197,7 @@ ClientMatchLoader.prototype.loadMapFromSnapshot = function(gameContext, snapshot
     }
 
     this.loadMusic(gameContext);
-    this.createWorldEvents(gameContext, CLIENT_EVENT_COMPONENTS);
+    this.createWorldEvents(gameContext);
     this.worldMap.loadLocalization(this.localization);
     this.worldMap.loadEdits(edits);
 
@@ -218,6 +217,8 @@ ClientMatchLoader.prototype.loadMapFromFile = function(gameContext, overrides) {
     this.rules |= LOADER_RULE.FIXED_ALLIES;
     this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
     this.rules |= LOADER_RULE.CUSTOM_COLOR;
+    this.rules |= LOADER_RULE.CREATE_EVENT_EFFECTS;
+    this.rules |= LOADER_RULE.CREATE_EVENT_SIMULATION;
 
     this.createTeams(gameContext, overrides);
     this.createActors(gameContext);
@@ -225,7 +226,7 @@ ClientMatchLoader.prototype.loadMapFromFile = function(gameContext, overrides) {
     this.createBuildings(gameContext);
     this.createMines(gameContext);
     this.loadMusic(gameContext);
-    this.createWorldEvents(gameContext, CLIENT_EVENT_COMPONENTS);
+    this.createWorldEvents(gameContext);
     this.worldMap.loadLocalization(this.localization);
 
     dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);
@@ -319,13 +320,14 @@ ServerMatchLoader.prototype.loadMap = function(gameContext, overrides) {
     //COOP has fixed allies, PvP does not.
     this.rules |= LOADER_RULE.FIXED_ALLIES;
     this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
+    this.rules |= LOADER_RULE.CREATE_EVENT_SIMULATION;
 
     this.createTeams(gameContext, overrides);
     this.createActors(gameContext);
     this.createEntities(gameContext);
     this.createBuildings(gameContext);
     this.createMines(gameContext);
-    this.createWorldEvents(gameContext, MP_SERVER_EVENT_COMPONENTS);
+    this.createWorldEvents(gameContext);
 
     teamManager.updateStatus();
 }

@@ -6,7 +6,9 @@ import { unpackPlan } from "../../action/planPacker.js";
 import { GAME_EVENT } from "../../enums.js";
 import { createClientMapLoader } from "../../systems/map.js";
 
-export const ArenaState = function() {}
+export const ArenaState = function() {
+    this.version = 0;
+}
 
 const NAME = getRandomElement(["FOO", "BAR", "BAZ", "NEYN", "PEARL", "GHOST", "NEMESIS"]);
 
@@ -50,8 +52,10 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
                 uiCore.arena.hide();
                 break;
             }
-            case GAME_EVENT.MP_SERVER_PLAN_UPDATE: {
-                for(const plan of payload) {
+            case GAME_EVENT.MP_SERVER_UPDATE: {
+                const { version, plans, events } = payload;
+
+                for(const plan of plans) {
                     const executionPlan = unpackPlan(plan);
 
                     if(executionPlan.isValid()) {
@@ -61,11 +65,14 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
                     }
                 }
 
-                break;
-            }
-            case GAME_EVENT.MP_SERVER_EVENT_UPDATE: {
-                for(const eventID of payload) {
+                for(const eventID of events) {
                     eventHandler.forceTrigger(gameContext, eventID);
+                }
+
+                if((this.version + 1) === version) {
+                    this.version = version;
+                } else {
+                    //Version mismatch!
                 }
 
                 break;
@@ -91,4 +98,5 @@ ArenaState.prototype.onExit = function(gameContext, stateMachine) {
 
     socket.disconnect();
     gameContext.exit();
+    this.version = 0;
 }
