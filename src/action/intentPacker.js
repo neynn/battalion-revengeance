@@ -1,7 +1,28 @@
 import { ACTION_TYPE, COMMAND_TYPE } from "../enums.js";
 import { createStep } from "../systems/pathfinding.js";
-import { createAttackRequest, createEndTurnIntent, createHealRequest, createMoveRequest, createPurchseEntityIntent } from "./actionHelper.js";
+import { createAttackRequest, createEndTurnIntent, createHealRequest, createMoveRequest, createProduceIntent, createPurchaseIntent } from "./actionHelper.js";
 import { MOVE_STEP_SIZE } from "./packer_constants.js";
+
+/*
+    0x00 -> type,
+    0x01 -> direction,
+    0x02 -> entityID,
+    0x04 -> typeID
+*/
+const PRODUCE_HEADER_SIZE = 6;
+
+export const packProduceIntent = function(data) {
+    const { direction, entityID, typeID } = data;
+    const buffer = new ArrayBuffer(PRODUCE_HEADER_SIZE);
+    const view = new DataView(buffer);
+
+    view.setUint8(0, ACTION_TYPE.PRODUCE_ENTITY);
+    view.setUint8(1, direction);
+    view.setInt16(2, entityID, true);
+    view.setInt16(4, typeID, true);
+
+    return buffer;
+}
 
 /*
     0x00 -> type,
@@ -123,6 +144,9 @@ export const isIntentValid = function(gameContext, intent) {
     const { type, data } = intent;
 
     switch(type) {
+        case ACTION_TYPE.PRODUCE_ENTITY: {
+            return true;
+        }
         case ACTION_TYPE.PURCHASE_ENTITY: {
             return true;
         }
@@ -158,12 +182,19 @@ export const unpackIntent = function(data) {
     const type = view.getUint8(0);
 
     switch(type) {
+        case ACTION_TYPE.PRODUCE_ENTITY: {
+            const direction = view.getUint8(1);
+            const entityID = view.getInt16(2, true);
+            const typeID = view.getInt16(4, true);
+
+            return createProduceIntent(entityID, typeID, direction);
+        }
         case ACTION_TYPE.PURCHASE_ENTITY: {
             const typeID = view.getInt16(1, true);
             const tileX = view.getInt16(3, true);
             const tileY = view.getInt16(5, true);
 
-            return createPurchseEntityIntent(tileX, tileY, typeID);
+            return createPurchaseIntent(tileX, tileY, typeID);
         }
         case ACTION_TYPE.END_TURN: {
             return createEndTurnIntent();

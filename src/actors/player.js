@@ -5,7 +5,7 @@ import { IdleState } from "./player/idle.js";
 import { SelectState } from "./player/select.js";
 import { DIRECTION, ENTITY_TYPE } from "../enums.js";
 import { saveStoryMap } from "../systems/save.js";
-import { createEndTurnIntent, createExtractIntent, createProduceEntityIntent, createPurchseEntityIntent } from "../action/actionHelper.js";
+import { createEndTurnIntent, createExtractIntent, createProduceIntent } from "../action/actionHelper.js";
 import { MapInspector } from "./player/inspector.js";
 
 export const Player = function(id, camera) {
@@ -98,7 +98,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
 
         if(entity) {
             //this.addIntent(createExtractIntent(entity.id));
-            this.addIntent(createProduceEntityIntent(entity.id, ENTITY_TYPE.ANNIHILATOR_TANK, DIRECTION.NORTH));
+            this.addIntent(createProduceIntent(entity.id, ENTITY_TYPE.ANNIHILATOR_TANK, DIRECTION.NORTH));
         }
     });
 }

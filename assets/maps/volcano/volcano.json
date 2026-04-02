@@ -8,8 +8,9 @@
         { "id": "TEST2", "commander": "KANYE", "faction": "GOLD" }
     ],
     "entities": [
-        { "x": 1, "y": 1, "type": "ENTWICKLUNG", "team": "TEST" },
-        { "x": 1, "y": 2, "stealth": false, "type": "STEALTH_TANK", "team": "TEST" },
+        { "x": 1, "y": 2, "type": "WARMACHINE", "team": "TEST", "cash": 5000 },
+        { "x": 2, "y": 1, "type": "ENTWICKLUNG", "team": "TEST" },
+        { "x": 2, "y": 2, "stealth": false, "type": "STEALTH_TANK", "team": "TEST" },
         { "x": 1, "y": 3, "stealth": true, "type": "INFANTRY", "team": "TEST" },
 
         { "x": 7, "y": 1, "type": "ENTWICKLUNG", "team": "TEST2" },

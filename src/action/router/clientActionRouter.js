@@ -1,6 +1,6 @@
 import { ActionRouter } from "../../../engine/action/actionRouter.js";
 import { ACTION_TYPE, GAME_EVENT } from "../../enums.js";
-import { packAttackIntent, packEndTurnIntent, packMoveIntent, packPurchaseIntent } from "../intentPacker.js";
+import { packAttackIntent, packEndTurnIntent, packHealIntent, packMoveIntent, packProduceIntent, packPurchaseIntent } from "../intentPacker.js";
 
 export const ClientActionRouter = function() {
     ActionRouter.call(this);
@@ -13,8 +13,10 @@ ClientActionRouter.prototype.packIntent = function(actionIntent) {
     const { type, data } = actionIntent;
 
     switch(type) {
+        case ACTION_TYPE.PRODUCE_ENTITY: return packProduceIntent(data);
         case ACTION_TYPE.PURCHASE_ENTITY: return packPurchaseIntent(data);
         case ACTION_TYPE.MOVE: return packMoveIntent(data);
+        case ACTION_TYPE.HEAL: return packHealIntent(data);
         case ACTION_TYPE.ATTACK: return packAttackIntent(data);
         case ACTION_TYPE.END_TURN: return packEndTurnIntent(data);
         default: return null;

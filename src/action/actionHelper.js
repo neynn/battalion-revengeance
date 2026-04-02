@@ -7,7 +7,7 @@ export const createMineTriggerIntent = function(entityID) {
     });
 }
 
-export const createProduceEntityIntent = function(entityID, typeID, direction) {
+export const createProduceIntent = function(entityID, typeID, direction) {
     return new ActionIntent(ACTION_TYPE.PRODUCE_ENTITY, {
         "entityID": entityID,
         "typeID": typeID,
@@ -15,7 +15,7 @@ export const createProduceEntityIntent = function(entityID, typeID, direction) {
     });
 } 
 
-export const createPurchseEntityIntent = function(tileX, tileY, typeID) {
+export const createPurchaseIntent = function(tileX, tileY, typeID) {
     return new ActionIntent(ACTION_TYPE.PURCHASE_ENTITY, {
         "tileX": tileX,
         "tileY": tileY,

@@ -1,4 +1,4 @@
-import { createPurchseEntityIntent } from "../../action/actionHelper.js";
+import { createPurchaseIntent } from "../../action/actionHelper.js";
 import { ENTITY_TYPE, TRAIT_TYPE } from "../../enums.js";
 import { Player } from "../player.js";
 import { PlayerState } from "./playerState.js";
@@ -27,7 +27,7 @@ IdleState.prototype.onBuildingClick = function(gameContext, stateMachine, buildi
         //TODO: Open and create SELECT menu.
         const { tileX, tileY } = building;
         const player = stateMachine.getContext();
-        const request = createPurchseEntityIntent(tileX, tileY, ENTITY_TYPE.HEAVY_COMMANDO);
+        const request = createPurchaseIntent(tileX, tileY, ENTITY_TYPE.HEAVY_COMMANDO);
 
         player.addIntent(request);
         stateMachine.setNextState(gameContext, Player.STATE.IDLE);
