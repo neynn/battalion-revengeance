@@ -9,6 +9,7 @@ export const createEntitySnapshot = function() {
         "direction": DIRECTION.EAST, //UINT8
         "state": BattalionEntity.STATE.IDLE, //UINT8
         "morale": MORALE_TYPE.NORMAL, //UINT8
+        "moraleDelta": 0, //INT8
         "teamID": TeamManager.INVALID_ID, //INT8
         "turns": 0, //UINT16
         "cash": 0, //UINT16

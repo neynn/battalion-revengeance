@@ -1,6 +1,6 @@
 export const MOVE_STEP_SIZE = 6;
 export const ENTITY_RESOLUTION_SIZE = 6;
-export const ENTITY_SNAPSHOT_SIZE = 30;
+export const ENTITY_SNAPSHOT_SIZE = 31;
 
 const BIT_8 = 1;
 const BIT_16 = 2;
@@ -33,6 +33,8 @@ export const packEntitySnapshot = function(snapshot, view, byteOffset) {
     view.setUint8(byteOffset, snapshot.state);
     byteOffset += BIT_8;
     view.setUint8(byteOffset, snapshot.morale);
+    byteOffset += BIT_8;
+    view.setInt8(byteOffset, snapshot.moraleDelta);
     byteOffset += BIT_8;
     view.setInt8(byteOffset, snapshot.teamID);
     byteOffset += BIT_8;
@@ -72,6 +74,8 @@ export const unpackEntitySnapshot = function(snapshot, view, byteOffset) {
     snapshot.state = view.getUint8(byteOffset);
     byteOffset += BIT_8;
     snapshot.morale = view.getUint8(byteOffset);
+    byteOffset += BIT_8;
+    snapshot.moraleDelta = view.getInt8(byteOffset);
     byteOffset += BIT_8;
     snapshot.teamID = view.getInt8(byteOffset);
     byteOffset += BIT_8;

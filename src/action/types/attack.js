@@ -121,6 +121,7 @@ AttackAction.prototype.execute = function(gameContext, data) {
     const entity = entityManager.getEntity(attackerID);
     const target = entityManager.getEntity(targetID);
     const team = entity.getTeam(gameContext);
+    const doTerrifying = entity.hasTrait(TRAIT_TYPE.TERRIFYING) && !(flags & AttackAction.FLAG.COUNTER);
     let killedUnits = 0;
 
     for(let i = 0; i < resolutions.length; i++) {
@@ -129,8 +130,14 @@ AttackAction.prototype.execute = function(gameContext, data) {
 
         targetObject.setHealth(health);
 
-        if(health <= 0 && entityID !== attackerID) {
-            killedUnits++;
+        if(entityID !== attackerID) {
+            if(doTerrifying) {
+                targetObject.applyTerrifying();
+            }
+
+            if(health <= 0) {
+                killedUnits++;
+            }
         }
     }
 

@@ -14,6 +14,9 @@ import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { BattalionMap } from "../map/battalionMap.js";
 
+const MORALE_DELTA_MAX = 3;
+const MORALE_DELTA_MIN = -3;
+
 export const BattalionEntity = function(id) {
     Entity.call(this, id);
 
@@ -25,6 +28,7 @@ export const BattalionEntity = function(id) {
     this.maxHealth = 1;
     this.damage = 0;
     this.moraleType = MORALE_TYPE.NORMAL;
+    this.moraleDelta = 0;
     this.tileX = -1;
     this.tileY = -1;
     this.tileZ = -1;
@@ -70,6 +74,7 @@ BattalionEntity.prototype.save = function() {
     snapshot.health = this.health;
     snapshot.maxHealth = this.maxHealth;
     snapshot.morale = this.moraleType;
+    snapshot.moraleDelta = this.moraleDelta;
     snapshot.tileX = this.tileX;
     snapshot.tileY = this.tileY;
     snapshot.tileZ = this.tileZ;
@@ -102,10 +107,6 @@ BattalionEntity.prototype.load = function(data) {
     this.setHealth(data.health);
 }
 
-BattalionEntity.prototype.setState = function(stateID) {
-    this.state = stateID;
-}
-
 BattalionEntity.prototype.loadConfig = function(config) {
     const { health, damage } = config;
 
@@ -115,6 +116,10 @@ BattalionEntity.prototype.loadConfig = function(config) {
     this.damage = damage;
 
     this.setHealth(this.health);
+}
+
+BattalionEntity.prototype.setState = function(stateID) {
+    this.state = stateID;
 }
 
 BattalionEntity.prototype.belongsTo = function(teamID) {
@@ -269,6 +274,35 @@ BattalionEntity.prototype.lookAt = function(entity) {
 
 BattalionEntity.prototype.setTeam = function(teamID) {
     this.teamID = teamID;
+}
+
+BattalionEntity.prototype.getMorale = function(gameContext) {
+    const { typeRegistry } = gameContext;
+    let morale = this.moraleType + this.moraleDelta;
+
+    if(morale < MORALE_TYPE.LOWEST)  {
+        morale = MORALE_TYPE.LOWEST;
+    } else if(morale > MORALE_TYPE.HIGHEST) {
+        morale = MORALE_TYPE.HIGHEST;
+    }
+
+    return typeRegistry.getMoraleType(morale);
+}
+
+BattalionEntity.prototype.applyTerrifying = function() {
+    this.moraleDelta--;
+
+    if(this.moraleDelta < MORALE_DELTA_MIN) {
+        this.moraleDelta = MORALE_DELTA_MIN;
+    }
+}
+
+BattalionEntity.prototype.applyInflaming = function() {
+    this.moraleDelta++;
+
+    if(this.moraleDelta > MORALE_DELTA_MAX) {
+        this.moraleDelta = MORALE_DELTA_MAX;
+    }
 }
 
 BattalionEntity.prototype.occupiesTile = function(tileX, tileY) {
@@ -816,11 +850,7 @@ BattalionEntity.prototype.isCounterValid = function(target) {
 }
 
 BattalionEntity.prototype.getMoraleFactor = function(gameContext) {
-    const { typeRegistry } = gameContext;
-    const { damageModifier } = typeRegistry.getMoraleType(this.moraleType);
-
-    //TODO(neyn): Think about adding "moraleBuff" which goes from -3 to 3
-    //Then transform that value to a morale type. (Table?)
+    const { damageModifier } = this.getMorale(gameContext);
 
     return damageModifier;
 }

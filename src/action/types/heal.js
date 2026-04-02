@@ -1,7 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
-import { SOUND_TYPE } from "../../enums.js";
+import { SOUND_TYPE, TRAIT_TYPE } from "../../enums.js";
 import { playEntitySound } from "../../systems/sound.js";
 import { getAnimationDuration, playHealEffect, updateEntitySprite } from "../../systems/sprite.js";
 import { createDeathIntent } from "../actionHelper.js";
@@ -76,14 +76,21 @@ HealAction.prototype.onEnd = function(gameContext, data) {
 HealAction.prototype.execute = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID, resolutions } = data;
+    const { entityID, targetID, resolutions } = data;
     const entity = entityManager.getEntity(entityID);
+    const doInflaming = entity.hasTrait(TRAIT_TYPE.INFLAMING);
 
     for(let i = 0; i < resolutions.length; i++) {
         const { entityID, health } = resolutions[i];
         const targetObject = entityManager.getEntity(entityID);
 
         targetObject.setHealth(health);
+
+        //MAYBE(neyn): If an entity modifies itself with healing, then inflaming is applied
+        //Healers with ABSORBER would be one option.
+        if(doInflaming) {
+            targetObject.applyInflaming();
+        }
     }
 
     entity.setActed();

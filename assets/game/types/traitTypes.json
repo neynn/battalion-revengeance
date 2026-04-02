@@ -330,13 +330,11 @@
     "TERRIFYING": {
         "name": "TRAIT_NAME_TERRIFYING",
         "desc": "TRAIT_DESC_TERRIFYING",
-        "icon": "TERRIFYING",
-        "note": "This trait is not implemented."
+        "icon": "TERRIFYING"
     },
     "INFLAMING": {
         "name": "TRAIT_NAME_INFLAMING",
         "desc": "TRAIT_DESC_INFLAMING",
-        "icon": "COURAGE",
-        "note": "This trait is not implemented."
+        "icon": "COURAGE"
     }
 }
