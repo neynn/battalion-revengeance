@@ -3,6 +3,7 @@ import { UnitSurviveObjective } from "./objective/types/unitSurvive.js";
 import { LynchpinObjective } from "./objective/types/lynchpin.js";
 import { COMMANDER_TYPE, CURRENCY_TYPE, SCHEMA_TYPE, TEAM_STAT, TRAIT_TYPE } from "../enums.js";
 import { SCORE_BONUS, VICTORY_BONUS } from "../constants.js";
+import { createTeamSnapshot } from "../snapshot/teamSnapshot.js";
 
 export const Team = function(id) {
     this.id = id;
@@ -44,18 +45,20 @@ Team.STATUS = {
 };
 
 Team.prototype.save = function() {
-    const objectives = [];
+    const snapshot = createTeamSnapshot();
+
+    snapshot.stats = this.stats;
+    snapshot.cash = this.cash;
+
+    for(let i = 0; i < TEAM_STAT._COUNT; i++) {
+        snapshot.stats[i] = this.stats[i];
+    }
 
     for(const objective of this.objectives) {
-        objectives.push(objective.save());
+        snapshot.objectives.push(objective.save());
     }
 
-    return {
-        "status": this.status,
-        "cash": this.cash,
-        "stats": this.stats,
-        "objectives": objectives
-    }
+    return snapshot;
 }
 
 Team.prototype.load = function(data) {

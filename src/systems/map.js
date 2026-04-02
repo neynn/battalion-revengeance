@@ -2,8 +2,9 @@ import { BattalionMap } from "../map/battalionMap.js";
 import { createClientBuildingObject, createClientEntityObject, createMineObject, createServerEntityObject, spawnClientBuilding, spawnServerBuilding } from "./spawn.js";
 import { COMPONENT_TYPE, LAYER_TYPE, LOADER_RULE, MINE_TYPE } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
-import { createEntitySnapshotFromJSON } from "../snapshot/entitySnapshot.js";
+import { createEntitySnapshot, createEntitySnapshotFromJSON } from "../snapshot/entitySnapshot.js";
 import { MatchLoader } from "./loader/matchLoader.js";
+import { unpackEntitySnapshot } from "../action/packer_constants.js";
 
 const MP_SERVER_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.EXPLODE_TILE, COMPONENT_TYPE.SPAWN_ENTITY]);
 const MP_CLIENT_EVENT_COMPONENTS = new Set([COMPONENT_TYPE.DIALOGUE, COMPONENT_TYPE.PLAY_EFFECT]);
@@ -124,6 +125,21 @@ ClientMatchLoader.prototype.loadTurnFromSnapshot = function(gameContext, turn) {
     }
 }
 
+ClientMatchLoader.prototype.unpackTotalEntityBuffer = function(gameContext, entities) {
+    const view = new DataView(entities);
+    const count = view.getUint16(0, true);
+    let byteOffset = 2;
+
+    for(let i = 0; i < count; i++) {
+        const entityID = view.getInt16(byteOffset, true);
+        const snapshot = createEntitySnapshot();
+
+        byteOffset = unpackEntitySnapshot(snapshot, view, byteOffset + 2);
+
+        createClientEntityObject(gameContext, entityID, snapshot);
+    }
+}
+
 ClientMatchLoader.prototype.loadInitialServerSnapshot = function(gameContext, snapshot, overrides) {
     const { dialogueHandler, teamManager, spriteManager } = gameContext;
     const { mapID, turn, entities, teams } = snapshot; //TODO(neyn): Colors to team overrides!
@@ -133,11 +149,7 @@ ClientMatchLoader.prototype.loadInitialServerSnapshot = function(gameContext, sn
 
     this.createTeams(gameContext, overrides);
     this.createActors(gameContext);
-
-    for(const { id, data } of entities) {
-        createClientEntityObject(gameContext, id, data);
-    }
-
+    this.unpackTotalEntityBuffer(gameContext, entities);
     this.createBuildings(gameContext);
     this.createMines(gameContext);
     this.loadMusic(gameContext);

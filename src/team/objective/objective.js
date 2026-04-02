@@ -1,3 +1,5 @@
+import { createObjectiveSnapshot } from "../../snapshot/teamSnapshot.js";
+
 export const Objective = function(DEBUG_NAME) {
     this.DEBUG_NAME = DEBUG_NAME;
     this.status = Objective.STATUS.ACTIVE;
@@ -12,9 +14,11 @@ Objective.STATUS = {
 };
 
 Objective.prototype.save = function() {
-    return {
-        "status": this.status
-    }
+    const snapshot = createObjectiveSnapshot();
+
+    snapshot.status = this.status;
+
+    return snapshot;
 }
 
 Objective.prototype.load = function(data) {

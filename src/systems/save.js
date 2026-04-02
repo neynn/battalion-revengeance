@@ -1,5 +1,5 @@
 import { PrettyJSON } from "../../engine/resources/prettyJSON.js";
-import { TeamManager } from "../team/teamManager.js";
+import { fillTurnSnapshot } from "../snapshot/turnSnapshot.js";
 import { createClientMapLoader } from "./map.js";
 
 const saveEntities = function(gameContext) {
@@ -70,19 +70,6 @@ const saveEdits = function(worldMap) {
     return data;
 }
 
-export const getTurnData = function(gameContext) {
-    const { world, teamManager } = gameContext;
-    const { turnManager } = world;
-    const { globalTurn, globalRound } = turnManager;
-    const turnData = {
-        "team": teamManager.currentTeam,
-        "rounds": globalRound,
-        "turns": globalTurn
-    };
-
-    return turnData;
-}
-
 export const saveStoryMap = function(gameContext) {
     const { world } = gameContext;
     const { mapManager, eventHandler } = world;
@@ -98,7 +85,7 @@ export const saveStoryMap = function(gameContext) {
 
     file.open();
     file.writeLine("mapID", worldMap.sourceID);
-    file.writeLine("turn", getTurnData(gameContext));
+    file.writeLine("turn", fillTurnSnapshot(gameContext));
     file.writeLine("events", events);
     file.writeLine("edits", edits, PrettyJSON.LIST_TYPE.ARRAY);
     file.writeList("entities", entities, PrettyJSON.LIST_TYPE.ARRAY);

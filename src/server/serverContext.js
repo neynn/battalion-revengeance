@@ -6,9 +6,10 @@ import { GAME_EVENT } from "../enums.js";
 import { createServerMapLoader } from "../systems/map.js";
 import { createStartTurnIntent } from "../action/actionHelper.js";
 import { MapMaster } from "../map/mapMaster.js";
-import { getTurnData } from "../systems/save.js";
 import { ServerActionRouter } from "../action/router/serverActionRouter.js";
 import { isIntentValid, unpackIntent } from "../action/intentPacker.js";
+import { ENTITY_SNAPSHOT_SIZE, packEntitySnapshot } from "../action/packer_constants.js";
+import { fillTurnSnapshot } from "../snapshot/turnSnapshot.js";
 
 const isClientTurn = function(gameContext, messengerID) {
     const { world } = gameContext;
@@ -85,28 +86,42 @@ ServerGameContext.prototype.mpSelectMap = function(mapID) {
     }
 }
 
+ServerGameContext.prototype.createTotalEntityBuffer = function() {
+    const entities = this.world.entityManager.entities;
+    const BUFFER_SIZE = 2 + (2 + ENTITY_SNAPSHOT_SIZE) * entities.length;
+    const buffer = new ArrayBuffer(BUFFER_SIZE);
+    const view = new DataView(buffer);
+
+    view.setUint16(0, entities.length, true);
+
+    let byteOffset = 2;
+
+    for(let i = 0; i < entities.length; i++) {
+        const entity = entities[i];
+        const entityID = entity.getID();
+        const snapshot = entity.save();
+
+        view.setInt16(byteOffset, entityID, true);
+        byteOffset = packEntitySnapshot(snapshot, view, byteOffset + 2);
+    }
+
+    return buffer;
+}
+
 ServerGameContext.prototype.createInitialSnapshot = function() {
     const { world, teamManager } = this;
-    const { mapManager, entityManager } = world;
+    const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
-    const entities = [];
     const teams = [];
-
-    entityManager.forEachEntity((entity) => {
-        entities.push({
-            "id": entity.getID(),
-            "data": entity.save()
-        });
-    });
 
     teamManager.forEachTeam((team) => teams.push(team.save()));
 
     return {
         "mapID": worldMap.sourceID,
-        "turn": getTurnData(this),
-        "entities": entities,
+        "turn": fillTurnSnapshot(this),
+        "entities": this.createTotalEntityBuffer(),
         "teams": teams
-    };
+    }
 }
 
 ServerGameContext.prototype.createRejoinSnapshot = function() {
