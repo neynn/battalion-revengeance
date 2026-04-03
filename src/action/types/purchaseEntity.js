@@ -66,7 +66,7 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
         return;
     }
 
-    const shopType = typeRegistry.getShopType(building.config.shop);
+    const shopType = building.getShop(gameContext);
     const hasEntity = shopType.hasEntity(typeID);
 
     if(!hasEntity) {

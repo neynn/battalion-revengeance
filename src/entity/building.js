@@ -1,5 +1,5 @@
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
-import { SCHEMA_TYPE } from "../enums.js";
+import { SCHEMA_TYPE, SHOP_TYPE } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { createBuildingSnapshot } from "../snapshot/buildingSnapshot.js";
 import { StaticObject } from "./staticObject.js";
@@ -12,6 +12,7 @@ export const Building = function(config) {
     this.customDesc = LanguageHandler.INVALID_ID;
     this.totalGeneratedCash = 0;
     this.color = SCHEMA_TYPE.RED;
+    this.shop = SHOP_TYPE.NONE;
 }
 
 Building.prototype = Object.create(StaticObject.prototype);
@@ -29,6 +30,7 @@ Building.prototype.save = function() {
     snapshot.name = this.customName;
     snapshot.totalGeneratedCash = this.totalGeneratedCash;
     snapshot.color = this.color;
+    snapshot.shop = this.shop;
 
     return snapshot;
 }
@@ -42,6 +44,8 @@ Building.prototype.load = function(data) {
     this.customName = data.name;
     this.customDesc = data.desc;
     this.totalGeneratedCash = data.totalGeneratedCash;
+    this.shop = data.shop;
+    this.color = data.color;
 }
 
 Building.prototype.generateCash = function(gameContext) {
@@ -77,4 +81,14 @@ Building.prototype.getName = function(gameContext) {
     }
 
     return language.getSystemTranslation(this.config.name);
+}
+
+Building.prototype.getShop = function(gameContext) {
+    const { typeRegistry } = gameContext;
+
+    if(this.shop !== SHOP_TYPE.NONE) {
+        return typeRegistry.getShopType(this.shop);
+    }
+
+    return typeRegistry.getShopType(this.config.shop);
 }

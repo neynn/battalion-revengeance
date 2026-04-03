@@ -1,10 +1,11 @@
 import { BattalionMap } from "../map/battalionMap.js";
-import { createClientBuildingObject, createClientEntityObject, createMineObject, createServerEntityObject, spawnClientBuilding, spawnServerBuilding } from "./spawn.js";
+import { createClientBuildingObject, createClientEntityObject, createMineObject, createServerBuildingObject, createServerEntityObject } from "./spawn.js";
 import { LAYER_TYPE, LOADER_RULE, MINE_TYPE } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
 import { createEntitySnapshot, createEntitySnapshotFromJSON } from "../snapshot/entitySnapshot.js";
 import { MatchLoader } from "./loader/matchLoader.js";
 import { unpackEntitySnapshot } from "../action/packer_constants.js";
+import { createBuildingSnapshotFromJSON } from "../snapshot/buildingSnapshot.js";
 
 export const ClientMatchLoader = function(worldMap, mapFile) {
     MatchLoader.call(this, worldMap, mapFile);
@@ -47,7 +48,9 @@ ClientMatchLoader.prototype.createActors = function(gameContext) {
 
 ClientMatchLoader.prototype.createBuildings = function(gameContext) {
     for(const building of this.buildings) {
-        spawnClientBuilding(gameContext, this.worldMap, building); 
+        const snapshot = createBuildingSnapshotFromJSON(gameContext, this.worldMap, building);
+
+        createClientBuildingObject(gameContext, this.worldMap, snapshot); 
     }
 }
 
@@ -183,11 +186,7 @@ ClientMatchLoader.prototype.loadMapFromSnapshot = function(gameContext, snapshot
     }
 
     for(const blob of buildings) {
-        const { type, tileX, tileY, teamID, color } = blob;
-        const building = createClientBuildingObject(gameContext, teamID, type, tileX, tileY, color);
-
-        building.load(blob);
-        this.worldMap.addBuilding(building);
+        createClientBuildingObject(gameContext, this.worldMap, blob);
     }
 
     for(const blob of entities) {
@@ -266,7 +265,9 @@ ServerMatchLoader.prototype.createActors = function(gameContext) {
 
 ServerMatchLoader.prototype.createBuildings = function(gameContext) {
     for(const building of this.buildings) {
-        spawnServerBuilding(gameContext, this.worldMap, building); 
+        const snapshot = createBuildingSnapshotFromJSON(gameContext, this.worldMap, building);
+
+        createServerBuildingObject(gameContext, this.worldMap, snapshot);
     }
 }
 

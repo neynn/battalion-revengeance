@@ -1,22 +1,11 @@
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { BUILDING_TYPE, LAYER_TYPE, SCHEMA_TYPE, TEAM_STAT } from "../enums.js";
+import { LAYER_TYPE, TEAM_STAT } from "../enums.js";
 import { Building } from "../entity/building.js";
 import { Mine } from "../entity/mine.js";
 import { bufferEntitySprites, createSchematicSprite, updateEntitySprite } from "./sprite.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { bufferEntitySounds } from "./sound.js";
 import { transformTileToWorld } from "../../engine/math/transform2D.js";
-import { TeamManager } from "../team/teamManager.js";
-
-const getBuildingID = function(name) {
-    const index = BUILDING_TYPE[name];
-
-    if(index === undefined) {
-        return BUILDING_TYPE.AIR_CONTROL;
-    }
-
-    return index;
-}
 
 const createEntity = function(gameContext, entityID, snapshot) {
     const { teamManager, typeRegistry, world } = gameContext;
@@ -63,13 +52,19 @@ const destroyEntity = function(gameContext, entity) {
     teamManager.updateStatus();
 }
 
-const createBuilding = function(gameContext, teamID, typeID, tileX, tileY) {
+const createBuilding = function(gameContext, worldMap, snapshot) {
     const { typeRegistry } = gameContext;
-    const buildingType = typeRegistry.getBuildingType(typeID);
+    const { teamID, type, tileX, tileY } = snapshot;
+    const buildingType = typeRegistry.getBuildingType(type);
     const building = new Building(buildingType);
 
     building.setTile(tileX, tileY);
     building.setTeam(teamID);
+    building.load(snapshot);
+
+    if(worldMap.isBuildingPlaceable(tileX, tileY)) {
+        worldMap.addBuilding(building);
+    }
 
     return building;
 }
@@ -116,18 +111,21 @@ export const createServerEntityObject = function(gameContext, entityID, snapshot
     return createEntity(gameContext, entityID, snapshot);
 }
 
-export const createClientBuildingObject = function(gameContext, teamID, typeID, tileX, tileY, color) {
-    const building = createBuilding(gameContext, teamID, typeID, tileX, tileY);
-    const { config } = building;
-    const { sprite } = config;
+export const createClientBuildingObject = function(gameContext, worldMap, snapshot) {
+    const { tileX, tileY, color } = snapshot;
+    const building = createBuilding(gameContext, worldMap, snapshot);
+    const spriteName = building.config.sprite;
     const position = transformTileToWorld(tileX, tileY);
-    const visualSprite = createSchematicSprite(gameContext, sprite, color, LAYER_TYPE.BUILDING);
+    const visualSprite = createSchematicSprite(gameContext, spriteName, color, LAYER_TYPE.BUILDING);
 
     visualSprite.setPosition(position.x, position.y);
     building.spriteID = visualSprite.getIndex();
-    building.color = color;
 
     return building;
+}
+
+export const createServerBuildingObject = function(gameContext, worldMap, snapshot) {
+    return createBuilding(gameContext, worldMap, snapshot);
 }
 
 export const createMineObject = function(gameContext, teamID, typeID, tileX, tileY) {
@@ -139,83 +137,4 @@ export const createMineObject = function(gameContext, teamID, typeID, tileX, til
     mine.setTeam(teamID);
 
     return mine;
-}
-
-export const spawnServerBuilding = function(gameContext, worldMap, config) {
-    const {
-        id = null,
-        name = null,
-        desc = null,
-        x = -1,
-        y = -1,
-        type = "NONE",
-        team = null
-    } = config;
-
-    const { teamManager } = gameContext;
-    const teamID = teamManager.getTeamID(team);
-    const isPlaceable = worldMap.isBuildingPlaceable(x, y);
-
-    if(isPlaceable) {
-        const typeID = getBuildingID(type);
-        const building = createBuilding(gameContext, teamID, typeID, x, y);
-
-        if(id !== null) {
-            building.customID = worldMap.getCustomID(id);
-        }
-
-        if(name !== null) {
-            building.customName = worldMap.getTextID(name);
-        }
-
-        if(desc !== null) {
-            building.customDesc = worldMap.getTextID(desc);
-        }
-
-        worldMap.addBuilding(building);
-    }
-}
-
-export const spawnClientBuilding = function(gameContext, worldMap, config) {
-    const {
-        id = null,
-        name = null,
-        desc = null,
-        x = -1,
-        y = -1,
-        type = "NONE",
-        team = null,
-        color = "NONE"
-    } = config;
-
-    const { teamManager } = gameContext;
-    const teamID = teamManager.getTeamID(team);
-    const isPlaceable = worldMap.isBuildingPlaceable(x, y);
-
-    if(isPlaceable) {
-        let buildingColor = SCHEMA_TYPE[color] ?? SCHEMA_TYPE.RED;
-
-        if(teamID !== TeamManager.INVALID_ID) {
-            const { color } = teamManager.getTeam(teamID);
-    
-            buildingColor = color;
-        }
-
-        const typeID = getBuildingID(type);
-        const building = createClientBuildingObject(gameContext, teamID, typeID, x, y, buildingColor);
-
-        if(id !== null) {
-            building.customID = worldMap.getCustomID(id);
-        }
-
-        if(name !== null) {
-            building.customName = worldMap.getTextID(name);
-        }
-
-        if(desc !== null) {
-            building.customDesc = worldMap.getTextID(desc);
-        }
-        
-        worldMap.addBuilding(building);
-    }
 }

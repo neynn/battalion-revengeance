@@ -16,3 +16,5 @@ TODO: add more validation in the intent unpacker! (e.g. does the entity belong t
 
 Add morale mechanic (buff/debuff up to -3/+3). Get morale does this.morale + this.moraleDelta and locks it to specific values.
 Maybe add a unit that cannot get morale debuffed at all! (HIGH_SPIRITS?)
+
+Default building texture is usually not loaded!!!
