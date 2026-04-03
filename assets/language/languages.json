@@ -2,7 +2,7 @@
     "en-US": {
         "directory": ["assets", "language", "en-US"],
         "sources": [
-            "system.json",
+            "core.json",
             "tiles.json",
             "traits.json",
             "entities.json",

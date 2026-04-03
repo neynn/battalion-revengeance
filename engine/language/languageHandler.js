@@ -2,18 +2,32 @@ import { EventEmitter } from "../events/eventEmitter.js";
 import { getPercent } from "../math/math.js";
 import { Language } from "./language.js";
 
+const IS_STRICT = true;
+
 export const LanguageHandler = function() {
     this.languages = new Map();
-    this.currentLanguage = LanguageHandler.STUB_LANGUAGE;
+    this.currentLanguage = LanguageHandler.LANGUAGE._INVALID;
+    this.fallbackLanguage = LanguageHandler.LANGUAGE._INVALID;
+    this.systemText = new Map();
     this.mapText = [];
-    this.flags = LanguageHandler.FLAG.IS_STRICT;
 
     this.events = new EventEmitter();
     this.events.register(LanguageHandler.EVENT.LANGUAGE_CHANGE);
 }
 
 LanguageHandler.INVALID_ID = -1;
-LanguageHandler.STUB_LANGUAGE = new Language("??-??", "", []);
+
+LanguageHandler.LANGUAGE = {
+    _INVALID: -1,
+    ENGLISH: 0,
+    GERMAN: 1,
+    SPANISH: 2,
+    _COUNT: 3
+};
+
+LanguageHandler.EVENT = {
+    LANGUAGE_CHANGE: "LANGUAGE_CHANGE"
+};
 
 LanguageHandler.TEST_CODE = {
     VALID: 0,
@@ -22,36 +36,22 @@ LanguageHandler.TEST_CODE = {
     EMPTY_TRANSLATION: 3
 };
 
-LanguageHandler.LANGUAGE = {
-    ENGLISH: "en-US",
-    GERMAN: "de-DE",
-    SPANISH: "es-ES"
-};
-
-LanguageHandler.EVENT = {
-    LANGUAGE_CHANGE: "LANGUAGE_CHANGE"
-};
-
-LanguageHandler.FLAG = {
-    NONE: 0,
-    IS_STRICT: 1 << 0,
-    DO_FALLBACK: 1 << 1
-};
+LanguageHandler.getKey = function(languageID) {
+    switch(languageID) {
+        case LanguageHandler.LANGUAGE.ENGLISH: return "en-US";
+        case LanguageHandler.LANGUAGE.GERMAN: return "de-DE";
+        case LanguageHandler.LANGUAGE.SPANISH: return "es-ES";
+        default: return "??-??";
+    }
+}
 
 LanguageHandler.prototype.load = function(languages) {
     for(const languageID in languages) {
         const { directory = "", sources = [] } = languages[languageID];
+        const language = new Language(languageID, directory, sources);
 
-        if(!this.languages.has(languageID)) {
-            const language = new Language(languageID, directory, sources);
-
-            this.languages.set(languageID, language);
-        }
+        this.languages.set(languageID, language);
     }
-}
-
-LanguageHandler.prototype.clearMapTranslations = function() {
-    this.mapText.length = 0;
 }
 
 LanguageHandler.prototype.registerMapText = function(translations, text) {
@@ -67,13 +67,13 @@ LanguageHandler.prototype.registerMapText = function(translations, text) {
     }
 }
 
-LanguageHandler.prototype.getCurrent = function() {
-    return this.currentLanguage;
+LanguageHandler.prototype.clearMapTranslations = function() {
+    this.mapText.length = 0;
 }
 
 LanguageHandler.prototype.clear = function() {
-    this.languages.forEach(language => language.clear());
-    this.currentLanguage = LanguageHandler.STUB_LANGUAGE;
+    this.currentLanguage = LanguageHandler.LANGUAGE._INVALID;
+    this.systemText.clear();
 }
 
 LanguageHandler.prototype.exit = function() {
@@ -81,21 +81,36 @@ LanguageHandler.prototype.exit = function() {
 }
 
 LanguageHandler.prototype.selectLanguage = function(languageID) {
-    if(this.currentLanguage.getID() !== languageID) {
-        const language = this.languages.get(languageID);
+    if(this.currentLanguage === languageID) {
+        return;
+    }
 
-        if(language) {
-            language.loadFiles(response => {
-                switch(response) {
-                    case Language.LOAD_RESPONSE.SUCCESS: {
-                        this.currentLanguage = language;
-                        this.events.emit(LanguageHandler.EVENT.LANGUAGE_CHANGE, {
-                            "language": language,
-                        });
-                        break;
-                    }
-                }
-            });
+    const languageKey = LanguageHandler.getKey(languageID);
+    const language = this.languages.get(languageKey);
+
+    if(!language) {
+        return;
+    }
+
+    language.loadFiles((files) => {
+        this.currentLanguage = languageID;
+        this.loadSystemText(files);
+        this.events.emit(LanguageHandler.EVENT.LANGUAGE_CHANGE, language);
+    });
+}
+
+LanguageHandler.prototype.loadSystemText = function(files) {
+    for(const file of files) {
+        if(file === null) {
+            continue;
+        }
+
+        for(const key in file) {
+            if(this.systemText.has(key)) {
+                console.error(`Translation <${key}> is already set!`);
+            } else {
+                this.systemText.set(key, file[key]);
+            }
         }
     }
 }
@@ -105,8 +120,7 @@ LanguageHandler.prototype.getSystemTranslationCode = function(key) {
         return LanguageHandler.TEST_CODE.INVALID_INPUT;
     }
 
-    const { translations } = this.currentLanguage;
-    const translation = translations[key];
+    const translation = this.systemText.get(key);
 
     if(translation === undefined) {
         return LanguageHandler.TEST_CODE.MISSING_TRANSLATION;
@@ -124,14 +138,14 @@ LanguageHandler.prototype.getSystemTranslation = function(key) {
         return "";
     }
 
-    const { translations } = this.currentLanguage;
-    const translation = translations[key];
+    const translation = this.systemText.get(key);
 
-    //!"" = true. Thanks JavaScript.
-    if(!translation) {
-        if(this.flags & LanguageHandler.FLAG.IS_STRICT) {
-            return key;
-        }
+    if(translation === undefined) {
+        return key;
+    }
+
+    if(translation.length === 0 && IS_STRICT) {
+        return key;
     }
 
     return translation;
@@ -143,23 +157,37 @@ LanguageHandler.prototype.getMapTranslation = function(index) {
     }
 
     const translations = this.mapText[index];
-    const translation = translations[this.currentLanguage.getID()];
+    const languageKey = LanguageHandler.getKey(this.currentLanguage);
+    const translation = translations[languageKey];
 
-    if(!translation) {
-        if(this.flags & LanguageHandler.FLAG.DO_FALLBACK) {
-            const fallback = translations[LanguageHandler.LANGUAGE.ENGLISH];
-
-            if(fallback) {
-                return fallback;
-            } else {
-                return "";
-            }
-        }
-
-        return "";
+    if(translation) {
+        return translation;
     }
 
-    return translation;
+    if(this.fallbackLanguage !== LanguageHandler.LANGUAGE._INVALID) {
+        const fallbackKey = LanguageHandler.getKey(this.fallbackLanguage);
+        const fallback = translations[fallbackKey];
+
+        if(fallback) {
+            return fallback;
+        }
+    }
+
+    return "";
+}
+
+LanguageHandler.prototype.getMissingTags = function(template) {
+    const missing = new Set();
+
+    for(const tagID in template) {
+        const tag = this.systemText.get(tagID);
+
+        if(tag === undefined || tag.length === 0) {
+            missing.add(tagID);
+        }
+    }
+
+    return missing;
 }
 
 LanguageHandler.prototype.getAllMissingTags = function(template, keywords = []) {

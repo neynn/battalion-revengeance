@@ -8,8 +8,6 @@
         }
     },
     "RED": {
-        "name": "SCHEMA_NAME_",
-        "desc": "SCHEMA_DESC_",
         "colors": {
             "0x661A5E": [0, 0, 0],
             "0xAA162C": [0, 0, 0],
@@ -18,8 +16,6 @@
         }
     },
     "BLUE": {
-        "name": "SCHEMA_NAME_",
-        "desc": "SCHEMA_DESC_",
         "colors": {
             "0x661A5E": [61, 49, 127],
             "0xAA162C": [43, 95, 199],
@@ -28,8 +24,6 @@
         }
     },
     "GREEN": {
-        "name": "SCHEMA_NAME_",
-        "desc": "SCHEMA_DESC_",
         "colors": {
             "0x661A5E": [30, 91, 35],
             "0xAA162C": [95, 147, 95],
@@ -38,8 +32,6 @@
         }
     },
     "YELLOW": {
-        "name": "SCHEMA_NAME_",
-        "desc": "SCHEMA_DESC_",
         "colors": {
             "0x661A5E": [134, 114, 52],
             "0xAA162C": [217, 164, 73],
@@ -48,8 +40,6 @@
         }
     },
     "DARK_RED": {
-        "name": "SCHEMA_NAME_",
-        "desc": "SCHEMA_DESC_",
         "colors": {
             "0x661A5E": [42, 33, 52],
             "0xAA162C": [78, 12, 35],
@@ -58,8 +48,6 @@
         }
     },
     "DARK_BLUE": {
-        "name": "SCHEMA_NAME_",
-        "desc": "SCHEMA_DESC_",
         "colors": {
             "0x661A5E": [30, 28, 59],
             "0xAA162C": [22, 39, 117],
@@ -68,8 +56,6 @@
         }
     },
     "BRONZE": {
-        "name": "SCHEMA_NAME_",
-        "desc": "SCHEMA_DESC_",
         "colors": {
             "0x661A5E": [50, 42, 50],
             "0xAA162C": [95, 69, 104],
@@ -78,8 +64,6 @@
         }
     },
     "DARK_GREEN": {
-        "name": "SCHEMA_NAME_",
-        "desc": "SCHEMA_DESC_",
         "colors": {
             "0x661A5E": [53, 61, 25],
             "0xAA162C": [65, 91, 13],
@@ -88,8 +72,6 @@
         }
     },
     "GOLD": {
-        "name": "SCHEMA_NAME_",
-        "desc": "SCHEMA_DESC_",
         "colors": {
             "0x661A5E": [95, 56, 65],
             "0xAA162C": [199, 65, 52],
@@ -98,8 +80,6 @@
         }
     },
     "CYAN": {
-        "name": "SCHEMA_NAME_",
-        "desc": "SCHEMA_DESC_",
         "colors": {
             "0x661A5E": [95, 86, 151],
             "0xAA162C": [69, 147, 99],
@@ -108,8 +88,6 @@
         }
     },
     "PINK": {
-        "name": "SCHEMA_NAME_",
-        "desc": "SCHEMA_DESC_",
         "colors": {
             "0x661A5E": [114, 36, 82],
             "0xAA162C": [196, 84, 129],
@@ -118,8 +96,6 @@
         }
     },
     "WHITE": {
-        "name": "SCHEMA_NAME_",
-        "desc": "SCHEMA_DESC_",
         "colors": {
             "0x661A5E": [106, 103, 141],
             "0xAA162C": [179, 193, 220],
@@ -128,8 +104,6 @@
         }
     },
     "PURPLE": {
-        "name": "SCHEMA_NAME_",
-        "desc": "SCHEMA_DESC_",
         "colors": {
             "0x661A5E": [39, 43, 49],
             "0xAA162C": [86, 69, 160],
@@ -138,8 +112,6 @@
         }
     },
     "BLACK": {
-        "name": "SCHEMA_NAME_",
-        "desc": "SCHEMA_DESC_",
         "colors": {
             "0x661A5E": [28, 29, 39],
             "0xAA162C": [40, 44, 50],
@@ -148,8 +120,6 @@
         }
     },
     "GRAY": {
-        "name": "SCHEMA_NAME_",
-        "desc": "SCHEMA_DESC_",
         "colors": {
             "0x661A5E": [43, 49, 52],
             "0xAA162C": [66, 67, 91],
@@ -158,8 +128,6 @@
         }
     },
     "CREAM": {
-        "name": "SCHEMA_NAME_",
-        "desc": "SCHEMA_DESC_",
         "colors": {
             "0x661A5E": [105, 125, 108],
             "0xAA162C": [197, 171, 159],
@@ -168,8 +136,6 @@
         }
     },
     "LIME": {
-        "name": "SCHEMA_NAME_",
-        "desc": "SCHEMA_DESC_",
         "colors": {
             "0x661A5E": [92, 107, 42],
             "0xAA162C": [49, 166, 26],
