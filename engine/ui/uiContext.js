@@ -1,5 +1,14 @@
+import { Cursor } from "../client/cursor/cursor.js";
+import { MouseButton } from "../client/cursor/mouseButton.js";
 import { Graph } from "../graphics/graph.js";
 import { UIElement } from "./uiElement.js";
+
+export const IM_FLAG = {
+    NONE: 0,
+    HOT: 1 << 0,
+    ACTIVE: 1 << 1,
+    CLICKED: 1 << 2
+};
 
 export const UIContext = function() {
     Graph.call(this);
@@ -10,12 +19,49 @@ export const UIContext = function() {
     this.elements = new Map();
     this.clickCallbacks = new Map();
     this.isRetained = true;
+
+    this.hotWidget = -1;
+    this.activeWidget = -1;
 }
 
 UIContext.EMPTY_ELEMENT = new UIElement("EMPTY");
 
 UIContext.prototype = Object.create(Graph.prototype);
 UIContext.prototype.constructor = UIContext;
+
+UIContext.prototype.doButton = function(gameContext, widgetID, x, y, w, h) {
+    const { client } = gameContext;
+    const { cursor } = client;
+    const lmbFlags = cursor.getFlags(Cursor.BUTTON.LEFT);
+    const isHovered = cursor.collidesRect(x, y, w, h);
+    let flags = IM_FLAG.NONE;
+
+    if(isHovered && this.hotWidget === -1) {
+        flags |= IM_FLAG.HOT;
+
+        this.hotWidget = widgetID;
+    }
+
+    if((lmbFlags & MouseButton.FLAG.DOWN) && this.hotWidget === widgetID) {
+        this.activeWidget = widgetID;
+    }
+
+    if(this.activeWidget === widgetID) {
+        flags |= IM_FLAG.ACTIVE;
+
+        if(lmbFlags & MouseButton.FLAG.UP) {
+            if(this.hotWidget === widgetID) {
+                flags |= IM_FLAG.CLICKED;
+            }
+        
+            flags &= ~IM_FLAG.ACTIVE;
+
+            this.activeWidget = -1;
+        }
+    }
+
+    return flags;
+}
 
 UIContext.prototype.getElementID = function(name) {
     const elementID = this.names.get(name);

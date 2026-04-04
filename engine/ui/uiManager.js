@@ -51,16 +51,14 @@ UIManager.prototype.update = function(gameContext) {
     for(let i = this.contexts.length - 1; i >= 0; i--) {
         const context = this.contexts[i];
 
-        if(context.isRetained) {
-            if(context.isVisible()) {
-                if(!isCollided) {
-                    isCollided = context.updateCollisions(positionX, positionY, radius);
-                }
+        context.hotWidget = -1;
 
-                context.update(realTime, deltaTime);
+        if(context.isVisible()) {
+            if(!isCollided) {
+                isCollided = context.updateCollisions(positionX, positionY, radius);
             }
-        } else {
-            context.updateCursor(cursor);
+
+            context.update(realTime, deltaTime);
         }
     }
 }
