@@ -11,6 +11,16 @@
     "dialogue_next_arrow": { "directory": ["assets", "gui", "dialogue"], "source": "next_arrow.png" },
     "dialogue_skip_button": { "directory": ["assets", "gui", "dialogue"], "source": "skip_button.png" },
     "dialogue_text_box": { "directory": ["assets", "gui", "dialogue"], "source": "text_box.png" },
+    "hud_buttons": {
+        "directory": ["assets", "gui", "hud"],
+        "source": "hud_buttons.png",
+        "gridWidth": 28,
+        "gridHeight": 40,
+        "autoGrid": {
+            "rows": 3,
+            "columns": 4
+        }
+    },
     "icons": {
         "directory": ["assets", "gui"],
         "source": "icons.png",

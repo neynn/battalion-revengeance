@@ -1,13 +1,15 @@
 import { TextStyle } from "../../engine/graphics/textStyle.js";
 import { clampValue } from "../../engine/math/math.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
-import { UIContext } from "../../engine/ui/uiContext.js";
+import { IM_FLAG, UIContext } from "../../engine/ui/uiContext.js";
 import { MapInspector } from "../actors/player/inspector.js";
 import { getHealthColor } from "../entity/helpers.js";
-import { COMMANDER_TYPE, TILE_ID } from "../enums.js";
+import { COMMANDER_TYPE, HUD_BUTTON, PLAYER_PREFERENCE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { UIData } from "./uiData.js";
 
+const HUD_BUTTON_WIDTH = 28;
+const HUD_BUTTON_HEIGHT = 40;
 const DIALOGUE_BOX_WIDTH = 560;
 const DIALOGUE_BOX_HEIGHT = 150;
 const RECON_TOOLTIP_BOX_WIDTH = 154;
@@ -72,6 +74,12 @@ export const PlayUI = function(inspector, cContext, gameContext) {
     this.isCollided = false;
 }
 
+PlayUI.WIDGET_ID = {
+    HUD_UNDO: 0,
+    HUD_MENU: 1,
+    HUD_QUIT: 2
+};
+
 PlayUI.prototype = Object.create(UIContext.prototype);
 PlayUI.prototype.constructor = PlayUI;
 
@@ -131,9 +139,44 @@ PlayUI.prototype.doIcon = function(iconID, display, screenX, screenY) {
         this.isCollided = true;
     }
 
-    uiData.getTexture(UIData.TEXTURE.ICONS).drawRegion(iconID, display, screenX, screenY);
+    uiData.getTexture(UIData.TEXTURE.ICONS).drawRegion(display, iconID, screenX, screenY);
 
     return isCollided;
+}
+
+//Assume that the HUD_BUTTON enum goes n, n+1, n+2!
+const getFlagOffset = function(imFlags) {
+    if(imFlags & IM_FLAG.ACTIVE) {
+        return 2;
+    } else if(imFlags & IM_FLAG.HOT) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+PlayUI.prototype.drawMainHud = function(display, screenX, screenY) {
+    const { uiData } = this.gameContext;
+    const buttonTexture = uiData.getTexture(UIData.TEXTURE.HUD_BUTTONS);
+    const hudTexture = uiData.getTexture(UIData.TEXTURE.RECON_MAIN);
+
+    const mainX = screenX - 14;
+    const mainY = screenY;
+    const buttonX = mainX + 33;
+    const buttonY = mainY + 169;
+
+    hudTexture.draw(display, mainX, mainY);
+
+    const undoFlags = this.doButton(this.gameContext, PlayUI.WIDGET_ID.HUD_UNDO, buttonX, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
+    const menuFlags = this.doButton(this.gameContext, PlayUI.WIDGET_ID.HUD_MENU, buttonX + 38, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
+    const quitFlags = this.doButton(this.gameContext, PlayUI.WIDGET_ID.HUD_QUIT, buttonX + 76, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
+    const undoButton = HUD_BUTTON.UNDO_ENABLED + getFlagOffset(undoFlags);
+    const menuButton = HUD_BUTTON.MENU_ENABLED + getFlagOffset(menuFlags);
+    const quitButton = HUD_BUTTON.QUIT_ENABLED + getFlagOffset(quitFlags);
+
+    buttonTexture.drawRegion(display, undoButton, buttonX, buttonY);
+    buttonTexture.drawRegion(display, menuButton, buttonX + 38, buttonY);
+    buttonTexture.drawRegion(display, quitButton, buttonX + 76, buttonY);
 }
 
 PlayUI.prototype.onDraw = function(display, screenX, screenY) {
@@ -183,7 +226,7 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
         tooltipX = x + ICON_WIDTH - RECON_TOOLTIP_WIDTH;
     }
 
-    uiData.getTexture(UIData.TEXTURE.RECON_MAIN).draw(display, mainX - 14, mainY);
+    this.drawMainHud(display, mainX, mainY);
 
     switch(this.lastInspect) {
         case MapInspector.STATE.NONE: {

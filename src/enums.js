@@ -78,6 +78,21 @@ export const TEAM_STAT = {
     _COUNT: 18
 };
 
+export const HUD_BUTTON = {
+    MENU_DISABLED: 0,
+    MENU_ENABLED: 1,
+    MENU_HOT: 2,
+    MENU_ACTIVE: 3,
+    UNDO_DISABLED: 4,
+    UNDO_ENABLED: 5,
+    UNDO_HOT: 6,
+    UNDO_ACTIVE: 7,
+    QUIT_DISABLED: 8,
+    QUIT_ENABLED: 9,
+    QUIT_HOT: 10,
+    QUIT_ACTIVE: 11
+};
+
 export const ICON_TYPE = {
     NONE: 0,
     ARMOR_LIGHT: 1,
