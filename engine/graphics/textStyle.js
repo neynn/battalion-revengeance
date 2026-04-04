@@ -4,8 +4,8 @@ export const TextStyle = function() {
     this.color = getRGBAString(0, 0, 0, 255);
     this.fontSize = TextStyle.DEFAULT.FONT_SIZE;
     this.fontType = TextStyle.DEFAULT.FONT_TYPE;
-    this.baseline = TextStyle.TEXT_BASELINE.MIDDLE;
-    this.alignment = TextStyle.TEXT_ALIGNMENT.LEFT;
+    this.baseline = TextStyle.BASELINE.MIDDLE;
+    this.alignment = TextStyle.ALIGN.LEFT;
     this.font = null;
 
     this.updateFont();
@@ -16,12 +16,12 @@ TextStyle.DEFAULT = {
     FONT_TYPE: "sans-serif"
 };
 
-TextStyle.TEXT_BASELINE = {
+TextStyle.BASELINE = {
     MIDDLE: "middle",
     TOP: "top"
 };
 
-TextStyle.TEXT_ALIGNMENT = {
+TextStyle.ALIGN = {
     RIGHT: "right",
     LEFT: "left",
     MIDDLE: "center"

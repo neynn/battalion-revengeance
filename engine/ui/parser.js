@@ -115,7 +115,7 @@ const createElement = function(uiManager, config, DEBUG_NAME) {
                 text = "ERROR",
                 fontType = TextStyle.DEFAULT.FONT_TYPE,
                 fontSize = TextStyle.DEFAULT.FONT_SIZE,
-                align = TextStyle.TEXT_ALIGNMENT.LEFT,
+                align = TextStyle.ALIGN.LEFT,
                 color
             } = config;
 

@@ -13,5 +13,9 @@
     "RECON_HEALTH": "Health:",
     "RECON_DAMAGE": "Damage:",
     "RECON_MOVE": "Move:",
-    "RECON_TRAIT": "Modifiers:"
+    "RECON_TRAIT": "Modifiers:",
+
+    "HUD_UNDO": "Undo Last Move",
+    "HUD_MENU": "Options",
+    "HUD_QUIT": "Quit"
 }

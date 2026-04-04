@@ -62,7 +62,7 @@ export const PlayUI = function(inspector, cContext, gameContext) {
     this.inspectSprite = SpriteManager.EMPTY_SPRITE;
     this.style = new TextStyle();
 
-    this.style.baseline = TextStyle.TEXT_BASELINE.TOP;
+    this.style.baseline = TextStyle.BASELINE.TOP;
     this.style.font = "10px arial";
     this.lines = [];
     this.tooltipLines = [];
@@ -144,35 +144,71 @@ PlayUI.prototype.doIcon = function(iconID, display, screenX, screenY) {
     return isCollided;
 }
 
-//Assume that the HUD_BUTTON enum goes n, n+1, n+2!
-const getFlagOffset = function(imFlags) {
-    if(imFlags & IM_FLAG.ACTIVE) {
-        return 2;
-    } else if(imFlags & IM_FLAG.HOT) {
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
 PlayUI.prototype.drawMainHud = function(display, screenX, screenY) {
-    const { uiData } = this.gameContext;
+    const { uiData, language } = this.gameContext;
+    const { context } = display;
     const buttonTexture = uiData.getTexture(UIData.TEXTURE.HUD_BUTTONS);
     const hudTexture = uiData.getTexture(UIData.TEXTURE.RECON_MAIN);
 
     const mainX = screenX - 14;
     const mainY = screenY;
+    const textX = mainX + 86;
+    const textY = mainY + 140;
     const buttonX = mainX + 33;
     const buttonY = mainY + 169;
 
-    hudTexture.draw(display, mainX, mainY);
+    const teamX = mainX + 21;
+    const teamY = mainY + 391;
+    const TEAM_OFFSET_Y = 30;
 
     const undoFlags = this.doButton(this.gameContext, PlayUI.WIDGET_ID.HUD_UNDO, buttonX, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
     const menuFlags = this.doButton(this.gameContext, PlayUI.WIDGET_ID.HUD_MENU, buttonX + 38, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
     const quitFlags = this.doButton(this.gameContext, PlayUI.WIDGET_ID.HUD_QUIT, buttonX + 76, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
-    const undoButton = HUD_BUTTON.UNDO_ENABLED + getFlagOffset(undoFlags);
-    const menuButton = HUD_BUTTON.MENU_ENABLED + getFlagOffset(menuFlags);
-    const quitButton = HUD_BUTTON.QUIT_ENABLED + getFlagOffset(quitFlags);
+
+    let undoButton = HUD_BUTTON.UNDO_ENABLED;
+    let menuButton = HUD_BUTTON.MENU_ENABLED;
+    let quitButton = HUD_BUTTON.QUIT_ENABLED;
+
+    hudTexture.draw(display, mainX, mainY);
+
+    switch(this.hotWidget) {
+        case PlayUI.WIDGET_ID.HUD_UNDO: {
+            undoButton = HUD_BUTTON.UNDO_HOT;
+            context.textAlign = TextStyle.ALIGN.MIDDLE;
+            context.fillText(language.getSystemTranslation("HUD_UNDO"), textX, textY);
+            context.textAlign = TextStyle.ALIGN.LEFT;
+            break;
+        }
+        case PlayUI.WIDGET_ID.HUD_MENU: {
+            menuButton = HUD_BUTTON.MENU_HOT;
+            context.textAlign = TextStyle.ALIGN.MIDDLE;
+            context.fillText(language.getSystemTranslation("HUD_MENU"), textX, textY);
+            context.textAlign = TextStyle.ALIGN.LEFT;
+            break;
+        }
+        case PlayUI.WIDGET_ID.HUD_QUIT: {
+            quitButton = HUD_BUTTON.QUIT_HOT;
+            context.textAlign = TextStyle.ALIGN.MIDDLE;
+            context.fillText(language.getSystemTranslation("HUD_QUIT"), textX, textY);
+            context.textAlign = TextStyle.ALIGN.LEFT;
+            break;
+        }
+    }
+
+    switch(this.activeWidget) {
+        case PlayUI.WIDGET_ID.HUD_UNDO: {
+            undoButton = HUD_BUTTON.UNDO_ACTIVE;
+            break;
+        }
+        case PlayUI.WIDGET_ID.HUD_MENU: {
+            menuButton = HUD_BUTTON.MENU_ACTIVE;
+            break;
+        }
+        case PlayUI.WIDGET_ID.HUD_QUIT: {
+            quitButton = HUD_BUTTON.QUIT_ACTIVE;
+            break;
+        }
+    }
 
     buttonTexture.drawRegion(display, undoButton, buttonX, buttonY);
     buttonTexture.drawRegion(display, menuButton, buttonX + 38, buttonY);
@@ -434,9 +470,9 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
         uiData.getTexture(tooltipTexture).draw(display, tooltipX, tooltipY);
 
         if(tooltipHead.length !== 0) {
-            context.textAlign = TextStyle.TEXT_ALIGNMENT.MIDDLE;
+            context.textAlign = TextStyle.ALIGN.MIDDLE;
             context.fillText(language.getSystemTranslation(tooltipHead), tooltipX + (RECON_TOOLTIP_WIDTH / 2), tooltipY + 4);
-            context.textAlign = TextStyle.TEXT_ALIGNMENT.LEFT;
+            context.textAlign = TextStyle.ALIGN.LEFT;
         }
 
         context.fillStyle = "#000000";
