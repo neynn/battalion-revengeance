@@ -1,4 +1,5 @@
 import { EventEmitter } from "../../events/eventEmitter.js";
+import { isRectangleRectangleIntersect } from "../../math/math.js";
 import { MouseClickEvent } from "./events/click.js";
 import { MouseDownEvent } from "./events/down.js";
 import { MouseDragEvent } from "./events/drag.js";
@@ -59,6 +60,13 @@ Cursor.SCROLL = {
     UP: 0,
     DOWN: 1
 };
+
+Cursor.prototype.collidesRect = function(screenX, screenY, width, height) {
+    return isRectangleRectangleIntersect(
+        this.positionX, this.positionY, this.radius, this.radius,
+        screenX, screenY, width, height
+    );
+}
 
 Cursor.prototype.getFlags = function(button) {
     if(button < 0 || button >= Cursor.BUTTON._COUNT) {

@@ -1,6 +1,5 @@
 import { TextStyle } from "../../engine/graphics/textStyle.js";
-import { clampValue, isRectangleRectangleIntersect } from "../../engine/math/math.js";
-import { TextureRegistry } from "../../engine/resources/texture/textureRegistry.js";
+import { clampValue } from "../../engine/math/math.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { UIContext } from "../../engine/ui/uiContext.js";
 import { MapInspector } from "../actors/player/inspector.js";
@@ -126,11 +125,7 @@ PlayUI.prototype.drawTile = function(display, tileX, tileY, screenX, screenY) {
 PlayUI.prototype.doIcon = function(iconID, display, screenX, screenY) {
     const { uiData, client } = this.gameContext;
     const { cursor } = client;
-    const { positionX, positionY, radius } = cursor;
-    const isCollided = !this.isCollided && isRectangleRectangleIntersect(
-        positionX, positionY, radius, radius,
-        screenX, screenY, ICON_WIDTH, ICON_HEIGHT
-    );
+    const isCollided = !this.isCollided && cursor.collidesRect(screenX, screenY, ICON_WIDTH, ICON_HEIGHT);
 
     if(isCollided) {
         this.isCollided = true;

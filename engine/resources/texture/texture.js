@@ -5,6 +5,8 @@ export const Texture = function(id, name, path) {
     this.id = id;
     this.name = name;
     this.path = path;
+    this.width = 0;
+    this.height = 0;
     this.handle = new TextureHandle(id);
     this.variants = [];
     this.regions = [];
@@ -75,7 +77,9 @@ Texture.prototype.requestBitmap = function() {
     .then((blob) => createImageBitmap(blob))
     .then((bitmap) => {
         this.handle.setImage(bitmap);
-    
+        this.width = bitmap.width;
+        this.height = bitmap.height;
+
         return Promise.resolve(bitmap);
     })
     .catch((error) => {
@@ -215,15 +219,15 @@ Texture.prototype.drawRegion = function(region, display, screenX, screenY) {
 }
 
 Texture.prototype.draw = function(display, screenX, screenY) {
-    const { state, width, height, bitmap } = this.handle;
+    const { state, bitmap } = this.handle;
 
     if(state === TextureHandle.STATE.LOADED) {
         const { context } = display;
 
         context.drawImage(
             bitmap,
-            0, 0, width, height,
-            screenX, screenY, width, height
+            0, 0, this.width, this.height,
+            screenX, screenY, this.width, this.height
         );
     }
 }
