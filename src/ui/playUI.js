@@ -7,6 +7,7 @@ import { MapInspector } from "../actors/player/inspector.js";
 import { getHealthColor } from "../entity/helpers.js";
 import { COMMANDER_TYPE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
+import { UIData } from "./uiData.js";
 
 const DIALOGUE_BOX_WIDTH = 560;
 const DIALOGUE_BOX_HEIGHT = 150;
@@ -28,28 +29,6 @@ const TILE_DRAW_ORDER = [
     BattalionMap.LAYER.DECORATION,
     BattalionMap.LAYER.CLOUD
 ];
-
-const TEXTURE_ID = {
-    RECON_UNIT: 0,
-    RECON_TERRAIN: 1,
-    RECON_NONE: 2,
-    RECON_MAIN: 3,
-    ICONS: 4,
-    RECON_HEALTH: 5,
-    TOOLTIP: 6,
-    TOOLTIP_PLUS: 7,
-    TOOLTIP_MINI: 8,
-    DIALOGUE_NEXT: 9,
-    DIALOGUE_SKIP: 10,
-    DIALOGUE_BOX: 11,
-    _COUNT: 12
-};
-
-const TEXTURES = new Int16Array(TEXTURE_ID._COUNT);
-
-for(let i = 0; i < TEXTURE_ID._COUNT; i++) {
-    TEXTURES[i] = TextureRegistry.INVALID_ID;
-}
 
 const mRegenerateLines = function(lines, context, text, maxWidth) {
     const words = text.split(' ');
@@ -98,28 +77,12 @@ PlayUI.prototype = Object.create(UIContext.prototype);
 PlayUI.prototype.constructor = PlayUI;
 
 PlayUI.prototype.load = function(gameContext) {
-    const { uiManager, spriteManager, textureLoader } = gameContext;
-    
-    TEXTURES[TEXTURE_ID.RECON_UNIT] = uiManager.getTextureID("recon_unit");
-    TEXTURES[TEXTURE_ID.RECON_TERRAIN] = uiManager.getTextureID("recon_terrain");
-    TEXTURES[TEXTURE_ID.RECON_NONE] = uiManager.getTextureID("recon_none");
-    TEXTURES[TEXTURE_ID.RECON_MAIN] = uiManager.getTextureID("recon_mainframe");
-    TEXTURES[TEXTURE_ID.ICONS] = uiManager.getTextureID("icons");
-    TEXTURES[TEXTURE_ID.RECON_HEALTH] = uiManager.getTextureID("recon_health");
-    TEXTURES[TEXTURE_ID.TOOLTIP] = uiManager.getTextureID("recon_tooltip");
-    TEXTURES[TEXTURE_ID.TOOLTIP_PLUS] = uiManager.getTextureID("recon_tooltip_plus");
-    TEXTURES[TEXTURE_ID.TOOLTIP_MINI] = uiManager.getTextureID("recon_tooltip_mini");
-    TEXTURES[TEXTURE_ID.DIALOGUE_NEXT] = uiManager.getTextureID("dialogue_next_arrow");
-    TEXTURES[TEXTURE_ID.DIALOGUE_SKIP] = uiManager.getTextureID("dialogue_skip_button");
-    TEXTURES[TEXTURE_ID.DIALOGUE_BOX] = uiManager.getTextureID("dialogue_text_box");
+    const { uiData, uiManager, spriteManager } = gameContext;
 
     this.inspectSprite = spriteManager.createEmptySprite();
     this.inspectSprite.scale = 0.6;
 
-    for(let i = 0; i < TEXTURE_ID._COUNT; i++) {
-        textureLoader.loadTexture(TEXTURES[i]);
-    }
-
+    uiData.loadPlayTextures();
     uiManager.addContext(this);
 }
 
@@ -161,7 +124,7 @@ PlayUI.prototype.drawTile = function(display, tileX, tileY, screenX, screenY) {
 }
 
 PlayUI.prototype.doIcon = function(iconID, display, screenX, screenY) {
-    const { client, textureLoader } = this.gameContext;
+    const { uiData, client } = this.gameContext;
     const { cursor } = client;
     const { positionX, positionY, radius } = cursor;
     const isCollided = !this.isCollided && isRectangleRectangleIntersect(
@@ -173,13 +136,13 @@ PlayUI.prototype.doIcon = function(iconID, display, screenX, screenY) {
         this.isCollided = true;
     }
 
-    textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.ICONS]).drawRegion(iconID, display, screenX, screenY);
+    uiData.getTexture(UIData.TEXTURE.ICONS).drawRegion(iconID, display, screenX, screenY);
 
     return isCollided;
 }
 
 PlayUI.prototype.onDraw = function(display, screenX, screenY) {
-    const { world, language, timer, textureLoader, typeRegistry, dialogueHandler, portraitHandler } = this.gameContext;
+    const { uiData, world, language, timer, typeRegistry, dialogueHandler, portraitHandler } = this.gameContext;
     const { mapManager } = world;
     const { realTime, deltaTime } = timer;
     const { context } = display;
@@ -225,18 +188,18 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
         tooltipX = x + ICON_WIDTH - RECON_TOOLTIP_WIDTH;
     }
 
-    textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_MAIN]).draw(display, mainX - 14, mainY);
+    uiData.getTexture(UIData.TEXTURE.RECON_MAIN).draw(display, mainX - 14, mainY);
 
     switch(this.lastInspect) {
         case MapInspector.STATE.NONE: {
-            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_NONE]).draw(display, reconX, reconY);
+             uiData.getTexture(UIData.TEXTURE.RECON_NONE).draw(display, reconX, reconY);
             break;
         }
         case MapInspector.STATE.TILE: {
             const { terrain } = worldMap.getTileType(this.gameContext, tileX, tileY);
             const climateType = worldMap.getClimateType(this.gameContext, tileX, tileY);
 
-            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_TERRAIN]).draw(display, reconX, reconY);
+             uiData.getTexture(UIData.TEXTURE.RECON_TERRAIN).draw(display, reconX, reconY);
 
             this.drawTile(display, tileX, tileY, reconX, reconY);
             this.style.apply(context);
@@ -272,7 +235,7 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
                 this.lastIndex = index;
             }
 
-            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_TERRAIN]).draw(display, reconX, reconY);
+            uiData.getTexture(UIData.TEXTURE.RECON_TERRAIN).draw(display, reconX, reconY);
 
             this.drawTile(display, tileX, tileY, reconX, reconY);
             this.inspectSprite.onUpdate(realTime, deltaTime);
@@ -300,7 +263,7 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
                 this.lastIndex = index;
             }
 
-            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_UNIT]).draw(display, reconX, reconY);
+            uiData.getTexture(UIData.TEXTURE.RECON_UNIT).draw(display, reconX, reconY);
 
             this.drawTile(display, tileX, tileY, reconX, reconY);
             this.inspectSprite.onUpdate(realTime, deltaTime);
@@ -329,7 +292,7 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             }
 
             context.fillText(`${entity.health}/${entity.maxHealth}`, armorX + ICON_WIDTH + 2, bodyY + 10);
-            textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.RECON_HEALTH]).draw(display, armorX + ICON_WIDTH + 2, bodyY);
+            uiData.getTexture(UIData.TEXTURE.RECON_HEALTH).draw(display, armorX + ICON_WIDTH + 2, bodyY);
 
             if(this.doIcon(weaponType.icon, display, weaponX, bodyY)) {
                 updateTooltip(weaponType.name, weaponType.desc, weaponX, bodyY);
@@ -401,25 +364,25 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
     }
 
     if(this.isCollided) {
-        let tooltipTexture = TEXTURE_ID.TOOLTIP;
+        let tooltipTexture = UIData.TEXTURE.TOOLTIP;
         let tooltipY = reconY + 17;
         let tooltipSize = 0;
 
         switch(this.tooltipLines.length) {
             case 1: {
-                tooltipTexture = TEXTURE_ID.TOOLTIP_MINI;
+                tooltipTexture = UIData.TEXTURE.TOOLTIP_MINI;
                 tooltipY -= RECON_TOOLTIP_MINI_HEIGHT;
                 tooltipSize = 1;
                 break;
             }
             case 2: {
-                tooltipTexture = TEXTURE_ID.TOOLTIP;
+                tooltipTexture = UIData.TEXTURE.TOOLTIP;
                 tooltipY -= RECON_TOOLTIP_HEIGHT;
                 tooltipSize = 2;
                 break;
             }
             case 3: {
-                tooltipTexture = TEXTURE_ID.TOOLTIP_PLUS;
+                tooltipTexture = UIData.TEXTURE.TOOLTIP_PLUS;
                 tooltipY -= RECON_TOOLTIP_PLUS_HEIGHT;
                 tooltipSize = 3;
                 break;
@@ -430,7 +393,7 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             tooltipX = mainX - RECON_TOOLTIP_WIDTH;
         }
 
-        textureLoader.getTextureWithFallback(TEXTURES[tooltipTexture]).draw(display, tooltipX, tooltipY);
+        uiData.getTexture(tooltipTexture).draw(display, tooltipX, tooltipY);
 
         if(tooltipHead.length !== 0) {
             context.textAlign = TextStyle.TEXT_ALIGNMENT.MIDDLE;
@@ -456,6 +419,6 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
         const dialogueX = mainX - DIALOGUE_BOX_WIDTH;
         const dialogueY = reconY - DIALOGUE_BOX_HEIGHT;
 
-        textureLoader.getTextureWithFallback(TEXTURES[TEXTURE_ID.DIALOGUE_BOX]).draw(display, dialogueX, dialogueY);
+        uiData.getTexture(UIData.TEXTURE.DIALOGUE_BOX).draw(display, dialogueX, dialogueY);
     }
 }

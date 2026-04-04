@@ -94,6 +94,7 @@ LanguageHandler.prototype.selectLanguage = function(languageID) {
 
     language.loadFiles((files) => {
         this.currentLanguage = languageID;
+        this.systemText.clear();
         this.loadSystemText(files);
         this.events.emit(LanguageHandler.EVENT.LANGUAGE_CHANGE, language);
     });

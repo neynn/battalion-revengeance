@@ -14,6 +14,7 @@ import { resolveTileType } from "./enumHelpers.js";
 import { ShadeCache } from "./shadeCache.js";
 import { MapRegistry } from "./map/mapRegistry.js";
 import { ClientActionRouter } from "./action/router/clientActionRouter.js";
+import { UIData } from "./ui/uiData.js";
 
 export const BattalionContext = function() {
     ClientGameContext.call(this);
@@ -25,6 +26,7 @@ export const BattalionContext = function() {
     this.actionRouter = new ClientActionRouter();
     this.shadeCache = new ShadeCache();
     this.mapRegistry = new MapRegistry();
+    this.uiData = new UIData(this.textureLoader);
 }
 
 BattalionContext.STATE = {
@@ -52,6 +54,7 @@ BattalionContext.prototype.init = function(resources) {
 
     this.spriteManager.initLayers(LAYER_TYPE._COUNT);
     this.typeRegistry.load(resources);
+    this.uiData.load(this);
 
     registerClientActions(this);
 
