@@ -53,7 +53,7 @@ BattalionContext.prototype.init = function(resources) {
     this.client.router.load(resources.keybinds);
     this.mapRegistry.load(resources.maps);
     this.language.load(resources.languages);
-
+    this.missionManager.load(resources);
     this.spriteManager.initLayers(LAYER_TYPE._COUNT);
     this.typeRegistry.load(resources);
     this.uiData.load(this);
