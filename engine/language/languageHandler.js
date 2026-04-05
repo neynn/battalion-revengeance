@@ -45,6 +45,21 @@ LanguageHandler.getKey = function(languageID) {
     }
 }
 
+LanguageHandler.prototype.getTranslation = function(translations) {
+    const key = LanguageHandler.getKey(this.currentLanguage);
+    const translation = translations[key];
+
+    if(translation === undefined) {
+        return "";
+    }
+
+    return translation;
+}
+
+LanguageHandler.prototype.getCurrentKey = function() {
+    return LanguageHandler.getKey(this.currentLanguage);
+}
+
 LanguageHandler.prototype.load = function(languages) {
     for(const languageID in languages) {
         const { directory = "", sources = [] } = languages[languageID];

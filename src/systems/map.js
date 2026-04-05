@@ -342,7 +342,7 @@ export const createEditorMap = async function(gameContext, sourceID) {
     if(file !== null) {
         const { width, height, data } = file;
         const nextID = mapManager.getNextID();
-        const worldMap = new BattalionMap(nextID, width, height, sourceID);
+        const worldMap = new BattalionMap(nextID, width, height, mapSource);
 
         worldMap.decodeLayers(data);
         mapManager.addMap(worldMap);
@@ -378,7 +378,7 @@ export const createClientMapLoader = async function(gameContext, sourceID) {
 
     const { width, height, data, text = [], custom = [] } = file;
     const nextID = mapManager.getNextID();
-    const worldMap = new BattalionMap(nextID, width, height, sourceID);
+    const worldMap = new BattalionMap(nextID, width, height, mapSource);
 
     worldMap.createTextMapping(text);
     worldMap.createCustomMapping(custom);
@@ -407,7 +407,7 @@ export const createServerMapLoader = async function(gameContext, sourceID) {
 
     const { width, height, data, text = [], custom = [] } = file;
     const nextID = mapManager.getNextID();
-    const worldMap = new BattalionMap(nextID, width, height, sourceID);
+    const worldMap = new BattalionMap(nextID, width, height, mapSource);
 
     worldMap.createTextMapping(text);
     worldMap.createCustomMapping(custom);

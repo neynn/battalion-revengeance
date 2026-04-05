@@ -145,8 +145,10 @@ PlayUI.prototype.doIcon = function(iconID, display, screenX, screenY) {
 }
 
 PlayUI.prototype.drawMainHud = function(display, screenX, screenY) {
-    const { uiData, language, teamManager, typeRegistry } = this.gameContext;
+    const { world, uiData, language, teamManager, typeRegistry } = this.gameContext;
     const { activeTeams } = teamManager;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
     const { context } = display;
     const buttonTexture = uiData.getTexture(UIData.TEXTURE.HUD_BUTTONS);
     const hudTexture = uiData.getTexture(UIData.TEXTURE.RECON_MAIN);
@@ -167,30 +169,31 @@ PlayUI.prototype.drawMainHud = function(display, screenX, screenY) {
     let quitButton = HUD_BUTTON.QUIT_ENABLED;
 
     hudTexture.draw(display, mainX, mainY);
+    context.textAlign = TextStyle.ALIGN.MIDDLE;
 
     switch(this.hotWidget) {
         case PlayUI.WIDGET_ID.HUD_UNDO: {
             undoButton = HUD_BUTTON.UNDO_HOT;
-            context.textAlign = TextStyle.ALIGN.MIDDLE;
             context.fillText(language.getSystemTranslation("HUD_UNDO"), textX, textY);
-            context.textAlign = TextStyle.ALIGN.LEFT;
             break;
         }
         case PlayUI.WIDGET_ID.HUD_MENU: {
             menuButton = HUD_BUTTON.MENU_HOT;
-            context.textAlign = TextStyle.ALIGN.MIDDLE;
             context.fillText(language.getSystemTranslation("HUD_MENU"), textX, textY);
-            context.textAlign = TextStyle.ALIGN.LEFT;
             break;
         }
         case PlayUI.WIDGET_ID.HUD_QUIT: {
             quitButton = HUD_BUTTON.QUIT_HOT;
-            context.textAlign = TextStyle.ALIGN.MIDDLE;
             context.fillText(language.getSystemTranslation("HUD_QUIT"), textX, textY);
-            context.textAlign = TextStyle.ALIGN.LEFT;
+            break;
+        }
+        default: {
+            context.fillText(language.getTranslation(worldMap.preview.title), textX, textY);
             break;
         }
     }
+
+    context.textAlign = TextStyle.ALIGN.LEFT;
 
     switch(this.activeWidget) {
         case PlayUI.WIDGET_ID.HUD_UNDO: {

@@ -183,10 +183,6 @@ BattalionEntity.prototype.getHealthAfterDamage = function(damage = 0) {
         return 0;
     }
 
-    if(health >= this.maxHealth) {
-        return this.maxHealth;
-    }
-
     return health;
 }
 

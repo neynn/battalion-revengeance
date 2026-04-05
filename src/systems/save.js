@@ -84,7 +84,7 @@ export const saveStoryMap = function(gameContext) {
     const events = eventHandler.saveTriggeredEvents();
 
     file.open();
-    file.writeLine("mapID", worldMap.sourceID);
+    file.writeLine("mapID", worldMap.preview.id);
     file.writeLine("turn", fillTurnSnapshot(gameContext));
     file.writeLine("events", events);
     file.writeLine("edits", edits, PrettyJSON.LIST_TYPE.ARRAY);

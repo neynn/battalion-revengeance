@@ -5,10 +5,10 @@ import { downgradeOre, oreToValue } from "../enumHelpers.js";
 import { CLIMATE_TYPE, TILE_TYPE } from "../enums.js";
 import { JammerTile } from "./jammerTile.js";
 
-export const BattalionMap = function(id, width, height, sourceID) {
+export const BattalionMap = function(id, width, height, preview) {
     WorldMap.call(this, id, width, height);
 
-    this.sourceID = sourceID;
+    this.preview = preview;
     this.globalClimate = CLIMATE_TYPE.NONE;
     this.climate = CLIMATE_TYPE.NONE;
     this.localization = [];
