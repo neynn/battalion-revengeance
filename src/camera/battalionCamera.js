@@ -7,13 +7,14 @@ import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { drawShape, shadeScreen } from "../../engine/util/drawHelper.js";
 import { TILE_HEIGHT, TILE_WIDTH } from "../../engine/engine_constants.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { DIRECTION, LAYER_TYPE, PLAYER_PREFERENCE, TILE_ID } from "../enums.js";
+import { DIRECTION, LAYER_TYPE, PATH_FLAG, PLAYER_PREFERENCE, RANGE_TYPE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { Mine } from "../entity/mine.js";
 import { TeamManager } from "../team/teamManager.js";
 import { TextureHandle } from "../../engine/resources/texture/textureHandle.js";
 import { getHealthColor } from "../entity/helpers.js";
+import { Autotiler } from "../../engine/tile/autotiler.js";
 
 const BLOCK = { COUNT: 4, WIDTH: 4, HEIGHT: 8, GAP: 1 };
 const WIDTH = (BLOCK.GAP * (BLOCK.COUNT + 1)) + BLOCK.WIDTH * BLOCK.COUNT;
@@ -57,11 +58,153 @@ BattalionCamera.STEALTH_THRESHOLD = 0.5;
 BattalionCamera.prototype = Object.create(Camera2D.prototype);
 BattalionCamera.prototype.constructor = BattalionCamera;
 
-BattalionCamera.prototype.loadSprites = function(gameContext) {}
-
 BattalionCamera.prototype.setInspect = function(inspectX, inspectY) {
     this.inspectX = inspectX;
     this.inspectY = inspectY;
+}
+
+BattalionCamera.prototype.clearOverlays = function() {
+    this.selectOverlay.clear();
+    this.pathOverlay.clear();
+    this.jammerOverlay.clear();
+}
+
+BattalionCamera.prototype.showEntityJammerAt = function(gameContext, entity, jammerX, jammerY) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const jammerRange = entity.config.jammerRange;
+
+    this.jammerOverlay.clear();
+
+    worldMap.fill2DGraph(jammerX, jammerY, jammerRange, (nextX, nextY) => {
+        this.jammerOverlay.add(TILE_ID.JAMMER, nextX, nextY);
+    });
+}
+
+BattalionCamera.prototype.showEntityNodes = function(gameContext, entity, nodeMap) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const rangeType = entity.getRangeType();
+    const { tileX, tileY } = entity;
+    const hasWeapon = entity.hasWeapon();
+    const minRange = entity.config.minRange;
+    const maxRange = entity.getMaxRange(gameContext);
+    const isJammer = entity.isJammer();
+
+    this.clearOverlays();
+
+    switch(rangeType) {
+        case RANGE_TYPE.MELEE: {
+            for(const [index, node] of nodeMap) {
+                const { x, y, flags } = node;
+
+                if((flags & PATH_FLAG.UNREACHABLE) === 0) {
+                    this.selectOverlay.add(TILE_ID.OVERLAY_MOVE, x, y);
+                } else if(hasWeapon) {
+                    this.selectOverlay.add(TILE_ID.OVERLAY_ATTACK_LIGHT, x, y);
+                }
+            }
+
+            break;
+        }
+        case RANGE_TYPE.HYBRID:
+        case RANGE_TYPE.RANGE: {
+            for(const [index, node] of nodeMap) {
+                const { x, y, flags } = node;
+                const distance = entity.getDistanceToTile(x, y);
+
+                //The node is reachable
+                if((flags & PATH_FLAG.UNREACHABLE) === 0) {
+                    if(distance >= minRange && distance <= maxRange) {
+                        this.selectOverlay.add(TILE_ID.OVERLAY_MOVE_ATTACK, x, y);
+                    } else {
+                        this.selectOverlay.add(TILE_ID.OVERLAY_MOVE, x, y);
+                    }
+                } else {
+                    //The node is unreachable, but still in attack range!
+                    if(distance >= minRange && distance <= maxRange) {
+                        this.selectOverlay.add(TILE_ID.OVERLAY_ATTACK_LIGHT, x, y);
+                    } else {
+                        //Not reachable and NOT in attack range.
+                        //This node is invisible to the unit.
+                    }
+                }
+            }
+
+            //Fill the rest out to signal attack range.
+            worldMap.fill2DGraph(tileX, tileY, maxRange, (nextX, nextY, distance, index) => {
+                if(distance >= minRange && !nodeMap.has(index)) {
+                    this.selectOverlay.add(TILE_ID.OVERLAY_ATTACK, nextX, nextY);
+                }
+            });
+
+            break;
+        }
+    }
+
+    if(isJammer) {
+        this.showEntityJammerAt(gameContext, entity, tileX, tileY);
+    }
+}
+
+BattalionCamera.prototype.showEntityPath = function(autotiler, path, entityX, entityY) {
+    let previousX = entityX;
+    let previousY = entityY;
+    let nextX = -2;
+    let nextY = -2;
+    let tileID = 0;
+
+    this.pathOverlay.clear();
+
+    for(let i = path.length - 1; i >= 0; i--) {
+        const { tileX, tileY } = path[i];
+
+        if(i > 0) {
+            nextX = path[i - 1].tileX;
+            nextY = path[i - 1].tileY;
+        } else {
+            nextX = -2;
+            nextY = -2;
+        }
+
+        tileID = autotiler.run(tileX, tileY, (currentX, currentY) => {
+            if(previousX === currentX && previousY === currentY) {
+                return Autotiler.RESPONSE.VALID;
+            }
+
+            if(nextX === currentX && nextY === currentY) {
+                return Autotiler.RESPONSE.VALID;
+            }
+
+            return Autotiler.RESPONSE.INVALID;
+        });
+
+        previousX = tileX;
+        previousY = tileY;
+
+        this.pathOverlay.add(tileID, tileX, tileY);
+    }
+
+    //Put the starting node.
+    if(path.length !== 0) {
+        const { deltaX, deltaY } = path[path.length - 1];
+
+        if(deltaX === 1) {
+            tileID = TILE_ID.PATH_RIGHT;
+        } else if(deltaX === -1) {
+            tileID = TILE_ID.PATH_LEFT;
+        } else if(deltaY === 1) {
+            tileID = TILE_ID.PATH_DOWN;
+        } else if(deltaY === -1) {
+            tileID = TILE_ID.PATH_UP;
+        }
+    } else {
+        tileID = TILE_ID.PATH_CENTER;
+    }
+
+    this.pathOverlay.add(tileID, entityX, entityY);
 }
 
 BattalionCamera.prototype.drawEntityHealth = function(display, drawX, drawY, vitality) {

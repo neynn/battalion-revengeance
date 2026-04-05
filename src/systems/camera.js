@@ -55,7 +55,6 @@ export const createPlayCamera = function(gameContext) {
     camera.flags |= BattalionCamera.FLAG.USE_PERSPECTIVES;
     camera.bindViewport();
     camera.setTileSize(TILE_WIDTH, TILE_HEIGHT);
-    camera.loadSprites(gameContext);
 
     context.setDragButton(Cursor.BUTTON.LEFT);
     context.enableBuffer();

@@ -6,14 +6,14 @@ export const Spectator = function(id, camera) {
     BattalionActor.call(this, id);
 
     this.camera = camera;
-    this.inspector = new MapInspector(camera);
+    this.inspector = new MapInspector();
 }
 
 Spectator.prototype = Object.create(BattalionActor.prototype);
 Spectator.prototype.constructor = Spectator;
 
 Spectator.prototype.onClick = function(gameContext, tileX, tileY) {
-    this.inspector.inspect(gameContext, this, tileX, tileY);
+    this.inspector.inspect(gameContext, this, this.camera, tileX, tileY);
 }
 
 Spectator.prototype.loadKeybinds = function(gameContext) {
@@ -36,7 +36,7 @@ Spectator.prototype.loadKeybinds = function(gameContext) {
 
 
 Spectator.prototype.update = function(gameContext) {
-    const hoverChanged = this.inspector.update(gameContext);
+    const hoverChanged = this.inspector.update(gameContext, this.camera);
 
     if(hoverChanged) {
         //TODO: Update camera.

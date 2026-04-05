@@ -13,7 +13,7 @@ IdleState.prototype.constructor = IdleState;
 IdleState.prototype.onEnter = function(gameContext, stateMachine, enterData) {
     const player = stateMachine.getContext();
 
-    player.inspector.clearOverlays();
+    player.camera.clearOverlays();
 }
 
 IdleState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {

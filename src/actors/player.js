@@ -12,7 +12,7 @@ export const Player = function(id, camera) {
     BattalionActor.call(this, id);
 
     this.camera = camera;
-    this.inspector = new MapInspector(camera);
+    this.inspector = new MapInspector();
 
     this.states = new StateMachine(this);
     this.states.addState(Player.STATE.IDLE, new IdleState());
@@ -45,7 +45,8 @@ Player.prototype.onTurnEnd = function(gameContext) {
 
 Player.prototype.onClick = function(gameContext, tileX, tileY) {
     const { teamManager, world } = gameContext;
-    const inspectorState = this.inspector.inspect(gameContext, this, tileX, tileY);
+    const { mapManager } = world;
+    const inspectorState = this.inspector.inspect(gameContext, this, this.camera, tileX, tileY);
 
     switch(inspectorState) {
         case MapInspector.STATE.TILE: {
@@ -53,8 +54,8 @@ Player.prototype.onClick = function(gameContext, tileX, tileY) {
             break;
         }
         case MapInspector.STATE.BUILDING: {
-            //Buildings are kept for the runtime, so a cache is okay.
-            const building = this.inspector.lastInspectedBuilding;
+            const worldMap = mapManager.getActiveMap();
+            const building = worldMap.getBuilding(tileX, tileY);
 
             this.states.eventEnter(gameContext, Player.EVENT.BUILDING_CLICK, { "building": building });
             break;
@@ -108,7 +109,7 @@ Player.prototype.activeUpdate = function(gameContext) {
 }
 
 Player.prototype.update = function(gameContext) {
-    const hoverChanged = this.inspector.update(gameContext);
+    const hoverChanged = this.inspector.update(gameContext, this.camera);
 
     if(hoverChanged) {
         this.states.eventEnter(gameContext, Player.EVENT.TILE_CHANGE, {

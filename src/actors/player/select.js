@@ -178,7 +178,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
                 }
             }
 
-            player.inspector.showPath(attackAutotiler, this.path, this.entity.tileX, this.entity.tileY);
+            player.camera.showEntityPath(attackAutotiler, this.path, this.entity.tileX, this.entity.tileY);
             return;
         }
     }
@@ -209,13 +209,13 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
         this.path = getBestPath(gameContext, this.nodeMap, tileX, tileY);
     }
 
-    player.inspector.showPath(walkAutotiler, this.path, this.entity.tileX, this.entity.tileY);
+    player.camera.showEntityPath(walkAutotiler, this.path, this.entity.tileX, this.entity.tileY);
 
     if(this.entity.isJammer()) {
         const pathX = this.getPathX();
         const pathY = this.getPathY();
 
-        player.inspector.showJammerAt(gameContext, this.entity, pathX, pathY);
+        player.camera.showEntityJammerAt(gameContext, this.entity, pathX, pathY);
     }
 }
 
