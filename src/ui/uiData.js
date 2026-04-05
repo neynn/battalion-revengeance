@@ -23,7 +23,8 @@ UIData.TEXTURE = {
     DIALOGUE_SKIP: 10,
     DIALOGUE_BOX: 11,
     HUD_BUTTONS: 12,
-    _COUNT: 13
+    HUD_GLASSPLATE: 13,
+    _COUNT: 14
 };
 
 UIData.prototype.getTexture = function(textureID) {
@@ -44,6 +45,7 @@ UIData.prototype.loadPlayTextures = function() {
     this.textureLoader.loadTexture(this.textures[UIData.TEXTURE.DIALOGUE_SKIP]);
     this.textureLoader.loadTexture(this.textures[UIData.TEXTURE.DIALOGUE_BOX]);
     this.textureLoader.loadTexture(this.textures[UIData.TEXTURE.HUD_BUTTONS]);
+    this.textureLoader.loadTexture(this.textures[UIData.TEXTURE.HUD_GLASSPLATE]);
 }
 
 UIData.prototype.load = function(gameContext) {
@@ -62,4 +64,5 @@ UIData.prototype.load = function(gameContext) {
     this.textures[UIData.TEXTURE.DIALOGUE_SKIP] = uiManager.getTextureID("dialogue_skip_button");
     this.textures[UIData.TEXTURE.DIALOGUE_BOX] = uiManager.getTextureID("dialogue_text_box");
     this.textures[UIData.TEXTURE.HUD_BUTTONS] = uiManager.getTextureID("hud_buttons");
+    this.textures[UIData.TEXTURE.HUD_GLASSPLATE] = uiManager.getTextureID("hud_glassplate");
 }

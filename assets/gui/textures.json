@@ -11,6 +11,7 @@
     "dialogue_next_arrow": { "directory": ["assets", "gui", "dialogue"], "source": "next_arrow.png" },
     "dialogue_skip_button": { "directory": ["assets", "gui", "dialogue"], "source": "skip_button.png" },
     "dialogue_text_box": { "directory": ["assets", "gui", "dialogue"], "source": "text_box.png" },
+    "hud_glassplate": { "directory": ["assets", "gui", "hud"], "source": "glassplate.png" },
     "hud_buttons": {
         "directory": ["assets", "gui", "hud"],
         "source": "hud_buttons.png",

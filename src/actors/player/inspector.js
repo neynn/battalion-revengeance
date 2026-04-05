@@ -1,4 +1,5 @@
 import { getCursorTile } from "../../../engine/camera/contextHelper.js";
+import { WorldMap } from "../../../engine/map/worldMap.js";
 import { Autotiler } from "../../../engine/tile/autotiler.js";
 import { PATH_FLAG, RANGE_TYPE, TILE_ID } from "../../enums.js";
 
@@ -124,25 +125,6 @@ MapInspector.prototype.inspectBuilding = function(gameContext, building) {
     });
 }
 
-MapInspector.prototype.inspectTile = function(gameContext, tileX, tileY) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-    const name = worldMap.getTileName(gameContext, tileX, tileY);
-    const desc = worldMap.getTileDesc(gameContext, tileX, tileY);
-    const climateType = worldMap.getClimateType(gameContext, tileX, tileY);
-    const tileType = worldMap.getTileType(gameContext, tileX, tileY);
-
-    console.log("Inspected Tile", {
-        "x": tileX,
-        "y": tileY,
-        "name": name,
-        "desc": desc,
-        "climate": climateType,
-        "type": tileType
-    });
-}
-
 MapInspector.prototype.showPath = function(autotiler, path, entityX, entityY) { 
     let previousX = entityX;
     let previousY = entityY;
@@ -246,10 +228,10 @@ MapInspector.prototype.inspect = function(gameContext, inspector, tileX, tileY) 
         return this.state;
     }
 
-    //A tile is the default inspection if there is no entity and no building.
-    this.state = MapInspector.STATE.TILE;
+    const index = worldMap.getIndex(this.lastX, this.lastY);
+
     this.clearOverlays();
-    this.inspectTile(gameContext, tileX, tileY);
+    this.state = index !== WorldMap.OUT_OF_BOUNDS ? MapInspector.STATE.TILE : MapInspector.STATE.NONE;
 
     return this.state;
 }

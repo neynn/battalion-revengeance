@@ -145,7 +145,8 @@ PlayUI.prototype.doIcon = function(iconID, display, screenX, screenY) {
 }
 
 PlayUI.prototype.drawMainHud = function(display, screenX, screenY) {
-    const { uiData, language } = this.gameContext;
+    const { uiData, language, teamManager, typeRegistry } = this.gameContext;
+    const { activeTeams } = teamManager;
     const { context } = display;
     const buttonTexture = uiData.getTexture(UIData.TEXTURE.HUD_BUTTONS);
     const hudTexture = uiData.getTexture(UIData.TEXTURE.RECON_MAIN);
@@ -156,10 +157,6 @@ PlayUI.prototype.drawMainHud = function(display, screenX, screenY) {
     const textY = mainY + 140;
     const buttonX = mainX + 33;
     const buttonY = mainY + 169;
-
-    const teamX = mainX + 21;
-    const teamY = mainY + 391;
-    const TEAM_OFFSET_Y = 30;
 
     const undoFlags = this.doButton(this.gameContext, PlayUI.WIDGET_ID.HUD_UNDO, buttonX, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
     const menuFlags = this.doButton(this.gameContext, PlayUI.WIDGET_ID.HUD_MENU, buttonX + 38, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
@@ -213,6 +210,32 @@ PlayUI.prototype.drawMainHud = function(display, screenX, screenY) {
     buttonTexture.drawRegion(display, undoButton, buttonX, buttonY);
     buttonTexture.drawRegion(display, menuButton, buttonX + 38, buttonY);
     buttonTexture.drawRegion(display, quitButton, buttonX + 76, buttonY);
+
+    //Only up to 4 teams!
+    const teamX = mainX + 3;
+    const teamY = mainY + 389;
+    const TEAM_OFFSET_Y = 30;
+    const teamDraws = activeTeams.length > 4 ? 4 : activeTeams.length;
+    const teamPlate = uiData.getTexture(UIData.TEXTURE.HUD_GLASSPLATE);
+
+    const colorX = teamX + 22;
+    const COLOR_WIDTH = 129;
+    const COLOR_HEIGHT = 19;
+
+    for(let i = 0; i < teamDraws; i++) {
+        const nextY = teamY + TEAM_OFFSET_Y * i;
+        const teamID = activeTeams[i];
+        const team = teamManager.getTeam(teamID);
+        const { hudColor, textColor } = typeRegistry.getSchemaType(team.color);
+
+        context.fillStyle = hudColor;
+        context.fillRect(colorX, nextY + 4, COLOR_WIDTH, COLOR_HEIGHT);
+
+        teamPlate.draw(display, teamX, nextY);
+
+        context.fillStyle = textColor;
+        context.fillText(team.getDisplayName(this.gameContext), teamX + 28, nextY + 8);
+    }
 }
 
 PlayUI.prototype.onDraw = function(display, screenX, screenY) {

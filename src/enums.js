@@ -407,7 +407,8 @@ export const SCHEMA_TYPE = {
     CUSTOM_6: 22,
     CUSTOM_7: 23,
     CUSTOM_8: 24,
-    _COUNT: 25
+    SUNSET: 25,
+    _COUNT: 26
 };
 
 export const POWER_TYPE = {
