@@ -19,6 +19,7 @@ export const BattalionMap = function(id, width, height, preview) {
     this.jammers = new Map();
     this.text = new Map();
     this.customs = new Map();
+
     this.createLayer(Layer.TYPE.BIT_16);
     this.createLayer(Layer.TYPE.BIT_16);
     this.createLayer(Layer.TYPE.BIT_16);

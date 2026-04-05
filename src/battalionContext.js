@@ -15,6 +15,7 @@ import { ShadeCache } from "./shadeCache.js";
 import { MapRegistry } from "./map/mapRegistry.js";
 import { ClientActionRouter } from "./action/router/clientActionRouter.js";
 import { UIData } from "./ui/uiData.js";
+import { MissionManager } from "./mission/missionManager.js";
 
 export const BattalionContext = function() {
     ClientGameContext.call(this);
@@ -26,6 +27,7 @@ export const BattalionContext = function() {
     this.actionRouter = new ClientActionRouter();
     this.shadeCache = new ShadeCache();
     this.mapRegistry = new MapRegistry();
+    this.missionManager = new MissionManager();
     this.uiData = new UIData(this.textureLoader);
 }
 
@@ -76,5 +78,6 @@ BattalionContext.prototype.onExit = function() {
     this.portraitHandler.exit();
     this.uiCore.exit();
     this.shadeCache.exit();
+    this.missionManager.exit();
     addDebug(this);
 }

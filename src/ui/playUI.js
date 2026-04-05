@@ -83,6 +83,20 @@ PlayUI.WIDGET_ID = {
 PlayUI.prototype = Object.create(UIContext.prototype);
 PlayUI.prototype.constructor = PlayUI;
 
+PlayUI.prototype.getHudTitle = function() {
+    const { language, missionManager, world } = this.gameContext;
+    const { mapManager } = world;
+    const { currentMission } = missionManager;
+
+    if(!currentMission) {
+        const worldMap = mapManager.getActiveMap();
+        
+        return worldMap.preview.title;
+    }
+
+    return language.getSystemTranslation(currentMission.name);
+}
+
 PlayUI.prototype.load = function(gameContext) {
     const { uiData, uiManager, spriteManager } = gameContext;
 
@@ -145,10 +159,8 @@ PlayUI.prototype.doIcon = function(iconID, display, screenX, screenY) {
 }
 
 PlayUI.prototype.drawMainHud = function(display, screenX, screenY) {
-    const { world, uiData, language, teamManager, typeRegistry } = this.gameContext;
+    const { uiData, language, teamManager, typeRegistry } = this.gameContext;
     const { activeTeams } = teamManager;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
     const { context } = display;
     const buttonTexture = uiData.getTexture(UIData.TEXTURE.HUD_BUTTONS);
     const hudTexture = uiData.getTexture(UIData.TEXTURE.RECON_MAIN);
@@ -188,7 +200,7 @@ PlayUI.prototype.drawMainHud = function(display, screenX, screenY) {
             break;
         }
         default: {
-            context.fillText(language.getTranslation(worldMap.preview.title), textX, textY);
+            context.fillText(this.getHudTitle(), textX, textY);
             break;
         }
     }

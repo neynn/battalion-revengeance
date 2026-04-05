@@ -40,7 +40,8 @@ export const createEntitySnapshotFromJSON = function(gameContext, worldMap, json
         direction = null,
         health = -1,
         stealth = false,
-        cash = 0
+        cash = 0,
+        cargo = null
     } = json;
 
     const snapshot = createEntitySnapshot();
@@ -78,6 +79,10 @@ export const createEntitySnapshotFromJSON = function(gameContext, worldMap, json
         if(entityType.hasTrait(TRAIT_TYPE.SUBMERGED)) {
             snapshot.flags |= BattalionEntity.FLAG.IS_SUBMERGED;
         }
+    }
+
+    if(cargo !== null) {
+        snapshot.transport = ENTITY_TYPE[cargo] ?? ENTITY_TYPE._INVALID;
     }
 
     return snapshot;

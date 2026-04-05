@@ -3,18 +3,10 @@ repairAction -> start repair and finish repair on the next active turn. onHit ->
 Model for Destroyer
 Data for Destroyer
 
-Barges can spawn with "CARGO". Cargo is the id of an EntityType.
 Maintenance trait that heals 5HP every ROUND. StartTurn -> query entities -> filter by MAINTENANCE -> heal
-
-new blend property that links and draws a second sprite as a child to one.
 
 train as transport.
 
-TODO: add quick game message -> no json packing
-TODO: add more validation in the intent unpacker! (e.g. does the entity belong to the actor?)
-    Just call currentActor.getTeam! (Also add ServerActor) so the lookup loop is gone!
-
-Add morale mechanic (buff/debuff up to -3/+3). Get morale does this.morale + this.moraleDelta and locks it to specific values.
-Maybe add a unit that cannot get morale debuffed at all! (HIGH_SPIRITS?)
-
-Default building texture is usually not loaded!!!
+MapEditor:
+    1. Add Text -> Runtime HashSet that gets turned into an array when creating the map.
+    2. Add Custom -> Runtime HashSet that gets turned into an array when creating the map.
