@@ -727,7 +727,9 @@ export const TILE_ID = {
     MARKER: 187,
     MARKER_PROTECTED: 188,
 
-    _COUNT: 189
+    CASH_BOX: 189,
+
+    _COUNT: 190
 };
 
 export const DIRECTION = {

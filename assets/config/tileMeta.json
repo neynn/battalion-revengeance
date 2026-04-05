@@ -23,5 +23,6 @@
     { "id": "mine_", "type": "NONE", "texture": "other", "variants": { "prefix": "mine_", "count": 2 } },
     { "type": "NONE", "texture": "other", "tile": "marker_weak" },
     { "type": "NONE", "texture": "other", "tile": "marker" },
-    { "type": "NONE", "texture": "other", "tile": "marker_protected" }
+    { "type": "NONE", "texture": "other", "tile": "marker_protected" },
+    { "type": "NONE", "texture": "other", "tile": "cash_box" }
 ]

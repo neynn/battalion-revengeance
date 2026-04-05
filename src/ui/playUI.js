@@ -238,8 +238,25 @@ PlayUI.prototype.drawMainHud = function(display, screenX, screenY) {
     }
 }
 
+PlayUI.prototype.drawDialogueHud = function(display, screenX, screenY) {
+    const { uiData, dialogueHandler, typeRegistry, language } = this.gameContext;
+    const { currentDialogue, currentText, currentIndex } = dialogueHandler;
+
+    if(currentDialogue.length !== 0) {
+        const { narrator } = currentDialogue[currentIndex];
+        const commanderID = COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE;
+        const { portrait, name } = typeRegistry.getCommanderType(commanderID);
+        const commanderName = language.getSystemTranslation(name);
+        //const portraitTexture = portraitHandler.getPortraitTexture(portrait);
+        const dialogueX = screenX - DIALOGUE_BOX_WIDTH;
+        const dialogueY = screenY - DIALOGUE_BOX_HEIGHT;
+
+        uiData.getTexture(UIData.TEXTURE.DIALOGUE_BOX).draw(display, dialogueX, dialogueY);
+    }
+}
+
 PlayUI.prototype.onDraw = function(display, screenX, screenY) {
-    const { uiData, world, language, timer, typeRegistry, dialogueHandler, portraitHandler } = this.gameContext;
+    const { uiData, world, language, timer, typeRegistry, portraitHandler } = this.gameContext;
     const { mapManager } = world;
     const { realTime, deltaTime } = timer;
     const { context } = display;
@@ -285,6 +302,7 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
         tooltipX = x + ICON_WIDTH - RECON_TOOLTIP_WIDTH;
     }
 
+    this.drawDialogueHud(display, mainX, reconY);
     this.drawMainHud(display, mainX, mainY);
 
     switch(this.lastInspect) {
@@ -503,19 +521,5 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
         for(let i = 0; i < tooltipSize; i++) {
             context.fillText(this.tooltipLines[i], tooltipX + 3, tooltipY + 19 + 10 * i);
         }
-    }
-
-    const { currentDialogue, currentText, currentIndex } = dialogueHandler;
-
-    if(currentDialogue.length !== 0) {
-        const { narrator } = currentDialogue[currentIndex];
-        const commanderID = COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE;
-        const { portrait, name } = typeRegistry.getCommanderType(commanderID);
-        const commanderName = language.getSystemTranslation(name);
-        //const portraitTexture = portraitHandler.getPortraitTexture(portrait);
-        const dialogueX = mainX - DIALOGUE_BOX_WIDTH;
-        const dialogueY = reconY - DIALOGUE_BOX_HEIGHT;
-
-        uiData.getTexture(UIData.TEXTURE.DIALOGUE_BOX).draw(display, dialogueX, dialogueY);
     }
 }

@@ -15,6 +15,7 @@ import { TeamManager } from "../team/teamManager.js";
 import { TextureHandle } from "../../engine/resources/texture/textureHandle.js";
 import { getHealthColor } from "../entity/helpers.js";
 import { Autotiler } from "../../engine/tile/autotiler.js";
+import { TextStyle } from "../../engine/graphics/textStyle.js";
 
 const BLOCK = { COUNT: 4, WIDTH: 4, HEIGHT: 8, GAP: 1 };
 const WIDTH = (BLOCK.GAP * (BLOCK.COUNT + 1)) + BLOCK.WIDTH * BLOCK.COUNT;
@@ -330,7 +331,7 @@ BattalionCamera.prototype.drawEntity = function(gameContext, display, entity, sp
 }
 
 BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap) {
-    const { timer, world, spriteManager } = gameContext;
+    const { timer, world, spriteManager, tileManager } = gameContext;
     const { realTime, deltaTime } = timer;
     const { entityManager } = world;
 
@@ -434,9 +435,13 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
             const screenX = this.tileXToScreen(tileX);
             const screenY = this.tileYToScreen(tileY);
 
+            this.drawTile(tileManager, TILE_ID.CASH_BOX, display.context, screenX, screenY);
+
+            context.textAlign = TextStyle.ALIGN.RIGHT;
             context.fillStyle = "#ffffff";
             context.globalAlpha = 1;
-            context.fillText(cash, screenX, screenY);
+            context.fillText(cash, screenX + TILE_WIDTH - 4, screenY + 50);
+            context.textAlign = TextStyle.ALIGN.LEFT;
         }
 
         count++;

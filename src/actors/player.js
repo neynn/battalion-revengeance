@@ -72,7 +72,7 @@ Player.prototype.onClick = function(gameContext, tileX, tileY) {
 }
 
 Player.prototype.loadKeybinds = function(gameContext) {
-    const { client, world } = gameContext;
+    const { client } = gameContext;
     const { router } = client;
     
     router.bind(gameContext, "PLAY");
