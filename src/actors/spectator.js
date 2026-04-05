@@ -42,14 +42,3 @@ Spectator.prototype.update = function(gameContext) {
         //TODO: Update camera.
     }
 }
-
-Spectator.prototype.getVisibleEntity = function(gameContext, tileX, tileY) {
-    const { world } = gameContext;
-    const entity = world.getEntityAt(tileX, tileY);
-
-    if(entity) {
-        return entity;
-    }
-
-    return null;
-}

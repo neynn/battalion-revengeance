@@ -41,3 +41,18 @@ BattalionActor.prototype.surrender = function(gameContext) {
 BattalionActor.prototype.setTeam = function(teamID) {
     this.teamID = teamID;
 }
+
+BattalionActor.prototype.getVisibleEntity = function(gameContext, tileX, tileY) {
+    const { world } = gameContext;
+    const entity = world.getEntityAt(tileX, tileY);
+
+    if(!entity) {
+        return null;
+    }
+
+    if(this.teamID === TeamManager.INVALID_ID || entity.isVisibleTo(gameContext, this.teamID)) {
+        return entity;
+    }
+
+    return null;
+}

@@ -27,20 +27,6 @@ MapInspector.prototype.enable = function() {
     this.isEnabled = true;
 }
 
-MapInspector.prototype.inspectEntity = function(gameContext, entity) {
-    console.log("Inspected Entity", {
-        "dName":  entity.getName(gameContext),
-        "dDesc": entity.getDescription(gameContext),
-        "entity": entity
-    });
-}
-
-MapInspector.prototype.inspectBuilding = function(gameContext, building) {
-    console.log("Inspected Building", {
-        "building": building
-    });
-}
-
 MapInspector.prototype.getLastBuilding = function(gameContext) {
     const { world } = gameContext;
     const { mapManager } = world;
@@ -80,12 +66,16 @@ MapInspector.prototype.inspect = function(gameContext, inspector, camera, tileX,
     //Entities only get inspected if the last inspect was NOT the same entity or the building on the tile.
     if(entity && this.state !== MapInspector.STATE.ENTITY && this.state !== MapInspector.STATE.BUILDING) {
         this.nodeMap.clear();
+        this.state = MapInspector.STATE.ENTITY;
 
         entity.mGetNodeMap(gameContext, this.nodeMap);
         camera.showEntityNodes(gameContext, entity, this.nodeMap);
 
-        this.inspectEntity(gameContext, entity);   
-        this.state = MapInspector.STATE.ENTITY;
+        console.log("Inspected Entity", {
+            "dName":  entity.getName(gameContext),
+            "dDesc": entity.getDescription(gameContext),
+            "entity": entity
+        });
 
         return this.state;
     }
@@ -95,8 +85,11 @@ MapInspector.prototype.inspect = function(gameContext, inspector, camera, tileX,
 
     //A building was found and the last inspect was NOT a building.
     if(building && this.state !== MapInspector.STATE.BUILDING) {
-        this.inspectBuilding(gameContext, building);
         this.state = MapInspector.STATE.BUILDING;
+
+        console.log("Inspected Building", {
+            "building": building
+        });
 
         return this.state;
     }

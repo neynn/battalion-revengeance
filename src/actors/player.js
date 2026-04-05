@@ -120,14 +120,3 @@ Player.prototype.update = function(gameContext) {
 
     this.states.update(gameContext);
 }
-
-Player.prototype.getVisibleEntity = function(gameContext, tileX, tileY) {
-    const { world } = gameContext;
-    const entity = world.getEntityAt(tileX, tileY);
-
-    if(entity && entity.isVisibleTo(gameContext, this.teamID)) {
-        return entity;
-    }
-
-    return null;
-}
