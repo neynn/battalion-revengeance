@@ -1,0 +1,43 @@
+{
+	"SOMERTIN_C1_M1": { "name": "MISSION_NAME_SOMERTIN_C1_M1", "desc": "MISSION_DESC_SOMERTIN_C1_M1", "playlist": "LAMENTOSO", "map": "presus" },
+	"SOMERTIN_C1_M2": { "name": "MISSION_NAME_SOMERTIN_C1_M2", "desc": "MISSION_DESC_SOMERTIN_C1_M2", "playlist": "LAMENTOSO", "map": "" },
+	"SOMERTIN_C1_M3": { "name": "MISSION_NAME_SOMERTIN_C1_M3", "desc": "MISSION_DESC_SOMERTIN_C1_M3", "playlist": "LAMENTOSO", "map": "" },
+	"SOMERTIN_C1_M4": { "name": "MISSION_NAME_SOMERTIN_C1_M4", "desc": "MISSION_DESC_SOMERTIN_C1_M4", "playlist": "LAMENTOSO", "map": "" },
+	"SOMERTIN_C1_M5": { "name": "MISSION_NAME_SOMERTIN_C1_M5", "desc": "MISSION_DESC_SOMERTIN_C1_M5", "playlist": "FORTISSIMO", "map": "" },
+
+	"SOMERTIN_C2_M1": { "name": "MISSION_NAME_SOMERTIN_C2_M1", "desc": "MISSION_DESC_SOMERTIN_C2_M1", "playlist": "LAMENTOSO", "map": "" },
+	"SOMERTIN_C2_M2": { "name": "MISSION_NAME_SOMERTIN_C2_M2", "desc": "MISSION_DESC_SOMERTIN_C2_M2", "playlist": "LAMENTOSO", "map": "" },
+	"SOMERTIN_C2_M3": { "name": "MISSION_NAME_SOMERTIN_C2_M3", "desc": "MISSION_DESC_SOMERTIN_C2_M3", "playlist": "LAMENTOSO", "map": "" },
+	"SOMERTIN_C2_M4": { "name": "MISSION_NAME_SOMERTIN_C2_M4", "desc": "MISSION_DESC_SOMERTIN_C2_M4", "playlist": "LAMENTOSO", "map": "" },
+	"SOMERTIN_C2_M5": { "name": "MISSION_NAME_SOMERTIN_C2_M5", "desc": "MISSION_DESC_SOMERTIN_C2_M5", "playlist": "FORTISSIMO", "map": "" },
+
+	"SOMERTIN_C3_M1": { "name": "MISSION_NAME_SOMERTIN_C3_M1", "desc": "MISSION_DESC_SOMERTIN_C3_M1", "playlist": "CRUSADE", "map": "" },
+	"SOMERTIN_C3_M2": { "name": "MISSION_NAME_SOMERTIN_C3_M2", "desc": "MISSION_DESC_SOMERTIN_C3_M2", "playlist": "CRUSADE", "map": "" },
+	"SOMERTIN_C3_M3": { "name": "MISSION_NAME_SOMERTIN_C3_M3", "desc": "MISSION_DESC_SOMERTIN_C3_M3", "playlist": "CRUSADE", "map": "" },
+	"SOMERTIN_C3_M4": { "name": "MISSION_NAME_SOMERTIN_C3_M4", "desc": "MISSION_DESC_SOMERTIN_C3_M4", "playlist": "CRUSADE", "map": "" },
+	"SOMERTIN_C3_M5": { "name": "MISSION_NAME_SOMERTIN_C3_M5", "desc": "MISSION_DESC_SOMERTIN_C3_M5", "playlist": "EPIC_NAVAL", "map": "" },
+
+	"SOMERTIN_C4_M1": { "name": "MISSION_NAME_SOMERTIN_C4_M1", "desc": "MISSION_DESC_SOMERTIN_C4_M1", "playlist": "CRUSADE", "map": "" },
+	"SOMERTIN_C4_M2": { "name": "MISSION_NAME_SOMERTIN_C4_M2", "desc": "MISSION_DESC_SOMERTIN_C4_M2", "playlist": "CRUSADE", "map": "" },
+	"SOMERTIN_C4_M3": { "name": "MISSION_NAME_SOMERTIN_C4_M3", "desc": "MISSION_DESC_SOMERTIN_C4_M3", "playlist": "CRUSADE", "map": "" },
+	"SOMERTIN_C4_M4": { "name": "MISSION_NAME_SOMERTIN_C4_M4", "desc": "MISSION_DESC_SOMERTIN_C4_M4", "playlist": "CRUSADE", "map": "" },
+	"SOMERTIN_C4_M5": { "name": "MISSION_NAME_SOMERTIN_C4_M5", "desc": "MISSION_DESC_SOMERTIN_C4_M5", "playlist": "CRUSADE", "map": "" },
+
+	"SOMERTIN_C5_M1": { "name": "MISSION_NAME_SOMERTIN_C5_M1", "desc": "MISSION_DESC_SOMERTIN_C5_M1", "playlist": "CRUSADE", "map": "" },
+	"SOMERTIN_C5_M2": { "name": "MISSION_NAME_SOMERTIN_C5_M2", "desc": "MISSION_DESC_SOMERTIN_C5_M2", "playlist": "CRUSADE", "map": "" },
+	"SOMERTIN_C5_M3": { "name": "MISSION_NAME_SOMERTIN_C5_M3", "desc": "MISSION_DESC_SOMERTIN_C5_M3", "playlist": "CRUSADE", "map": "" },
+	"SOMERTIN_C5_M4": { "name": "MISSION_NAME_SOMERTIN_C5_M4", "desc": "MISSION_DESC_SOMERTIN_C5_M4", "playlist": "CRUSADE", "map": "" },
+	"SOMERTIN_C5_M5": { "name": "MISSION_NAME_SOMERTIN_C5_M5", "desc": "MISSION_DESC_SOMERTIN_C5_M5", "playlist": "CRUSADE", "map": "" },
+
+	"SOMERTIN_C6_M1": { "name": "MISSION_NAME_SOMERTIN_C6_M1", "desc": "MISSION_DESC_SOMERTIN_C6_M1", "playlist": "CRUSADE", "map": "" },
+	"SOMERTIN_C6_M2": { "name": "MISSION_NAME_SOMERTIN_C6_M2", "desc": "MISSION_DESC_SOMERTIN_C6_M2", "playlist": "CRUSADE", "map": "" },
+	"SOMERTIN_C6_M3": { "name": "MISSION_NAME_SOMERTIN_C6_M3", "desc": "MISSION_DESC_SOMERTIN_C6_M3", "playlist": "CRUSADE", "map": "" },
+	"SOMERTIN_C6_M4": { "name": "MISSION_NAME_SOMERTIN_C6_M4", "desc": "MISSION_DESC_SOMERTIN_C6_M4", "playlist": "CRUSADE", "map": "" },
+	"SOMERTIN_C6_M5": { "name": "MISSION_NAME_SOMERTIN_C6_M5", "desc": "MISSION_DESC_SOMERTIN_C6_M5", "playlist": "CRUSADE", "map": "" },
+
+	"SOMERTIN_C7_M1": { "name": "MISSION_NAME_SOMERTIN_C7_M1", "desc": "MISSION_DESC_SOMERTIN_C7_M1", "playlist": "CRUSADE", "map": "" },
+	"SOMERTIN_C7_M2": { "name": "MISSION_NAME_SOMERTIN_C7_M2", "desc": "MISSION_DESC_SOMERTIN_C7_M2", "playlist": "CRUSADE", "map": "" },
+	"SOMERTIN_C7_M3": { "name": "MISSION_NAME_SOMERTIN_C7_M3", "desc": "MISSION_DESC_SOMERTIN_C7_M3", "playlist": "CRUSADE", "map": "" },
+	"SOMERTIN_C7_M4": { "name": "MISSION_NAME_SOMERTIN_C7_M4", "desc": "MISSION_DESC_SOMERTIN_C7_M4", "playlist": "CRUSADE", "map": "" },
+	"SOMERTIN_C7_M5": { "name": "MISSION_NAME_SOMERTIN_C7_M5", "desc": "MISSION_DESC_SOMERTIN_C7_M5", "playlist": "CRUSADE", "map": "" }
+}

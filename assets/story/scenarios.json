@@ -1,0 +1,7 @@
+{
+    "GREAT_WAR": {
+        "name": "SCENARIO_NAME_GREAT_WAR",
+		"desc": "SCENARIO_DESC_GREAT_WAR",
+		"campaigns": ["SOMERTIN", "KARGIT", "TRANSKAL", "POLASIE", "ELAM"]
+    }
+}
