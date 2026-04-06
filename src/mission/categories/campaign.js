@@ -1,4 +1,5 @@
-import { NATION_TYPE } from "../enums.js";
+import { NATION_TYPE } from "../../enums.js";
+import { COMPLETION_STATE } from "../constants.js";
 
 export const Campaign = function(id) {
     this.id = id;
@@ -7,6 +8,17 @@ export const Campaign = function(id) {
     this.nation = NATION_TYPE.SOMERTIN;
     this.isHidden = false;
     this.chapters = [];
+    this.state = COMPLETION_STATE.NOT_COMPLETED;
+}
+
+Campaign.prototype.isCompleted = function() {
+    for(const { state } of this.chapters) {
+        if(state !== COMPLETION_STATE.COMPLETED) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 Campaign.prototype.getChapterIndex = function(chapterID) {

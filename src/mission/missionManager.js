@@ -1,8 +1,9 @@
 import { NATION_TYPE } from "../enums.js";
-import { Campaign } from "./campaign.js";
-import { Chapter } from "./chapter.js";
-import { Mission } from "./mission.js";
-import { Scenario } from "./scenario.js";
+import { COMPLETION_STATE, VICTORY_FLAG } from "./constants.js";
+import { Campaign } from "./categories/campaign.js";
+import { Chapter } from "./categories/chapter.js";
+import { Mission } from "./categories/mission.js";
+import { Scenario } from "./categories/scenario.js";
 
 export const MissionManager = function() {
 	this.scenarios = new Map();
@@ -165,6 +166,42 @@ MissionManager.prototype.selectMission = function(missionID) {
     this.currentMission = this.missions.get(missionID);
 }
 
+MissionManager.prototype.onVictory = function() {
+    let victoryFlags = VICTORY_FLAG.NONE;
+
+    if(!this.currentMission) {
+        return victoryFlags;
+    }
+
+    if(this.currentMission.state === COMPLETION_STATE.NOT_COMPLETED) {
+        this.currentMission.state = COMPLETION_STATE.COMPLETED;
+        victoryFlags |= VICTORY_FLAG.MISSION_FIRST;
+
+        if(this.currentChapter.state === COMPLETION_STATE.NOT_COMPLETED) {
+            if(this.currentChapter.isCompleted()) {
+                this.currentChapter.state = COMPLETION_STATE.COMPLETED;
+                victoryFlags |= VICTORY_FLAG.CHAPTER_FIRST;
+    
+                if(this.currentCampaign.state === COMPLETION_STATE.NOT_COMPLETED) {
+                    if(this.currentCampaign.isCompleted()) {
+                        this.currentCampaign.state = COMPLETION_STATE.COMPLETED;
+                        victoryFlags |= VICTORY_FLAG.CAMPAIGN_FIRST;
+    
+                        if(this.currentScenario.state === COMPLETION_STATE.NOT_COMPLETED) {
+                            if(this.currentScenario.isCompleted()) {
+                                this.currentScenario.state = COMPLETION_STATE.COMPLETED;
+                                victoryFlags |= VICTORY_FLAG.SCENARIO_FIRST;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return victoryFlags;
+}
+
 MissionManager.prototype.save = function() {
     const scenarios = {};
     const campaigns = {};
@@ -172,19 +209,19 @@ MissionManager.prototype.save = function() {
     const missions = {};
 
     for(const [scenarioID, scenario] of this.scenarios) {
-        scenarios[scenarioID] = 1;
+        scenarios[scenarioID] = scenario.state;
     }
 
     for(const [campaignID, campaign] of this.campaigns) {
-        campaigns[campaignID] = 1;
+        campaigns[campaignID] = campaign.state;
     }
 
     for(const [chapterID, chapter] of this.chapters) {
-        chapters[chapterID] = 1;
+        chapters[chapterID] = chapter.state;
     }
 
     for(const [missionID, mission] of this.missions) {
-        missions[missionID] = 1;
+        missions[missionID] = mission.state;
     }
 
     return {
