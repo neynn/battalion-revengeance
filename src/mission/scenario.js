@@ -4,3 +4,13 @@ export const Scenario = function(id) {
     this.desc = "";
     this.campaigns = [];
 }
+
+Scenario.prototype.hasCampaign = function(campaignID) {
+    for(const { id } of this.campaigns) {
+        if(id === campaignID) {
+            return true;
+        }
+    }
+
+    return false;
+}

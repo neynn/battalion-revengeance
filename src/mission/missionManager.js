@@ -94,6 +94,77 @@ MissionManager.prototype.load = function(resources) {
     }
 }
 
-MissionManager.prototype.exit = function() {
+MissionManager.prototype.deselectScenario = function() {
+    this.currentScenario = null;
+    this.currentCampaign = null;
+    this.currentChapter = null;
+    this.currentMission = null;
+}
+
+MissionManager.prototype.deselectCampaign = function() {
+    this.currentCampaign = null;
+    this.currentChapter = null;
+    this.currentMission = null;
+}
+
+MissionManager.prototype.deselectChapter = function() {
+    this.currentChapter = null;
+    this.currentMission = null;
+}
+
+MissionManager.prototype.deselectMission = function() {
+    this.currentMission = null;
+}
+
+MissionManager.prototype.selectScenario = function(scenarioID) {
+    const scenario = this.scenarios.get(scenarioID);
+
+    if(!scenario) {
+        return;
+    }
+
+    this.currentScenario = scenario;
+    this.deselectCampaign();
+}
+
+MissionManager.prototype.selectCampaign = function(campaignID) {
+    if(!this.currentScenario) {
+        return;
+    }
+
+    if(!this.currentScenario.hasCampaign(campaignID)) {
+        return;
+    }
+
+    this.currentCampaign = this.campaigns.get(campaignID);
+    this.deselectChapter();
+}
+
+MissionManager.prototype.selectChapter = function(chapterID) {
+    if(!this.currentCampaign) {
+        return;
+    }
+
+    if(!this.currentCampaign.hasChapter(chapterID)) {
+        return;
+    }
+
+    this.currentChapter = this.chapters.get(chapterID);
+    this.deselectMission();
+}
+
+MissionManager.prototype.selectMission = function(missionID) {
+    if(!this.currentChapter) {
+        return;
+    }
+
+    if(!this.currentChapter.hasMission(missionID)) {
+        return;
+    }
+
+    this.currentMission = this.missions.get(missionID);
+}
+
+MissionManager.prototype.exit = function() { 
 
 }
