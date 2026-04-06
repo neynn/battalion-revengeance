@@ -165,6 +165,36 @@ MissionManager.prototype.selectMission = function(missionID) {
     this.currentMission = this.missions.get(missionID);
 }
 
+MissionManager.prototype.save = function() {
+    const scenarios = {};
+    const campaigns = {};
+    const chapters = {};
+    const missions = {};
+
+    for(const [scenarioID, scenario] of this.scenarios) {
+        scenarios[scenarioID] = 1;
+    }
+
+    for(const [campaignID, campaign] of this.campaigns) {
+        campaigns[campaignID] = 1;
+    }
+
+    for(const [chapterID, chapter] of this.chapters) {
+        chapters[chapterID] = 1;
+    }
+
+    for(const [missionID, mission] of this.missions) {
+        missions[missionID] = 1;
+    }
+
+    return {
+        scenarios,
+        campaigns,
+        chapters,
+        missions
+    }
+}
+
 MissionManager.prototype.exit = function() { 
 
 }
