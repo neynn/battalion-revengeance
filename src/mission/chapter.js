@@ -5,12 +5,16 @@ export const Chapter = function(id) {
     this.missions = [];
 }
 
-Chapter.prototype.hasMission = function(missionID) {
-    for(const { id } of this.missions) {
-        if(id === missionID) {
-            return true;
+Chapter.prototype.getMissionIndex = function(missionID) {
+    for(let i = 0; i < this.missions.length; i++) {
+        if(this.missions[i].id === missionID) {
+            return i;
         }
     }
 
-    return false;
+    return -1;
+}
+
+Chapter.prototype.hasMission = function(missionID) {
+    return this.getMissionIndex(missionID) !== -1;
 }

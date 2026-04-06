@@ -5,12 +5,16 @@ export const Scenario = function(id) {
     this.campaigns = [];
 }
 
-Scenario.prototype.hasCampaign = function(campaignID) {
-    for(const { id } of this.campaigns) {
-        if(id === campaignID) {
-            return true;
+Scenario.prototype.getCampaignIndex = function(campaignID) {
+    for(let i = 0; i < this.campaigns.length; i++) {
+        if(this.campaigns[i].id === campaignID) {
+            return i;
         }
     }
 
-    return false;
+    return -1;
+}
+
+Scenario.prototype.hasCampaign = function(campaignID) {
+    return this.getCampaignIndex(campaignID) !== -1;
 }

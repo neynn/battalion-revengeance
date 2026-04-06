@@ -9,12 +9,16 @@ export const Campaign = function(id) {
     this.chapters = [];
 }
 
-Campaign.prototype.hasChapter = function(chapterID) {
-    for(const { id } of this.chapters) {
-        if(id === chapterID) {
-            return true;
+Campaign.prototype.getChapterIndex = function(chapterID) {
+    for(let i = 0; i < this.chapters.length; i++) {
+        if(this.chapters[i].id === chapterID) {
+            return i;
         }
     }
 
-    return false;
+    return -1;
+}
+
+Campaign.prototype.hasChapter = function(chapterID) {
+    return this.getChapterIndex(chapterID) !== -1;
 }
