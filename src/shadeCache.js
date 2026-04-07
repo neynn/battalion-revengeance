@@ -8,7 +8,7 @@ export const ShadeCache = function() {
     this.handles = [];
 
     for(let i = 0; i < MAX_SHADES; i++) {
-        this.handles[i] = new TextureHandle(i);
+        this.handles[i] = new TextureHandle();
     }
 }
 

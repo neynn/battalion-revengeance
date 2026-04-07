@@ -7,14 +7,14 @@ export const Texture = function(id, name, path) {
     this.path = path;
     this.width = 0;
     this.height = 0;
-    this.handle = new TextureHandle(id);
-    this.variants = [];
+    this.handle = new TextureHandle();
+    this.variants = new Map();
     this.regions = [];
     this.regionMap = {};
 }
 
 Texture.EMPTY_REGION = new TextureRegion(0, 0, 0, 0);
-Texture.EMPTY_HANDLE = new TextureHandle(-1);
+Texture.EMPTY_HANDLE = new TextureHandle();
 
 Texture.prototype.getRegion = function(index) {
     if(index < 0 || index >= this.regions.length) {
@@ -47,8 +47,8 @@ Texture.prototype.getRegionIndex = function(name) {
 Texture.prototype.getSizeBytes = function() {
     let bytes = this.handle.getBytes();
 
-    for(let i = 0; i < this.variants.length; i++) {
-        bytes += this.variants[i].getBytes();
+    for(const [id, variant] of this.variants) {
+        bytes += variant.getBytes();
     }
 
     return bytes;
@@ -57,11 +57,11 @@ Texture.prototype.getSizeBytes = function() {
 Texture.prototype.clear = function() {
     this.handle.clear();
     
-    for(let i = 0; i < this.variants.length; i++) {
-        this.variants[i].clear();
+    for(const [id, variant] of this.variants) {
+        variant.clear();
     }
 
-    this.variants.length = 0;
+    this.variants.clear();
 }
 
 Texture.prototype.requestBitmap = function() {
@@ -103,17 +103,17 @@ Texture.prototype.getID = function() {
 }
 
 Texture.prototype.createHandle = function(handleID) {
-    for(let i = 0; i < this.variants.length; i++) {
-        if(this.variants[i].id === handleID) {
-            return this.variants[i];
-        }
+    const handle = this.variants.get(handleID);
+
+    if(handle) {
+        return handle;
     }
 
-    const handle = new TextureHandle(handleID);
+    const nextHandle = new TextureHandle();
 
-    this.variants.push(handle);
+    this.variants.set(handleID, nextHandle);
 
-    return handle;
+    return nextHandle;
 }
 
 Texture.prototype.initGrid = function(grid, width, height) {
@@ -187,13 +187,13 @@ Texture.prototype.getFrames = function(regions) {
 }
 
 Texture.prototype.getHandle = function(handleID) {
-    for(let i = 0; i < this.variants.length; i++) {
-        if(this.variants[i].id === handleID) {
-            return this.variants[i];
-        }
+    const handle = this.variants.get(handleID);
+
+    if(!handle) {
+        return this.handle;
     }
 
-    return this.handle;
+    return handle;
 }
 
 Texture.prototype.drawOffset = function(display, screenX, screenY) {
