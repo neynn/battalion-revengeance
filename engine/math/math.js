@@ -1,3 +1,7 @@
+export const toCenter = function(parentSize, childSize) {
+	return Math.floor(parentSize / 2 - childSize / 2);
+}
+
 export const getPercent = function(value, max) {
 	if(max === 0) {
 		return 100;

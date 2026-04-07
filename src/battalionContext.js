@@ -4,7 +4,7 @@ import { PortraitHandler } from "./client/portraitHandler.js";
 import { LAYER_TYPE, TILE_ID, TILE_TYPE } from "./enums.js";
 import { MainMenuState } from "./states/mainMenu/mainMenu.js";
 import { MapEditorState } from "./states/mapEditor/mapEditorState.js";
-import { PlayState } from "./states/play.js";
+import { StoryState } from "./states/story/story.js";
 import { TeamManager } from "./team/teamManager.js";
 import { TypeRegistry } from "./type/typeRegistry.js";
 import { ArenaState } from "./states/arena/arena.js";
@@ -32,7 +32,7 @@ export const BattalionContext = function() {
 }
 
 BattalionContext.STATE = {
-    PLAY: "PLAY",
+    STORY: "STORY",
     ARENA: "ARENA",
     MAIN_MENU: "MAIN_MENU",
     MAP_EDITOR: "MAP_EDITOR"
@@ -67,7 +67,7 @@ BattalionContext.prototype.init = function(resources) {
     this.states.addState(BattalionContext.STATE.MAIN_MENU, new MainMenuState());
     this.states.addState(BattalionContext.STATE.MAP_EDITOR, new MapEditorState());
     this.states.addState(BattalionContext.STATE.ARENA, new ArenaState());
-    this.states.addState(BattalionContext.STATE.PLAY, new PlayState());
+    this.states.addState(BattalionContext.STATE.STORY, new StoryState());
     this.states.setNextState(this, BattalionContext.STATE.MAIN_MENU);
     this.timer.start();
     addDebug(this);

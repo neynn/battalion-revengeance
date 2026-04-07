@@ -13,7 +13,16 @@ export const Texture = function(id, name, path) {
     this.regionMap = {};
 }
 
+Texture.EMPTY_REGION = new TextureRegion(0, 0, 0, 0);
 Texture.EMPTY_HANDLE = new TextureHandle(-1);
+
+Texture.prototype.getRegion = function(index) {
+    if(index < 0 || index >= this.regions.length) {
+        return Texture.EMPTY_REGION;
+    }
+
+    return this.regions[index];
+}
 
 Texture.prototype.getRegionByName = function(name) {
     const index = this.getRegionIndex(name);

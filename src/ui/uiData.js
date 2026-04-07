@@ -15,6 +15,7 @@ UIData.TEXTURE = {
     RECON_NONE: 2,
     RECON_MAIN: 3,
     RECON_HEALTH: 4,
+
     ICONS: 5,
     TOOLTIP: 6,
     TOOLTIP_PLUS: 7,
@@ -24,11 +25,28 @@ UIData.TEXTURE = {
     DIALOGUE_BOX: 11,
     HUD_BUTTONS: 12,
     HUD_GLASSPLATE: 13,
-    _COUNT: 14
+
+    STORY_CHAPTER_PANEL: 14,
+    STORY_CHAPTER_PLAQUE: 15,
+    STORY_EMBLEM_SLOT: 16,
+    STORY_MAIN_MENU_BORDER: 17,
+    STORY_TITLE_PANEL: 18,
+    STORY_MISSION_PANEL: 19,
+
+    _COUNT: 20
 };
 
 UIData.prototype.getTexture = function(textureID) {
     return this.textureLoader.getTextureWithFallback(this.textures[textureID]);
+}
+
+UIData.prototype.loadStoryTextures = function() {
+    this.textureLoader.loadTexture(this.textures[UIData.TEXTURE.STORY_CHAPTER_PANEL]);
+    this.textureLoader.loadTexture(this.textures[UIData.TEXTURE.STORY_CHAPTER_PLAQUE]);
+    this.textureLoader.loadTexture(this.textures[UIData.TEXTURE.STORY_EMBLEM_SLOT]);
+    this.textureLoader.loadTexture(this.textures[UIData.TEXTURE.STORY_MAIN_MENU_BORDER]);
+    this.textureLoader.loadTexture(this.textures[UIData.TEXTURE.STORY_TITLE_PANEL]);
+    this.textureLoader.loadTexture(this.textures[UIData.TEXTURE.STORY_MISSION_PANEL]);
 }
 
 UIData.prototype.loadPlayTextures = function() {
@@ -65,4 +83,11 @@ UIData.prototype.load = function(gameContext) {
     this.textures[UIData.TEXTURE.DIALOGUE_BOX] = uiManager.getTextureID("dialogue_text_box");
     this.textures[UIData.TEXTURE.HUD_BUTTONS] = uiManager.getTextureID("hud_buttons");
     this.textures[UIData.TEXTURE.HUD_GLASSPLATE] = uiManager.getTextureID("hud_glassplate");
+
+    this.textures[UIData.TEXTURE.STORY_CHAPTER_PANEL] = uiManager.getTextureID("story_chapter_panel");
+    this.textures[UIData.TEXTURE.STORY_CHAPTER_PLAQUE] = uiManager.getTextureID("story_chapter_plaque");
+    this.textures[UIData.TEXTURE.STORY_EMBLEM_SLOT] = uiManager.getTextureID("story_emblem_slot");
+    this.textures[UIData.TEXTURE.STORY_MAIN_MENU_BORDER] = uiManager.getTextureID("story_main_menu_border");
+    this.textures[UIData.TEXTURE.STORY_TITLE_PANEL] = uiManager.getTextureID("story_title_panel");
+    this.textures[UIData.TEXTURE.STORY_MISSION_PANEL] = uiManager.getTextureID("story_mission_panel");
 }

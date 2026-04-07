@@ -15,7 +15,7 @@ MainMenuInterface.prototype.load = function(gameContext, stateMachine) {
 
     parseLayout(gameContext, this, "MAIN_MENU");
 
-    this.addClickByName("BUTTON_PLAY", (e) => stateMachine.setNextState(gameContext, BattalionContext.STATE.PLAY));
+    this.addClickByName("BUTTON_PLAY", (e) => stateMachine.setNextState(gameContext, BattalionContext.STATE.STORY));
     this.addClickByName("BUTTON_EDIT", (e) => stateMachine.setNextState(gameContext, BattalionContext.STATE.MAP_EDITOR));
     this.addClickByName("BUTTON_VERSUS", (e) => stateMachine.setNextState(gameContext, BattalionContext.STATE.ARENA));
     this.addClickByName("BUTTON_EXTRA", (e) => musicPlayer.playPlaylist("EPIC_NAVAL"));

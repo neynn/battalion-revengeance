@@ -1,5 +1,5 @@
 import { NATION_TYPE } from "../enums.js";
-import { COMPLETION_STATE, VICTORY_FLAG } from "./constants.js";
+import { COMPLETION_STATE, MAX_CHAPTERS, MAX_MISSIONS, VICTORY_FLAG } from "./constants.js";
 import { Campaign } from "./categories/campaign.js";
 import { Chapter } from "./categories/chapter.js";
 import { Mission } from "./categories/mission.js";
@@ -41,6 +41,7 @@ MissionManager.prototype.load = function(resources) {
     for(const chapterID in chapters) {
         const { name, desc, missions } = chapters[chapterID];
         const chapter = new Chapter(chapterID);
+        let count = 0;
 
         chapter.name = name;
         chapter.desc = desc;
@@ -50,6 +51,11 @@ MissionManager.prototype.load = function(resources) {
 
             if(mission) {
                 chapter.missions.push(mission);
+                count++;
+            }
+
+            if(count >= MAX_MISSIONS) {
+                break;
             }
         }
 
@@ -59,6 +65,7 @@ MissionManager.prototype.load = function(resources) {
     for(const campaignID in campaigns) {
         const { name, desc, nation, hidden = false, chapters } = campaigns[campaignID];
         const campaign = new Campaign(campaignID);
+        let count = 0;
 
         campaign.name = name;
         campaign.desc = desc;
@@ -70,6 +77,11 @@ MissionManager.prototype.load = function(resources) {
 
             if(chapter) {
                 campaign.chapters.push(chapter);
+                count++;
+            }
+
+            if(count >= MAX_CHAPTERS) {
+                break;
             }
         }
 

@@ -10,3 +10,6 @@ export const VICTORY_FLAG = {
     CAMPAIGN_FIRST: 1 << 2,
     SCENARIO_FIRST: 1 << 3
 };
+
+export const MAX_MISSIONS = 5;
+export const MAX_CHAPTERS = 7;
