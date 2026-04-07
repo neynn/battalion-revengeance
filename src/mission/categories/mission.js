@@ -8,3 +8,7 @@ export const Mission = function(id) {
     this.map = null;
     this.state = COMPLETION_STATE.NOT_COMPLETED;
 }
+
+Mission.prototype.complete = function() {
+    this.state = COMPLETION_STATE.COMPLETED;
+}

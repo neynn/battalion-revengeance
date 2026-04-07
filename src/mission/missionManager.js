@@ -166,6 +166,51 @@ MissionManager.prototype.selectMission = function(missionID) {
     this.currentMission = this.missions.get(missionID);
 }
 
+MissionManager.prototype.selectChapterIfPossible = function(index) {
+    if(!this.currentCampaign) {
+        return null;
+    }
+
+    if(!this.currentCampaign.isChapterAvailableAsNext(index)) {
+        return null;
+    }
+
+    this.currentChapter = this.currentCampaign.chapters[index];
+    this.deselectMission();
+
+    return this.currentChapter;
+}
+
+MissionManager.prototype.selectMissionIfPossible = function(index) {
+    if(!this.currentChapter) {
+        return null;
+    }
+
+    if(!this.currentChapter.isMissionAvailableAsNext(index)) {
+        return null;
+    }
+
+    this.currentMission = this.currentChapter.missions[index];
+
+    return this.currentMission;
+}
+
+MissionManager.prototype.getNextMissionIndex = function() {
+    if(!this.currentChapter) {
+        return -1;
+    }
+
+    return this.currentChapter.getNextMissionIndex();
+}
+
+MissionManager.prototype.getNextChapterIndex = function() {
+    if(!this.currentCampaign) {
+        return -1;
+    }
+
+    return this.currentCampaign.getNextChapterIndex();
+}
+
 MissionManager.prototype.onVictory = function() {
     let victoryFlags = VICTORY_FLAG.NONE;
 
@@ -224,14 +269,17 @@ MissionManager.prototype.save = function() {
         missions[missionID] = mission.state;
     }
 
-    return {
+    return [
         scenarios,
         campaigns,
         chapters,
         missions
-    }
+    ];
 }
 
 MissionManager.prototype.exit = function() { 
-
+	this.currentScenario = null;
+	this.currentCampaign = null;
+	this.currentChapter = null;
+	this.currentMission = null;
 }

@@ -8,6 +8,14 @@ export const Scenario = function(id) {
     this.state = COMPLETION_STATE.NOT_COMPLETED;
 }
 
+Scenario.prototype.complete = function() {
+    this.state = COMPLETION_STATE.COMPLETED;
+
+    for(const campaign of this.campaigns) {
+        campaign.complete();
+    }
+}
+
 Scenario.prototype.isCompleted = function() {
     for(const { state } of this.campaigns) {
         if(state !== COMPLETION_STATE.COMPLETED) {
