@@ -47,15 +47,15 @@ MissionManager.prototype.load = function(resources) {
         chapter.desc = desc;
 
         for(const missionID of missions) {
+            if(count >= MAX_MISSIONS) {
+                break;
+            }
+
             const mission = this.missions.get(missionID);
 
             if(mission) {
                 chapter.missions.push(mission);
                 count++;
-            }
-
-            if(count >= MAX_MISSIONS) {
-                break;
             }
         }
 
@@ -73,15 +73,15 @@ MissionManager.prototype.load = function(resources) {
         campaign.isHidden = hidden;
 
         for(const chapterID of chapters) {
+            if(count >= MAX_CHAPTERS) {
+                break;
+            }
+
             const chapter = this.chapters.get(chapterID);
 
             if(chapter) {
                 campaign.chapters.push(chapter);
                 count++;
-            }
-
-            if(count >= MAX_CHAPTERS) {
-                break;
             }
         }
 

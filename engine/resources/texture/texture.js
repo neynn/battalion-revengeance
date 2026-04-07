@@ -9,8 +9,8 @@ export const Texture = function(id, name, path) {
     this.height = 0;
     this.handle = new TextureHandle();
     this.variants = new Map();
+    this.regionMap = new Map();
     this.regions = [];
-    this.regionMap = {};
 }
 
 Texture.EMPTY_REGION = new TextureRegion(0, 0, 0, 0);
@@ -35,7 +35,7 @@ Texture.prototype.getRegionByName = function(name) {
 }
 
 Texture.prototype.getRegionIndex = function(name) {
-    const index = this.regionMap[name];
+    const index = this.regionMap.get(name);
 
     if(index === undefined) {
         return -1;
@@ -122,7 +122,7 @@ Texture.prototype.initGrid = function(grid, width, height) {
         const region = new TextureRegion(u * width, v * height, width, height);
 
         this.regions.push(region);
-        this.regionMap[regionID] = this.regions.length - 1;
+        this.regionMap.set(regionID, this.regions.length - 1);
     }
 }
 
@@ -132,7 +132,7 @@ Texture.prototype.initRegions = function(regions) {
         const region = new TextureRegion(x, y, w, h);
 
         this.regions.push(region);
-        this.regionMap[regionID] = this.regions.length - 1;
+        this.regionMap.set(regionID, this.regions.length - 1);
     }
 }
 
@@ -144,9 +144,10 @@ Texture.prototype.autoGrid = function(startX, startY, rows, columns, firstID, wi
             const regionX = startX + j * width;
             const regionY = startY + i * height;
             const region = new TextureRegion(regionX, regionY, width, height);
+            const regionID = (id++) + "";
 
             this.regions.push(region);
-            this.regionMap[id++] = this.regions.length - 1;
+            this.regionMap.set(regionID, this.regions.length - 1);
         }
     }
 }
@@ -156,8 +157,9 @@ Texture.prototype.getFramesAuto = function(autoRegions) {
     const frames = [];
 
     for(let i = 0; i < repeat; i++) {
-        const regionID = start + jump * i;
-        const index = this.regionMap[regionID];
+        const regionNumber = start + jump * i;
+        const regionID = regionNumber + "";
+        const index = this.regionMap.get(regionID);
 
         if(index !== undefined) {
             frames.push(this.regions[index]);
@@ -174,7 +176,7 @@ Texture.prototype.getFrames = function(regions) {
 
     for(let i = 0; i < regions.length; i++) {
         const regionID = regions[i];
-        const index = this.regionMap[regionID];
+        const index = this.regionMap.get(regionID);
 
         if(index !== undefined) {
             frames.push(this.regions[index]);

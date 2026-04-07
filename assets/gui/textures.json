@@ -1,6 +1,8 @@
 {
+    "plaque": { "directory": ["assets", "gui", "other"], "source": "plaque.png" },
+    "plaque_disabled": { "directory": ["assets", "gui", "other"], "source": "plaque_disabled.png" },
+
     "story_chapter_panel": { "directory": ["assets", "gui", "story"], "source": "chapter_panel.png" },
-    "story_chapter_plaque": { "directory": ["assets", "gui", "story"], "source": "chapter_plaque.png" },
     "story_emblem_slot": { "directory": ["assets", "gui", "story"], "source": "emblem_slot.png" },
     "story_main_menu_border": { "directory": ["assets", "gui", "story"], "source": "main_menu_border.png" },
     "story_title_panel": { "directory": ["assets", "gui", "story"], "source": "title_panel.png" },
