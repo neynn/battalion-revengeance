@@ -2,11 +2,11 @@ import { TextStyle } from "../../engine/graphics/textStyle.js";
 import { toCenter } from "../../engine/math/math.js";
 import { IM_FLAG, UIContext } from "../../engine/ui/uiContext.js";
 import { createStartTurnIntent } from "../action/actionHelper.js";
+import { UI_TEXTURE } from "../enums.js";
 import { TeamOverride } from "../map/override.js";
 import { MAX_CHAPTERS } from "../mission/constants.js";
 import { createClientMapLoader } from "../systems/map.js";
 import { mRegenerateLines } from "./helpers.js";
-import { UIData } from "./uiData.js";
 
 const START_BUTTON_WIDTH = 391;
 const START_BUTTON_HEIGHT = 101;
@@ -24,42 +24,42 @@ const START_BUTTON = {
     HOT: 2
 };
 
-export const StoryUI = function(gameContext) {
+export const StoryUI = function() {
     UIContext.call(this);
 
-    this.style = new TextStyle();
-    this.gameContext = gameContext;
-
-    this.style.font = "16px Times New Roman";
-    this.style.setAlignment(TextStyle.ALIGN.MIDDLE);
+    this.isImmediate = true;
     this.lines = [];
     this.lastMission = null;
+
+    this.style = new TextStyle();
+    this.style.font = "16px Times New Roman";
+    this.style.setAlignment(TextStyle.ALIGN.MIDDLE);
 }
 
 StoryUI.prototype = Object.create(UIContext.prototype);
 StoryUI.prototype.constructor = StoryUI;
 
-StoryUI.prototype.load = function() {
-    const { uiData, uiManager } = this.gameContext;
+StoryUI.prototype.load = function(gameContext) {
+    const { uiData, uiManager } = gameContext;
 
     uiData.loadStoryTextures();
     uiManager.addContext(this);
 }
 
-StoryUI.prototype.onDraw = function(display, screenX, screenY) {
-    const { uiData, applicationWindow, missionManager, typeRegistry, language } = this.gameContext;
+StoryUI.prototype.onImmediate = function(gameContext, display) {
+    const { uiData, applicationWindow, missionManager, typeRegistry, language } = gameContext;
     const { currentChapter, currentMission, currentCampaign } = missionManager;
     const { width, height } = applicationWindow;
     const { context } = display;
-    const mainMenuBorder = uiData.getTexture(UIData.TEXTURE.STORY_MAIN_MENU_BORDER);
-    const chapterPanel = uiData.getTexture(UIData.TEXTURE.STORY_CHAPTER_PANEL);
-    const missionPanel = uiData.getTexture(UIData.TEXTURE.STORY_MISSION_PANEL);
-    const titlePanel = uiData.getTexture(UIData.TEXTURE.STORY_TITLE_PANEL);
-    const chapterPlaque = uiData.getTexture(UIData.TEXTURE.PLAQUE);
-    const chapterPlaqueDisabled = uiData.getTexture(UIData.TEXTURE.PLAQUE_DISABLED);
-    const emblemTexture = uiData.getTexture(UIData.TEXTURE.STORY_EMBLEMS);
-    const emblemSlot = uiData.getTexture(UIData.TEXTURE.STORY_EMBLEM_SLOT);
-    const startButtonTexture = uiData.getTexture(UIData.TEXTURE.STORY_START);
+    const mainMenuBorder = uiData.getTexture(UI_TEXTURE.STORY_MAIN_MENU_BORDER);
+    const chapterPanel = uiData.getTexture(UI_TEXTURE.STORY_CHAPTER_PANEL);
+    const missionPanel = uiData.getTexture(UI_TEXTURE.STORY_MISSION_PANEL);
+    const titlePanel = uiData.getTexture(UI_TEXTURE.STORY_TITLE_PANEL);
+    const chapterPlaque = uiData.getTexture(UI_TEXTURE.PLAQUE);
+    const chapterPlaqueDisabled = uiData.getTexture(UI_TEXTURE.PLAQUE_DISABLED);
+    const emblemTexture = uiData.getTexture(UI_TEXTURE.STORY_EMBLEMS);
+    const emblemSlot = uiData.getTexture(UI_TEXTURE.STORY_EMBLEM_SLOT);
+    const startButtonTexture = uiData.getTexture(UI_TEXTURE.STORY_START);
 
     const borderX = toCenter(width, mainMenuBorder.width);
     const borderY = toCenter(height, mainMenuBorder.height);
@@ -95,7 +95,7 @@ StoryUI.prototype.onDraw = function(display, screenX, screenY) {
                 chapterPlaque.draw(display, plaqueX, drawY);
                 
                 if(this.doButton(
-                    this.gameContext,
+                    gameContext,
                     CHAPTER_ID_REGION + i,
                     plaqueX,
                     drawY,
@@ -170,7 +170,7 @@ StoryUI.prototype.onDraw = function(display, screenX, screenY) {
                 const startTextX = startX + Math.floor(START_BUTTON_WIDTH / 2);
                 const startTextY = startY + Math.floor(START_BUTTON_HEIGHT / 2);
                 const startFlags = this.doButton(
-                    this.gameContext,
+                    gameContext,
                     2,
                     startX,
                     startY,
@@ -187,10 +187,10 @@ StoryUI.prototype.onDraw = function(display, screenX, screenY) {
                 context.fillText(language.getSystemTranslation(startButton), startTextX, startTextY);
 
                 if(startFlags & IM_FLAG.CLICKED) {
-                    createClientMapLoader(this.gameContext, map)
+                    createClientMapLoader(gameContext, map)
                     .then(loader => {
                         if(loader) {
-                            const { actionRouter } = this.gameContext;
+                            const { actionRouter } = gameContext;
                             const over = new TeamOverride("SOMERTIN");
 
                             over.color = {
@@ -200,8 +200,8 @@ StoryUI.prototype.onDraw = function(display, screenX, screenY) {
                                 "0xFF9085": [71, 75, 136]
                             };
 
-                            loader.loadMapFromFile(this.gameContext, [over]);
-                            actionRouter.forceEnqueue(this.gameContext, createStartTurnIntent());
+                            loader.loadMapFromFile(gameContext, [over]);
+                            actionRouter.forceEnqueue(gameContext, createStartTurnIntent());
                             this.hide();
                         } else {
                             
@@ -217,7 +217,7 @@ StoryUI.prototype.onDraw = function(display, screenX, screenY) {
                     emblemTexture.drawRegion(display, emblem, drawX, emblemY);
 
                     if(this.doButton(
-                        this.gameContext,
+                        gameContext,
                         MISSION_ID_REGION + i,
                         drawX,
                         emblemY,

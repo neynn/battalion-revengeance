@@ -4,7 +4,7 @@ import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { IM_FLAG, UIContext } from "../../engine/ui/uiContext.js";
 import { MapInspector } from "../actors/player/inspector.js";
 import { getHealthColor } from "../entity/helpers.js";
-import { COMMANDER_TYPE, HUD_BUTTON, PLAYER_PREFERENCE, TILE_ID } from "../enums.js";
+import { COMMANDER_TYPE, HUD_BUTTON, PLAYER_PREFERENCE, TILE_ID, UI_TEXTURE } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { mRegenerateLines } from "./helpers.js";
 import { UIData } from "./uiData.js";
@@ -32,15 +32,15 @@ const TILE_DRAW_ORDER = [
     BattalionMap.LAYER.CLOUD
 ];
 
-export const PlayUI = function(inspector, cContext, gameContext) {
+export const PlayUI = function(inspector, cContext) {
     UIContext.call(this);
 
+    this.isImmediate = true;
     this.inspector = inspector;
     this.cContext = cContext;
-    this.gameContext = gameContext;
     this.inspectSprite = SpriteManager.EMPTY_SPRITE;
-    this.style = new TextStyle();
 
+    this.style = new TextStyle();
     this.style.baseline = TextStyle.BASELINE.TOP;
     this.style.font = "10px arial";
     this.lines = [];
@@ -62,8 +62,8 @@ PlayUI.WIDGET_ID = {
 PlayUI.prototype = Object.create(UIContext.prototype);
 PlayUI.prototype.constructor = PlayUI;
 
-PlayUI.prototype.getHudTitle = function() {
-    const { language, missionManager, world } = this.gameContext;
+PlayUI.prototype.getHudTitle = function(gameContext) {
+    const { language, missionManager, world } = gameContext;
     const { mapManager } = world;
     const { currentMission } = missionManager;
 
@@ -95,21 +95,21 @@ PlayUI.prototype.regenerateLines = function(context, text, maxWidth) {
 
 //TODO(neyn): Create a 28x28 ICON for each entity!
 //This icon gets drawn instead of a full sprite!
-PlayUI.prototype.updateInspectSprite = function(entity) {
-    const { spriteManager } = this.gameContext;
-    const { color } = entity.getTeam(this.gameContext);
+PlayUI.prototype.updateInspectSprite = function(gameContext, entity) {
+    const { spriteManager } = gameContext;
+    const { color } = entity.getTeam(gameContext);
 
     spriteManager.updateSprite(this.inspectSprite.index, entity.config.sprites.idle_right, color);
 }
 
-PlayUI.prototype.updateBuilding = function(building) {
-    const { spriteManager } = this.gameContext;
+PlayUI.prototype.updateBuilding = function(gameContext, building) {
+    const { spriteManager } = gameContext;
 
     spriteManager.updateSprite(this.inspectSprite.index, building.config.sprite, building.color);
 }
 
-PlayUI.prototype.drawTile = function(display, tileX, tileY, screenX, screenY) {
-    const { tileManager, world } = this.gameContext;
+PlayUI.prototype.drawTile = function(gameContext, display, tileX, tileY, screenX, screenY) {
+    const { tileManager, world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
     const { context } = display;
@@ -123,8 +123,8 @@ PlayUI.prototype.drawTile = function(display, tileX, tileY, screenX, screenY) {
     }
 }
 
-PlayUI.prototype.doIcon = function(iconID, display, screenX, screenY) {
-    const { uiData, client } = this.gameContext;
+PlayUI.prototype.doIcon = function(gameContext, iconID, display, screenX, screenY) {
+    const { uiData, client } = gameContext;
     const { cursor } = client;
     const isCollided = !this.isCollided && cursor.collidesRect(screenX, screenY, ICON_WIDTH, ICON_HEIGHT);
 
@@ -132,17 +132,17 @@ PlayUI.prototype.doIcon = function(iconID, display, screenX, screenY) {
         this.isCollided = true;
     }
 
-    uiData.getTexture(UIData.TEXTURE.ICONS).drawRegion(display, iconID, screenX, screenY);
+    uiData.getTexture(UI_TEXTURE.ICONS).drawRegion(display, iconID, screenX, screenY);
 
     return isCollided;
 }
 
-PlayUI.prototype.drawMainHud = function(display, screenX, screenY) {
-    const { uiData, language, teamManager, typeRegistry } = this.gameContext;
+PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) {
+    const { uiData, language, teamManager, typeRegistry } = gameContext;
     const { activeTeams } = teamManager;
     const { context } = display;
-    const buttonTexture = uiData.getTexture(UIData.TEXTURE.HUD_BUTTONS);
-    const hudTexture = uiData.getTexture(UIData.TEXTURE.RECON_MAIN);
+    const buttonTexture = uiData.getTexture(UI_TEXTURE.HUD_BUTTONS);
+    const hudTexture = uiData.getTexture(UI_TEXTURE.RECON_MAIN);
 
     const mainX = screenX - 14;
     const mainY = screenY;
@@ -151,9 +151,9 @@ PlayUI.prototype.drawMainHud = function(display, screenX, screenY) {
     const buttonX = mainX + 33;
     const buttonY = mainY + 169;
 
-    const undoFlags = this.doButton(this.gameContext, PlayUI.WIDGET_ID.HUD_UNDO, buttonX, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
-    const menuFlags = this.doButton(this.gameContext, PlayUI.WIDGET_ID.HUD_MENU, buttonX + 38, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
-    const quitFlags = this.doButton(this.gameContext, PlayUI.WIDGET_ID.HUD_QUIT, buttonX + 76, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
+    const undoFlags = this.doButton(gameContext, PlayUI.WIDGET_ID.HUD_UNDO, buttonX, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
+    const menuFlags = this.doButton(gameContext, PlayUI.WIDGET_ID.HUD_MENU, buttonX + 38, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
+    const quitFlags = this.doButton(gameContext, PlayUI.WIDGET_ID.HUD_QUIT, buttonX + 76, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
 
     let undoButton = HUD_BUTTON.UNDO_ENABLED;
     let menuButton = HUD_BUTTON.MENU_ENABLED;
@@ -179,7 +179,7 @@ PlayUI.prototype.drawMainHud = function(display, screenX, screenY) {
             break;
         }
         default: {
-            context.fillText(this.getHudTitle(), textX, textY);
+            context.fillText(this.getHudTitle(gameContext), textX, textY);
             break;
         }
     }
@@ -210,7 +210,7 @@ PlayUI.prototype.drawMainHud = function(display, screenX, screenY) {
     const teamY = mainY + 389;
     const TEAM_OFFSET_Y = 30;
     const teamDraws = activeTeams.length > 4 ? 4 : activeTeams.length;
-    const teamPlate = uiData.getTexture(UIData.TEXTURE.HUD_GLASSPLATE);
+    const teamPlate = uiData.getTexture(UI_TEXTURE.HUD_GLASSPLATE);
 
     const colorX = teamX + 22;
     const COLOR_WIDTH = 129;
@@ -228,12 +228,12 @@ PlayUI.prototype.drawMainHud = function(display, screenX, screenY) {
         teamPlate.draw(display, teamX, nextY);
 
         context.fillStyle = textColor;
-        context.fillText(team.getDisplayName(this.gameContext), teamX + 28, nextY + 8);
+        context.fillText(team.getDisplayName(gameContext), teamX + 28, nextY + 8);
     }
 }
 
-PlayUI.prototype.drawDialogueHud = function(display, screenX, screenY) {
-    const { uiData, dialogueHandler, typeRegistry, language } = this.gameContext;
+PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, screenY) {
+    const { uiData, dialogueHandler, typeRegistry, language } = gameContext;
     const { currentDialogue, currentText, currentIndex } = dialogueHandler;
 
     if(currentDialogue.length !== 0) {
@@ -245,12 +245,12 @@ PlayUI.prototype.drawDialogueHud = function(display, screenX, screenY) {
         const dialogueX = screenX - DIALOGUE_BOX_WIDTH;
         const dialogueY = screenY - DIALOGUE_BOX_HEIGHT;
 
-        uiData.getTexture(UIData.TEXTURE.DIALOGUE_BOX).draw(display, dialogueX, dialogueY);
+        uiData.getTexture(UI_TEXTURE.DIALOGUE_BOX).draw(display, dialogueX, dialogueY);
     }
 }
 
-PlayUI.prototype.onDraw = function(display, screenX, screenY) {
-    const { uiData, world, language, timer, typeRegistry, portraitHandler } = this.gameContext;
+PlayUI.prototype.onImmediate = function(gameContext, display) {
+    const { uiData, world, language, timer, typeRegistry, portraitHandler } = gameContext;
     const { mapManager } = world;
     const { realTime, deltaTime } = timer;
     const { context } = display;
@@ -296,39 +296,39 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
         tooltipX = x + ICON_WIDTH - RECON_TOOLTIP_WIDTH;
     }
 
-    this.drawDialogueHud(display, mainX, reconY);
-    this.drawMainHud(display, mainX, mainY);
+    this.drawDialogueHud(gameContext, display, mainX, reconY);
+    this.drawMainHud(gameContext, display, mainX, mainY);
 
     switch(this.lastInspect) {
         case MapInspector.STATE.NONE: {
-             uiData.getTexture(UIData.TEXTURE.RECON_NONE).draw(display, reconX, reconY);
+             uiData.getTexture(UI_TEXTURE.RECON_NONE).draw(display, reconX, reconY);
             break;
         }
         case MapInspector.STATE.TILE: {
-            const { terrain } = worldMap.getTileType(this.gameContext, tileX, tileY);
-            const climateType = worldMap.getClimateType(this.gameContext, tileX, tileY);
+            const { terrain } = worldMap.getTileType(gameContext, tileX, tileY);
+            const climateType = worldMap.getClimateType(gameContext, tileX, tileY);
 
-             uiData.getTexture(UIData.TEXTURE.RECON_TERRAIN).draw(display, reconX, reconY);
+             uiData.getTexture(UI_TEXTURE.RECON_TERRAIN).draw(display, reconX, reconY);
 
-            this.drawTile(display, tileX, tileY, reconX, reconY);
+            this.drawTile(gameContext, display, tileX, tileY, reconX, reconY);
             this.style.apply(context);
 
-            context.fillText(worldMap.getTileName(this.gameContext, tileX, tileY), reconX + 41, headY);
+            context.fillText(worldMap.getTileName(gameContext, tileX, tileY), reconX + 41, headY);
             context.fillText(language.getSystemTranslation("RECON_TRAIT"), traitX + 2, headY);
 
             if(this.lastIndex !== index) {
-                this.regenerateLines(context, worldMap.getTileDesc(this.gameContext, tileX, tileY), DESCRIPTION_BOX_WIDTH_TILE);
+                this.regenerateLines(context, worldMap.getTileDesc(gameContext, tileX, tileY), DESCRIPTION_BOX_WIDTH_TILE);
                 this.lastIndex = index;
             }
 
-            if(this.doIcon(climateType.icon, display, climateX, bodyY)) {
+            if(this.doIcon(gameContext, climateType.icon, display, climateX, bodyY)) {
                 updateTooltip(climateType.name, climateType.desc, climateX, bodyY);
             }
 
             for(let i = 0; i < terrain.length; i++) {
                 const { icon, name, desc } = typeRegistry.getTerrainType(terrain[i]);
 
-                if(this.doIcon(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
+                if(this.doIcon(gameContext, icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
                     updateTooltip(name, desc, traitX + (ICON_WIDTH + 1) * i, bodyY);
                 }
             }
@@ -339,24 +339,24 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             const building = worldMap.getBuilding(tileX, tileY);
 
             if(this.lastIndex !== index) {
-                this.regenerateLines(context, building.getDescription(this.gameContext), DESCRIPTION_BOX_WIDTH_TILE);
-                this.updateBuilding(building);
+                this.regenerateLines(context, building.getDescription(gameContext), DESCRIPTION_BOX_WIDTH_TILE);
+                this.updateBuilding(gameContext, building);
                 this.lastIndex = index;
             }
 
-            uiData.getTexture(UIData.TEXTURE.RECON_TERRAIN).draw(display, reconX, reconY);
+            uiData.getTexture(UI_TEXTURE.RECON_TERRAIN).draw(display, reconX, reconY);
 
-            this.drawTile(display, tileX, tileY, reconX, reconY);
+            this.drawTile(gameContext, display, tileX, tileY, reconX, reconY);
             this.inspectSprite.onUpdate(realTime, deltaTime);
             this.inspectSprite.onDraw(display, reconX + 1, reconY + 5);
 
-            context.fillText(building.getName(this.gameContext), reconX + 41, headY);
+            context.fillText(building.getName(gameContext), reconX + 41, headY);
             context.fillText(language.getSystemTranslation("RECON_TRAIT"), traitX + 2, headY);
 
             for(let i = 0; i < building.config.traits.length; i++) {
                 const { icon, name, desc } = typeRegistry.getTraitType(building.config.traits[i]);
 
-                if(this.doIcon(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
+                if(this.doIcon(gameContext, icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
                     updateTooltip(name, desc, traitX + (ICON_WIDTH + 1) * i, bodyY);
                 }
             }
@@ -367,26 +367,26 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             const entity = world.getEntityAt(tileX, tileY);
 
             if(this.lastIndex !== index) {
-                this.regenerateLines(context, entity.getDescription(this.gameContext), DESCRIPTION_BOX_WIDTH_ENTITY);
-                this.updateInspectSprite(entity);
+                this.regenerateLines(context, entity.getDescription(gameContext), DESCRIPTION_BOX_WIDTH_ENTITY);
+                this.updateInspectSprite(gameContext, entity);
                 this.lastIndex = index;
             }
 
-            uiData.getTexture(UIData.TEXTURE.RECON_UNIT).draw(display, reconX, reconY);
+            uiData.getTexture(UI_TEXTURE.RECON_UNIT).draw(display, reconX, reconY);
 
-            this.drawTile(display, tileX, tileY, reconX, reconY);
+            this.drawTile(gameContext, display, tileX, tileY, reconX, reconY);
             this.inspectSprite.onUpdate(realTime, deltaTime);
             this.inspectSprite.onDraw(display, reconX + 1, reconY + 5);
 
             const minRange = entity.config.minRange;
-            const maxRange = entity.getMaxRange(this.gameContext);
+            const maxRange = entity.getMaxRange(gameContext);
             const armorType = typeRegistry.getArmorType(entity.config.armorType);
             const movementType = typeRegistry.getMovementType(entity.config.movementType);
             const weaponType = typeRegistry.getWeaponType(entity.config.weaponType);
             const vitality = clampValue(entity.getVitality(), 1, 0);
             const healthColor = getHealthColor(vitality);
 
-            context.fillText(entity.getName(this.gameContext), reconX + 41, headY);
+            context.fillText(entity.getName(gameContext), reconX + 41, headY);
             context.fillText(language.getSystemTranslation("RECON_HEALTH"), armorX, headY);
             context.fillText(language.getSystemTranslation("RECON_DAMAGE"), weaponX, headY);
             context.fillText(language.getSystemTranslation("RECON_MOVE"), moveX, headY);
@@ -396,14 +396,14 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             context.fillRect(armorX + ICON_WIDTH + 5, bodyY, Math.floor(vitality * RECON_VITALITY_HEALTH_WIDTH), RECON_VITALITY_HEALTH_HEIGHT);
             context.fillStyle = "#ffffff";
 
-            if(this.doIcon(armorType.icon, display, armorX, bodyY)) {
+            if(this.doIcon(gameContext, armorType.icon, display, armorX, bodyY)) {
                 updateTooltip(armorType.name, armorType.desc, armorX, bodyY);
             }
 
             context.fillText(`${entity.health}/${entity.maxHealth}`, armorX + ICON_WIDTH + 2, bodyY + 10);
-            uiData.getTexture(UIData.TEXTURE.RECON_HEALTH).draw(display, armorX + ICON_WIDTH + 2, bodyY);
+            uiData.getTexture(UI_TEXTURE.RECON_HEALTH).draw(display, armorX + ICON_WIDTH + 2, bodyY);
 
-            if(this.doIcon(weaponType.icon, display, weaponX, bodyY)) {
+            if(this.doIcon(gameContext, weaponType.icon, display, weaponX, bodyY)) {
                 updateTooltip(weaponType.name, weaponType.desc, weaponX, bodyY);
             }
 
@@ -413,7 +413,7 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
                 context.fillText(`[${minRange}-${maxRange}]`, weaponX + ICON_WIDTH + 2 + 15, bodyY + 10);
             }
 
-            if(this.doIcon(movementType.icon, display, moveX, bodyY)) {
+            if(this.doIcon(gameContext, movementType.icon, display, moveX, bodyY)) {
                 updateTooltip(movementType.name, movementType.desc, moveX, bodyY);
             }
 
@@ -422,7 +422,7 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
             for(let i = 0; i < entity.config.traits.length; i++) {
                 const { icon, name, desc } = typeRegistry.getTraitType(entity.config.traits[i]);
 
-                if(this.doIcon(icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
+                if(this.doIcon(gameContext, icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
                     updateTooltip(name, desc, traitX + (ICON_WIDTH + 1) * i, bodyY);
                 }
             }
@@ -456,7 +456,7 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
                 context.fillText(this.lines[frameIndex + 1], reconX + 39, bodyY + 10);
             }
 
-            this.lineTime += this.gameContext.timer.deltaTime;
+            this.lineTime += gameContext.timer.deltaTime;
             break;
         }
     }
@@ -473,25 +473,25 @@ PlayUI.prototype.onDraw = function(display, screenX, screenY) {
     }
 
     if(this.isCollided) {
-        let tooltipTexture = UIData.TEXTURE.TOOLTIP;
+        let tooltipTexture = UI_TEXTURE.TOOLTIP;
         let tooltipY = reconY + 17;
         let tooltipSize = 0;
 
         switch(this.tooltipLines.length) {
             case 1: {
-                tooltipTexture = UIData.TEXTURE.TOOLTIP_MINI;
+                tooltipTexture = UI_TEXTURE.TOOLTIP_MINI;
                 tooltipY -= RECON_TOOLTIP_MINI_HEIGHT;
                 tooltipSize = 1;
                 break;
             }
             case 2: {
-                tooltipTexture = UIData.TEXTURE.TOOLTIP;
+                tooltipTexture = UI_TEXTURE.TOOLTIP;
                 tooltipY -= RECON_TOOLTIP_HEIGHT;
                 tooltipSize = 2;
                 break;
             }
             case 3: {
-                tooltipTexture = UIData.TEXTURE.TOOLTIP_PLUS;
+                tooltipTexture = UI_TEXTURE.TOOLTIP_PLUS;
                 tooltipY -= RECON_TOOLTIP_PLUS_HEIGHT;
                 tooltipSize = 3;
                 break;

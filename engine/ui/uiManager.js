@@ -51,9 +51,7 @@ UIManager.prototype.update = function(gameContext) {
     for(let i = this.contexts.length - 1; i >= 0; i--) {
         const context = this.contexts[i];
 
-        context.hotWidget = -1;
-
-        if(context.isVisible()) {
+        if(!context.isImmediate && context.isVisible()) {
             if(!isCollided) {
                 isCollided = context.updateCollisions(positionX, positionY, radius);
             }
@@ -63,9 +61,18 @@ UIManager.prototype.update = function(gameContext) {
     }
 }
 
-UIManager.prototype.draw = function(display) {
+UIManager.prototype.draw = function(gameContext, display) {
     for(let i = this.contexts.length - 1; i >= 0; i--) {
-        this.contexts[i].draw(display, 0, 0);
+        const context = this.contexts[i];
+
+        if(context.isImmediate) {
+            if(context.isVisible()) {
+                context.hotWidget = -1;
+                context.onImmediate(gameContext, display);
+            }
+        } else {
+            context.draw(display, 0, 0);
+        }
     }
 }
 

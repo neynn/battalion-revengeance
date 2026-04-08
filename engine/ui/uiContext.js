@@ -18,16 +18,18 @@ export const UIContext = function() {
     this.names = new Map();
     this.elements = new Map();
     this.clickCallbacks = new Map();
-    this.isRetained = true;
 
     this.hotWidget = -1;
     this.activeWidget = -1;
+    this.isImmediate = false;
 }
 
 UIContext.EMPTY_ELEMENT = new UIElement("EMPTY");
 
 UIContext.prototype = Object.create(Graph.prototype);
 UIContext.prototype.constructor = UIContext;
+
+UIContext.prototype.onImmediate = function(gameContext, display) {}
 
 UIContext.prototype.doButton = function(gameContext, widgetID, x, y, w, h) {
     const { client } = gameContext;

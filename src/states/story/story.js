@@ -11,9 +11,9 @@ StoryState.prototype.onEnter = async function(gameContext, stateMachine, transit
     const { client, world, actionRouter, missionManager } = gameContext;
     const { eventHandler } = world;
     const { router } = client;
-    const storyUI = new StoryUI(gameContext);
+    const storyUI = new StoryUI();
 
-    storyUI.load();
+    storyUI.load(gameContext);
     eventHandler.toAuthority();
     actionRouter.toSelf();
 

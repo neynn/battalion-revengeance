@@ -82,7 +82,7 @@ Renderer.prototype.update = function(gameContext) {
     }
 
     display.save();
-    uiManager.draw(display);
+    uiManager.draw(gameContext, display);
     display.reset();
 
     if(DEBUG.UI) {
