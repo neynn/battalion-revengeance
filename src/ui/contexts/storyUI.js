@@ -2,10 +2,10 @@ import { TextStyle } from "../../../engine/graphics/textStyle.js";
 import { toCenter } from "../../../engine/math/math.js";
 import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
 import { createStartTurnIntent } from "../../action/actionHelper.js";
-import { UI_TEXTURE } from "../../enums.js";
 import { TeamOverride } from "../../map/override.js";
 import { createClientMapLoader } from "../../systems/map.js";
 import { mRegenerateLines } from "../helpers.js";
+import { UI_TEXTURE } from "../constants.js";
 
 const START_BUTTON_WIDTH = 391;
 const START_BUTTON_HEIGHT = 101;

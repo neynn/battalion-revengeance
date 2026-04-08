@@ -1,5 +1,5 @@
 import { TextureRegistry } from "../../engine/resources/texture/textureRegistry.js";
-import { UI_TEXTURE } from "../enums.js";
+import { UI_TEXTURE } from "./constants.js";
 
 export const UIData = function(textureLoader) {
     this.textureLoader = textureLoader;

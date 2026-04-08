@@ -1,7 +1,8 @@
 import { TextStyle } from "../../../engine/graphics/textStyle.js";
 import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
 import { BattalionContext } from "../../battalionContext.js";
-import { GAME_EVENT, GENERIC_BUTTON, UI_TEXTURE } from "../../enums.js";
+import { GAME_EVENT } from "../../enums.js";
+import { UI_TEXTURE, GENERIC_BUTTON } from "../constants.js";
 
 const BUTTON_WIDTH = 126;
 const BUTTON_HEIGHT = 71;
