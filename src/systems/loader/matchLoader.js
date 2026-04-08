@@ -13,7 +13,7 @@ import { BattalionActor } from "../../actors/battalionActor.js";
 import { Player } from "../../actors/player.js";
 import { ServerActor } from "../../actors/serverActor.js";
 import { Spectator } from "../../actors/spectator.js";
-import { PlayUI } from "../../ui/playUI.js";
+import { PlayUI } from "../../ui/contexts/playUI.js";
 import { createPlayCamera } from "../camera.js";
 
 import { DialogueComponent } from "../../event/components/dialogue.js";

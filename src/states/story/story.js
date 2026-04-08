@@ -1,6 +1,6 @@
 import { State } from "../../../engine/state/state.js";
 import { BattalionContext } from "../../battalionContext.js";
-import { StoryUI } from "../../ui/storyUI.js";
+import { StoryUI } from "../../ui/contexts/storyUI.js";
 
 export const StoryState = function() {
     this.storyUI = new StoryUI();

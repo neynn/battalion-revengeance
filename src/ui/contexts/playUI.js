@@ -1,12 +1,12 @@
-import { TextStyle } from "../../engine/graphics/textStyle.js";
-import { clampValue } from "../../engine/math/math.js";
-import { SpriteManager } from "../../engine/sprite/spriteManager.js";
-import { IM_FLAG, UIContext } from "../../engine/ui/uiContext.js";
-import { MapInspector } from "../actors/player/inspector.js";
-import { getHealthColor } from "../entity/helpers.js";
-import { COMMANDER_TYPE, HUD_BUTTON, PLAYER_PREFERENCE, TILE_ID, UI_TEXTURE } from "../enums.js";
-import { BattalionMap } from "../map/battalionMap.js";
-import { mRegenerateLines } from "./helpers.js";
+import { TextStyle } from "../../../engine/graphics/textStyle.js";
+import { clampValue } from "../../../engine/math/math.js";
+import { SpriteManager } from "../../../engine/sprite/spriteManager.js";
+import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
+import { MapInspector } from "../../actors/player/inspector.js";
+import { getHealthColor } from "../../entity/helpers.js";
+import { COMMANDER_TYPE, HUD_BUTTON, PLAYER_PREFERENCE, TILE_ID, UI_TEXTURE } from "../../enums.js";
+import { BattalionMap } from "../../map/battalionMap.js";
+import { mRegenerateLines } from "../helpers.js";
 
 const MENU_ID_REGION = 100;
 const ICON_ID_REGION = 200;
