@@ -35,8 +35,9 @@ UIData.TEXTURE = {
     STORY_TITLE_PANEL: 19,
     STORY_MISSION_PANEL: 20,
     STORY_EMBLEMS: 21,
+    STORY_START: 22,
 
-    _COUNT: 22
+    _COUNT: 23
 };
 
 UIData.prototype.getTexture = function(textureID) {
@@ -53,6 +54,7 @@ UIData.prototype.loadStoryTextures = function() {
     this.textureLoader.loadTexture(this.textures[UIData.TEXTURE.STORY_TITLE_PANEL]);
     this.textureLoader.loadTexture(this.textures[UIData.TEXTURE.STORY_MISSION_PANEL]);
     this.textureLoader.loadTexture(this.textures[UIData.TEXTURE.STORY_EMBLEMS]);
+    this.textureLoader.loadTexture(this.textures[UIData.TEXTURE.STORY_START]);
 }
 
 UIData.prototype.loadPlayTextures = function() {
@@ -99,4 +101,5 @@ UIData.prototype.load = function(gameContext) {
     this.textures[UIData.TEXTURE.STORY_TITLE_PANEL] = uiManager.getTextureID("story_title_panel");
     this.textures[UIData.TEXTURE.STORY_MISSION_PANEL] = uiManager.getTextureID("story_mission_panel");
     this.textures[UIData.TEXTURE.STORY_EMBLEMS] = uiManager.getTextureID("story_emblems");
+    this.textures[UIData.TEXTURE.STORY_START] = uiManager.getTextureID("story_start_button");
 }

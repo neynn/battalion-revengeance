@@ -1,9 +1,5 @@
 import { State } from "../../../engine/state/state.js";
-import { createStartTurnIntent } from "../../action/actionHelper.js";
 import { BattalionContext } from "../../battalionContext.js";
-import { TeamOverride } from "../../map/override.js";
-import { COMPLETION_STATE } from "../../mission/constants.js";
-import { createClientMapLoader } from "../../systems/map.js";
 import { StoryUI } from "../../ui/storyUI.js";
 
 export const StoryState = function() {}
@@ -17,32 +13,16 @@ StoryState.prototype.onEnter = async function(gameContext, stateMachine, transit
     const { router } = client;
     const storyUI = new StoryUI(gameContext);
 
+    storyUI.load();
     eventHandler.toAuthority();
     actionRouter.toSelf();
 
-    /*
-    const over = new TeamOverride("SOMERTIN");
-    over.color = {
-        "0x661A5E": [105, 125, 108],
-        "0xAA162C": [197, 171, 159],
-        "0xE9332E": [66, 65, 68],
-        "0xFF9085": [71, 75, 136]
-    };
-
-    const matchLoader = await createClientMapLoader(gameContext, "presus");
-
-    if(matchLoader) {
-        matchLoader.loadMapFromFile(gameContext, [over]);
-        actionRouter.forceEnqueue(gameContext, createStartTurnIntent());
-    }
-    */
-
     missionManager.unlockAll();
     missionManager.selectScenario("GREAT_WAR")
-    missionManager.selectCampaign("ELAM");
+    missionManager.selectCampaign("SOMERTIN");
     missionManager.selectChapterIfPossible(missionManager.getNextChapterIndex());
     missionManager.selectMissionIfPossible(missionManager.getNextMissionIndex());
-    storyUI.load();
+
     router.on("ESCAPE", () => stateMachine.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));
 }
 

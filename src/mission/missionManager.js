@@ -63,12 +63,13 @@ MissionManager.prototype.load = function(resources) {
     }
 
     for(const campaignID in campaigns) {
-        const { name, desc, nation, hidden = false, chapters } = campaigns[campaignID];
+        const { name, desc, nation, hidden = false, chapters, startButton } = campaigns[campaignID];
         const campaign = new Campaign(campaignID);
         let count = 0;
 
         campaign.name = name;
         campaign.desc = desc;
+        campaign.startButton = startButton;
         campaign.nation = NATION_TYPE[nation] ?? NATION_TYPE.SOMERTIN;
         campaign.isHidden = hidden;
 

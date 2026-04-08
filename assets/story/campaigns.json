@@ -4,6 +4,7 @@
 		"desc": "CAMPAIGN_DESC_SOMERTIN",
 		"nation": "SOMERTIN",
 		"hidden": false,
+		"startButton": "CAMPAIGN_START_BUTTON_SOMERTIN",
 		"chapters": ["SOMERTIN_C1", "SOMERTIN_C2", "SOMERTIN_C3", "SOMERTIN_C4", "SOMERTIN_C5", "SOMERTIN_C6", "SOMERTIN_C7"]
 	},
 	"KARGIT": {
@@ -11,6 +12,7 @@
 		"desc": "CAMPAIGN_DESC_KARGIT",
 		"nation": "KARGIT",
 		"hidden": false,
+		"startButton": "CAMPAIGN_START_BUTTON_KARGIT",
 		"chapters": ["KARGIT_C1", "KARGIT_C2", "KARGIT_C3", "KARGIT_C4", "KARGIT_C5", "KARGIT_C6", "KARGIT_C7"]
 	},
 	"TRANSKAL": {
@@ -18,6 +20,7 @@
 		"desc": "CAMPAIGN_DESC_TRANSKAL",
 		"nation": "TRANSKAL",
 		"hidden": false,
+		"startButton": "CAMPAIGN_START_BUTTON_TRANSKAL",
 		"chapters": ["TRANSKAL_C1", "TRANSKAL_C2", "TRANSKAL_C3", "TRANSKAL_C4", "TRANSKAL_C5"]
 	},
 	"POLASIE": {
@@ -25,6 +28,7 @@
 		"desc": "CAMPAIGN_DESC_POLASIE",
 		"nation": "POLASIE",
 		"hidden": false,
+		"startButton": "CAMPAIGN_START_BUTTON_POLASIE",
 		"chapters": ["POLASIE_C1", "POLASIE_C2", "POLASIE_C3", "POLASIE_C4", "POLASIE_C5"]
 	},
 	"ELAM": {
@@ -32,6 +36,7 @@
 		"desc": "CAMPAIGN_DESC_ELAM",
 		"nation": "ELAM",
 		"hidden": false,
+		"startButton": "CAMPAIGN_START_BUTTON_ELAM",
 		"chapters": ["ELAM_C1", "ELAM_C2", "ELAM_C3", "ELAM_C4", "ELAM_C5"]
 	}
 }

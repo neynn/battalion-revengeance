@@ -1,9 +1,15 @@
 import { TextStyle } from "../../engine/graphics/textStyle.js";
 import { toCenter } from "../../engine/math/math.js";
 import { IM_FLAG, UIContext } from "../../engine/ui/uiContext.js";
+import { createStartTurnIntent } from "../action/actionHelper.js";
+import { TeamOverride } from "../map/override.js";
 import { MAX_CHAPTERS } from "../mission/constants.js";
+import { createClientMapLoader } from "../systems/map.js";
 import { mRegenerateLines } from "./helpers.js";
 import { UIData } from "./uiData.js";
+
+const START_BUTTON_WIDTH = 391;
+const START_BUTTON_HEIGHT = 101;
 
 const EMBLEM_GAP = 20;
 const EMBLEM_WIDTH = 70;
@@ -11,6 +17,12 @@ const EMBLEM_HEIGHT = 70;
 
 const CHAPTER_ID_REGION = 100;
 const MISSION_ID_REGION = 200;
+
+const START_BUTTON = {
+    DISABLED: 0,
+    ENABLED: 1,
+    HOT: 2
+};
 
 export const StoryUI = function(gameContext) {
     UIContext.call(this);
@@ -21,7 +33,7 @@ export const StoryUI = function(gameContext) {
     this.style.font = "16px Times New Roman";
     this.style.setAlignment(TextStyle.ALIGN.MIDDLE);
     this.lines = [];
-    this.lastDescription = null;
+    this.lastMission = null;
 }
 
 StoryUI.prototype = Object.create(UIContext.prototype);
@@ -47,11 +59,12 @@ StoryUI.prototype.onDraw = function(display, screenX, screenY) {
     const chapterPlaqueDisabled = uiData.getTexture(UIData.TEXTURE.PLAQUE_DISABLED);
     const emblemTexture = uiData.getTexture(UIData.TEXTURE.STORY_EMBLEMS);
     const emblemSlot = uiData.getTexture(UIData.TEXTURE.STORY_EMBLEM_SLOT);
+    const startButtonTexture = uiData.getTexture(UIData.TEXTURE.STORY_START);
 
     const borderX = toCenter(width, mainMenuBorder.width);
     const borderY = toCenter(height, mainMenuBorder.height);
-    const panelX = borderX + 100;
-    const panelY = borderY + 105;
+    const chapterPanelX = borderX + 100;
+    const chapterPanelY = borderY + 105;
     const missionPanelX = borderX + toCenter(mainMenuBorder.width, missionPanel.width);
     const missionPanelY = borderY + toCenter(mainMenuBorder.height, missionPanel.height);
     const PLAQUE_WIDTH = chapterPlaque.width;
@@ -63,15 +76,15 @@ StoryUI.prototype.onDraw = function(display, screenX, screenY) {
     this.style.apply(context);
 
     mainMenuBorder.draw(display, borderX, borderY);
-    chapterPanel.draw(display, panelX, panelY);
+    chapterPanel.draw(display, chapterPanelX, chapterPanelY);
     missionPanel.draw(display, missionPanelX, missionPanelY);
 
     if(currentCampaign) {
-        const { chapters, nation } = currentCampaign;
+        const { chapters, nation, startButton } = currentCampaign;
         const { emblem, nonEmblem } = typeRegistry.getNationType(nation);
 
-        const plaqueX = panelX + toCenter(chapterPanel.width, PLAQUE_WIDTH);
-        const plaqueY = panelY + 11;
+        const plaqueX = chapterPanelX + toCenter(chapterPanel.width, PLAQUE_WIDTH);
+        const plaqueY = chapterPanelY + 11;
         const offsetY = PLAQUE_HEIGHT + 2;
         const nextIndex = currentCampaign.getNextChapterIndex();
 
@@ -104,7 +117,7 @@ StoryUI.prototype.onDraw = function(display, screenX, screenY) {
         }
 
         if(currentChapter) {
-            const { missions, name, desc } = currentChapter;
+            const { missions, name } = currentChapter;
             const totalEmblemWidth = EMBLEM_WIDTH * missions.length + EMBLEM_GAP * (missions.length - 1);
             const emblemX = missionPanelX + toCenter(missionPanel.width, totalEmblemWidth);
             const emblemY = missionPanelY - EMBLEM_HEIGHT;
@@ -129,7 +142,7 @@ StoryUI.prototype.onDraw = function(display, screenX, screenY) {
             }
 
             if(currentMission) {
-                const { name, desc } = currentMission;
+                const { id, name, desc, map } = currentMission;
                 const missionPanelTextX = Math.floor(missionPanelX + missionPanel.width / 2);
                 const missionPanelTextY = missionPanelY + 32;
 
@@ -139,9 +152,9 @@ StoryUI.prototype.onDraw = function(display, screenX, screenY) {
                 emblemSlot.draw(display, drawX, emblemY - 22);
                 context.fillText(language.getSystemTranslation(name), missionPanelTextX, missionPanelTextY);
 
-                if(this.lastDescription !== desc) {
+                if(this.lastMission !== id) {
+                    this.lastMission = id;
                     this.lines.length = 0;
-                    this.lastDescription = desc;
 
                     mRegenerateLines(this.lines, context, language.getSystemTranslation(desc), 480);
                 }
@@ -150,6 +163,50 @@ StoryUI.prototype.onDraw = function(display, screenX, screenY) {
                     const textY = missionPanelTextY + 40 + 20 * i;
 
                     context.fillText(this.lines[i], missionPanelTextX, textY);
+                }
+
+                const startX = missionPanelX + toCenter(missionPanel.width, START_BUTTON_WIDTH);
+                const startY = missionPanelY + missionPanel.height - Math.floor(START_BUTTON_HEIGHT / 2);
+                const startTextX = startX + Math.floor(START_BUTTON_WIDTH / 2);
+                const startTextY = startY + Math.floor(START_BUTTON_HEIGHT / 2);
+                const startFlags = this.doButton(
+                    this.gameContext,
+                    2,
+                    startX,
+                    startY,
+                    START_BUTTON_WIDTH,
+                    START_BUTTON_HEIGHT
+                );
+
+                if(startFlags & IM_FLAG.HOT) {
+                    startButtonTexture.drawRegion(display, START_BUTTON.HOT, startX, startY);
+                } else {
+                    startButtonTexture.drawRegion(display, START_BUTTON.ENABLED, startX, startY);
+                }
+
+                context.fillText(language.getSystemTranslation(startButton), startTextX, startTextY);
+
+                if(startFlags & IM_FLAG.CLICKED) {
+                    createClientMapLoader(this.gameContext, map)
+                    .then(loader => {
+                        if(loader) {
+                            const { actionRouter } = this.gameContext;
+                            const over = new TeamOverride("SOMERTIN");
+
+                            over.color = {
+                                "0x661A5E": [105, 125, 108],
+                                "0xAA162C": [197, 171, 159],
+                                "0xE9332E": [66, 65, 68],
+                                "0xFF9085": [71, 75, 136]
+                            };
+
+                            loader.loadMapFromFile(this.gameContext, [over]);
+                            actionRouter.forceEnqueue(this.gameContext, createStartTurnIntent());
+                            this.hide();
+                        } else {
+                            
+                        }
+                    });
                 }
             }
 

@@ -8,6 +8,7 @@
     "story_title_panel": { "directory": ["assets", "gui", "story"], "source": "title_panel.png" },
     "story_mission_panel": { "directory": ["assets", "gui", "story"], "source": "mission_panel.png" },
     "story_emblems": { "directory": ["assets", "gui", "story"], "source": "emblems.png", "gridWidth": 70, "gridHeight": 70, "autoGrid": { "rows": 3, "columns": 4 } },
+    "story_start_button": { "directory": ["assets", "gui", "story"], "source": "start_button.png", "gridWidth": 391, "gridHeight": 101, "autoGrid": { "rows": 3, "columns": 1 } },
 
     "pvp_icon": { "directory": ["assets", "gui"], "source": "pvp_icon.png" },
     "recon_mainframe": { "directory": ["assets", "gui", "recon"], "source": "recon_mainframe.png" },
