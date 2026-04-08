@@ -78,6 +78,13 @@ export const TEAM_STAT = {
     _COUNT: 18
 };
 
+export const GENERIC_BUTTON = {
+    DISABLED: 0,
+    ENABLED: 1,
+    HOT: 2,
+    ACTIVE: 3
+};
+
 export const HUD_BUTTON = {
     MENU_DISABLED: 0,
     MENU_ENABLED: 1,
@@ -134,7 +141,9 @@ export const UI_TEXTURE = {
     STORY_EMBLEMS: 21,
     STORY_START: 22,
 
-    _COUNT: 23
+    GENERIC_BUTTON: 23,
+
+    _COUNT: 24
 };
 
 export const ICON_TYPE = {

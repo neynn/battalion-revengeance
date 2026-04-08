@@ -5,9 +5,11 @@ import { State } from "../../../engine/state/state.js";
 import { unpackPlan } from "../../action/planPacker.js";
 import { GAME_EVENT } from "../../enums.js";
 import { createClientMapLoader } from "../../systems/map.js";
+import { ArenaUI } from "../../ui/contexts/arenaUI.js";
 
 export const ArenaState = function() {
     this.version = 0;
+    this.arenaUI = new ArenaUI();
 }
 
 const NAME = getRandomElement(["FOO", "BAR", "BAZ", "NEYN", "PEARL", "GHOST", "NEMESIS"]);
@@ -16,7 +18,7 @@ ArenaState.prototype = Object.create(State.prototype);
 ArenaState.prototype.constructor = ArenaState;
 
 ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
-    const { client, actionRouter, world, uiCore } = gameContext;
+    const { client, actionRouter, world } = gameContext;
     const { eventHandler, actionQueue } = world;
     const { socket } = client;
 
@@ -49,7 +51,7 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
             }
             case GAME_EVENT.MP_SERVER_START_MAP: {
                 console.log("MAP_STARTED");
-                uiCore.arena.hide();
+                this.arenaUI.hide();
                 break;
             }
             case GAME_EVENT.MP_SERVER_UPDATE: {
@@ -88,8 +90,8 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
         }
     });
 
-    uiCore.arena.show();
-    uiCore.arena.loadEvents(gameContext);
+    this.arenaUI.show();
+    this.arenaUI.load(gameContext);
 }
 
 ArenaState.prototype.onExit = function(gameContext, stateMachine) {

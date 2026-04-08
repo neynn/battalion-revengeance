@@ -108,16 +108,14 @@ ServerGameContext.prototype.createTotalEntityBuffer = function() {
     return buffer;
 }
 
-ServerGameContext.prototype.createInitialSnapshot = function() {
-    const { world, teamManager } = this;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
+ServerGameContext.prototype.createInitialSnapshot = function(mapID) {
+    const { teamManager } = this;
     const teams = [];
 
     teamManager.forEachTeam((team) => teams.push(team.save()));
 
     return {
-        "mapID": worldMap.sourceID,
+        "mapID": mapID,
         "turn": fillTurnSnapshot(this),
         "entities": this.createTotalEntityBuffer(),
         "teams": teams
@@ -165,7 +163,7 @@ ServerGameContext.prototype.onMessage = async function(messengerID, type, payloa
                 if(mapLoader) {
                     mapLoader.loadMap(this, overrides);
 
-                    const snapshot = this.createInitialSnapshot();
+                    const snapshot = this.createInitialSnapshot(sourceID);
 
                     for(let i = 0; i < this.members.length; i++) {
                         const memberID = this.members[i].getID();

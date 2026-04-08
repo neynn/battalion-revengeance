@@ -8,7 +8,6 @@ import { StoryState } from "./states/story/story.js";
 import { TeamManager } from "./team/teamManager.js";
 import { TypeRegistry } from "./type/typeRegistry.js";
 import { ArenaState } from "./states/arena/arena.js";
-import { UICore } from "./ui/uiCore.js";
 import { addDebug, registerClientActions } from "./systems/context.js";
 import { resolveTileType } from "./enumHelpers.js";
 import { ShadeCache } from "./shadeCache.js";
@@ -23,7 +22,6 @@ export const BattalionContext = function() {
     this.typeRegistry = new TypeRegistry();
     this.teamManager = new TeamManager();
     this.portraitHandler = new PortraitHandler();
-    this.uiCore = new UICore();
     this.actionRouter = new ClientActionRouter();
     this.shadeCache = new ShadeCache();
     this.mapRegistry = new MapRegistry();
@@ -60,7 +58,6 @@ BattalionContext.prototype.init = function(resources) {
 
     registerClientActions(this);
 
-    this.uiCore.init(this);
     this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);
     this.portraitHandler.load(resources.portraits);
 
@@ -76,7 +73,6 @@ BattalionContext.prototype.init = function(resources) {
 BattalionContext.prototype.onExit = function() {
     this.teamManager.exit();
     this.portraitHandler.exit();
-    this.uiCore.exit();
     this.shadeCache.exit();
     this.missionManager.exit();
     addDebug(this);

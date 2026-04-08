@@ -14,10 +14,13 @@ UIData.prototype.getTexture = function(textureID) {
     return this.textureLoader.getTextureWithFallback(this.textures[textureID]);
 }
 
+UIData.prototype.loadGenericTextures = function() {
+    this.textureLoader.loadTexture(this.textures[UI_TEXTURE.GENERIC_BUTTON]);   
+}
+
 UIData.prototype.loadStoryTextures = function() {
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.PLAQUE]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.PLAQUE_DISABLED]);
-
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_CHAPTER_PANEL]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_EMBLEM_SLOT]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_MAIN_MENU_BORDER]);
@@ -72,4 +75,6 @@ UIData.prototype.load = function(gameContext) {
     this.textures[UI_TEXTURE.STORY_MISSION_PANEL] = uiManager.getTextureID("story_mission_panel");
     this.textures[UI_TEXTURE.STORY_EMBLEMS] = uiManager.getTextureID("story_emblems");
     this.textures[UI_TEXTURE.STORY_START] = uiManager.getTextureID("story_start_button");
+
+    this.textures[UI_TEXTURE.GENERIC_BUTTON] = uiManager.getTextureID("generic_button");
 }

@@ -1,4 +1,5 @@
 {
+    "generic_button": { "directory": ["assets", "gui"], "source": "generic_button.png", "gridWidth": 126, "gridHeight": 71, "autoGrid": { "rows": 4, "columns": 1 } },
     "plaque": { "directory": ["assets", "gui", "other"], "source": "plaque.png" },
     "plaque_disabled": { "directory": ["assets", "gui", "other"], "source": "plaque_disabled.png" },
 
