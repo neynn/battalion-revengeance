@@ -93,6 +93,19 @@ export const HUD_BUTTON = {
     QUIT_ACTIVE: 11
 };
 
+export const EMBLEM_TYPE = {
+    SOMERTIN: 0,
+    SOMERTIN_NO: 1,
+    KARGIT: 2,
+    KARGIT_NO: 3,
+    TRANSKAL: 4,
+    TRANSKAL_NO: 5,
+    POLASIE: 6,
+    POLASIE_NO: 7,
+    ELAM: 8,
+    ELAM_NO: 9
+};
+
 export const ICON_TYPE = {
     NONE: 0,
     ARMOR_LIGHT: 1,

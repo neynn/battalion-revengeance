@@ -2,6 +2,7 @@ import { State } from "../../../engine/state/state.js";
 import { createStartTurnIntent } from "../../action/actionHelper.js";
 import { BattalionContext } from "../../battalionContext.js";
 import { TeamOverride } from "../../map/override.js";
+import { COMPLETION_STATE } from "../../mission/constants.js";
 import { createClientMapLoader } from "../../systems/map.js";
 import { StoryUI } from "../../ui/storyUI.js";
 
@@ -36,8 +37,12 @@ StoryState.prototype.onEnter = async function(gameContext, stateMachine, transit
     }
     */
 
+    missionManager.unlockAll();
     missionManager.selectScenario("GREAT_WAR")
     missionManager.selectCampaign("SOMERTIN");
+    missionManager.chapters.get("SOMERTIN_C1").state = COMPLETION_STATE.COMPLETED;
+    missionManager.selectChapterIfPossible(missionManager.getNextChapterIndex());
+    missionManager.selectMissionIfPossible(missionManager.getNextMissionIndex());
     storyUI.load();
     router.on("ESCAPE", () => stateMachine.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));
 }

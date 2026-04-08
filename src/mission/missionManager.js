@@ -107,6 +107,10 @@ MissionManager.prototype.load = function(resources) {
     }
 }
 
+MissionManager.prototype.unlockAll = function() {
+    this.missions.forEach(mission => mission.state = COMPLETION_STATE.COMPLETED);
+}
+
 MissionManager.prototype.deselectScenario = function() {
     this.currentScenario = null;
     this.currentCampaign = null;

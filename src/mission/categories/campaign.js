@@ -26,13 +26,17 @@ Campaign.prototype.isChapterAvailableAsNext = function(index) {
 }
 
 Campaign.prototype.getNextChapterIndex = function() {
+    let index = -1;
+
     for(let i = 0; i < this.chapters.length; i++) {
+        index = i;
+
         if(this.chapters[i].state === COMPLETION_STATE.NOT_COMPLETED) {
-            return i;
+            break;
         }
     }
 
-    return -1;
+    return index;
 }
 
 Campaign.prototype.complete = function() {

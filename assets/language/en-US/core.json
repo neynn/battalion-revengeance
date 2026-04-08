@@ -17,5 +17,7 @@
 
     "HUD_UNDO": "Undo Last Move",
     "HUD_MENU": "Options",
-    "HUD_QUIT": "Quit"
+    "HUD_QUIT": "Quit",
+
+    "STORY_CHAPTER_PLAQUE": "Chapter"
 }

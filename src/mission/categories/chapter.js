@@ -23,13 +23,17 @@ Chapter.prototype.isMissionAvailableAsNext = function(index) {
 }
 
 Chapter.prototype.getNextMissionIndex = function() {
+    let index = -1;
+
     for(let i = 0; i < this.missions.length; i++) {
+        index = i;
+        
         if(this.missions[i].state === COMPLETION_STATE.NOT_COMPLETED) {
-            return i;
+            break;
         }
     }
 
-    return -1;
+    return index;
 }
 
 Chapter.prototype.complete = function() {

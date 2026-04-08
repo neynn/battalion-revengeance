@@ -6,6 +6,7 @@ import { MapInspector } from "../actors/player/inspector.js";
 import { getHealthColor } from "../entity/helpers.js";
 import { COMMANDER_TYPE, HUD_BUTTON, PLAYER_PREFERENCE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
+import { mRegenerateLines } from "./helpers.js";
 import { UIData } from "./uiData.js";
 
 const HUD_BUTTON_WIDTH = 28;
@@ -30,28 +31,6 @@ const TILE_DRAW_ORDER = [
     BattalionMap.LAYER.DECORATION,
     BattalionMap.LAYER.CLOUD
 ];
-
-const mRegenerateLines = function(lines, context, text, maxWidth) {
-    const words = text.split(' ');
-    let line = '';
-
-    for(let i = 0; i < words.length; i++) {
-        const testLine = line + words[i] + ' ';
-        const metrics = context.measureText(testLine);
-        const testWidth = metrics.width;
-        
-        if(testWidth > maxWidth && line !== '') {
-            lines.push(line.trim());
-            line = words[i] + ' ';
-        } else {
-            line = testLine;
-        }
-    }
-
-    if(line) {
-        lines.push(line.trim());
-    }
-}
 
 export const PlayUI = function(inspector, cContext, gameContext) {
     UIContext.call(this);

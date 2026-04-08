@@ -1,7 +1,52 @@
 {
-	"SOMERTIN": { "name": "NATION_NAME_SOMERTIN", "desc": "NATION_DESC_SOMERTIN", "prefix": "SOM", "faction": "CONTINENTAL_SECURITY_LEAGUE", "power": "MAJOR", "currency": "ZLOT" },
-	"KARGIT": { "name": "NATION_NAME_KARGIT", "desc": "NATION_DESC_KARGIT", "prefix": "KAR", "faction": "GLORIOUS_COALLITION", "power": "MAJOR", "currency": "KARGIL" },
-	"TRANSKAL": { "name": "NATION_NAME_TRANSKAL", "desc": "NATION_DESC_TRANSKAL", "prefix": "TRK", "faction": "CONTINENTAL_SECURITY_LEAGUE", "power": "REGIONAL", "currency": "KRONE" },
-	"POLASIE": { "name": "NATION_NAME_POLASIE", "desc": "NATION_DESC_POLASIE", "prefix": "POE", "faction": "GLORIOUS_COALLITION", "power": "REGIONAL", "currency": "PULA" },
-	"ELAM": { "name": "NATION_NAME_ELAM", "desc": "NATION_DESC_ELAM", "prefix": "ELM", "faction": "GLORIOUS_COALLITION", "power": "REGIONAL", "currency": "RIAL" }
+	"SOMERTIN": { 
+		"name": "NATION_NAME_SOMERTIN",
+		"desc": "NATION_DESC_SOMERTIN",
+		"prefix": "SOM",
+		"faction": "CONTINENTAL_SECURITY_LEAGUE",
+		"power": "MAJOR",
+		"currency": "ZLOT",
+		"emblem": "SOMERTIN",
+		"nonEmblem": "SOMERTIN_NO"
+	},
+	"KARGIT": {
+		"name": "NATION_NAME_KARGIT",
+		"desc": "NATION_DESC_KARGIT",
+		"prefix": "KAR", 
+		"faction": "GLORIOUS_COALLITION", 
+		"power": "MAJOR",
+		"currency": "KARGIL",
+		"emblem": "KARGIT",
+		"nonEmblem": "KARGIT_NO"
+	},
+	"TRANSKAL": { 
+		"name": "NATION_NAME_TRANSKAL", 
+		"desc": "NATION_DESC_TRANSKAL", 
+		"prefix": "TRK", 
+		"faction": "CONTINENTAL_SECURITY_LEAGUE", 
+		"power": "REGIONAL",
+		"currency": "KRONE",
+		"emblem": "TRANSKAL",
+		"nonEmblem": "TRANSKAL_NO"
+	},
+	"POLASIE": { 
+		"name": "NATION_NAME_POLASIE", 
+		"desc": "NATION_DESC_POLASIE", 
+		"prefix": "POE", 
+		"faction": "GLORIOUS_COALLITION", 
+		"power": "REGIONAL",
+		"currency": "PULA",
+		"emblem": "POLASIE",
+		"nonEmblem": "POLASIE_NO"
+	},
+	"ELAM": { 
+		"name": "NATION_NAME_ELAM", 
+		"desc": "NATION_DESC_ELAM", 
+		"prefix": "ELM", 
+		"faction": "GLORIOUS_COALLITION", 
+		"power": "REGIONAL",
+		"currency": "RIAL",
+		"emblem": "ELAM",
+		"nonEmblem": "ELAM_NO"
+	}
 }
