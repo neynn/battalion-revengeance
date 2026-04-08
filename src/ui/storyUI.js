@@ -9,8 +9,8 @@ const EMBLEM_GAP = 20;
 const EMBLEM_WIDTH = 70;
 const EMBLEM_HEIGHT = 70;
 
-const CHAPTER_ID_REGION = 10;
-const MISSION_ID_REGION = 100;
+const CHAPTER_ID_REGION = 100;
+const MISSION_ID_REGION = 200;
 
 export const StoryUI = function(gameContext) {
     UIContext.call(this);
@@ -73,10 +73,7 @@ StoryUI.prototype.onDraw = function(display, screenX, screenY) {
         const plaqueX = panelX + toCenter(chapterPanel.width, PLAQUE_WIDTH);
         const plaqueY = panelY + 11;
         const offsetY = PLAQUE_HEIGHT + 2;
-        const textX = plaqueX + Math.floor(PLAQUE_WIDTH / 2);
-        const textY = Math.floor(PLAQUE_HEIGHT / 2);
         const nextIndex = currentCampaign.getNextChapterIndex();
-        const chapterName = language.getSystemTranslation("STORY_CHAPTER_PLAQUE");
 
         for(let i = 0; i < chapters.length; i++) {
             const drawY = plaqueY + offsetY * i;
@@ -84,7 +81,14 @@ StoryUI.prototype.onDraw = function(display, screenX, screenY) {
             if(i <= nextIndex) {
                 chapterPlaque.draw(display, plaqueX, drawY);
                 
-                if(this.doButton(this.gameContext, CHAPTER_ID_REGION + i, plaqueX, drawY, PLAQUE_WIDTH, PLAQUE_HEIGHT) & IM_FLAG.CLICKED) {
+                if(this.doButton(
+                    this.gameContext,
+                    CHAPTER_ID_REGION + i,
+                    plaqueX,
+                    drawY,
+                    PLAQUE_WIDTH,
+                    PLAQUE_HEIGHT
+                ) & IM_FLAG.CLICKED) {
                     missionManager.selectChapterIfPossible(i);
                     missionManager.selectMissionIfPossible(missionManager.getNextMissionIndex());
                 }
@@ -92,6 +96,10 @@ StoryUI.prototype.onDraw = function(display, screenX, screenY) {
                 chapterPlaqueDisabled.draw(display, plaqueX, drawY);
             }
             
+            const textX = plaqueX + Math.floor(PLAQUE_WIDTH / 2);
+            const textY = Math.floor(PLAQUE_HEIGHT / 2);
+            const chapterName = language.getSystemTranslation("STORY_CHAPTER_PLAQUE");
+
             context.fillText(chapterName + ` ${i + 1}`, textX, drawY + textY);
         }
 
@@ -151,7 +159,14 @@ StoryUI.prototype.onDraw = function(display, screenX, screenY) {
                 if(i <= nextIndex) {
                     emblemTexture.drawRegion(display, emblem, drawX, emblemY);
 
-                    if(this.doButton(this.gameContext, MISSION_ID_REGION + i, drawX, emblemY, EMBLEM_WIDTH, EMBLEM_HEIGHT) & IM_FLAG.CLICKED) {
+                    if(this.doButton(
+                        this.gameContext,
+                        MISSION_ID_REGION + i,
+                        drawX,
+                        emblemY,
+                        EMBLEM_WIDTH,
+                        EMBLEM_HEIGHT
+                    ) & IM_FLAG.CLICKED) {
                         missionManager.selectMissionIfPossible(i);
                     }
                 } else {

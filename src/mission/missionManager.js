@@ -109,6 +109,9 @@ MissionManager.prototype.load = function(resources) {
 
 MissionManager.prototype.unlockAll = function() {
     this.missions.forEach(mission => mission.state = COMPLETION_STATE.COMPLETED);
+    this.chapters.forEach(chapter => chapter.state = COMPLETION_STATE.COMPLETED);
+    this.campaigns.forEach(campaign => campaign.state = COMPLETION_STATE.COMPLETED);
+    this.scenarios.forEach(scenario => scenario.state = COMPLETION_STATE.COMPLETED);
 }
 
 MissionManager.prototype.deselectScenario = function() {

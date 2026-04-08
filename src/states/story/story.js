@@ -39,8 +39,7 @@ StoryState.prototype.onEnter = async function(gameContext, stateMachine, transit
 
     missionManager.unlockAll();
     missionManager.selectScenario("GREAT_WAR")
-    missionManager.selectCampaign("SOMERTIN");
-    missionManager.chapters.get("SOMERTIN_C1").state = COMPLETION_STATE.COMPLETED;
+    missionManager.selectCampaign("ELAM");
     missionManager.selectChapterIfPossible(missionManager.getNextChapterIndex());
     missionManager.selectMissionIfPossible(missionManager.getNextMissionIndex());
     storyUI.load();
