@@ -142,7 +142,7 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
             }
 
             if(currentMission) {
-                const { id, name, desc, map } = currentMission;
+                const { id, name, desc, map, playlist } = currentMission;
                 const missionPanelTextX = Math.floor(missionPanelX + missionPanel.width / 2);
                 const missionPanelTextY = missionPanelY + 32;
 
@@ -199,6 +199,11 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
                                 "0xE9332E": [66, 65, 68],
                                 "0xFF9085": [71, 75, 136]
                             };
+
+                            //Hacky: Overrides the playlist to the missions.
+                            if(playlist !== null) {
+                                loader.playlist = playlist;
+                            }
 
                             loader.loadMapFromFile(gameContext, [over]);
                             actionRouter.forceEnqueue(gameContext, createStartTurnIntent());
