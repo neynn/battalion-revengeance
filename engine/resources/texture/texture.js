@@ -212,6 +212,21 @@ Texture.prototype.drawOffset = function(display, screenX, screenY) {
     }
 }
 
+Texture.prototype.drawRect = function(display, rect, screenX, screenY) {
+    const { state, bitmap } = this.handle;
+
+    if(state === TextureHandle.STATE.LOADED) {
+        const { x, y, w, h } = rect;
+        const { context } = display;
+
+        context.drawImage(
+            bitmap,
+            x, y, w, h,
+            screenX, screenY, w, h
+        );
+    } 
+}
+
 Texture.prototype.drawRegion = function(display, region, screenX, screenY) {
     const { state, bitmap } = this.handle;
 

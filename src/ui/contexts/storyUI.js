@@ -6,6 +6,7 @@ import { TeamOverride } from "../../map/override.js";
 import { createClientMapLoader } from "../../systems/map.js";
 import { mRegenerateLines } from "../helpers.js";
 import { UI_TEXTURE } from "../constants.js";
+import { TextureRegion } from "../../../engine/resources/texture/region.js";
 
 const START_BUTTON_WIDTH = 391;
 const START_BUTTON_HEIGHT = 101;
@@ -33,6 +34,11 @@ export const StoryUI = function() {
     this.style = new TextStyle();
     this.style.font = "16px Times New Roman";
     this.style.setAlignment(TextStyle.ALIGN.MIDDLE);
+
+    this.difficultyRect = new TextureRegion(0, 0, 0, 0);
+    this.hotseatRect = new TextureRegion(0, 0, 0, 0);
+    this.titleRect = new TextureRegion(0, 0, 0, 0);
+    this.specificationRect = new TextureRegion(0, 0, 0, 0);
 }
 
 StoryUI.prototype = Object.create(UIContext.prototype);
@@ -40,6 +46,12 @@ StoryUI.prototype.constructor = StoryUI;
 
 StoryUI.prototype.load = function(gameContext) {
     const { uiData, uiManager } = gameContext;
+    const panelTexture = uiData.getTexture(UI_TEXTURE.STORY_PANELS);
+
+    this.difficultyRect.copy(panelTexture.getRegionByName("difficulty"));
+    this.hotseatRect.copy(panelTexture.getRegionByName("hotseat"));
+    this.titleRect.copy(panelTexture.getRegionByName("title"));
+    this.specificationRect.copy(panelTexture.getRegionByName("specification"));
 
     uiData.loadStoryTextures();
     uiManager.addContext(this);
@@ -50,26 +62,30 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
     const { currentChapter, currentMission, currentCampaign } = missionManager;
     const { width, height } = applicationWindow;
     const { context } = display;
+
     const mainMenuBorder = uiData.getTexture(UI_TEXTURE.STORY_MAIN_MENU_BORDER);
     const chapterPanel = uiData.getTexture(UI_TEXTURE.STORY_CHAPTER_PANEL);
-    const missionPanel = uiData.getTexture(UI_TEXTURE.STORY_MISSION_PANEL);
-    const titlePanel = uiData.getTexture(UI_TEXTURE.STORY_TITLE_PANEL);
     const chapterPlaque = uiData.getTexture(UI_TEXTURE.PLAQUE);
     const chapterPlaqueDisabled = uiData.getTexture(UI_TEXTURE.PLAQUE_DISABLED);
     const emblemTexture = uiData.getTexture(UI_TEXTURE.STORY_EMBLEMS);
     const emblemSlot = uiData.getTexture(UI_TEXTURE.STORY_EMBLEM_SLOT);
     const startButtonTexture = uiData.getTexture(UI_TEXTURE.STORY_START);
+    const chapterArrowTexture = uiData.getTexture(UI_TEXTURE.CHAPTER_ARROW);
+    const missionPanel = uiData.getTexture(UI_TEXTURE.STORY_MISSION_PANEL);
+    const panelTexture = uiData.getTexture(UI_TEXTURE.STORY_PANELS);
 
+    const specificationPanelTexture = uiData.getTexture(UI_TEXTURE.STORY_SPECIFICATION_PANEL);
+    
     const borderX = toCenter(width, mainMenuBorder.width);
     const borderY = toCenter(height, mainMenuBorder.height);
     const chapterPanelX = borderX + 100;
-    const chapterPanelY = borderY + 105;
+    const chapterPanelY = borderY + 100;
     const missionPanelX = borderX + toCenter(mainMenuBorder.width, missionPanel.width);
     const missionPanelY = borderY + toCenter(mainMenuBorder.height, missionPanel.height);
     const PLAQUE_WIDTH = chapterPlaque.width;
     const PLAQUE_HEIGHT = chapterPlaque.height;
 
-    context.fillStyle = "#eeeeee";
+    context.fillStyle = "#222222";
     context.fillRect(borderX, borderY, mainMenuBorder.width, mainMenuBorder.height);
 
     this.style.apply(context);
@@ -123,21 +139,21 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
             const nextIndex = currentChapter.getNextMissionIndex();
 
             //Draw title
-            {
-                const titleX = borderX + toCenter(mainMenuBorder.width, titlePanel.width);
-                const titleY = borderY - 20;
-                const titleTextX = Math.floor(titleX + titlePanel.width / 2);
-                const titleTextY = Math.floor(titleY + titlePanel.height / 2);
+            const titleX = borderX + toCenter(mainMenuBorder.width, this.titleRect.w);
+            const titleY = borderY - 20;
+            const titleTextX = Math.floor(titleX + this.titleRect.w / 2);
+            const titleTextY = Math.floor(titleY + this.titleRect.h / 2);
 
-                titlePanel.draw(display, titleX, titleY);
-                context.fillText(language.getSystemTranslation(name), titleTextX, titleTextY);
-            }
+            panelTexture.drawRect(display, this.titleRect, titleX, titleY);
+            context.fillText(language.getSystemTranslation(name), titleTextX, titleTextY);
 
             //TODO: This is cursed.
             {
                 const index = currentCampaign.getChapterIndex(currentChapter.id);
+                const arrowX = plaqueX - 50;
+                const arrowY = plaqueY + offsetY * index - PLAQUE_HEIGHT / 2;
 
-                context.fillRect(plaqueX - 10, plaqueY + offsetY * index, 10, PLAQUE_HEIGHT);
+                chapterArrowTexture.draw(display, arrowX, arrowY);
             }
 
             if(currentMission) {
@@ -234,6 +250,21 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
                     emblemTexture.drawRegion(display, nonEmblem, drawX, emblemY);
                 }
             }
+
+            const panelX = borderX + mainMenuBorder.width - this.specificationRect.w - 50;
+            const panelY = borderY + mainMenuBorder.height - this.specificationRect.h - 50;
+
+            panelTexture.drawRect(display, this.specificationRect, panelX, panelY);
+
+            const hotseatX = chapterPanelX + toCenter(chapterPanel.width, this.hotseatRect.w);
+            const hotseatY = chapterPanelY + chapterPanel.height + 2;
+
+            panelTexture.drawRect(display, this.hotseatRect, hotseatX, hotseatY);
+
+            const difficultyX = chapterPanelX + toCenter(chapterPanel.width, this.difficultyRect.w);
+            const difficultyY = hotseatY + this.hotseatRect.h + 4;
+
+            panelTexture.drawRect(display, this.difficultyRect, difficultyX, difficultyY);
         }
     }
 }

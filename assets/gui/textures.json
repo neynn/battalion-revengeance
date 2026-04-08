@@ -2,11 +2,21 @@
     "generic_button": { "directory": ["assets", "gui"], "source": "generic_button.png", "gridWidth": 126, "gridHeight": 71, "autoGrid": { "rows": 4, "columns": 1 } },
     "plaque": { "directory": ["assets", "gui", "other"], "source": "plaque.png" },
     "plaque_disabled": { "directory": ["assets", "gui", "other"], "source": "plaque_disabled.png" },
+    "story_panels": {
+        "directory": ["assets", "gui", "story"],
+        "source": "panels.png",
+        "regions": {
+            "difficulty": { "x": 0, "y": 0, "w": 112, "h": 168 },
+            "hotseat": { "x": 112, "y": 0, "w": 112, "h": 130 },
+            "title": { "x": 0, "y": 168, "w": 350, "h": 112 },
+            "specification": { "x": 0, "y": 280, "w": 350, "h": 208 }
+        }
+    },
 
+    "story_chapter_arrow": { "directory": ["assets", "gui", "story"], "source": "chapter_arrow.png" },
     "story_chapter_panel": { "directory": ["assets", "gui", "story"], "source": "chapter_panel.png" },
     "story_emblem_slot": { "directory": ["assets", "gui", "story"], "source": "emblem_slot.png" },
     "story_main_menu_border": { "directory": ["assets", "gui", "story"], "source": "main_menu_border.png" },
-    "story_title_panel": { "directory": ["assets", "gui", "story"], "source": "title_panel.png" },
     "story_mission_panel": { "directory": ["assets", "gui", "story"], "source": "mission_panel.png" },
     "story_emblems": { "directory": ["assets", "gui", "story"], "source": "emblems.png", "gridWidth": 70, "gridHeight": 70, "autoGrid": { "rows": 3, "columns": 4 } },
     "story_start_button": { "directory": ["assets", "gui", "story"], "source": "start_button.png", "gridWidth": 391, "gridHeight": 101, "autoGrid": { "rows": 3, "columns": 1 } },

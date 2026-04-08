@@ -28,6 +28,9 @@ UIData.prototype.loadStoryTextures = function() {
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_MISSION_PANEL]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_EMBLEMS]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_START]);
+    this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_SPECIFICATION_PANEL]);
+    this.textureLoader.loadTexture(this.textures[UI_TEXTURE.CHAPTER_ARROW]);
+    this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_PANELS]);
 }
 
 UIData.prototype.loadPlayTextures = function() {
@@ -75,6 +78,9 @@ UIData.prototype.load = function(gameContext) {
     this.textures[UI_TEXTURE.STORY_MISSION_PANEL] = uiManager.getTextureID("story_mission_panel");
     this.textures[UI_TEXTURE.STORY_EMBLEMS] = uiManager.getTextureID("story_emblems");
     this.textures[UI_TEXTURE.STORY_START] = uiManager.getTextureID("story_start_button");
+    this.textures[UI_TEXTURE.STORY_SPECIFICATION_PANEL] = uiManager.getTextureID("story_specification_panel");
 
     this.textures[UI_TEXTURE.GENERIC_BUTTON] = uiManager.getTextureID("generic_button");
+    this.textures[UI_TEXTURE.CHAPTER_ARROW] = uiManager.getTextureID("story_chapter_arrow");
+    this.textures[UI_TEXTURE.STORY_PANELS] = uiManager.getTextureID("story_panels");
 }
