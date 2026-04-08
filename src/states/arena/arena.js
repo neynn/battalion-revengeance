@@ -98,7 +98,10 @@ ArenaState.prototype.onExit = function(gameContext, stateMachine) {
     const { client } = gameContext;
     const { socket } = client;
 
+    this.arenaUI.hide();
+
     socket.disconnect();
     gameContext.exit();
+    
     this.version = 0;
 }

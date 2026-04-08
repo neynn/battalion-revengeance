@@ -2,7 +2,9 @@ import { State } from "../../../engine/state/state.js";
 import { BattalionContext } from "../../battalionContext.js";
 import { StoryUI } from "../../ui/storyUI.js";
 
-export const StoryState = function() {}
+export const StoryState = function() {
+    this.storyUI = new StoryUI();
+}
 
 StoryState.prototype = Object.create(State.prototype);
 StoryState.prototype.constructor = StoryState;
@@ -11,9 +13,10 @@ StoryState.prototype.onEnter = async function(gameContext, stateMachine, transit
     const { client, world, actionRouter, missionManager } = gameContext;
     const { eventHandler } = world;
     const { router } = client;
-    const storyUI = new StoryUI();
 
-    storyUI.load(gameContext);
+    this.storyUI.load(gameContext);
+    this.storyUI.show();
+
     eventHandler.toAuthority();
     actionRouter.toSelf();
 
@@ -27,5 +30,7 @@ StoryState.prototype.onEnter = async function(gameContext, stateMachine, transit
 }
 
 StoryState.prototype.onExit = function(gameContext, stateMachine) {
+    this.storyUI.hide();
+
     gameContext.exit();
 }
