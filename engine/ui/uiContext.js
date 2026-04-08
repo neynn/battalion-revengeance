@@ -31,6 +31,21 @@ UIContext.prototype.constructor = UIContext;
 
 UIContext.prototype.onImmediate = function(gameContext, display) {}
 
+UIContext.prototype.doIcon = function(gameContext, widgetID, x, y, w, h) {
+    const { client } = gameContext;
+    const { cursor } = client;
+    const isHovered = cursor.collidesRect(x, y, w, h);
+    let flags = IM_FLAG.NONE;
+
+    if(isHovered && this.hotWidget === -1) {
+        flags |= IM_FLAG.HOT;
+
+        this.hotWidget = widgetID;
+    }
+
+    return flags;
+}
+
 UIContext.prototype.doButton = function(gameContext, widgetID, x, y, w, h) {
     const { client } = gameContext;
     const { cursor } = client;

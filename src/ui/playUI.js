@@ -7,7 +7,9 @@ import { getHealthColor } from "../entity/helpers.js";
 import { COMMANDER_TYPE, HUD_BUTTON, PLAYER_PREFERENCE, TILE_ID, UI_TEXTURE } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { mRegenerateLines } from "./helpers.js";
-import { UIData } from "./uiData.js";
+
+const MENU_ID_REGION = 100;
+const ICON_ID_REGION = 200;
 
 const HUD_BUTTON_WIDTH = 28;
 const HUD_BUTTON_HEIGHT = 40;
@@ -50,7 +52,8 @@ export const PlayUI = function(inspector, cContext) {
     this.lastInspect = MapInspector.STATE.NONE;
     this.lastIndex = -1;
     this.lastTooltip = null;
-    this.isCollided = false;
+
+    this.iconTick = 0;
 }
 
 PlayUI.WIDGET_ID = {
@@ -123,16 +126,24 @@ PlayUI.prototype.drawTile = function(gameContext, display, tileX, tileY, screenX
     }
 }
 
-PlayUI.prototype.doIcon = function(gameContext, iconID, display, screenX, screenY) {
-    const { uiData, client } = gameContext;
-    const { cursor } = client;
-    const isCollided = !this.isCollided && cursor.collidesRect(screenX, screenY, ICON_WIDTH, ICON_HEIGHT);
-
-    if(isCollided) {
-        this.isCollided = true;
-    }
+PlayUI.prototype.drawIcon = function(gameContext, iconID, display, screenX, screenY) {
+    const { uiData } = gameContext;
+    const iconTick = this.iconTick++;
+    const flags = this.doIcon(gameContext, ICON_ID_REGION + iconTick, screenX, screenY, ICON_WIDTH, ICON_HEIGHT);
+    let isCollided = false;
 
     uiData.getTexture(UI_TEXTURE.ICONS).drawRegion(display, iconID, screenX, screenY);
+
+    if(flags & IM_FLAG.HOT) {
+        const { context } = display;
+
+        context.fillStyle = "#eeeeee";
+        context.globalAlpha = 0.2;
+        context.fillRect(screenX, screenY, ICON_WIDTH, ICON_HEIGHT);
+        context.globalAlpha = 1;
+
+        isCollided = true;
+    }
 
     return isCollided;
 }
@@ -151,9 +162,12 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
     const buttonX = mainX + 33;
     const buttonY = mainY + 169;
 
-    const undoFlags = this.doButton(gameContext, PlayUI.WIDGET_ID.HUD_UNDO, buttonX, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
-    const menuFlags = this.doButton(gameContext, PlayUI.WIDGET_ID.HUD_MENU, buttonX + 38, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
-    const quitFlags = this.doButton(gameContext, PlayUI.WIDGET_ID.HUD_QUIT, buttonX + 76, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
+    const undoID = MENU_ID_REGION;
+    const menuID = MENU_ID_REGION + 1;
+    const quitID = MENU_ID_REGION + 2;
+    const undoFlags = this.doButton(gameContext, undoID, buttonX, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
+    const menuFlags = this.doButton(gameContext, menuID, buttonX + 38, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
+    const quitFlags = this.doButton(gameContext, quitID, buttonX + 76, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
 
     let undoButton = HUD_BUTTON.UNDO_ENABLED;
     let menuButton = HUD_BUTTON.MENU_ENABLED;
@@ -163,17 +177,17 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
     context.textAlign = TextStyle.ALIGN.MIDDLE;
 
     switch(this.hotWidget) {
-        case PlayUI.WIDGET_ID.HUD_UNDO: {
+        case undoID: {
             undoButton = HUD_BUTTON.UNDO_HOT;
             context.fillText(language.getSystemTranslation("HUD_UNDO"), textX, textY);
             break;
         }
-        case PlayUI.WIDGET_ID.HUD_MENU: {
+        case menuID: {
             menuButton = HUD_BUTTON.MENU_HOT;
             context.fillText(language.getSystemTranslation("HUD_MENU"), textX, textY);
             break;
         }
-        case PlayUI.WIDGET_ID.HUD_QUIT: {
+        case quitID: {
             quitButton = HUD_BUTTON.QUIT_HOT;
             context.fillText(language.getSystemTranslation("HUD_QUIT"), textX, textY);
             break;
@@ -187,15 +201,15 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
     context.textAlign = TextStyle.ALIGN.LEFT;
 
     switch(this.activeWidget) {
-        case PlayUI.WIDGET_ID.HUD_UNDO: {
+        case undoID: {
             undoButton = HUD_BUTTON.UNDO_ACTIVE;
             break;
         }
-        case PlayUI.WIDGET_ID.HUD_MENU: {
+        case menuID: {
             menuButton = HUD_BUTTON.MENU_ACTIVE;
             break;
         }
-        case PlayUI.WIDGET_ID.HUD_QUIT: {
+        case quitID: {
             quitButton = HUD_BUTTON.QUIT_ACTIVE;
             break;
         }
@@ -287,7 +301,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
         this.lines.length = 0;
     }
 
-    this.isCollided = false;
+    this.iconTick = 0;
     this.style.apply(context);
 
     const updateTooltip = (name, desc, x, y) => {
@@ -321,14 +335,14 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
                 this.lastIndex = index;
             }
 
-            if(this.doIcon(gameContext, climateType.icon, display, climateX, bodyY)) {
+            if(this.drawIcon(gameContext, climateType.icon, display, climateX, bodyY)) {
                 updateTooltip(climateType.name, climateType.desc, climateX, bodyY);
             }
 
             for(let i = 0; i < terrain.length; i++) {
                 const { icon, name, desc } = typeRegistry.getTerrainType(terrain[i]);
 
-                if(this.doIcon(gameContext, icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
+                if(this.drawIcon(gameContext, icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
                     updateTooltip(name, desc, traitX + (ICON_WIDTH + 1) * i, bodyY);
                 }
             }
@@ -356,7 +370,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
             for(let i = 0; i < building.config.traits.length; i++) {
                 const { icon, name, desc } = typeRegistry.getTraitType(building.config.traits[i]);
 
-                if(this.doIcon(gameContext, icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
+                if(this.drawIcon(gameContext, icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
                     updateTooltip(name, desc, traitX + (ICON_WIDTH + 1) * i, bodyY);
                 }
             }
@@ -396,14 +410,14 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
             context.fillRect(armorX + ICON_WIDTH + 5, bodyY, Math.floor(vitality * RECON_VITALITY_HEALTH_WIDTH), RECON_VITALITY_HEALTH_HEIGHT);
             context.fillStyle = "#ffffff";
 
-            if(this.doIcon(gameContext, armorType.icon, display, armorX, bodyY)) {
+            if(this.drawIcon(gameContext, armorType.icon, display, armorX, bodyY)) {
                 updateTooltip(armorType.name, armorType.desc, armorX, bodyY);
             }
 
             context.fillText(`${entity.health}/${entity.maxHealth}`, armorX + ICON_WIDTH + 2, bodyY + 10);
             uiData.getTexture(UI_TEXTURE.RECON_HEALTH).draw(display, armorX + ICON_WIDTH + 2, bodyY);
 
-            if(this.doIcon(gameContext, weaponType.icon, display, weaponX, bodyY)) {
+            if(this.drawIcon(gameContext, weaponType.icon, display, weaponX, bodyY)) {
                 updateTooltip(weaponType.name, weaponType.desc, weaponX, bodyY);
             }
 
@@ -413,7 +427,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
                 context.fillText(`[${minRange}-${maxRange}]`, weaponX + ICON_WIDTH + 2 + 15, bodyY + 10);
             }
 
-            if(this.doIcon(gameContext, movementType.icon, display, moveX, bodyY)) {
+            if(this.drawIcon(gameContext, movementType.icon, display, moveX, bodyY)) {
                 updateTooltip(movementType.name, movementType.desc, moveX, bodyY);
             }
 
@@ -422,7 +436,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
             for(let i = 0; i < entity.config.traits.length; i++) {
                 const { icon, name, desc } = typeRegistry.getTraitType(entity.config.traits[i]);
 
-                if(this.doIcon(gameContext, icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
+                if(this.drawIcon(gameContext, icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
                     updateTooltip(name, desc, traitX + (ICON_WIDTH + 1) * i, bodyY);
                 }
             }
@@ -472,7 +486,8 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
         }
     }
 
-    if(this.isCollided) {
+    //If collided with any icon.
+    if(this.hotWidget >= ICON_ID_REGION) {
         let tooltipTexture = UI_TEXTURE.TOOLTIP;
         let tooltipY = reconY + 17;
         let tooltipSize = 0;
