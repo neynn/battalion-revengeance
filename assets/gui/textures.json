@@ -9,7 +9,10 @@
             "difficulty": { "x": 0, "y": 0, "w": 112, "h": 168 },
             "hotseat": { "x": 112, "y": 0, "w": 112, "h": 130 },
             "title": { "x": 0, "y": 168, "w": 350, "h": 112 },
-            "specification": { "x": 0, "y": 280, "w": 350, "h": 208 }
+            "specification": { "x": 0, "y": 280, "w": 350, "h": 208 },
+            "difficulty_easy": { "x": 224, "y": 0, "w": 10, "h": 32 },
+            "difficulty_medium": { "x": 234, "y": 0, "w": 10, "h": 32 },
+            "difficulty_hard": { "x": 244, "y": 0, "w": 10, "h": 32 }
         }
     },
 

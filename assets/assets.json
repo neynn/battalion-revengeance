@@ -18,10 +18,10 @@
 
     "portraits": { "directory": ["assets", "portraits"], "source": "portraits.json" },
 
-    "scenarios": { "directory": ["assets", "story"], "source": "scenarios.json" },
-    "campaigns": { "directory": ["assets", "story"], "source": "campaigns.json" },
-    "chapters": { "directory": ["assets", "story"], "source": "chapters.json" },
-    "missions": { "directory": ["assets", "story"], "source": "missions.json" },
+    "scenarios": { "directory": ["assets", "game", "story"], "source": "scenarios.json" },
+    "campaigns": { "directory": ["assets", "game", "story"], "source": "campaigns.json" },
+    "chapters": { "directory": ["assets", "game", "story"], "source": "chapters.json" },
+    "missions": { "directory": ["assets", "game", "story"], "source": "missions.json" },
 
     "armorTypes": { "directory": ["assets", "game", "types"], "source": "armorTypes.json" },
     "buildingTypes": { "directory": ["assets", "game", "types"], "source": "buildingTypes.json" },

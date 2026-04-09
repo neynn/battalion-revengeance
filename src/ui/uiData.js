@@ -14,6 +14,11 @@ UIData.prototype.getTexture = function(textureID) {
     return this.textureLoader.getTextureWithFallback(this.textures[textureID]);
 }
 
+UIData.prototype.loadMainMenuTextures = function() {
+    this.loadGenericTextures();
+    this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_MAIN_MENU_BORDER]);
+}
+
 UIData.prototype.loadGenericTextures = function() {
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.GENERIC_BUTTON]);   
 }
@@ -24,11 +29,9 @@ UIData.prototype.loadStoryTextures = function() {
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_CHAPTER_PANEL]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_EMBLEM_SLOT]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_MAIN_MENU_BORDER]);
-    this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_TITLE_PANEL]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_MISSION_PANEL]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_EMBLEMS]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_START]);
-    this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_SPECIFICATION_PANEL]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.CHAPTER_ARROW]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_PANELS]);
 }
@@ -74,11 +77,9 @@ UIData.prototype.load = function(gameContext) {
     this.textures[UI_TEXTURE.STORY_CHAPTER_PANEL] = uiManager.getTextureID("story_chapter_panel");
     this.textures[UI_TEXTURE.STORY_EMBLEM_SLOT] = uiManager.getTextureID("story_emblem_slot");
     this.textures[UI_TEXTURE.STORY_MAIN_MENU_BORDER] = uiManager.getTextureID("story_main_menu_border");
-    this.textures[UI_TEXTURE.STORY_TITLE_PANEL] = uiManager.getTextureID("story_title_panel");
     this.textures[UI_TEXTURE.STORY_MISSION_PANEL] = uiManager.getTextureID("story_mission_panel");
     this.textures[UI_TEXTURE.STORY_EMBLEMS] = uiManager.getTextureID("story_emblems");
     this.textures[UI_TEXTURE.STORY_START] = uiManager.getTextureID("story_start_button");
-    this.textures[UI_TEXTURE.STORY_SPECIFICATION_PANEL] = uiManager.getTextureID("story_specification_panel");
 
     this.textures[UI_TEXTURE.GENERIC_BUTTON] = uiManager.getTextureID("generic_button");
     this.textures[UI_TEXTURE.CHAPTER_ARROW] = uiManager.getTextureID("story_chapter_arrow");

@@ -36,6 +36,9 @@ export const StoryUI = function() {
     this.style.setAlignment(TextStyle.ALIGN.MIDDLE);
 
     this.difficultyRect = new TextureRegion(0, 0, 0, 0);
+    this.difficultyEasyRect = new TextureRegion(0, 0, 0, 0);
+    this.difficultyMediumRect = new TextureRegion(0, 0, 0, 0);
+    this.difficultyHardRect = new TextureRegion(0, 0, 0, 0);
     this.hotseatRect = new TextureRegion(0, 0, 0, 0);
     this.titleRect = new TextureRegion(0, 0, 0, 0);
     this.specificationRect = new TextureRegion(0, 0, 0, 0);
@@ -52,6 +55,9 @@ StoryUI.prototype.load = function(gameContext) {
     this.hotseatRect.copy(panelTexture.getRegionByName("hotseat"));
     this.titleRect.copy(panelTexture.getRegionByName("title"));
     this.specificationRect.copy(panelTexture.getRegionByName("specification"));
+    this.difficultyEasyRect.copy(panelTexture.getRegionByName("difficulty_easy"));
+    this.difficultyMediumRect.copy(panelTexture.getRegionByName("difficulty_medium"));
+    this.difficultyHardRect.copy(panelTexture.getRegionByName("difficulty_hard"));
 
     uiData.loadStoryTextures();
     uiManager.addContext(this);
@@ -73,8 +79,6 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
     const chapterArrowTexture = uiData.getTexture(UI_TEXTURE.CHAPTER_ARROW);
     const missionPanel = uiData.getTexture(UI_TEXTURE.STORY_MISSION_PANEL);
     const panelTexture = uiData.getTexture(UI_TEXTURE.STORY_PANELS);
-
-    const specificationPanelTexture = uiData.getTexture(UI_TEXTURE.STORY_SPECIFICATION_PANEL);
     
     const borderX = toCenter(width, mainMenuBorder.width);
     const borderY = toCenter(height, mainMenuBorder.height);
@@ -264,7 +268,32 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
             const difficultyX = chapterPanelX + toCenter(chapterPanel.width, this.difficultyRect.w);
             const difficultyY = hotseatY + this.hotseatRect.h + 4;
 
-            panelTexture.drawRect(display, this.difficultyRect, difficultyX, difficultyY);
+            this.drawDifficulty(gameContext, display, difficultyX, difficultyY);
         }
     }
+}
+
+StoryUI.prototype.drawDifficulty = function(gameContext, display, screenX, screenY) {
+    const { uiData, language } = gameContext;
+    const { context } = display;
+    const panelTexture = uiData.getTexture(UI_TEXTURE.STORY_PANELS);
+
+    const difficultyX = screenX + 15;
+    const easyY = screenY + 40;
+    const mediumY = easyY + this.difficultyEasyRect.h + 5;
+    const hardY = mediumY + this.difficultyMediumRect.h + 5;
+    const textX = screenX + Math.floor(this.difficultyRect.w / 2);
+    const textY = screenY + 25;
+    const textOffsetX = 15;
+    const textOffsetY = Math.floor(this.difficultyEasyRect.h / 2);
+
+    panelTexture.drawRect(display, this.difficultyRect, screenX, screenY);
+    panelTexture.drawRect(display, this.difficultyEasyRect, difficultyX, easyY);
+    panelTexture.drawRect(display, this.difficultyMediumRect, difficultyX, mediumY);
+    panelTexture.drawRect(display, this.difficultyHardRect, difficultyX, hardY);
+
+    context.fillText(language.getSystemTranslation("STORY_DIFFICULTY_TITLE"), textX, textY);
+    context.fillText(language.getSystemTranslation("STORY_DIFFICULTY_EASY"), textX + textOffsetX, easyY + textOffsetY);
+    context.fillText(language.getSystemTranslation("STORY_DIFFICULTY_MEDIUM"), textX + textOffsetX, mediumY + textOffsetY);
+    context.fillText(language.getSystemTranslation("STORY_DIFFICULTY_HARD"), textX + textOffsetX, hardY + textOffsetY);
 }

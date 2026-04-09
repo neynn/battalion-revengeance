@@ -19,5 +19,9 @@
     "HUD_MENU": "Options",
     "HUD_QUIT": "Quit",
 
-    "STORY_CHAPTER_PLAQUE": "Chapter"
+    "STORY_CHAPTER_PLAQUE": "Chapter",
+    "STORY_DIFFICULTY_TITLE": "Difficulty",
+    "STORY_DIFFICULTY_EASY": "Jehtro",
+    "STORY_DIFFICULTY_MEDIUM": "Vlad",
+    "STORY_DIFFICULTY_HARD": "Kirk"
 }

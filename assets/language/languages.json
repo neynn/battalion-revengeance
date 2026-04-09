@@ -3,12 +3,8 @@
         "directory": ["assets", "language", "en-US"],
         "sources": [
             "core.json",
-            "tiles.json",
-            "traits.json",
-            "entities.json",
-            "factions.json",
-            "other.json",
-            "story.json"
+            "story.json",
+            "types.json"
         ]
     }
 }
