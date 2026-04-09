@@ -5,11 +5,8 @@ import { createStartTurnIntent } from "../../action/actionHelper.js";
 import { TeamOverride } from "../../map/override.js";
 import { createClientMapLoader } from "../../systems/map.js";
 import { mRegenerateLines } from "../helpers.js";
-import { UI_TEXTURE } from "../constants.js";
+import { START_BUTTON_STYLE, UI_TEXTURE } from "../constants.js";
 import { TextureRegion } from "../../../engine/resources/texture/region.js";
-
-const START_BUTTON_WIDTH = 391;
-const START_BUTTON_HEIGHT = 101;
 
 const EMBLEM_GAP = 20;
 const EMBLEM_WIDTH = 70;
@@ -18,12 +15,6 @@ const EMBLEM_HEIGHT = 70;
 const CHAPTER_ID_REGION = 100;
 const MISSION_ID_REGION = 200;
 const DIFFICULTY_ID_REGION = 300;
-
-const START_BUTTON = {
-    DISABLED: 0,
-    ENABLED: 1,
-    HOT: 2
-};
 
 export const StoryUI = function() {
     UIContext.call(this);
@@ -185,23 +176,23 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
                     context.fillText(this.lines[i], missionPanelTextX, textY);
                 }
 
-                const startX = missionPanelX + toCenter(missionPanel.width, START_BUTTON_WIDTH);
-                const startY = missionPanelY + missionPanel.height - Math.floor(START_BUTTON_HEIGHT / 2);
-                const startTextX = startX + Math.floor(START_BUTTON_WIDTH / 2);
-                const startTextY = startY + Math.floor(START_BUTTON_HEIGHT / 2);
+                const startX = missionPanelX + toCenter(missionPanel.width, START_BUTTON_STYLE.width);
+                const startY = missionPanelY + missionPanel.height - START_BUTTON_STYLE.halfHeight;
+                const startTextX = startX + START_BUTTON_STYLE.halfWidth;
+                const startTextY = startY + START_BUTTON_STYLE.halfHeight;
                 const startFlags = this.doButton(
                     gameContext,
                     2,
                     startX,
                     startY,
-                    START_BUTTON_WIDTH,
-                    START_BUTTON_HEIGHT
+                    START_BUTTON_STYLE.width,
+                    START_BUTTON_STYLE.height
                 );
 
                 if(startFlags & IM_FLAG.HOT) {
-                    startButtonTexture.drawRegion(display, START_BUTTON.HOT, startX, startY);
+                    startButtonTexture.drawRegion(display, START_BUTTON_STYLE.hot, startX, startY);
                 } else {
-                    startButtonTexture.drawRegion(display, START_BUTTON.ENABLED, startX, startY);
+                    startButtonTexture.drawRegion(display, START_BUTTON_STYLE.enabled, startX, startY);
                 }
 
                 context.fillText(language.getSystemTranslation(startButton), startTextX, startTextY);
