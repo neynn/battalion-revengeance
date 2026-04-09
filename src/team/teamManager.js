@@ -43,6 +43,10 @@ TeamManager.prototype.exit = function() {
     this.previousTeam = TeamManager.INVALID_ID;
 }
 
+TeamManager.prototype.isCurrent = function(teamID) {
+    return this.currentTeam !== TeamManager.INVALID_ID && this.currentTeam === teamID;
+}
+
 TeamManager.prototype.getCurrentTeam = function() {
     if(this.currentTeam < 0 || this.currentTeam >= this.teams.length) {
         return null;

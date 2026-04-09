@@ -2,10 +2,8 @@ import { TextStyle } from "../../../engine/graphics/textStyle.js";
 import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
 import { BattalionContext } from "../../battalionContext.js";
 import { GAME_EVENT } from "../../enums.js";
-import { UI_TEXTURE, GENERIC_BUTTON } from "../constants.js";
+import { UI_TEXTURE, GENERIC_BUTTON, GENERIC_BUTTON_HEIGHT, GENERIC_BUTTON_WIDTH, GENERIC_BUTTON_TEXT_OFFSET_X } from "../constants.js";
 
-const BUTTON_WIDTH = 126;
-const BUTTON_HEIGHT = 71;
 const BUTTON_ID_REGION = 100;
 
 export const ArenaUI = function() {
@@ -38,32 +36,32 @@ ArenaUI.prototype.onImmediate = function(gameContext, display) {
     const backX = 0;
     const backY = 0;
     const backID = BUTTON_ID_REGION;
-    const backFlags = this.doButton(gameContext, backID, backX, backY, BUTTON_WIDTH, BUTTON_HEIGHT);
+    const backFlags = this.doButton(gameContext, backID, backX, backY, GENERIC_BUTTON_WIDTH, GENERIC_BUTTON_HEIGHT);
     
     const connectX = 0;
-    const connectY = BUTTON_HEIGHT;
+    const connectY = GENERIC_BUTTON_HEIGHT;
     const connectID = BUTTON_ID_REGION + 1;
-    const connectFlags = this.doButton(gameContext, connectID, connectX, connectY, BUTTON_WIDTH, BUTTON_HEIGHT);
+    const connectFlags = this.doButton(gameContext, connectID, connectX, connectY, GENERIC_BUTTON_WIDTH, GENERIC_BUTTON_HEIGHT);
   
     const joinX = 0;
-    const joinY = BUTTON_HEIGHT * 2;
+    const joinY = GENERIC_BUTTON_HEIGHT * 2;
     const joinID = BUTTON_ID_REGION + 2;
-    const joinFlags = this.doButton(gameContext, joinID, joinX, joinY, BUTTON_WIDTH, BUTTON_HEIGHT);
+    const joinFlags = this.doButton(gameContext, joinID, joinX, joinY, GENERIC_BUTTON_WIDTH, GENERIC_BUTTON_HEIGHT);
   
     const createX = 0;
-    const createY = BUTTON_HEIGHT * 3;
+    const createY = GENERIC_BUTTON_HEIGHT * 3;
     const createID = BUTTON_ID_REGION + 3;
-    const createFlags = this.doButton(gameContext, createID, createX, createY, BUTTON_WIDTH, BUTTON_HEIGHT);
+    const createFlags = this.doButton(gameContext, createID, createX, createY, GENERIC_BUTTON_WIDTH, GENERIC_BUTTON_HEIGHT);
   
     const leaveX = 0;
-    const leaveY = BUTTON_HEIGHT * 4;
+    const leaveY = GENERIC_BUTTON_HEIGHT * 4;
     const leaveID = BUTTON_ID_REGION + 4;
-    const leaveFlags = this.doButton(gameContext, leaveID, leaveX, leaveY, BUTTON_WIDTH, BUTTON_HEIGHT);
+    const leaveFlags = this.doButton(gameContext, leaveID, leaveX, leaveY, GENERIC_BUTTON_WIDTH, GENERIC_BUTTON_HEIGHT);
   
     const startX = 0;
-    const startY = BUTTON_HEIGHT * 5;
+    const startY = GENERIC_BUTTON_HEIGHT * 5;
     const startID = BUTTON_ID_REGION + 5;
-    const startFlags = this.doButton(gameContext, startID, startX, startY, BUTTON_WIDTH, BUTTON_HEIGHT);
+    const startFlags = this.doButton(gameContext, startID, startX, startY, GENERIC_BUTTON_WIDTH, GENERIC_BUTTON_HEIGHT);
   
     let backButton = GENERIC_BUTTON.ENABLED;
     let connectButton = GENERIC_BUTTON.ENABLED;
@@ -187,13 +185,10 @@ ArenaUI.prototype.onImmediate = function(gameContext, display) {
     buttonTexture.drawRegion(display, leaveButton, leaveX, leaveY);
     buttonTexture.drawRegion(display, startButton, startX, startY);
 
-    const textOffsetX = Math.floor(BUTTON_WIDTH / 2);
-    const textOffsetY = 34;
-
-    context.fillText("BACK", backX + textOffsetX, backY + textOffsetY);
-    context.fillText("CONNECT", connectX + textOffsetX, connectY + textOffsetY);
-    context.fillText("JOIN", joinX + textOffsetX, joinY + textOffsetY);
-    context.fillText("CREATE", createX + textOffsetX, createY + textOffsetY);
-    context.fillText("LEAVE", leaveX + textOffsetX, leaveY + textOffsetY);
-    context.fillText("START", startX + textOffsetX, startY + textOffsetY);
+    context.fillText("BACK", backX + GENERIC_BUTTON_TEXT_OFFSET_X, backY + 34);
+    context.fillText("CONNECT", connectX + GENERIC_BUTTON_TEXT_OFFSET_X, connectY + 34);
+    context.fillText("JOIN", joinX + GENERIC_BUTTON_TEXT_OFFSET_X, joinY + 34);
+    context.fillText("CREATE", createX + GENERIC_BUTTON_TEXT_OFFSET_X, createY + 34);
+    context.fillText("LEAVE", leaveX + GENERIC_BUTTON_TEXT_OFFSET_X, leaveY + 34);
+    context.fillText("START", startX + GENERIC_BUTTON_TEXT_OFFSET_X, startY + 34);
 }

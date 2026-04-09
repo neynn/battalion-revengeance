@@ -1,16 +1,18 @@
 import { TextStyle } from "../../../engine/graphics/textStyle.js";
-import { clampValue } from "../../../engine/math/math.js";
+import { clampValue, toCenter } from "../../../engine/math/math.js";
 import { SpriteManager } from "../../../engine/sprite/spriteManager.js";
 import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
 import { MapInspector } from "../../actors/player/inspector.js";
 import { getHealthColor } from "../../entity/helpers.js";
 import { COMMANDER_TYPE, PLAYER_PREFERENCE, TILE_ID } from "../../enums.js";
-import { UI_TEXTURE, HUD_BUTTON } from "../constants.js";
+import { UI_TEXTURE, HUD_BUTTON, GENERIC_BUTTON_HEIGHT, GENERIC_BUTTON, GENERIC_BUTTON_WIDTH, GENERIC_BUTTON_TEXT_OFFSET_X, GENERIC_BUTTON_TEXT_OFFSET_Y } from "../constants.js";
 import { BattalionMap } from "../../map/battalionMap.js";
 import { mRegenerateLines } from "../helpers.js";
+import { createEndTurnIntent } from "../../action/actionHelper.js";
 
 const MENU_ID_REGION = 100;
 const ICON_ID_REGION = 200;
+const OTHER_ID_REGION = 300;
 
 const HUD_BUTTON_WIDTH = 28;
 const HUD_BUTTON_HEIGHT = 40;
@@ -35,9 +37,10 @@ const TILE_DRAW_ORDER = [
     BattalionMap.LAYER.CLOUD
 ];
 
-export const PlayUI = function(inspector, cContext) {
+export const PlayUI = function(inspector, cContext, player) {
     UIContext.call(this);
 
+    this.player = player;
     this.isImmediate = true;
     this.inspector = inspector;
     this.cContext = cContext;
@@ -86,6 +89,7 @@ PlayUI.prototype.load = function(gameContext) {
     this.inspectSprite = spriteManager.createEmptySprite();
     this.inspectSprite.scale = 0.6;
 
+    uiData.loadGenericTextures();
     uiData.loadPlayTextures();
     uiManager.addContext(this);
 }
@@ -155,6 +159,7 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
     const { context } = display;
     const buttonTexture = uiData.getTexture(UI_TEXTURE.HUD_BUTTONS);
     const hudTexture = uiData.getTexture(UI_TEXTURE.RECON_MAIN);
+    const genericButtonTexture = uiData.getTexture(UI_TEXTURE.GENERIC_BUTTON);
 
     const mainX = screenX - 14;
     const mainY = screenY;
@@ -245,6 +250,39 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
         context.fillStyle = textColor;
         context.fillText(team.getDisplayName(gameContext), teamX + 28, nextY + 8);
     }
+
+    const endturnX = mainX + toCenter(hudTexture.width, genericButtonTexture.width) + 8;
+    const endTurnY = mainY + hudTexture.height - GENERIC_BUTTON_HEIGHT - 16;
+    let button = GENERIC_BUTTON.DISABLED;
+
+    const endTurnFlags = this.doButton(
+        gameContext,
+        OTHER_ID_REGION,
+        endturnX,
+        endTurnY,
+        GENERIC_BUTTON_WIDTH,
+        GENERIC_BUTTON_HEIGHT
+    );
+
+    if(teamManager.isCurrent(this.player.teamID)) {
+        if(endTurnFlags & IM_FLAG.CLICKED) {
+            this.player.addIntent(createEndTurnIntent());
+        }
+
+        if(endTurnFlags & IM_FLAG.ACTIVE) {
+            button = GENERIC_BUTTON.ACTIVE;
+        } else if(endTurnFlags & IM_FLAG.HOT) {
+            button = GENERIC_BUTTON.HOT;
+        } else {
+            button = GENERIC_BUTTON.ENABLED;
+        }
+    }
+
+
+    genericButtonTexture.drawRegion(display, button, endturnX, endTurnY);
+    context.textAlign = TextStyle.ALIGN.MIDDLE;
+    context.fillText("END TURN", endturnX + GENERIC_BUTTON_TEXT_OFFSET_X, endTurnY + GENERIC_BUTTON_TEXT_OFFSET_Y - 5);
+    context.textAlign = TextStyle.ALIGN.LEFT;
 }
 
 PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, screenY) {
@@ -488,7 +526,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
     }
 
     //If collided with any icon.
-    if(this.hotWidget >= ICON_ID_REGION) {
+    if(this.hotWidget >= ICON_ID_REGION && this.hotWidget < OTHER_ID_REGION) {
         let tooltipTexture = UI_TEXTURE.TOOLTIP;
         let tooltipY = reconY + 17;
         let tooltipSize = 0;

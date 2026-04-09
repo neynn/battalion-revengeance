@@ -48,3 +48,8 @@ export const GENERIC_BUTTON = {
     HOT: 2,
     ACTIVE: 3
 };
+
+export const GENERIC_BUTTON_WIDTH = 126;
+export const GENERIC_BUTTON_HEIGHT = 71;
+export const GENERIC_BUTTON_TEXT_OFFSET_X = Math.floor(GENERIC_BUTTON_WIDTH / 2);
+export const GENERIC_BUTTON_TEXT_OFFSET_Y = Math.floor(GENERIC_BUTTON_HEIGHT / 2);
