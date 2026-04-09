@@ -96,10 +96,8 @@ export const saveStoryMap = function(gameContext) {
     file.download("map");
 }
 
-export const loadStoryMap = async function(gameContext, data) {
-    const matchLoader = await createClientMapLoader(gameContext, data.mapID);
-
-    if(matchLoader) {
-        matchLoader.loadMapFromSnapshot(gameContext, []);
-    }
+export const loadStoryMap = function(gameContext, data) {
+    createClientMapLoader(gameContext, data.mapID)
+    .then(loader => loader.loadMapFromSnapshot(gameContext, []))
+    .catch(() => {});
 }

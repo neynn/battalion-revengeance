@@ -199,29 +199,28 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
 
                 if(startFlags & IM_FLAG.CLICKED) {
                     createClientMapLoader(gameContext, map)
-                    .then(loader => {
-                        if(loader) {
-                            const { actionRouter } = gameContext;
-                            const over = new TeamOverride("SOMERTIN");
+                    .then((loader) => {
+                        const { actionRouter } = gameContext;
+                        const over = new TeamOverride("SOMERTIN");
 
-                            over.color = {
-                                "0x661A5E": [105, 125, 108],
-                                "0xAA162C": [197, 171, 159],
-                                "0xE9332E": [66, 65, 68],
-                                "0xFF9085": [71, 75, 136]
-                            };
+                        over.color = {
+                            "0x661A5E": [105, 125, 108],
+                            "0xAA162C": [197, 171, 159],
+                            "0xE9332E": [66, 65, 68],
+                            "0xFF9085": [71, 75, 136]
+                        };
 
-                            //Hacky: Overrides the playlist to the missions.
-                            if(playlist !== null) {
-                                loader.playlist = playlist;
-                            }
-
-                            loader.loadMapFromFile(gameContext, [over]);
-                            actionRouter.forceEnqueue(gameContext, createStartTurnIntent());
-                            this.hide();
-                        } else {
-                            
+                        //Hacky: Overrides the playlist to the missions.
+                        if(playlist !== null) {
+                            loader.playlist = playlist;
                         }
+
+                        loader.loadMapFromFile(gameContext, [over]);
+                        actionRouter.forceEnqueue(gameContext, createStartTurnIntent());
+                        this.hide();
+                    })
+                    .catch(() => {
+                        //TODO(neyn): Log error.
                     });
                 }
             }

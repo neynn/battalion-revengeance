@@ -373,7 +373,7 @@ export const createClientMapLoader = async function(gameContext, sourceID) {
     const [file, translations] = await Promise.all([mapSource.promiseFile(pathHandler), mapSource.promiseTranslations(pathHandler)]);
 
     if(file === null) {
-        return null;
+        return Promise.reject();
     }
 
     const { width, height, data, text = [], custom = [] } = file;

@@ -38,13 +38,12 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
             
                 createClientMapLoader(gameContext, mapID)
                 .then((mapLoader) => {
-                    if(mapLoader) {
-                        mapLoader.clientTeam = client;
-                        mapLoader.loadInitialServerSnapshot(gameContext, snapshot, overrides);
-                        socket.messageRoom(GAME_EVENT.MP_CLIENT_MAP_LOADED, {});
-                    } else {
-                        //TODO: Signal a failed load.
-                    }
+                    mapLoader.clientTeam = client;
+                    mapLoader.loadInitialServerSnapshot(gameContext, snapshot, overrides);
+                    socket.messageRoom(GAME_EVENT.MP_CLIENT_MAP_LOADED, {});
+                })
+                .catch(() => {
+                    //TODO: Signal a failed load.
                 });
 
                 break;
