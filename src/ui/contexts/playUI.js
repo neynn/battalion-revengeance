@@ -5,7 +5,7 @@ import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
 import { MapInspector } from "../../actors/player/inspector.js";
 import { getHealthColor } from "../../entity/helpers.js";
 import { COMMANDER_TYPE, PLAYER_PREFERENCE, TILE_ID } from "../../enums.js";
-import { UI_TEXTURE, HUD_BUTTON, GENERIC_BUTTON_HEIGHT, GENERIC_BUTTON, GENERIC_BUTTON_WIDTH, GENERIC_BUTTON_TEXT_OFFSET_X, GENERIC_BUTTON_TEXT_OFFSET_Y } from "../constants.js";
+import { UI_TEXTURE, HUD_BUTTON, GENERIC_BUTTON_STYLE } from "../constants.js";
 import { BattalionMap } from "../../map/battalionMap.js";
 import { mRegenerateLines } from "../helpers.js";
 import { createEndTurnIntent } from "../../action/actionHelper.js";
@@ -252,16 +252,16 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
     }
 
     const endturnX = mainX + toCenter(hudTexture.width, genericButtonTexture.width) + 8;
-    const endTurnY = mainY + hudTexture.height - GENERIC_BUTTON_HEIGHT - 16;
-    let button = GENERIC_BUTTON.DISABLED;
+    const endTurnY = mainY + hudTexture.height - GENERIC_BUTTON_STYLE.height - 16;
+    let button = GENERIC_BUTTON_STYLE.disabled;
 
     const endTurnFlags = this.doButton(
         gameContext,
         OTHER_ID_REGION,
         endturnX,
         endTurnY,
-        GENERIC_BUTTON_WIDTH,
-        GENERIC_BUTTON_HEIGHT
+        GENERIC_BUTTON_STYLE.width,
+        GENERIC_BUTTON_STYLE.height
     );
 
     if(teamManager.isCurrent(this.player.teamID)) {
@@ -270,18 +270,18 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
         }
 
         if(endTurnFlags & IM_FLAG.ACTIVE) {
-            button = GENERIC_BUTTON.ACTIVE;
+            button = GENERIC_BUTTON_STYLE.active;
         } else if(endTurnFlags & IM_FLAG.HOT) {
-            button = GENERIC_BUTTON.HOT;
+            button = GENERIC_BUTTON_STYLE.hot;
         } else {
-            button = GENERIC_BUTTON.ENABLED;
+            button = GENERIC_BUTTON_STYLE.enabled;
         }
     }
 
 
     genericButtonTexture.drawRegion(display, button, endturnX, endTurnY);
     context.textAlign = TextStyle.ALIGN.MIDDLE;
-    context.fillText("END TURN", endturnX + GENERIC_BUTTON_TEXT_OFFSET_X, endTurnY + GENERIC_BUTTON_TEXT_OFFSET_Y - 5);
+    context.fillText("END TURN", endturnX + GENERIC_BUTTON_STYLE.halfWidth, endTurnY + GENERIC_BUTTON_STYLE.halfHeight - 5);
     context.textAlign = TextStyle.ALIGN.LEFT;
 }
 

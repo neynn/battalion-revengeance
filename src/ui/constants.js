@@ -1,3 +1,27 @@
+const createButtonStyle = function(width, height, regionStart) {
+    const style = {
+        "disabled": 0,
+        "enabled": 1,
+        "hot": 2,
+        "active": 3,
+        "width": 0,
+        "height": 0,
+        "halfWidth": 0,
+        "halfHeight": 0
+    };
+
+    style.disabled += regionStart;
+    style.enabled += regionStart;
+    style.hot += regionStart;
+    style.active += regionStart;
+    style.width = width;
+    style.height = height;
+    style.halfWidth = Math.floor(width / 2);
+    style.halfHeight = Math.floor(height / 2);
+
+    return style;
+}
+
 export const UI_TEXTURE = {
     RECON_UNIT: 0,
     RECON_TERRAIN: 1,
@@ -36,20 +60,10 @@ export const HUD_BUTTON = {
     UNDO_ENABLED: 5,
     UNDO_HOT: 6,
     UNDO_ACTIVE: 7,
-    QUIT_DISABLED: 8,
+    QUIT_DISABLED: 8, 
     QUIT_ENABLED: 9,
     QUIT_HOT: 10,
     QUIT_ACTIVE: 11
 };
 
-export const GENERIC_BUTTON = {
-    DISABLED: 0,
-    ENABLED: 1,
-    HOT: 2,
-    ACTIVE: 3
-};
-
-export const GENERIC_BUTTON_WIDTH = 126;
-export const GENERIC_BUTTON_HEIGHT = 71;
-export const GENERIC_BUTTON_TEXT_OFFSET_X = Math.floor(GENERIC_BUTTON_WIDTH / 2);
-export const GENERIC_BUTTON_TEXT_OFFSET_Y = Math.floor(GENERIC_BUTTON_HEIGHT / 2);
+export const GENERIC_BUTTON_STYLE = createButtonStyle(126, 71, 0);

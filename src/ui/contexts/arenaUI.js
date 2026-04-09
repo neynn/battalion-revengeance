@@ -2,7 +2,7 @@ import { TextStyle } from "../../../engine/graphics/textStyle.js";
 import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
 import { BattalionContext } from "../../battalionContext.js";
 import { GAME_EVENT } from "../../enums.js";
-import { UI_TEXTURE, GENERIC_BUTTON, GENERIC_BUTTON_HEIGHT, GENERIC_BUTTON_WIDTH, GENERIC_BUTTON_TEXT_OFFSET_X } from "../constants.js";
+import { UI_TEXTURE, GENERIC_BUTTON_STYLE } from "../constants.js";
 
 const BUTTON_ID_REGION = 100;
 
@@ -36,85 +36,85 @@ ArenaUI.prototype.onImmediate = function(gameContext, display) {
     const backX = 0;
     const backY = 0;
     const backID = BUTTON_ID_REGION;
-    const backFlags = this.doButton(gameContext, backID, backX, backY, GENERIC_BUTTON_WIDTH, GENERIC_BUTTON_HEIGHT);
+    const backFlags = this.doButton(gameContext, backID, backX, backY, GENERIC_BUTTON_STYLE.width, GENERIC_BUTTON_STYLE.height);
     
     const connectX = 0;
-    const connectY = GENERIC_BUTTON_HEIGHT;
+    const connectY = GENERIC_BUTTON_STYLE.height;
     const connectID = BUTTON_ID_REGION + 1;
-    const connectFlags = this.doButton(gameContext, connectID, connectX, connectY, GENERIC_BUTTON_WIDTH, GENERIC_BUTTON_HEIGHT);
+    const connectFlags = this.doButton(gameContext, connectID, connectX, connectY, GENERIC_BUTTON_STYLE.width, GENERIC_BUTTON_STYLE.height);
   
     const joinX = 0;
-    const joinY = GENERIC_BUTTON_HEIGHT * 2;
+    const joinY = GENERIC_BUTTON_STYLE.height * 2;
     const joinID = BUTTON_ID_REGION + 2;
-    const joinFlags = this.doButton(gameContext, joinID, joinX, joinY, GENERIC_BUTTON_WIDTH, GENERIC_BUTTON_HEIGHT);
+    const joinFlags = this.doButton(gameContext, joinID, joinX, joinY, GENERIC_BUTTON_STYLE.width, GENERIC_BUTTON_STYLE.height);
   
     const createX = 0;
-    const createY = GENERIC_BUTTON_HEIGHT * 3;
+    const createY = GENERIC_BUTTON_STYLE.height * 3;
     const createID = BUTTON_ID_REGION + 3;
-    const createFlags = this.doButton(gameContext, createID, createX, createY, GENERIC_BUTTON_WIDTH, GENERIC_BUTTON_HEIGHT);
+    const createFlags = this.doButton(gameContext, createID, createX, createY, GENERIC_BUTTON_STYLE.width, GENERIC_BUTTON_STYLE.height);
   
     const leaveX = 0;
-    const leaveY = GENERIC_BUTTON_HEIGHT * 4;
+    const leaveY = GENERIC_BUTTON_STYLE.height * 4;
     const leaveID = BUTTON_ID_REGION + 4;
-    const leaveFlags = this.doButton(gameContext, leaveID, leaveX, leaveY, GENERIC_BUTTON_WIDTH, GENERIC_BUTTON_HEIGHT);
+    const leaveFlags = this.doButton(gameContext, leaveID, leaveX, leaveY, GENERIC_BUTTON_STYLE.width, GENERIC_BUTTON_STYLE.height);
   
     const startX = 0;
-    const startY = GENERIC_BUTTON_HEIGHT * 5;
+    const startY = GENERIC_BUTTON_STYLE.height * 5;
     const startID = BUTTON_ID_REGION + 5;
-    const startFlags = this.doButton(gameContext, startID, startX, startY, GENERIC_BUTTON_WIDTH, GENERIC_BUTTON_HEIGHT);
+    const startFlags = this.doButton(gameContext, startID, startX, startY, GENERIC_BUTTON_STYLE.width, GENERIC_BUTTON_STYLE.height);
   
-    let backButton = GENERIC_BUTTON.ENABLED;
-    let connectButton = GENERIC_BUTTON.ENABLED;
-    let joinButton = GENERIC_BUTTON.ENABLED;
-    let createButton = GENERIC_BUTTON.ENABLED;
-    let leaveButton = GENERIC_BUTTON.ENABLED;
-    let startButton = GENERIC_BUTTON.ENABLED;
+    let backButton = GENERIC_BUTTON_STYLE.enabled;
+    let connectButton = GENERIC_BUTTON_STYLE.enabled;
+    let joinButton = GENERIC_BUTTON_STYLE.enabled;
+    let createButton = GENERIC_BUTTON_STYLE.enabled;
+    let leaveButton = GENERIC_BUTTON_STYLE.enabled;
+    let startButton = GENERIC_BUTTON_STYLE.enabled;
 
     if(isConnected) {
-        connectButton = GENERIC_BUTTON.DISABLED;
+        connectButton = GENERIC_BUTTON_STYLE.disabled;
 
         switch(this.hotWidget) {
             case backID: {
-                backButton = GENERIC_BUTTON.HOT;
+                backButton = GENERIC_BUTTON_STYLE.hot;
                 break;
             }
             case joinID: {
-                joinButton = GENERIC_BUTTON.HOT;
+                joinButton = GENERIC_BUTTON_STYLE.hot;
                 break;
             }
             case createID: {
-                createButton = GENERIC_BUTTON.HOT;
+                createButton = GENERIC_BUTTON_STYLE.hot;
                 break;
             }
             case leaveID: {
-                leaveButton = GENERIC_BUTTON.HOT;
+                leaveButton = GENERIC_BUTTON_STYLE.hot;
                 break;
             }
             case startID: {
-                startButton = GENERIC_BUTTON.HOT;
+                startButton = GENERIC_BUTTON_STYLE.hot;
                 break;
             }
         }
 
         switch(this.activeWidget) {
             case backID: {
-                backButton = GENERIC_BUTTON.ACTIVE;
+                backButton = GENERIC_BUTTON_STYLE.active;
                 break;
             }
             case joinID: {
-                joinButton = GENERIC_BUTTON.ACTIVE;
+                joinButton = GENERIC_BUTTON_STYLE.active;
                 break;
             }
             case createID: {
-                createButton = GENERIC_BUTTON.ACTIVE;
+                createButton = GENERIC_BUTTON_STYLE.active;
                 break;
             }
             case leaveID: {
-                leaveButton = GENERIC_BUTTON.ACTIVE;
+                leaveButton = GENERIC_BUTTON_STYLE.active;
                 break;
             }
             case startID: {
-                startButton = GENERIC_BUTTON.ACTIVE;
+                startButton = GENERIC_BUTTON_STYLE.active;
                 break;
             }
         }
@@ -137,29 +137,29 @@ ArenaUI.prototype.onImmediate = function(gameContext, display) {
             socket.messageRoom(GAME_EVENT.MP_CLIENT_START_MATCH, {});
         }
     } else {
-        joinButton = GENERIC_BUTTON.DISABLED;
-        createButton = GENERIC_BUTTON.DISABLED;
-        leaveButton = GENERIC_BUTTON.DISABLED;
-        startButton = GENERIC_BUTTON.DISABLED;
+        joinButton = GENERIC_BUTTON_STYLE.disabled;
+        createButton = GENERIC_BUTTON_STYLE.disabled;
+        leaveButton = GENERIC_BUTTON_STYLE.disabled;
+        startButton = GENERIC_BUTTON_STYLE.disabled;
 
         switch(this.hotWidget) {
             case backID: {
-                backButton = GENERIC_BUTTON.HOT;
+                backButton = GENERIC_BUTTON_STYLE.hot;
                 break;
             }
             case connectID: {
-                connectButton = GENERIC_BUTTON.HOT;
+                connectButton = GENERIC_BUTTON_STYLE.hot;
                 break;
             }
         }
 
         switch(this.activeWidget) {
             case backID: {
-                backButton = GENERIC_BUTTON.ACTIVE;
+                backButton = GENERIC_BUTTON_STYLE.active;
                 break;
             }
             case connectID: {
-                connectButton = GENERIC_BUTTON.ACTIVE;
+                connectButton = GENERIC_BUTTON_STYLE.active;
                 break;
             }
         }
@@ -185,10 +185,10 @@ ArenaUI.prototype.onImmediate = function(gameContext, display) {
     buttonTexture.drawRegion(display, leaveButton, leaveX, leaveY);
     buttonTexture.drawRegion(display, startButton, startX, startY);
 
-    context.fillText("BACK", backX + GENERIC_BUTTON_TEXT_OFFSET_X, backY + 34);
-    context.fillText("CONNECT", connectX + GENERIC_BUTTON_TEXT_OFFSET_X, connectY + 34);
-    context.fillText("JOIN", joinX + GENERIC_BUTTON_TEXT_OFFSET_X, joinY + 34);
-    context.fillText("CREATE", createX + GENERIC_BUTTON_TEXT_OFFSET_X, createY + 34);
-    context.fillText("LEAVE", leaveX + GENERIC_BUTTON_TEXT_OFFSET_X, leaveY + 34);
-    context.fillText("START", startX + GENERIC_BUTTON_TEXT_OFFSET_X, startY + 34);
+    context.fillText("BACK", backX + GENERIC_BUTTON_STYLE.halfWidth, backY + 34);
+    context.fillText("CONNECT", connectX + GENERIC_BUTTON_STYLE.halfWidth, connectY + 34);
+    context.fillText("JOIN", joinX + GENERIC_BUTTON_STYLE.halfWidth, joinY + 34);
+    context.fillText("CREATE", createX + GENERIC_BUTTON_STYLE.halfWidth, createY + 34);
+    context.fillText("LEAVE", leaveX + GENERIC_BUTTON_STYLE.halfWidth, leaveY + 34);
+    context.fillText("START", startX + GENERIC_BUTTON_STYLE.halfWidth, startY + 34);
 }
