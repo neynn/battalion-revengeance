@@ -19,3 +19,7 @@ export const mRegenerateLines = function(lines, context, text, maxWidth) {
         lines.push(line.trim());
     }
 }
+
+export const toLine = function(size, gap, count) {
+    return (size + gap) * count;
+}

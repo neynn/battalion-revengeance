@@ -17,6 +17,7 @@ const EMBLEM_HEIGHT = 70;
 
 const CHAPTER_ID_REGION = 100;
 const MISSION_ID_REGION = 200;
+const DIFFICULTY_ID_REGION = 300;
 
 const START_BUTTON = {
     DISABLED: 0,
@@ -282,6 +283,7 @@ StoryUI.prototype.drawDifficulty = function(gameContext, display, screenX, scree
     const easyY = screenY + 40;
     const mediumY = easyY + this.difficultyEasyRect.h + 5;
     const hardY = mediumY + this.difficultyMediumRect.h + 5;
+
     const textX = screenX + Math.floor(this.difficultyRect.w / 2);
     const textY = screenY + 25;
     const textOffsetX = 15;
@@ -296,4 +298,41 @@ StoryUI.prototype.drawDifficulty = function(gameContext, display, screenX, scree
     context.fillText(language.getSystemTranslation("STORY_DIFFICULTY_EASY"), textX + textOffsetX, easyY + textOffsetY);
     context.fillText(language.getSystemTranslation("STORY_DIFFICULTY_MEDIUM"), textX + textOffsetX, mediumY + textOffsetY);
     context.fillText(language.getSystemTranslation("STORY_DIFFICULTY_HARD"), textX + textOffsetX, hardY + textOffsetY);
+
+    const easyID = DIFFICULTY_ID_REGION;
+    const mediumID = DIFFICULTY_ID_REGION + 1;
+    const hardID = DIFFICULTY_ID_REGION + 2;
+
+    if(this.doButton(
+        gameContext,
+        easyID, 
+        screenX,
+        easyY,
+        this.difficultyRect.w,
+        this.difficultyEasyRect.h
+    ) & IM_FLAG.CLICKED) {
+        console.log("EASY_MODE!");
+    }
+
+    if(this.doButton(
+        gameContext,
+        mediumID,
+        screenX,
+        mediumY,
+        this.difficultyRect.w,
+        this.difficultyMediumRect.h
+    ) & IM_FLAG.CLICKED) {
+        console.log("MEDIUM_MODE!");
+    }
+
+    if(this.doButton(
+        gameContext,
+        hardID,
+        screenX,
+        hardY,
+        this.difficultyRect.w,
+        this.difficultyHardRect.h
+    ) & IM_FLAG.CLICKED) {
+        console.log("HARD_MODE!");
+    }
 }
