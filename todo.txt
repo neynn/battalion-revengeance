@@ -10,3 +10,5 @@ train as transport.
 MapEditor:
     1. Add Text -> Runtime HashSet that gets turned into an array when creating the map.
     2. Add Custom -> Runtime HashSet that gets turned into an array when creating the map.
+
+Send RevealEvent over the server.

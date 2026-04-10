@@ -1,13 +1,13 @@
-import { EventComponent } from "../../../engine/world/event/eventComponent.js";
+import { SimulationComponent } from "../../../engine/world/event/simulationComponent.js";
 import { createSpawnIntent } from "../../action/actionHelper.js";
 
 export const SpawnComponent = function(snapshot) {
-    EventComponent.call(this);
+    SimulationComponent.call(this);
 
     this.snapshot = snapshot;
 }
 
-SpawnComponent.prototype = Object.create(EventComponent.prototype);
+SpawnComponent.prototype = Object.create(SimulationComponent.prototype);
 SpawnComponent.prototype.constructor = SpawnComponent;
 
 SpawnComponent.prototype.execute = function(gameContext) {

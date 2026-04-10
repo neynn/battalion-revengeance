@@ -1,5 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
-import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { ActionIntent } from "../../../engine/action/actionIntent.js";
+import { ACTION_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { TeamManager } from "../../team/teamManager.js";
 import { createDeathIntent, createUncloakIntent } from "../actionHelper.js";
 import { fillEntityResolution } from "../interactionResolver.js";
@@ -27,7 +28,7 @@ StartTurnAction.prototype.onEnd = function(gameContext, data) {
 }
 
 StartTurnAction.prototype.execute = function(gameContext, data) {
-    const { world, teamManager } = gameContext;
+    const { actionRouter, world, teamManager } = gameContext;
     const { entityManager, eventHandler, mapManager } = world;
     const { teamID, resolutions } = data;
     const worldMap = mapManager.getActiveMap();
@@ -68,10 +69,22 @@ StartTurnAction.prototype.execute = function(gameContext, data) {
 
         team.addStatistic(TEAM_STAT.ROUNDS_TAKEN, 1);
     }
-
+    
     teamManager.setActive(teamID);
     teamManager.updateActor(gameContext);
-    eventHandler.triggerEvents(gameContext, teamManager.turn, teamManager.round);
+    
+    const events = eventHandler.getTriggerableEvents(teamManager.turn, teamManager.round);
+
+    for(const event of events) {
+        const { simulation } = event;
+
+        actionRouter.forceEnqueue(gameContext, new ActionIntent(ACTION_TYPE.REVEAL_EVENT, { "event": event.id }));
+
+        for(const action of simulation) {
+            action.execute(gameContext);
+        }
+    }
+
     teamManager.updateStatus();
     //TODO: Get next turn, then check if any construction grows. Add that as next.
 }

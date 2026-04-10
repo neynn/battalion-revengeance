@@ -89,8 +89,8 @@ MatchLoader.prototype.createEventComponents = function(gameContext, event, simul
                     break;
                 }
                 case COMPONENT_TYPE.DIALOGUE: {
-                    const { dialogue, target = null } = effect;
-                    const component = new DialogueComponent(dialogue, target);
+                    const { dialogue } = effect;
+                    const component = new DialogueComponent(dialogue);
 
                     event.addEffect(component);
                     break;

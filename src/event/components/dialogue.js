@@ -1,21 +1,16 @@
-import { EventComponent } from "../../../engine/world/event/eventComponent.js";
+import { EffectComponent } from "../../../engine/world/event/effectComponent.js";
 
-export const DialogueComponent = function(dialogue, target) {
-    EventComponent.call(this);
+export const DialogueComponent = function(dialogue) {
+    EffectComponent.call(this);
 
     this.dialogue = dialogue;
-    this.target = target;
 }
 
-DialogueComponent.prototype = Object.create(EventComponent.prototype);
+DialogueComponent.prototype = Object.create(EffectComponent.prototype);
 DialogueComponent.prototype.constructor = DialogueComponent;
 
-DialogueComponent.prototype.execute = function(gameContext) {
+DialogueComponent.prototype.play = function(gameContext) {
     const { dialogueHandler } = gameContext;
 
-    if(this.target) {
-        //Get team from target -> get actor -> call onDialogue.
-    } else {
-        dialogueHandler.playCustomDialogue(gameContext, this.dialogue);
-    }
+    dialogueHandler.playCustomDialogue(gameContext, this.dialogue);
 }

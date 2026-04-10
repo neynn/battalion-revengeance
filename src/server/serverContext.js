@@ -159,23 +159,24 @@ ServerGameContext.prototype.onMessage = async function(messengerID, type, payloa
             const overrides = this.mapMaster.createOverrides();
 
             createServerMapLoader(this, sourceID)
-            .then((mapLoader) => {
-                if(mapLoader) {
-                    mapLoader.loadMap(this, overrides);
+            .then((loader) => {
+                loader.loadMap(this, overrides);
 
-                    const snapshot = this.createInitialSnapshot(sourceID);
+                const snapshot = this.createInitialSnapshot(sourceID);
 
-                    for(let i = 0; i < this.members.length; i++) {
-                        const memberID = this.members[i].getID();
-                        const teamID = this.mapMaster.getTeamID(memberID);
+                for(let i = 0; i < this.members.length; i++) {
+                    const memberID = this.members[i].getID();
+                    const teamID = this.mapMaster.getTeamID(memberID);
 
-                        this.send(GAME_EVENT.MP_SERVER_LOAD_MAP, {
-                            "snapshot": snapshot,
-                            "client": teamID,
-                            "overrides": overrides
-                        }, memberID);
-                    }
+                    this.send(GAME_EVENT.MP_SERVER_LOAD_MAP, {
+                        "snapshot": snapshot,
+                        "client": teamID,
+                        "overrides": overrides
+                    }, memberID);
                 }
+            })
+            .catch(() => {
+
             });
 
             break;

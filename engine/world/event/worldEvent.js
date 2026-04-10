@@ -9,16 +9,6 @@ export const WorldEvent = function(id) {
 
 WorldEvent.INVALID_TIME = -1;
 
-WorldEvent.prototype.execute = function(gameContext) {
-    for(let i = 0; i < this.simulation.length; i++) {
-        this.simulation[i].execute(gameContext);
-    }
-
-    for(let i = 0; i < this.effects.length; i++) {
-        this.effects[i].execute(gameContext);
-    }
-}
-
 WorldEvent.prototype.setNext = function(next) {
     if(next !== undefined && next !== this.id) {
         this.next = next;

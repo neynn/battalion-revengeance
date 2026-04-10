@@ -353,10 +353,6 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
     this.drawMainHud(gameContext, display, mainX, mainY);
 
     switch(this.lastInspect) {
-        case MapInspector.STATE.NONE: {
-             uiData.getTexture(UI_TEXTURE.RECON_NONE).draw(display, reconX, reconY);
-            break;
-        }
         case MapInspector.STATE.TILE: {
             const { terrain } = worldMap.getTileType(gameContext, tileX, tileY);
             const climateType = worldMap.getClimateType(gameContext, tileX, tileY);
@@ -480,6 +476,10 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
                 }
             }
 
+            break;
+        }
+        default: {
+            uiData.getTexture(UI_TEXTURE.RECON_NONE).draw(display, reconX, reconY);
             break;
         }
     }

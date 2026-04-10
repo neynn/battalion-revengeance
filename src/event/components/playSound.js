@@ -1,15 +1,15 @@
-import { EventComponent } from "../../../engine/world/event/eventComponent.js";
+import { EffectComponent } from "../../../engine/world/event/effectComponent.js";
 
 export const PlaySoundComponent = function(sound) {
-    EventComponent.call(this);
+    EffectComponent.call(this);
 
     this.sound = sound;
 }
 
-PlaySoundComponent.prototype = Object.create(EventComponent.prototype);
+PlaySoundComponent.prototype = Object.create(EffectComponent.prototype);
 PlaySoundComponent.prototype.constructor = PlaySoundComponent;
 
-PlaySoundComponent.prototype.execute = function(gameContext) {
+PlaySoundComponent.prototype.play = function(gameContext) {
     const { client } = gameContext;
     const { soundPlayer } = client;
 

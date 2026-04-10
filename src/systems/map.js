@@ -402,7 +402,7 @@ export const createServerMapLoader = async function(gameContext, sourceID) {
     const file = await mapSource.promiseFile(pathHandler);
 
     if(file === null) {
-        return null;
+        return Promise.reject();
     }
 
     const { width, height, data, text = [], custom = [] } = file;

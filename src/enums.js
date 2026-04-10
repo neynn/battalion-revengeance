@@ -585,7 +585,8 @@ export const ACTION_TYPE = {
     ATTACK: 11,
     CLOAK: 12,
     DEATH: 13,
-    UNCLOAK: 14
+    UNCLOAK: 14,
+    REVEAL_EVENT: 15
 };
 
 export const OBJECTIVE_TYPE = {

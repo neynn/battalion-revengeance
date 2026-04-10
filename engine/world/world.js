@@ -2,7 +2,7 @@ import { ActionQueue } from "../action/actionQueue.js";
 import { TurnManager } from "./turn/turnManager.js";
 import { EntityManager } from "../entity/entityManager.js";
 import { MapManager } from "../map/mapManager.js";
-import { WorldEventHandler } from "./event/worldEventHandler.js";
+import { WorldEventRegistry } from "./event/worldEventRegistry.js";
 import { FloodFill } from "../pathfinders/floodFill.js";
 
 export const World = function() {
@@ -10,7 +10,7 @@ export const World = function() {
     this.turnManager = new TurnManager();
     this.entityManager = new EntityManager();
     this.mapManager = new MapManager();
-    this.eventHandler = new WorldEventHandler();
+    this.eventHandler = new WorldEventRegistry();
 }
 
 World.prototype.exit = function() {

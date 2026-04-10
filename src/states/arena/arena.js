@@ -54,7 +54,7 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
                 break;
             }
             case GAME_EVENT.MP_SERVER_UPDATE: {
-                const { version, plans, events } = payload;
+                const { version, plans } = payload;
 
                 for(const plan of plans) {
                     const executionPlan = unpackPlan(plan);
@@ -64,10 +64,6 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
                     } else {
                         //...
                     }
-                }
-
-                for(const eventID of events) {
-                    eventHandler.forceTrigger(gameContext, eventID);
                 }
 
                 if((this.version + 1) === version) {
