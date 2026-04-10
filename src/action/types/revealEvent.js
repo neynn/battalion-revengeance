@@ -1,9 +1,17 @@
 import { Action } from "../../../engine/action/action.js";
+import { WorldEvent } from "../../../engine/world/event/worldEvent.js";
 
 export const RevealEventAction = function() {
     Action.call(this);
 
     this.effects = [];
+    this.time = 0;
+}
+
+RevealEventAction.createData = function() {
+    return {
+        "event": WorldEvent.INVALID_ID
+    }
 }
 
 RevealEventAction.prototype = Object.create(Action.prototype);
@@ -21,7 +29,7 @@ RevealEventAction.prototype.onStart = function(gameContext, data) {
 }
 
 RevealEventAction.prototype.isFinished = function(gameContext, executionPlan) {
-    return true;
+    return this.time++ >= 300;
 }
 
 RevealEventAction.prototype.onEnd = function(gameContext, data) {
@@ -30,12 +38,14 @@ RevealEventAction.prototype.onEnd = function(gameContext, data) {
     }
 
     this.effects.length = 0;
+    this.time = 0;
 }
 
 RevealEventAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { event } = actionIntent;
+    const data = RevealEventAction.createData();
 
-    executionPlan.setData({
-        "event": event
-    });
+    data.event = event;
+
+    executionPlan.setData(data);
 }

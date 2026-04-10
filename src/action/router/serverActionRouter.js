@@ -13,6 +13,7 @@ import {
     packMovePlan,
     packProducePlan,
     packPurchasePlan,
+    packRevealEventPlan,
     packStartTurnPlan,
     packUncloakPlan
 } from "../planPacker.js";
@@ -47,6 +48,7 @@ ServerActionRouter.prototype.packPlan = function(plan) {
         case ACTION_TYPE.PURCHASE_ENTITY: return packPurchasePlan(data);
         case ACTION_TYPE.START_TURN: return packStartTurnPlan(data);
         case ACTION_TYPE.UNCLOAK: return packUncloakPlan(data);
+        case ACTION_TYPE.REVEAL_EVENT: return packRevealEventPlan(data);
         default: return null;
     }
 }

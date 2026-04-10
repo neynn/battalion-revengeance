@@ -1,6 +1,9 @@
+import { WorldEvent } from "./worldEvent.js";
+
 export const WorldEventRegistry = function() {
     this.worldEvents = [];
     this.triggeredEvents = new Set();
+    this.nameMap = new Map();
     this.isAuthority = true;
 }
 
@@ -18,8 +21,14 @@ WorldEventRegistry.prototype.exit = function() {
     this.isAuthority = true;
 }
 
-WorldEventRegistry.prototype.addEvent = function(event) {
+WorldEventRegistry.prototype.createEvent = function(name) {
+    const eventID = this.worldEvents.length;
+    const event = new WorldEvent(eventID, name);
+
     this.worldEvents.push(event);
+    this.nameMap.set(name, eventID);
+
+    return event;
 }
 
 WorldEventRegistry.prototype.getTriggerableEvents = function(turn, round) {
@@ -52,7 +61,7 @@ WorldEventRegistry.prototype.getTriggerableEvents = function(turn, round) {
                 events.push(currentEvent);
 
                 if(next !== null) {
-                    currentEvent = this.getEvent(next);
+                    currentEvent = this.getEventByName(next);
                 } else {
                     currentEvent = null;
                 }
@@ -63,17 +72,6 @@ WorldEventRegistry.prototype.getTriggerableEvents = function(turn, round) {
     }
 
     return events;
-}
-
-
-WorldEventRegistry.prototype.cleanup = function() {
-    for(let i = this.worldEvents.length - 1; i >= 0; i--) {
-        if(this.triggeredEvents.has(this.worldEvents[i].id)) {
-            this.triggeredEvents.delete(this.worldEvents[i].id);
-            this.worldEvents[i] = this.worldEvents[this.worldEvents.length - 1];
-            this.worldEvents.pop();
-        }
-    }
 }
 
 WorldEventRegistry.prototype.loadTriggeredEvents = function(events) {
@@ -92,14 +90,20 @@ WorldEventRegistry.prototype.saveTriggeredEvents = function() {
     return events;
 }
 
-WorldEventRegistry.prototype.getEvent = function(eventID) {
-    for(const event of this.worldEvents) {
-        const { id } = event;
+WorldEventRegistry.prototype.getEventByName = function(name) {
+    const eventID = this.nameMap.get(name);
 
-        if(id === eventID) {
-            return event;
-        }
+    if(eventID === undefined) {
+        return null;
     }
 
-    return null;
+    return this.getEvent(eventID);
+}
+
+WorldEventRegistry.prototype.getEvent = function(eventID) {
+    if(eventID < 0 || eventID >= this.worldEvents.length) {
+        return null;
+    }
+
+    return this.worldEvents[eventID];
 }

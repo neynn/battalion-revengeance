@@ -17,8 +17,26 @@ import { MineTriggerAction } from "./types/mineTrigger.js";
 import { MoveAction } from "./types/move.js";
 import { ProduceEntityAction } from "./types/produceEntity.js";
 import { PurchaseEntityAction } from "./types/purchaseEntity.js";
+import { RevealEventAction } from "./types/revealEvent.js";
 import { StartTurnAction } from "./types/startTurn.js";
 import { UncloakAction } from "./types/uncloak.js";
+
+/*
+    0x00 -> type,
+    0x01 -> eventID
+*/
+const REVEAL_EVENT_HEADER_SIZE = 3;
+
+export const packRevealEventPlan = function(data) {
+    const { event } = data;
+    const buffer = new ArrayBuffer(REVEAL_EVENT_HEADER_SIZE);
+    const view = new DataView(buffer);
+
+    view.setUint8(0, ACTION_TYPE.REVEAL_EVENT);
+    view.setUint16(1, event, true);
+
+    return buffer;
+}
 
 /*
     0x00 -> type,
@@ -395,6 +413,11 @@ export const unpackPlan = function(buffer) {
     let data = null;
 
     switch(type) {
+        case ACTION_TYPE.REVEAL_EVENT: {
+            data = RevealEventAction.createData();
+            data.event = view.getUint16(1, true);
+            break;
+        }
         case ACTION_TYPE.UNCLOAK: {
             data = UncloakAction.createData();
 

@@ -59,7 +59,7 @@ export const registerServerActions = function(gameContext) {
     actionQueue.registerAction(ACTION_TYPE.DEATH, new DeathAction(despawnServerEntity));
     actionQueue.registerAction(ACTION_TYPE.UNCLOAK, new UncloakAction());
     actionQueue.registerAction(ACTION_TYPE.END_TURN, new EndTurnAction());
-    actionQueue.registerAction(ACTION_TYPE.REVEAL_EVENT, new SimulateEventAction());
+    actionQueue.registerAction(ACTION_TYPE.REVEAL_EVENT, new RevealEventAction());
 }
 
 export const addDebug = function(gameContext) {

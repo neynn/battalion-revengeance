@@ -123,6 +123,11 @@
         "TILE_DESC_TEST",
         "PRESUS_EVENT_TEXT"
     ],
+    "eventNames": [
+        "DESTROY_BRIDGE",
+        "DESTROY_BRIDGE_DIALOGUE",
+        "SPAWN_TANK"
+    ],
     "events": {
         "DESTROY_BRIDGE": {
             "turn": 2,

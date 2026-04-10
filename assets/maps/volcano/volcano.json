@@ -27,6 +27,9 @@
     "postlogue": [],
     "defeat": [],
     "localization": [],
+    "eventNames": [
+        "BOOM"
+    ],
     "events": {
         "BOOM": {
             "turn": 2,

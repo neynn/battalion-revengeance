@@ -19,7 +19,6 @@ import { createPlayCamera } from "../camera.js";
 import { DialogueComponent } from "../../event/components/dialogue.js";
 import { ExplodeTileComponent } from "../../event/components/explodeTile.js";
 import { SpawnComponent } from "../../event/components/spawn.js";
-import { WorldEvent } from "../../../engine/world/event/worldEvent.js";
 import { createEntitySnapshotFromJSON } from "../../snapshot/entitySnapshot.js";
 import { PlaySoundComponent } from "../../event/components/playSound.js";
 import { PlaySpriteComponent } from "../../event/components/playSprite.js";
@@ -43,6 +42,7 @@ export const MatchLoader = function(worldMap, mapFile) {
     this.teams = mapFile.teams ?? [];
     this.entities = mapFile.entities ?? [];
     this.objectives = mapFile.objectives ?? {};
+    this.eventNames = mapFile.eventNames ?? [];
     this.events = mapFile.events ?? {};
     this.buildings = mapFile.buildings ?? [];
     this.mines = mapFile.mines ?? [];
@@ -104,15 +104,19 @@ MatchLoader.prototype.createWorldEvents = function(gameContext) {
     const { world } = gameContext;
     const { eventHandler } = world;
 
-    for(const eventName in this.events) {
-        const { turn, round, next = null, simulation = [], effects = [] } = this.events[eventName];
-        const event = new WorldEvent(eventName);
+    for(let i = 0; i < this.eventNames.length; i++) {
+        const eventName = this.eventNames[i];
+        const config = this.events[eventName];
+        const event = eventHandler.createEvent(eventName);
 
-        this.createEventComponents(gameContext, event, simulation, effects);
+        if(config) {
+            const { turn, round, next = null, simulation = [], effects = [] } = config;
 
-        event.setTriggerTime(turn, round);
-        event.setNext(next);
-        eventHandler.addEvent(event);
+            this.createEventComponents(gameContext, event, simulation, effects);
+
+            event.setTriggerTime(turn, round);
+            event.setNext(next);
+        }
     }
 }
 

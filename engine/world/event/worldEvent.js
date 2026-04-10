@@ -1,16 +1,18 @@
-export const WorldEvent = function(id) {
+export const WorldEvent = function(id, name) {
     this.id = id;
+    this.name = name;
+    this.next = null;
     this.turn = WorldEvent.INVALID_TIME;
     this.round = WorldEvent.INVALID_TIME;
-    this.next = null;
     this.simulation = [];
     this.effects = [];
 }
 
+WorldEvent.INVALID_ID = -1;
 WorldEvent.INVALID_TIME = -1;
 
 WorldEvent.prototype.setNext = function(next) {
-    if(next !== undefined && next !== this.id) {
+    if(next !== WorldEvent.INVALID_ID && next !== this.id) {
         this.next = next;
     }
 }

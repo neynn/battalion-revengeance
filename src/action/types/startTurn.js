@@ -76,9 +76,9 @@ StartTurnAction.prototype.execute = function(gameContext, data) {
     const events = eventHandler.getTriggerableEvents(teamManager.turn, teamManager.round);
 
     for(const event of events) {
-        const { simulation } = event;
+        const { id, simulation } = event;
 
-        actionRouter.forceEnqueue(gameContext, new ActionIntent(ACTION_TYPE.REVEAL_EVENT, { "event": event.id }));
+        actionRouter.forceEnqueue(gameContext, new ActionIntent(ACTION_TYPE.REVEAL_EVENT, { "event": id }));
 
         for(const action of simulation) {
             action.execute(gameContext);
