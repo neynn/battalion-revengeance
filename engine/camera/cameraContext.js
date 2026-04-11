@@ -11,9 +11,7 @@ export const CameraContext = function(id, renderer, camera) {
     this.positionY = 0;
     this.flags = CameraContext.FLAG.NONE;
     this.dragButton = Cursor.BUTTON._INVALID;
-
-    this.display = new Display();
-    this.display.init(1, 1, Display.TYPE.BUFFER);
+    this.display = new Display(1, 1, Display.TYPE.BUFFER);
 
     this.events = new EventEmitter();
     this.events.register(CameraContext.EVENT.POSITION_UPDATE);

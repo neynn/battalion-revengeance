@@ -4,7 +4,6 @@ import { TeamManager } from "../team/teamManager.js";
 export const BattalionActor = function(id) {
     Actor.call(this, id);
 
-    this.name = "";
     this.teamID = TeamManager.INVALID_ID;
 }
 
@@ -15,14 +14,6 @@ BattalionActor.prototype.getTeam = function(gameContext) {
     const { teamManager } = gameContext;
 
     return teamManager.getTeam(this.teamID);
-}
-
-BattalionActor.prototype.setName = function(name) {
-    this.name = name;
-}
-
-BattalionActor.prototype.isControlling = function(entity) {
-    return entity.teamID !== null && this.teamID === entity.teamID;
 }
 
 BattalionActor.prototype.setTeam = function(teamID) {

@@ -83,7 +83,7 @@ Player.prototype.onClick = function(gameContext, tileX, tileY) {
         case MapInspector.STATE.ENTITY: {
             const entity = world.getEntityAt(tileX, tileY);
             const isAlly = teamManager.isAlly(this.teamID, entity.teamID);
-            const isControlled = this.isControlling(entity);
+            const isControlled = entity.belongsTo(this.teamID);
 
             this.states.eventEnter(gameContext, Player.EVENT.ENTITY_CLICK, { "entity": entity, "isAlly": isAlly, "isControlled": isControlled });
             break;

@@ -10,7 +10,7 @@ import { World } from "./world/world.js";
 import { LanguageHandler } from "./language/languageHandler.js";
 import { FontHandler } from "./fontHandler.js";
 import { TextureLoader } from "./resources/texture/textureLoader.js";
-import { ApplicationWindow } from "./applicationWindow.js";
+import { GameWindow } from "./gameWindow.js";
 import { PathHandler } from "./resources/pathHandler.js";
 import { TweenManager } from "./tween/tweenManager.js";
 import { DialogueHandler } from "./dialogueHandler.js";
@@ -19,7 +19,7 @@ export const ClientGameContext = function() {
     this.client = new Client();
     this.world = new World();
     this.pathHandler = PathHandler;
-    this.applicationWindow = new ApplicationWindow();
+    this.applicationWindow = new GameWindow();
     this.renderer = new Renderer(window.innerWidth, window.innerHeight);
     this.textureLoader = new TextureLoader();
     this.tileManager = new TileManager();

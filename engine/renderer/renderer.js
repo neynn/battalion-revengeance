@@ -63,8 +63,7 @@ Renderer.prototype.destroyContext = function(contextID) {
 }
 
 Renderer.prototype.update = function(gameContext) {
-    const { timer, uiManager, applicationWindow } = gameContext; 
-    const deltaTime = timer.getDeltaTime();
+    const { uiManager, applicationWindow } = gameContext; 
     const display = applicationWindow.display;
     
     display.clear();

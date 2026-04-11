@@ -129,7 +129,6 @@ MatchLoader.prototype.createServerActor = function(gameContext, teamID, clientID
 
     actorManager.addActor(actor);
     actor.setTeam(teamID);
-    actor.setName("Server");
     actor.clientID = clientID;
 }
 
@@ -141,7 +140,6 @@ MatchLoader.prototype.createActor = function(gameContext, teamID) {
 
     actorManager.addActor(actor);
     actor.setTeam(teamID);
-    actor.setName("NPC");
 }
 
 MatchLoader.prototype.createPlayer = function(gameContext, teamID) {
@@ -157,7 +155,6 @@ MatchLoader.prototype.createPlayer = function(gameContext, teamID) {
     actor.setTeam(teamID);
     actor.loadKeybinds(gameContext);
     actor.states.setNextState(gameContext, Player.STATE.IDLE);
-    actor.setName("PLAYER");
 }
 
 MatchLoader.prototype.createSpectator = function(gameContext) {
@@ -171,7 +168,6 @@ MatchLoader.prototype.createSpectator = function(gameContext) {
     playUI.load(gameContext);
     actorManager.addActor(actor);
     actor.loadKeybinds(gameContext);
-    actor.setName("SPECTATOR");
 }
 
 MatchLoader.prototype.createObjective = function(config) {

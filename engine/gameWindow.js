@@ -2,21 +2,21 @@ import { getCursorTile } from "./camera/contextHelper.js";
 import { Display } from "./camera/display.js";
 import { DEBUG } from "./debug.js";
 
-export const ApplicationWindow = function() {
+export const GameWindow = function() {
     this.isResizeQueued = false;
     this.timeUntilResize = 0;
     this.width = window.innerWidth;
     this.height = window.innerHeight;
-    this.display = new Display();
-    this.display.init(this.width, this.height, Display.TYPE.DISPLAY);
+
+    this.display = new Display(this.width, this.height, Display.TYPE.DISPLAY);
     this.display.toDocument();
 
     window.addEventListener("resize", () => this.queueResize());
 }
 
-ApplicationWindow.RESIZE_BUFFER_TIME = 0.2;
+GameWindow.RESIZE_BUFFER_TIME = 0.2;
 
-ApplicationWindow.prototype.update = function(gameContext) {
+GameWindow.prototype.update = function(gameContext) {
     const { uiManager, renderer, timer } = gameContext;
 
     if(this.isResizeQueued) {
@@ -24,7 +24,7 @@ ApplicationWindow.prototype.update = function(gameContext) {
 
         this.timeUntilResize += deltaTime;
 
-        if(this.timeUntilResize >= ApplicationWindow.RESIZE_BUFFER_TIME) {
+        if(this.timeUntilResize >= GameWindow.RESIZE_BUFFER_TIME) {
             this.isResizeQueued = false;
             this.timeUntilResize = 0;
             this.width = window.innerWidth;
@@ -37,14 +37,14 @@ ApplicationWindow.prototype.update = function(gameContext) {
     }
 }
 
-ApplicationWindow.prototype.queueResize = function() {
+GameWindow.prototype.queueResize = function() {
     if(!this.isResizeQueued) {
         this.timeUntilResize = 0;
         this.isResizeQueued = true;
     }
 }
 
-ApplicationWindow.prototype.drawDebug = function(gameContext) {
+GameWindow.prototype.drawDebug = function(gameContext) {
     const { textureLoader } = gameContext;
     const { context } = this.display;
     const { timer } = gameContext;
