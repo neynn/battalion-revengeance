@@ -4,9 +4,6 @@ import { INTERRUPT_TYPE } from "../../enums.js";
 
 export const InterruptAction = function() {
     Action.call(this);
-
-    this.effects = [];
-    this.time = 0;
 }
 
 InterruptAction.createData = function() {
@@ -26,12 +23,12 @@ InterruptAction.prototype.onStart = function(gameContext, data) {
 
     switch(type) {
         case INTERRUPT_TYPE.EVENT: {
-            const worldEvent = eventHandler.getEvent(event);
+            const { effects } = eventHandler.getEvent(event);
 
-            for(const effect of worldEvent.effects) {
-                this.effects.push(effect);
+            for(const effect of effects) {
+                effect.play(gameContext);
             }
-            
+
             break;
         }
     }
@@ -39,20 +36,47 @@ InterruptAction.prototype.onStart = function(gameContext, data) {
 }
 
 InterruptAction.prototype.isFinished = function(gameContext, executionPlan) {
-    return this.time++ >= 300;
-}
+    const { data } = executionPlan;
+    const { type, event } = data;
+    let isFinished = false;
 
-InterruptAction.prototype.onEnd = function(gameContext, data) {
-    for(const effect of this.effects) {
-        effect.play(gameContext);
+    switch(type) {
+        case INTERRUPT_TYPE.EVENT: {
+            const { world } = gameContext;
+            const { eventHandler } = world;
+            const { effects } = eventHandler.getEvent(event);
+
+            let allFinished = true;
+
+            for(const effect of effects) {
+                if(!effect.isFinished(gameContext)) {
+                    allFinished = false;
+                    break;
+                }
+            }
+
+            isFinished = allFinished;
+            break;
+        }
+        default: {
+            isFinished = true;
+            break;
+        }
     }
 
-    this.effects.length = 0;
-    this.time = 0;
+    return isFinished;
 }
 
 InterruptAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
+    const { world } = gameContext;
+    const { eventHandler } = world;
     const { event, type } = actionIntent;
+    const worldEvent = eventHandler.getEvent(event);
+
+    if(type === INTERRUPT_TYPE.EVENT && !worldEvent) {
+        return;
+    }
+
     const data = InterruptAction.createData();
 
     data.type = type;

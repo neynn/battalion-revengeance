@@ -1,12 +1,10 @@
 import { Action } from "../../../engine/action/action.js";
-import { SOUND_TYPE } from "../../enums.js";
-import { playEntitySound } from "../../systems/sound.js";
-import { updateEntitySprite } from "../../systems/sprite.js";
-import { CloakTween } from "../../tween/cloakTween.js";
-import { UncloakTween } from "../../tween/uncloakTween.js";
+import { TransportTween } from "../../tween/transportTween.js";
 
 export const ToTransportAction = function() {
     Action.call(this);
+
+    this.tweens = [];
 }
 
 ToTransportAction.prototype = Object.create(Action.prototype);
@@ -17,29 +15,29 @@ ToTransportAction.prototype.onStart = function(gameContext, data) {
     const { entityManager } = world;
     const { entityID } = data;
     const entity = entityManager.getEntity(entityID);
+    const tween = new TransportTween(entity);
 
-    playEntitySound(gameContext, entity, SOUND_TYPE.CLOAK);
+    tweenManager.addTween(tween);
 
-    tweenManager.addTween(new CloakTween(entity, 0.5));
-
+    this.tweens.push(tween);
     this.execute(gameContext, data);
 }
 
 ToTransportAction.prototype.isFinished = function(gameContext, executionPlan) {
-    const { tweenManager } = gameContext;
+    let isFinished = true;
 
-    return tweenManager.isEmpty();
+    for(const tween of this.tweens) {
+        if(!tween.isComplete()) {
+            isFinished = false;
+            break;
+        }
+    }
+
+    return isFinished;
 }
 
 ToTransportAction.prototype.onEnd = function(gameContext, data) {
-    const { world, tweenManager } = gameContext;
-    const { entityManager } = world;
-    const { entityID } = data;
-    const entity = entityManager.getEntity(entityID);
-
-    updateEntitySprite(gameContext, entity);
-
-    tweenManager.addTween(new UncloakTween(entity, 1));
+    this.tweens.length = 0;
 }
 
 ToTransportAction.prototype.execute = function(gameContext, data) {

@@ -9,6 +9,12 @@ export const DialogueComponent = function(dialogue) {
 DialogueComponent.prototype = Object.create(EffectComponent.prototype);
 DialogueComponent.prototype.constructor = DialogueComponent;
 
+DialogueComponent.prototype.isFinished = function(gameContext) {
+    console.log("REEEE");
+
+    return false;
+}
+
 DialogueComponent.prototype.play = function(gameContext) {
     const { dialogueHandler } = gameContext;
 

@@ -44,6 +44,7 @@ TweenManager.prototype.update = function(gameContext) {
 
         //Automatically end tweens after 10s.
         if(state === Tween.STATE.COMPLETE || timePassed >= 10) {
+            this.tweens[i].state = Tween.STATE.COMPLETE;
             this.tweens.splice(i, 1);
         }
     }

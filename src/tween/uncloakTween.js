@@ -1,12 +1,11 @@
 import { FADE_RATE } from "../constants.js";
 import { Tween } from "../../engine/tween/tween.js";
 
-export const UncloakTween = function(cloakable, maxOpacity = 1) {
+export const UncloakTween = function(cloakable) {
     Tween.call(this);
 
     this.cloakable = cloakable;
     this.opacity = 0;
-    this.maxOpacity = maxOpacity;
     this.waitType = Tween.WAIT_TYPE.SEQUENTIAL_ALL;
 }
 
@@ -19,8 +18,8 @@ UncloakTween.prototype.update = function(gameContext) {
 
     this.opacity += FADE_RATE * deltaTime;
 
-    if(this.opacity > this.maxOpacity) {
-        this.opacity = this.maxOpacity;
+    if(this.opacity >= 1) {
+        this.opacity = 1;
         this.state = Tween.STATE.COMPLETE;
     }
 

@@ -6,6 +6,8 @@ import { CloakTween } from "../../tween/cloakTween.js";
 
 export const CloakAction = function() {
     Action.call(this);
+
+    this.tweens = [];
 }
 
 CloakAction.createData = function() {
@@ -22,18 +24,27 @@ CloakAction.prototype.onStart = function(gameContext, data) {
     const { entityManager } = world;
     const { entityID } = data;
     const entity = entityManager.getEntity(entityID);
+    const tween = new CloakTween(entity);
 
     playEntitySound(gameContext, entity, SOUND_TYPE.CLOAK);
 
-    tweenManager.addTween(new CloakTween(entity));
+    tweenManager.addTween(tween);
 
+    this.tweens.push(tween);
     this.execute(gameContext, data);
 }
 
 CloakAction.prototype.isFinished = function(gameContext, executionPlan) {
-    const { tweenManager } = gameContext;
+    let isFinished = true;
 
-    return tweenManager.isEmpty();
+    for(const tween of this.tweens) {
+        if(!tween.isComplete()) {
+            isFinished = false;
+            break;
+        }
+    }
+
+    return isFinished;
 }
 
 CloakAction.prototype.execute = function(gameContext, data) {
@@ -43,6 +54,10 @@ CloakAction.prototype.execute = function(gameContext, data) {
     const entity = entityManager.getEntity(entityID);
 
     entity.setCloaked();
+}
+
+CloakAction.prototype.onEnd = function(gameContext, data) {
+    this.tweens.length = 0;
 }
 
 CloakAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {

@@ -20,7 +20,7 @@
         { "x": 8, "y": 0, "direction": "SOUTH", "type": "AMPAC", "team": "SOMERTIN" },
         { "x": 9, "y": 0, "direction": "SOUTH", "type": "TURRET", "team": "SOMERTIN" },
         { "x": 0, "y": 1, "direction": "SOUTH", "type": "ENTWICKLUNG", "team": "SOMERTIN" },
-        { "x": 1, "y": 1, "stealth": true, "type": "STEALTH_TANK", "team": "SOMERTIN" },
+        { "x": 1, "y": 1, "stealth": false, "type": "STEALTH_TANK", "team": "SOMERTIN" },
         { "x": 2, "y": 1, "type": "HEAVY_COMMANDO", "team": "SOMERTIN" },
         { "x": 3, "y": 1, "type": "AYIN", "team": "SOMERTIN" },
         { "x": 4, "y": 1, "type": "GORLITZ_TANK", "team": "SOMERTIN" },

@@ -15,4 +15,8 @@ Tween.WAIT_TYPE = {
     SEQUENTIAL_ALL: 2  //Always runs but blocks the next SEQUENTIAL.
 };
 
+Tween.prototype.isComplete = function() {
+    return this.state === Tween.STATE.COMPLETE;
+}
+
 Tween.prototype.update = function(gameContext) {}

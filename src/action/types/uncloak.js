@@ -7,6 +7,8 @@ import { createTrackingIntent } from "../actionHelper.js";
 
 export const UncloakAction = function() {
     Action.call(this);
+
+    this.tweens = [];
 }
 
 UncloakAction.createData = function() {
@@ -30,25 +32,37 @@ UncloakAction.prototype.onStart = function(gameContext, data) {
 
     for(let i = 0; i < entities.length; i++) {
         const entity = entityManager.getEntity(entities[i]);
+        const tween = new UncloakTween(entity);
 
-        tweenManager.addTween(new UncloakTween(entity));
+        this.tweens.push(tween);
+        tweenManager.addTween(tween);
     }
 
     for(let i = 0; i < mines.length; i++) {
         const { x, y } = mines[i];
         const mine = worldMap.getMine(x, y);
+        const tween = new UncloakTween(mine);
 
-        tweenManager.addTween(new UncloakTween(mine));
+        this.tweens.push(tween);
+        tweenManager.addTween(tween);
     }
 }
 
 UncloakAction.prototype.isFinished = function(gameContext, executionPlan) {
-    const { tweenManager } = gameContext;
+    let isFinished = true;
 
-    return tweenManager.isEmpty();
+    for(const tween of this.tweens) {
+        if(!tween.isComplete()) {
+            isFinished = false;
+            break;
+        }
+    }
+
+    return isFinished;
 }
 
 UncloakAction.prototype.onEnd = function(gameContext, data) {
+    this.tweens.length = 0;
     this.execute(gameContext, data);
 }
 

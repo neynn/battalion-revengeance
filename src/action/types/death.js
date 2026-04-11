@@ -9,6 +9,7 @@ export const DeathAction = function(despawn) {
     Action.call(this);
 
     this._despawn = despawn;
+    this.tweens = [];
 }
 
 DeathAction.createData = function() {
@@ -38,17 +39,29 @@ DeathAction.prototype.onStart = function(gameContext, data) {
         entityList.push(entity);
     }
 
-    tweenManager.addTween(new DeathTween(entityList));
+    const tween = new DeathTween(entityList);
+
+    tweenManager.addTween(tween);
+
+    this.tweens.push(tween);
 }
 
 DeathAction.prototype.isFinished = function(gameContext, executionPlan) {
-    const { tweenManager } = gameContext;
+    let isFinished = true;
 
-    return tweenManager.isEmpty();
+    for(const tween of this.tweens) {
+        if(!tween.isComplete()) {
+            isFinished = false;
+            break;
+        }
+    }
+
+    return isFinished;
 }
 
 DeathAction.prototype.onEnd = function(gameContext, data) {
     this.execute(gameContext, data);
+    this.tweens.length = 0;
 }
 
 DeathAction.prototype.execute = function(gameContext, data) {
