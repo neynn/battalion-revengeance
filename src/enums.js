@@ -14,6 +14,14 @@ export const SOUND_TYPE = {
     _COUNT: 7
 };
 
+export const INTERRUPT_TYPE = {
+    NONE: 0,
+    START_GAME: 1,
+    END_GAME: 2,
+    EVENT: 3,
+    CUSTOM: 4
+};
+
 export const LOADER_RULE = {
     NONE: 0,
     ALLOW_SPECTATOR: 1 << 0,
@@ -586,7 +594,7 @@ export const ACTION_TYPE = {
     CLOAK: 12,
     DEATH: 13,
     UNCLOAK: 14,
-    REVEAL_EVENT: 15
+    INTERRUPT: 15
 };
 
 export const OBJECTIVE_TYPE = {

@@ -1,6 +1,5 @@
 import { ExecutionPlan } from "../../engine/action/executionPlan.js";
 import { ACTION_TYPE } from "../enums.js";
-import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 import { createStep } from "../systems/pathfinding.js";
 import { createEntityResolution } from "./interactionResolver.js";
 import { ENTITY_RESOLUTION_SIZE, ENTITY_SNAPSHOT_SIZE, MOVE_STEP_SIZE, packEntityResolution, packEntitySnapshot, unpackEntityResolution, unpackEntitySnapshot } from "./packer_constants.js";
@@ -17,23 +16,25 @@ import { MineTriggerAction } from "./types/mineTrigger.js";
 import { MoveAction } from "./types/move.js";
 import { ProduceEntityAction } from "./types/produceEntity.js";
 import { PurchaseEntityAction } from "./types/purchaseEntity.js";
-import { RevealEventAction } from "./types/revealEvent.js";
+import { InterruptAction } from "./types/interrupt.js";
 import { StartTurnAction } from "./types/startTurn.js";
 import { UncloakAction } from "./types/uncloak.js";
 
 /*
     0x00 -> type,
-    0x01 -> eventID
+    0x01 -> interruptType,
+    0x02 -> eventID
 */
-const REVEAL_EVENT_HEADER_SIZE = 3;
+const INTERRUPT_HEADER_SIZE = 4;
 
-export const packRevealEventPlan = function(data) {
-    const { event } = data;
-    const buffer = new ArrayBuffer(REVEAL_EVENT_HEADER_SIZE);
+export const packInterruptPlan = function(data) {
+    const { event, type } = data;
+    const buffer = new ArrayBuffer(INTERRUPT_HEADER_SIZE);
     const view = new DataView(buffer);
 
-    view.setUint8(0, ACTION_TYPE.REVEAL_EVENT);
-    view.setUint16(1, event, true);
+    view.setUint8(0, ACTION_TYPE.INTERRUPT);
+    view.setUint8(1, type);
+    view.setInt16(2, event, true);
 
     return buffer;
 }
@@ -413,9 +414,10 @@ export const unpackPlan = function(buffer) {
     let data = null;
 
     switch(type) {
-        case ACTION_TYPE.REVEAL_EVENT: {
-            data = RevealEventAction.createData();
-            data.event = view.getUint16(1, true);
+        case ACTION_TYPE.INTERRUPT: {
+            data = InterruptAction.createData();
+            data.type = view.getUint8(1);
+            data.event = view.getInt16(2, true);
             break;
         }
         case ACTION_TYPE.UNCLOAK: {

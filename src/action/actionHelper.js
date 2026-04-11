@@ -1,6 +1,13 @@
 import { ActionIntent } from "../../engine/action/actionIntent.js";
 import { ACTION_TYPE, COMMAND_TYPE } from "../enums.js";
 
+export const createInterruptIntent = function(type, event) {
+    return new ActionIntent(ACTION_TYPE.INTERRUPT, {
+        "type": type,
+        "event": event
+    });
+}
+
 export const createMineTriggerIntent = function(entityID) {
     return new ActionIntent(ACTION_TYPE.MINE_TRIGGER, {
         "entityID": entityID

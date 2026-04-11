@@ -1,8 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
-import { ActionIntent } from "../../../engine/action/actionIntent.js";
-import { ACTION_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { INTERRUPT_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { TeamManager } from "../../team/teamManager.js";
-import { createDeathIntent, createUncloakIntent } from "../actionHelper.js";
+import { createDeathIntent, createInterruptIntent, createUncloakIntent } from "../actionHelper.js";
 import { fillEntityResolution } from "../interactionResolver.js";
 
 export const StartTurnAction = function() {
@@ -78,7 +77,7 @@ StartTurnAction.prototype.execute = function(gameContext, data) {
     for(const event of events) {
         const { id, simulation } = event;
 
-        actionRouter.forceEnqueue(gameContext, new ActionIntent(ACTION_TYPE.REVEAL_EVENT, { "event": id }));
+        actionRouter.forceEnqueue(gameContext, createInterruptIntent(INTERRUPT_TYPE.EVENT, id));
 
         for(const action of simulation) {
             action.execute(gameContext);

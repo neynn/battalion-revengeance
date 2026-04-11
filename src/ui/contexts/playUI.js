@@ -281,6 +281,7 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
 
     genericButtonTexture.drawRegion(display, button, endturnX, endTurnY);
     context.textAlign = TextStyle.ALIGN.MIDDLE;
+    context.fillStyle = this.style.color;
     context.fillText("END TURN", endturnX + GENERIC_BUTTON_STYLE.halfWidth, endTurnY + GENERIC_BUTTON_STYLE.halfHeight - 5);
     context.textAlign = TextStyle.ALIGN.LEFT;
 }

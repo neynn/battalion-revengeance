@@ -12,7 +12,7 @@ import { MineTriggerAction } from "../action/types/mineTrigger.js";
 import { MoveAction } from "../action/types/move.js";
 import { ProduceEntityAction } from "../action/types/produceEntity.js";
 import { PurchaseEntityAction } from "../action/types/purchaseEntity.js";
-import { RevealEventAction } from "../action/types/revealEvent.js";
+import { InterruptAction } from "../action/types/interrupt.js";
 import { StartTurnAction } from "../action/types/startTurn.js";
 import { UncloakAction } from "../action/types/uncloak.js";
 import { ACTION_TYPE } from "../enums.js";
@@ -37,7 +37,7 @@ export const registerClientActions = function(gameContext) {
     actionQueue.registerAction(ACTION_TYPE.DEATH, new DeathAction(despawnClientEntity));
     actionQueue.registerAction(ACTION_TYPE.UNCLOAK, new UncloakAction());
     actionQueue.registerAction(ACTION_TYPE.END_TURN, new EndTurnAction());
-    actionQueue.registerAction(ACTION_TYPE.REVEAL_EVENT, new RevealEventAction());
+    actionQueue.registerAction(ACTION_TYPE.INTERRUPT, new InterruptAction());
 }
 
 export const registerServerActions = function(gameContext) {
@@ -59,7 +59,7 @@ export const registerServerActions = function(gameContext) {
     actionQueue.registerAction(ACTION_TYPE.DEATH, new DeathAction(despawnServerEntity));
     actionQueue.registerAction(ACTION_TYPE.UNCLOAK, new UncloakAction());
     actionQueue.registerAction(ACTION_TYPE.END_TURN, new EndTurnAction());
-    actionQueue.registerAction(ACTION_TYPE.REVEAL_EVENT, new RevealEventAction());
+    actionQueue.registerAction(ACTION_TYPE.INTERRUPT, new InterruptAction());
 }
 
 export const addDebug = function(gameContext) {

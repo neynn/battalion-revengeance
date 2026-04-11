@@ -13,7 +13,7 @@ import {
     packMovePlan,
     packProducePlan,
     packPurchasePlan,
-    packRevealEventPlan,
+    packInterruptPlan,
     packStartTurnPlan,
     packUncloakPlan
 } from "../planPacker.js";
@@ -48,7 +48,7 @@ ServerActionRouter.prototype.packPlan = function(plan) {
         case ACTION_TYPE.PURCHASE_ENTITY: return packPurchasePlan(data);
         case ACTION_TYPE.START_TURN: return packStartTurnPlan(data);
         case ACTION_TYPE.UNCLOAK: return packUncloakPlan(data);
-        case ACTION_TYPE.REVEAL_EVENT: return packRevealEventPlan(data);
+        case ACTION_TYPE.INTERRUPT: return packInterruptPlan(data);
         default: return null;
     }
 }
@@ -59,7 +59,7 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
     }
 
     const { world } = gameContext;
-    const { actionQueue, eventHandler } = world;
+    const { actionQueue } = world;
     const executedPlans = [];
     let count = 0;
     let sentBytes = 0;
