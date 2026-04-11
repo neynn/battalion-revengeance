@@ -1,44 +1,37 @@
-export const Timer = function(targetFPS = 60) {
+import { FIXED_DELTA_TIME, MAX_TICKS, TARGET_FPS } from "./engine_constants.js";
+
+export const Timer = function() {
     this.tick = 0;
     this.realTime = 0;
     this.lastTime = 0;
     this.deltaTime = 0;
     this.accumulatedTime = 0;
-    this.targetFPS = targetFPS;
-    this.maxTicks = 30;
-    this.fixedDeltaTime = 1 / targetFPS;
-    this.smoothFPS = targetFPS;
+    this.smoothFPS = TARGET_FPS;
     this.smoothFactor = 0.05;
     this._nextFrame = this.nextFrame.bind(this);
 }
 
-Timer.prototype.input = function(deltaTime) {}
-Timer.prototype.update = function(fDeltaTime) {}
-Timer.prototype.render = function(deltaTime) {}
-
-Timer.prototype.setFPS = function(targetFPS) {
-    this.targetFPS = targetFPS;
-    this.fixedDeltaTime = 1 / targetFPS;
-}
+Timer.prototype.input = function() {}
+Timer.prototype.update = function() {}
+Timer.prototype.render = function() {}
 
 Timer.prototype.nextFrame = function(timestamp) {
     this.realTime = timestamp / 1000;
     this.deltaTime = this.realTime - this.lastTime;
     this.accumulatedTime += this.deltaTime;
     this.smoothFPS = (1 - this.smoothFactor) * this.smoothFPS + this.smoothFactor * (1 / this.deltaTime);
+    this.input();
 
-    this.input(this.deltaTime);
-
-    while(this.accumulatedTime > this.fixedDeltaTime) {
-        if(++this.tick >= this.maxTicks) {
+    while(this.accumulatedTime >= FIXED_DELTA_TIME) {
+        if(++this.tick >= MAX_TICKS) {
             this.tick = 0;
         }
 
-        this.update(this.fixedDeltaTime);
-        this.accumulatedTime -= this.fixedDeltaTime;
+        this.update();
+        this.accumulatedTime -= FIXED_DELTA_TIME;
     }
 
-    this.render(this.deltaTime);
+    this.render();
     this.lastTime = this.realTime;
     this.queue();
 }
@@ -61,10 +54,6 @@ Timer.prototype.start = function() {
 
 Timer.prototype.getRealTime = function() {
     return this.realTime;
-}
-
-Timer.prototype.getFixedDeltaTime = function() {
-    return this.fixedDeltaTime;
 }
 
 Timer.prototype.getDeltaTime = function() {

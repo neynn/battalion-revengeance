@@ -1,4 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
+import { FIXED_DELTA_TIME } from "../../../engine/engine_constants.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { SOUND_TYPE, TRAIT_TYPE } from "../../enums.js";
@@ -49,10 +50,7 @@ HealAction.prototype.onStart = function(gameContext, data) {
 }
 
 HealAction.prototype.onUpdate = function(gameContext, data) {
-    const { timer } = gameContext;
-    const deltaTime = timer.getFixedDeltaTime();
-
-    this.passedTime += deltaTime;
+    this.passedTime += FIXED_DELTA_TIME;
 }
  
 HealAction.prototype.isFinished = function(gameContext, executionPlan) {

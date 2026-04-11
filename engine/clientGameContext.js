@@ -32,17 +32,17 @@ export const ClientGameContext = function() {
     this.tweenManager = new TweenManager();
     this.dialogueHandler = new DialogueHandler();
 
-    this.timer.input = (deltaTime) => {
+    this.timer.input = () => {
         this.client.update();
         this.uiManager.update(this);
     }
 
-    this.timer.update = (fDeltaTime) => {
+    this.timer.update = () => {
         this.states.update(this);
         this.world.update(this);
     }
 
-    this.timer.render = (deltaTime) => {
+    this.timer.render = () => {
         this.textureLoader.update();
         this.applicationWindow.update(this);
         this.dialogueHandler.update(this);

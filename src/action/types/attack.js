@@ -1,4 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
+import { FIXED_DELTA_TIME } from "../../../engine/engine_constants.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ATTACK_TYPE, COMMAND_TYPE, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
@@ -90,10 +91,7 @@ AttackAction.prototype.onStart = function(gameContext, data) {
 }
 
 AttackAction.prototype.onUpdate = function(gameContext, data) {
-    const { timer } = gameContext;
-    const deltaTime = timer.getFixedDeltaTime();
-
-    this.passedTime += deltaTime;
+    this.passedTime += FIXED_DELTA_TIME;
 }
  
 AttackAction.prototype.isFinished = function(gameContext, executionPlan) {

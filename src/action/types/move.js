@@ -1,5 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
-import { TILE_HEIGHT, TILE_WIDTH } from "../../../engine/engine_constants.js";
+import { FIXED_DELTA_TIME, TILE_HEIGHT, TILE_WIDTH } from "../../../engine/engine_constants.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { FADE_RATE } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
@@ -61,13 +61,10 @@ MoveAction.prototype.onStart = function(gameContext, data) {
 }
 
 MoveAction.prototype.onUpdate = function(gameContext, data) {
-    const { timer } = gameContext;
-    const deltaTime = timer.getFixedDeltaTime();
-
     switch(this.state) {
         case MoveAction.STATE.NONE: {
             const { deltaX, deltaY } = this.path[this.pathIndex]; 
-            const distanceMoved = this.entity.getDistanceMoved(deltaTime);
+            const distanceMoved = this.entity.getDistanceMoved(FIXED_DELTA_TIME);
             const directionChanged = this.entity.setDirectionByDelta(deltaX, deltaY);
             const distanceX = deltaX * distanceMoved;
             const distanceY = deltaY * distanceMoved;
@@ -103,7 +100,7 @@ MoveAction.prototype.onUpdate = function(gameContext, data) {
             break;
         }
         case MoveAction.STATE.DISCOVERED: {
-            this.opacity += FADE_RATE * deltaTime;
+            this.opacity += FADE_RATE * FIXED_DELTA_TIME;
 
             if(this.opacity > 1) {
                 this.opacity = 1;
