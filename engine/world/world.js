@@ -1,5 +1,5 @@
 import { ActionQueue } from "../action/actionQueue.js";
-import { TurnManager } from "./turn/turnManager.js";
+import { ActorManager } from "./actor/actorManager.js";
 import { EntityManager } from "../entity/entityManager.js";
 import { MapManager } from "../map/mapManager.js";
 import { WorldEventRegistry } from "./event/worldEventRegistry.js";
@@ -7,7 +7,7 @@ import { FloodFill } from "../pathfinders/floodFill.js";
 
 export const World = function() {
     this.actionQueue = new ActionQueue();
-    this.turnManager = new TurnManager();
+    this.actorManager = new ActorManager();
     this.entityManager = new EntityManager();
     this.mapManager = new MapManager();
     this.eventHandler = new WorldEventRegistry();
@@ -15,7 +15,7 @@ export const World = function() {
 
 World.prototype.exit = function() {
     this.actionQueue.exit();
-    this.turnManager.exit();
+    this.actorManager.exit();
     this.entityManager.exit();
     this.mapManager.exit();
     this.eventHandler.exit();
@@ -23,7 +23,7 @@ World.prototype.exit = function() {
 
 World.prototype.update = function(gameContext) {
     this.actionQueue.update(gameContext);
-    this.turnManager.update(gameContext);
+    this.actorManager.update(gameContext);
     this.mapManager.update(gameContext);
     this.entityManager.update(gameContext);
 }

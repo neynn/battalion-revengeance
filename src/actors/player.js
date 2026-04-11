@@ -5,7 +5,7 @@ import { IdleState } from "./player/idle.js";
 import { SelectState } from "./player/select.js";
 import { DIRECTION, ENTITY_TYPE } from "../enums.js";
 import { saveStoryMap } from "../systems/save.js";
-import { createEndTurnIntent, createExtractIntent, createProduceIntent } from "../action/actionHelper.js";
+import { createDeathIntent, createEndTurnIntent, createExtractIntent, createProduceIntent } from "../action/actionHelper.js";
 import { MapInspector } from "./player/inspector.js";
 
 export const Player = function(id, camera) {
@@ -13,6 +13,7 @@ export const Player = function(id, camera) {
 
     this.camera = camera;
     this.inspector = new MapInspector();
+    this.actionIntents = [];
 
     this.states = new StateMachine(this);
     this.states.addState(Player.STATE.IDLE, new IdleState());
@@ -34,13 +35,32 @@ Player.STATE = {
 Player.prototype = Object.create(BattalionActor.prototype);
 Player.prototype.constructor = Player;
 
+Player.prototype.surrender = function(gameContext) {
+    const { teamManager } = gameContext;
+    const team = teamManager.getTeam(this.teamID);
+    
+    if(team) {
+        const { entities } = team;
+        const deathRequest = createDeathIntent(entities);
+
+        this.addIntent(deathRequest);
+    }
+}
+
+Player.prototype.addIntent = function(intent) {
+    const MAX_INTENTS = 10;
+
+    if(this.actionIntents.length < MAX_INTENTS) {
+        this.actionIntents.push(intent);
+    }
+}
+
 Player.prototype.onTurnStart = function(gameContext) {
-    this.camera.teamID = this.teamID;
-    this.camera.isCurrentActor = true;
+    this.actionIntents.length = 0;
 }
 
 Player.prototype.onTurnEnd = function(gameContext) {
-    this.camera.isCurrentActor = false;
+    this.actionIntents.length = 0;
 }
 
 Player.prototype.onClick = function(gameContext, tileX, tileY) {
@@ -105,7 +125,25 @@ Player.prototype.loadKeybinds = function(gameContext) {
 }
 
 Player.prototype.activeUpdate = function(gameContext) {
-    this.tryEnqueueAction(gameContext);
+    const { world, actionRouter, teamManager } = gameContext;
+    const { actionQueue } = world;
+
+    if(!teamManager.isCurrent(this.teamID) || actionQueue.isRunning()) {
+        return;
+    }
+
+    for(let i = 0; i < this.actionIntents.length; i++) {
+        const actionIntent = this.actionIntents[i];
+        const executionPlan = actionQueue.createExecutionPlan(gameContext, actionIntent);
+
+        if(executionPlan) {
+            actionRouter.dispatch(gameContext, executionPlan, actionIntent);
+            this.actionIntents.splice(0, i + 1);
+            return;
+        }
+    }
+
+    this.actionIntents.length = 0;
 }
 
 Player.prototype.update = function(gameContext) {

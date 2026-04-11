@@ -287,14 +287,14 @@ TeamManager.prototype.getNextTeam = function() {
 
 TeamManager.prototype.updateActor = function(gameContext) {
     const { world } = gameContext;
-    const { turnManager } = world;
-    const { actors } = turnManager;
+    const { actorManager } = world;
+    const { actors } = actorManager;
     let isFound = false;
 
     if(this.currentTeam !== TeamManager.INVALID_ID) {
         for(const actor of actors) {
             if(actor.teamID === this.currentTeam) {
-                turnManager.setCurrentActor(gameContext, actor.getID());
+                actorManager.setCurrentActor(gameContext, actor.getID());
                 isFound = true;
                 break;
             }
@@ -302,6 +302,6 @@ TeamManager.prototype.updateActor = function(gameContext) {
     }
 
     if(!isFound) {
-        turnManager.clearCurrentActor(gameContext);
+        actorManager.clearCurrentActor(gameContext);
     }
 }

@@ -13,8 +13,8 @@ import { fillTurnSnapshot } from "../snapshot/turnSnapshot.js";
 
 const isClientTurn = function(gameContext, messengerID) {
     const { world } = gameContext;
-    const { turnManager } = world;
-    const { currentActor } = turnManager;
+    const { actorManager } = world;
+    const { currentActor } = actorManager;
 
     if(!currentActor) {
         return false;

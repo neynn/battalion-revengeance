@@ -11,7 +11,7 @@ import { MOVE_STEP_SIZE } from "./packer_constants.js";
 */
 const PRODUCE_HEADER_SIZE = 6;
 
-export const packProduceIntent = function(data) {
+const packProduceIntent = function(data) {
     const { direction, entityID, typeID } = data;
     const buffer = new ArrayBuffer(PRODUCE_HEADER_SIZE);
     const view = new DataView(buffer);
@@ -31,7 +31,7 @@ export const packProduceIntent = function(data) {
 */
 const HEAL_HEADER_SIZE = 5;
 
-export const packHealIntent = function(data) {
+const packHealIntent = function(data) {
     const { entityID, targetID } = data;
     const buffer = new ArrayBuffer(HEAL_HEADER_SIZE);
     const view = new DataView(buffer);
@@ -51,7 +51,7 @@ export const packHealIntent = function(data) {
 */
 const PURCHASE_HEADER_SIZE = 7;
 
-export const packPurchaseIntent = function(data) {
+const packPurchaseIntent = function(data) {
     const { tileX, tileY, typeID } = data;
     const buffer = new ArrayBuffer(PURCHASE_HEADER_SIZE);
     const view = new DataView(buffer);
@@ -69,7 +69,7 @@ export const packPurchaseIntent = function(data) {
 */
 const END_TURN_HEADER_SIZE = 1;
 
-export const packEndTurnIntent = function(data) {
+const packEndTurnIntent = function(data) {
     const buffer = new ArrayBuffer(END_TURN_HEADER_SIZE);
     const view = new DataView(buffer);
 
@@ -86,7 +86,7 @@ export const packEndTurnIntent = function(data) {
 */
 const ATTACK_HEADER_SIZE = 6;
 
-export const packAttackIntent = function(data) {
+const packAttackIntent = function(data) {
     const { entityID, targetID, command } = data;
     const buffer = new ArrayBuffer(ATTACK_HEADER_SIZE);
     const view = new DataView(buffer);
@@ -109,7 +109,7 @@ export const packAttackIntent = function(data) {
 */
 const MOVE_HEADER_SIZE = 8;
 
-export const packMoveIntent = function(data) {
+const packMoveIntent = function(data) {
     const { entityID, targetID, command, path } = data;
     const BUFFER_SIZE = MOVE_HEADER_SIZE + MOVE_STEP_SIZE * path.length;
     const buffer = new ArrayBuffer(BUFFER_SIZE);
@@ -174,6 +174,20 @@ export const isIntentValid = function(gameContext, intent) {
         default: {
             return false;
         }
+    }
+}
+
+export const packIntent = function(actionIntent) {
+    const { type, data } = actionIntent;
+
+    switch(type) {
+        case ACTION_TYPE.PRODUCE_ENTITY: return packProduceIntent(data);
+        case ACTION_TYPE.PURCHASE_ENTITY: return packPurchaseIntent(data);
+        case ACTION_TYPE.MOVE: return packMoveIntent(data);
+        case ACTION_TYPE.HEAL: return packHealIntent(data);
+        case ACTION_TYPE.ATTACK: return packAttackIntent(data);
+        case ACTION_TYPE.END_TURN: return packEndTurnIntent(data);
+        default: return null;
     }
 }
 

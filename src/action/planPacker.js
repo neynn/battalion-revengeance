@@ -27,7 +27,7 @@ import { UncloakAction } from "./types/uncloak.js";
 */
 const INTERRUPT_HEADER_SIZE = 4;
 
-export const packInterruptPlan = function(data) {
+const packInterruptPlan = function(data) {
     const { event, type } = data;
     const buffer = new ArrayBuffer(INTERRUPT_HEADER_SIZE);
     const view = new DataView(buffer);
@@ -47,7 +47,7 @@ export const packInterruptPlan = function(data) {
 */
 const UNCLOAK_HEADER_SIZE = 5;
 
-export const packUncloakPlan = function(data) {
+const packUncloakPlan = function(data) {
     const { entityID, entities, mines } = data;
     const BUFFER_SIZE = UNCLOAK_HEADER_SIZE + 2 * entities.length + 4 * mines.length;
     const buffer = new ArrayBuffer(BUFFER_SIZE);
@@ -85,7 +85,7 @@ export const packUncloakPlan = function(data) {
 */
 const START_TURN_HEADER_SIZE = 4;
 
-export const packStartTurnPlan = function(data) {
+const packStartTurnPlan = function(data) {
     const { teamID, resolutions } = data;
     const BUFFER_SIZE = START_TURN_HEADER_SIZE + ENTITY_RESOLUTION_SIZE * resolutions.length;
     const buffer = new ArrayBuffer(BUFFER_SIZE);
@@ -112,7 +112,7 @@ export const packStartTurnPlan = function(data) {
 */
 const PURCHASE_HEADER_SIZE = 5 + ENTITY_SNAPSHOT_SIZE;
 
-export const packPurchasePlan = function(data) {
+const packPurchasePlan = function(data) {
     const { nextID, cost, snapshot } = data;
     const buffer = new ArrayBuffer(PURCHASE_HEADER_SIZE);
     const view = new DataView(buffer);
@@ -134,7 +134,7 @@ export const packPurchasePlan = function(data) {
 */
 const PRODUCE_HEADER_SIZE = 7 + ENTITY_SNAPSHOT_SIZE;
 
-export const packProducePlan = function(data) {
+const packProducePlan = function(data) {
     const { entityID, nextID, cost, snapshot } = data;
     const buffer = new ArrayBuffer(PRODUCE_HEADER_SIZE);
     const view = new DataView(buffer);
@@ -156,7 +156,7 @@ export const packProducePlan = function(data) {
 */
 const MOVE_HEADER_SIZE = 6;
 
-export const packMovePlan = function(data) {
+const packMovePlan = function(data) {
     const { entityID, flags, path } = data;
     const BUFFER_SIZE = MOVE_HEADER_SIZE + MOVE_STEP_SIZE * path.length;
     const buffer = new ArrayBuffer(BUFFER_SIZE);
@@ -192,7 +192,7 @@ export const packMovePlan = function(data) {
 */
 const MINE_TRIGGER_HEADER_SIZE = 9;
 
-export const packMineTriggerPlan = function(data) {
+const packMineTriggerPlan = function(data) {
     const { entityID, health, tileX, tileY } = data;
     const buffer = new ArrayBuffer(MINE_TRIGGER_HEADER_SIZE);
     const view = new DataView(buffer);
@@ -214,7 +214,7 @@ export const packMineTriggerPlan = function(data) {
 */
 const HEAL_HEADER_SIZE = 7;
 
-export const packHealPlan = function(data) {
+const packHealPlan = function(data) {
     const { entityID, targetID, resolutions } = data;
     const BUFFER_SIZE = HEAL_HEADER_SIZE + ENTITY_RESOLUTION_SIZE * resolutions.length;
     const buffer = new ArrayBuffer(BUFFER_SIZE);
@@ -241,7 +241,7 @@ export const packHealPlan = function(data) {
 */
 const EXTRACT_ORE_HEADER_SIZE = 5;
 
-export const packExtractOrePlan = function(data) {
+const packExtractOrePlan = function(data) {
     const { entityID, value } = data;
     const buffer = new ArrayBuffer(EXTRACT_ORE_HEADER_SIZE);
     const view = new DataView(buffer);
@@ -262,7 +262,7 @@ export const packExtractOrePlan = function(data) {
 */
 const EXPLODE_TILE_HEADER_SIZE = 8;
 
-export const packExplodeTilePlan = function(data) {
+const packExplodeTilePlan = function(data) {
     const { entityID, layer, tileX, tileY } = data;
     const buffer = new ArrayBuffer(EXPLODE_TILE_HEADER_SIZE);
     const view = new DataView(buffer);
@@ -283,7 +283,7 @@ export const packExplodeTilePlan = function(data) {
 */
 const ENTITY_SPAWN_HEADER_SIZE = 3 + ENTITY_SNAPSHOT_SIZE;
 
-export const packEntitySpawnPlan = function(data) {
+const packEntitySpawnPlan = function(data) {
     const { entityID, snapshot } = data;
     const buffer = new ArrayBuffer(ENTITY_SPAWN_HEADER_SIZE);
     const view = new DataView(buffer);
@@ -301,7 +301,7 @@ export const packEntitySpawnPlan = function(data) {
 */
 const END_TURN_HEADER_SIZE = 1;
 
-export const packEndTurnPlan = function(data) {
+const packEndTurnPlan = function(data) {
     const buffer = new ArrayBuffer(END_TURN_HEADER_SIZE);
     const view = new DataView(buffer);
 
@@ -317,7 +317,7 @@ export const packEndTurnPlan = function(data) {
 const DEATH_HEADER_SIZE = 3;
 const DEATH_BLOCK_SIZE = 2;
 
-export const packDeathPlan = function(data) {
+const packDeathPlan = function(data) {
     const { entities } = data;
     const BUFFER_SIZE = DEATH_HEADER_SIZE + DEATH_BLOCK_SIZE * entities.length;
     const buffer = new ArrayBuffer(BUFFER_SIZE);
@@ -343,7 +343,7 @@ export const packDeathPlan = function(data) {
 */
 const CLOAK_HEADER_SIZE = 3;
 
-export const packCloakPlan = function(data) {
+const packCloakPlan = function(data) {
     const { entityID } = data;
     const buffer = new ArrayBuffer(CLOAK_HEADER_SIZE);
     const view = new DataView(buffer);
@@ -362,7 +362,7 @@ export const packCloakPlan = function(data) {
 */
 const CAPTURE_HEADER_SIZE = 7;
 
-export const packCapturePlan = function(data) {
+const packCapturePlan = function(data) {
     const { entityID, targetX, targetY } = data;
     const buffer = new ArrayBuffer(CAPTURE_HEADER_SIZE);
     const view = new DataView(buffer);
@@ -385,7 +385,7 @@ export const packCapturePlan = function(data) {
 */
 const ATTACK_HEADER_SIZE = 12;
 
-export const packAttackPlan = function(data) {
+const packAttackPlan = function(data) {
     const { attackerID, targetID, resourceDamage, flags, resolutions } = data;
     const BUFFER_SIZE = ATTACK_HEADER_SIZE + ENTITY_RESOLUTION_SIZE * resolutions.length;
     const buffer = new ArrayBuffer(BUFFER_SIZE);
@@ -405,6 +405,30 @@ export const packAttackPlan = function(data) {
     }
 
     return buffer;
+}
+
+export const packPlan = function(executionPlan) {
+    const { id, type, data } = executionPlan;
+
+    switch(type) {
+        case ACTION_TYPE.ATTACK: return packAttackPlan(data);
+        case ACTION_TYPE.CAPTURE: return packCapturePlan(data);
+        case ACTION_TYPE.CLOAK: return packCloakPlan(data);
+        case ACTION_TYPE.DEATH: return packDeathPlan(data);
+        case ACTION_TYPE.END_TURN: return packEndTurnPlan(data);
+        case ACTION_TYPE.ENTITY_SPAWN: return packEntitySpawnPlan(data);
+        case ACTION_TYPE.EXPLODE_TILE: return packExplodeTilePlan(data);
+        case ACTION_TYPE.EXTRACT: return packExtractOrePlan(data);
+        case ACTION_TYPE.HEAL: return packHealPlan(data);
+        case ACTION_TYPE.MINE_TRIGGER: return packMineTriggerPlan(data);
+        case ACTION_TYPE.MOVE: return packMovePlan(data);
+        case ACTION_TYPE.PRODUCE_ENTITY: return packProducePlan(data);
+        case ACTION_TYPE.PURCHASE_ENTITY: return packPurchasePlan(data);
+        case ACTION_TYPE.START_TURN: return packStartTurnPlan(data);
+        case ACTION_TYPE.UNCLOAK: return packUncloakPlan(data);
+        case ACTION_TYPE.INTERRUPT: return packInterruptPlan(data);
+        default: return null;
+    }
 }
 
 export const unpackPlan = function(buffer) {

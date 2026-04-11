@@ -1,16 +1,16 @@
-export const TurnManager = function() {
+export const ActorManager = function() {
     this.nextID = 0;
     this.actors = [];
     this.currentActor = null;
 }
 
-TurnManager.prototype.exit = function() {
+ActorManager.prototype.exit = function() {
     this.nextID = 0;
     this.actors.length = 0;
     this.currentActor = null;
 }
 
-TurnManager.prototype.forAllActors = function(onCall) {
+ActorManager.prototype.forAllActors = function(onCall) {
     if(typeof onCall === "function") {
         for(let i = 0; i < this.actors.length; i++) {
             onCall(this.actors[i]);
@@ -18,7 +18,7 @@ TurnManager.prototype.forAllActors = function(onCall) {
     }
 }
 
-TurnManager.prototype.getActorIndex = function(actorID) {
+ActorManager.prototype.getActorIndex = function(actorID) {
     for(let i = 0; i < this.actors.length; i++) {
         if(this.actors[i].getID() === actorID) {
             return i;
@@ -28,11 +28,11 @@ TurnManager.prototype.getActorIndex = function(actorID) {
     return -1;
 }
 
-TurnManager.prototype.getNextID = function() {
+ActorManager.prototype.getNextID = function() {
     return this.nextID++;
 }
 
-TurnManager.prototype.addActor = function(actor) {
+ActorManager.prototype.addActor = function(actor) {
     const actorID = actor.getID();
 
     if(this.getActorIndex(actorID) === -1) {
@@ -41,7 +41,7 @@ TurnManager.prototype.addActor = function(actor) {
 }
 
 //TODO(neyn): Destroy if current.
-TurnManager.prototype.destroyActor = function(actorID) {
+ActorManager.prototype.destroyActor = function(actorID) {
     const index = this.getActorIndex(actorID);
 
     if(index !== -1) {
@@ -50,7 +50,7 @@ TurnManager.prototype.destroyActor = function(actorID) {
     }
 }
 
-TurnManager.prototype.getActor = function(actorID) {
+ActorManager.prototype.getActor = function(actorID) {
     const index = this.getActorIndex(actorID);
 
     if(index === -1) {
@@ -60,7 +60,7 @@ TurnManager.prototype.getActor = function(actorID) {
     return this.actors[index];
 }
 
-TurnManager.prototype.isActor = function(actorID) {
+ActorManager.prototype.isActor = function(actorID) {
     if(this.currentActor === null) {
         return false;
     }
@@ -68,23 +68,24 @@ TurnManager.prototype.isActor = function(actorID) {
     return this.currentActor.getID() === actorID;
 }
 
-TurnManager.prototype.setCurrentActor = function(gameContext, actorID) {
+ActorManager.prototype.setCurrentActor = function(gameContext, actorID) {
     const actor = this.getActor(actorID);
 
     if(actor) {
         this.currentActor = actor;
-        this.currentActor.startTurn(gameContext);
+        this.currentActor.turn++;
+        this.currentActor.onTurnStart(gameContext);
     }
 }
 
-TurnManager.prototype.clearCurrentActor = function(gameContext) {
+ActorManager.prototype.clearCurrentActor = function(gameContext) {
     if(this.currentActor) {
-        this.currentActor.endTurn(gameContext);
+        this.currentActor.onTurnEnd(gameContext);
         this.currentActor = null;
     }
 }
 
-TurnManager.prototype.update = function(gameContext) {
+ActorManager.prototype.update = function(gameContext) {
     for(let i = 0; i < this.actors.length; i++) {
         this.actors[i].update(gameContext);
     }

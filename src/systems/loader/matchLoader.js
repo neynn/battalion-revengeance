@@ -22,6 +22,7 @@ import { SpawnComponent } from "../../event/components/spawn.js";
 import { createEntitySnapshotFromJSON } from "../../snapshot/entitySnapshot.js";
 import { PlaySoundComponent } from "../../event/components/playSound.js";
 import { PlaySpriteComponent } from "../../event/components/playSprite.js";
+import { TeamManager } from "../../team/teamManager.js";
 
 const createCustomSchema = function(gameContext, team, colorMap) {
     const { typeRegistry } = gameContext;
@@ -122,11 +123,11 @@ MatchLoader.prototype.createWorldEvents = function(gameContext) {
 
 MatchLoader.prototype.createServerActor = function(gameContext, teamID, clientID) {
     const { world } = gameContext;
-    const { turnManager } = world;
-    const actorID = turnManager.getNextID();
+    const { actorManager } = world;
+    const actorID = actorManager.getNextID();
     const actor = new ServerActor(actorID);
 
-    turnManager.addActor(actor);
+    actorManager.addActor(actor);
     actor.setTeam(teamID);
     actor.setName("Server");
     actor.clientID = clientID;
@@ -134,25 +135,25 @@ MatchLoader.prototype.createServerActor = function(gameContext, teamID, clientID
 
 MatchLoader.prototype.createActor = function(gameContext, teamID) {
     const { world } = gameContext;
-    const { turnManager } = world;
-    const actorID = turnManager.getNextID();
+    const { actorManager } = world;
+    const actorID = actorManager.getNextID();
     const actor = new BattalionActor(actorID);
 
-    turnManager.addActor(actor);
+    actorManager.addActor(actor);
     actor.setTeam(teamID);
     actor.setName("NPC");
 }
 
 MatchLoader.prototype.createPlayer = function(gameContext, teamID) {
     const { world } = gameContext;
-    const { turnManager } = world;
-    const context = createPlayCamera(gameContext);
-    const actorID = turnManager.getNextID();
+    const { actorManager } = world;
+    const context = createPlayCamera(gameContext, teamID);
+    const actorID = actorManager.getNextID();
     const actor = new Player(actorID, context.getCamera());
     const playUI = new PlayUI(actor.inspector, context, actor);
 
     playUI.load(gameContext);
-    turnManager.addActor(actor);
+    actorManager.addActor(actor);
     actor.setTeam(teamID);
     actor.loadKeybinds(gameContext);
     actor.states.setNextState(gameContext, Player.STATE.IDLE);
@@ -161,14 +162,14 @@ MatchLoader.prototype.createPlayer = function(gameContext, teamID) {
 
 MatchLoader.prototype.createSpectator = function(gameContext) {
     const { world } = gameContext;
-    const { turnManager } = world;
-    const context = createPlayCamera(gameContext);
-    const actorID = turnManager.getNextID();
+    const { actorManager } = world;
+    const context = createPlayCamera(gameContext, TeamManager.INVALID_ID);
+    const actorID = actorManager.getNextID();
     const actor = new Spectator(actorID, context.getCamera());
     const playUI = new PlayUI(actor.inspector, context, actor);
 
     playUI.load(gameContext);
-    turnManager.addActor(actor);
+    actorManager.addActor(actor);
     actor.loadKeybinds(gameContext);
     actor.setName("SPECTATOR");
 }

@@ -47,11 +47,12 @@ export const createEditCamera = function(gameContext, brush) {
     return context;
 }
 
-export const createPlayCamera = function(gameContext) {
+export const createPlayCamera = function(gameContext, teamID) {
     const { renderer } = gameContext;
     const camera = new BattalionCamera();
     const context = renderer.createContext(camera);
 
+    camera.teamID = teamID;
     camera.flags |= BattalionCamera.FLAG.USE_PERSPECTIVES;
     camera.bindViewport();
     camera.setTileSize(TILE_WIDTH, TILE_HEIGHT);

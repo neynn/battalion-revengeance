@@ -518,7 +518,7 @@ BattalionCamera.prototype.drawMines = function(gameContext, display, worldMap) {
 }
 
 BattalionCamera.prototype.update = function(gameContext, display) {
-    const { world, tileManager } = gameContext;
+    const { world, tileManager, teamManager } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
 
@@ -531,6 +531,7 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     let overlays = 0;
     let other = 0;
 
+    this.isCurrentActor = teamManager.isCurrent(this.teamID);
     this.updateWorldBounds(worldMap.width, worldMap.height);
     tiles += this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.GROUND));
     tiles += this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
