@@ -17,7 +17,7 @@ MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
     const controller = new EditorController(mapEditor);
     const context = createEditCamera(gameContext, mapEditor.brush);
     const camera = context.getCamera();
-    const userInterface = new MapEditorInterface(controller, camera);
+    const userInterface = new MapEditorInterface(controller, mapEditor, camera);
 
     userInterface.load(gameContext);
 

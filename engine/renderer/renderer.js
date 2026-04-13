@@ -63,8 +63,8 @@ Renderer.prototype.destroyContext = function(contextID) {
 }
 
 Renderer.prototype.update = function(gameContext) {
-    const { uiManager, applicationWindow } = gameContext; 
-    const display = applicationWindow.display;
+    const { uiManager, gameWindow } = gameContext; 
+    const display = gameWindow.display;
     
     display.clear();
 
@@ -89,7 +89,7 @@ Renderer.prototype.update = function(gameContext) {
     }
 
     if(DEBUG.SHOW_INFO) {
-        applicationWindow.drawDebug(gameContext);
+        gameWindow.drawDebug(gameContext);
     }
 }
 

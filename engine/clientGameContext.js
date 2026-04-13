@@ -19,7 +19,7 @@ export const ClientGameContext = function() {
     this.client = new Client();
     this.world = new World();
     this.pathHandler = PathHandler;
-    this.applicationWindow = new GameWindow();
+    this.gameWindow = new GameWindow();
     this.renderer = new Renderer(window.innerWidth, window.innerHeight);
     this.textureLoader = new TextureLoader();
     this.tileManager = new TileManager();
@@ -44,7 +44,7 @@ export const ClientGameContext = function() {
 
     this.timer.render = () => {
         this.textureLoader.update();
-        this.applicationWindow.update(this);
+        this.gameWindow.update(this);
         this.dialogueHandler.update(this);
         this.tweenManager.update(this);
         this.spriteManager.update(this);

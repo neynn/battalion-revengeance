@@ -56,9 +56,9 @@ StoryUI.prototype.load = function(gameContext) {
 }
 
 StoryUI.prototype.onImmediate = function(gameContext, display) {
-    const { uiData, applicationWindow, missionManager, typeRegistry, language } = gameContext;
+    const { uiData, gameWindow, missionManager, typeRegistry, language } = gameContext;
     const { currentChapter, currentMission, currentCampaign } = missionManager;
-    const { width, height } = applicationWindow;
+    const { width, height } = gameWindow;
     const { context } = display;
 
     const mainMenuBorder = uiData.getTexture(UI_TEXTURE.STORY_MAIN_MENU_BORDER);

@@ -32,9 +32,16 @@ export const MapEditor = function() {
     this.permutations = {};
     this.fill = [];
     this.flags = MapEditor.FLAG.NONE;
+    this.layerStates = [];
     this.targetLayer = WorldMap.INVALID_LAYER_ID;
     this.targetMap = null;
 }
+
+MapEditor.LAYER_STATE = {
+    VISIBLE: 0,
+    HIDDEN: 1,
+    EDIT: 2
+};
 
 MapEditor.FLAG = {
     NONE: 0,
@@ -122,6 +129,76 @@ MapEditor.prototype.getPermutation = function(originID) {
     return getRandomElement(permutations);
 }
 
+MapEditor.prototype.getLayerState = function(layerID) {
+    if(layerID < 0 || layerID >= this.layerStates.length) {
+        return MapEditor.LAYER_STATE.VISIBLE;
+    }
+    
+    return this.layerStates[layerID];
+}
+
+MapEditor.prototype.resetLayerStates = function() {
+    for(let i = 0; i < this.layerStates.length; i++) {
+        this.layerStates[i] = MapEditor.LAYER_STATE.VISIBLE;
+        this.targetMap.setLayerAlpha(i, 1);
+    }
+
+    this.targetLayer = WorldMap.INVALID_LAYER_ID;
+}
+
+MapEditor.prototype.toggleLayerState = function(layerID) {
+    if(layerID < 0 || layerID >= this.layerStates.length) {
+        return MapEditor.LAYER_STATE.VISIBLE;
+    }
+
+    switch(this.layerStates[layerID]) {
+        case MapEditor.LAYER_STATE.VISIBLE: {
+            this.layerStates[layerID] = MapEditor.LAYER_STATE.EDIT;
+
+            if(this.targetLayer !== WorldMap.INVALID_LAYER_ID) {
+                this.layerStates[this.targetLayer] = MapEditor.LAYER_STATE.VISIBLE;
+            }
+
+            this.targetLayer = layerID;
+            this.targetMap.setLayerAlpha(layerID, 1);
+
+            for(let i = 0; i < this.layerStates.length; i++) {
+                if(this.layerStates[i] === MapEditor.LAYER_STATE.VISIBLE) {
+                    this.targetMap.setLayerAlpha(i, 0.5);
+                }
+            }
+
+            break;
+        }
+        case MapEditor.LAYER_STATE.HIDDEN: {
+            this.layerStates[layerID] = MapEditor.LAYER_STATE.VISIBLE;
+
+            if(this.targetLayer === WorldMap.INVALID_LAYER_ID) {
+                this.targetMap.setLayerAlpha(layerID, 1);
+            } else {
+                this.targetMap.setLayerAlpha(layerID, 0.5);
+            }
+
+            break;
+        }
+        case MapEditor.LAYER_STATE.EDIT: {
+            this.layerStates[layerID] = MapEditor.LAYER_STATE.HIDDEN;
+            this.targetMap.setLayerAlpha(layerID, 0);
+            this.targetLayer = WorldMap.INVALID_LAYER_ID;
+
+            for(let i = 0; i < this.layerStates.length; i++) {
+                if(this.layerStates[i] === MapEditor.LAYER_STATE.VISIBLE) {
+                    this.targetMap.setLayerAlpha(i, 1);
+                }
+            }
+
+            break;
+        }
+    }
+
+    return this.layerStates[layerID];
+}
+
 MapEditor.prototype.togglePermutation = function() {
     this.flags ^= MapEditor.FLAG.USE_PERMUTATION;
 
@@ -163,18 +240,20 @@ MapEditor.prototype.resetBrush = function() {
 }
 
 MapEditor.prototype.setTargetMap = function(worldMap) {
+    const { layers } = worldMap;
+
+    this.layerStates.length = 0;
     this.targetMap = worldMap;
+
+    for(let i = 0; i < layers.length; i++) {
+        this.layerStates[i] = MapEditor.LAYER_STATE.VISIBLE;
+    }
+
+    this.targetLayer = WorldMap.INVALID_LAYER_ID;
 }
 
 MapEditor.prototype.removeTargetMap = function() {
     this.targetMap = null;
-}
-
-MapEditor.prototype.setTargetLayer = function(layerID) {
-    this.targetLayer = layerID;
-}
-
-MapEditor.prototype.removeTargetLayer = function() {
     this.targetLayer = WorldMap.INVALID_LAYER_ID;
 }
 

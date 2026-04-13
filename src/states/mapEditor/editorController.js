@@ -1,9 +1,7 @@
 import { PrettyJSON } from "../../../engine/resources/prettyJSON.js";
 import { BattalionContext } from "../../battalionContext.js";
 import { createEditorMap, createEmptyMap } from "../../systems/map.js";
-import { BattalionMap } from "../../map/battalionMap.js";
 import { clampValue, loopValue } from "../../../engine/math/math.js";
-import { ButtonHandler } from "../../../engine/map/editor/buttonHandler.js";
 import { getCursorTile } from "../../../engine/camera/contextHelper.js";
 import { Cursor } from "../../../engine/client/cursor/cursor.js";
 import { BrushSet } from "../../../engine/map/editor/brushSet.js";
@@ -33,15 +31,9 @@ export const EditorController = function(mapEditor) {
     this.userInterface = null;
     this.maxWidth = 100;
     this.maxHeight = 100;
-    this.buttonHandler = new ButtonHandler();
     this.pageIndex = 0;
     this.defaultWidth = 20;
     this.defaultHeight = 20;
-
-    this.buttonHandler.createButton(EditorController.LAYER_BUTTON.L1, BattalionMap.LAYER.GROUND, "TEXT_L1");
-    this.buttonHandler.createButton(EditorController.LAYER_BUTTON.L2, BattalionMap.LAYER.DECORATION, "TEXT_L2");
-    this.buttonHandler.createButton(EditorController.LAYER_BUTTON.L3, BattalionMap.LAYER.CLOUD, "TEXT_L3");
-
 
     this.mode = EditorController.MODE.TILE;
     this.brushSizes = new Scroller(createBrushSize());
@@ -219,40 +211,6 @@ EditorController.prototype.updateBrushSize = function(gameContext, delta) {
 
     this.editor.brush.setSize(width, height);
     this.updateMenuText(gameContext);
-}
-
-EditorController.prototype.clickLayerButton = function(buttonID) {
-    const worldMap = this.editor.targetMap;
-
-    if(!worldMap) {
-        return;
-    }
-
-    this.buttonHandler.onClick(this.userInterface, buttonID);
-    this.buttonHandler.updateLayers(worldMap);
-
-    const activeButton = this.buttonHandler.getActiveButton();
-
-    if(activeButton) {
-        const { layerID } = activeButton;
-
-        this.editor.setTargetLayer(layerID);
-    } else {
-        this.editor.removeTargetLayer();
-    }
-}
-
-EditorController.prototype.viewAllLayers = function() {
-    const worldMap = this.editor.targetMap;
-
-    if(!worldMap) {
-        return;
-    }
-    
-    this.resetBrush();
-    this.buttonHandler.resetButtons(this.userInterface, this);
-    this.buttonHandler.updateLayers(worldMap);
-    this.editor.removeTargetLayer();
 }
 
 EditorController.prototype.resetBrush = function() {
@@ -441,9 +399,4 @@ EditorController.prototype.initUIEvents = function(gameContext, camera) {
     this.userInterface.addClickByName("BUTTON_RESIZE", (e) => this.resizeCurrentMap(camera)); 
     this.userInterface.addClickByName("BUTTON_UNDO", (e) => this.editor.undo(gameContext)); 
     this.userInterface.addClickByName("BUTTON_ERASER", (e) => this.toggleEraser());
-    this.userInterface.addClickByName("BUTTON_VIEW_ALL", (e) => this.viewAllLayers());
-
-    this.userInterface.addClickByName("BUTTON_L1", (e) => this.clickLayerButton(EditorController.LAYER_BUTTON.L1));
-    this.userInterface.addClickByName("BUTTON_L2", (e) => this.clickLayerButton(EditorController.LAYER_BUTTON.L2));
-    this.userInterface.addClickByName("BUTTON_L3", (e) => this.clickLayerButton(EditorController.LAYER_BUTTON.L3));
 }
