@@ -1,16 +1,37 @@
 import { getRandomElement } from "../../math/math.js";
-import { Scroller } from "../../util/scroller.js";
+import { TileManager } from "../../tile/tileManager.js";
 import { WorldMap } from "../worldMap.js";
 import { Brush } from "./brush.js";
 
+export const createFill = function() {
+    return {
+        "layerID": WorldMap.INVALID_LAYER_ID,
+        "value": TileManager.TILE_ID.INVALID
+    }
+}
+
+export const createBrushAction = function() {
+    return {
+        "layerID": WorldMap.INVALID_LAYER_ID,
+        "tileX": WorldMap.OUT_OF_BOUNDS,
+        "tileY": WorldMap.OUT_OF_BOUNDS,
+        "oldID": TileManager.TILE_ID.INVALID
+    }
+}
+
+export const createActivity = function() {
+    return {
+        "mapID": null,
+        "actions": []
+    }
+}
+
 export const MapEditor = function() {
     this.brush = new Brush();
-    this.modes = new Scroller(MapEditor.MODE.TILE);
     this.activityStack = [];
     this.permutations = {};
     this.fill = [];
     this.flags = MapEditor.FLAG.NONE;
-    this.modes.setValues([MapEditor.MODE.TILE, MapEditor.MODE.ENTITY]);
     this.targetLayer = WorldMap.INVALID_LAYER_ID;
     this.targetMap = null;
 }
@@ -22,34 +43,12 @@ MapEditor.FLAG = {
     INVERT_AUTOTILER: 1 << 2
 };
 
-MapEditor.MODE = {
-    TILE: 0,
-    ENTITY: 1
-};
-
-MapEditor.prototype.onEntityPaint = function(gameContext, tileX, tileY) {}
-MapEditor.prototype.onTilePaint = function(gameContext, tileX, tileY) {}
+MapEditor.prototype.onPaint = function(gameContext, tileX, tileY) {}
 
 MapEditor.prototype.paint = function(gameContext, tileX, tileY) {
-    if(!this.targetMap) {
-        return;
-    }
-
-    switch(this.modes.getValue()) {
-        case MapEditor.MODE.TILE: {
-            if(this.targetLayer !== WorldMap.INVALID_LAYER_ID) {
-                this.onTilePaint(gameContext, tileX, tileY);
-            }
-
-            break;
-        }
-        case MapEditor.MODE.ENTITY: {
-            this.onEntityPaint(gameContext, tileX, tileY);
-            break;
-        }
-        default: {
-            console.error("Unknown mode!");
-            break;
+    if(this.targetMap) {
+        if(this.targetLayer !== WorldMap.INVALID_LAYER_ID) {
+            this.onPaint(gameContext, tileX, tileY);
         }
     }
 }
@@ -61,7 +60,7 @@ MapEditor.prototype.undo = function(gameContext) {
 
     const { world } = gameContext;
     const { mapManager } = world;
-    const { mapID, mode, actions } = this.activityStack.pop();
+    const { mapID, actions } = this.activityStack.pop();
     const worldMap = mapManager.getMap(mapID);
 
     if(worldMap) {
@@ -93,9 +92,9 @@ MapEditor.prototype.autofillMap = function() {
     }
 
     for(let i = 0; i < this.fill.length; i++) {
-        const { id, value } = this.fill[i];
+        const { layerID, value } = this.fill[i];
 
-        this.targetMap.getLayer(id).fill(value);
+        this.targetMap.getLayer(layerID).fill(value);
     }
 }
 
@@ -103,16 +102,6 @@ MapEditor.prototype.getBrushArea = function() {
     const { width, height } = this.brush;
 
     return `${(width + 1) * 2 - 1}x${(height + 1) * 2 - 1}`;
-}
-
-MapEditor.prototype.getModeName = function() {
-    const mode = this.modes.getValue();
-
-    switch(mode) {
-        case MapEditor.MODE.TILE: return "TILE";
-        case MapEditor.MODE.ENTITY: return "ENTITY";
-        default: return "INVALID"
-    }
 }
 
 MapEditor.prototype.getBrushTile = function() {
@@ -131,10 +120,6 @@ MapEditor.prototype.getPermutation = function(originID) {
     }
 
     return getRandomElement(permutations);
-}
-
-MapEditor.prototype.scrollMode = function(delta = 0) {
-    this.modes.loop(delta);
 }
 
 MapEditor.prototype.togglePermutation = function() {
@@ -195,31 +180,34 @@ MapEditor.prototype.removeTargetLayer = function() {
 
 MapEditor.prototype.registerFill = function(layerID, value) {
     for(let i = 0; i < this.fill.length; i++) {
-        if(this.fill[i].id === layerID) {
+        if(this.fill[i].layerID === layerID) {
             return;
         }
     }
 
-    this.fill.push({
-        "id": layerID,
-        "value": value
-    });
+    const fill = createFill();
+
+    fill.layerID = layerID;
+    fill.value = value;
+
+    this.fill.push(fill);
 }
 
-MapEditor.prototype.registerPermutation = function(originID, mutationID) {
-    const permutations = this.permutations[originID];
+MapEditor.prototype.registerVariants = function(originID, variants) {
+    if(variants.length === 0) {
+        return;
+    }
+
+    let permutations = this.permutations[originID];
 
     if(permutations === undefined) {
-        this.permutations[originID] = [mutationID];
-    } else if(!permutations.includes(mutationID)) {
-        permutations.push(mutationID);
+        permutations = [];
+        this.permutations[originID] = permutations;
     }
-}
 
-MapEditor.prototype.registerPermutations = function(permutations) {
-    for(const { origin, variants } of permutations) {
-        for(const variant of variants) {
-            this.registerPermutation(origin, variant);
+    for(const mutationID of variants) {
+        if(!permutations.includes(mutationID)) {
+            permutations.push(mutationID);
         }
     }
 }

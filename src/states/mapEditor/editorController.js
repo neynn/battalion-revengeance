@@ -7,27 +7,53 @@ import { ButtonHandler } from "../../../engine/map/editor/buttonHandler.js";
 import { getCursorTile } from "../../../engine/camera/contextHelper.js";
 import { Cursor } from "../../../engine/client/cursor/cursor.js";
 import { BrushSet } from "../../../engine/map/editor/brushSet.js";
-import { TILE_ID } from "../../enums.js";
-import { EditorConfigurator } from "../../../engine/map/editor/configurator.js";
+import { ENTITY_TYPE, TILE_ID } from "../../enums.js";
 import { BUTTON_COUNT } from "./mapEditorInterface.js";
 import { TileManager } from "../../../engine/tile/tileManager.js";
+import { Scroller } from "../../../engine/util/scroller.js";
+
+const createBrushSize = function() {
+    return {
+        "width": 0,
+        "height": 0
+    }
+}
+
+const fillBrushSize = function(width, height) {
+    const size = createBrushSize();
+
+    size.width = width;
+    size.height = height;
+
+    return size;
+}
 
 export const EditorController = function(mapEditor) {
     this.editor = mapEditor;
     this.userInterface = null;
-    this.configurator = new EditorConfigurator(mapEditor);
     this.maxWidth = 100;
     this.maxHeight = 100;
     this.buttonHandler = new ButtonHandler();
     this.pageIndex = 0;
     this.defaultWidth = 20;
     this.defaultHeight = 20;
-    this.initConfigurator();
 
     this.buttonHandler.createButton(EditorController.LAYER_BUTTON.L1, BattalionMap.LAYER.GROUND, "TEXT_L1");
     this.buttonHandler.createButton(EditorController.LAYER_BUTTON.L2, BattalionMap.LAYER.DECORATION, "TEXT_L2");
-    this.buttonHandler.createButton(EditorController.LAYER_BUTTON.L3, BattalionMap.LAYER.CLOUD, "TEXT_L3"); 
+    this.buttonHandler.createButton(EditorController.LAYER_BUTTON.L3, BattalionMap.LAYER.CLOUD, "TEXT_L3");
+
+
+    this.mode = EditorController.MODE.TILE;
+    this.brushSizes = new Scroller(createBrushSize());
+    this.tileSets = new Scroller(new BrushSet("INVALID", TileManager.TILE_ID.INVALID));
+    this.entitySets = new Scroller(new BrushSet("INVALID", ENTITY_TYPE._INVALID));
+    this.initScrollers();
 }
+
+EditorController.MODE = {
+    TILE: 0,
+    ENTITY: 1
+};
 
 EditorController.LAYER_BUTTON = {
     L1: "L1",
@@ -35,7 +61,7 @@ EditorController.LAYER_BUTTON = {
     L3: "L3"
 };
 
-EditorController.prototype.initConfigurator = function() {
+EditorController.prototype.initScrollers = function() {
     const allSet = new BrushSet("MAP_EDITOR_SET_NAME_ALL", TileManager.TILE_ID.INVALID);
     const canyonSet = new BrushSet("MAP_EDITOR_SET_NAME_CANYON", TileManager.TILE_ID.INVALID);
     const roadSet = new BrushSet("MAP_EDITOR_SET_NAME_ROAD", TileManager.TILE_ID.INVALID);
@@ -83,20 +109,30 @@ EditorController.prototype.initConfigurator = function() {
         railSet.addValue(i);
     }
 
-    this.configurator.addBrushSet(allSet);
-    this.configurator.addBrushSet(roadSet);
-    this.configurator.addBrushSet(canyonSet);
-    this.configurator.addBrushSet(groundSet);
-    this.configurator.addBrushSet(shoreSet);
-    this.configurator.addBrushSet(riverSet);
-    this.configurator.addBrushSet(seaSet);
-    this.configurator.addBrushSet(railSet);
+
+    this.tileSets.addValue(allSet);
+    this.tileSets.addValue(roadSet);
+    this.tileSets.addValue(canyonSet);
+    this.tileSets.addValue(groundSet);
+    this.tileSets.addValue(shoreSet);
+    this.tileSets.addValue(riverSet);
+    this.tileSets.addValue(seaSet);
+    this.tileSets.addValue(railSet);
     
-    this.configurator.addBrushSize(0, 0);
-    this.configurator.addBrushSize(1, 1);
-    this.configurator.addBrushSize(2, 2);
-    this.configurator.addBrushSize(3, 3);
-    this.configurator.addBrushSize(4, 4);
+    this.brushSizes.addValue(fillBrushSize(0, 0));
+    this.brushSizes.addValue(fillBrushSize(1, 1));
+    this.brushSizes.addValue(fillBrushSize(2, 2));
+    this.brushSizes.addValue(fillBrushSize(3, 3));
+    this.brushSizes.addValue(fillBrushSize(4, 4));
+}
+
+EditorController.prototype.getSizeInfo = function() {
+    const { width, height } = this.brushSizes.getValue();
+    const pageString = this.brushSizes.getPageString();
+    const paintWidth = (width + 1) * 2 - 1;
+    const paintHeight = (height + 1) * 2 - 1;
+
+    return `SIZE: ${paintWidth}x${paintHeight} (${pageString})`;
 }
 
 EditorController.prototype.initCursorEvents = function(gameContext) {
@@ -118,23 +154,55 @@ EditorController.prototype.initCursorEvents = function(gameContext) {
 
     cursor.events.on(Cursor.EVENT.DRAG, ({ button }) => {
         if(button === Cursor.BUTTON.RIGHT) {
-            const { x, y } = getCursorTile(gameContext);
-
-            this.editor.paint(gameContext, x, y);
+            this.draw(gameContext);
         }
     });
 
     cursor.events.on(Cursor.EVENT.BUTTON_CLICK, ({ button }) => {
         if(button === Cursor.BUTTON.RIGHT) {
-            const { x, y } = getCursorTile(gameContext);
-
-            this.editor.paint(gameContext, x, y);
+            this.draw(gameContext);
         }
     });
 }
 
+EditorController.prototype.draw = function(gameContext) {
+    const { x, y } = getCursorTile(gameContext);
+
+    switch(this.mode) {
+        case EditorController.MODE.TILE: {
+            this.editor.paint(gameContext, x, y);
+            break;
+        }
+        case EditorController.MODE.ENTITY: {
+            //TODO(neyn): Add entity placement!
+            break;
+        }
+    }
+}
+
+EditorController.prototype.changeMode = function() {
+    switch(this.mode) {
+        case EditorController.MODE.TILE: {
+            this.mode = EditorController.MODE.ENTITY;
+            break;
+        }
+        case EditorController.MODE.ENTITY: {
+            this.mode = EditorController.MODE.TILE;
+            break;
+        }
+    }
+}
+
+EditorController.prototype.getCurrentSet = function() {
+    switch(this.mode) {
+        case EditorController.MODE.TILE: return this.tileSets.getValue();
+        case EditorController.MODE.ENTITY: return this.entitySets.getValue();
+        default: return this.tileSets.getValue();
+    }
+}
+
 EditorController.prototype.updatePage = function(gameContext, delta) {
-    const palletSize = this.configurator.getCurrentSet().getSize();
+    const palletSize = this.getCurrentSet().getSize();
     const maxPagesNeeded = Math.ceil(palletSize / BUTTON_COUNT);
 
     if(maxPagesNeeded <= 0) {
@@ -147,7 +215,9 @@ EditorController.prototype.updatePage = function(gameContext, delta) {
 }
 
 EditorController.prototype.updateBrushSize = function(gameContext, delta) {
-    this.configurator.scrollBrushSize(delta);
+    const { width, height } = this.brushSizes.scroll(delta);
+
+    this.editor.brush.setSize(width, height);
     this.updateMenuText(gameContext);
 }
 
@@ -235,7 +305,7 @@ EditorController.prototype.resizeCurrentMap = function(camera) {
 }
 
 EditorController.prototype.getPageText = function() {
-    const palletSize = this.configurator.getCurrentSet().getSize();
+    const palletSize = this.getCurrentSet().getSize();
     const maxPagesNeeded = Math.ceil(palletSize / BUTTON_COUNT);
     const showMaxPagesNeeded = maxPagesNeeded === 0 ? 1 : maxPagesNeeded;
     const showCurrentPage = this.pageIndex + 1;
@@ -245,13 +315,27 @@ EditorController.prototype.getPageText = function() {
 
 EditorController.prototype.updateMenuText = function(gameContext) {
     const { language } = gameContext;
-    const nameID = this.configurator.getCurrentSet().name;
+    const nameID = this.getCurrentSet().name;
     const tilesetName = language.getSystemTranslation(nameID);
 
-    this.userInterface.getElement("TEXT_TILESET_MODE").setText("MODE: " + this.editor.getModeName());
     this.userInterface.getElement("TEXT_PAGE").setText(this.getPageText());
-    this.userInterface.getElement("TEXT_SIZE").setText(this.configurator.getSizeInfo());
+    this.userInterface.getElement("TEXT_SIZE").setText(this.getSizeInfo());
     this.userInterface.getElement("TEXT_TILESET").setText(tilesetName);
+
+    switch(this.mode) {
+        case EditorController.MODE.TILE: {
+            this.userInterface.getElement("TEXT_TILESET_MODE").setText("TILE MODE");
+            break;
+        }
+        case EditorController.MODE.ENTITY: {
+            this.userInterface.getElement("TEXT_TILESET_MODE").setText("ENTITY MODE");
+            break;
+        }
+        default: {
+            this.userInterface.getElement("TEXT_TILESET_MODE").setText("NO MODE");
+            break;
+        }
+    }
 }
 
 EditorController.prototype.saveMap = function() {
@@ -329,19 +413,20 @@ EditorController.prototype.initUIEvents = function(gameContext, camera) {
     this.userInterface.addClickByName("BUTTON_AUTO", (e) => this.toggleAutotiler());
 
     this.userInterface.addClickByName("BUTTON_TILESET_MODE", (e) => {
-        this.editor.scrollMode(1);
+        this.changeMode();
         this.pageIndex = 0;
+        this.resetBrush();
         this.updateMenuText(gameContext);
     });
 
     this.userInterface.addClickByName("BUTTON_TILESET_LEFT", (e) => {
-        this.configurator.scrollBrushSet(-1);
+        this.tileSets.loop(-1);
         this.pageIndex = 0;
         this.updateMenuText(gameContext);
     });
 
     this.userInterface.addClickByName("BUTTON_TILESET_RIGHT", (e) => {
-        this.configurator.scrollBrushSet(1);
+        this.tileSets.loop(1);
         this.pageIndex = 0;
         this.updateMenuText(gameContext);
     });

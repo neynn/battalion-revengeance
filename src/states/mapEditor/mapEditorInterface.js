@@ -10,7 +10,8 @@ export const BUTTON_COLUMNS = 7;
 export const BUTTON_COUNT = BUTTON_ROWS * BUTTON_COLUMNS;
 
 const SLOT_START_Y = 100;
-const SELECT_BUTTON_ID_REGION = 100;
+const SLOT_BUTTON_SIZE = 50;
+const SLOT_BUTTON_ID_REGION = 100;
 const OUTLINE_COLOR = getRGBAString(255, 255, 255, 255);
 const HIGHLIGHT_COLOR = getRGBAString(200, 200, 200, 64);
 
@@ -21,7 +22,6 @@ export const MapEditorInterface = function(controller, camera) {
     this.controller = controller;
     this.doImmediate = true;
 
-    this.slotButtonSize = 50;
     this.textColorView = [238, 238, 238, 255];
     this.textColorEdit = [252, 252, 63, 255];
     this.textColorHide = [207, 55, 35, 255];
@@ -34,13 +34,13 @@ MapEditorInterface.prototype.onImmediate = function(gameContext, display) {
     const { tileManager } = gameContext;
     const { context } = display;
     const container = this.getElement("CONTAINER_TILES");
-    const tileSet = this.controller.configurator.getCurrentSet();
+    const tileSet = this.controller.getCurrentSet();
     const pageIndex = this.controller.pageIndex;
-    const scale = this.slotButtonSize / TILE_WIDTH;
+    const scale = SLOT_BUTTON_SIZE / TILE_WIDTH;
 
     let positionX = container._screenX;
     let positionY = container._screenY + SLOT_START_Y;
-    let buttonID = SELECT_BUTTON_ID_REGION;
+    let buttonID = SLOT_BUTTON_ID_REGION;
     let index = 0;
     
     context.fillStyle = HIGHLIGHT_COLOR;
@@ -48,7 +48,7 @@ MapEditorInterface.prototype.onImmediate = function(gameContext, display) {
 
     for(let i = 0; i < BUTTON_ROWS; i++) {
         for(let j = 0; j < BUTTON_COLUMNS; j++) {
-            const buttonFlags = this.doButton(gameContext, buttonID, positionX, positionY, this.slotButtonSize, this.slotButtonSize);
+            const buttonFlags = this.doButton(gameContext, buttonID, positionX, positionY, SLOT_BUTTON_SIZE, SLOT_BUTTON_SIZE);
             const palletIndex = pageIndex * BUTTON_COUNT + index;
             const tileID = tileSet.getValue(palletIndex);
 
@@ -56,10 +56,10 @@ MapEditorInterface.prototype.onImmediate = function(gameContext, display) {
                 this.camera.drawTile(tileManager, tileID, context, positionX, positionY, scale);
 
                 if(buttonFlags & IM_FLAG.HOT) {
-                    context.fillRect(positionX, positionY, this.slotButtonSize, this.slotButtonSize);
+                    context.fillRect(positionX, positionY, SLOT_BUTTON_SIZE, SLOT_BUTTON_SIZE);
                 }
 
-                context.strokeRect(positionX, positionY, this.slotButtonSize, this.slotButtonSize);
+                context.strokeRect(positionX, positionY, SLOT_BUTTON_SIZE, SLOT_BUTTON_SIZE);
             }
 
             if(buttonFlags & IM_FLAG.CLICKED) {
@@ -71,13 +71,13 @@ MapEditorInterface.prototype.onImmediate = function(gameContext, display) {
                 }
             }
 
-            positionX += this.slotButtonSize;
+            positionX += SLOT_BUTTON_SIZE;
             buttonID++;
             index++;
         }
 
         positionX = container._screenX;
-        positionY += this.slotButtonSize;
+        positionY += SLOT_BUTTON_SIZE;
     }
 }
 

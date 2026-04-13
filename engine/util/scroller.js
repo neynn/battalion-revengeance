@@ -38,7 +38,7 @@ Scroller.prototype.getValue = function() {
     return this.values[this.index];
 }
 
-Scroller.prototype.getInfo = function() {
+Scroller.prototype.getPageString = function() {
     const info = `${this.index + 1} / ${this.values.length}`;
 
     return info;
