@@ -2,7 +2,7 @@ import { ExecutionPlan } from "../../engine/action/executionPlan.js";
 import { ACTION_TYPE } from "../enums.js";
 import { createStep } from "../systems/pathfinding.js";
 import { createEntityResolution } from "./interactionResolver.js";
-import { ENTITY_RESOLUTION_SIZE, ENTITY_SNAPSHOT_SIZE, MOVE_STEP_SIZE, packEntityResolution, packEntitySnapshot, unpackEntityResolution, unpackEntitySnapshot } from "./packer_constants.js";
+import { ENTITY_RESOLUTION_SIZE, ENTITY_SNAPSHOT_SIZE, MOVE_STEP_SIZE, packEntityResolution, packEntitySnapshot, packStep, unpackEntityResolution, unpackEntitySnapshot, unpackStep } from "./packer_constants.js";
 import { AttackAction } from "./types/attack.js";
 import { CaptureAction } from "./types/capture.js";
 import { CloakAction } from "./types/cloak.js";
@@ -170,14 +170,7 @@ const packMovePlan = function(data) {
     let byteOffset = MOVE_HEADER_SIZE;
 
     for(let i = 0; i < path.length; i++) {
-        const { deltaX, deltaY, tileX, tileY } = path[i];
-
-        view.setInt8(byteOffset, deltaX);
-        view.setInt8(byteOffset + 1, deltaY);
-        view.setInt16(byteOffset + 2, tileX, true);
-        view.setInt16(byteOffset + 4, tileY, true);
-
-        byteOffset += MOVE_STEP_SIZE;
+        byteOffset = packStep(path[i], view, byteOffset);
     }
 
     return buffer;
@@ -515,13 +508,10 @@ export const unpackPlan = function(buffer) {
             let byteOffset = MOVE_HEADER_SIZE;
 
             for(let i = 0; i < count; i++) {
-                const deltaX = view.getInt8(byteOffset);
-                const deltaY = view.getInt8(byteOffset + 1);
-                const tileX = view.getInt16(byteOffset + 2, true);
-                const tileY = view.getInt16(byteOffset + 4, true);
+                const step = createStep(0, 0);
 
-                data.path.push(createStep(deltaX, deltaY, tileX, tileY));
-                byteOffset += MOVE_STEP_SIZE;
+                data.path.push(step);
+                byteOffset = unpackStep(step, view, byteOffset);
             }
 
             break;

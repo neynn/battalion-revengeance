@@ -9,6 +9,10 @@ import { PlayerState } from "./playerState.js";
 export const SelectState = function() {
     PlayerState.call(this);
 
+    this.targetX = -1;
+    this.targetY = -1;
+    this.goalX = -1;
+    this.goalY = -1;
     this.path = [];
     this.entity = null;
     this.nodeMap = null;
@@ -33,64 +37,49 @@ SelectState.prototype.selectEntity = function(gameContext, stateMachine, entity)
 
     this.entity = entity;
     this.nodeMap = player.inspector.nodeMap;
-    this.onTileChange(gameContext, stateMachine, this.entity.tileX, this.entity.tileY);
+    this.targetX = entity.tileX;
+    this.targetY = entity.tileY;
+    this.goalX = entity.tileX;
+    this.goalY = entity.tileY;
+    this.onTileChange(gameContext, stateMachine, this.targetX, this.targetY);
 }
 
 SelectState.prototype.isTargetValid = function(targetX, targetY) {
-    return this.path.length !== 0 && this.path[0].tileX === targetX && this.path[0].tileY === targetY;
+    return this.path.length !== 0 && this.targetX === targetX && this.targetY === targetY;
 }
 
 SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, tileY) {
     if(this.isTargetValid(tileX, tileY)) {
-        const isValid = this.entity.isPathValid(gameContext, this.path);
-
-        if(isValid) {
-            const player = stateMachine.getContext();
-            const request = createMoveRequest(this.entity.getID(), this.path, MOVE_COMMAND.NONE, EntityManager.INVALID_ID);
-
-            player.addIntent(request);
+        if(this.entity.isMoveTargetValid(gameContext, tileX, tileY)) {
+            if(this.entity.isPathWalkable(gameContext, this.path)) {
+                const player = stateMachine.getContext();
+                const request = createMoveRequest(this.entity.getID(), this.path, MOVE_COMMAND.NONE, EntityManager.INVALID_ID);
+        
+                player.addIntent(request);
+            }
         }
     }
 
     stateMachine.setNextState(gameContext, Player.STATE.IDLE);
 }
 
-SelectState.prototype.getPathX = function() {
-    let pathX = 0;
-
-    if(this.path.length === 0) {
-        pathX = this.entity.tileX;
-    } else {
-        pathX = this.path[0].tileX;
-    }
-
-    return pathX;
-}
-
-SelectState.prototype.getPathY = function() {
-    let pathY = 0;
-
-    if(this.path.length === 0) {
-        pathY = this.entity.tileY;
-    } else {
-        pathY = this.path[0].tileY;
-    }
-
-    return pathY;
-}
-
-SelectState.prototype.splitPath = function(targetX, targetY) {
-    if(targetX === this.entity.tileX && targetY === this.entity.tileY) {
+SelectState.prototype.splitPath = function() {
+    if(this.targetX === this.entity.tileX && this.targetY === this.entity.tileY) {
         this.path.length = 0;
         return true;
     }
 
+    let tileX = this.entity.tileX;
+    let tileY = this.entity.tileY;
+
     for(let i = this.path.length - 1; i >= 0; i--) {
-        const { tileX, tileY } = this.path[i];
+        const { deltaX, deltaY } = this.path[i];
 
-        if(tileX === targetX && tileY === targetY) {
+        tileX += deltaX;
+        tileY += deltaY;
+
+        if(tileX === this.targetX && tileY === this.targetY) {
             this.path.splice(0, i);
-
             return true;
         }
     }
@@ -104,24 +93,25 @@ SelectState.prototype.isAttackPathValid = function(gameContext, entity) {
         return this.entity.getDistanceToEntity(entity) === 1;
     }
 
-    const finalX = this.path[0].tileX;
-    const finalY = this.path[0].tileY;
-    const deltaX = Math.abs(entity.tileX - finalX);
-    const deltaY = Math.abs(entity.tileY - finalY);
+    const deltaX = Math.abs(entity.tileX - this.goalX);
+    const deltaY = Math.abs(entity.tileY - this.goalY);
+    
+    if((deltaX + deltaY) !== 1) {
+        return false;
+    }
 
-    return (deltaX + deltaY) === 1 && this.entity.isPathValid(gameContext, this.path);
+    return this.entity.isMoveTargetValid(gameContext, this.goalX, this.goalY) && this.entity.isPathWalkable(gameContext, this.path);
 }
 
-SelectState.prototype.setOptimalAttackPath = function(gameContext, entity) {
+SelectState.prototype.setOptimalAttackPath = function(gameContext) {
     const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
-    const { tileX, tileY } = entity;
     let bestNode = null;
 
     for(const [deltaX, deltaY, type] of FloodFill.NEIGHBORS) {
-        const neighborX = tileX + deltaX;
-        const neighborY = tileY + deltaY;
+        const neighborX = this.targetX + deltaX;
+        const neighborY = this.targetY + deltaY;
         const isOccupied = worldMap.isTileOccupied(neighborX, neighborY);
 
         if(!isOccupied) {
@@ -155,8 +145,24 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
     const walkAutotiler = tileManager.getAutotilerByID(AUTOTILER_TYPE.PATH);
     const attackAutotiler = tileManager.getAutotilerByID(AUTOTILER_TYPE.PATH);
 
+    this.targetX = tileX;
+    this.targetY = tileY;
+    this.goalX = this.entity.tileX;
+    this.goalY = this.entity.tileY;
+
+    for(let i = this.path.length - 1; i >= 0; i--) {
+        const { deltaX, deltaY } = this.path[i];
+
+        this.goalX += deltaX;
+        this.goalY += deltaY;
+    }
+
+    const deltaX = this.targetX - this.goalX;
+    const deltaY = this.targetY - this.goalY;
+    const absDelta = Math.abs(deltaX) + Math.abs(deltaY);
+
     if(entity) {
-        if(!this.entity.isAllyWith(gameContext, entity)) {
+        if(!this.entity.isAllyWith(gameContext, entity) && this.entity.isAttackValid(gameContext, entity)) {
             switch(this.entity.getRangeType()) {
                 case RANGE_TYPE.RANGE: {
                     //Remove the path if the entity is a ranged attacker.
@@ -165,9 +171,9 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
                 }
                 case RANGE_TYPE.MELEE:
                 case RANGE_TYPE.HYBRID: {
+                    //Recalculates the optimal attack path if the current does not work.
                     if(!this.isAttackPathValid(gameContext, entity)) {
-                        //Recalculates the optimal attack path if the current does not work.
-                        this.setOptimalAttackPath(gameContext, entity);
+                        this.setOptimalAttackPath(gameContext);
                     }
 
                     break;
@@ -188,34 +194,27 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
         return;
     }
 
-    const deltaX = tileX - this.getPathX();
-    const deltaY = tileY - this.getPathY();
-    const absDelta = Math.abs(deltaX) + Math.abs(deltaY);
-
     //If the next step is valid, then check if the path cuts itself.
     //If the path does not cut itself, then check if it's walkable.
     //If it's not walkable, recalculate the optimal path.
     if(absDelta === 1 && this.path.length > 0) {
-        const isSplit = this.splitPath(tileX, tileY);
+        const isSplit = this.splitPath();
 
         if(!isSplit) {
-            this.path.unshift(createStep(deltaX, deltaY, tileX, tileY));
+            this.path.unshift(createStep(deltaX, deltaY));
 
             if(!this.entity.isPathWalkable(gameContext, this.path)) {
                 this.path = getBestPath(gameContext, this.nodeMap, tileX, tileY);
             }
         }
-    } else {
+    } else if(absDelta !== 0) {
         this.path = getBestPath(gameContext, this.nodeMap, tileX, tileY);
     }
 
     player.camera.showEntityPath(walkAutotiler, this.path, this.entity.tileX, this.entity.tileY);
 
     if(this.entity.isJammer()) {
-        const pathX = this.getPathX();
-        const pathY = this.getPathY();
-
-        player.camera.showEntityJammerAt(gameContext, this.entity, pathX, pathY);
+        player.camera.showEntityJammerAt(gameContext, this.entity, this.targetX, this.targetY);
     }
 }
 

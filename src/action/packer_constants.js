@@ -1,9 +1,27 @@
-export const MOVE_STEP_SIZE = 6;
+export const MOVE_STEP_SIZE = 2;
 export const ENTITY_RESOLUTION_SIZE = 6;
 export const ENTITY_SNAPSHOT_SIZE = 31;
 
 const BIT_8 = 1;
 const BIT_16 = 2;
+
+export const packStep = function(step, view, byteOffset) {
+    view.setInt8(byteOffset, step.deltaX);
+    byteOffset += BIT_8;
+    view.setInt8(byteOffset, step.deltaY);
+    byteOffset += BIT_8;
+
+    return byteOffset;
+}
+
+export const unpackStep = function(step, view, byteOffset) {
+    step.deltaX = view.getInt8(byteOffset);
+    byteOffset += BIT_8;
+    step.deltaY = view.getInt8(byteOffset);
+    byteOffset += BIT_8;
+
+    return byteOffset;
+}
 
 export const packEntityResolution = function(resolution, view, byteOffset) {
     view.setInt16(byteOffset, resolution.entityID, true);

@@ -4,7 +4,6 @@ import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { FADE_RATE } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { COMMAND_TYPE, MOVE_COMMAND, PATH_INTERCEPT, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
-import { mInterceptMine, mInterceptPath } from "../../systems/pathfinding.js";
 import { playEntitySound, playUncloakSound } from "../../systems/sound.js";
 import { updateEntitySprite } from "../../systems/sprite.js";
 import { createAttackRequest, createCaptureIntent, createCloakIntent, createHealRequest, createMineTriggerIntent, createUncloakIntent } from "../actionHelper.js";
@@ -18,6 +17,8 @@ export const MoveAction = function() {
     this.state = MoveAction.STATE.NONE;
     this.wasDiscovered = false;
     this.opacity = 0;
+    this.originX = -1;
+    this.originY = -1;
 }
 
 MoveAction.STATE = {
@@ -27,8 +28,7 @@ MoveAction.STATE = {
 
 MoveAction.FLAG = {
     NONE: 0,
-    ELUSIVE: 1 << 0,
-    MINE_DISCOVERED: 1 << 1
+    ELUSIVE: 1 << 0
 };
 
 MoveAction.createData = function() {
@@ -56,6 +56,8 @@ MoveAction.prototype.onStart = function(gameContext, data) {
     this.path = path;
     this.pathIndex = this.path.length - 1;
     this.entity = entity;
+    this.originX = entity.tileX;
+    this.originY = entity.tileY;
 
     worldMap.addMoving(entity.getIndex());
 }
@@ -81,15 +83,15 @@ MoveAction.prototype.onUpdate = function(gameContext, data) {
             let oversteps = Math.max(overstepX, overstepY);
 
             while(this.pathIndex >= 0 && oversteps > 0) {
-                const { deltaX, deltaY, tileX, tileY } = this.path[this.pathIndex];
+                const { deltaX, deltaY } = this.path[this.pathIndex];
 
                 this.entity.clearOffset();
-                this.entity.setTile(tileX, tileY);
+                this.entity.updateTile(deltaX, deltaY);
                 this.entity.setDirectionByDelta(deltaX, deltaY);
                 this.pathIndex--;
                 oversteps--;
 
-                if(!this.wasDiscovered && this.entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.entity.isDiscoveredByJammerAt(gameContext, tileX, tileY)) {
+                if(!this.wasDiscovered && this.entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.entity.isDiscoveredByJammer(gameContext)) {
                     this.state = MoveAction.STATE.DISCOVERED;
                     this.wasDiscovered = true;
 
@@ -127,8 +129,10 @@ MoveAction.prototype.onEnd = function(gameContext, data) {
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
 
+    //Put entity back on origin.
+    //Client would otherwise bug out because it modifies tileX, tileY itself.
+    this.entity.setTile(this.originX, this.originY);
     this.execute(gameContext, data);
-
     this.entity.setState(BattalionEntity.STATE.IDLE);
     this.entity.clearOffset();
 
@@ -142,32 +146,30 @@ MoveAction.prototype.onEnd = function(gameContext, data) {
     this.state = MoveAction.STATE.NONE;
     this.wasDiscovered = false;
     this.opacity = 0;
+    this.originX = -1;
+    this.originY = -1;
 }
 
 MoveAction.prototype.execute = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
     const { entityID, path, flags } = data;
-    const { tileX, tileY, deltaX, deltaY } = path[path.length - 1];
     const entity = entityManager.getEntity(entityID);
     const team = entity.getTeam(gameContext);
+    let isDiscovered = false;
 
-    //Remove the entity from the origin.
-    //Client would otherwise bug out because it modifies tileX, tileY itself.
-    const originX = tileX - deltaX;
-    const originY = tileY - deltaY;
-
-    entity.setTile(originX, originY);
     entity.removeFromMap(gameContext);
     entity.setFlag(BattalionEntity.FLAG.HAS_MOVED);
     entity.clearFlag(BattalionEntity.FLAG.CAN_MOVE);
 
     for(let i = path.length - 1; i >= 0; i--) {
-        const { tileX, tileY } = path[i];
+        const { deltaX, deltaY } = path[i];
 
-        if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && entity.isDiscoveredByJammerAt(gameContext, tileX, tileY)) {
+        entity.updateTile(deltaX, deltaY);
+
+        if(!isDiscovered && entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && entity.isDiscoveredByJammer(gameContext)) {
             entity.setUncloaked();
-            break;
+            isDiscovered = true;
         }
     }
 
@@ -175,24 +177,21 @@ MoveAction.prototype.execute = function(gameContext, data) {
         entity.triggerElusive();
     }
 
-    const lastTileX = path[0].tileX;
-    const lastTileY = path[0].tileY;
     const lastDeltaX = path[0].deltaX;
     const lastDeltaY = path[0].deltaY;
 
-    entity.setTile(lastTileX, lastTileY);
     entity.setDirectionByDelta(lastDeltaX, lastDeltaY);
     entity.placeOnMap(gameContext);
     team.addStatistic(TEAM_STAT.UNITS_MOVED, 1);
 
-    if(flags & MoveAction.FLAG.MINE_DISCOVERED) {
+    if(entity.discoversMine(gameContext)) {
         team.addStatistic(TEAM_STAT.MINES_DISCOVERED, 1);
     }
 }
 
 MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
-    const { entityManager, mapManager } = world;
+    const { entityManager } = world;
     const { entityID, path, command, targetID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
 
@@ -200,46 +199,47 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
         return;
     }
 
-    if(!entity.isMoveable() || entity.isDead() || !entity.isPathValid(gameContext, path)) {
+    let targetX = entity.tileX;
+    let targetY = entity.tileY;
+
+    for(let i = path.length - 1; i >= 0; i--) {
+        const { deltaX, deltaY } = path[i];
+
+        targetX += deltaX;
+        targetY += deltaY;
+    }
+
+    if(!entity.isMoveable() || entity.isDead() || !entity.isMoveTargetValid(gameContext, targetX, targetY) || !entity.isPathWalkable(gameContext, path)) {
         return;
     }
 
-    const { teamID } = entity;
     const newPath = [];
 
     //Copies the path, which is essential for keeping the intent valid!
     for(let i = 0; i < path.length; i++) {
-        newPath.push(path[i]);
+        newPath[i] = path[i];
     }
 
-    const intercept = mInterceptPath(gameContext, teamID, newPath);
+    const intercept = entity.mInterceptPath(gameContext, newPath);
 
     if(newPath.length === 0 || intercept === PATH_INTERCEPT.ILLEGAL) {
         console.error("EDGE CASE: Stealth unit was too close!");
         return;
     }
 
-    const mineIntercept = mInterceptMine(gameContext, entity, newPath);
+    const mineIntercept = entity.mInterceptMine(gameContext, newPath);
 
     if(mineIntercept === PATH_INTERCEPT.MINE) {
         executionPlan.addNext(createMineTriggerIntent(entityID));
     } 
 
-    const targetX = newPath[0].tileX;
-    const targetY = newPath[0].tileY;
-    const worldMap = mapManager.getActiveMap();
-    const mine = worldMap.getMine(targetX, targetY);
     let flags = MoveAction.FLAG.NONE;
 
-    if(mine && mine.isHidden() && mine.isEnemy(gameContext, teamID)) {
-        flags |= MoveAction.FLAG.MINE_DISCOVERED;
-    }
-
-    //Follow-Up commands are ignored if there is no target.
-    //Follow-Up commands only work on neighboring entities.
-    //If a Follow-Up command is given but is invalid, the move is canceled.
-    //Move is NOT canceled if ANY intercept is triggered! Otherwise information might leak.
     switch(command) {
+        //Follow-Up commands are ignored if there is no target.
+        //Follow-Up commands only work on neighboring entities.
+        //If a Follow-Up command is given but is invalid, the move is canceled.
+        //Move is NOT canceled if ANY intercept is triggered! Otherwise information might leak.
         case MOVE_COMMAND.HEAL: {
             const targetEntity = entityManager.getEntity(targetID);
 

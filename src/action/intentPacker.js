@@ -1,7 +1,7 @@
 import { ACTION_TYPE, COMMAND_TYPE } from "../enums.js";
 import { createStep } from "../systems/pathfinding.js";
 import { createAttackRequest, createEndTurnIntent, createHealRequest, createMoveRequest, createProduceIntent, createPurchaseIntent } from "./actionHelper.js";
-import { MOVE_STEP_SIZE } from "./packer_constants.js";
+import { MOVE_STEP_SIZE, packStep, unpackStep } from "./packer_constants.js";
 
 /*
     0x00 -> type,
@@ -124,14 +124,7 @@ const packMoveIntent = function(data) {
     let byteOffset = MOVE_HEADER_SIZE;
 
     for(let i = 0; i < path.length; i++) {
-        const { deltaX, deltaY, tileX, tileY } = path[i];
-
-        view.setInt8(byteOffset, deltaX);
-        view.setInt8(byteOffset + 1, deltaY);
-        view.setInt16(byteOffset + 2, tileX, true);
-        view.setInt16(byteOffset + 4, tileY, true);
-
-        byteOffset += MOVE_STEP_SIZE;
+        byteOffset = packStep(path[i], view, byteOffset);
     }
 
     return buffer;
@@ -235,13 +228,10 @@ export const unpackIntent = function(data) {
             let byteOffset = MOVE_HEADER_SIZE;
 
             for(let i = 0; i < pathLength; i++) {
-                const deltaX = view.getInt8(byteOffset);
-                const deltaY = view.getInt8(byteOffset + 1);
-                const tileX = view.getInt16(byteOffset + 2, true);
-                const tileY = view.getInt16(byteOffset + 4, true);
+                const step = createStep(0, 0);
 
-                path.push(createStep(deltaX, deltaY, tileX, tileY));
-                byteOffset += MOVE_STEP_SIZE;
+                path.push(step);
+                byteOffset = unpackStep(step, view, byteOffset);
             }
 
             return createMoveRequest(entityID, path, command, targetID);

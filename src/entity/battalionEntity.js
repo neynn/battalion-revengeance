@@ -6,7 +6,7 @@ import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { createNode, mGetLowestCostNode } from "../systems/pathfinding.js";
 import { getDirectionByDelta, getDirectionVector } from "../systems/direction.js";
-import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE } from "../enums.js";
+import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE, PATH_INTERCEPT } from "../enums.js";
 import { mapTransportToEntity } from "../enumHelpers.js";
 import { getLineEntities } from "../systems/targeting.js";
 import { TeamManager } from "../team/teamManager.js";
@@ -208,6 +208,11 @@ BattalionEntity.prototype.setHealth = function(health) {
 
 BattalionEntity.prototype.hasTrait = function(traitID) {
     return this.config.hasTrait(traitID);
+}
+
+BattalionEntity.prototype.updateTile = function(deltaX, deltaY) {
+    this.tileX += deltaX;
+    this.tileY += deltaY;
 }
 
 BattalionEntity.prototype.setTile = function(tileX, tileY) {
@@ -556,13 +561,13 @@ BattalionEntity.prototype.isPathWalkable = function(gameContext, path) {
     const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
-    let currentX = this.tileX;
-    let currentY = this.tileY;
+    let nextX = this.tileX;
+    let nextY = this.tileY;
     let totalCost = 0;
 
     //Path[0] is the target.
     for(let i = path.length - 1; i >= 0; i--) {
-        const { deltaX, deltaY, tileX, tileY } = path[i];
+        const { deltaX, deltaY } = path[i];
         const totalDelta = Math.abs(deltaX) + Math.abs(deltaY);
 
         //Entities can only move one tile at a time.
@@ -570,24 +575,19 @@ BattalionEntity.prototype.isPathWalkable = function(gameContext, path) {
             return false;
         }
 
-        //Are tileX and tileY correct?
-        if(currentX + deltaX !== tileX || currentY + deltaY !== tileY) {
-            return false;
-        }
+        nextX += deltaX;
+        nextY += deltaY;
 
-        currentX += deltaX;
-        currentY += deltaY;
-
-        const index = worldMap.getIndex(currentX, currentY);
+        const index = worldMap.getIndex(nextX, nextY);
 
         //The target is out of bounds
         if(index === WorldMap.OUT_OF_BOUNDS) {
             return false;
         }
 
-        const tileType = worldMap.getTileType(gameContext, tileX, tileY);
+        const tileType = worldMap.getTileType(gameContext, nextX, nextY);
 
-        totalCost += this.getTileCost(gameContext, worldMap, tileType, tileX, tileY);
+        totalCost += this.getTileCost(gameContext, worldMap, tileType, nextX, nextY);
 
         if(totalCost > this.config.movementRange) {
             return false;
@@ -597,21 +597,70 @@ BattalionEntity.prototype.isPathWalkable = function(gameContext, path) {
     return true;
 }
 
-BattalionEntity.prototype.isPathValid = function(gameContext, path) {
-    if(path.length === 0) {
-        return false;
-    }
-
+BattalionEntity.prototype.isMoveTargetValid = function(gameContext, targetX, targetY) {
     const { world } = gameContext;
-    const targetX = path[0].tileX;
-    const targetY = path[0].tileY;
     const tileEntity = world.getEntityAt(targetX, targetY);
 
     if(tileEntity && tileEntity.isVisibleTo(gameContext, this.teamID)) {
         return false;
     }
 
-    return this.isPathWalkable(gameContext, path);
+    return true;
+}
+
+BattalionEntity.prototype.mInterceptPath = function(gameContext, mPath) {
+    const { world } = gameContext;
+    let nextX = this.tileX;
+    let nextY = this.tileY;
+    let elementsToDelete = mPath.length;
+
+    for(let i = mPath.length - 1; i >= 0; i--) {
+        const { deltaX, deltaY } = mPath[i];
+
+        nextX += deltaX;
+        nextY += deltaY;
+
+        const entity = world.getEntityAt(nextX, nextY);
+
+        if(!entity) {
+            elementsToDelete = i;
+        } else if(!entity.isVisibleTo(gameContext, this.teamID)) {
+            mPath.splice(0, elementsToDelete);
+
+            if(elementsToDelete !== i + 1) {
+                return PATH_INTERCEPT.ILLEGAL;
+            }
+
+            return PATH_INTERCEPT.VALID;
+        }
+    }
+
+    return PATH_INTERCEPT.NONE;
+}
+
+BattalionEntity.prototype.mInterceptMine = function(gameContext, mPath) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    let nextX = this.tileX;
+    let nextY = this.tileY;
+
+    for(let i = mPath.length - 1; i >= 0; i--) {
+        const { deltaX, deltaY } = mPath[i];
+
+        nextX += deltaX;
+        nextY += deltaY;
+
+        const mine = worldMap.getMine(nextX, nextY);
+
+        if(mine && this.triggersMine(gameContext, mine)) {
+            mPath.splice(0, i);
+
+            return PATH_INTERCEPT.MINE;
+        }
+    }
+
+    return PATH_INTERCEPT.NONE;
 }
 
 BattalionEntity.prototype.getTerrainTypes = function(gameContext) {
@@ -1236,6 +1285,10 @@ BattalionEntity.prototype.getUncloakedEntities = function(gameContext) {
     return uncloakedEntities;
 }
 
+BattalionEntity.prototype.isDiscoveredByJammer = function(gameContext) {
+    return this.isDiscoveredByJammerAt(gameContext, this.tileX, this.tileY);
+}
+
 BattalionEntity.prototype.isDiscoveredByJammerAt = function(gameContext, tileX, tileY) {
     //UNFAIR entities ignore jammers.
     if(this.hasTrait(TRAIT_TYPE.UNFAIR)) {
@@ -1581,6 +1634,19 @@ BattalionEntity.prototype.setPurchased = function() {
     this.turns = 0;
 }
 
+BattalionEntity.prototype.discoversMine = function(gameContext) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const mine = worldMap.getMine(this.tileX, this.tileY);
+
+    if(!mine) {
+        return false;
+    }
+
+    return mine.isHidden() && mine.isEnemy(gameContext, this.teamID);
+}
+ 
 BattalionEntity.prototype.triggersMine = function(gameContext, mine) {
     const damage = mine.getDamage(this.config.movementType);
 

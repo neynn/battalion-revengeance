@@ -1,48 +1,5 @@
-import { PATH_FLAG, PATH_INTERCEPT } from "../enums.js";
+import { DIRECTION, PATH_FLAG } from "../enums.js";
 import { EntityType } from "../type/parsed/entityType.js";
-
-export const mInterceptPath = function(gameContext, teamID, mPath) {
-    const { world } = gameContext;
-    let elementsToDelete = mPath.length;
-
-    for(let i = mPath.length - 1; i >= 0; i--) {
-        const { tileX, tileY } = mPath[i];
-        const entity = world.getEntityAt(tileX, tileY);
-
-        if(!entity) {
-            elementsToDelete = i;
-        } else if(!entity.isVisibleTo(gameContext, teamID)) {
-            mPath.splice(0, elementsToDelete);
-
-            if(elementsToDelete !== i + 1) {
-                return PATH_INTERCEPT.ILLEGAL;
-            }
-
-            return PATH_INTERCEPT.VALID;
-        }
-    }
-
-    return PATH_INTERCEPT.NONE;
-}
-
-export const mInterceptMine = function(gameContext, entity, mPath) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-
-    for(let i = mPath.length - 1; i >= 0; i--) {
-        const { tileX, tileY } = mPath[i];
-        const mine = worldMap.getMine(tileX, tileY);
-
-        if(mine && entity.triggersMine(gameContext, mine)) {
-            mPath.splice(0, i);
-
-            return PATH_INTERCEPT.MINE;
-        }
-    }
-
-    return PATH_INTERCEPT.NONE;
-}
 
 export const mGetLowestCostNode = function(queue) {
     let lowestNode = queue[0];
@@ -73,13 +30,40 @@ export const createNode = function(id, x, y, cost, type, parent, flags) {
     }
 }
 
-export const createStep = function(deltaX, deltaY, tileX, tileY) {
+export const createStep = function(deltaX, deltaY) {
     return {
         "deltaX": deltaX,
-        "deltaY": deltaY,
-        "tileX": tileX,
-        "tileY": tileY
+        "deltaY": deltaY
     }
+}
+
+export const directionToStep = function(direction) {
+    const step = createStep(0, 0);
+
+    switch(direction) {
+        case DIRECTION.NORTH: {
+            step.deltaX = 0;
+            step.deltaY = -1;
+            break;
+        }
+        case DIRECTION.EAST: {
+            step.deltaX = 1;
+            step.deltaY = 0;
+            break;
+        }
+        case DIRECTION.SOUTH: {
+            step.deltaX = 0;
+            step.deltaY = 1
+            break;
+        }
+        case DIRECTION.WEST: {
+            step.deltaX = -1;
+            step.deltaY = 0;
+            break;
+        }
+    }
+
+    return step;
 }
 
 export const isNodeReachable = function(node) {
@@ -119,7 +103,7 @@ export const getBestPath = function(gameContext, nodes, targetX, targetY) {
         const deltaX = lastX - x;
         const deltaY = lastY - y;
 
-        path.push(createStep(deltaX, deltaY, lastX, lastY));
+        path.push(createStep(deltaX, deltaY));
 
         i++;
         lastX = x;

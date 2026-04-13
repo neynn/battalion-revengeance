@@ -160,32 +160,34 @@ BattalionCamera.prototype.showEntityPath = function(autotiler, path, entityX, en
     this.pathOverlay.clear();
 
     for(let i = path.length - 1; i >= 0; i--) {
-        const { tileX, tileY } = path[i];
-
+        const { deltaX, deltaY } = path[i];
+        const currentX = previousX + deltaX;
+        const currentY = previousY + deltaY;
+        
         if(i > 0) {
-            nextX = path[i - 1].tileX;
-            nextY = path[i - 1].tileY;
+            nextX = currentX + path[i - 1].deltaX;
+            nextY = currentY + path[i - 1].deltaY;
         } else {
             nextX = -2;
             nextY = -2;
         }
 
-        tileID = autotiler.run(tileX, tileY, (currentX, currentY) => {
-            if(previousX === currentX && previousY === currentY) {
+        tileID = autotiler.run(currentX, currentY, (x, y) => {
+            if(previousX === x && previousY === y) {
                 return Autotiler.RESPONSE.VALID;
             }
 
-            if(nextX === currentX && nextY === currentY) {
+            if(nextX === x && nextY === y) {
                 return Autotiler.RESPONSE.VALID;
             }
 
             return Autotiler.RESPONSE.INVALID;
         });
 
-        previousX = tileX;
-        previousY = tileY;
+        previousX = currentX;
+        previousY = currentY;
 
-        this.pathOverlay.add(tileID, tileX, tileY);
+        this.pathOverlay.add(tileID, currentX, currentY);
     }
 
     //Put the starting node.
