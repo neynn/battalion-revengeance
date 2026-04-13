@@ -29,13 +29,6 @@ LanguageHandler.EVENT = {
     LANGUAGE_CHANGE: "LANGUAGE_CHANGE"
 };
 
-LanguageHandler.TEST_CODE = {
-    VALID: 0,
-    INVALID_INPUT: 1,
-    MISSING_TRANSLATION: 2,
-    EMPTY_TRANSLATION: 3
-};
-
 LanguageHandler.getKey = function(languageID) {
     switch(languageID) {
         case LanguageHandler.LANGUAGE.ENGLISH: return "en-US";
@@ -129,24 +122,6 @@ LanguageHandler.prototype.loadSystemText = function(files) {
             }
         }
     }
-}
-
-LanguageHandler.prototype.getSystemTranslationCode = function(key) {
-    if(typeof key !== "string") {
-        return LanguageHandler.TEST_CODE.INVALID_INPUT;
-    }
-
-    const translation = this.systemText.get(key);
-
-    if(translation === undefined) {
-        return LanguageHandler.TEST_CODE.MISSING_TRANSLATION;
-    }
-
-    if(translation.length === 0) {
-        return LanguageHandler.TEST_CODE.EMPTY_TRANSLATION;
-    }
-
-    return LanguageHandler.TEST_CODE.VALID;
 }
 
 LanguageHandler.prototype.getSystemTranslation = function(key) {

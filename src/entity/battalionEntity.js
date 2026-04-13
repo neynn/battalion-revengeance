@@ -172,7 +172,19 @@ BattalionEntity.prototype.getHealthAfterHeal = function(heal = 0) {
     return health;
 }
 
-BattalionEntity.prototype.getHealthAfterDamage = function(damage = 0) {
+BattalionEntity.prototype.getClampedHealth = function(health = 0) {
+    if(health <= 0) {
+        return 0;
+    }
+
+    if(health >= this.maxHealth) {
+        return this.maxHealth;
+    }
+
+    return health;
+}
+
+BattalionEntity.prototype.getHealthAfterAttack = function(damage = 0) {
     const health = Math.floor(this.health - damage);
 
     if(health <= 0) {
@@ -1390,7 +1402,7 @@ BattalionEntity.prototype.mResolveAttackTraits = function(resolver) {
 
     } else if(this.hasTrait(TRAIT_TYPE.OVERHEAT)) {
         const overheatDamage = this.getOverheatDamage();
-        const overheatHealth = this.getHealthAfterDamage(overheatDamage);
+        const overheatHealth = this.getHealthAfterAttack(overheatDamage);
 
         resolver.add(this.id, overheatDamage, overheatHealth);
 

@@ -2,6 +2,8 @@ import { getCursorTile } from "./camera/contextHelper.js";
 import { Display } from "./camera/display.js";
 import { DEBUG } from "./debug.js";
 
+const RESIZE_BUFFER_TIME = 0.2;
+
 export const GameWindow = function() {
     this.isResizeQueued = false;
     this.timeUntilResize = 0;
@@ -14,8 +16,6 @@ export const GameWindow = function() {
     window.addEventListener("resize", () => this.queueResize());
 }
 
-GameWindow.RESIZE_BUFFER_TIME = 0.2;
-
 GameWindow.prototype.update = function(gameContext) {
     const { uiManager, renderer, timer } = gameContext;
 
@@ -24,7 +24,7 @@ GameWindow.prototype.update = function(gameContext) {
 
         this.timeUntilResize += deltaTime;
 
-        if(this.timeUntilResize >= GameWindow.RESIZE_BUFFER_TIME) {
+        if(this.timeUntilResize >= RESIZE_BUFFER_TIME) {
             this.isResizeQueued = false;
             this.timeUntilResize = 0;
             this.width = window.innerWidth;

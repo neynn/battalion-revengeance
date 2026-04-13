@@ -77,7 +77,7 @@ MineTriggerAction.prototype.fillExecutionPlan = function(gameContext, executionP
         return;
     }
 
-    const health = entity.getHealthAfterDamage(damage);
+    const health = entity.getHealthAfterAttack(damage);
 
     if(health <= 0) {
         executionPlan.addNext(createDeathIntent([entityID]));

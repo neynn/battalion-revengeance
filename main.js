@@ -4,7 +4,7 @@ import { PrettyJSON } from "./engine/resources/prettyJSON.js";
 import { generateAutoSheet, makeLanguageFile } from "./helpers.js";
 import { BattalionContext } from "./src/battalionContext.js";
 import { validateTraitTypes } from "./src/type/validateTypes.js";
-import { tAllNamesAndDescriptionsPresent } from "./test.js";
+import { tAllNamesAndDescriptionsPresent } from "./test/language.js";
 
 const DO_TEST = false;
 const gameContext = new BattalionContext();

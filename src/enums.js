@@ -33,6 +33,7 @@ export const LOADER_RULE = {
 };
 
 export const TRAIT_CONFIG = {
+    REPAIR_VALUE: 5,
     CEMENTED_STEEL_ARMOR_REDUCTION: 20,
     SHRAPNEL_RANGE: 1,
     SHRAPNEL_DAMAGE: 0.5,
@@ -324,7 +325,8 @@ export const TRAIT_TYPE = {
     CRAB: 60,
     UNBUILT: 61,
     ENGINEER: 62,
-    _COUNT: 63
+    REPAIR: 63,
+    _COUNT: 64
 };
 
 export const MOVEMENT_TYPE = {

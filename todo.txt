@@ -3,8 +3,6 @@ repairAction -> start repair and finish repair on the next active turn. onHit ->
 Model for Destroyer
 Data for Destroyer
 
-Maintenance trait that heals 5HP every ROUND. StartTurn -> query entities -> filter by MAINTENANCE -> heal
-
 train as transport.
 
 MapEditor:

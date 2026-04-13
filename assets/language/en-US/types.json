@@ -266,6 +266,9 @@
     "ENTITY_NAME_MEME_BUREAUCRAT": "Bureaucrat",
     "ENTITY_DESC_MEME_BUREAUCRAT": "This specimen of fucking idiot shithead subhuman animal bitch goes to work at 10:00AM, scratches his ass until 12:00AM then leaves at 14:00AM. He will send you on an endless chase for approvals, signatures and requests, all the while acting so superior. Wtf is wrong with you, you dumb bitch? Don't you realize you can easily be replaced by a monkey with a typewritter? I yearn for the day when you are replaced by robots, and if that day does not come then all of humanity must join together and genocide all bureaucrats.",
 
+    "TRAIT_NAME_REPAIR": "Repair",
+    "TRAIT_DESC_REPAIR": "This unit heals 5HP every turn.",
+
     "TRAIT_NAME_ENGINEER": "Engineer",
     "TRAIT_DESC_ENGINEER": "This unit can construct obstacles and towers.",
 

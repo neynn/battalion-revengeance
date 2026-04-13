@@ -32,7 +32,7 @@ InteractionResolver.prototype.addHeal = function(entity, heal) {
 }
 
 InteractionResolver.prototype.addAttack = function(entity, damage) {
-    this.add(entity.getID(), damage, entity.getHealthAfterDamage(damage));
+    this.add(entity.getID(), damage, entity.getHealthAfterAttack(damage));
     this.totalDamage += damage;
     this.resourceDamage += Math.floor(entity.getDamageAsResources(damage));
 }

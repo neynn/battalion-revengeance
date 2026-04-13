@@ -1,4 +1,9 @@
 {
+    "REPAIR": {
+        "name": "TRAIT_NAME_REPAIR",
+        "desc": "TRAIT_DESC_REPAIR",
+        "icon": "SUPPLY_DISTRIBUTION"
+    },
     "ENGINEER": {
         "name": "TRAIT_NAME_ENGINEER",
         "desc": "TRAIT_DESC_ENGINEER",

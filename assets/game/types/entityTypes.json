@@ -1582,7 +1582,7 @@
         "movementType": "STATIONARY",
         "name": "ENTITY_NAME_TURRET",
         "desc": "ENTITY_DESC_TURRET",
-        "traits": ["FIXED"],
+        "traits": ["FIXED", "REPAIR"],
         "sounds": {
             "move": "turret_move",
             "fire": "turret_fire"

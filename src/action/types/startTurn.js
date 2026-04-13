@@ -1,5 +1,5 @@
 import { Action } from "../../../engine/action/action.js";
-import { INTERRUPT_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { INTERRUPT_TYPE, TEAM_STAT, TRAIT_CONFIG, TRAIT_TYPE } from "../../enums.js";
 import { TeamManager } from "../../team/teamManager.js";
 import { createDeathIntent, createInterruptIntent, createUncloakIntent } from "../actionHelper.js";
 import { fillEntityResolution } from "../interactionResolver.js";
@@ -105,19 +105,29 @@ StartTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPla
     for(const entityID of entities) {
         const entity = entityManager.getEntity(entityID);
 
-        if(entity) {
-            const damage = entity.getTerrainDamage(gameContext);
-            const health = entity.getHealthAfterDamage(damage);
+        if(!entity) {
+            continue;
+        }
 
-            if(health <= 0) {
-                deadEntities.push(entityID);
-            } else if(entity.hasTrait(TRAIT_TYPE.RADAR)) {
-                executionPlan.addNext(createUncloakIntent(entityID));
-            }
+        const { health } = entity;
+        const damage = entity.getTerrainDamage(gameContext);
+        let nextHealth = health - damage;
 
-            if(damage !== 0) {
-                resolutions.push(fillEntityResolution(entityID, damage, health));
-            }
+        if(entity.hasTrait(TRAIT_TYPE.REPAIR)) {
+            nextHealth += TRAIT_CONFIG.REPAIR_VALUE;
+        }
+
+        if(nextHealth <= 0) {
+            deadEntities.push(entityID);
+        } else if(entity.hasTrait(TRAIT_TYPE.RADAR)) {
+            executionPlan.addNext(createUncloakIntent(entityID));
+        }
+
+        if(nextHealth !== health) {
+            const health = entity.getClampedHealth(nextHealth);
+            const delta = health - nextHealth;
+
+            resolutions.push(fillEntityResolution(entityID, delta, nextHealth));
         }
     }
 
