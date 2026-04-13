@@ -9,7 +9,7 @@ const BUTTON_ID_REGION = 100;
 export const ArenaUI = function() {
     UIContext.call(this);
 
-    this.isImmediate = true;
+    this.doImmediate = true;
 
     this.style = new TextStyle();
     this.style.setAlignment(TextStyle.ALIGN.MIDDLE);

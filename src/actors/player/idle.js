@@ -16,7 +16,10 @@ IdleState.prototype.onEnter = function(gameContext, stateMachine, enterData) {
     player.camera.clearOverlays();
 }
 
-IdleState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {
+IdleState.prototype.onEntityClick = function(gameContext, stateMachine, entity) {
+    const { teamID } = stateMachine.getContext();
+    const isControlled = entity.belongsTo(teamID);
+
     if(isControlled && entity.isSelectable()) {
         stateMachine.setNextState(gameContext, Player.STATE.SELECT, { "entity": entity });
     }

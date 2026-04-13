@@ -5,7 +5,7 @@ import { BattalionMapEditor } from "./battalionMapEditor.js"
 import { MapEditorInterface } from "./mapEditorInterface.js";
 
 export const MapEditorState = function() {
-    this.controller = null;
+    this.interfaceID = -1;
     this.contextID = -1;
 }
 
@@ -14,30 +14,30 @@ MapEditorState.prototype.constructor = MapEditorState;
 
 MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
     const mapEditor = new BattalionMapEditor();
-    const userInterface = new MapEditorInterface();
+    const controller = new EditorController(mapEditor);
     const context = createEditCamera(gameContext, mapEditor.brush);
     const camera = context.getCamera();
-    const controller = new EditorController(mapEditor, userInterface, camera);
-    const palletButtons = userInterface.createPalletButtons();
+    const userInterface = new MapEditorInterface(controller, camera);
 
     userInterface.load(gameContext);
-    controller.initPalletButtons(gameContext, palletButtons, camera);
+
+    controller.userInterface = userInterface;
     controller.initCursorEvents(gameContext);
-    controller.initUIEvents(gameContext);
+    controller.initUIEvents(gameContext, camera);
     controller.initCommands(gameContext);
     controller.updateMenuText(gameContext);
 
-    this.controller = controller;
+    this.interfaceID = userInterface.getID();
     this.contextID = context.getID();
 }
 
 MapEditorState.prototype.onExit = function(gameContext, stateMachine) {
     const { uiManager, renderer } = gameContext;
 
-    uiManager.destroyContext(this.controller.userInterface.getID());
+    uiManager.destroyContext(this.interfaceID);
     renderer.destroyContext(this.contextID);
 
-    this.controller = null;
+    this.interfaceID = -1;
     this.contextID = -1;
 
     gameContext.exit();

@@ -13,15 +13,16 @@ export const IM_FLAG = {
 export const UIContext = function() {
     Graph.call(this);
 
-    this.previousHot = null;
-    this.collisions = 0;
     this.names = new Map();
     this.elements = new Map();
     this.clickCallbacks = new Map();
 
+    this.previousHot = null;
+    this.collisions = 0;
+
     this.hotWidget = -1;
     this.activeWidget = -1;
-    this.isImmediate = false;
+    this.doImmediate = false;
 }
 
 UIContext.EMPTY_ELEMENT = new UIElement("EMPTY");

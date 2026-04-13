@@ -41,7 +41,7 @@ export const PlayUI = function(inspector, cContext, player) {
     UIContext.call(this);
 
     this.player = player;
-    this.isImmediate = true;
+    this.doImmediate = true;
     this.inspector = inspector;
     this.cContext = cContext;
     this.inspectSprite = SpriteManager.EMPTY_SPRITE;

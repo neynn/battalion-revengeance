@@ -19,7 +19,7 @@ const DIFFICULTY_ID_REGION = 300;
 export const StoryUI = function() {
     UIContext.call(this);
 
-    this.isImmediate = true;
+    this.doImmediate = true;
     this.lines = [];
     this.lastMission = null;
 

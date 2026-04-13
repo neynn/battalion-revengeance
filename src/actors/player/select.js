@@ -282,16 +282,19 @@ SelectState.prototype.getHealRequest = function(entity) {
     }
 
     return request;
-} 
+}
 
-SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity, isAlly, isControlled) {
+SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity) {
     if(entity === this.entity) {
         stateMachine.setNextState(gameContext, Player.STATE.IDLE);
         //TODO: Open ContextMenu.
         return;
     }
 
+    const { teamManager } = gameContext;
     const player = stateMachine.getContext();
+    const isAlly = teamManager.isAlly(player.teamID, entity.teamID);
+    const isControlled = entity.belongsTo(player.teamID);
 
     if(!isAlly) {
         if(this.entity.isAttackValid(gameContext, entity)) {

@@ -9,18 +9,16 @@ import { Cursor } from "../../../engine/client/cursor/cursor.js";
 import { BrushSet } from "../../../engine/map/editor/brushSet.js";
 import { TILE_ID } from "../../enums.js";
 import { EditorConfigurator } from "../../../engine/map/editor/configurator.js";
+import { BUTTON_COUNT } from "./mapEditorInterface.js";
 import { TileManager } from "../../../engine/tile/tileManager.js";
-import { TILE_WIDTH } from "../../../engine/engine_constants.js";
 
-export const EditorController = function(mapEditor, userInterface, camera2D) {
+export const EditorController = function(mapEditor) {
     this.editor = mapEditor;
-    this.userInterface = userInterface;
-    this.camera2D = camera2D;
+    this.userInterface = null;
     this.configurator = new EditorConfigurator(mapEditor);
     this.maxWidth = 100;
     this.maxHeight = 100;
     this.buttonHandler = new ButtonHandler();
-    this.buttonCount = 49;
     this.pageIndex = 0;
     this.defaultWidth = 20;
     this.defaultHeight = 20;
@@ -38,14 +36,14 @@ EditorController.LAYER_BUTTON = {
 };
 
 EditorController.prototype.initConfigurator = function() {
-    const allSet = new BrushSet("MAP_EDITOR_SET_NAME_ALL");
-    const canyonSet = new BrushSet("MAP_EDITOR_SET_NAME_CANYON");
-    const roadSet = new BrushSet("MAP_EDITOR_SET_NAME_ROAD");
-    const groundSet = new BrushSet("MAP_EDITOR_SET_NAME_GROUND");
-    const shoreSet = new BrushSet("MAP_EDITOR_SET_NAME_SHORE");
-    const riverSet = new BrushSet("MAP_EDITOR_SET_NAME_RIVER");
-    const seaSet = new BrushSet("MAP_EDITOR_SET_NAME_SEA");
-    const railSet = new BrushSet("MAP_EDITOR_SET_NAME_RAIL");
+    const allSet = new BrushSet("MAP_EDITOR_SET_NAME_ALL", TileManager.TILE_ID.INVALID);
+    const canyonSet = new BrushSet("MAP_EDITOR_SET_NAME_CANYON", TileManager.TILE_ID.INVALID);
+    const roadSet = new BrushSet("MAP_EDITOR_SET_NAME_ROAD", TileManager.TILE_ID.INVALID);
+    const groundSet = new BrushSet("MAP_EDITOR_SET_NAME_GROUND", TileManager.TILE_ID.INVALID);
+    const shoreSet = new BrushSet("MAP_EDITOR_SET_NAME_SHORE", TileManager.TILE_ID.INVALID);
+    const riverSet = new BrushSet("MAP_EDITOR_SET_NAME_RIVER", TileManager.TILE_ID.INVALID);
+    const seaSet = new BrushSet("MAP_EDITOR_SET_NAME_SEA", TileManager.TILE_ID.INVALID);
+    const railSet = new BrushSet("MAP_EDITOR_SET_NAME_RAIL", TileManager.TILE_ID.INVALID);
 
     for(let i = TILE_ID.GRASS; i < TILE_ID._COUNT; i++) {
         allSet.addValue(i);
@@ -101,52 +99,6 @@ EditorController.prototype.initConfigurator = function() {
     this.configurator.addBrushSize(4, 4);
 }
 
-EditorController.prototype.initPalletButtons = function(gameContext, buttons, camera) {
-    const { tileManager } = gameContext;
-    const slotButtonSize = this.userInterface.slotButtonSize;
-    const container = this.userInterface.getElement("CONTAINER_TILES");
-
-    if(!container) {
-        return;
-    }
-
-    for(const button of buttons) {
-        const { palletID } = button;
-        const buttonID = button.getID();
-
-        this.userInterface.addClick(buttonID, (e) => {
-            const palletIndex = this.getPalletIndex(palletID);
-            const tileID = this.configurator.getCurrentSet().getTileID(palletIndex);
-
-            if(tileID !== TileManager.TILE_ID.INVALID) {
-                this.resetBrush();
-                this.editor.setBrush(tileID, `${tileID}`);
-            } else {
-                this.resetBrush();
-            }
-        });
-
-        button.setCustom((display, localX, localY) => {
-            const palletIndex = this.getPalletIndex(palletID);
-            const tileID = this.configurator.getCurrentSet().getTileID(palletIndex);
-
-            if(tileID !== TileManager.TILE_ID.INVALID) {
-                const scale = slotButtonSize / TILE_WIDTH;
-
-                camera.drawTile(tileManager, tileID, display.context, localX, localY, scale);
-            }
-        });
-
-        container.addChild(button);
-    }
-
-    if(buttons.length === 0) {
-        this.buttonCount = -1;
-    } else {
-        this.buttonCount = buttons.length;
-    }
-}
-
 EditorController.prototype.initCursorEvents = function(gameContext) {
     const { client } = gameContext;
     const { cursor } = client;
@@ -183,7 +135,7 @@ EditorController.prototype.initCursorEvents = function(gameContext) {
 
 EditorController.prototype.updatePage = function(gameContext, delta) {
     const palletSize = this.configurator.getCurrentSet().getSize();
-    const maxPagesNeeded = Math.ceil(palletSize / this.buttonCount);
+    const maxPagesNeeded = Math.ceil(palletSize / BUTTON_COUNT);
 
     if(maxPagesNeeded <= 0) {
         this.pageIndex = 0;
@@ -262,12 +214,7 @@ EditorController.prototype.toggleAutotiler = function() {
     this.userInterface.updateAutoText(isEnabled);
 }
 
-EditorController.prototype.getPalletIndex = function(index) {
-    return this.pageIndex * this.buttonCount + index;
-} 
-
-EditorController.prototype.resizeCurrentMap = function(gameContext) {
-    const { renderer } = gameContext;
+EditorController.prototype.resizeCurrentMap = function(camera) {
     const worldMap = this.editor.targetMap;
 
     if(!worldMap) {
@@ -283,12 +230,13 @@ EditorController.prototype.resizeCurrentMap = function(gameContext) {
     worldMap.resize(newWidth, newHeight);
 
     this.editor.autofillMap();
-    this.camera2D.jumpToTile(0, 0);
+
+    camera.jumpToTile(0, 0);
 }
 
 EditorController.prototype.getPageText = function() {
     const palletSize = this.configurator.getCurrentSet().getSize();
-    const maxPagesNeeded = Math.ceil(palletSize / this.buttonCount);
+    const maxPagesNeeded = Math.ceil(palletSize / BUTTON_COUNT);
     const showMaxPagesNeeded = maxPagesNeeded === 0 ? 1 : maxPagesNeeded;
     const showCurrentPage = this.pageIndex + 1;
 
@@ -373,7 +321,7 @@ EditorController.prototype.initCommands = function(gameContext) {
     router.on("TOGGLE_RANDOM", () => this.togglePermutation());
 }
 
-EditorController.prototype.initUIEvents = function(gameContext) {
+EditorController.prototype.initUIEvents = function(gameContext, camera) {
     const { states } = gameContext;
 
     this.userInterface.addClickByName("BUTTON_INVERT", (e) => this.toggleInversion());
@@ -405,7 +353,7 @@ EditorController.prototype.initUIEvents = function(gameContext) {
     this.userInterface.addClickByName("BUTTON_SAVE", (e) => this.saveMap());
     this.userInterface.addClickByName("BUTTON_CREATE", (e) => this.createMap(gameContext));
     this.userInterface.addClickByName("BUTTON_LOAD", (e) => this.loadMap(gameContext));
-    this.userInterface.addClickByName("BUTTON_RESIZE", (e) => this.resizeCurrentMap(gameContext)); 
+    this.userInterface.addClickByName("BUTTON_RESIZE", (e) => this.resizeCurrentMap(camera)); 
     this.userInterface.addClickByName("BUTTON_UNDO", (e) => this.editor.undo(gameContext)); 
     this.userInterface.addClickByName("BUTTON_ERASER", (e) => this.toggleEraser());
     this.userInterface.addClickByName("BUTTON_VIEW_ALL", (e) => this.viewAllLayers());

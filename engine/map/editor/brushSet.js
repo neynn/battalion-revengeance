@@ -1,7 +1,6 @@
-import { TileManager } from "../../tile/tileManager.js";
-
-export const BrushSet = function(name) {
+export const BrushSet = function(name, invalid) {
     this.name = name;
+    this.invalid = invalid; 
     this.values = [];
 }
 
@@ -13,9 +12,9 @@ BrushSet.prototype.addValue = function(value) {
     this.values.push(value);
 }
 
-BrushSet.prototype.getTileID = function(index) {
+BrushSet.prototype.getValue = function(index) {
     if(index < 0 || index >= this.values.length) {
-        return TileManager.TILE_ID.INVALID;
+        return this.invalid;
     }
 
     return this.values[index];

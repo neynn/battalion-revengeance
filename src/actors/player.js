@@ -70,14 +70,14 @@ Player.prototype.onClick = function(gameContext, tileX, tileY) {
 
     switch(inspectorState) {
         case MapInspector.STATE.TILE: {
-            this.states.eventEnter(gameContext, Player.EVENT.TILE_CLICK, { "x": tileX, "y": tileY });
+            this.states.handleEvent(gameContext, Player.EVENT.TILE_CLICK, { "x": tileX, "y": tileY });
             break;
         }
         case MapInspector.STATE.BUILDING: {
             const worldMap = mapManager.getActiveMap();
             const building = worldMap.getBuilding(tileX, tileY);
 
-            this.states.eventEnter(gameContext, Player.EVENT.BUILDING_CLICK, { "building": building });
+            this.states.handleEvent(gameContext, Player.EVENT.BUILDING_CLICK, { "building": building });
             break;
         }
         case MapInspector.STATE.ENTITY: {
@@ -85,7 +85,7 @@ Player.prototype.onClick = function(gameContext, tileX, tileY) {
             const isAlly = teamManager.isAlly(this.teamID, entity.teamID);
             const isControlled = entity.belongsTo(this.teamID);
 
-            this.states.eventEnter(gameContext, Player.EVENT.ENTITY_CLICK, { "entity": entity, "isAlly": isAlly, "isControlled": isControlled });
+            this.states.handleEvent(gameContext, Player.EVENT.ENTITY_CLICK, { "entity": entity, "isAlly": isAlly, "isControlled": isControlled });
             break;
         }
     }
@@ -150,7 +150,7 @@ Player.prototype.update = function(gameContext) {
     const hoverChanged = this.inspector.update(gameContext, this.camera);
 
     if(hoverChanged) {
-        this.states.eventEnter(gameContext, Player.EVENT.TILE_CHANGE, {
+        this.states.handleEvent(gameContext, Player.EVENT.TILE_CHANGE, {
             "x": this.inspector.lastHoverX,
             "y": this.inspector.lastHoverY
         });

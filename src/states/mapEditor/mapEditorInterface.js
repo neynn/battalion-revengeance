@@ -1,12 +1,25 @@
+import { TILE_WIDTH } from "../../../engine/engine_constants.js";
 import { getRGBAString } from "../../../engine/graphics/colorHelper.js";
-import { PalletButton } from "../../../engine/map/editor/palletButton.js";
-import { SHAPE } from "../../../engine/math/constants.js";
+import { TileManager } from "../../../engine/tile/tileManager.js";
 import { Container } from "../../../engine/ui/elements/container.js";
 import { parseLayout } from "../../../engine/ui/parser.js";
-import { UIContext } from "../../../engine/ui/uiContext.js";
+import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
 
-export const MapEditorInterface = function() {
+export const BUTTON_ROWS = 7;
+export const BUTTON_COLUMNS = 7;
+export const BUTTON_COUNT = BUTTON_ROWS * BUTTON_COLUMNS;
+
+const SLOT_START_Y = 100;
+const SELECT_BUTTON_ID_REGION = 100;
+const OUTLINE_COLOR = getRGBAString(255, 255, 255, 255);
+const HIGHLIGHT_COLOR = getRGBAString(200, 200, 200, 64);
+
+export const MapEditorInterface = function(controller, camera) {
     UIContext.call(this);
+
+    this.camera = camera;
+    this.controller = controller;
+    this.doImmediate = true;
 
     this.slotButtonSize = 50;
     this.textColorView = [238, 238, 238, 255];
@@ -16,6 +29,57 @@ export const MapEditorInterface = function() {
 
 MapEditorInterface.prototype = Object.create(UIContext.prototype);
 MapEditorInterface.prototype.constructor = MapEditorInterface;
+
+MapEditorInterface.prototype.onImmediate = function(gameContext, display) {
+    const { tileManager } = gameContext;
+    const { context } = display;
+    const container = this.getElement("CONTAINER_TILES");
+    const tileSet = this.controller.configurator.getCurrentSet();
+    const pageIndex = this.controller.pageIndex;
+    const scale = this.slotButtonSize / TILE_WIDTH;
+
+    let positionX = container._screenX;
+    let positionY = container._screenY + SLOT_START_Y;
+    let buttonID = SELECT_BUTTON_ID_REGION;
+    let index = 0;
+    
+    context.fillStyle = HIGHLIGHT_COLOR;
+    context.strokeStyle = OUTLINE_COLOR;
+
+    for(let i = 0; i < BUTTON_ROWS; i++) {
+        for(let j = 0; j < BUTTON_COLUMNS; j++) {
+            const buttonFlags = this.doButton(gameContext, buttonID, positionX, positionY, this.slotButtonSize, this.slotButtonSize);
+            const palletIndex = pageIndex * BUTTON_COUNT + index;
+            const tileID = tileSet.getValue(palletIndex);
+
+            if(tileID !== TileManager.TILE_ID.INVALID) {
+                this.camera.drawTile(tileManager, tileID, context, positionX, positionY, scale);
+
+                if(buttonFlags & IM_FLAG.HOT) {
+                    context.fillRect(positionX, positionY, this.slotButtonSize, this.slotButtonSize);
+                }
+
+                context.strokeRect(positionX, positionY, this.slotButtonSize, this.slotButtonSize);
+            }
+
+            if(buttonFlags & IM_FLAG.CLICKED) {
+                if(tileID !== TileManager.TILE_ID.INVALID) {
+                    this.controller.resetBrush();
+                    this.controller.editor.setBrush(tileID, `${tileID}`);
+                } else {
+                    this.controller.resetBrush();
+                }
+            }
+
+            positionX += this.slotButtonSize;
+            buttonID++;
+            index++;
+        }
+
+        positionX = container._screenX;
+        positionY += this.slotButtonSize;
+    }
+}
 
 MapEditorInterface.prototype.load = function(gameContext) {
     const CONTAINERS = ["CONTAINER_FILE", "CONTAINER_LAYERS", "CONTAINER_TILES", "CONTAINER_TOOLS"];
@@ -73,34 +137,4 @@ MapEditorInterface.prototype.updateEraserText = function(isErasing) {
     } else {
         style.setColorArray(this.textColorView);
     }
-}
-
-MapEditorInterface.prototype.createPalletButtons = function() {
-    const buttons = [];
-    const SLOT_START_Y = 100;
-    const BUTTON_ROWS = 7;
-    const BUTTON_COLUMNS = 7;
-    let positionX = 0;
-    let positionY = SLOT_START_Y;
-    let index = 0;
-
-    for(let i = 0; i < BUTTON_ROWS; i++) {
-        for(let j = 0; j < BUTTON_COLUMNS; j++) {
-            const button = new PalletButton(index, `BUTTON_${index}`);
-
-            button.setShape(SHAPE.RECTANGLE);
-            button.setSize(this.slotButtonSize, this.slotButtonSize);
-            button.setPosition(positionX, positionY);
-            button.setOrigin(positionX, positionY);
-            buttons.push(button);
-
-            positionX += this.slotButtonSize;
-            index++;
-        }
-
-        positionX = 0;
-        positionY += this.slotButtonSize;
-    }
-
-    return buttons;
 }

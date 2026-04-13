@@ -23,7 +23,7 @@ StateMachine.prototype.isCurrent = function(stateID) {
         return false;
     }
 
-    return this.changeState === state;
+    return this.currentState === state;
 }
 
 StateMachine.prototype.setContext = function(context) {
@@ -40,12 +40,12 @@ StateMachine.prototype.update = function(gameContext) {
     }
 }
 
-StateMachine.prototype.eventEnter = function(gameContext, eventID, eventData) {
+StateMachine.prototype.handleEvent = function(gameContext, eventID, eventData) {
     if(this.currentState !== null) {
         this.currentState.onEvent(gameContext, this, eventID, eventData);
 
         if(this.isCurrentMachine) {
-            this.currentState.eventEnter(gameContext, eventID, eventData);
+            this.currentState.handleEvent(gameContext, eventID, eventData);
         }
     }
 }
@@ -63,7 +63,7 @@ StateMachine.prototype.exit = function(gameContext) {
     }
 }
 
-StateMachine.prototype.changeState = function(gameContext, state, enterData = {}) {
+StateMachine.prototype.changeState = function(gameContext, state, event = {}) {
     this.exit(gameContext);
     this.currentState = state;
 
@@ -71,26 +71,26 @@ StateMachine.prototype.changeState = function(gameContext, state, enterData = {}
         this.isCurrentMachine = true;
     }
 
-    this.currentState.onEnter(gameContext, this, enterData);
+    this.currentState.onEnter(gameContext, this, event);
 }
 
-StateMachine.prototype.setNextState = function(gameContext, stateID, enterData) {
+StateMachine.prototype.setNextState = function(gameContext, stateID, event) {
     const nextState = this.states.get(stateID);
 
     if(nextState) {
         this.nextState = nextState;
-        this.goToNextState(gameContext, enterData);
+        this.goToNextState(gameContext, event);
     } else {
         console.warn(`State (${stateID}) does not exist!`, this.context);
     }
 }
 
-StateMachine.prototype.goToPreviousState = function(gameContext, enterData) {
-    this.changeState(gameContext, this.previousState, enterData);
+StateMachine.prototype.goToPreviousState = function(gameContext, event) {
+    this.changeState(gameContext, this.previousState, event);
 }
 
-StateMachine.prototype.goToNextState = function(gameContext, enterData) {
-    this.changeState(gameContext, this.nextState, enterData);
+StateMachine.prototype.goToNextState = function(gameContext, event) {
+    this.changeState(gameContext, this.nextState, event);
 }
 
 StateMachine.prototype.getContext = function() {
@@ -103,12 +103,7 @@ StateMachine.prototype.addState = function(stateID, state) {
         return;
     }
 
-    if(!(state instanceof State)) {
-        console.warn(`State (${stateID}) is not a state!`);
-        return;
-    }
-
-    if(this.context !== null && state instanceof StateMachine) {
+    if(state instanceof StateMachine) {
         state.setContext(this.context);
     }
 
