@@ -158,6 +158,7 @@ MapEditorInterface.prototype.drawLayerButton = function(display, buttonX, button
         }
     }
 
+    context.font = "20px Arial";
     context.textAlign = TextStyle.ALIGN.MIDDLE;
     context.fillText(text, textX, textY);
 
@@ -171,7 +172,7 @@ MapEditorInterface.prototype.drawLayerButton = function(display, buttonX, button
 }
 
 MapEditorInterface.prototype.load = function(gameContext) {
-    const CONTAINERS = ["CONTAINER_FILE", "CONTAINER_LAYERS", "CONTAINER_TILES", "CONTAINER_TOOLS"];
+    const CONTAINERS = ["CONTAINER_FILE", "CONTAINER_TILES", "CONTAINER_TOOLS"];
 
     parseLayout(gameContext, this, "MAP_EDITOR");
 
@@ -181,8 +182,6 @@ MapEditorInterface.prototype.load = function(gameContext) {
         element.drawFlags |= Container.DRAW_FLAG.BACKGROUND;
         element.backgroundColor = getRGBAString(20, 20, 20, 128);
     }
-
-    this.getElement("CONTAINER_LAYERS").hide();
 }
 
 MapEditorInterface.prototype.updatePermutationText = function(isEnabled) {
