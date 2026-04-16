@@ -10,6 +10,9 @@ import { BattalionMap } from "../../map/battalionMap.js";
 import { isDrawTime, mRegenerateLines } from "../helpers.js";
 import { createEndTurnIntent } from "../../action/actionHelper.js";
 
+const PORTRAIT_WIDTH = 130;
+const PORTRAIT_HEIGHT = 150;
+
 const MENU_ID_REGION = 100;
 const ICON_ID_REGION = 200;
 const DIALOGUE_ID_REGION = 300;
@@ -290,9 +293,10 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
 
 PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, screenY) {
     const { timer, uiData, dialogueHandler, typeRegistry, language } = gameContext;
-    const { currentDialogue, fullText, currentIndex, letterIndex } = dialogueHandler;
+    const { fullText, letterIndex } = dialogueHandler;
+    const dialogue = dialogueHandler.getCurrentEntry();
 
-    if(currentDialogue.length === 0) {
+    if(!dialogue) {
         this.inspector.enable();
         return;
     }
@@ -304,25 +308,30 @@ PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, scree
     const boxTexture = uiData.getTexture(UI_TEXTURE.DIALOGUE_BOX);
 
     const { context } = display;
-    const { narrator } = currentDialogue[currentIndex];
+    const { narrator } = dialogue;
     const { portrait, name } = typeRegistry.getCommanderType(COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE);
     const commanderName = language.getSystemTranslation(name);
     //const portraitTexture = portraitHandler.getPortraitTexture(portrait);
 
+    const barWidth = 4;
+    const nextOffsetY = 8;
     const dialogueX = screenX - DIALOGUE_BOX_WIDTH;
     const dialogueY = screenY - DIALOGUE_BOX_HEIGHT;
     const skipX = screenX - skipTexture.width;
     const skipY = dialogueY - skipTexture.height;
     const nextX = screenX - nextTexture.width;
-    const nextY = screenY - nextTexture.height;
-    const textX = dialogueX + 100;
-    const textY = dialogueY + 50;
+    const nextY = screenY - nextTexture.height + nextOffsetY;
+    const textX = dialogueX + PORTRAIT_WIDTH + barWidth + 4;
+    const textY = dialogueY + 4 + 22;
 
-    if(dialogueHandler.hasIndexChanged()) {
+    context.font = "16px Times New Roman";
+    context.textAlign = TextStyle.ALIGN.LEFT;
+
+    if(dialogueHandler.hasEntryChanged()) {
         this.dialogueLines.length = 0;
         let charCount = 0;
 
-        mRegenerateLines(this.dialogueLines, context, fullText, 100);
+        mRegenerateLines(this.dialogueLines, context, fullText, 418);
 
         for(let i = 0; i < this.dialogueLines.length; i++) {
             charCount += this.dialogueLines[i].length;
@@ -330,11 +339,9 @@ PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, scree
 
         dialogueHandler.setLetterCount(charCount);
     }
-
+    
     let remainingChars = letterIndex;
     let fullLinesToDraw = 0;
-
-    context.textAlign = TextStyle.ALIGN.LEFT;
 
     for(let i = 0; i < this.dialogueLines.length; i++) {
         const lineLength =  this.dialogueLines[i].length;
@@ -350,6 +357,12 @@ PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, scree
 
     boxTexture.draw(display, dialogueX, dialogueY);
     skipTexture.draw(display, skipX, skipY);
+    //Todo(neyn): Draw portrait.
+
+    context.fillStyle = "#ff0000";
+    context.fillRect(dialogueX + PORTRAIT_WIDTH, dialogueY, barWidth, DIALOGUE_BOX_HEIGHT);
+    context.fillStyle = this.style.color;
+    context.fillText(commanderName, textX, dialogueY + 6);
 
     for(let i = 0; i < fullLinesToDraw; i++) {
         const drawY = textY + 20 * i;
@@ -364,7 +377,7 @@ PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, scree
 
         context.fillText(text, textX, drawY);
     } else if(fullLinesToDraw === this.dialogueLines.length) {
-        if(isDrawTime(timer.realTime, 2, 0.5)) {    
+        if(isDrawTime(timer.realTime, 2, 0.5)) {
             nextTexture.draw(display, nextX, nextY);
         }
     }
@@ -378,7 +391,7 @@ PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, scree
         nextX,
         nextY,
         nextTexture.width,
-        nextTexture.height
+        nextTexture.height - nextOffsetY
     ) & IM_FLAG.CLICKED) {
         dialogueHandler.onNextButton(gameContext);
     }
@@ -445,6 +458,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
     }
 
     this.drawDialogueHud(gameContext, display, mainX, reconY);
+    this.style.apply(context);
     this.drawMainHud(gameContext, display, mainX, mainY);
 
     switch(this.lastInspect) {

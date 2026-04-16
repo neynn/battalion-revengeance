@@ -52,13 +52,13 @@ DialogueHandler.prototype.exit = function() {
     this.currentIndex = -1;
     this.lastIndex = -1;
     this.fullText = "";
-
+    
     this.lettersPerSecond = DEFAULT_LETTERS_PER_SECOND;
     this.secondsPassed = 0;
-
+    
     this.dialogueID = 0;
     this.lastDialogueID = 0;
-
+    
     this.letterCount = 0;
     this.letterIndex = 0;
 }
@@ -116,7 +116,7 @@ DialogueHandler.prototype.playCustomDialogue = function(gameContext, dialogue) {
     }
 }
 
-DialogueHandler.prototype.hasIndexChanged = function() {
+DialogueHandler.prototype.hasEntryChanged = function() {
     let hasChanged = false;
 
     if(this.lastIndex < this.currentIndex) {
@@ -136,6 +136,15 @@ DialogueHandler.prototype.hasDialogueChanged = function() {
     }
 
     return hasChanged;
+}
+
+
+DialogueHandler.prototype.getCurrentEntry = function() {
+    if(this.currentIndex < 0 || this.currentIndex >= this.currentDialogue.length) {
+        return null;
+    }
+
+    return this.currentDialogue[this.currentIndex];
 }
 
 DialogueHandler.prototype.isFinished = function() {
