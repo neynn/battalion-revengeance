@@ -32,7 +32,7 @@ UIData.prototype.loadStoryTextures = function() {
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_MISSION_PANEL]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_EMBLEMS]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_START]);
-    this.textureLoader.loadTexture(this.textures[UI_TEXTURE.CHAPTER_ARROW]);
+    this.textureLoader.loadTexture(this.textures[UI_TEXTURE.ARROW]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_PANELS]);
 }
 
@@ -46,11 +46,11 @@ UIData.prototype.loadPlayTextures = function() {
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.TOOLTIP]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.TOOLTIP_PLUS]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.TOOLTIP_MINI]);
-    this.textureLoader.loadTexture(this.textures[UI_TEXTURE.DIALOGUE_NEXT]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.DIALOGUE_SKIP]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.DIALOGUE_BOX]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.HUD_BUTTONS]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.HUD_GLASSPLATE]);
+    this.textureLoader.loadTexture(this.textures[UI_TEXTURE.ARROW]);
 }
 
 UIData.prototype.load = function(gameContext) {
@@ -65,7 +65,6 @@ UIData.prototype.load = function(gameContext) {
     this.textures[UI_TEXTURE.TOOLTIP] = uiManager.getTextureID("recon_tooltip");
     this.textures[UI_TEXTURE.TOOLTIP_PLUS] = uiManager.getTextureID("recon_tooltip_plus");
     this.textures[UI_TEXTURE.TOOLTIP_MINI] = uiManager.getTextureID("recon_tooltip_mini");
-    this.textures[UI_TEXTURE.DIALOGUE_NEXT] = uiManager.getTextureID("dialogue_next_arrow");
     this.textures[UI_TEXTURE.DIALOGUE_SKIP] = uiManager.getTextureID("dialogue_skip_button");
     this.textures[UI_TEXTURE.DIALOGUE_BOX] = uiManager.getTextureID("dialogue_text_box");
     this.textures[UI_TEXTURE.HUD_BUTTONS] = uiManager.getTextureID("hud_buttons");
@@ -82,6 +81,6 @@ UIData.prototype.load = function(gameContext) {
     this.textures[UI_TEXTURE.STORY_START] = uiManager.getTextureID("story_start_button");
 
     this.textures[UI_TEXTURE.GENERIC_BUTTON] = uiManager.getTextureID("generic_button");
-    this.textures[UI_TEXTURE.CHAPTER_ARROW] = uiManager.getTextureID("story_chapter_arrow");
+    this.textures[UI_TEXTURE.ARROW] = uiManager.getTextureID("arrow");
     this.textures[UI_TEXTURE.STORY_PANELS] = uiManager.getTextureID("story_panels");
 }

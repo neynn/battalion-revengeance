@@ -68,7 +68,7 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
     const emblemTexture = uiData.getTexture(UI_TEXTURE.STORY_EMBLEMS);
     const emblemSlot = uiData.getTexture(UI_TEXTURE.STORY_EMBLEM_SLOT);
     const startButtonTexture = uiData.getTexture(UI_TEXTURE.STORY_START);
-    const chapterArrowTexture = uiData.getTexture(UI_TEXTURE.CHAPTER_ARROW);
+    const chapterArrowTexture = uiData.getTexture(UI_TEXTURE.ARROW);
     const missionPanel = uiData.getTexture(UI_TEXTURE.STORY_MISSION_PANEL);
     const panelTexture = uiData.getTexture(UI_TEXTURE.STORY_PANELS);
     

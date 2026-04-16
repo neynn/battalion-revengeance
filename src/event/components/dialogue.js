@@ -10,7 +10,7 @@ DialogueComponent.prototype = Object.create(EffectComponent.prototype);
 DialogueComponent.prototype.constructor = DialogueComponent;
 
 DialogueComponent.prototype.isFinished = function(gameContext) {
-    console.log("REEEE");
+    //console.log("REEEE");
 
     return false;
 }

@@ -4,15 +4,15 @@ import { SpriteManager } from "../../../engine/sprite/spriteManager.js";
 import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
 import { MapInspector } from "../../actors/player/inspector.js";
 import { getHealthColor } from "../../entity/helpers.js";
-import { COMMANDER_TYPE, PLAYER_PREFERENCE, TILE_ID } from "../../enums.js";
+import { COMMANDER_TYPE, TILE_ID } from "../../enums.js";
 import { UI_TEXTURE, HUD_BUTTON, GENERIC_BUTTON_STYLE } from "../constants.js";
 import { BattalionMap } from "../../map/battalionMap.js";
-import { mRegenerateLines } from "../helpers.js";
+import { isDrawTime, mRegenerateLines } from "../helpers.js";
 import { createEndTurnIntent } from "../../action/actionHelper.js";
 
 const MENU_ID_REGION = 100;
 const ICON_ID_REGION = 200;
-const OTHER_ID_REGION = 300;
+const DIALOGUE_ID_REGION = 300;
 
 const HUD_BUTTON_WIDTH = 28;
 const HUD_BUTTON_HEIGHT = 40;
@@ -49,8 +49,9 @@ export const PlayUI = function(inspector, cContext, player) {
     this.style = new TextStyle();
     this.style.baseline = TextStyle.BASELINE.TOP;
     this.style.font = "10px arial";
-    this.lines = [];
+    this.reconLines = [];
     this.tooltipLines = [];
+    this.dialogueLines = [];
     this.lineTime = 0;
 
     this.lastInspect = MapInspector.STATE.NONE;
@@ -95,10 +96,10 @@ PlayUI.prototype.load = function(gameContext) {
 }
 
 PlayUI.prototype.regenerateLines = function(context, text, maxWidth) {
-    this.lines.length = 0;
+    this.reconLines.length = 0;
     this.lineTime = 0;
 
-    mRegenerateLines(this.lines, context, text, maxWidth);
+    mRegenerateLines(this.reconLines, context, text, maxWidth);
 }
 
 //TODO(neyn): Create a 28x28 ICON for each entity!
@@ -171,6 +172,7 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
     const undoID = MENU_ID_REGION;
     const menuID = MENU_ID_REGION + 1;
     const quitID = MENU_ID_REGION + 2;
+    const endTurnID = MENU_ID_REGION + 3;
     const undoFlags = this.doButton(gameContext, undoID, buttonX, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
     const menuFlags = this.doButton(gameContext, menuID, buttonX + 38, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
     const quitFlags = this.doButton(gameContext, quitID, buttonX + 76, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
@@ -257,7 +259,7 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
 
     const endTurnFlags = this.doButton(
         gameContext,
-        OTHER_ID_REGION,
+        endTurnID,
         endturnX,
         endTurnY,
         GENERIC_BUTTON_STYLE.width,
@@ -278,7 +280,6 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
         }
     }
 
-
     genericButtonTexture.drawRegion(display, button, endturnX, endTurnY);
     context.textAlign = TextStyle.ALIGN.MIDDLE;
     context.fillStyle = this.style.color;
@@ -287,19 +288,106 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
 }
 
 PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, screenY) {
-    const { uiData, dialogueHandler, typeRegistry, language } = gameContext;
-    const { currentDialogue, currentText, currentIndex } = dialogueHandler;
+    const { timer, uiData, dialogueHandler, typeRegistry, language } = gameContext;
+    const { currentDialogue, fullText, currentText, currentIndex } = dialogueHandler;
 
-    if(currentDialogue.length !== 0) {
-        const { narrator } = currentDialogue[currentIndex];
-        const commanderID = COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE;
-        const { portrait, name } = typeRegistry.getCommanderType(commanderID);
-        const commanderName = language.getSystemTranslation(name);
-        //const portraitTexture = portraitHandler.getPortraitTexture(portrait);
-        const dialogueX = screenX - DIALOGUE_BOX_WIDTH;
-        const dialogueY = screenY - DIALOGUE_BOX_HEIGHT;
+    if(currentDialogue.length === 0) {
+        this.inspector.enable();
+        return;
+    }
 
-        uiData.getTexture(UI_TEXTURE.DIALOGUE_BOX).draw(display, dialogueX, dialogueY);
+    this.inspector.disable();
+
+    const nextTexture = uiData.getTexture(UI_TEXTURE.ARROW);
+    const skipTexture = uiData.getTexture(UI_TEXTURE.DIALOGUE_SKIP);
+    const boxTexture = uiData.getTexture(UI_TEXTURE.DIALOGUE_BOX);
+
+    const { context } = display;
+    const { narrator } = currentDialogue[currentIndex];
+    const { portrait, name } = typeRegistry.getCommanderType(COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE);
+    const commanderName = language.getSystemTranslation(name);
+    //const portraitTexture = portraitHandler.getPortraitTexture(portrait);
+
+    const dialogueX = screenX - DIALOGUE_BOX_WIDTH;
+    const dialogueY = screenY - DIALOGUE_BOX_HEIGHT;
+    const skipX = screenX - skipTexture.width;
+    const skipY = dialogueY - skipTexture.height;
+    const nextX = screenX - nextTexture.width;
+    const nextY = screenY - nextTexture.height;
+    const textX = dialogueX + 100;
+    const textY = dialogueY + 50;
+
+    if(dialogueHandler.hasIndexChanged()) {
+        this.dialogueLines.length = 0;
+
+        mRegenerateLines(this.dialogueLines, context, fullText, 100);
+    }
+
+    let fullLinesToDraw = 0;
+    let remainingChars = currentText.length;
+    let drawnChars = 0;
+
+    context.textAlign = TextStyle.ALIGN.LEFT;
+
+    for(let i = 0; i < this.dialogueLines.length; i++) {
+        const lineLength =  this.dialogueLines[i].length;
+        const remaining = remainingChars - lineLength;
+
+        if(remaining < 0) {
+            break;
+        }
+
+        fullLinesToDraw++;
+        remainingChars -= lineLength;
+        drawnChars += lineLength;
+    }
+
+    boxTexture.draw(display, dialogueX, dialogueY);
+    skipTexture.draw(display, skipX, skipY);
+
+    for(let i = 0; i < fullLinesToDraw; i++) {
+        const drawY = textY + 20 * i;
+
+        context.fillText(this.dialogueLines[i], textX, drawY);
+    }
+
+    if(fullLinesToDraw < this.dialogueLines.length) {
+        const text = currentText.substring(drawnChars, drawnChars + remainingChars);
+        const drawY = textY + 20 * fullLinesToDraw;
+
+        context.fillText(text, textX, drawY);
+    }
+
+    if(dialogueHandler.isUnveiled()) {
+        if(isDrawTime(timer.realTime, 2, 0.5)) {    
+            nextTexture.draw(display, nextX, nextY);
+        }
+    }
+    const skipID = DIALOGUE_ID_REGION;
+    const nextID = DIALOGUE_ID_REGION + 1;
+    
+    if(this.doButton(
+        gameContext,
+        nextID,
+        nextX,
+        nextY,
+        nextTexture.width,
+        nextTexture.height
+    ) & IM_FLAG.CLICKED) {
+        dialogueHandler.onNextButton(gameContext);
+    }
+
+    if(this.doButton(
+        gameContext,
+        skipID,
+        skipX,
+        skipY,
+        skipTexture.width,
+        skipTexture.height
+    ) & IM_FLAG.CLICKED) {
+        dialogueHandler.onSkipButton();
+
+        this.dialogueLines.length = 0;
     }
 }
 
@@ -338,7 +426,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
     if(this.lastInspect !== this.inspector.state) {
         this.lastIndex = -1;
         this.lastInspect = this.inspector.state;
-        this.lines.length = 0;
+        this.reconLines.length = 0;
     }
 
     this.iconTick = 0;
@@ -487,27 +575,27 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
 
     context.fillStyle = "#ffffff";
     
-    switch(this.lines.length) {
+    switch(this.reconLines.length) {
         case 0: {
             break;
         }
         case 1: {
-            context.fillText(this.lines[0], reconX + 39, bodyY);
+            context.fillText(this.reconLines[0], reconX + 39, bodyY);
             break;
         }
         case 2: {
-            context.fillText(this.lines[0], reconX + 39, bodyY);
-            context.fillText(this.lines[1], reconX + 39, bodyY + 10);
+            context.fillText(this.reconLines[0], reconX + 39, bodyY);
+            context.fillText(this.reconLines[1], reconX + 39, bodyY + 10);
             break;
         }
         default: {
             const SECONDS_PER_LINE = 2;
-            const frameIndex = Math.floor(this.lineTime / SECONDS_PER_LINE) % this.lines.length;
+            const frameIndex = Math.floor(this.lineTime / SECONDS_PER_LINE) % this.reconLines.length;
 
-            context.fillText(this.lines[frameIndex], reconX + 39, bodyY);
+            context.fillText(this.reconLines[frameIndex], reconX + 39, bodyY);
 
-            if(frameIndex < this.lines.length - 1) {
-                context.fillText(this.lines[frameIndex + 1], reconX + 39, bodyY + 10);
+            if(frameIndex < this.reconLines.length - 1) {
+                context.fillText(this.reconLines[frameIndex + 1], reconX + 39, bodyY + 10);
             }
 
             this.lineTime += gameContext.timer.deltaTime;
@@ -515,9 +603,9 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
         }
     }
 
-    if(this.tooltip !== tooltip) {
+    if(this.lastTooltip !== tooltip) {
         this.tooltipLines.length = 0;
-        this.tooltip = tooltip;
+        this.lastTooltip = tooltip;
 
         if(tooltip.length !== 0) {
             const text = language.getSystemTranslation(tooltip);
@@ -527,7 +615,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
     }
 
     //If collided with any icon.
-    if(this.hotWidget >= ICON_ID_REGION && this.hotWidget < OTHER_ID_REGION) {
+    if(this.hotWidget >= ICON_ID_REGION && this.hotWidget < DIALOGUE_ID_REGION) {
         let tooltipTexture = UI_TEXTURE.TOOLTIP;
         let tooltipY = reconY + 17;
         let tooltipSize = 0;

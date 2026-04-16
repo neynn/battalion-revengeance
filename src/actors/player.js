@@ -61,6 +61,8 @@ Player.prototype.onTurnStart = function(gameContext) {
 
 Player.prototype.onTurnEnd = function(gameContext) {
     this.actionIntents.length = 0;
+    this.camera.clearOverlays();
+    this.states.setNextState(gameContext, Player.STATE.IDLE);
 }
 
 Player.prototype.onClick = function(gameContext, tileX, tileY) {

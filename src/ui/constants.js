@@ -32,7 +32,7 @@ export const UI_TEXTURE = {
     TOOLTIP: 6,
     TOOLTIP_PLUS: 7,
     TOOLTIP_MINI: 8,
-    DIALOGUE_NEXT: 9,
+    ARROW: 9,
     DIALOGUE_SKIP: 10,
     DIALOGUE_BOX: 11,
     HUD_BUTTONS: 12,
@@ -46,9 +46,8 @@ export const UI_TEXTURE = {
     STORY_EMBLEMS: 20,
     STORY_START: 21,
     GENERIC_BUTTON: 22,
-    CHAPTER_ARROW: 23,
-    STORY_PANELS: 24,
-    _COUNT: 25
+    STORY_PANELS: 23,
+    _COUNT: 24
 };
 
 export const HUD_BUTTON = {

@@ -19,7 +19,6 @@ MapInspector.STATE = {
 };
 
 MapInspector.prototype.disable = function() {
-    this.state = MapInspector.STATE.NONE;
     this.isEnabled = false;
 }
 
@@ -45,7 +44,7 @@ MapInspector.prototype.getLastEntity = function(gameContext) {
 
 MapInspector.prototype.inspect = function(gameContext, inspector, camera, tileX, tileY) {
     if(!this.isEnabled) {
-        return this.state;
+        return MapInspector.STATE.NONE;
     }
 
     const { world } = gameContext;

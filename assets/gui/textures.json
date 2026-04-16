@@ -1,7 +1,10 @@
 {
     "generic_button": { "directory": ["assets", "gui"], "source": "generic_button.png", "gridWidth": 126, "gridHeight": 71, "autoGrid": { "rows": 4, "columns": 1 } },
+
+    "arrow": { "directory": ["assets", "gui", "other"], "source": "arrow.png" },
     "plaque": { "directory": ["assets", "gui", "other"], "source": "plaque.png" },
     "plaque_disabled": { "directory": ["assets", "gui", "other"], "source": "plaque_disabled.png" },
+
     "story_panels": {
         "directory": ["assets", "gui", "story"],
         "source": "panels.png",
@@ -16,7 +19,6 @@
         }
     },
 
-    "story_chapter_arrow": { "directory": ["assets", "gui", "story"], "source": "chapter_arrow.png" },
     "story_chapter_panel": { "directory": ["assets", "gui", "story"], "source": "chapter_panel.png" },
     "story_emblem_slot": { "directory": ["assets", "gui", "story"], "source": "emblem_slot.png" },
     "story_main_menu_border": { "directory": ["assets", "gui", "story"], "source": "main_menu_border.png" },
@@ -33,7 +35,6 @@
     "recon_tooltip": { "directory": ["assets", "gui", "recon"], "source": "recon_tooltip.png" },
     "recon_tooltip_plus": { "directory": ["assets", "gui", "recon"], "source": "recon_tooltip_plus.png" },
     "recon_tooltip_mini": { "directory": ["assets", "gui", "recon"], "source": "recon_tooltip_mini.png" },
-    "dialogue_next_arrow": { "directory": ["assets", "gui", "dialogue"], "source": "next_arrow.png" },
     "dialogue_skip_button": { "directory": ["assets", "gui", "dialogue"], "source": "skip_button.png" },
     "dialogue_text_box": { "directory": ["assets", "gui", "dialogue"], "source": "text_box.png" },
     "hud_glassplate": { "directory": ["assets", "gui", "hud"], "source": "glassplate.png" },
