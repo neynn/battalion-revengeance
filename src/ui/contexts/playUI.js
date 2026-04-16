@@ -52,6 +52,7 @@ export const PlayUI = function(inspector, cContext, player) {
     this.reconLines = [];
     this.tooltipLines = [];
     this.dialogueLines = [];
+    this.dialogueChars = 0;
     this.lineTime = 0;
 
     this.lastInspect = MapInspector.STATE.NONE;
@@ -289,7 +290,7 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
 
 PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, screenY) {
     const { timer, uiData, dialogueHandler, typeRegistry, language } = gameContext;
-    const { currentDialogue, fullText, currentText, currentIndex } = dialogueHandler;
+    const { currentDialogue, fullText, currentIndex, letterIndex } = dialogueHandler;
 
     if(currentDialogue.length === 0) {
         this.inspector.enable();
@@ -319,13 +320,19 @@ PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, scree
 
     if(dialogueHandler.hasIndexChanged()) {
         this.dialogueLines.length = 0;
+        let charCount = 0;
 
         mRegenerateLines(this.dialogueLines, context, fullText, 100);
+
+        for(let i = 0; i < this.dialogueLines.length; i++) {
+            charCount += this.dialogueLines[i].length;
+        }
+
+        dialogueHandler.setLetterCount(charCount);
     }
 
+    let remainingChars = letterIndex;
     let fullLinesToDraw = 0;
-    let remainingChars = currentText.length;
-    let drawnChars = 0;
 
     context.textAlign = TextStyle.ALIGN.LEFT;
 
@@ -339,7 +346,6 @@ PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, scree
 
         fullLinesToDraw++;
         remainingChars -= lineLength;
-        drawnChars += lineLength;
     }
 
     boxTexture.draw(display, dialogueX, dialogueY);
@@ -352,17 +358,17 @@ PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, scree
     }
 
     if(fullLinesToDraw < this.dialogueLines.length) {
-        const text = currentText.substring(drawnChars, drawnChars + remainingChars);
+        const nextLine = this.dialogueLines[fullLinesToDraw];
+        const text = nextLine.substring(0, remainingChars);
         const drawY = textY + 20 * fullLinesToDraw;
 
         context.fillText(text, textX, drawY);
-    }
-
-    if(dialogueHandler.isUnveiled()) {
+    } else if(fullLinesToDraw === this.dialogueLines.length) {
         if(isDrawTime(timer.realTime, 2, 0.5)) {    
             nextTexture.draw(display, nextX, nextY);
         }
     }
+
     const skipID = DIALOGUE_ID_REGION;
     const nextID = DIALOGUE_ID_REGION + 1;
     

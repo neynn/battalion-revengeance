@@ -1,19 +1,24 @@
+const DEFAULT_LETTERS_PER_SECOND = 20;
+
 export const DialogueHandler = function() {
     this.prelogue = [];
     this.postlogue = [];
     this.defeat = [];
     this.state = DialogueHandler.STATE.ENABLED;
-    this.skipUnveiling = false;
     this.currentDialogue = [];
     this.currentIndex = -1;
     this.lastIndex = -1;
-    this.currentText = "";
     this.fullText = "";
-    this.secondsPerLetter = 0.1;
-    this.secondsPassed = this.secondsPerLetter;
+    
+    this.skipUnveiling = false;
+    this.lettersPerSecond = DEFAULT_LETTERS_PER_SECOND;
+    this.secondsPassed = 0;
 
     this.dialogueID = 0;
     this.lastDialogueID = 0;
+
+    this.letterCount = 0;
+    this.letterIndex = 0;
 }
 
 DialogueHandler.STATE = {
@@ -26,13 +31,15 @@ DialogueHandler.prototype.update = function(gameContext) {
     const { deltaTime } = timer;
 
     if(this.currentDialogue.length !== 0) {
-        this.secondsPassed += deltaTime;
+        if(this.skipUnveiling) {
+            this.letterIndex = this.letterCount;
+        } else if(this.letterIndex !== this.letterCount) {
+            this.secondsPassed += deltaTime;
+            this.letterIndex = Math.floor(this.secondsPassed * this.lettersPerSecond);
 
-        const skippedLetters = Math.floor(this.secondsPassed / this.secondsPerLetter);
-
-        if(skippedLetters > 0) {
-            this.revealLetters(skippedLetters);
-            this.secondsPassed -= skippedLetters * this.secondsPerLetter;
+            if(this.letterIndex >= this.letterCount) {
+                this.letterIndex = this.letterCount;
+            }
         }
     }
 }
@@ -44,12 +51,16 @@ DialogueHandler.prototype.exit = function() {
     this.currentDialogue = [];
     this.currentIndex = -1;
     this.lastIndex = -1;
-    this.currentText = "";
     this.fullText = "";
-    this.secondsPerLetter = 0.1;
-    this.secondsPassed = this.secondsPerLetter;
+
+    this.lettersPerSecond = DEFAULT_LETTERS_PER_SECOND;
+    this.secondsPassed = 0;
+
     this.dialogueID = 0;
     this.lastDialogueID = 0;
+
+    this.letterCount = 0;
+    this.letterIndex = 0;
 }
 
 DialogueHandler.prototype.loadMapDialogue = function(prelogue, postlogue, defeat) {
@@ -99,9 +110,9 @@ DialogueHandler.prototype.playCustomDialogue = function(gameContext, dialogue) {
     if(dialogue.length !== 0 && this.state !== DialogueHandler.STATE.DISABLED) {
         this.currentIndex = -1;
         this.lastIndex = -1;
+        this.dialogueID++;
         this.currentDialogue = dialogue;
         this.showNextEntry(gameContext);
-        this.dialogueID++;
     }
 }
 
@@ -136,15 +147,21 @@ DialogueHandler.prototype.onSkipButton = function() {
 }
 
 DialogueHandler.prototype.onNextButton = function(gameContext) {
-    if(this.currentText.length === this.fullText.length) {
+    if(this.letterIndex === this.letterCount) {
         this.showNextEntry(gameContext);
     } else {
-        this.showFullText();
+        this.letterIndex = this.letterCount;
     }
 }
 
+DialogueHandler.prototype.setLetterCount = function(count) {
+    this.letterIndex = 0;
+    this.secondsPassed = 0;
+    this.letterCount = count;
+}
+
 DialogueHandler.prototype.isUnveiled = function() {
-    return this.currentText.length === this.fullText.length;
+    return this.letterCount === this.letterIndex;
 }
 
 DialogueHandler.prototype.showNextEntry = function(gameContext) {
@@ -164,21 +181,9 @@ DialogueHandler.prototype.showNextEntry = function(gameContext) {
     const translation = language.getMapTranslation(textID);
 
     this.fullText = translation;
-    this.currentText = this.skipUnveiling ? translation : "";
 
     if(voice) {
         soundPlayer.play(voice);
-    }
-}
-
-DialogueHandler.prototype.showFullText = function() {
-    this.currentText = this.fullText;
-}
-
-DialogueHandler.prototype.revealLetters = function(letters = 0) {
-    while(letters > 0 && this.currentText.length < this.fullText.length) {
-        this.currentText += this.fullText[this.currentText.length];
-        letters--;
     }
 }
 
@@ -186,8 +191,8 @@ DialogueHandler.prototype.reset = function() {
     this.currentDialogue = [];
     this.currentIndex = -1;
     this.lastIndex = -1;
-    this.currentPortrait = null;
-    this.currentText = "";
     this.fullText = "";
-    this.secondsPassed = this.secondsPerLetter;
+    this.secondsPassed = 0;
+    this.letterCount = 0;
+    this.letterIndex = 0;
 }
