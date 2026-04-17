@@ -5,7 +5,7 @@ import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
 import { MapInspector } from "../../actors/player/inspector.js";
 import { getHealthColor } from "../../entity/helpers.js";
 import { COMMANDER_TYPE, TILE_ID } from "../../enums.js";
-import { UI_TEXTURE, HUD_BUTTON, GENERIC_BUTTON_STYLE } from "../constants.js";
+import { UI_TEXTURE, HUD_BUTTON, GENERIC_BUTTON_STYLE, HUD_BUTTON_STYLE } from "../constants.js";
 import { BattalionMap } from "../../map/battalionMap.js";
 import { isDrawTime, mRegenerateLines } from "../helpers.js";
 import { createEndTurnIntent } from "../../action/actionHelper.js";
@@ -17,8 +17,6 @@ const MENU_ID_REGION = 100;
 const ICON_ID_REGION = 200;
 const DIALOGUE_ID_REGION = 300;
 
-const HUD_BUTTON_WIDTH = 28;
-const HUD_BUTTON_HEIGHT = 40;
 const DIALOGUE_BOX_WIDTH = 560;
 const DIALOGUE_BOX_HEIGHT = 150;
 const RECON_TOOLTIP_BOX_WIDTH = 154;
@@ -177,9 +175,9 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
     const menuID = MENU_ID_REGION + 1;
     const quitID = MENU_ID_REGION + 2;
     const endTurnID = MENU_ID_REGION + 3;
-    const undoFlags = this.doButton(gameContext, undoID, buttonX, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
-    const menuFlags = this.doButton(gameContext, menuID, buttonX + 38, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
-    const quitFlags = this.doButton(gameContext, quitID, buttonX + 76, buttonY, HUD_BUTTON_WIDTH, HUD_BUTTON_HEIGHT);
+    const undoFlags = this.doButton(gameContext, undoID, buttonX, buttonY,  HUD_BUTTON_STYLE.width, HUD_BUTTON_STYLE.height);
+    const menuFlags = this.doButton(gameContext, menuID, buttonX + 38, buttonY, HUD_BUTTON_STYLE.width, HUD_BUTTON_STYLE.height);
+    const quitFlags = this.doButton(gameContext, quitID, buttonX + 76, buttonY, HUD_BUTTON_STYLE.width, HUD_BUTTON_STYLE.height);
 
     let undoButton = HUD_BUTTON.UNDO_ENABLED;
     let menuButton = HUD_BUTTON.MENU_ENABLED;

@@ -11,12 +11,12 @@ export const BattalionMap = function(id, width, height, preview) {
     this.preview = preview;
     this.globalClimate = CLIMATE_TYPE.NONE;
     this.climate = CLIMATE_TYPE.NONE;
-    this.localization = [];
     this.buildings = [];
     this.mines = [];
     this.edits = [];
     this.movingEntities = [];
     this.jammers = new Map();
+    this.localization = new Map();
     this.text = new Map();
     this.customs = new Map();
 
@@ -50,7 +50,6 @@ BattalionMap.SEARCH_ORDER = [
 ];
 
 BattalionMap.INVALID_CUSTOM_ID = -1;
-BattalionMap.STUB_JAMMER = new JammerTile(-1, -1);
 
 BattalionMap.getLayerIndex = function(name) {
     const index = BattalionMap.LAYER[name];
@@ -221,13 +220,11 @@ BattalionMap.prototype.getTileType = function(gameContext, tileX, tileY) {
 
 BattalionMap.prototype.getTileName = function(gameContext, tileX, tileY) {
     const { language } = gameContext;
+    const index = this.getIndex(tileX, tileY);
+    const localization = this.localization.get(index);
 
-    for(let i = 0; i < this.localization.length; i++) {
-        const { x, y, name } = this.localization[i];
-
-        if(x === tileX && y === tileY && name !== LanguageHandler.INVALID_ID) {
-            return language.getMapTranslation(name);
-        }
+    if(localization && localization.name !== LanguageHandler.INVALID_ID) {
+        return language.getMapTranslation(localization.name);
     }
 
     const { name } = this.getTileType(gameContext, tileX, tileY);
@@ -237,13 +234,11 @@ BattalionMap.prototype.getTileName = function(gameContext, tileX, tileY) {
 
 BattalionMap.prototype.getTileDesc = function(gameContext, tileX, tileY) {
     const { language } = gameContext;
+    const index = this.getIndex(tileX, tileY);
+    const localization = this.localization.get(index);
 
-    for(let i = 0; i < this.localization.length; i++) {
-        const { x, y, desc } = this.localization[i];
-
-        if(x === tileX && y === tileY && desc !== LanguageHandler.INVALID_ID) {
-            return language.getMapTranslation(desc);
-        }
+    if(localization && localization.desc !== LanguageHandler.INVALID_ID) {
+        return language.getMapTranslation(localization.desc);
     }
 
     const { desc } = this.getTileType(gameContext, tileX, tileY);
@@ -252,20 +247,14 @@ BattalionMap.prototype.getTileDesc = function(gameContext, tileX, tileY) {
 }
 
 BattalionMap.prototype.removeLocalization = function(tileX, tileY) {
-    for(let i = 0; i < this.localization.length; i++) {
-        const { x, y } = this.localization[i];
+    const index = this.getIndex(tileX, tileY);
 
-        if(x === tileX && y === tileY) {
-            this.localization[i] = this.localization[this.localization.length - 1];
-            this.localization.pop();
-            break;
-        }
+    if(this.localization.has(index)) {
+        this.localization.delete(index);
     }
 }
 
 BattalionMap.prototype.loadLocalization = function(localization) {
-    const indices = new Set();
-
     for(let i = 0; i < localization.length; i++) {
         const {
             x = -1,
@@ -276,21 +265,17 @@ BattalionMap.prototype.loadLocalization = function(localization) {
 
         const index = this.getIndex(x, y);
 
-        if(index === WorldMap.OUT_OF_BOUNDS || indices.has(index)) {
+        if(index === WorldMap.OUT_OF_BOUNDS || this.localization.has(index)) {
             continue;
         }
 
         const nameID = this.getTextID(name);
         const descID = this.getTextID(desc);
 
-        this.localization.push({
-            "x": x,
-            "y": y,
+        this.localization.set(index, {
             "name": nameID,
             "desc": descID
         });
-
-        indices.add(index);
     }
 }
 
@@ -380,30 +365,30 @@ BattalionMap.prototype.getBuilding = function(tileX, tileY) {
     return null;
 }
 
-BattalionMap.prototype.addJammer = function(tileX, tileY, teamID, flags) {
+BattalionMap.prototype.addJammer = function(tileX, tileY, entityID, teamID, flags) {
     const index = this.getIndex(tileX, tileY);
 
     if(index !== WorldMap.OUT_OF_BOUNDS) {
         const jammerTile = this.jammers.get(index);
 
         if(jammerTile) {
-            jammerTile.addBlocker(teamID, flags);
+            jammerTile.addBlocker(entityID, teamID, flags);
         } else {
-            const newTile = new JammerTile(tileX, tileY);
+            const newTile = new JammerTile();
 
-            newTile.addBlocker(teamID, flags);
+            newTile.addBlocker(entityID, teamID, flags);
 
             this.jammers.set(index, newTile);
         }
     }
 }
 
-BattalionMap.prototype.removeJammer = function(tileX, tileY, teamID, flags) {
+BattalionMap.prototype.removeJammer = function(tileX, tileY, entityID, teamID, flags) {
     const index = this.getIndex(tileX, tileY);
     const jammerTile = this.jammers.get(index);
 
     if(jammerTile) {
-        jammerTile.removeBlocker(teamID, flags);
+        jammerTile.removeBlocker(entityID, teamID, flags);
 
         if(jammerTile.isEmpty()) {
             this.jammers.delete(index);
@@ -411,15 +396,15 @@ BattalionMap.prototype.removeJammer = function(tileX, tileY, teamID, flags) {
     }
 }
 
-BattalionMap.prototype.getJammer = function(tileX, tileY) {
+BattalionMap.prototype.isJammed = function(gameContext, tileX, tileY, teamID, flags) {
     const index = this.getIndex(tileX, tileY);
     const jammerTile = this.jammers.get(index);
 
     if(!jammerTile) {
-        return BattalionMap.STUB_JAMMER;
+        return false;
     }
 
-    return jammerTile;
+    return jammerTile.isJammed(gameContext, teamID, flags);
 }
 
 BattalionMap.prototype.decodeLayers = function(layerData) {

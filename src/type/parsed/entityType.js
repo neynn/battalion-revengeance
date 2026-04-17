@@ -2,6 +2,7 @@ import { MAX_TRAITS } from "../../constants.js";
 import { mapMovementToCategory } from "../../enumHelpers.js";
 import { ARMOR_TYPE, ATTACK_TYPE, DIRECTION, ENTITY_CATEGORY, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../../enums.js";
 
+const TILE_STEP = 56;
 const ENABLE_HYBRID = false;
 
 const getRangeType = function(minRange, maxRange) {
@@ -32,7 +33,7 @@ export const EntityType = function(id) {
     this.movementType = MOVEMENT_TYPE.STATIONARY;
     this.armorType = ARMOR_TYPE.NONE;
     this.movementRange = 0;
-    this.movementSpeed = 224;
+    this.movementSpeed = 4 * TILE_STEP;
     this.jammerRange = 1;
     this.minRange = 1;
     this.maxRange = 1;
@@ -62,7 +63,7 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
         armorType = "NONE",
         movementRange = 0,
         movementType = "STATIONARY",
-        movementSpeed = 224,
+        movementSpeed = 4,
         jammerRange = 1,
         minRange = 1,
         maxRange = 1,
@@ -88,7 +89,7 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
     this.armorType = ARMOR_TYPE[armorType] ?? ARMOR_TYPE.NONE;
     this.shop = SHOP_TYPE[shop] ?? SHOP_TYPE.NONE;
     this.movementRange = movementRange;
-    this.movementSpeed = movementSpeed;
+    this.movementSpeed = movementSpeed * TILE_STEP;
     this.jammerRange = jammerRange;
     this.streamRange = streamRange;
     this.cost = cost;

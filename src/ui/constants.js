@@ -67,3 +67,4 @@ export const HUD_BUTTON = {
 
 export const GENERIC_BUTTON_STYLE = createButtonStyle(126, 71, 0);
 export const START_BUTTON_STYLE = createButtonStyle(391, 101, 0);
+export const HUD_BUTTON_STYLE = createButtonStyle(28, 40, 0);

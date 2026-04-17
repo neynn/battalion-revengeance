@@ -1,7 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { WorldMap } from "../../../engine/map/worldMap.js";
-import { TILE_ID } from "../../enums.js";
+import { ENTITY_CATEGORY, TILE_ID } from "../../enums.js";
 import { BattalionMap } from "../../map/battalionMap.js";
 import { playExplosion } from "../../systems/sprite.js";
 
@@ -69,7 +69,7 @@ ExplodeTileAction.prototype.fillExecutionPlan = function(gameContext, executionP
     const entity = world.getEntityAt(tileX, tileY);
     let entityID = EntityManager.INVALID_ID;
 
-    if(entity) {
+    if(entity && entity.config.category !== ENTITY_CATEGORY.AIR) {
         entityID = entity.getID();
     }
 

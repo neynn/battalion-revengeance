@@ -392,9 +392,7 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
     //Airspace is blocked by a jammer.
     //Units with HIGH_ALTITUDE may fly regardless.
     if(this.config.category === ENTITY_CATEGORY.AIR && !this.hasTrait(TRAIT_TYPE.HIGH_ALTITUDE)) {
-        const jammer = worldMap.getJammer(tileX, tileY);
-
-        if(jammer.isJammed(gameContext, this.teamID, JAMMER_FLAG.AIRSPACE_BLOCKED)) {
+        if(worldMap.isJammed(gameContext, tileX, tileY, this.teamID, JAMMER_FLAG.AIRSPACE_BLOCKED)) {
             return EntityType.MAX_MOVE_COST;
         }
     }
@@ -1298,10 +1296,9 @@ BattalionEntity.prototype.isDiscoveredByJammerAt = function(gameContext, tileX, 
     const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
-    const jammer = worldMap.getJammer(tileX, tileY);
     const cloakFlag = this.config.getCloakFlag();
 
-    return jammer.isJammed(gameContext, this.teamID, cloakFlag);
+    return worldMap.isJammed(gameContext, tileX, tileY, this.teamID, cloakFlag);
 }
 
 BattalionEntity.prototype.getUncloakedMines = function(gameContext) {
@@ -1582,7 +1579,7 @@ BattalionEntity.prototype.placeOnMap = function(gameContext) {
 
     if(jammerFlags !== JAMMER_FLAG.NONE) {
         worldMap.fill2DGraph(this.tileX, this.tileY, jammerRange, (nextX, nextY) => {
-            worldMap.addJammer(nextX, nextY, this.teamID, jammerFlags);
+            worldMap.addJammer(nextX, nextY, this.id, this.teamID, jammerFlags);
         });
     }
 
@@ -1605,7 +1602,7 @@ BattalionEntity.prototype.removeFromMap = function(gameContext) {
 
     if(jammerFlags !== JAMMER_FLAG.NONE) {
         worldMap.fill2DGraph(this.tileX, this.tileY, jammerRange, (nextX, nextY) => {
-            worldMap.removeJammer(nextX, nextY, this.teamID, jammerFlags);
+            worldMap.removeJammer(nextX, nextY, this.id, this.teamID, jammerFlags);
         });
     }
 }
@@ -1683,6 +1680,7 @@ BattalionEntity.prototype.reduceCash = function(cash) {
     this.cash -= cash;
 }
 
+//TODO(neyn): Most of this must be calculated in MinePlaceAction!
 BattalionEntity.prototype.canPlaceMine = function(gameContext) {
     const { world, typeRegistry } = gameContext;
     const { mapManager } = world;

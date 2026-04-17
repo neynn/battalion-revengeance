@@ -1,8 +1,16 @@
+import { EntityManager } from "../../engine/entity/entityManager.js";
 import { JAMMER_FLAG } from "../enums.js";
+import { TeamManager } from "../team/teamManager.js";
 
-export const JammerTile = function(tileX, tileY) {
-    this.tileX = tileX;
-    this.tileY = tileY;
+const createBlocker = function() {
+    return {
+        "entityID": EntityManager.INVALID_ID,
+        "teamID": TeamManager.INVALID_ID,
+        "flags": JAMMER_FLAG.NONE
+    }
+}
+
+export const JammerTile = function() {
     this.blockers = [];
 }
 
@@ -12,7 +20,7 @@ JammerTile.prototype.isJammed = function(gameContext, teamID, flags) {
     for(let i = 0; i < this.blockers.length; i++) {
         const blocker = this.blockers[i];
 
-        if((blocker.flags & flags) !== 0) {
+        if(blocker.flags & flags) {
             const isAlly = teamManager.isAlly(teamID, blocker.teamID);
 
             if(!isAlly) {
@@ -24,40 +32,38 @@ JammerTile.prototype.isJammed = function(gameContext, teamID, flags) {
     return false;
 }
 
-JammerTile.prototype.removeBlocker = function(teamID, flags) {
+JammerTile.prototype.removeBlocker = function(entityID, teamID, flags) {
     for(let i = 0; i < this.blockers.length; i++) {
         const blocker = this.blockers[i];
 
-        if(blocker.teamID === teamID) {
-            blocker.flags &= ~flags;
-
-            if(blocker.flags === JAMMER_FLAG.NONE) {
-                this.blockers[i] = this.blockers[this.blockers.length - 1];
-                this.blockers.pop();
-                break;
-            }
+        if(blocker.entityID === entityID) {
+            this.blockers[i] = this.blockers[this.blockers.length - 1];
+            this.blockers.pop();
+            break;
         }
     }
 }
 
-JammerTile.prototype.addBlocker = function(teamID, flags) {
+JammerTile.prototype.addBlocker = function(entityID, teamID, flags) {
     let blockerFound = false;
 
     for(let i = 0; i < this.blockers.length; i++) {
         const blocker = this.blockers[i];
 
-        if(blocker.teamID === teamID) {
-            blocker.flags |= flags;
+        if(blocker.entityID === entityID) {
             blockerFound = true;
             break;
         }
     }
    
     if(!blockerFound) {
-        this.blockers.push({
-            "teamID": teamID,
-            "flags": flags
-        });
+        const blocker = createBlocker();
+
+        blocker.entityID = entityID;
+        blocker.teamID = teamID;
+        blocker.flags = flags;
+
+        this.blockers.push(blocker);
     }
 }
 
