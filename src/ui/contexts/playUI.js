@@ -304,12 +304,12 @@ PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, scree
     const nextTexture = uiData.getTexture(UI_TEXTURE.ARROW);
     const skipTexture = uiData.getTexture(UI_TEXTURE.DIALOGUE_SKIP);
     const boxTexture = uiData.getTexture(UI_TEXTURE.DIALOGUE_BOX);
+    const portraitTexture = uiData.getTexture(UI_TEXTURE.STORY_PORTRAITS);
 
     const { context } = display;
     const { narrator } = dialogue;
     const { portrait, name } = typeRegistry.getCommanderType(COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE);
     const commanderName = language.getSystemTranslation(name);
-    //const portraitTexture = portraitHandler.getPortraitTexture(portrait);
 
     const barWidth = 4;
     const nextOffsetY = 8;
@@ -355,7 +355,7 @@ PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, scree
 
     boxTexture.draw(display, dialogueX, dialogueY);
     skipTexture.draw(display, skipX, skipY);
-    //Todo(neyn): Draw portrait.
+    portraitTexture.drawRegion(display, portrait, dialogueX, dialogueY);
 
     context.fillStyle = "#ff0000";
     context.fillRect(dialogueX + PORTRAIT_WIDTH, dialogueY, barWidth, DIALOGUE_BOX_HEIGHT);
@@ -409,7 +409,7 @@ PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, scree
 }
 
 PlayUI.prototype.onImmediate = function(gameContext, display) {
-    const { uiData, world, language, timer, typeRegistry, portraitHandler } = gameContext;
+    const { uiData, world, language, timer, typeRegistry } = gameContext;
     const { mapManager } = world;
     const { realTime, deltaTime } = timer;
     const { context } = display;

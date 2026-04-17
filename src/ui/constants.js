@@ -47,7 +47,8 @@ export const UI_TEXTURE = {
     STORY_START: 21,
     GENERIC_BUTTON: 22,
     STORY_PANELS: 23,
-    _COUNT: 24
+    STORY_PORTRAITS: 24,
+    _COUNT: 25
 };
 
 export const HUD_BUTTON = {

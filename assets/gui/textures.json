@@ -19,6 +19,7 @@
         }
     },
 
+    "story_portraits": { "directory": ["assets", "gui", "story"], "source": "portraits.png", "gridWidth": 130, "gridHeight": 150, "autoGrid": { "rows": 1, "columns": 2 } },
     "story_chapter_panel": { "directory": ["assets", "gui", "story"], "source": "chapter_panel.png" },
     "story_emblem_slot": { "directory": ["assets", "gui", "story"], "source": "emblem_slot.png" },
     "story_main_menu_border": { "directory": ["assets", "gui", "story"], "source": "main_menu_border.png" },

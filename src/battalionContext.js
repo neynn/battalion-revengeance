@@ -1,6 +1,5 @@
 import { ClientGameContext } from "../engine/clientGameContext.js";
 import { LanguageHandler } from "../engine/language/languageHandler.js";
-import { PortraitHandler } from "./client/portraitHandler.js";
 import { LAYER_TYPE, TILE_ID, TILE_TYPE } from "./enums.js";
 import { MainMenuState } from "./states/mainMenu/mainMenu.js";
 import { MapEditorState } from "./states/mapEditor/mapEditorState.js";
@@ -21,7 +20,6 @@ export const BattalionContext = function() {
 
     this.typeRegistry = new TypeRegistry();
     this.teamManager = new TeamManager();
-    this.portraitHandler = new PortraitHandler();
     this.actionRouter = new ClientActionRouter();
     this.shadeCache = new ShadeCache();
     this.mapRegistry = new MapRegistry();
@@ -59,7 +57,6 @@ BattalionContext.prototype.init = function(resources) {
     registerClientActions(this);
 
     this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);
-    this.portraitHandler.load(resources.portraits);
 
     this.states.addState(BattalionContext.STATE.MAIN_MENU, new MainMenuState());
     this.states.addState(BattalionContext.STATE.MAP_EDITOR, new MapEditorState());
@@ -72,7 +69,6 @@ BattalionContext.prototype.init = function(resources) {
 
 BattalionContext.prototype.onExit = function() {
     this.teamManager.exit();
-    this.portraitHandler.exit();
     this.shadeCache.exit();
     this.missionManager.exit();
     addDebug(this);

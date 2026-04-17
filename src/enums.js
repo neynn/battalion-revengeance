@@ -100,6 +100,12 @@ export const EMBLEM_TYPE = {
     ELAM_NO: 9
 };
 
+export const PORTRAIT_TYPE = {
+    NONE: 0,
+    KANYE: 1,
+    _COUNT: 2
+};
+
 export const ICON_TYPE = {
     NONE: 0,
     ARMOR_LIGHT: 1,

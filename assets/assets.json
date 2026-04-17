@@ -16,8 +16,6 @@
     "spriteTextures": { "directory": ["assets", "sprites"], "source": "textures.json" },
     "tiles": { "directory": ["assets", "tiles"], "source": "tiles.json" },
 
-    "portraits": { "directory": ["assets", "portraits"], "source": "portraits.json" },
-
     "scenarios": { "directory": ["assets", "game", "story"], "source": "scenarios.json" },
     "campaigns": { "directory": ["assets", "game", "story"], "source": "campaigns.json" },
     "chapters": { "directory": ["assets", "game", "story"], "source": "chapters.json" },

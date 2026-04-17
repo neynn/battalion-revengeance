@@ -34,6 +34,7 @@ UIData.prototype.loadStoryTextures = function() {
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_START]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.ARROW]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_PANELS]);
+    this.textureLoader.loadTexture(this.textures[UI_TEXTURE.STORY_PORTRAITS]);
 }
 
 UIData.prototype.loadPlayTextures = function() {
@@ -83,4 +84,5 @@ UIData.prototype.load = function(gameContext) {
     this.textures[UI_TEXTURE.GENERIC_BUTTON] = uiManager.getTextureID("generic_button");
     this.textures[UI_TEXTURE.ARROW] = uiManager.getTextureID("arrow");
     this.textures[UI_TEXTURE.STORY_PANELS] = uiManager.getTextureID("story_panels");
+    this.textures[UI_TEXTURE.STORY_PORTRAITS] = uiManager.getTextureID("story_portraits");
 }

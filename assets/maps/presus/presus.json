@@ -142,8 +142,8 @@
                 {
                     "type": "DIALOGUE",
                     "dialogue": [
-                        { "narrator": "Kanye", "text": "PRESUS_EVENT_TEXT" },
-                        { "narrator": "Kanye", "text": "PRESUS_EVENT_TEXT" }
+                        { "narrator": "KANYE", "text": "PRESUS_EVENT_TEXT" },
+                        { "narrator": "KANYE", "text": "PRESUS_EVENT_TEXT" }
                     ]
                 }
             ]
