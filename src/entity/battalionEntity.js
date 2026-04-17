@@ -5,10 +5,9 @@ import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { createNode, mGetLowestCostNode } from "../systems/pathfinding.js";
-import { getDirectionByDelta, getDirectionVector } from "../systems/direction.js";
+import { DIRECTION_DELTA_X, DIRECTION_DELTA_Y, getDirectionByDelta } from "../systems/direction.js";
 import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE, PATH_INTERCEPT } from "../enums.js";
 import { mapTransportToEntity } from "../enumHelpers.js";
-import { getLineEntities } from "../systems/targeting.js";
 import { TeamManager } from "../team/teamManager.js";
 import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
@@ -264,15 +263,6 @@ BattalionEntity.prototype.getDirectionTo = function(entity) {
     } else {
         return getDirectionByDelta(0, deltaY);
     }
-}
-
-BattalionEntity.prototype.getTileByDirection = function(direction) {
-    const vec = getDirectionVector(direction);
-
-    vec.x += this.tileX;
-    vec.y += this.tileY;
-
-    return vec;
 }
 
 BattalionEntity.prototype.addCash = function(value) {
@@ -1469,15 +1459,26 @@ BattalionEntity.prototype.isHurtByShrapnel = function() {
     return this.config.category !== ENTITY_CATEGORY.AIR && !this.hasFlag(BattalionEntity.FLAG.IS_SUBMERGED);
 }
 
+BattalionEntity.prototype.isHurtByStreamblast = function() {
+    //Streamblast does not hurt air and submerged units.
+    return this.config.category !== ENTITY_CATEGORY.AIR && !this.hasFlag(BattalionEntity.FLAG.IS_SUBMERGED);
+}
+
+BattalionEntity.prototype.isHurtByDispersion = function() {
+    //Dispersion does not hurt air units, but unlike SHRAPNEL and STREAMBLAST hurts IS_SUBMERGED units.
+    return this.config.category !== ENTITY_CATEGORY.AIR;
+}
+
 BattalionEntity.prototype.mResolveShrapnel = function(gameContext, target, damageFlags, resolver) {
+    const { world } = gameContext;
     const { tileX, tileY } = target;
     const direction = this.getDirectionTo(target);
-    const targets = getLineEntities(gameContext, direction, tileX, tileY, TRAIT_CONFIG.SHRAPNEL_RANGE);
+    const deltaX = DIRECTION_DELTA_X[direction];
+    const deltaY = DIRECTION_DELTA_Y[direction];
+    const targets = world.getEntitiesInLine(tileX, tileY, deltaX, deltaY, TRAIT_CONFIG.SHRAPNEL_RANGE);
     const flags = damageFlags | ATTACK_FLAG.SHRAPNEL;
 
-    for(let i = 0; i < targets.length; i++) {
-        const target = targets[i];
-
+    for(const target of targets) {
         if(target.isHurtByShrapnel()) {
             const damage = this.getAttackDamage(gameContext, target, flags);
 
@@ -1486,18 +1487,14 @@ BattalionEntity.prototype.mResolveShrapnel = function(gameContext, target, damag
     }
 }
 
-BattalionEntity.prototype.isHurtByStreamblast = function() {
-    //Streamblast does not hurt air and submerged units.
-    return this.config.category !== ENTITY_CATEGORY.AIR && !this.hasFlag(BattalionEntity.FLAG.IS_SUBMERGED);
-}
-
 BattalionEntity.prototype.mResolveStreamblastAttack = function(gameContext, target, resolver) {
+    const { world } = gameContext;
     const direction = this.getDirectionTo(target);
-    const targets = getLineEntities(gameContext, direction, this.tileX, this.tileY, this.config.streamRange);
+    const deltaX = DIRECTION_DELTA_X[direction];
+    const deltaY = DIRECTION_DELTA_Y[direction];
+    const targets = world.getEntitiesInLine(this.tileX, this.tileY, deltaX, deltaY, this.config.streamRange);
 
-    for(let i = 0; i < targets.length; i++) {
-        const target = targets[i];
-
+    for(const target of targets) {
         if(target.isHurtByStreamblast()) {
             const damage = this.getAttackDamage(gameContext, target, ATTACK_FLAG.STREAMBLAST);
 
@@ -1508,20 +1505,15 @@ BattalionEntity.prototype.mResolveStreamblastAttack = function(gameContext, targ
     this.mResolveAttackTraits(resolver);
 }
 
-BattalionEntity.prototype.isHurtByDispersion = function() {
-    //Dispersion does not hurt air units, but unlike SHRAPNEL and STREAMBLAST hurts IS_SUBMERGED units.
-    return this.config.category !== ENTITY_CATEGORY.AIR;
-}
-
 BattalionEntity.prototype.mResolveDispersionAttack = function(gameContext, target, resolver) {
     const { world } = gameContext;
     const { tileX, tileY } = target;
     const range = this.hasTrait(TRAIT_TYPE.JUDGEMENT) ? TRAIT_CONFIG.JUDGEMENT_RANGE : TRAIT_CONFIG.DISPERSION_RANGE;
     const targets = world.getEntitiesInRange(tileX, tileY, range, range);
 
-    for(let i = 0; i < targets.length; i++) {
-        const target = targets[i];
-
+    //TODO(neyn): AOE SHOULD also hurt the attacker.
+    //Rewrite resolver to handle such cases!
+    for(const target of targets) {
         if(target.isHurtByDispersion() && this.id !== target.id) {
             const damage = this.getAttackDamage(gameContext, target, ATTACK_FLAG.AREA);
 

@@ -1,12 +1,12 @@
 import { TextStyle } from "../../../engine/graphics/textStyle.js";
 import { toCenter } from "../../../engine/math/math.js";
 import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
-import { createStartTurnIntent } from "../../action/actionHelper.js";
 import { TeamOverride } from "../../map/override.js";
 import { createClientMapLoader } from "../../systems/map.js";
 import { mRegenerateLines } from "../helpers.js";
 import { START_BUTTON_STYLE, UI_TEXTURE } from "../constants.js";
 import { TextureRegion } from "../../../engine/resources/texture/region.js";
+import { beginMatch } from "../../systems/launch.js";
 
 const EMBLEM_GAP = 20;
 const EMBLEM_WIDTH = 70;
@@ -216,7 +216,7 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
                         }
 
                         loader.loadMapFromFile(gameContext, [over]);
-                        actionRouter.forceEnqueue(gameContext, createStartTurnIntent());
+                        beginMatch(gameContext);
                         this.hide();
                     })
                     .catch(() => {

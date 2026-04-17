@@ -147,8 +147,8 @@ DialogueHandler.prototype.getCurrentEntry = function() {
     return this.currentDialogue[this.currentIndex];
 }
 
-DialogueHandler.prototype.isFinished = function() {
-    return this.currentDialogue.length !== 0 && this.currentIndex >= this.currentDialogue.length;
+DialogueHandler.prototype.hasDialogue = function() {
+    return this.currentDialogue.length !== 0;
 }
 
 DialogueHandler.prototype.onSkipButton = function() {
@@ -176,7 +176,7 @@ DialogueHandler.prototype.isUnveiled = function() {
 DialogueHandler.prototype.showNextEntry = function(gameContext) {
     this.currentIndex++;
 
-    if(this.isFinished()) {
+    if(this.currentIndex >= this.currentDialogue.length) {
         this.reset();
         return;
     }

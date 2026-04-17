@@ -3,6 +3,7 @@ import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { mapCategoryToStat } from "../../enumHelpers.js";
 import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { createEntitySnapshot } from "../../snapshot/entitySnapshot.js";
+import { DIRECTION_DELTA_X, DIRECTION_DELTA_Y, isDirectionValid } from "../../systems/direction.js";
 import { createMineTriggerIntent, createUncloakIntent } from "../actionHelper.js";
 
 export const ProduceEntityAction = function(createEntity) {
@@ -61,20 +62,21 @@ ProduceEntityAction.prototype.fillExecutionPlan = function(gameContext, executio
     const entity = entityManager.getEntity(entityID);
     const worldMap = mapManager.getActiveMap();
 
-    if(!entity || entity.isDead() || !entity.canActAndMove() || !entity.hasTrait(TRAIT_TYPE.TANK_POOPER)) {
+    if(!entity || entity.isDead() || !entity.canActAndMove() || !entity.hasTrait(TRAIT_TYPE.TANK_POOPER) || !isDirectionValid(direction)) {
         return;
     }
 
     const { health, cost, movementType } = typeRegistry.getEntityType(typeID);
-    const { x, y } = entity.getTileByDirection(direction);
-    const tileType = worldMap.getTileType(gameContext, x, y);
+    const tileX = entity.tileX + DIRECTION_DELTA_X[direction];
+    const tileY = entity.tileY + DIRECTION_DELTA_Y[direction];
+    const tileType = worldMap.getTileType(gameContext, tileX, tileY);
 
     //If the entity cannot move to a tile, it should not spawn there.
     if(tileType.getPassabilityCost(movementType) <= 0) {
         return;
     }
 
-    if(world.getEntityAt(x, y) !== null) {
+    if(world.getEntityAt(tileX, tileY) !== null) {
         return;
     }
 
@@ -93,8 +95,8 @@ ProduceEntityAction.prototype.fillExecutionPlan = function(gameContext, executio
     data.entityID = entityID;
     data.nextID = nextID;
     data.cost = cost;
-    data.snapshot.tileX = x;
-    data.snapshot.tileY = y;
+    data.snapshot.tileX = tileX;
+    data.snapshot.tileY = tileY;
     data.snapshot.type = typeID;
     data.snapshot.health = health;
     data.snapshot.maxHealth = health;

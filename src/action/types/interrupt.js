@@ -17,7 +17,7 @@ InterruptAction.prototype = Object.create(Action.prototype);
 InterruptAction.prototype.constructor = InterruptAction;
 
 InterruptAction.prototype.onStart = function(gameContext, data) {
-    const { world } = gameContext;
+    const { world, dialogueHandler } = gameContext;
     const { eventHandler } = world;
     const { type, event } = data;
 
@@ -31,19 +31,24 @@ InterruptAction.prototype.onStart = function(gameContext, data) {
 
             break;
         }
+        case INTERRUPT_TYPE.START_GAME: {
+            dialogueHandler.playPrelogue(gameContext);
+            break;
+        }
     }
 
 }
 
 InterruptAction.prototype.isFinished = function(gameContext, executionPlan) {
+    const { dialogueHandler, world } = gameContext;
+    const { eventHandler } = world;
+
     const { data } = executionPlan;
     const { type, event } = data;
     let isFinished = false;
 
     switch(type) {
         case INTERRUPT_TYPE.EVENT: {
-            const { world } = gameContext;
-            const { eventHandler } = world;
             const { effects } = eventHandler.getEvent(event);
 
             let allFinished = true;
@@ -56,6 +61,10 @@ InterruptAction.prototype.isFinished = function(gameContext, executionPlan) {
             }
 
             isFinished = allFinished;
+            break;
+        }
+        case INTERRUPT_TYPE.START_GAME: {
+            isFinished = !dialogueHandler.hasDialogue();
             break;
         }
         default: {
