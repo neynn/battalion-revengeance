@@ -4,6 +4,8 @@ export const ActorManager = function() {
     this.currentActor = null;
 }
 
+ActorManager.INVALID_ID = -1;
+
 ActorManager.prototype.exit = function() {
     this.nextID = 0;
     this.actors.length = 0;

@@ -8,12 +8,12 @@ import { saveStoryMap } from "../systems/save.js";
 import { createDeathIntent, createEndTurnIntent, createExtractIntent, createProduceIntent } from "../action/actionHelper.js";
 import { MapInspector } from "./player/inspector.js";
 
-export const Player = function(id, camera) {
+export const Player = function(id, inspector, camera) {
     BattalionActor.call(this, id);
 
     this.camera = camera;
-    this.inspector = new MapInspector();
-    this.actionIntents = [];
+    this.inspector = inspector;
+    this.maxIntents = 10;
 
     this.states = new StateMachine(this);
     this.states.addState(Player.STATE.IDLE, new IdleState());
@@ -47,20 +47,13 @@ Player.prototype.surrender = function(gameContext) {
     }
 }
 
-Player.prototype.addIntent = function(intent) {
-    const MAX_INTENTS = 10;
-
-    if(this.actionIntents.length < MAX_INTENTS) {
-        this.actionIntents.push(intent);
-    }
-}
-
 Player.prototype.onTurnStart = function(gameContext) {
-    this.actionIntents.length = 0;
+    this.clearIntents();
+    this.camera.teamID = this.teamID;
 }
 
 Player.prototype.onTurnEnd = function(gameContext) {
-    this.actionIntents.length = 0;
+    this.clearIntents();
     this.camera.clearOverlays();
     this.states.setNextState(gameContext, Player.STATE.IDLE);
 }
@@ -127,25 +120,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
 }
 
 Player.prototype.activeUpdate = function(gameContext) {
-    const { world, actionRouter, teamManager } = gameContext;
-    const { actionQueue } = world;
-
-    if(!teamManager.isCurrent(this.teamID) || actionQueue.isRunning()) {
-        return;
-    }
-
-    for(let i = 0; i < this.actionIntents.length; i++) {
-        const actionIntent = this.actionIntents[i];
-        const executionPlan = actionQueue.createExecutionPlan(gameContext, actionIntent);
-
-        if(executionPlan) {
-            actionRouter.dispatch(gameContext, executionPlan, actionIntent);
-            this.actionIntents.splice(0, i + 1);
-            return;
-        }
-    }
-
-    this.actionIntents.length = 0;
+    this.enqueueNextIntent(gameContext);
 }
 
 Player.prototype.update = function(gameContext) {

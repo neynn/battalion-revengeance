@@ -9,6 +9,7 @@ import { UI_TEXTURE, HUD_BUTTON, GENERIC_BUTTON_STYLE, HUD_BUTTON_STYLE } from "
 import { BattalionMap } from "../../map/battalionMap.js";
 import { isDrawTime, mRegenerateLines } from "../helpers.js";
 import { createEndTurnIntent } from "../../action/actionHelper.js";
+import { ActorManager } from "../../../engine/world/actor/actorManager.js";
 
 const PORTRAIT_WIDTH = 130;
 const PORTRAIT_HEIGHT = 150;
@@ -38,13 +39,13 @@ const TILE_DRAW_ORDER = [
     BattalionMap.LAYER.CLOUD
 ];
 
-export const PlayUI = function(inspector, cContext, player) {
+export const PlayUI = function(cContext) {
     UIContext.call(this);
 
-    this.player = player;
     this.doImmediate = true;
-    this.inspector = inspector;
     this.cContext = cContext;
+    this.actorID = ActorManager.INVALID_ID;
+    this.inspector = new MapInspector();
     this.inspectSprite = SpriteManager.EMPTY_SPRITE;
 
     this.style = new TextStyle();
@@ -157,7 +158,8 @@ PlayUI.prototype.drawIcon = function(gameContext, iconID, display, screenX, scre
 }
 
 PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) {
-    const { uiData, language, teamManager, typeRegistry } = gameContext;
+    const { world, uiData, language, teamManager, typeRegistry } = gameContext;
+    const { actorManager } = world;
     const { activeTeams } = teamManager;
     const { context } = display;
     const buttonTexture = uiData.getTexture(UI_TEXTURE.HUD_BUTTONS);
@@ -268,9 +270,11 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
         GENERIC_BUTTON_STYLE.height
     );
 
-    if(teamManager.isCurrent(this.player.teamID)) {
+    const actor = actorManager.getActor(this.actorID);
+
+    if(actor && teamManager.isCurrent(actor.teamID)) {
         if(endTurnFlags & IM_FLAG.CLICKED) {
-            this.player.addIntent(createEndTurnIntent());
+            actor.addIntent(createEndTurnIntent());
         }
 
         if(endTurnFlags & IM_FLAG.ACTIVE) {

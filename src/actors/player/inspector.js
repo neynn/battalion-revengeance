@@ -42,7 +42,7 @@ MapInspector.prototype.getLastEntity = function(gameContext) {
     return entity;
 }
 
-MapInspector.prototype.inspect = function(gameContext, inspector, camera, tileX, tileY) {
+MapInspector.prototype.inspect = function(gameContext, actor, camera, tileX, tileY) {
     if(!this.isEnabled) {
         return MapInspector.STATE.NONE;
     }
@@ -59,7 +59,7 @@ MapInspector.prototype.inspect = function(gameContext, inspector, camera, tileX,
     this.lastX = tileX;
     this.lastY = tileY;
 
-    const entity = inspector.getVisibleEntity(gameContext, tileX, tileY);
+    const entity = actor.getVisibleEntity(gameContext, tileX, tileY);
 
     //If the tile has updated, then STATE will be NONE.
     //Entities only get inspected if the last inspect was NOT the same entity or the building on the tile.

@@ -2,11 +2,11 @@ import { getCursorTile } from "../../engine/camera/contextHelper.js";
 import { BattalionActor } from "./battalionActor.js";
 import { MapInspector } from "./player/inspector.js";
 
-export const Spectator = function(id, camera) {
+export const Spectator = function(id, inspector, camera) {
     BattalionActor.call(this, id);
 
     this.camera = camera;
-    this.inspector = new MapInspector();
+    this.inspector = inspector;
 }
 
 Spectator.prototype = Object.create(BattalionActor.prototype);

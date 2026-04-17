@@ -147,9 +147,10 @@ MatchLoader.prototype.createPlayer = function(gameContext, teamID) {
     const { actorManager } = world;
     const context = createPlayCamera(gameContext, teamID);
     const actorID = actorManager.getNextID();
-    const actor = new Player(actorID, context.getCamera());
-    const playUI = new PlayUI(actor.inspector, context, actor);
+    const playUI = new PlayUI(context);
+    const actor = new Player(actorID, playUI.inspector, context.getCamera());
 
+    playUI.actorID = actorID;
     playUI.load(gameContext);
     actorManager.addActor(actor);
     actor.setTeam(teamID);
@@ -162,9 +163,10 @@ MatchLoader.prototype.createSpectator = function(gameContext) {
     const { actorManager } = world;
     const context = createPlayCamera(gameContext, TeamManager.INVALID_ID);
     const actorID = actorManager.getNextID();
-    const actor = new Spectator(actorID, context.getCamera());
-    const playUI = new PlayUI(actor.inspector, context, actor);
+    const playUI = new PlayUI(context);
+    const actor = new Spectator(actorID, playUI.inspector, context.getCamera());
 
+    playUI.actorID = actorID;
     playUI.load(gameContext);
     actorManager.addActor(actor);
     actor.loadKeybinds(gameContext);
