@@ -75,13 +75,10 @@ StartTurnAction.prototype.execute = function(gameContext, data) {
     const events = eventHandler.getTriggerableEvents(teamManager.turn, teamManager.round);
 
     for(const event of events) {
-        const { id, simulation } = event;
+        const { id } = event;
 
         actionRouter.forceEnqueue(gameContext, createInterruptIntent(INTERRUPT_TYPE.EVENT, id));
-
-        for(const action of simulation) {
-            action.execute(gameContext);
-        }
+        event.execute(gameContext);
     }
 
     teamManager.updateStatus();

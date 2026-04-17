@@ -2,7 +2,6 @@ import { WorldEvent } from "./worldEvent.js";
 
 export const WorldEventRegistry = function() {
     this.worldEvents = [];
-    this.triggeredEvents = new Set();
     this.nameMap = new Map();
     this.isAuthority = true;
 }
@@ -17,7 +16,6 @@ WorldEventRegistry.prototype.toReceiver = function() {
 
 WorldEventRegistry.prototype.exit = function() {
     this.worldEvents.length = 0;
-    this.triggeredEvents.clear();
     this.isAuthority = true;
 }
 
@@ -41,22 +39,12 @@ WorldEventRegistry.prototype.getTriggerableEvents = function(turn, round) {
     const MAX_DEPTH = 10;
 
     for(const event of this.worldEvents) {
-        if(this.triggeredEvents.has(event.id)) {
-            continue;
-        }
-
-        if(event.isTriggeredByTurn(turn) || event.isTriggeredByRound(round)) {
-            let depth = 0;
+        if(event.isTriggerable(turn, round)) {
             let currentEvent = event;
+            let depth = 0;
 
             while(depth < MAX_DEPTH && currentEvent !== null) {
-                const { id, next } = currentEvent;
-
-                if(this.triggeredEvents.has(id)) {
-                    break;
-                }
-
-                this.triggeredEvents.add(id);
+                const { next } = currentEvent;
 
                 events.push(currentEvent);
 
@@ -76,15 +64,21 @@ WorldEventRegistry.prototype.getTriggerableEvents = function(turn, round) {
 
 WorldEventRegistry.prototype.loadTriggeredEvents = function(events) {
     for(const eventID of events) {
-        this.triggeredEvents.add(eventID);
+        const event = this.getEvent(eventID);
+
+        if(event) {
+            event.state = WorldEvent.STATE.TRIGGERED;
+        }
     }
 }
 
 WorldEventRegistry.prototype.saveTriggeredEvents = function() {
     const events = [];
 
-    for(const eventID of this.triggeredEvents) {
-        events.push(eventID);
+    for(let i = 0; i < this.worldEvents.length; i++) {
+        if(this.worldEvents[i].state === WorldEvent.STATE.TRIGGERED) {
+            events.push(i);
+        }
     }
 
     return events;
