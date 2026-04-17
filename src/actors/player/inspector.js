@@ -15,7 +15,8 @@ MapInspector.STATE = {
     NONE: 0,
     TILE: 1,
     BUILDING: 2,
-    ENTITY: 3
+    ENTITY: 3,
+    ENTITY_MENU: 4
 };
 
 MapInspector.prototype.disable = function() {
@@ -42,6 +43,71 @@ MapInspector.prototype.getLastEntity = function(gameContext) {
     return entity;
 }
 
+MapInspector.prototype.tryInspectTile = function(gameContext, camera, tileX, tileY) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const index = worldMap.getIndex(this.lastX, this.lastY);
+    let isValid = false;
+
+    if(index !== WorldMap.OUT_OF_BOUNDS) {
+        this.state = MapInspector.STATE.TILE;
+        isValid = true;
+    }
+
+    camera.clearOverlays();
+
+    return isValid;
+}
+
+MapInspector.prototype.tryInspectBuilding = function(gameContext, tileX, tileY) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const building = worldMap.getBuilding(tileX, tileY);
+    let isValid = false;
+
+    //A building was found and the last inspect was NOT a building.
+    if(building && this.state !== MapInspector.STATE.BUILDING) {
+        this.state = MapInspector.STATE.BUILDING;
+
+        console.log("Inspected Building", {
+            "building": building
+        });
+
+        isValid = true;
+    }
+
+    return isValid;
+}
+
+MapInspector.prototype.tryInspectEntity = function(gameContext, actor, camera, tileX, tileY) {
+    const entity = actor.getVisibleEntity(gameContext, tileX, tileY);
+    let isValid = false;
+
+    if(this.state === MapInspector.STATE.ENTITY) {
+
+    }
+
+    if(entity && this.state !== MapInspector.STATE.ENTITY_MENU && this.state !== MapInspector.STATE.ENTITY && this.state !== MapInspector.STATE.BUILDING) {
+        this.nodeMap.clear();
+        this.state = MapInspector.STATE.ENTITY;
+
+        entity.mGetNodeMap(gameContext, this.nodeMap);
+        camera.showEntityNodes(gameContext, entity, this.nodeMap);
+
+        console.log("Inspected Entity", {
+            "dName":  entity.getName(gameContext),
+            "dDesc": entity.getDescription(gameContext),
+            "entity": entity
+        });
+
+        isValid = true;
+    }
+
+    return isValid;
+}
+
 MapInspector.prototype.inspect = function(gameContext, actor, camera, tileX, tileY) {
     if(!this.isEnabled) {
         return MapInspector.STATE.NONE;
@@ -59,45 +125,13 @@ MapInspector.prototype.inspect = function(gameContext, actor, camera, tileX, til
     this.lastX = tileX;
     this.lastY = tileY;
 
-    const entity = actor.getVisibleEntity(gameContext, tileX, tileY);
-
-    //If the tile has updated, then STATE will be NONE.
-    //Entities only get inspected if the last inspect was NOT the same entity or the building on the tile.
-    if(entity && this.state !== MapInspector.STATE.ENTITY && this.state !== MapInspector.STATE.BUILDING) {
-        this.nodeMap.clear();
-        this.state = MapInspector.STATE.ENTITY;
-
-        entity.mGetNodeMap(gameContext, this.nodeMap);
-        camera.showEntityNodes(gameContext, entity, this.nodeMap);
-
-        console.log("Inspected Entity", {
-            "dName":  entity.getName(gameContext),
-            "dDesc": entity.getDescription(gameContext),
-            "entity": entity
-        });
-
-        return this.state;
+    if(!this.tryInspectEntity(gameContext, actor, camera, tileX, tileY)) {
+        if(!this.tryInspectBuilding(gameContext, tileX, tileY)) {
+            if(!this.tryInspectTile(gameContext, camera, tileX, tileY)) {
+                this.state = MapInspector.STATE.NONE;
+            }
+        }
     }
-
-    const worldMap = mapManager.getActiveMap();
-    const building = worldMap.getBuilding(tileX, tileY);
-
-    //A building was found and the last inspect was NOT a building.
-    if(building && this.state !== MapInspector.STATE.BUILDING) {
-        this.state = MapInspector.STATE.BUILDING;
-
-        console.log("Inspected Building", {
-            "building": building
-        });
-
-        return this.state;
-    }
-
-    const index = worldMap.getIndex(this.lastX, this.lastY);
-
-    camera.clearOverlays();
-
-    this.state = index !== WorldMap.OUT_OF_BOUNDS ? MapInspector.STATE.TILE : MapInspector.STATE.NONE;
 
     return this.state;
 }
