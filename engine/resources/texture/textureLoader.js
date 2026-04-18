@@ -23,14 +23,6 @@ TextureLoader.prototype.getCompletedTasks = function() {
     return this.totalTasks - this.tasks.length;
 }
 
-TextureLoader.prototype.clearTexture = function(index) {
-    const texture = this.textureRegistry.getTexture(index);
-
-    if(texture) {
-        texture.clear();
-    }
-}
-
 TextureLoader.prototype.getTotalKBUsed = function() {
     return this.textureRegistry.getSizeBytes() / 1024;
 }

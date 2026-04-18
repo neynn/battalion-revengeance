@@ -8,14 +8,13 @@ import { TextureRegistry } from "../resources/texture/textureRegistry.js";
 export const SpriteManager = function(textureLoader) {
     this.resources = textureLoader;
     this.spriteTracker = new Set();
-    this.spriteMap = new Map();
+    this.containerMap = new Map();
     this.containers = [];
     this.sharedSprites = [];
     this.timestamp = 0;
     this.nextCleanup = 0;
     this.pool = new ObjectPool(1024, (index) => new Sprite(index, "EMPTY_SPRITE"));
     this.layers = [];
-    this.containerMap = new Map();
 }
 
 SpriteManager.INVALID_ID = -1;
@@ -23,6 +22,16 @@ SpriteManager.NO_VARIANT = -1;
 SpriteManager.SECONDS_TO_CLEANUP = 5;
 SpriteManager.EMPTY_SPRITE = new Sprite(SpriteManager.INVALID_ID, "EMPTY_SPRITE");
 SpriteManager.EMPTY_LAYER = [];
+
+SpriteManager.prototype.getSpriteID = function(name) {
+    const index = this.containerMap.get(name);
+
+    if(index === undefined) {
+        return SpriteManager.INVALID_ID;
+    }
+
+    return index;
+}
 
 SpriteManager.prototype.load = function(textures, sprites) {
     if(!textures || !sprites) {
@@ -68,10 +77,6 @@ SpriteManager.prototype.load = function(textures, sprites) {
             
             this.containers.push(spriteContainer);
             this.containerMap.set(spriteID, containerID);
-            this.spriteMap.set(spriteID, {
-                "containerID": containerID,
-                "textureID": textureID
-            });
         } else {
             console.warn(`Sprite ${spriteID} has no frames!`);
         }
@@ -79,17 +84,15 @@ SpriteManager.prototype.load = function(textures, sprites) {
 }
 
 SpriteManager.prototype.createShadeTask = function(spriteID, handle) {
-    const spriteEntry = this.spriteMap.get(spriteID);
-
-    if(!spriteEntry) {
+    if(spriteID < 0 || spriteID >= this.containers.length) {
         return;
     }
 
-    const { containerID, textureID } = spriteEntry;
-    const container = this.containers[containerID];
-    const { frames } = container;
+    const container = this.containers[spriteID];
+    const { texture, frames } = container;
+    const { id } = texture;
 
-    this.resources.addShadeTask(textureID, frames[0], handle);
+    this.resources.addShadeTask(id, frames[0], handle);
 }
 
 SpriteManager.prototype.forEachSprite = function(onCall) {
@@ -106,30 +109,29 @@ SpriteManager.prototype.addSharedEntry = function(spriteID, index) {
 }
 
 SpriteManager.prototype.getSpriteDuration = function(spriteID) {
-    const spriteEntry = this.spriteMap.get(spriteID);
-
-    if(spriteEntry) {
-        const { containerID } = spriteEntry;
-        const container = this.getContainer(containerID);
-
-        if(container) {
-            return container.totalFrameTime;
-        }
+    if(spriteID < 0 || spriteID >= this.containers.length) {
+        return 1;
     }
 
-    return 1;
+    const container = this.containers[spriteID];
+    const { totalFrameTime } = container;
+
+    return totalFrameTime;
 }
 
 SpriteManager.prototype.createCopyTexture = function(spriteID, variantID, colorMap) {
-    const spriteEntry = this.spriteMap.get(spriteID);
+    //TODO(neyn): Replace with numbers.
+    spriteID = this.getSpriteID(spriteID);
 
-    if(!spriteEntry) {
+    if(spriteID < 0 || spriteID >= this.containers.length) {
         return;
     }
 
-    const { textureID } = spriteEntry;
+    const container = this.containers[spriteID];
+    const { texture } = container;
+    const { id } = texture;
 
-    this.resources.addRecolorTask(textureID, variantID, colorMap);
+    this.resources.addRecolorTask(id, variantID, colorMap);
 }
 
 SpriteManager.prototype.update = function(gameContext) {
@@ -166,11 +168,10 @@ SpriteManager.prototype.update = function(gameContext) {
 }
 
 SpriteManager.prototype.clear = function() {
-    for(const [spriteID, entry] of this.spriteMap) {
-        const { containerID, textureID } = entry;
-        
-        this.resources.clearTexture(textureID);
-    }
+    const textures = this.resources.textureRegistry.textures;
+    const registry = this.resources.textureRegistry.registries[TextureRegistry.REGISTRY_TYPE.SPRITE];
+
+    registry.forEach(textureID => textures[textureID].clear());
 }
 
 SpriteManager.prototype.exit = function() {
@@ -360,39 +361,38 @@ SpriteManager.prototype.removeSpriteFromLayers = function(spriteIndex) {
 }
 
 SpriteManager.prototype.updateSprite = function(spriteIndex, spriteID, variantID = SpriteManager.NO_VARIANT) {
+    //TODO(neyn): Replace with numbers.
+    spriteID = this.getSpriteID(spriteID);
+
+    if(spriteID < 0 || spriteID >= this.containers.length) {
+        return;
+    }
+
     const sprite = this.pool.getReservedElement(spriteIndex);
-    const spriteEntry = this.spriteMap.get(spriteID);
 
-    if(!sprite || !spriteEntry) {
+    if(!sprite) {
         return;
     }
 
-    const { containerID, textureID } = spriteEntry;
-    const container = this.getContainer(containerID);
-
-    if(!container) {
-        return;
-    }
+    const container = this.containers[spriteID];
+    const { texture } = container;
+    const { id, handle } = texture;
 
     sprite.init(container, this.timestamp, spriteID);
-
-    const texture = this.resources.getTexture(textureID);
 
     //If the handle is unknown, the default handle is used.
     //If the specific handle is not found, the default handle is used.
     if(variantID === SpriteManager.NO_VARIANT) {
-        const { handle } = texture;
-
         sprite.setHandle(handle);
 
         //Lazy-Load the default handle.
         if(handle.state === TextureHandle.STATE.EMPTY) {
-            this.resources.loadTexture(textureID);
+            this.resources.loadTexture(id);
         }
     } else {
-        const handle = texture.getHandle(variantID);
+        const variantHandle = texture.getHandle(variantID);
 
-        sprite.setHandle(handle);
+        sprite.setHandle(variantHandle);
     }
 }
 

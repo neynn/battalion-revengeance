@@ -41,7 +41,7 @@ ShadeCache.prototype.loadShades = function(gameContext, entityTypeID) {
         const spriteName = sprites[spriteIndex];
 
         if(spriteName) {
-            spriteManager.createShadeTask(spriteName, shadeHandle);
+            spriteManager.createShadeTask(spriteManager.getSpriteID(spriteName), shadeHandle);
         }
     }
 }
