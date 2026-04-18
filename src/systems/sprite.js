@@ -18,7 +18,10 @@ const SPRITE_TABLE = [
     ENTITY_SPRITE.FIRE_LEFT
 ];
 
-const getSpriteIndex = function(state, direction) {
+export const getEntitySpriteID = function(entity) {
+    const { state, direction, config } = entity;
+    const { sprites } = config;
+
     let begin = ENTITY_SPRITE.IDLE_UP;
 
     switch(state) {
@@ -36,7 +39,7 @@ const getSpriteIndex = function(state, direction) {
         }
     }
 
-    return SPRITE_TABLE[begin + direction];
+    return sprites[SPRITE_TABLE[begin + direction]];
 }
 
 export const playSprite = function(gameContext, spriteType, tileX, tileY) {
@@ -85,10 +88,9 @@ export const updateBuildingSprite = function(gameContext, building) {
 
 export const updateEntitySprite = function(gameContext, entity) {
     const { spriteManager, typeRegistry } = gameContext;
-    const { spriteID, state, direction, config } = entity;
+    const { spriteID, state, config } = entity;
     const sprite = spriteManager.getSprite(spriteID);
-    const spriteIndex = getSpriteIndex(state, direction);
-    const spriteName = config.sprites[spriteIndex];
+    const spriteName = getEntitySpriteID(entity);
 
     if(spriteName !== null) {
         const { color } = entity.getTeam(gameContext);

@@ -2,6 +2,7 @@ import { Sprite } from "./sprite.js";
 import { ObjectPool } from "../util/objectPool.js";
 import { SpriteContainer } from "./spriteContainer.js";
 import { TextureHandle } from "../resources/texture/textureHandle.js";
+import { RenderState } from "./renderState.js";
 
 export const SpriteManager = function(textureLoader) {
     this.resources = textureLoader;
@@ -14,6 +15,9 @@ export const SpriteManager = function(textureLoader) {
     this.pool = new ObjectPool(1024, (index) => new Sprite(index, "EMPTY_SPRITE"));
     this.layers = [];
     this.textureMap = {};
+
+    this.containerMap = new Map();
+    this.renderStates = new ObjectPool(2000, (index) => new RenderState(index));
 }
 
 SpriteManager.INVALID_ID = -1;
@@ -43,7 +47,8 @@ SpriteManager.prototype.load = function(textures, sprites) {
         const regionFrames = frames !== undefined ? textureObject.getFrames(frames) : textureObject.getFramesAuto(autoFrames);
 
         if(regionFrames.length !== 0) {
-            const spriteContainer = new SpriteContainer(spriteID, regionFrames);
+            const containerID = this.containers.length;
+            const spriteContainer = new SpriteContainer(containerID, textureObject, regionFrames);
 
             if(spriteTime !== undefined) {
                 spriteContainer.setSpriteTime(spriteTime);
@@ -64,8 +69,9 @@ SpriteManager.prototype.load = function(textures, sprites) {
             }
             
             this.containers.push(spriteContainer);
+            this.containerMap.set(spriteID, containerID);
             this.spriteMap.set(spriteID, {
-                "containerID": this.containers.length - 1,
+                "containerID": containerID,
                 "textureID": textureID
             });
         } else {

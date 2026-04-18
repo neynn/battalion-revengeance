@@ -1,10 +1,11 @@
 import { TILE_HEIGHT, TILE_WIDTH } from "../engine_constants.js";
 
-export const SpriteContainer = function(id, frames) {
+export const SpriteContainer = function(id, texture, frames) {
     this.id = id;
     this.frames = frames;
     this.frameCount = frames.length;
     this.totalFrameTime = frames.length;
+    this.texture = texture;
     this.frameTime = 1;
     this.boundsW = 0;
     this.boundsH = 0;
