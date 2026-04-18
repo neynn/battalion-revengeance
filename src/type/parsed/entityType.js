@@ -1,6 +1,6 @@
 import { MAX_TRAITS } from "../../constants.js";
 import { mapMovementToCategory } from "../../enumHelpers.js";
-import { ARMOR_TYPE, ATTACK_TYPE, DIRECTION, ENTITY_CATEGORY, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../../enums.js";
+import { ARMOR_TYPE, ATTACK_TYPE, DIRECTION, ENTITY_CATEGORY, ENTITY_SPRITE, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../../enums.js";
 
 const TILE_STEP = 56;
 const ENABLE_HYBRID = false;
@@ -19,6 +19,24 @@ const getRangeType = function(minRange, maxRange) {
     }
 
     return RANGE_TYPE.NONE;
+}
+
+const spriteNameToEnum = function(name) {
+    switch(name) {
+        case "idle_up": return ENTITY_SPRITE.IDLE_UP;
+        case "idle_right": return ENTITY_SPRITE.IDLE_RIGHT;
+        case "idle_down": return ENTITY_SPRITE.IDLE_DOWN;
+        case "idle_left": return ENTITY_SPRITE.IDLE_LEFT;
+        case "move_up": return ENTITY_SPRITE.MOVE_UP;
+        case "move_right": return ENTITY_SPRITE.MOVE_RIGHT;
+        case "move_down": return ENTITY_SPRITE.MOVE_DOWN;
+        case "move_left": return ENTITY_SPRITE.MOVE_LEFT;
+        case "fire_up": return ENTITY_SPRITE.FIRE_UP;
+        case "fire_right": return ENTITY_SPRITE.FIRE_RIGHT;
+        case "fire_down": return ENTITY_SPRITE.FIRE_DOWN;
+        case "fire_left": return ENTITY_SPRITE.FIRE_LEFT;
+        default: return ENTITY_SPRITE._INVALID
+    }
 }
 
 export const EntityType = function(id) {
@@ -40,12 +58,16 @@ export const EntityType = function(id) {
     this.streamRange = 1;
     this.cost = 0;
     this.sounds = {};
-    this.sprites = {};
     this.effects = {};
+    this.sprites = [];
     this.traits = [];
     this.category = mapMovementToCategory(this.movementType);
     this.rangeType = getRangeType(this.minRange, this.maxRange);
     this.shop = SHOP_TYPE.NONE;
+
+    for(let i = 0; i < ENTITY_SPRITE._COUNT; i++) {
+        this.sprites[i] = null;
+    }
 }
 
 EntityType.MIN_MOVE_COST = 1;
@@ -96,7 +118,6 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
     this.minRange = minRange;
     this.maxRange = maxRange;
     this.sounds = sounds;
-    this.sprites = sprites;
     this.effects = effects;
 
     if(this.maxRange < this.minRange) {
@@ -130,20 +151,28 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
         console.warn(`${DEBUG_NAME}: More than ${MAX_TRAITS} traits detected!`);
     }
 
-    if(this.sprites["move_right"] === undefined) {
-        this.sprites["move_right"] = this.sprites["idle_right"];
+    for(const spriteID in sprites) {
+        const index = spriteNameToEnum(spriteID);
+
+        if(index !== ENTITY_SPRITE._INVALID) {
+            this.sprites[index] = sprites[spriteID];
+        }
     }
 
-    if(this.sprites["move_left"] === undefined) {
-        this.sprites["move_left"] = this.sprites["idle_left"];
+    if(!this.sprites[ENTITY_SPRITE.MOVE_UP]) {
+        this.sprites[ENTITY_SPRITE.MOVE_UP] = this.sprites[ENTITY_SPRITE.IDLE_UP];
     }
 
-    if(this.sprites["move_up"] === undefined) {
-        this.sprites["move_up"] = this.sprites["idle_up"];
+    if(!this.sprites[ENTITY_SPRITE.MOVE_RIGHT]) {
+        this.sprites[ENTITY_SPRITE.MOVE_RIGHT] = this.sprites[ENTITY_SPRITE.IDLE_RIGHT];
     }
 
-    if(this.sprites["move_down"] === undefined) {
-        this.sprites["move_down"] = this.sprites["idle_down"];
+    if(!this.sprites[ENTITY_SPRITE.MOVE_DOWN]) {
+        this.sprites[ENTITY_SPRITE.MOVE_DOWN] = this.sprites[ENTITY_SPRITE.IDLE_DOWN];
+    }
+
+    if(!this.sprites[ENTITY_SPRITE.MOVE_LEFT]) {
+        this.sprites[ENTITY_SPRITE.MOVE_LEFT] = this.sprites[ENTITY_SPRITE.IDLE_LEFT];
     }
 }
 

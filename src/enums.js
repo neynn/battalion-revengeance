@@ -3,6 +3,23 @@ export const PLAYER_PREFERENCE = {
     DISABLE_IDLE_ANIMATIONS: 0 //TODO: Implement!
 };
 
+export const ENTITY_SPRITE = {
+    _INVALID: -1,
+    IDLE_UP: 0,
+    IDLE_RIGHT: 1,
+    IDLE_DOWN: 2,
+    IDLE_LEFT: 3,
+    MOVE_UP: 4,
+    MOVE_RIGHT: 5,
+    MOVE_DOWN: 6,
+    MOVE_LEFT: 7,
+    FIRE_UP: 8,
+    FIRE_RIGHT: 9,
+    FIRE_DOWN: 10,
+    FIRE_LEFT: 11,
+    _COUNT: 12
+};
+
 export const SOUND_TYPE = {
     HEAL: "heal",
     MOVE: "move",

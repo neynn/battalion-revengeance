@@ -4,7 +4,7 @@ import { SpriteManager } from "../../../engine/sprite/spriteManager.js";
 import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
 import { MapInspector } from "../../actors/player/inspector.js";
 import { getHealthColor } from "../../entity/helpers.js";
-import { COMMANDER_TYPE, TILE_ID } from "../../enums.js";
+import { COMMANDER_TYPE, ENTITY_SPRITE, TILE_ID } from "../../enums.js";
 import { UI_TEXTURE, HUD_BUTTON, GENERIC_BUTTON_STYLE, HUD_BUTTON_STYLE } from "../constants.js";
 import { BattalionMap } from "../../map/battalionMap.js";
 import { isDrawTime, mRegenerateLines } from "../helpers.js";
@@ -110,8 +110,9 @@ PlayUI.prototype.regenerateLines = function(context, text, maxWidth) {
 PlayUI.prototype.updateInspectSprite = function(gameContext, entity) {
     const { spriteManager } = gameContext;
     const { color } = entity.getTeam(gameContext);
+    const spriteName = entity.config.sprites[ENTITY_SPRITE.IDLE_RIGHT];
 
-    spriteManager.updateSprite(this.inspectSprite.index, entity.config.sprites.idle_right, color);
+    spriteManager.updateSprite(this.inspectSprite.index, spriteName, color);
 }
 
 PlayUI.prototype.updateBuilding = function(gameContext, building) {

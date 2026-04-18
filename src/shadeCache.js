@@ -1,6 +1,6 @@
 import { Texture } from "../engine/resources/texture/texture.js";
 import { TextureHandle } from "../engine/resources/texture/textureHandle.js";
-import { DIRECTION, ENTITY_TYPE } from "./enums.js";
+import { DIRECTION, ENTITY_SPRITE, ENTITY_TYPE } from "./enums.js";
 
 export const ShadeCache = function() {
    const MAX_SHADES = ENTITY_TYPE._COUNT * DIRECTION._COUNT;
@@ -37,29 +37,11 @@ ShadeCache.prototype.loadShades = function(gameContext, entityTypeID) {
             continue;
         } 
 
-        let idleSprite = null;
+        const spriteIndex = ENTITY_SPRITE.IDLE_UP + i;
+        const spriteName = sprites[spriteIndex];
 
-        switch(i) {
-            case DIRECTION.NORTH: {
-                idleSprite = sprites["idle_up"];
-                break;
-            }
-            case DIRECTION.EAST: {
-                idleSprite = sprites["idle_right"];
-                break;
-            }
-            case DIRECTION.SOUTH: {
-                idleSprite = sprites["idle_down"];
-                break;
-            }
-            case DIRECTION.WEST: {
-                idleSprite = sprites["idle_left"];
-                break;
-            }
-        }
-
-        if(idleSprite) {
-            spriteManager.createShadeTask(idleSprite, shadeHandle);
+        if(spriteName) {
+            spriteManager.createShadeTask(spriteName, shadeHandle);
         }
     }
 }
