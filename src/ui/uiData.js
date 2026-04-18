@@ -55,34 +55,32 @@ UIData.prototype.loadPlayTextures = function() {
 }
 
 UIData.prototype.load = function(gameContext) {
-    const { uiManager } = gameContext;
+    this.textures[UI_TEXTURE.RECON_UNIT] = this.textureLoader.getGUIID("recon_unit");
+    this.textures[UI_TEXTURE.RECON_TERRAIN] = this.textureLoader.getGUIID("recon_terrain");
+    this.textures[UI_TEXTURE.RECON_NONE] = this.textureLoader.getGUIID("recon_none");
+    this.textures[UI_TEXTURE.RECON_MAIN] = this.textureLoader.getGUIID("recon_mainframe");
+    this.textures[UI_TEXTURE.ICONS] = this.textureLoader.getGUIID("icons");
+    this.textures[UI_TEXTURE.RECON_HEALTH] = this.textureLoader.getGUIID("recon_health");
+    this.textures[UI_TEXTURE.TOOLTIP] = this.textureLoader.getGUIID("recon_tooltip");
+    this.textures[UI_TEXTURE.TOOLTIP_PLUS] = this.textureLoader.getGUIID("recon_tooltip_plus");
+    this.textures[UI_TEXTURE.TOOLTIP_MINI] = this.textureLoader.getGUIID("recon_tooltip_mini");
+    this.textures[UI_TEXTURE.DIALOGUE_SKIP] = this.textureLoader.getGUIID("dialogue_skip_button");
+    this.textures[UI_TEXTURE.DIALOGUE_BOX] = this.textureLoader.getGUIID("dialogue_text_box");
+    this.textures[UI_TEXTURE.HUD_BUTTONS] = this.textureLoader.getGUIID("hud_buttons");
+    this.textures[UI_TEXTURE.HUD_GLASSPLATE] = this.textureLoader.getGUIID("hud_glassplate");
 
-    this.textures[UI_TEXTURE.RECON_UNIT] = uiManager.getTextureID("recon_unit");
-    this.textures[UI_TEXTURE.RECON_TERRAIN] = uiManager.getTextureID("recon_terrain");
-    this.textures[UI_TEXTURE.RECON_NONE] = uiManager.getTextureID("recon_none");
-    this.textures[UI_TEXTURE.RECON_MAIN] = uiManager.getTextureID("recon_mainframe");
-    this.textures[UI_TEXTURE.ICONS] = uiManager.getTextureID("icons");
-    this.textures[UI_TEXTURE.RECON_HEALTH] = uiManager.getTextureID("recon_health");
-    this.textures[UI_TEXTURE.TOOLTIP] = uiManager.getTextureID("recon_tooltip");
-    this.textures[UI_TEXTURE.TOOLTIP_PLUS] = uiManager.getTextureID("recon_tooltip_plus");
-    this.textures[UI_TEXTURE.TOOLTIP_MINI] = uiManager.getTextureID("recon_tooltip_mini");
-    this.textures[UI_TEXTURE.DIALOGUE_SKIP] = uiManager.getTextureID("dialogue_skip_button");
-    this.textures[UI_TEXTURE.DIALOGUE_BOX] = uiManager.getTextureID("dialogue_text_box");
-    this.textures[UI_TEXTURE.HUD_BUTTONS] = uiManager.getTextureID("hud_buttons");
-    this.textures[UI_TEXTURE.HUD_GLASSPLATE] = uiManager.getTextureID("hud_glassplate");
+    this.textures[UI_TEXTURE.PLAQUE] = this.textureLoader.getGUIID("plaque");
+    this.textures[UI_TEXTURE.PLAQUE_DISABLED] = this.textureLoader.getGUIID("plaque_disabled");
 
-    this.textures[UI_TEXTURE.PLAQUE] = uiManager.getTextureID("plaque");
-    this.textures[UI_TEXTURE.PLAQUE_DISABLED] = uiManager.getTextureID("plaque_disabled");
+    this.textures[UI_TEXTURE.STORY_CHAPTER_PANEL] = this.textureLoader.getGUIID("story_chapter_panel");
+    this.textures[UI_TEXTURE.STORY_EMBLEM_SLOT] = this.textureLoader.getGUIID("story_emblem_slot");
+    this.textures[UI_TEXTURE.STORY_MAIN_MENU_BORDER] = this.textureLoader.getGUIID("story_main_menu_border");
+    this.textures[UI_TEXTURE.STORY_MISSION_PANEL] = this.textureLoader.getGUIID("story_mission_panel");
+    this.textures[UI_TEXTURE.STORY_EMBLEMS] = this.textureLoader.getGUIID("story_emblems");
+    this.textures[UI_TEXTURE.STORY_START] = this.textureLoader.getGUIID("story_start_button");
 
-    this.textures[UI_TEXTURE.STORY_CHAPTER_PANEL] = uiManager.getTextureID("story_chapter_panel");
-    this.textures[UI_TEXTURE.STORY_EMBLEM_SLOT] = uiManager.getTextureID("story_emblem_slot");
-    this.textures[UI_TEXTURE.STORY_MAIN_MENU_BORDER] = uiManager.getTextureID("story_main_menu_border");
-    this.textures[UI_TEXTURE.STORY_MISSION_PANEL] = uiManager.getTextureID("story_mission_panel");
-    this.textures[UI_TEXTURE.STORY_EMBLEMS] = uiManager.getTextureID("story_emblems");
-    this.textures[UI_TEXTURE.STORY_START] = uiManager.getTextureID("story_start_button");
-
-    this.textures[UI_TEXTURE.GENERIC_BUTTON] = uiManager.getTextureID("generic_button");
-    this.textures[UI_TEXTURE.ARROW] = uiManager.getTextureID("arrow");
-    this.textures[UI_TEXTURE.STORY_PANELS] = uiManager.getTextureID("story_panels");
-    this.textures[UI_TEXTURE.STORY_PORTRAITS] = uiManager.getTextureID("story_portraits");
+    this.textures[UI_TEXTURE.GENERIC_BUTTON] = this.textureLoader.getGUIID("generic_button");
+    this.textures[UI_TEXTURE.ARROW] = this.textureLoader.getGUIID("arrow");
+    this.textures[UI_TEXTURE.STORY_PANELS] = this.textureLoader.getGUIID("story_panels");
+    this.textures[UI_TEXTURE.STORY_PORTRAITS] = this.textureLoader.getGUIID("story_portraits");
 }

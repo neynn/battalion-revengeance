@@ -3,6 +3,7 @@ import { ObjectPool } from "../util/objectPool.js";
 import { SpriteContainer } from "./spriteContainer.js";
 import { TextureHandle } from "../resources/texture/textureHandle.js";
 import { RenderState } from "./renderState.js";
+import { TextureRegistry } from "../resources/texture/textureRegistry.js";
 
 export const SpriteManager = function(textureLoader) {
     this.resources = textureLoader;
@@ -14,10 +15,7 @@ export const SpriteManager = function(textureLoader) {
     this.nextCleanup = 0;
     this.pool = new ObjectPool(1024, (index) => new Sprite(index, "EMPTY_SPRITE"));
     this.layers = [];
-    this.textureMap = {};
-
     this.containerMap = new Map();
-    this.renderStates = new ObjectPool(2000, (index) => new RenderState(index));
 }
 
 SpriteManager.INVALID_ID = -1;
@@ -30,15 +28,15 @@ SpriteManager.prototype.load = function(textures, sprites) {
     if(!textures || !sprites) {
         return;
     }
-
-    const textureMap = this.resources.createTextures(textures);
     
+    this.resources.createSpriteTextures(textures);
+
     for(const spriteID in sprites) {
         const spriteConfig = sprites[spriteID];
         const { texture, shift, anchor, bounds, frameTime, spriteTime, frames, autoFrames } = spriteConfig;
-        const textureID = textureMap[texture];
+        const textureID = this.resources.getSpriteID(texture);
 
-        if(textureID === undefined || (!frames && !autoFrames)) {
+        if(textureID === TextureRegistry.INVALID_ID || (!frames && !autoFrames)) {
             console.warn(`Texture ${texture} of sprite ${spriteID} does not exist!`);
             continue;
         }
@@ -78,8 +76,6 @@ SpriteManager.prototype.load = function(textures, sprites) {
             console.warn(`Sprite ${spriteID} has no frames!`);
         }
     }
-
-    this.textureMap = textureMap;
 }
 
 SpriteManager.prototype.createShadeTask = function(spriteID, handle) {
@@ -94,10 +90,6 @@ SpriteManager.prototype.createShadeTask = function(spriteID, handle) {
     const { frames } = container;
 
     this.resources.addShadeTask(textureID, frames[0], handle);
-}
-
-SpriteManager.prototype.getTextureIndex = function(name) {
-    return this.textureMap[name] ?? -1;
 }
 
 SpriteManager.prototype.forEachSprite = function(onCall) {

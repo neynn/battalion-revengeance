@@ -35,8 +35,28 @@ TextureLoader.prototype.getTotalKBUsed = function() {
     return this.textureRegistry.getSizeBytes() / 1024;
 }
 
-TextureLoader.prototype.createTextures = function(textures) {
-    return this.textureRegistry.createTextures(textures);
+TextureLoader.prototype.getTileID = function(name) {
+    return this.textureRegistry.getTextureID(TextureRegistry.REGISTRY_TYPE.TILE, name);
+}
+
+TextureLoader.prototype.getSpriteID = function(name) {
+    return this.textureRegistry.getTextureID(TextureRegistry.REGISTRY_TYPE.SPRITE, name);
+}
+
+TextureLoader.prototype.getGUIID = function(name) {
+    return this.textureRegistry.getTextureID(TextureRegistry.REGISTRY_TYPE.GUI, name);
+}
+
+TextureLoader.prototype.createTileTextures = function(textures) {
+    this.textureRegistry.createTextures(TextureRegistry.REGISTRY_TYPE.TILE, textures);
+}
+
+TextureLoader.prototype.createSpriteTextures = function(textures) {
+    this.textureRegistry.createTextures(TextureRegistry.REGISTRY_TYPE.SPRITE, textures);
+}
+
+TextureLoader.prototype.createGUITextures = function(textures) {
+    this.textureRegistry.createTextures(TextureRegistry.REGISTRY_TYPE.GUI, textures);
 }
 
 TextureLoader.prototype.getTextureWithFallback = function(index) {

@@ -1,6 +1,7 @@
 import { TileVisual } from "./visual.js";
 import { Autotiler } from "./autotiler.js";
 import { Tile } from "./tile.js";
+import { TextureRegistry } from "../resources/texture/textureRegistry.js";
 
 export const TileManager = function() {
     this.autotilers = new Map();
@@ -95,16 +96,17 @@ TileManager.prototype.createAutotilers = function(autotilers, visualMap) {
 }
 
 TileManager.prototype.createTileVisuals = function(textureLoader, tileAtlases, tileMeta) {
-    const textureMap = textureLoader.createTextures(tileAtlases);
+    textureLoader.createTileTextures(tileAtlases);
+
     const generatedVisuals = new Set();
     let mapID = 1;
 
     const createVisual = (textureName, regionID) => {
         const visual = new TileVisual(mapID++);
         const textureConfig = tileAtlases[textureName];
-        const textureID = textureMap[textureName];
+        const textureID = textureLoader.getTileID(textureName);
 
-        if(textureID !== undefined) {
+        if(textureID !== TextureRegistry.INVALID_ID) {
             const textureObject = textureLoader.getTexture(textureID);
             const { handle } = textureObject;
 

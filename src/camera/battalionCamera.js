@@ -340,8 +340,6 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
     const movingEntities = worldMap.movingEntities;
     const mapEntities = worldMap.entities;
     const sprites = spriteManager.pool.elements;
-    const renderStates = spriteManager.renderStates.elements;
-    const containers = spriteManager.containers;
     const entities = entityManager.entities;
 
     const startX = this.startX;

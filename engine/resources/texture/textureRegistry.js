@@ -5,10 +5,36 @@ const DEFAULT_TEXTURE_TYPE = ".png";
 
 export const TextureRegistry = function() {
     this.textures = [];
+    this.registries = [];
+
+    for(let i = 0; i < TextureRegistry.REGISTRY_TYPE._COUNT; i++) {
+        this.registries[i] = new Map();
+    }
 }
+
+TextureRegistry.REGISTRY_TYPE = {
+    TILE: 0,
+    SPRITE: 1,
+    GUI: 2,
+    _COUNT: 3
+};
 
 TextureRegistry.INVALID_ID = -1;
 TextureRegistry.EMPTY_TEXTURE = new Texture(TextureRegistry.INVALID_ID, "EMPTY_TEXTURE", "");
+
+TextureRegistry.prototype.getTextureID = function(type, name) {
+    if(type < 0 || type >= this.registries.length) {
+        return TextureRegistry.INVALID_ID;
+    }
+
+    const textureID = this.registries[type].get(name);
+
+    if(textureID === undefined) {
+        return TextureRegistry.INVALID_ID;
+    }
+
+    return textureID;
+}
 
 TextureRegistry.prototype.getSizeBytes = function() {
     let bytes = 0;
@@ -20,8 +46,10 @@ TextureRegistry.prototype.getSizeBytes = function() {
     return bytes;
 }
 
-TextureRegistry.prototype.createTextures = function(textures) {
-    const textureMap = {};
+TextureRegistry.prototype.createTextures = function(type, textures) {
+    if(type < 0 || type >= this.registries.length) {
+        return;
+    }
 
     for(const textureName in textures) {
         const { directory, source, grid, autoGrid, regions, gridWidth = 0, gridHeight = 0 } = textures[textureName];
@@ -41,11 +69,8 @@ TextureRegistry.prototype.createTextures = function(textures) {
         }
 
         this.textures.push(texture);
-
-        textureMap[textureName] = textureID;
+        this.registries[type].set(textureName, textureID);
     }
-
-    return textureMap;
 }
 
 TextureRegistry.prototype.getTextureWithFallback = function(index) {

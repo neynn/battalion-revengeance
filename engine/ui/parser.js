@@ -1,5 +1,6 @@
 import { TextStyle } from "../graphics/textStyle.js";
 import { SHAPE } from "../math/constants.js";
+import { TextureRegistry } from "../resources/texture/textureRegistry.js";
 import { ANCHOR_TYPE } from "./constants.js";
 import { Button } from "./elements/button.js";
 import { Container } from "./elements/container.js";
@@ -28,7 +29,7 @@ const getTypeID = function(name) {
     }
 }
 
-const createElement = function(uiManager, config, DEBUG_NAME) {
+const createElement = function(textureLoader, config, DEBUG_NAME) {
     const {
         type,
         position = { x: 0, y: 0 },
@@ -86,15 +87,22 @@ const createElement = function(uiManager, config, DEBUG_NAME) {
                 scale = 1
             } = config;
 
-            const texture = uiManager.getUITexture(image);
-            const { handle } = texture;
+            const textureID = textureLoader.getGUIID(image);
+
+            if(textureID !== TextureRegistry.INVALID_ID) {
+                const texture = textureLoader.getTexture(textureID);
+                const { handle } = texture;
+
+                textureLoader.loadTexture(textureID);
+                element.setHandle(handle);
+            }
 
             element.setPosition(x, y);
             element.setOpacity(opacity);
             element.setOrigin(x, y);
             element.setAnchor(anchorID);
             element.setSize(width, height);
-            element.setHandle(handle);
+
             element.setScale(scale);
 
             return element;
@@ -136,13 +144,13 @@ const createElement = function(uiManager, config, DEBUG_NAME) {
 }
 
 const createLayout = function(gameContext, uiContext, layout) {
-    const { uiManager, gameWindow } = gameContext;
+    const { textureLoader, gameWindow } = gameContext;
     const windowWidth = gameWindow.width;
     const windowHeight = gameWindow.height;
 
     for(const elementName in layout) {
         const config = layout[elementName];
-        const element = createElement(uiManager, config, elementName);
+        const element = createElement(textureLoader, config, elementName);
 
         uiContext.addElement(element);
         uiContext.registerName(elementName, element);   

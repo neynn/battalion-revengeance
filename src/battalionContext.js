@@ -41,7 +41,7 @@ BattalionContext.prototype.init = function(resources) {
     this.tileManager.loadClient(this.textureLoader, resources.tiles, resources.tileMeta, resources.autotilers, resolveTileType);
     this.tileManager.addCustomTile(TILE_ID.RIVER_10, TILE_TYPE.SEA);
     this.spriteManager.load(resources.spriteTextures, resources.sprites);
-    this.uiManager.load(resources.layouts, resources.gui);
+    this.uiManager.load(this.textureLoader, resources.layouts, resources.gui);
     this.fonts.load(resources.fonts);
     this.client.musicPlayer.load(resources.music, resources.playlists);
     this.client.soundPlayer.load(resources.sounds);
@@ -52,7 +52,7 @@ BattalionContext.prototype.init = function(resources) {
     this.missionManager.load(resources);
     this.spriteManager.initLayers(LAYER_TYPE._COUNT);
     this.typeRegistry.load(resources);
-    this.uiData.load(this);
+    this.uiData.load();
 
     registerClientActions(this);
 
