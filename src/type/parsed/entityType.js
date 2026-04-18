@@ -1,6 +1,6 @@
 import { MAX_TRAITS } from "../../constants.js";
 import { mapMovementToCategory } from "../../enumHelpers.js";
-import { ARMOR_TYPE, ATTACK_TYPE, DIRECTION, ENTITY_CATEGORY, ENTITY_SPRITE, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../../enums.js";
+import { ARMOR_TYPE, ATTACK_TYPE, DIRECTION, EFFECT_SPRITE, ENTITY_CATEGORY, ENTITY_SPRITE, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../../enums.js";
 
 const TILE_STEP = 56;
 const ENABLE_HYBRID = false;
@@ -19,6 +19,15 @@ const getRangeType = function(minRange, maxRange) {
     }
 
     return RANGE_TYPE.NONE;
+}
+
+const effectNameToEnum = function(name) {
+    switch(name) {
+        case "death": return EFFECT_SPRITE.DEATH;
+        case "fire": return EFFECT_SPRITE.FIRE;
+        case "heal": return EFFECT_SPRITE.HEAL;
+        default: return ENTITY_SPRITE._INVALID;
+    }
 }
 
 const spriteNameToEnum = function(name) {
@@ -58,7 +67,7 @@ export const EntityType = function(id) {
     this.streamRange = 1;
     this.cost = 0;
     this.sounds = {};
-    this.effects = {};
+    this.effects = [];
     this.sprites = [];
     this.traits = [];
     this.category = mapMovementToCategory(this.movementType);
@@ -68,6 +77,14 @@ export const EntityType = function(id) {
     for(let i = 0; i < ENTITY_SPRITE._COUNT; i++) {
         this.sprites[i] = null;
     }
+
+    for(let i = 0; i < EFFECT_SPRITE._COUNT; i++) {
+        this.effects[i] = null;
+    }
+
+    this.effects[EFFECT_SPRITE.DEATH] = "explosion";
+    this.effects[EFFECT_SPRITE.FIRE] = "small_attack";
+    this.effects[EFFECT_SPRITE.HEAL] = "supply_attack";
 }
 
 EntityType.MIN_MOVE_COST = 1;
@@ -118,7 +135,6 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
     this.minRange = minRange;
     this.maxRange = maxRange;
     this.sounds = sounds;
-    this.effects = effects;
 
     if(this.maxRange < this.minRange) {
         this.maxRange = this.minRange;
@@ -173,6 +189,14 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
 
     if(!this.sprites[ENTITY_SPRITE.MOVE_LEFT]) {
         this.sprites[ENTITY_SPRITE.MOVE_LEFT] = this.sprites[ENTITY_SPRITE.IDLE_LEFT];
+    }
+
+    for(const effectID in effects) {
+        const index = effectNameToEnum(effectID);
+
+        if(index !== EFFECT_SPRITE._INVALID) {
+            this.effects[index] = effects[effectID];
+        }
     }
 }
 

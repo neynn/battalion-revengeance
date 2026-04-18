@@ -1,19 +1,7 @@
 import { transformTileToWorld } from "../../engine/math/transform2D.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { ATTACK_TYPE, DIRECTION, ENTITY_SPRITE, LAYER_TYPE, SCHEMA_TYPE } from "../enums.js";
-
-const EFFECT_KEY = {
-    DEATH: "death",
-    FIRE: "fire",
-    HEAL: "heal"
-};
-
-const DEFAULT_EFFECTS = {
-    [EFFECT_KEY.DEATH]: "explosion",
-    [EFFECT_KEY.HEAL]: "supply_attack",
-    [EFFECT_KEY.FIRE]: "small_attack"
-};
+import { ATTACK_TYPE, DIRECTION, EFFECT_SPRITE, ENTITY_SPRITE, LAYER_TYPE, SCHEMA_TYPE } from "../enums.js";
 
 const SPRITE_TABLE = [
     ENTITY_SPRITE.IDLE_UP,
@@ -49,16 +37,6 @@ const getSpriteIndex = function(state, direction) {
     }
 
     return SPRITE_TABLE[begin + direction];
-}
-
-const getEffect = function(entity, effectType) {
-    let effectName = entity.config.effects[effectType];
-
-    if(effectName === undefined) {
-        effectName = DEFAULT_EFFECTS[effectType];
-    }
-
-    return effectName;
 }
 
 export const playSprite = function(gameContext, spriteType, tileX, tileY) {
@@ -133,15 +111,15 @@ export const updateEntitySprite = function(gameContext, entity) {
 }
 
 export const playDeathEffect = function(gameContext, entity) {
-    const { tileX, tileY } = entity;
-    const effectName = getEffect(entity, EFFECT_KEY.DEATH);
+    const { tileX, tileY, config } = entity;
+    const effectName = config.effects[EFFECT_SPRITE.DEATH];
 
     playSprite(gameContext, effectName, tileX, tileY);
 }
 
 export const playHealEffect = function(gameContext, entity, target) {
     const { tileX, tileY } = target;
-    const effectName = getEffect(entity, EFFECT_KEY.HEAL);
+    const effectName = entity.config.effects[EFFECT_SPRITE.HEAL];
 
     playSprite(gameContext, effectName, tileX, tileY);
 }
@@ -149,7 +127,7 @@ export const playHealEffect = function(gameContext, entity, target) {
 export const playAttackEffect = function(gameContext, entity, target, resolutions) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const effectName = getEffect(entity, EFFECT_KEY.FIRE);
+    const effectName = entity.config.effects[EFFECT_SPRITE.FIRE];
     const attackType = entity.getAttackType();
 
     switch(attackType) {

@@ -3,6 +3,14 @@ export const PLAYER_PREFERENCE = {
     DISABLE_IDLE_ANIMATIONS: 0 //TODO: Implement!
 };
 
+export const EFFECT_SPRITE = {
+    _INVALID: -1,
+    DEATH: 0,
+    FIRE: 1,
+    HEAL: 2,
+    _COUNT: 3
+};
+
 export const ENTITY_SPRITE = {
     _INVALID: -1,
     IDLE_UP: 0,
