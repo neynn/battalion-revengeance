@@ -54,7 +54,6 @@ Player.prototype.onTurnStart = function(gameContext) {
     session.actorID = this.id;
 
     this.clearIntents();
-    this.camera.teamID = this.teamID;
 }
 
 Player.prototype.onTurnEnd = function(gameContext) {
