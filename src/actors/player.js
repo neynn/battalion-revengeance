@@ -48,6 +48,11 @@ Player.prototype.surrender = function(gameContext) {
 }
 
 Player.prototype.onTurnStart = function(gameContext) {
+    const { client } = gameContext;
+    const { session } = client;
+
+    session.actorID = this.id;
+
     this.clearIntents();
     this.camera.teamID = this.teamID;
 }

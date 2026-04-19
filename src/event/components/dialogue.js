@@ -10,9 +10,9 @@ DialogueComponent.prototype = Object.create(EffectComponent.prototype);
 DialogueComponent.prototype.constructor = DialogueComponent;
 
 DialogueComponent.prototype.isFinished = function(gameContext) {
-    //console.log("REEEE");
+    const { dialogueHandler } = gameContext;
 
-    return false;
+    return !dialogueHandler.hasDialogue();
 }
 
 DialogueComponent.prototype.play = function(gameContext) {

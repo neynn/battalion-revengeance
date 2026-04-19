@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 import { Server } from 'socket.io';
 import { ServerApplication } from './src/server/serverApplication.js';
-import { AssetLoader } from './engine/resources/assetLoader.js';
+import { loadResourcesDev } from './engine/resources/assetLoader.js';
 
 const server = createServer();
 const io = new Server(server, {
@@ -20,9 +20,9 @@ const pathHandler = serverApplication.pathHandler;
 
 pathHandler.setRoot(import.meta.url);
 
-const assetLoader = new AssetLoader();
-const resources = await assetLoader.loadResourcesDev(pathHandler, pathHandler.getPath(["assets"], "assets.json"));
+loadResourcesDev(pathHandler, pathHandler.getPath(["assets"], "assets.json"))
+.then(resources => {
+    serverApplication.init(resources);
+    server.listen(3000, "0.0.0.0", () => console.log("Server started!")); 
+});
 
-serverApplication.init(resources);
-
-server.listen(3000, "0.0.0.0", () => console.log("Server started!")); 

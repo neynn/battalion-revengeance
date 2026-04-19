@@ -44,7 +44,6 @@ export const PlayUI = function(cContext) {
 
     this.doImmediate = true;
     this.cContext = cContext;
-    this.actorID = ActorManager.INVALID_ID;
     this.inspector = new MapInspector();
     this.inspectSprite = SpriteManager.EMPTY_SPRITE;
 
@@ -159,7 +158,8 @@ PlayUI.prototype.drawIcon = function(gameContext, iconID, display, screenX, scre
 }
 
 PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) {
-    const { world, uiData, language, teamManager, typeRegistry } = gameContext;
+    const { client, world, uiData, language, teamManager, typeRegistry } = gameContext;
+    const { session } = client; 
     const { actorManager } = world;
     const { activeTeams } = teamManager;
     const { context } = display;
@@ -271,7 +271,7 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
         GENERIC_BUTTON_STYLE.height
     );
 
-    const actor = actorManager.getActor(this.actorID);
+    const actor = actorManager.getActor(session.actorID);
 
     if(actor && teamManager.isCurrent(actor.teamID)) {
         if(endTurnFlags & IM_FLAG.CLICKED) {

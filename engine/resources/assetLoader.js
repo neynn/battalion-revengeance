@@ -1,8 +1,4 @@
-export const AssetLoader = function() {
-    this.resources = {};
-}
-
-AssetLoader.prototype.loadJSONList = async function(pathHandler, fileList) {
+const loadJSONList = async function(pathHandler, fileList) {
     const files = {};
     const promises = [];
 
@@ -20,29 +16,7 @@ AssetLoader.prototype.loadJSONList = async function(pathHandler, fileList) {
     return files;
 }
 
-AssetLoader.prototype.loadResourcesDev = async function(pathHandler, path) {
-    const files = await pathHandler.promiseJSON(path);
-
-    if(files) {
-        const resources = await this.loadJSONList(pathHandler, files);
-
-        this.resources = resources;
-    }
-
-    return this.resources;
-}
-
-AssetLoader.prototype.loadResourcesProd = async function(pathHandler, path) {
-    const resources = await pathHandler.promiseJSON(path);
-
-    if(resources) {
-        this.resources = resources;
-    }
-
-    return this.resources;
-}
-
-AssetLoader.prototype.download = function(filename, data) {
+export const downloadFile = function(filename, data) {
     const blob = new Blob([data], { type: "text/json" });
     const link = document.createElement("a");
   
@@ -60,6 +34,24 @@ AssetLoader.prototype.download = function(filename, data) {
     link.remove();
 }
 
-AssetLoader.prototype.mergeResources = function() {
-    this.download("assets", JSON.stringify(this.resources));
+export const loadResourcesDev = async function(pathHandler, path) {
+    const files = await pathHandler.promiseJSON(path);
+
+    if(files) {
+        const resources = await loadJSONList(pathHandler, files);
+
+        return Promise.resolve(resources);
+    }
+
+    return Promise.reject();
+}
+
+export const loadResourcesProd = async function(pathHandler, path) {
+    const resources = await pathHandler.promiseJSON(path);
+
+    if(resources) {
+        return Promise.resolve(resources);
+    }
+
+    return Promise.reject();
 }

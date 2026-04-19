@@ -23,6 +23,7 @@ import { createEntitySnapshotFromJSON } from "../../snapshot/entitySnapshot.js";
 import { PlaySoundComponent } from "../../event/components/playSound.js";
 import { PlaySpriteComponent } from "../../event/components/playSprite.js";
 import { TeamManager } from "../../team/teamManager.js";
+import { StoryActor } from "../../actors/storyActor.js";
 
 const createCustomSchema = function(gameContext, team, colorMap) {
     const { typeRegistry } = gameContext;
@@ -136,7 +137,7 @@ MatchLoader.prototype.createActor = function(gameContext, teamID) {
     const { world } = gameContext;
     const { actorManager } = world;
     const actorID = actorManager.getNextID();
-    const actor = new BattalionActor(actorID);
+    const actor = new StoryActor(actorID);
 
     actorManager.addActor(actor);
     actor.setTeam(teamID);
@@ -150,7 +151,6 @@ MatchLoader.prototype.createPlayer = function(gameContext, teamID) {
     const playUI = new PlayUI(context);
     const actor = new Player(actorID, playUI.inspector, context.getCamera());
 
-    playUI.actorID = actorID;
     playUI.load(gameContext);
     actorManager.addActor(actor);
     actor.setTeam(teamID);
@@ -166,7 +166,6 @@ MatchLoader.prototype.createSpectator = function(gameContext) {
     const playUI = new PlayUI(context);
     const actor = new Spectator(actorID, playUI.inspector, context.getCamera());
 
-    playUI.actorID = actorID;
     playUI.load(gameContext);
     actorManager.addActor(actor);
     actor.loadKeybinds(gameContext);
