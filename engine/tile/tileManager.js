@@ -5,7 +5,7 @@ import { TextureRegistry } from "../resources/texture/textureRegistry.js";
 
 export const TileManager = function() {
     this.autotilers = new Map();
-    this.tiles = [];
+    this.tiles = [TileManager.EMPTY_TILE];
     this.tileTable = [];
     this.visuals = [];
     this.activeVisuals = [];
@@ -49,38 +49,44 @@ TileManager.prototype.createTiles = function(tileMeta, resolveType) {
 
     //0 is treated as an empty visual => counting begins at 1.
     //Table maps a visual tile to logical tile.
-
     for(let i = 0; i < tileMeta.length; i++) {
         const { id = null, type = null, autotiler = null, variants } = tileMeta[i];
-        const typeID = resolveType(type);
-        const tileObject = new Tile(i, typeID, autotiler);
+        let tileID = 0;
+        let count = 1;
 
-        this.tiles.push(tileObject);
+        //If a type is specified it must be a logical tile.
+        if(type !== null) {
+            tileID = this.tiles.length;
+
+            const typeID = resolveType(type);
+            const tileObject = new Tile(tileID, typeID, autotiler);
+
+            this.tiles.push(tileObject);
+        }
+
+        let visualID = mapID;
 
         if(variants) {
-            const { count } = variants;
+            count = variants.count;
 
             if(id !== null) {
                 for(let j = 0; j < count; j++) {
                     const tileName = id + j;
 
                     if(visualMap[tileName] === undefined) {
-                        visualMap[tileName] = mapID + 1;
+                        visualMap[tileName] = ++visualID;
                     }
-
-                    this.tileTable[mapID++] = i;
-                }
-            } else {
-                for(let j = 0; j < count; j++) {
-                    this.tileTable[mapID++] = i;
                 }
             }
         } else {
             if(id !== null && visualMap[id] === undefined) {
-                visualMap[id] = mapID + 1;
+                visualMap[id] = ++visualID;
             }
+        }
 
-            this.tileTable[mapID++] = i;
+        //Matches mapID with tileID.
+        for(let i = 0; i < count; i++) {
+            this.tileTable[mapID++] = tileID;
         }
     }
 

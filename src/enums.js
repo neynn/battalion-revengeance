@@ -769,7 +769,10 @@ export const TILE_ID = {
 
     CASH_BOX: 189,
 
-    _COUNT: 190
+    SHRUB_0: 190,
+    SHRUB_4: 194,
+
+    _COUNT: 195
 };
 
 export const DIRECTION = {
