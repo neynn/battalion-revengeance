@@ -23,8 +23,6 @@ export const BattalionMap = function(id, width, height, preview) {
     this.createLayer(Layer.TYPE.BIT_16);
     this.createLayer(Layer.TYPE.BIT_16);
     this.createLayer(Layer.TYPE.BIT_16);
-    this.createLayer(Layer.TYPE.BIT_8);
-    this.createLayer(Layer.TYPE.BIT_8);
 }
 
 BattalionMap.LAYER_NAME = {
@@ -38,9 +36,7 @@ BattalionMap.LAYER_NAME = {
 BattalionMap.LAYER = {
     GROUND: 0,
     DECORATION: 1,
-    CLOUD: 2,
-    FLAG: 3,
-    TEAM: 4
+    CLOUD: 2
 };
 
 BattalionMap.SEARCH_ORDER = [
@@ -408,14 +404,13 @@ BattalionMap.prototype.isJammed = function(gameContext, tileX, tileY, teamID, fl
 }
 
 BattalionMap.prototype.decodeLayers = function(layerData) {
-    for(const layerID in layerData) {
+    for(const layerID in BattalionMap.LAYER) {
         const data = layerData[layerID];
-        const index = BattalionMap.LAYER[layerID];
 
-        if(index !== undefined) {
-            this.getLayer(index).decode(data);
+        if(data) {
+            this.getLayer(BattalionMap.LAYER[layerID]).decode(data);
         } else {
-            console.error(`Unknown layer! ${layerID}`);
+            console.error("LayerData is not present!", layerID);
         }
     }
 }

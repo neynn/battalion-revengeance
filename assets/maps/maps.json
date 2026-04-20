@@ -1,4 +1,12 @@
 {
+    "C1M1": {
+        "directory": ["assets", "maps", "story", "c1m1"],
+        "source": "c1m1.json",
+        "text": "c1m1_text.json",
+        "title": "Presus",
+        "maxPlayers": 2,
+        "teams": ["TEST", "TEST2"] 
+    },
     "volcano": {
         "directory": ["assets", "maps", "volcano"],
         "source": "volcano.json",

@@ -339,7 +339,7 @@
             "width": 350,
             "height": 550,
             "opacity": 1,
-            "children": [ "BUTTON_SCROLL_SIZE", "TEXT_TILESET", "BUTTON_TILESET_RIGHT", "BUTTON_TILESET_LEFT", "BUTTON_TILESET_MODE", "TEXT_PAGE", "BUTTON_PAGE_LAST", "BUTTON_PAGE_NEXT" ]
+            "children": [ "BUTTON_SCROLL_SIZE", "TEXT_TILESET", "BUTTON_TILESET_RIGHT", "BUTTON_TILESET_LEFT", "TEXT_PAGE", "BUTTON_PAGE_LAST", "BUTTON_PAGE_NEXT" ]
         },
         "TEXT_PAGE": {
             "type": "TEXT",
@@ -412,25 +412,6 @@
             "type": "TEXT",
             "position": { "x": 175, "y": 25 },
             "text": "<TILESET>",
-            "fontSize": 20,
-            "fontType": "Arial",
-            "color": [238, 238, 238, 255],
-            "align": "center",
-            "opacity": 1
-        },
-        "BUTTON_TILESET_MODE": {
-            "type": "BUTTON",
-            "shape": 0,
-            "position": { "x": 50, "y": 50 },
-            "width": 250,
-            "height": 50,
-            "opacity": 1,
-            "children": [ "TEXT_TILESET_MODE" ]
-        },
-        "TEXT_TILESET_MODE": {
-            "type": "TEXT",
-            "position": { "x": 125, "y": 25 },
-            "text": "<MODE>",
             "fontSize": 20,
             "fontType": "Arial",
             "color": [238, 238, 238, 255],

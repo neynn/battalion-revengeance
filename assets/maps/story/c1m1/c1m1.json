@@ -1,0 +1,170 @@
+{
+    "music": "Generic1",
+    "width": 10,
+    "height": 10,
+    "client": "SOMERTIN",
+    "teams": [
+        { "id": "SOMERTIN", "commander": "PLAYER", "cash": 1000, "faction": "SOMERTIN", "allies": ["DRAGOON"], "objectives": ["DEFEAT_BOAT_1", "CAPTURE_0_0", "SURVIVE_TURN_2"] },
+        { "id": "TRANSKAL", "commander": "KANYE", "faction": "TRANSKAL", "objectives": ["PROTECT_BOAT_1"] },
+        { "id": "DRAGOON", "commander": "KANYE", "faction": "ELAM" }
+    ],
+    "entities": [
+        { "x": 0, "y": 0, "direction": "SOUTH", "type": "ALEPH", "name": "PRESUS_PRELOGUE_1", "team": "SOMERTIN" },
+        { "x": 1, "y": 0, "direction": "SOUTH", "type": "CONDOR_BOMBER", "team": "SOMERTIN" },
+        { "x": 2, "y": 0, "direction": "SOUTH", "type": "MEME_BUREAUCRAT", "team": "SOMERTIN" },
+        { "x": 3, "y": 0, "direction": "SOUTH", "type": "COCKROACH", "team": "SOMERTIN" },
+        { "x": 4, "y": 0, "direction": "SOUTH", "type": "ASEKARA_TANK", "team": "SOMERTIN" },
+        { "x": 5, "y": 0, "direction": "SOUTH", "type": "RAPTOR_FIGHTER", "team": "SOMERTIN" },
+        { "x": 6, "y": 0, "direction": "SOUTH", "type": "FLAK_TANK", "team": "SOMERTIN" },
+        { "x": 7, "y": 0, "direction": "SOUTH", "type": "TANK_HUNTER", "team": "SOMERTIN" },
+        { "x": 8, "y": 0, "direction": "SOUTH", "type": "AMPAC", "team": "SOMERTIN" },
+        { "x": 9, "y": 0, "direction": "SOUTH", "type": "TURRET", "team": "SOMERTIN" },
+        { "x": 0, "y": 1, "direction": "SOUTH", "type": "ENTWICKLUNG", "team": "SOMERTIN" },
+        { "x": 1, "y": 1, "stealth": false, "type": "STEALTH_TANK", "team": "SOMERTIN" },
+        { "x": 2, "y": 1, "type": "HEAVY_COMMANDO", "team": "SOMERTIN" },
+        { "x": 3, "y": 1, "type": "AYIN", "team": "SOMERTIN" },
+        { "x": 4, "y": 1, "type": "GORLITZ_TANK", "team": "SOMERTIN" },
+        { "x": 5, "y": 1, "type": "PANZERHENKER", "team": "SOMERTIN" },
+        { "x": 6, "y": 1, "type": "CRAB_TANK", "team": "SOMERTIN" },
+        { "x": 7, "y": 1, "type": "BOLT_TANK", "team": "SOMERTIN" },
+        { "x": 8, "y": 1, "type": "ASSAULT_INFANTRY", "team": "SOMERTIN" },
+        { "x": 9, "y": 1, "type": "BERTHA_BATTERY", "team": "SOMERTIN" },
+        { "x": 0, "y": 2, "type": "INFANTRY", "team": "SOMERTIN" },
+        { "x": 1, "y": 2, "type": "BLIMP", "team": "SOMERTIN" },
+        { "x": 2, "y": 2, "type": "STRIKE_COMMANDO", "team": "SOMERTIN" },
+        { "x": 0, "y": 3, "type": "ROCKET_TRUCK", "team": "SOMERTIN" },
+        { "x": 0, "y": 4, "type": "MORTAR_TRUCK", "team": "SOMERTIN" },
+        { "x": 0, "y": 5, "type": "ANNIHILATOR_TANK", "team": "SOMERTIN" },
+        { "x": 0, "y": 6, "type": "SPIDER_TANK", "team": "SOMERTIN" },
+        { "x": 0, "y": 7, "type": "SUICIDE_BOMBER", "team": "SOMERTIN" },
+        { "x": 0, "y": 8, "stealth": true, "type": "PROFESSIONAL_TERRORIST", "team": "SOMERTIN" },
+        { "x": 0, "y": 9, "type": "INFANTRY_TRUCK", "team": "SOMERTIN" },
+        { "x": 1, "y": 9, "type": "LIGHT_INFANTRY", "team": "SOMERTIN" },
+        { "x": 1, "y": 8, "type": "SNIPERS", "team": "SOMERTIN" },
+        { "x": 1, "y": 7, "type": "MARINES", "team": "SOMERTIN" },
+        { "x": 1, "y": 6, "type": "STORMTROOPERS", "team": "SOMERTIN" },
+        { "x": 1, "y": 5, "type": "SUPPLY_TRUCK", "team": "SOMERTIN" },
+        { "x": 2, "y": 5, "stealth": true, "type": "SPEC_OPS", "team": "SOMERTIN" },
+        { "x": 2, "y": 4, "type": "HEAVY_SNIPER", "team": "SOMERTIN" },
+        { "x": 2, "y": 3, "cash": 1000, "type": "WARMACHINE", "team": "SOMERTIN" },
+
+        { "x": 3, "y": 6, "stealth": true, "type": "STEALTH_TANK", "team": "TRANSKAL" },
+        { "x": 3, "y": 7, "type": "ANNIHILATOR_TANK", "team": "TRANSKAL" },
+        { "x": 5, "y": 4, "direction":"SOUTH", "type": "AKONTIO", "team": "SOMERTIN" },
+        { "x": 8, "y": 4, "direction":"SOUTH", "type": "U_BOAT", "team": "SOMERTIN" },
+        { "x": 8, "y": 3, "id": "BOAT_1", "direction":"SOUTH", "type": "U_BOAT", "team": "TRANSKAL" },
+        { "x": 4, "y": 4, "stealth": true, "direction":"SOUTH", "type": "U_BOAT", "team": "TRANSKAL" },
+        { "x": 3, "y": 3, "direction":"SOUTH", "type": "HUNTER_SUPPORT", "team": "SOMERTIN" },
+        { "x": 3, "y": 4, "direction":"SOUTH", "type": "SUPER_BATTLESHIP", "team": "SOMERTIN" },
+        { "x": 4, "y": 2, "stealth": false, "type": "STEALTH_TANK", "team": "TRANSKAL" },
+        { "x": 4, "y": 6, "stealth": true, "type": "STEALTH_TANK", "team": "TRANSKAL" },
+        { "x": 5, "y": 2, "type": "TANK_HUNTER", "team": "TRANSKAL", "direction": "WEST" },
+        { "x": 6, "y": 7, "type": "JAMMER_TRUCK", "team": "SOMERTIN", "direction": "WEST" },
+        { "x": 6, "y": 8, "type": "ANTI_TANK", "team": "SOMERTIN", "direction": "WEST" },
+        { "x": 6, "y": 9, "type": "ROLAND", "team": "SOMERTIN", "direction": "WEST" },
+        { "x": 7, "y": 8, "type": "ROLAND", "team": "TRANSKAL", "direction": "WEST" },
+        { "x": 4, "y": 8, "stealth": true, "type": "STIHIE", "team": "SOMERTIN", "direction": "WEST" },
+        { "x": 4, "y": 9, "type": "AKONTIO", "team": "SOMERTIN", "direction": "WEST" },
+        { "x": 3, "y": 9, "type": "EAGLE_STRIKER", "team": "SOMERTIN", "direction": "WEST" },
+        { "x": 7, "y": 3, "health": 100, "type": "JAMMER_TRUCK", "team": "TRANSKAL", "direction": "WEST" },
+        { "x": 7, "y": 5, "type": "JAMMER_TRUCK", "team": "DRAGOON", "direction": "WEST" },
+        { "x": 8, "y": 5, "stealth": true, "type": "STEALTH_TANK", "team": "DRAGOON" },
+        { "x": 8, "y": 6, "type": "DEPOT", "team": "SOMERTIN" }
+    ],
+    "buildings": [
+        { "x": 0, "y": 6, "type": "AIR_CONTROL", "team": "SOMERTIN" },
+        { "x": 1, "y": 6, "type": "COMMAND_CENTER", "team": "TRANSKAL" },
+        { "x": 2, "y": 6, "type": "FACTORY", "team": "SOMERTIN" },
+        { "x": 3, "y": 6, "type": "GROUND_CONTROL", "team": "SOMERTIN" },
+        { "x": 4, "y": 6, "type": "OIL_ADVANCED_REFINERY", "team": "DRAGOON" },
+        { "x": 5, "y": 6, "type": "OIL_REFINERY", "team": "DRAGOON" },
+        { "x": 6, "y": 6, "type": "OIL_RIG", "team": "TRANSKAL" },
+        { "x": 7, "y": 6, "type": "SEA_CONTROL", "team": "TRANSKAL" }
+    ],
+    "mines": [
+        { "x": 6, "y": 3, "type": "LAND", "team": "TRANSKAL", "visible": false }
+    ],
+    "objectives": {
+        "SURVIVE_TURN_2": { "type": "SURVIVE", "turn": 2 },
+        "PROTECT_BOAT_1": { "type": "PROTECT", "targets": ["BOAT_1"] },
+        "DEFEAT_BOAT_1": { "type": "DEFEAT", "target": "BOAT_1" },
+        "CAPTURE_0_0": { "type": "CAPTURE", "tiles": [{"x": 0, "y": 0}] }
+    },
+    "prelogue": [
+        { "narrator": "KANYE", "text": "PRESUS_PRELOGUE_1" },
+        { "narrator": "KANYE", "text": "PRESUS_PRELOGUE_2" }
+    ],
+    "postlogue": [
+        { "narrator": "KANYE", "text": "PRESUS_POSTLOGUE_1" },
+        { "narrator": "KANYE", "text": "PRESUS_POSTLOGUE_2" }
+    ],
+    "defeat": [
+        { "narrator": "KANYE", "text": "PRESUS_DEFEAT_1" },
+        { "narrator": "KANYE", "text": "PRESUS_DEFEAT_2" }
+    ],
+    "localization": [
+        { "x": 0, "y": 0, "name": "TILE_NAME_TEST" },
+        { "x": 1, "y": 0, "desc": "TILE_DESC_TEST" }
+    ],
+    "custom": [
+        "BOAT_1"
+    ],
+    "text": [
+        "PRESUS_PRELOGUE_1",
+        "PRESUS_PRELOGUE_2",
+        "PRESUS_POSTLOGUE_1",
+        "PRESUS_POSTLOGUE_2",
+        "PRESUS_DEFEAT_1",
+        "PRESUS_DEFEAT_2",
+        "PRESUS_EVENT_TEST",
+        "ENTITY_NAME_1",
+        "ENTITY_DESC_1",
+        "TILE_NAME_TEST",
+        "TILE_DESC_TEST",
+        "PRESUS_EVENT_TEXT"
+    ],
+    "eventNames": [
+        "DESTROY_BRIDGE",
+        "DESTROY_BRIDGE_DIALOGUE",
+        "SPAWN_TANK"
+    ],
+    "events": {
+        "DESTROY_BRIDGE": {
+            "turn": 2,
+            "next": "DESTROY_BRIDGE_DIALOGUE",
+            "simulation": [
+                { "type": "EXPLODE_TILE", "layer": "CLOUD", "x": 2, "y": 2 },
+                { "type": "EXPLODE_TILE", "layer": "CLOUD", "x": 3, "y": 7 }
+            ]
+        },
+        "DESTROY_BRIDGE_DIALOGUE": { 
+            "effects": [
+                {
+                    "type": "DIALOGUE",
+                    "dialogue": [
+                        { "narrator": "KANYE", "text": "PRESUS_EVENT_TEXT" },
+                        { "narrator": "KANYE", "text": "PRESUS_EVENT_TEXT" }
+                    ]
+                }
+            ]
+        },
+        "SPAWN_TANK": {
+            "turn": 2,
+            "simulation": [
+                { "type": "SPAWN_ENTITY", "entity": { "x": 0, "y": 9, "type": "STEALTH_TANK", "team": "SOMERTIN" } }
+            ],
+            "effects": [
+                { "type": "PLAY_SOUND", "sound": "uncloak" },
+                { "type": "PLAY_SPRITE", "sprite": "explosion", "x": 0, "y": 9 }
+            ]
+        }
+    },
+    "flags": [],
+    "data": {
+        "GROUND": [1,100],
+        "DECORATION": [0,2,23,1,114,1,0,5,176,1,0,2,23,1,0,6,177,1,0,2,23,1,0,6,177,1,0,2,22,1,29,1,0,5,177,1,0,3,55,1,30,4,79,1,177,1,0,3,23,1,0,5,177,1,0,3,23,1,0,5,177,1,0,3,23,1,0,5,177,1,154,1,162,1,146,1,23,1,0,5,177,1,127,1,132,1,124,1,23,1,0,1,172,1,174,3,171,1],
+        "CLOUD": [0,6,8,1,0,9,5,1,0,3,6,3,11,1,0,2,5,1,0,9,5,1,0,9,5,1,0,9,16,1,6,1,11,1,0,7,5,1,0,3,10,1,6,5,15,1,0,23],
+        "FLAG": [0,100],
+        "TEAM": [0,100]
+    }
+}

@@ -22,7 +22,7 @@ const LAYER_BUTTON_ID_REGION = 200;
 
 const OUTLINE_COLOR = getRGBAString(255, 255, 255, 255);
 const HIGHLIGHT_COLOR = getRGBAString(200, 200, 200, 64);
-const BACKGROUND_COLOR = getRGBAString(0, 0, 0, 0);
+const BACKGROUND_COLOR = getRGBAString(20, 20, 20, 128);
 
 const TEXT_COLOR_VIEW = getRGBAString(238, 238, 238, 255);
 const TEXT_COLOR_EDIT = getRGBAString(252, 252, 63, 255);
@@ -39,12 +39,57 @@ export const MapEditorInterface = function(controller, editor, camera) {
     this.textColorView = [238, 238, 238, 255];
     this.textColorEdit = [252, 252, 63, 255];
     this.textColorHide = [207, 55, 35, 255];
+
+    this.state = MapEditorInterface.STATE.TILE;
 }
+
+MapEditorInterface.STATE = {
+    NONE: 0,
+    TILE: 1,
+    TEAM: 2,
+    ENTITY: 3
+};
 
 MapEditorInterface.prototype = Object.create(UIContext.prototype);
 MapEditorInterface.prototype.constructor = MapEditorInterface;
 
-MapEditorInterface.prototype.onImmediate = function(gameContext, display) {
+MapEditorInterface.prototype.drawLayerButton = function(display, buttonX, buttonY, isHot, state, text) {
+    const { context } = display;
+    const textX = buttonX + LAYER_BUTTON_WIDTH / 2;
+    const textY = buttonY + LAYER_BUTTON_HEIGHT / 2;
+
+    context.fillStyle = BACKGROUND_COLOR;
+    context.fillRect(buttonX, buttonY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
+
+    switch(state) {
+        case MapEditor.LAYER_STATE.HIDDEN: {
+            context.fillStyle = TEXT_COLOR_HIDE;
+            break;
+        }
+        case MapEditor.LAYER_STATE.VISIBLE: {
+            context.fillStyle = TEXT_COLOR_VIEW;
+            break;
+        }
+        case MapEditor.LAYER_STATE.EDIT: {
+            context.fillStyle = TEXT_COLOR_EDIT;
+            break;
+        }
+    }
+
+    context.font = "20px Arial";
+    context.textAlign = TextStyle.ALIGN.MIDDLE;
+    context.fillText(text, textX, textY);
+
+    if(isHot) {
+        context.fillStyle = HIGHLIGHT_COLOR;
+        context.fillRect(buttonX, buttonY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
+    }
+
+    context.strokeStyle = OUTLINE_COLOR;
+    context.strokeRect(buttonX, buttonY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
+}
+
+MapEditorInterface.prototype.drawTileEditor = function(gameContext, display) {
     const { tileManager, gameWindow } = gameContext;
     const { context } = display;
     const container = this.getElement("CONTAINER_TILES");
@@ -127,6 +172,7 @@ MapEditorInterface.prototype.onImmediate = function(gameContext, display) {
 
     if(allFlags & IM_FLAG.CLICKED) {
         this.editor.resetLayerStates();
+        this.controller.resetBrush();
     }
 
     this.drawLayerButton(display, bottomX, layerY, (bottomFlags & IM_FLAG.HOT), this.editor.getLayerState(BattalionMap.LAYER.GROUND), "Bottom");
@@ -135,40 +181,13 @@ MapEditorInterface.prototype.onImmediate = function(gameContext, display) {
     this.drawLayerButton(display, allX, layerY, (allFlags & IM_FLAG.HOT), MapEditor.LAYER_STATE.VISIBLE, "View All");
 }
 
-MapEditorInterface.prototype.drawLayerButton = function(display, buttonX, buttonY, isHot, state, text) {
-    const { context } = display;
-    const textX = buttonX + LAYER_BUTTON_WIDTH / 2;
-    const textY = buttonY + LAYER_BUTTON_HEIGHT / 2;
-
-    context.fillStyle = BACKGROUND_COLOR;
-    context.fillRect(buttonX, buttonY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
-
-    switch(state) {
-        case MapEditor.LAYER_STATE.HIDDEN: {
-            context.fillStyle = TEXT_COLOR_HIDE;
-            break;
-        }
-        case MapEditor.LAYER_STATE.VISIBLE: {
-            context.fillStyle = TEXT_COLOR_VIEW;
-            break;
-        }
-        case MapEditor.LAYER_STATE.EDIT: {
-            context.fillStyle = TEXT_COLOR_EDIT;
+MapEditorInterface.prototype.onImmediate = function(gameContext, display) {
+    switch(this.state) {
+        case MapEditorInterface.STATE.TILE: {
+            this.drawTileEditor(gameContext, display);
             break;
         }
     }
-
-    context.font = "20px Arial";
-    context.textAlign = TextStyle.ALIGN.MIDDLE;
-    context.fillText(text, textX, textY);
-
-    if(isHot) {
-        context.fillStyle = HIGHLIGHT_COLOR;
-        context.fillRect(buttonX, buttonY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
-    }
-
-    context.strokeStyle = OUTLINE_COLOR;
-    context.strokeRect(buttonX, buttonY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
 }
 
 MapEditorInterface.prototype.load = function(gameContext) {
