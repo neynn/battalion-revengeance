@@ -1,0 +1,55 @@
+{
+    "Grass": {
+        "tileType": "GRASS"
+    },
+    "Boreal": {
+        "tileType": "BOREAL"
+    },
+    "Arctic": {
+        "tileType": "ARCTIC"
+    },
+    "Road": {
+        "tileType": "ROAD",
+        "autotiler": "battalion_road"
+    },
+    "Volcano": {
+        "tileType": "VOLCANO"
+    },
+    "River": {
+        "tileType": "RIVER",
+        "autotiler": "battalion_river"
+    },
+    "Shore": {
+        "tileType": "SHORE"
+    },
+    "Island": {
+        "tileType": "ISLAND"
+    },
+    "Swirl": {
+        "tileType": "SWIRL"
+    },
+    "Rocks": {
+        "tileType": "ROCKS"
+    },
+    "Path": {
+        "tileType": "NONE",
+        "autotiler": "battalion_path"
+    },
+    "RichOre": {
+        "tileType": "RICH_ORE"
+    },
+    "UsedOre": {
+        "tileType": "USED_ORE"
+    },
+    "DepletedOre": {
+        "tileType": "DEPLETED_ORE"
+    },
+    "Canyon": {
+        "tileType": "CANYON",
+        "autotiler": "battalion_canyon"
+    },
+    "Rail": {
+        "tileType": "RAIL",
+        "autotiler": "battalion_rail"
+    }
+}

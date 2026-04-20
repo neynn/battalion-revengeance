@@ -1,12 +1,11 @@
-export const Tile = function(id, type, autotiler, category) {
+export const Tile = function(id, type, autotiler) {
     this.id = id;
     this.type = type;
     this.autotiler = autotiler;
-    this.category = category;
 }
 
-export const TileCategory = function(id) {
-    this.id = id;
+export const TileCategory = function(name) {
+    this.name = name;
     this.members = new Set();
 }
 

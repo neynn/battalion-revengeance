@@ -38,7 +38,7 @@ BattalionContext.prototype = Object.create(ClientGameContext.prototype);
 BattalionContext.prototype.constructor = BattalionContext;
 
 BattalionContext.prototype.init = function(resources) {
-    this.tileManager.loadClient(this.textureLoader, resources.tiles, resources.tileMeta, resources.autotilers, resolveTileType);
+    this.tileManager.loadClient(this.textureLoader, resources.tiles, resources.tileCategories, resources.logicTiles, resources.visualTiles, resources.autotilers, resolveTileType);
     this.tileManager.addCustomTile(TILE_ID.RIVER_10, TILE_TYPE.SEA);
     this.spriteManager.load(resources.spriteTextures, resources.sprites);
     this.uiManager.load(this.textureLoader, resources.layouts, resources.gui);

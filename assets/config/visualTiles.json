@@ -1,78 +1,74 @@
 [
     { 
         "id": "grass",
-        "type": "GRASS",
+        "logic": "Grass",
         "texture": "background",
         "visuals": ["grass"]
     },
     { 
         "id": "boreal",
-        "type": "BOREAL",
+        "logic": "Boreal",
         "texture": "background",
         "visuals": ["boreal"]
     },
     { 
         "id": "arctic",
-        "type": "ARCTIC",
+        "logic": "Arctic",
         "texture": "background",
         "visuals": ["arctic"]
     },
     { 
         "category": "Road", 
         "id": "road_",
-        "type": "ROAD",
-        "autotiler": "battalion_road",
+        "logic": "Road",
         "texture": "road",
         "autoVisuals": { "prefix": "", "count": 16 }
     },
     { 
         "id": "volcano",
-        "type": "VOLCANO",
+        "logic": "Volcano",
         "texture": "volcano",
         "visuals": ["ANIMATION_0"]
     },
     { 
         "category": "River",
         "id": "river_",
-        "type": "RIVER",
-        "autotiler": "battalion_river",
+        "logic": "River",
         "texture": "river",
         "autoVisuals": { "prefix": "ANIMATION_", "count": 48 }
     },
     { 
         "id": "shore_",
-        "type": "SHORE",
+        "logic": "Shore",
         "texture": "shore",
         "autoVisuals": { "prefix": "ANIMATION_", "count": 12 }
     },
     { 
         "id": "island_",
-        "type": "ISLAND",
+        "logic": "Island",
         "texture": "water",
         "autoVisuals": { "prefix": "ANIMATION_ISLAND_", "count": 4 }
     },
     { 
         "id": "swirl_",
-        "type": "SWIRL",
+        "logic": "Swirl",
         "texture": "water",
         "visuals": ["ANIMATION_SWIRL_0", "ANIMATION_SWIRL_1", "ANIMATION_SWIRL_2", "ANIMATION_SWIRL_3"]
     },
     { 
         "id": "rocks_",
-        "type": "ROCKS",
+        "logic": "Rocks",
         "texture": "water",
         "visuals": ["ANIMATION_ROCKS_0", "ANIMATION_ROCKS_1", "ANIMATION_ROCKS_2", "ANIMATION_ROCKS_3"]
     },
     { 
-        "id": "overlay_",
         "texture": "other",
         "visuals": ["overlay_0", "overlay_1", "overlay_2", "overlay_3"]
     },
     { 
         "category": "Path",
         "id": "path_",
-        "type": "PATH",
-        "autotiler": "battalion_path",
+        "logic": "Path",
         "texture": "path",
         "autoVisuals": { "prefix": "", "count": 16 }
     },
@@ -83,53 +79,51 @@
     },
     { 
         "id": "ore_0",
-        "type": "RICH_ORE",
+        "logic": "RichOre",
         "texture": "ore_deposit",
         "visuals": ["LEFT"]
     },
     { 
         "id": "ore_1",
-        "type": "RICH_ORE",
+        "logic": "RichOre",
         "texture": "ore_deposit",
         "visuals": ["RIGHT"]
     },
     { 
         "id": "ore_2",
-        "type": "USED_ORE",
+        "logic": "UsedOre",
         "texture": "ore_deposit",
         "visuals": ["LEFT_USED"]
     },
     { 
         "id": "ore_3",
-        "type": "USED_ORE",
+        "logic": "UsedOre",
         "texture": "ore_deposit",
         "visuals": ["RIGHT_USED"]
     },
     {
         "id": "ore_4",
-        "type": "DEPLETED_ORE",
+        "logic": "DepletedOre",
         "texture": "ore_deposit",
         "visuals": ["LEFT_DEPLETED"]
     },
     { 
         "id": "ore_5",
-        "type": "DEPLETED_ORE",
+        "logic": "DepletedOre",
         "texture": "ore_deposit",
         "visuals": ["RIGHT_DEPLETED"]
     },
     { 
         "category": "Canyon",
         "id": "canyon_",
-        "type": "CANYON",
-        "autotiler": "battalion_canyon",
+        "logic": "Canyon",
         "texture": "canyon",
         "autoVisuals": { "prefix": "", "count": 48 }
     },
     { 
         "category": "Rail",
         "id": "rail_",
-        "type": "RAIL",
-        "autotiler": "battalion_rail",
+        "logic": "Rail",
         "texture": "rail",
         "autoVisuals": { "prefix": "", "count": 16 }
     },
@@ -138,7 +132,7 @@
         "visuals": ["mine_0", "mine_1", "marker_weak", "marker", "marker_protected", "cash_box"]
     },
     {
-        "type": "GRASS",
+        "logic": "Grass",
         "texture": "background",
         "visuals": ["shrub_0", "shrub_1", "shrub_2", "shrub_3", "shrub_4"]
     }

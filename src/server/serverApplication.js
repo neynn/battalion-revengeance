@@ -22,7 +22,7 @@ ServerApplication.prototype = Object.create(SocketServer.prototype);
 ServerApplication.prototype.constructor = ServerApplication;
 
 ServerApplication.prototype.init = function(resources) {
-    this.tileManager.loadServer(resources.tileMeta, resources.autotilers, resolveTileType);
+    this.tileManager.loadServer(resources.tileCategories, resources.logicTiles, resources.visualTiles, resources.autotilers, resolveTileType);
     this.tileManager.addCustomTile(TILE_ID.RIVER_10, TILE_TYPE.SEA);
     this.mapRegistry.load(resources.maps);
     this.typeRegistry.load(resources);
