@@ -1,14 +1,17 @@
 import { TileVisual } from "./visual.js";
 import { Autotiler } from "./autotiler.js";
-import { Tile } from "./tile.js";
+import { Tile, TileCategory } from "./tile.js";
 import { TextureRegistry } from "../resources/texture/textureRegistry.js";
 
 export const TileManager = function() {
     this.autotilers = new Map();
-    this.tiles = [TileManager.EMPTY_TILE];
+    this.tiles = [];
     this.tileTable = [];
     this.visuals = [];
     this.activeVisuals = [];
+
+    this.categories = new Map();
+    this.categoryID = 0;
 }
 
 TileManager.EMPTY_VISUAL = new TileVisual(-1);
@@ -31,7 +34,7 @@ TileManager.prototype.update = function(gameContext) {
 TileManager.prototype.addCustomTile = function(mapID, typeID) {
     const oldTile = this.getTile(mapID);
     const tileID = this.tiles.length;
-    const tileObject = new Tile(tileID, typeID, oldTile.autotiler);
+    const tileObject = new Tile(tileID, typeID, oldTile.autotiler, oldTile.category);
     const index = mapID - 1;
 
     if(index >= 0 && index < this.tileTable.length) {
@@ -50,21 +53,11 @@ TileManager.prototype.createTiles = function(tileMeta, resolveType) {
     //0 is treated as an empty visual => counting begins at 1.
     //Table maps a visual tile to logical tile.
     for(let i = 0; i < tileMeta.length; i++) {
-        const { id = null, type = null, autotiler = null, variants } = tileMeta[i];
-        let tileID = 0;
+        const { category = null, id = null, type = null, autotiler = null, variants } = tileMeta[i];
+        let tileID = this.tiles.length;
         let count = 1;
-
-        //If a type is specified it must be a logical tile.
-        if(type !== null) {
-            tileID = this.tiles.length;
-
-            const typeID = resolveType(type);
-            const tileObject = new Tile(tileID, typeID, autotiler);
-
-            this.tiles.push(tileObject);
-        }
-
         let visualID = mapID;
+        let categoryID = -1;
 
         if(variants) {
             count = variants.count;
@@ -84,21 +77,37 @@ TileManager.prototype.createTiles = function(tileMeta, resolveType) {
             }
         }
 
+        if(category !== null) {
+            if(this.categories.has(category)) {
+                categoryID = this.categories.get(category).id;
+            } else {
+                categoryID = this.categoryID++;
+                this.categories.set(category, new TileCategory(categoryID));
+            }
+        }
+
+        const typeID = resolveType(type);
+        const tileObject = new Tile(tileID, typeID, autotiler, categoryID);
+
+        this.tiles.push(tileObject);
+
+        if(category !== null) {
+            const categoryType = this.categories.get(category);
+
+            for(let i = 0; i < count; i++) {
+                categoryType.addMember(mapID + i);
+            }
+        }
+
         //Matches mapID with tileID.
         for(let i = 0; i < count; i++) {
-            this.tileTable[mapID++] = tileID;
+            this.tileTable[mapID + i] = tileID;
         }
+
+        mapID += count;
     }
 
     return visualMap;
-}
-
-TileManager.prototype.createAutotilers = function(autotilers, visualMap) {
-    for(const autotilerID in autotilers) {
-        const autotiler = this.createAutotiler(autotilers[autotilerID], visualMap);
-
-        this.autotilers.set(autotilerID, autotiler);
-    }
 }
 
 TileManager.prototype.createTileVisuals = function(textureLoader, tileAtlases, tileMeta) {
@@ -156,56 +165,25 @@ TileManager.prototype.createTileVisuals = function(textureLoader, tileAtlases, t
     }
 }
 
-TileManager.prototype.loadServer = function(tileMeta, autotilers, resolveType) {
-    if(!tileMeta || !autotilers) {
-        console.warn("TileMeta/Autotilers does not exist!");
-        return;
+TileManager.prototype.createAutotilers = function(autotilers, visualMap) {
+    for(const autotilerID in autotilers) {
+        const autotiler = this.createAutotiler(autotilers[autotilerID], visualMap);
+
+        this.autotilers.set(autotilerID, autotiler);
     }
-
-    const visualMap = this.createTiles(tileMeta, resolveType);
-
-    this.createAutotilers(autotilers, visualMap);
-}
-
-TileManager.prototype.loadClient = function(textureLoader, tileAtlases, tileMeta, autotilers, resolveType) {
-    if(!tileAtlases || !tileMeta || !autotilers) {
-        console.warn("TileAtlases/TileMeta/Autotilers does not exist!");
-        return;
-    }
-
-    const visualMap = this.createTiles(tileMeta, resolveType);
-
-    this.createAutotilers(autotilers, visualMap);
-    this.createTileVisuals(textureLoader, tileAtlases, tileMeta);
-    this.enableAllVisuals();
 }
 
 TileManager.prototype.createAutotiler = function(config, visualMap) {
-    const { type = Autotiler.TYPE.NONE, values = {}, members = [], autoMembers = [], useAutoValues = null } = config;
+    const { type = Autotiler.TYPE.NONE, values = {}, categories = [], useAutoValues = null } = config;
     const autotiler = new Autotiler(TileManager.TILE_ID.EMPTY);
 
     autotiler.setType(type);
 
-    for(const { prefix, first, last } of autoMembers) {
-        for(let i = first; i <= last; i++) {
-            const namedID = `${prefix}${i}`;
-            const mapID = visualMap[namedID];
+    for(const categoryID of categories) {
+        const category = this.categories.get(categoryID);
 
-            if(mapID !== undefined) {
-                autotiler.addMember(mapID);
-            } else {
-                console.error("namedID does not exist!", namedID);
-            }  
-        }
-    }
-
-    for(const namedID of members) {
-        const mapID = visualMap[namedID];
-
-        if(mapID !== undefined) {
-            autotiler.addMember(mapID);
-        } else {
-            console.error("namedID does not exist!", namedID);
+        if(category) {
+            autotiler.addCategory(category);
         }
     }
 
@@ -236,6 +214,31 @@ TileManager.prototype.createAutotiler = function(config, visualMap) {
     }
 
     return autotiler;
+}
+
+
+TileManager.prototype.loadServer = function(tileMeta, autotilers, resolveType) {
+    if(!tileMeta || !autotilers) {
+        console.warn("TileMeta/Autotilers does not exist!");
+        return;
+    }
+
+    const visualMap = this.createTiles(tileMeta, resolveType);
+
+    this.createAutotilers(autotilers, visualMap);
+}
+
+TileManager.prototype.loadClient = function(textureLoader, tileAtlases, tileMeta, autotilers, resolveType) {
+    if(!tileAtlases || !tileMeta || !autotilers) {
+        console.warn("TileAtlases/TileMeta/Autotilers does not exist!");
+        return;
+    }
+
+    const visualMap = this.createTiles(tileMeta, resolveType);
+
+    this.createAutotilers(autotilers, visualMap);
+    this.createTileVisuals(textureLoader, tileAtlases, tileMeta);
+    this.enableAllVisuals();
 }
 
 TileManager.prototype.disableVisual = function(mapID) {

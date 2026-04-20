@@ -1,7 +1,7 @@
 export const Autotiler = function(defaultValue) {
     this.defaultValue = defaultValue;
     this.type = Autotiler.TYPE.NONE;
-    this.members = new Set();
+    this.categories = [];
     this.values = [];
 }
 
@@ -89,12 +89,18 @@ Autotiler.prototype.getValue = function(index) {
     return this.values[index];
 }
 
-Autotiler.prototype.addMember = function(memberID) {
-    this.members.add(memberID);
+Autotiler.prototype.addCategory = function(category) {
+    this.categories.push(category);
 }
 
 Autotiler.prototype.hasMember = function(tileID) {
-    return this.members.has(tileID);
+    for(const category of this.categories) {
+        if(category.hasMember(tileID)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 Autotiler.prototype.autotile4Bits = function(tileX, tileY, onCheck) {

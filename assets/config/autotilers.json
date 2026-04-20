@@ -1,23 +1,8 @@
 {
     "battalion_path": {
         "type": "MIN_4",
-        "members": [
-            "path_0",
-            "path_1",
-            "path_2",
-            "path_3",
-            "path_4",
-            "path_5",
-            "path_6",
-            "path_7",
-            "path_8",
-            "path_9",
-            "path_10",
-            "path_11",
-            "path_12",
-            "path_13",
-            "path_14",
-            "path_15"
+        "categories": [
+            "Path"
         ],
         "values": {
             "0": "path_8",
@@ -40,23 +25,8 @@
     },
     "battalion_road": {
         "type": "MIN_4",
-        "members": [
-            "road_0",
-            "road_1",
-            "road_2",
-            "road_3",
-            "road_4",
-            "road_5",
-            "road_6",
-            "road_7",
-            "road_8",
-            "road_9",
-            "road_10",
-            "road_11",
-            "road_12",
-            "road_13",
-            "road_14",
-            "road_15"
+        "categories": [
+            "Road"
         ],
         "values": {
             "0": "road_0",
@@ -79,55 +49,8 @@
     },
     "battalion_river": {
         "type": "MIN_8",
-        "members": [
-            "river_0",
-            "river_1",
-            "river_2",
-            "river_3",
-            "river_4",
-            "river_5",
-            "river_6",
-            "river_7",
-            "river_8",
-            "river_9",
-            "river_10",
-            "river_11",
-            "river_12",
-            "river_13",
-            "river_14",
-            "river_15",
-            "river_16",
-            "river_17",
-            "river_18",
-            "river_19",
-            "river_20",
-            "river_21",
-            "river_22",
-            "river_23",
-            "river_24",
-            "river_25",
-            "river_26",
-            "river_27",
-            "river_28",
-            "river_29",
-            "river_30",
-            "river_31",
-            "river_32",
-            "river_33",
-            "river_34",
-            "river_35",
-            "river_36",
-            "river_37",
-            "river_38",
-            "river_39",
-            "river_40",
-            "river_41",
-            "river_42",
-            "river_43",
-            "river_44",
-            "river_45",
-            "river_46",
-            "river_47"
+        "categories": [
+            "River"
         ],
         "values": {
             "0": "river_10",
@@ -187,15 +110,15 @@
     },
     "battalion_rail": {
         "type": "MIN_4",
-        "autoMembers": [
-            { "prefix": "rail_", "first": 0, "last": 15 }
+        "categories": [
+            "Rail"
         ],
         "useAutoValues": "rail_"
     },
     "battalion_canyon": {
         "type": "MIN_8",
-        "autoMembers": [
-            { "prefix": "canyon_", "first": 0, "last": 47 }
+        "categories": [
+            "Canyon"
         ],
         "useAutoValues": "canyon_"
     }
