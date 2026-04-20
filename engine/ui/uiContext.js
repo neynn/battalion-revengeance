@@ -99,6 +99,14 @@ UIContext.prototype.addClick = function(elementID, onClick) {
     }
 }
 
+UIContext.prototype.removeClickByName = function(name) {
+    const elementID = this.getElementID(name);
+
+    if(this.clickCallbacks.has(elementID)) {
+        this.clickCallbacks.delete(elementID);
+    }
+}
+
 UIContext.prototype.addClickByName = function(name, onClick) {
     const elementID = this.getElementID(name);
 

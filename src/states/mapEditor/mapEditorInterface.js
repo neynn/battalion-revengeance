@@ -7,6 +7,7 @@ import { Container } from "../../../engine/ui/elements/container.js";
 import { parseLayout } from "../../../engine/ui/parser.js";
 import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
 import { BattalionMap } from "../../map/battalionMap.js";
+import { EditorController } from "./editorController.js";
 
 export const BUTTON_ROWS = 7;
 export const BUTTON_COLUMNS = 7;
@@ -39,16 +40,7 @@ export const MapEditorInterface = function(controller, editor, camera) {
     this.textColorView = [238, 238, 238, 255];
     this.textColorEdit = [252, 252, 63, 255];
     this.textColorHide = [207, 55, 35, 255];
-
-    this.state = MapEditorInterface.STATE.TILE;
 }
-
-MapEditorInterface.STATE = {
-    NONE: 0,
-    TILE: 1,
-    TEAM: 2,
-    ENTITY: 3
-};
 
 MapEditorInterface.prototype = Object.create(UIContext.prototype);
 MapEditorInterface.prototype.constructor = MapEditorInterface;
@@ -89,12 +81,12 @@ MapEditorInterface.prototype.drawLayerButton = function(display, buttonX, button
     context.strokeRect(buttonX, buttonY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
 }
 
-MapEditorInterface.prototype.drawTileEditor = function(gameContext, display) {
+MapEditorInterface.prototype.drawTileEditor = function(gameContext, display, tool) {
     const { tileManager, gameWindow } = gameContext;
     const { context } = display;
     const container = this.getElement("CONTAINER_TILES");
-    const tileSet = this.controller.getCurrentSet();
-    const pageIndex = this.controller.pageIndex;
+    const tileSet = tool.tileSets.getValue();
+    const pageIndex = tool.pageIndex;
     const scale = SLOT_BUTTON_SIZE / TILE_WIDTH;
 
     let positionX = container._screenX;
@@ -123,10 +115,10 @@ MapEditorInterface.prototype.drawTileEditor = function(gameContext, display) {
 
             if(buttonFlags & IM_FLAG.CLICKED) {
                 if(tileID !== TileManager.TILE_ID.INVALID) {
-                    this.controller.resetBrush();
-                    this.controller.editor.setBrush(tileID, `${tileID}`);
+                    tool.resetBrush();
+                    this.editor.setBrush(tileID, `${tileID}`);
                 } else {
-                    this.controller.resetBrush();
+                    tool.resetBrush();
                 }
             }
 
@@ -172,7 +164,7 @@ MapEditorInterface.prototype.drawTileEditor = function(gameContext, display) {
 
     if(allFlags & IM_FLAG.CLICKED) {
         this.editor.resetLayerStates();
-        this.controller.resetBrush();
+        tool.resetBrush();
     }
 
     this.drawLayerButton(display, bottomX, layerY, (bottomFlags & IM_FLAG.HOT), this.editor.getLayerState(BattalionMap.LAYER.GROUND), "Bottom");
@@ -182,9 +174,12 @@ MapEditorInterface.prototype.drawTileEditor = function(gameContext, display) {
 }
 
 MapEditorInterface.prototype.onImmediate = function(gameContext, display) {
-    switch(this.state) {
-        case MapEditorInterface.STATE.TILE: {
-            this.drawTileEditor(gameContext, display);
+    switch(this.controller.tool) {
+        case EditorController.TOOL.NONE: {
+            break;
+        }
+        case EditorController.TOOL.TILE: {
+            this.drawTileEditor(gameContext, display, this.controller.tools[EditorController.TOOL.TILE]);
             break;
         }
     }

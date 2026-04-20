@@ -1,124 +1,39 @@
 import { PrettyJSON } from "../../../engine/resources/prettyJSON.js";
 import { BattalionContext } from "../../battalionContext.js";
 import { createEditorMap, createEmptyMap } from "../../systems/map.js";
-import { clampValue, loopValue } from "../../../engine/math/math.js";
+import { clampValue } from "../../../engine/math/math.js";
 import { getCursorTile } from "../../../engine/camera/contextHelper.js";
 import { Cursor } from "../../../engine/client/cursor/cursor.js";
-import { BrushSet } from "../../../engine/map/editor/brushSet.js";
-import { ENTITY_TYPE, TILE_ID } from "../../enums.js";
-import { BUTTON_COUNT } from "./mapEditorInterface.js";
-import { TileManager } from "../../../engine/tile/tileManager.js";
-import { Scroller } from "../../../engine/util/scroller.js";
-
-const createBrushSize = function() {
-    return {
-        "width": 0,
-        "height": 0
-    }
-}
-
-const fillBrushSize = function(width, height) {
-    const size = createBrushSize();
-
-    size.width = width;
-    size.height = height;
-
-    return size;
-}
+import { EditorTool } from "./tools/tool.js";
+import { TileTool } from "./tools/tileTool.js";
+import { EntityTool } from "./tools/entityTool.js";
 
 export const EditorController = function(mapEditor) {
     this.editor = mapEditor;
-    this.userInterface = null;
     this.maxWidth = 100;
     this.maxHeight = 100;
-    this.pageIndex = 0;
     this.defaultWidth = 20;
     this.defaultHeight = 20;
-
-    this.brushSizes = new Scroller(createBrushSize());
-    this.tileSets = new Scroller(new BrushSet("INVALID", TileManager.TILE_ID.INVALID));
-    this.entitySets = new Scroller(new BrushSet("INVALID", ENTITY_TYPE._INVALID));
-    this.initScrollers();
-}
-
-EditorController.LAYER_BUTTON = {
-    L1: "L1",
-    L2: "L2",
-    L3: "L3"
-};
-
-EditorController.prototype.initScrollers = function() {
-    const allSet = new BrushSet("MAP_EDITOR_SET_NAME_ALL", TileManager.TILE_ID.INVALID);
-    const canyonSet = new BrushSet("MAP_EDITOR_SET_NAME_CANYON", TileManager.TILE_ID.INVALID);
-    const roadSet = new BrushSet("MAP_EDITOR_SET_NAME_ROAD", TileManager.TILE_ID.INVALID);
-    const groundSet = new BrushSet("MAP_EDITOR_SET_NAME_GROUND", TileManager.TILE_ID.INVALID);
-    const shoreSet = new BrushSet("MAP_EDITOR_SET_NAME_SHORE", TileManager.TILE_ID.INVALID);
-    const riverSet = new BrushSet("MAP_EDITOR_SET_NAME_RIVER", TileManager.TILE_ID.INVALID);
-    const seaSet = new BrushSet("MAP_EDITOR_SET_NAME_SEA", TileManager.TILE_ID.INVALID);
-    const railSet = new BrushSet("MAP_EDITOR_SET_NAME_RAIL", TileManager.TILE_ID.INVALID);
-
-    for(let i = TILE_ID.GRASS; i < TILE_ID._COUNT; i++) {
-        allSet.addValue(i);
-    }
-
-    for(let i = TILE_ID.CANYON_0; i <= TILE_ID.CANYON_47; i++) {
-        canyonSet.addValue(i);
-    }
-
-    groundSet.values = [
-        TILE_ID.VOLANO,
-        TILE_ID.ORE_LEFT,
-        TILE_ID.ORE_LEFT_USED,
-        TILE_ID.ORE_LEFT_DEPLETED,
-        TILE_ID.ORE_RIGHT,
-        TILE_ID.ORE_RIGHT_USED,
-        TILE_ID.ORE_RIGHT_DEPLETED
+    this.tools = [
+        new EditorTool(),
+        new TileTool(mapEditor),
+        new EntityTool()
     ];
 
-    for(let i = TILE_ID.SHORE_0; i <= TILE_ID.SHORE_11; i++) {
-        shoreSet.addValue(i);
-    }
-
-    for(let i = TILE_ID.ROAD_0; i <= TILE_ID.ROAD_15; i++) {
-        roadSet.addValue(i);
-    }
-
-    for(let i = TILE_ID.RIVER_0; i <= TILE_ID.RIVER_47; i++) {
-        riverSet.addValue(i);
-    }
-
-    for(let i = TILE_ID.ISLAND_1; i <= TILE_ID.ROCKS_4; i++) {
-        seaSet.addValue(i);
-    }
-
-    for(let i = TILE_ID.RAIL_0; i <= TILE_ID.RAIL_15; i++) {
-        railSet.addValue(i);
-    }
-
-
-    this.tileSets.addValue(allSet);
-    this.tileSets.addValue(roadSet);
-    this.tileSets.addValue(canyonSet);
-    this.tileSets.addValue(groundSet);
-    this.tileSets.addValue(shoreSet);
-    this.tileSets.addValue(riverSet);
-    this.tileSets.addValue(seaSet);
-    this.tileSets.addValue(railSet);
-    
-    this.brushSizes.addValue(fillBrushSize(0, 0));
-    this.brushSizes.addValue(fillBrushSize(1, 1));
-    this.brushSizes.addValue(fillBrushSize(2, 2));
-    this.brushSizes.addValue(fillBrushSize(3, 3));
-    this.brushSizes.addValue(fillBrushSize(4, 4));
+    this.tool = EditorController.TOOL.NONE;
 }
 
-EditorController.prototype.getSizeInfo = function() {
-    const { width, height } = this.brushSizes.getValue();
-    const pageString = this.brushSizes.getPageString();
-    const paintWidth = (width + 1) * 2 - 1;
-    const paintHeight = (height + 1) * 2 - 1;
+EditorController.TOOL = {
+    NONE: 0,
+    TILE: 1,
+    ENTITY: 2
+};
 
-    return `SIZE: ${paintWidth}x${paintHeight} (${pageString})`;
+EditorController.prototype.useTool = function(gameContext) {
+    const tool = this.tools[this.tool];
+    const { x, y } = getCursorTile(gameContext);
+
+    tool.onClick(gameContext, x, y);
 }
 
 EditorController.prototype.initCursorEvents = function(gameContext) {
@@ -128,11 +43,11 @@ EditorController.prototype.initCursorEvents = function(gameContext) {
     cursor.events.on(Cursor.EVENT.SCROLL, ({ direction }) => {
         switch(direction) {
             case Cursor.SCROLL.UP: {
-                this.updateBrushSize(gameContext, 1);
+                this.tools[this.tool].onScrollUp(gameContext);
                 break;
             }
             case Cursor.SCROLL.DOWN: {
-                this.updateBrushSize(gameContext, -1);
+                this.tools[this.tool].onScrollDown(gameContext);
                 break;
             }
         }
@@ -140,77 +55,18 @@ EditorController.prototype.initCursorEvents = function(gameContext) {
 
     cursor.events.on(Cursor.EVENT.DRAG, ({ button }) => {
         if(button === Cursor.BUTTON.RIGHT) {
-            this.draw(gameContext);
+            this.useTool(gameContext);
         }
     });
 
     cursor.events.on(Cursor.EVENT.BUTTON_CLICK, ({ button }) => {
         if(button === Cursor.BUTTON.RIGHT) {
-            this.draw(gameContext);
+            this.useTool(gameContext);
         }
     });
 }
 
-EditorController.prototype.draw = function(gameContext) {
-    const { x, y } = getCursorTile(gameContext);
-
-    this.editor.paint(gameContext, x, y);
-}
-
-EditorController.prototype.getCurrentSet = function() {
-    return this.tileSets.getValue();
-}
-
-EditorController.prototype.updatePage = function(gameContext, delta) {
-    const palletSize = this.getCurrentSet().getSize();
-    const maxPagesNeeded = Math.ceil(palletSize / BUTTON_COUNT);
-
-    if(maxPagesNeeded <= 0) {
-        this.pageIndex = 0;
-    } else {
-        this.pageIndex = loopValue(this.pageIndex + delta, maxPagesNeeded - 1, 0);
-    }
-
-    this.updateMenuText(gameContext);
-}
-
-EditorController.prototype.updateBrushSize = function(gameContext, delta) {
-    const { width, height } = this.brushSizes.scroll(delta);
-
-    this.editor.brush.setSize(width, height);
-    this.updateMenuText(gameContext);
-}
-
-EditorController.prototype.resetBrush = function() {
-    this.editor.resetBrush();
-    this.userInterface.updateEraserText(false);
-}
-
-EditorController.prototype.toggleInversion = function() {
-    const isInverted = this.editor.toggleInversion();
-
-    this.userInterface.updateInversionText(isInverted);
-}
-
-EditorController.prototype.toggleEraser = function() {
-    const isErasing = this.editor.toggleEraser();
-
-    this.userInterface.updateEraserText(isErasing);
-}
-
-EditorController.prototype.togglePermutation = function() {
-    const isEnabled = this.editor.togglePermutation();
-
-    this.userInterface.updatePermutationText(isEnabled);
-}
-
-EditorController.prototype.toggleAutotiler = function() {
-    const isEnabled = this.editor.toggleAutotiling();
-
-    this.userInterface.updateAutoText(isEnabled);
-}
-
-EditorController.prototype.resizeCurrentMap = function(camera) {
+EditorController.prototype.resizeCurrentMap = function() {
     const worldMap = this.editor.targetMap;
 
     if(!worldMap) {
@@ -226,27 +82,6 @@ EditorController.prototype.resizeCurrentMap = function(camera) {
     worldMap.resize(newWidth, newHeight);
 
     this.editor.autofillMap();
-
-    camera.jumpToTile(0, 0);
-}
-
-EditorController.prototype.getPageText = function() {
-    const palletSize = this.getCurrentSet().getSize();
-    const maxPagesNeeded = Math.ceil(palletSize / BUTTON_COUNT);
-    const showMaxPagesNeeded = maxPagesNeeded === 0 ? 1 : maxPagesNeeded;
-    const showCurrentPage = this.pageIndex + 1;
-
-    return `${showCurrentPage} / ${showMaxPagesNeeded}`;
-}
-
-EditorController.prototype.updateMenuText = function(gameContext) {
-    const { language } = gameContext;
-    const nameID = this.getCurrentSet().name;
-    const tilesetName = language.getSystemTranslation(nameID);
-
-    this.userInterface.getElement("TEXT_PAGE").setText(this.getPageText());
-    this.userInterface.getElement("TEXT_SIZE").setText(this.getSizeInfo());
-    this.userInterface.getElement("TEXT_TILESET").setText(tilesetName);
 }
 
 EditorController.prototype.saveMap = function() {
@@ -305,53 +140,16 @@ EditorController.prototype.loadMap = async function(gameContext) {
     }
 }
 
-EditorController.prototype.initCommands = function(gameContext) {
-    const { client } = gameContext;
-    const { router } = client;
+EditorController.prototype.selectTool = function(gameContext, userInterface, toolID) {
+    if(toolID < 0 || toolID >= this.tools.length) {
+        return;
+    }
 
-    router.bind(gameContext, "EDIT");
-    router.on("TOGGLE_AUTOTILER", () => this.toggleAutotiler());
-    router.on("TOGGLE_ERASER", () => this.toggleEraser());
-    router.on("TOGGLE_INVERSION", () => this.toggleInversion());
-    router.on("TOGGLE_RANDOM", () => this.togglePermutation());
-}
+    if(toolID === this.tool) {
+        return;
+    }
 
-EditorController.prototype.initUIEvents = function(gameContext, camera) {
-    const { states } = gameContext;
-
-    this.userInterface.addClickByName("BUTTON_INVERT", (e) => this.toggleInversion());
-    this.userInterface.addClickByName("BUTTON_BACK", (e) => states.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));
-    this.userInterface.addClickByName("BUTTON_AUTO", (e) => this.toggleAutotiler());
-
-    /*
-    this.userInterface.addClickByName("BUTTON_TILESET_MODE", (e) => {
-        this.changeMode();
-        this.pageIndex = 0;
-        this.resetBrush();
-        this.updateMenuText(gameContext);
-    });
-    */
-
-    this.userInterface.addClickByName("BUTTON_TILESET_LEFT", (e) => {
-        this.tileSets.loop(-1);
-        this.pageIndex = 0;
-        this.updateMenuText(gameContext);
-    });
-
-    this.userInterface.addClickByName("BUTTON_TILESET_RIGHT", (e) => {
-        this.tileSets.loop(1);
-        this.pageIndex = 0;
-        this.updateMenuText(gameContext);
-    });
-
-    this.userInterface.addClickByName("BUTTON_PERMUTATION", (e) => this.togglePermutation());
-    this.userInterface.addClickByName("BUTTON_PAGE_LAST", (e) => this.updatePage(gameContext, -1)); 
-    this.userInterface.addClickByName("BUTTON_PAGE_NEXT", (e) => this.updatePage(gameContext, 1));  
-    this.userInterface.addClickByName("BUTTON_SCROLL_SIZE", (e) => this.updateBrushSize(gameContext, 1));
-    this.userInterface.addClickByName("BUTTON_SAVE", (e) => this.saveMap());
-    this.userInterface.addClickByName("BUTTON_CREATE", (e) => this.createMap(gameContext));
-    this.userInterface.addClickByName("BUTTON_LOAD", (e) => this.loadMap(gameContext));
-    this.userInterface.addClickByName("BUTTON_RESIZE", (e) => this.resizeCurrentMap(camera)); 
-    this.userInterface.addClickByName("BUTTON_UNDO", (e) => this.editor.undo(gameContext)); 
-    this.userInterface.addClickByName("BUTTON_ERASER", (e) => this.toggleEraser());
+    this.tools[this.tool].onDisable(gameContext);
+    this.tools[toolID].onEnable(gameContext, userInterface);
+    this.tool = toolID;
 }
