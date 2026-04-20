@@ -1,62 +1,52 @@
 [
     { 
-        "id": "grass",
         "logic": "Grass",
         "texture": "background",
         "visuals": ["grass"]
     },
     { 
-        "id": "boreal",
         "logic": "Boreal",
         "texture": "background",
         "visuals": ["boreal"]
     },
     { 
-        "id": "arctic",
         "logic": "Arctic",
         "texture": "background",
         "visuals": ["arctic"]
     },
     { 
         "category": "Road", 
-        "id": "road_",
         "logic": "Road",
         "texture": "road",
         "autoVisuals": { "prefix": "", "count": 16 }
     },
     { 
-        "id": "volcano",
         "logic": "Volcano",
         "texture": "volcano",
         "visuals": ["ANIMATION_0"]
     },
     { 
         "category": "River",
-        "id": "river_",
         "logic": "River",
         "texture": "river",
         "autoVisuals": { "prefix": "ANIMATION_", "count": 48 }
     },
     { 
-        "id": "shore_",
         "logic": "Shore",
         "texture": "shore",
         "autoVisuals": { "prefix": "ANIMATION_", "count": 12 }
     },
     { 
-        "id": "island_",
         "logic": "Island",
         "texture": "water",
         "autoVisuals": { "prefix": "ANIMATION_ISLAND_", "count": 4 }
     },
     { 
-        "id": "swirl_",
         "logic": "Swirl",
         "texture": "water",
         "visuals": ["ANIMATION_SWIRL_0", "ANIMATION_SWIRL_1", "ANIMATION_SWIRL_2", "ANIMATION_SWIRL_3"]
     },
     { 
-        "id": "rocks_",
         "logic": "Rocks",
         "texture": "water",
         "visuals": ["ANIMATION_ROCKS_0", "ANIMATION_ROCKS_1", "ANIMATION_ROCKS_2", "ANIMATION_ROCKS_3"]
@@ -67,62 +57,52 @@
     },
     { 
         "category": "Path",
-        "id": "path_",
         "logic": "Path",
         "texture": "path",
         "autoVisuals": { "prefix": "", "count": 16 }
     },
     { 
-        "id": "jammer",
         "texture": "other",
         "visuals": ["jammer"]
     },
     { 
-        "id": "ore_0",
         "logic": "RichOre",
         "texture": "ore_deposit",
         "visuals": ["LEFT"]
     },
     { 
-        "id": "ore_1",
         "logic": "RichOre",
         "texture": "ore_deposit",
         "visuals": ["RIGHT"]
     },
     { 
-        "id": "ore_2",
         "logic": "UsedOre",
         "texture": "ore_deposit",
         "visuals": ["LEFT_USED"]
     },
     { 
-        "id": "ore_3",
         "logic": "UsedOre",
         "texture": "ore_deposit",
         "visuals": ["RIGHT_USED"]
     },
     {
-        "id": "ore_4",
         "logic": "DepletedOre",
         "texture": "ore_deposit",
         "visuals": ["LEFT_DEPLETED"]
     },
     { 
-        "id": "ore_5",
         "logic": "DepletedOre",
         "texture": "ore_deposit",
         "visuals": ["RIGHT_DEPLETED"]
     },
     { 
         "category": "Canyon",
-        "id": "canyon_",
         "logic": "Canyon",
         "texture": "canyon",
         "autoVisuals": { "prefix": "", "count": 48 }
     },
     { 
         "category": "Rail",
-        "id": "rail_",
         "logic": "Rail",
         "texture": "rail",
         "autoVisuals": { "prefix": "", "count": 16 }
