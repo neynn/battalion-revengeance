@@ -53,27 +53,27 @@ TileManager.prototype.createTiles = function(tileMeta, resolveType) {
     //0 is treated as an empty visual => counting begins at 1.
     //Table maps a visual tile to logical tile.
     for(let i = 0; i < tileMeta.length; i++) {
-        const { category = null, id = null, type = null, autotiler = null, variants } = tileMeta[i];
+        const { category = null, id = null, type = null, autotiler = null, visuals = [], autoVisuals = {} } = tileMeta[i];
+        const { count = 0, prefix = "" } = autoVisuals;
+        const visualCount = count + visuals.length;
+
         let tileID = this.tiles.length;
-        let count = 1;
         let visualID = mapID;
         let categoryID = -1;
+        
+        if(id !== null) {
+            for(let j = 0; j < count; j++) {
+                const tileName = id + j;
 
-        if(variants) {
-            count = variants.count;
-
-            if(id !== null) {
-                for(let j = 0; j < count; j++) {
-                    const tileName = id + j;
-
-                    if(visualMap[tileName] === undefined) {
-                        visualMap[tileName] = ++visualID;
-                    }
+                if(visualMap[tileName] === undefined) {
+                    visualMap[tileName] = ++visualID;
                 }
             }
-        } else {
-            if(id !== null && visualMap[id] === undefined) {
-                visualMap[id] = ++visualID;
+
+            for(const name of visuals) {
+                if(visualMap[name] === undefined) {
+                    visualMap[name] = ++visualID;
+                }
             }
         }
 
@@ -94,17 +94,17 @@ TileManager.prototype.createTiles = function(tileMeta, resolveType) {
         if(category !== null) {
             const categoryType = this.categories.get(category);
 
-            for(let i = 0; i < count; i++) {
+            for(let i = 0; i < visualCount; i++) {
                 categoryType.addMember(mapID + i);
             }
         }
 
         //Matches mapID with tileID.
-        for(let i = 0; i < count; i++) {
+        for(let i = 0; i < visualCount; i++) {
             this.tileTable[mapID + i] = tileID;
         }
 
-        mapID += count;
+        mapID += visualCount;
     }
 
     return visualMap;
@@ -141,28 +141,29 @@ TileManager.prototype.createTileVisuals = function(textureLoader, tileAtlases, t
     }
 
     for(let i = 0; i < tileMeta.length; i++) {
-        const { variants, texture, tile } = tileMeta[i];
+        const { autoVisuals = {}, visuals = [], texture = "" } = tileMeta[i];
+        const { count = 0, prefix = "" } = autoVisuals;
 
-        if(variants) {
-            const { count, prefix } = variants;
-
-            for(let j = 0; j < count; j++) {
-                const visualID = texture + "::" + prefix + j;
-
-                if(!generatedVisuals.has(visualID)) {
-                    createVisual(texture, prefix + j);
-                    generatedVisuals.add(visualID);
-                }
-            }
-        } else {
-            const visualID = texture + "::" + tile;
+        for(let j = 0; j < count; j++) {
+            const visualID = texture + "::" + prefix + j
 
             if(!generatedVisuals.has(visualID)) {
-                createVisual(texture, tile);
+                createVisual(texture, prefix + j);
+                generatedVisuals.add(visualID);
+            }
+        }
+
+        for(const name of visuals) {
+            const visualID = texture + "::" + name;
+
+            if(!generatedVisuals.has(visualID)) {
+                createVisual(texture, name);
                 generatedVisuals.add(visualID);
             }
         }
     }
+
+    console.log(generatedVisuals);
 }
 
 TileManager.prototype.createAutotilers = function(autotilers, visualMap) {
