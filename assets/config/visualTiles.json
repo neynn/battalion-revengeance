@@ -15,6 +15,7 @@
         "visuals": ["arctic"]
     },
     { 
+        "id": "Road",
         "category": "Road", 
         "logic": "Road",
         "texture": "road",
@@ -26,6 +27,7 @@
         "visuals": ["ANIMATION_0"]
     },
     { 
+        "id": "River",
         "category": "River",
         "logic": "River",
         "texture": "river",
@@ -56,6 +58,7 @@
         "visuals": ["overlay_0", "overlay_1", "overlay_2", "overlay_3"]
     },
     { 
+        "id": "Path",
         "category": "Path",
         "logic": "Path",
         "texture": "path",
@@ -96,12 +99,14 @@
         "visuals": ["RIGHT_DEPLETED"]
     },
     { 
+        "id": "Canyon",
         "category": "Canyon",
         "logic": "Canyon",
         "texture": "canyon",
         "autoVisuals": { "prefix": "", "count": 48 }
     },
     { 
+        "id": "Rail",
         "category": "Rail",
         "logic": "Rail",
         "texture": "rail",
