@@ -107,24 +107,17 @@ StartTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPla
         }
 
         const { health } = entity;
-        const damage = entity.getTerrainDamage(gameContext);
-        let nextHealth = health - damage;
+        const sotHealth = entity.getStartOfTurnHealth(gameContext);
+        const delta = health - sotHealth;
 
-        if(entity.hasTrait(TRAIT_TYPE.REPAIR)) {
-            nextHealth += TRAIT_CONFIG.REPAIR_VALUE;
-        }
-
-        if(nextHealth <= 0) {
+        if(sotHealth <= 0) {
             deadEntities.push(entityID);
         } else if(entity.hasTrait(TRAIT_TYPE.RADAR)) {
             executionPlan.addNext(createUncloakIntent(entityID));
         }
 
-        if(nextHealth !== health) {
-            const health = entity.getClampedHealth(nextHealth);
-            const delta = health - nextHealth;
-
-            resolutions.push(fillEntityResolution(entityID, delta, nextHealth));
+        if(delta !== 0) {
+            resolutions.push(fillEntityResolution(entityID, delta, sotHealth));
         }
     }
 

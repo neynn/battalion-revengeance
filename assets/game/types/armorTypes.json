@@ -3,7 +3,7 @@
         "name": "ARMOR_NAME_NONE",
         "desc": "ARMOR_DESC_NONE",
         "icon": "NONE",
-        "resistance": {
+        "damageModifier": {
             "*": -0.5    
         }
     },
@@ -11,7 +11,7 @@
         "name": "ARMOR_NAME_LIGHT",
         "desc": "ARMOR_DESC_LIGHT",
         "icon": "ARMOR_LIGHT",
-        "resistance": {
+        "damageModifier": {
             "LIGHT": -0.5,
             "MEDIUM": 0,
             "HEAVY": 0.5
@@ -21,7 +21,7 @@
         "name": "ARMOR_NAME_MEDIUM",
         "desc": "ARMOR_DESC_MEDIUM",
         "icon": "ARMOR_MEDIUM",
-        "resistance": {
+        "damageModifier": {
             "*": 0
         }
     },
@@ -29,7 +29,7 @@
         "name": "ARMOR_NAME_HEAVY",
         "desc": "ARMOR_DESC_HEAVY",
         "icon": "ARMOR_HEAVY",
-        "resistance": {
+        "damageModifier": {
             "LIGHT": 0.5,
             "MEDIUM": 0,
             "HEAVY": -0.5
@@ -39,7 +39,7 @@
         "name": "ARMOR_NAME_OMEGA",
         "desc": "ARMOR_DESC_OMEGA",
         "icon": "NONE",
-        "resistance": {
+        "damageModifier": {
             "*": 0.5
         }
     }

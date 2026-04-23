@@ -158,29 +158,48 @@ BattalionEntity.prototype.isAtFullHealth = function() {
 }
 
 BattalionEntity.prototype.getHealthAfterHeal = function(heal = 0) {
+    //Units that have more than 100% health should not receive the heal.
+    if(this.health >= this.maxHealth) {
+        return this.health;
+    }
+
+    //Negative healing is not allowed!
+    if(heal < 0) {
+        return this.health;
+    }
+
     const health = Math.floor(this.health + heal);
 
     if(health <= 0) {
         return 0;
     }
 
-    if(health >= this.maxHealth) {
-        return this.maxHealth;
-    }
-
     return health;
 }
 
-BattalionEntity.prototype.getClampedHealth = function(health = 0) {
-    if(health <= 0) {
-        return 0;
+BattalionEntity.prototype.getStartOfTurnHealth = function(gameContext) {
+    //Skips the first turn to prohibit unfair state.
+    if(this.turns <= 0) {
+        return this.health;
     }
 
-    if(health >= this.maxHealth) {
-        return this.maxHealth;
+    const damage = this.getTerrainDamage(gameContext);
+    let nextHealth = this.health - damage;
+
+    //Heal if below maxHealth but cap the healing to maxHealth.
+    if(this.hasTrait(TRAIT_TYPE.REPAIR) && nextHealth < this.maxHealth) {
+        nextHealth += TRAIT_CONFIG.REPAIR_VALUE;
+
+        if(nextHealth > this.maxHealth) {
+            nextHealth = this.maxHealth;
+        }
     }
 
-    return health;
+    if(nextHealth < 0) {
+        nextHealth = 0;
+    }
+
+    return nextHealth;
 }
 
 BattalionEntity.prototype.getHealthAfterAttack = function(damage = 0) {
@@ -201,7 +220,7 @@ BattalionEntity.prototype.setHealth = function(health) {
     if(health < 0) {
         this.health = 0;
     } else {
-        this.health = health;
+        this.health = Math.floor(health);
     }
 }
 
@@ -338,8 +357,7 @@ BattalionEntity.prototype.isAllyWith = function(gameContext, entity) {
 
 BattalionEntity.prototype.getTerrainDamage = function(gameContext) {
     //Commandos take NO damage from terrains.
-    //Entities also do not take damage their first turn.
-    if(this.turns <= 0 || this.hasTrait(TRAIT_TYPE.COMMANDO)) {
+    if(this.hasTrait(TRAIT_TYPE.COMMANDO)) {
         return 0;
     }
 
@@ -903,7 +921,8 @@ BattalionEntity.prototype.getMoraleFactor = function(gameContext) {
 BattalionEntity.prototype.getArmorFactor = function(gameContext, targetArmor) {
     const { typeRegistry } = gameContext;
     const armorType = typeRegistry.getArmorType(targetArmor);
-    let armorFactor = armorType.getDamageFactor(this.config.weaponType);
+    const damageModifier = armorType.getDamageModifier(this.config.weaponType);
+    let armorFactor = 1 - damageModifier;
 
     //Ignore only damage reduction with ARMOR_PIERCE, keep the damage increase.
     if(armorFactor < 1 && this.hasTrait(TRAIT_TYPE.ARMOR_PIERCE)) {
@@ -932,9 +951,9 @@ BattalionEntity.prototype.getTerrainFactor = function(gameContext, target) {
         if(protectionFactor > 1) {
             terrainFactor = 0;
             break;
-        } else {
-            terrainFactor *= (1 - protectionFactor);
         }
+
+        terrainFactor *= (1 - protectionFactor);
     }
 
     return terrainFactor;
@@ -943,13 +962,13 @@ BattalionEntity.prototype.getTerrainFactor = function(gameContext, target) {
 BattalionEntity.prototype.getLogisticFactor = function(gameContext) {
     const { world } = gameContext;
     const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const climateType = worldMap.getClimateType(gameContext, this.tileX, this.tileY);
     let logisticFactor = 1;
 
-    //Applies only to non-commandos.
-    if(!this.hasTrait(TRAIT_TYPE.COMMANDO)) {
-        const worldMap = mapManager.getActiveMap();
-        const climateType = worldMap.getClimateType(gameContext, this.tileX, this.tileY);
-
+    if(this.hasTrait(TRAIT_TYPE.COMMANDO)) {
+        logisticFactor = 1 - (1 - climateType.logisticFactor) * TRAIT_CONFIG.COMMANDO_LOGISTIC_REDUCTION;
+    } else {
         logisticFactor = climateType.logisticFactor;
     }
 

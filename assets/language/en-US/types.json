@@ -375,7 +375,7 @@
     "TRAIT_DESC_SUBMERGED": "This unit cannot be attacked by most units.",
 
     "TRAIT_NAME_COMMANDO": "Commando",
-    "TRAIT_DESC_COMMANDO": "This unit is immune to logistical challenges.",
+    "TRAIT_DESC_COMMANDO": "This unit is less impaired by logistical challenges and immune to terrain damage.",
 
     "TRAIT_NAME_CRAB": "Crab",
     "TRAIT_DESC_CRAB": "This unit can cross water and land, but it is NOT a crab.",
