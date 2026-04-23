@@ -27,14 +27,22 @@ export const InteractionResolver = function() {
 }
 
 InteractionResolver.prototype.addHeal = function(entity, heal) {
-    this.add(entity.getID(), heal, entity.getHealthAfterHeal(heal));
+    const delta = entity.getHealDelta(heal);
+    const value = entity.getHealthFromDelta(delta);
+
+    this.add(entity.getID(), delta, value);
     this.totalHeal += heal;
 }
 
 InteractionResolver.prototype.addAttack = function(entity, damage) {
-    this.add(entity.getID(), damage, entity.getHealthAfterAttack(damage));
-    this.totalDamage += damage;
-    this.resourceDamage += Math.floor(entity.getDamageAsResources(damage));
+    const delta = entity.getAttackDelta(damage);
+    const value = entity.getHealthFromDelta(delta);
+    const damageDealt = entity.getDamageFromDelta(delta);
+    const resourceDamage = entity.getDamageAsResources(damageDealt);
+
+    this.add(entity.getID(), delta, value);
+    this.totalDamage += damageDealt;
+    this.resourceDamage += resourceDamage;
 }
 
 InteractionResolver.prototype.add = function(entityID, delta, health) {

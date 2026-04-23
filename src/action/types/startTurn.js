@@ -106,9 +106,8 @@ StartTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPla
             continue;
         }
 
-        const { health } = entity;
-        const sotHealth = entity.getStartOfTurnHealth(gameContext);
-        const delta = health - sotHealth;
+        const sotDelta = entity.getStartOfTurnDelta(gameContext);
+        const sotHealth = entity.getHealthFromDelta(sotDelta);
 
         if(sotHealth <= 0) {
             deadEntities.push(entityID);
@@ -116,8 +115,8 @@ StartTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPla
             executionPlan.addNext(createUncloakIntent(entityID));
         }
 
-        if(delta !== 0) {
-            resolutions.push(fillEntityResolution(entityID, delta, sotHealth));
+        if(sotDelta !== 0) {
+            resolutions.push(fillEntityResolution(entityID, sotDelta, sotHealth));
         }
     }
 

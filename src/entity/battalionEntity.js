@@ -157,63 +157,117 @@ BattalionEntity.prototype.isAtFullHealth = function() {
     return this.health >= this.maxHealth;
 }
 
-BattalionEntity.prototype.getHealthAfterHeal = function(heal = 0) {
+/**
+ * 
+ * @param {int} heal 
+ * @returns {int}
+ */
+BattalionEntity.prototype.getHealDelta = function(heal = 0) {
     //Units that have more than 100% health should not receive the heal.
-    if(this.health >= this.maxHealth) {
-        return this.health;
-    }
-
     //Negative healing is not allowed!
-    if(heal < 0) {
-        return this.health;
-    }
-
-    const health = Math.floor(this.health + heal);
-
-    if(health <= 0) {
+    if(heal < 0 || this.health >= this.maxHealth) {
         return 0;
     }
 
-    return health;
+    const missingHealth = this.maxHealth - this.health;
+    let delta = Math.floor(heal);
+
+    if(delta > missingHealth) {
+        delta = missingHealth;
+    }
+
+    return delta;
 }
 
-BattalionEntity.prototype.getStartOfTurnHealth = function(gameContext) {
+/**
+ * 
+ * @param {*} gameContext 
+ * @returns {int}
+ */
+BattalionEntity.prototype.getStartOfTurnDelta = function(gameContext) {
     //Skips the first turn to prohibit unfair state.
     if(this.turns <= 0) {
-        return this.health;
+        return 0;
     }
 
     const damage = this.getTerrainDamage(gameContext);
-    let nextHealth = this.health - damage;
+    let delta = -Math.floor(damage);
 
     //Heal if below maxHealth but cap the healing to maxHealth.
-    if(this.hasTrait(TRAIT_TYPE.REPAIR) && nextHealth < this.maxHealth) {
-        nextHealth += TRAIT_CONFIG.REPAIR_VALUE;
+    if(this.hasTrait(TRAIT_TYPE.REPAIR) && this.health < this.maxHealth) {
+        const missingHealth = this.maxHealth - this.health;
 
-        if(nextHealth > this.maxHealth) {
-            nextHealth = this.maxHealth;
+        if(TRAIT_CONFIG.REPAIR_VALUE > missingHealth) {
+            delta += missingHealth;
+        } else {
+            delta += TRAIT_CONFIG.REPAIR_VALUE;
         }
     }
 
-    if(nextHealth < 0) {
-        nextHealth = 0;
+    if(this.health + delta < 0) {
+        delta = -this.health;
     }
 
-    return nextHealth;
+    return delta;
 }
 
-BattalionEntity.prototype.getHealthAfterAttack = function(damage = 0) {
-    const health = Math.floor(this.health - damage);
-
-    if(health <= 0) {
-        if(this.health > TRAIT_CONFIG.HEROIC_THRESHOLD && this.hasTrait(TRAIT_TYPE.HEROIC)) {
-            return TRAIT_CONFIG.HEROIC_THRESHOLD;
-        }
-
+/**
+ * 
+ * @param {int} damage 
+ * @returns {int}
+ */
+BattalionEntity.prototype.getAttackDelta = function(damage = 0) {
+    if(damage <= 0) {
         return 0;
     }
 
-    return health;
+    const realDamage = Math.floor(damage);
+    const health = this.health - realDamage;
+
+    if(health <= 0) {
+        if(this.health > TRAIT_CONFIG.HEROIC_THRESHOLD && this.hasTrait(TRAIT_TYPE.HEROIC)) {
+            return TRAIT_CONFIG.HEROIC_THRESHOLD - this.health;
+        }
+
+        return -this.health;
+    }
+
+    return -realDamage;
+}
+
+/**
+ * 
+ * @param {int} delta 
+ * @returns {int}
+ */
+BattalionEntity.prototype.getHealthFromDelta = function(delta = 0) {
+    return this.health + delta;
+}
+
+/**
+ * 
+ * @param {int} delta 
+ * @returns {int}
+ */
+BattalionEntity.prototype.getDamageFromDelta = function(delta) {
+    if(delta >= 0) {
+        return 0;
+    }
+
+    return -delta;
+}
+
+/**
+ * 
+ * @param {int} lostHP 
+ * @returns {int}
+ */
+BattalionEntity.prototype.getDamageAsResources = function(lostHP) {
+    if(lostHP < 0) {
+        return 0;
+    }
+
+    return Math.floor(lostHP / this.maxHealth * this.config.cost);
 }
 
 BattalionEntity.prototype.setHealth = function(health) {
@@ -355,6 +409,11 @@ BattalionEntity.prototype.isAllyWith = function(gameContext, entity) {
     return teamManager.isAlly(this.teamID, teamID);
 }
 
+/**
+ * 
+ * @param {*} gameContext 
+ * @returns {int}
+ */
 BattalionEntity.prototype.getTerrainDamage = function(gameContext) {
     //Commandos take NO damage from terrains.
     if(this.hasTrait(TRAIT_TYPE.COMMANDO)) {
@@ -1429,34 +1488,21 @@ BattalionEntity.prototype.triggerElusive = function() {
     }
 }
 
+/**
+ * 
+ * @returns {int}
+ */
 BattalionEntity.prototype.getOverheatDamage = function() {
-    return this.maxHealth * TRAIT_CONFIG.OVERHEAT_DAMAGE;
+    return Math.floor(this.maxHealth * TRAIT_CONFIG.OVERHEAT_DAMAGE);
 }
 
+/**
+ * 
+ * @param {int} damage 
+ * @returns {int}
+ */
 BattalionEntity.prototype.getAbsorberHeal = function(damage) {
-    return damage * TRAIT_CONFIG.ABSORBER_RATE;
-}
-
-BattalionEntity.prototype.getDamageAsResources = function(damage) {
-    return damage / this.maxHealth * this.config.cost;
-}
-
-BattalionEntity.prototype.mResolveAttackTraits = function(resolver) {
-    if(this.hasTrait(TRAIT_TYPE.SELF_DESTRUCT)) {
-        resolver.add(this.id, this.health, 0);
-
-    } else if(this.hasTrait(TRAIT_TYPE.OVERHEAT)) {
-        const overheatDamage = this.getOverheatDamage();
-        const overheatHealth = this.getHealthAfterAttack(overheatDamage);
-
-        resolver.add(this.id, overheatDamage, overheatHealth);
-
-    } else if(this.hasTrait(TRAIT_TYPE.ABSORBER)) {
-        const { totalDamage } = resolver;
-        const absorberHeal = this.getAbsorberHeal(totalDamage);
-
-        resolver.addHeal(this, Math.floor(absorberHeal));
-    }
+    return Math.floor(damage * TRAIT_CONFIG.ABSORBER_RATE);
 }
 
 BattalionEntity.prototype.isHurtByShrapnel = function() {
@@ -1472,6 +1518,25 @@ BattalionEntity.prototype.isHurtByStreamblast = function() {
 BattalionEntity.prototype.isHurtByDispersion = function() {
     //Dispersion does not hurt air units, but unlike SHRAPNEL and STREAMBLAST hurts IS_SUBMERGED units.
     return this.config.category !== ENTITY_CATEGORY.AIR;
+}
+
+BattalionEntity.prototype.mResolveAttackTraits = function(resolver) {
+    if(this.hasTrait(TRAIT_TYPE.SELF_DESTRUCT)) {
+        resolver.add(this.id, -this.health, 0);
+
+    } else if(this.hasTrait(TRAIT_TYPE.OVERHEAT)) {
+        const overheatDamage = this.getOverheatDamage();
+        const overheatDelta = this.getAttackDelta(overheatDamage);
+        const overheatHealth = this.getHealthFromDelta(overheatDelta);
+
+        resolver.add(this.id, overheatDelta, overheatHealth);
+
+    } else if(this.hasTrait(TRAIT_TYPE.ABSORBER)) {
+        const { totalDamage } = resolver;
+        const absorberHeal = this.getAbsorberHeal(totalDamage);
+
+        resolver.addHeal(this, Math.floor(absorberHeal));
+    }
 }
 
 BattalionEntity.prototype.mResolveShrapnel = function(gameContext, target, damageFlags, resolver) {

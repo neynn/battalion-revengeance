@@ -26,7 +26,7 @@ export const unpackStep = function(step, view, byteOffset) {
 export const packEntityResolution = function(resolution, view, byteOffset) {
     view.setInt16(byteOffset, resolution.entityID, true);
     byteOffset += BIT_16;
-    view.setUint16(byteOffset, resolution.delta, true);
+    view.setInt16(byteOffset, resolution.delta, true);
     byteOffset += BIT_16;
     view.setUint16(byteOffset, resolution.health, true);
     byteOffset += BIT_16;
@@ -37,7 +37,7 @@ export const packEntityResolution = function(resolution, view, byteOffset) {
 export const unpackEntityResolution = function(resolution, view, byteOffset) {
     resolution.entityID = view.getInt16(byteOffset, true);
     byteOffset += BIT_16;
-    resolution.delta = view.getUint16(byteOffset, true);
+    resolution.delta = view.getInt16(byteOffset, true);
     byteOffset += BIT_16;
     resolution.health = view.getUint16(byteOffset, true);
     byteOffset += BIT_16;
