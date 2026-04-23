@@ -159,18 +159,48 @@ BattalionEntity.prototype.isAtFullHealth = function() {
 
 /**
  * 
- * @param {int} heal 
+ * @param {int} damage 
+ * @param {int} accumulatedDelta
  * @returns {int}
  */
-BattalionEntity.prototype.getHealDelta = function(heal = 0) {
-    //Units that have more than 100% health should not receive the heal.
-    //Negative healing is not allowed!
-    if(heal < 0 || this.health >= this.maxHealth) {
+BattalionEntity.prototype.getAttackDelta = function(damage = 0, accumulatedDelta = 0) {
+    const realDamage = Math.floor(damage);
+
+    if(realDamage <= 0) {
         return 0;
     }
 
-    const missingHealth = this.maxHealth - this.health;
+    const effectiveHealth = this.health + accumulatedDelta;
+    const health = effectiveHealth - realDamage;
+
+    if(health <= 0) {
+        if(effectiveHealth > TRAIT_CONFIG.HEROIC_THRESHOLD && this.hasTrait(TRAIT_TYPE.HEROIC)) {
+            return TRAIT_CONFIG.HEROIC_THRESHOLD - effectiveHealth;
+        }
+
+        return -effectiveHealth;
+    }
+
+    return -realDamage;
+}
+
+/**
+ * 
+ * @param {int} heal 
+ * @param {int} accumulatedDelta
+ * @returns {int}
+ */
+BattalionEntity.prototype.getHealDelta = function(heal = 0, accumulatedDelta = 0) {
+    const effectiveHealth = this.health + accumulatedDelta;
     let delta = Math.floor(heal);
+
+    //Units that have more than 100% health should not receive the heal.
+    //Negative healing is not allowed!
+    if(delta <= 0 || effectiveHealth >= this.maxHealth) {
+        return 0;
+    }
+
+    const missingHealth = this.maxHealth - effectiveHealth;
 
     if(delta > missingHealth) {
         delta = missingHealth;
@@ -213,48 +243,11 @@ BattalionEntity.prototype.getStartOfTurnDelta = function(gameContext) {
 
 /**
  * 
- * @param {int} damage 
- * @returns {int}
- */
-BattalionEntity.prototype.getAttackDelta = function(damage = 0) {
-    if(damage <= 0) {
-        return 0;
-    }
-
-    const realDamage = Math.floor(damage);
-    const health = this.health - realDamage;
-
-    if(health <= 0) {
-        if(this.health > TRAIT_CONFIG.HEROIC_THRESHOLD && this.hasTrait(TRAIT_TYPE.HEROIC)) {
-            return TRAIT_CONFIG.HEROIC_THRESHOLD - this.health;
-        }
-
-        return -this.health;
-    }
-
-    return -realDamage;
-}
-
-/**
- * 
  * @param {int} delta 
  * @returns {int}
  */
 BattalionEntity.prototype.getHealthFromDelta = function(delta = 0) {
     return this.health + delta;
-}
-
-/**
- * 
- * @param {int} delta 
- * @returns {int}
- */
-BattalionEntity.prototype.getDamageFromDelta = function(delta) {
-    if(delta >= 0) {
-        return 0;
-    }
-
-    return -delta;
 }
 
 /**
@@ -1521,21 +1514,21 @@ BattalionEntity.prototype.isHurtByDispersion = function() {
 }
 
 BattalionEntity.prototype.mResolveAttackTraits = function(resolver) {
-    if(this.hasTrait(TRAIT_TYPE.SELF_DESTRUCT)) {
-        resolver.add(this.id, -this.health, 0);
-
-    } else if(this.hasTrait(TRAIT_TYPE.OVERHEAT)) {
+    if(this.hasTrait(TRAIT_TYPE.OVERHEAT)) {
         const overheatDamage = this.getOverheatDamage();
-        const overheatDelta = this.getAttackDelta(overheatDamage);
-        const overheatHealth = this.getHealthFromDelta(overheatDelta);
 
-        resolver.add(this.id, overheatDelta, overheatHealth);
+        resolver.addSelfDamage(this, overheatDamage);
+    }
 
-    } else if(this.hasTrait(TRAIT_TYPE.ABSORBER)) {
+    if(this.hasTrait(TRAIT_TYPE.ABSORBER)) {
         const { totalDamage } = resolver;
         const absorberHeal = this.getAbsorberHeal(totalDamage);
 
-        resolver.addHeal(this, Math.floor(absorberHeal));
+        resolver.addHeal(this, absorberHeal);
+    }
+
+    if(this.hasTrait(TRAIT_TYPE.SELF_DESTRUCT)) {
+        resolver.addSelfDestruct(this);
     }
 }
 
@@ -1581,13 +1574,15 @@ BattalionEntity.prototype.mResolveDispersionAttack = function(gameContext, targe
     const range = this.hasTrait(TRAIT_TYPE.JUDGEMENT) ? TRAIT_CONFIG.JUDGEMENT_RANGE : TRAIT_CONFIG.DISPERSION_RANGE;
     const targets = world.getEntitiesInRange(tileX, tileY, range, range);
 
-    //TODO(neyn): AOE SHOULD also hurt the attacker.
-    //Rewrite resolver to handle such cases!
     for(const target of targets) {
-        if(target.isHurtByDispersion() && this.id !== target.id) {
+        if(target.isHurtByDispersion()) {
             const damage = this.getAttackDamage(gameContext, target, ATTACK_FLAG.AREA);
 
-            resolver.addAttack(target, damage);
+            if(target.id === this.id) {
+                resolver.addSelfDamage(target, damage);
+            } else {
+                resolver.addAttack(target, damage);
+            }
         }
     }
 

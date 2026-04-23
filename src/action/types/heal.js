@@ -6,7 +6,7 @@ import { SOUND_TYPE, TRAIT_TYPE } from "../../enums.js";
 import { playEntitySound } from "../../systems/sound.js";
 import { getAnimationDuration, playHealEffect, updateEntitySprite } from "../../systems/sprite.js";
 import { createDeathIntent } from "../actionHelper.js";
-import { InteractionResolver } from "../interactionResolver.js";
+import { getDeadEntities, InteractionResolver } from "../interactionResolver.js";
 
 const resolveHeal = function(gameContext, entity, target, resolver) {
     if(entity.isHealValid(gameContext, target) && entity.isHealPositionValid(gameContext, target)) {
@@ -116,10 +116,11 @@ HealAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
         } 
     }
 
-    const hitEntities = resolver.getHitEntities();
-    const deadEntities = resolver.getDeadEntities();
+    const resolutions = resolver.createResolutions(gameContext);
 
-     if(hitEntities.length !== 0) {
+     if(resolutions.length !== 0) {
+        const deadEntities = getDeadEntities(resolutions);
+
         if(deadEntities.length !== 0) {
             executionPlan.addNext(createDeathIntent(deadEntities));
         }
@@ -128,7 +129,7 @@ HealAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
 
         data.entityID = entityID;
         data.targetID = targetID;
-        data.resolutions = hitEntities;
+        data.resolutions = resolutions;
 
         executionPlan.setData(data);
     }

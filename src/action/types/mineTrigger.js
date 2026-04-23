@@ -77,7 +77,7 @@ MineTriggerAction.prototype.fillExecutionPlan = function(gameContext, executionP
         return;
     }
 
-    const delta = entity.getAttackDelta(damage);
+    const delta = entity.getAttackDelta(damage, 0);
     const health = entity.getHealthFromDelta(delta);
 
     if(health <= 0) {

@@ -6,7 +6,7 @@ import { ATTACK_TYPE, COMMAND_TYPE, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "..
 import { playEntitySound } from "../../systems/sound.js";
 import { getAnimationDuration, playAttackEffect, updateEntitySprite } from "../../systems/sprite.js";
 import { createAttackRequest, createDeathIntent } from "../actionHelper.js";
-import { InteractionResolver } from "../interactionResolver.js";
+import { getDeadEntities, InteractionResolver } from "../interactionResolver.js";
 
 const resolveCounterAttack = function(gameContext, entity, target, resolver) {
     if(entity.isCounterValid(target) && entity.isAttackValid(gameContext, target) && entity.isAttackPositionValid(gameContext, target)) {
@@ -133,6 +133,7 @@ AttackAction.prototype.execute = function(gameContext, data) {
                 targetObject.applyTerrifying();
             }
 
+            //TODO(neyn): Should the unit itself count as killed?
             if(health <= 0) {
                 killedUnits++;
             }
@@ -191,10 +192,11 @@ AttackAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, 
         }
     }
 
-    const hitEntities = resolver.getHitEntities();
-    const deadEntities = resolver.getDeadEntities();
+    const resolutions = resolver.createResolutions(gameContext);
 
-    if(hitEntities.length !== 0) {
+    if(resolutions.length !== 0) {
+        const deadEntities = getDeadEntities(resolutions);
+
         if(deadEntities.length !== 0) {
             executionPlan.addNext(createDeathIntent(deadEntities));
         }               
@@ -217,7 +219,7 @@ AttackAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, 
 
         data.attackerID = entityID;
         data.targetID = targetID;
-        data.resolutions = hitEntities;
+        data.resolutions = resolutions;
         data.resourceDamage = Math.floor(resolver.resourceDamage);
         data.flags = flags;
 
