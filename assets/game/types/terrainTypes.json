@@ -43,7 +43,9 @@
         "desc": "TERRAIN_DESC_IMPASSABLE",
         "icon": "IMPASSABLE",
         "protection": {},
-        "cost": {}
+        "cost": {
+            "*": -1
+        }
     },
     "TRICKY_WATERS": {
         "name": "TERRAIN_NAME_TRICKY_WATERS",

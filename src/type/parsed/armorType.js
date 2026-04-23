@@ -1,4 +1,4 @@
-import { ICON_TYPE, WEAPON_TYPE } from "../../enums.js";
+import { ARMOR_TYPE, ICON_TYPE, WEAPON_TYPE } from "../../enums.js";
 
 export const ArmorType = function(id) {
     this.id = id;
@@ -41,12 +41,19 @@ ArmorType.prototype.load = function(config, DEBUG_NAME) {
             console.warn(`${DEBUG_NAME}: Weapon ${weaponID} does not exist!`);
         }
     }
+
+    //Caps damage reduction at 100%
+    for(let i = 0; i < WEAPON_TYPE._COUNT; i++) {
+        if(this.resistance[i] > 1) {
+            this.resistance[i] = 1;
+        }
+    }
 }
 
-ArmorType.prototype.getResistance = function(weaponType) {
+ArmorType.prototype.getDamageFactor = function(weaponType) {
     if(weaponType < 0 || weaponType >= WEAPON_TYPE._COUNT) {
-        return 0;
+        return 1;
     }
 
-   return this.resistance[weaponType];
+    return 1 - this.resistance[weaponType];
 }

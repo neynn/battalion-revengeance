@@ -1,4 +1,13 @@
 {
+    "TERRAIN_NAME_SHIELDED": "Shielded",
+    "TERRAIN_DESC_SHIELDED": "Units are protected from ranged attacks.",
+
+    "TERRAIN_NAME_IMPASSABLE": "Impassable",
+    "TERRAIN_DESC_IMPASSABLE": "No unit may enter.",
+
+    "TERRAIN_NAME_EXTRACTABLE": "Extractable",
+    "TERRAIN_DESC_EXTRACTABLE": "Resources can be extracted from this tile.",
+
     "TILE_NAME_GRASS": "Plains",
     "TILE_DESC_GRASS": "Plains slow movement slighty but provide minimal cover against enemy attacks.",
 

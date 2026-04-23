@@ -903,15 +903,7 @@ BattalionEntity.prototype.getMoraleFactor = function(gameContext) {
 BattalionEntity.prototype.getArmorFactor = function(gameContext, targetArmor) {
     const { typeRegistry } = gameContext;
     const armorType = typeRegistry.getArmorType(targetArmor);
-    const resistance = armorType.getResistance(this.config.weaponType);
-    let armorFactor = 1;
-
-    //Maxes out at 100%
-    if(resistance > 1) {
-        armorFactor = 0;
-    } else {
-        armorFactor = (1 - resistance);
-    }
+    let armorFactor = armorType.getDamageFactor(this.config.weaponType);
 
     //Ignore only damage reduction with ARMOR_PIERCE, keep the damage increase.
     if(armorFactor < 1 && this.hasTrait(TRAIT_TYPE.ARMOR_PIERCE)) {
@@ -1017,17 +1009,6 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
         traitFactor *= traitType.getArmorDamage(targetArmor);
     }
 
-    //Trait factor is supposed to be bonus damage. It CANNOT invert the damage.
-    if(traitFactor < 0) {
-        traitFactor = 0;
-    }
-
-    //Bonus damage if at full health.
-    //TODO(neyn): Maybe move this to non-counters? CEMENTED_STEEL_ARMOR + ANNIHILATE would be broken.
-    if(healthFactor >= 1 && this.hasTrait(TRAIT_TYPE.ANNIHILATE)) {
-        otherFactor *= TRAIT_CONFIG.ANNIHILATE_DAMAGE;
-    }
-
     //Bonus damage if target at full health.
     if(target.isAtFullHealth() && this.hasTrait(TRAIT_TYPE.BULLDOZE)) {
         otherFactor *= TRAIT_CONFIG.BULLDOZE_DAMAGE;
@@ -1054,6 +1035,11 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
             healthFactor = 1;
         }
     } else {
+        //Bonus damage if attacking at full health.
+        if(healthFactor >= 1 && this.hasTrait(TRAIT_TYPE.ANNIHILATE)) {
+            otherFactor *= TRAIT_CONFIG.ANNIHILATE_DAMAGE;
+        }
+
         //Blitz factor.
         if(this.hasTrait(TRAIT_TYPE.BLITZ)) {
             otherFactor *= TRAIT_CONFIG.BLITZ_MULTIPLIER;
@@ -1529,6 +1515,7 @@ BattalionEntity.prototype.mResolveCounterAttack = function(gameContext, target, 
 
     resolver.addAttack(target, damage);
 
+    //TODO(neyn): Shrapnel did NOT work when countering in the original game.
     if(this.hasTrait(TRAIT_TYPE.SHRAPNEL)) {
         this.mResolveShrapnel(gameContext, target, ATTACK_FLAG.COUNTER, resolver);
     }

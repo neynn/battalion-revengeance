@@ -106,10 +106,7 @@
         "name": "TILE_NAME_VOLCANO",
         "desc": "TILE_DESC_VOLCANO",
         "climate": "HELLISH",
-        "terrain": [],
-        "passability": {
-            "*": -1
-        }
+        "terrain": ["IMPASSABLE"]
     },
     "RICH_ORE": {
         "name": "TILE_NAME_RICH_ORE",

@@ -134,7 +134,7 @@
         "desc": "TRAIT_DESC_ANTI_INFANTRY",
         "icon": "ANTI_INFANTRY",
         "moveDamage": {
-            "FOOT": 0.5
+            "FOOT": 1.5
         }
     },
     "ANTI_TANK": {
@@ -142,7 +142,7 @@
         "desc": "TRAIT_DESC_ANTI_TANK",
         "icon": "ANTI_TANK",
         "moveDamage": {
-            "TRACKED": 0.5
+            "TRACKED": 1.5
         }
     },
     "ANTI_AIR": {
@@ -150,7 +150,7 @@
         "desc": "TRAIT_DESC_ANTI_AIR",
         "icon": "ANTI_AIR",
         "moveDamage": {
-            "FLIGHT": 0.5
+            "FLIGHT": 1.5
         }
     },
     "ANTI_SHIP": {
@@ -158,8 +158,8 @@
         "desc": "TRAIT_DESC_ANTI_SHIP",
         "icon": "ANTI_SHIP",
         "moveDamage": {
-            "RUDDER": 0.5,
-            "HEAVY_RUDDER": 0.5
+            "RUDDER": 1.5,
+            "HEAVY_RUDDER": 1.5
         }
     },
     "ANTI_STRUCTURE": {
@@ -167,7 +167,7 @@
         "desc": "TRAIT_DESC_ANTI_STRUCTURE",
         "icon": "ANTI_STRUCTURE",
         "moveDamage": {
-            "STATIONARY": 0.5
+            "STATIONARY": 1.5
         }
     },
     "STEALTH": {

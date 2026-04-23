@@ -10,11 +10,11 @@ export const TraitType = function(id) {
     this.armorDamage = [];
 
     for(let i = 0; i < MOVEMENT_TYPE._COUNT; i++) {
-        this.moveDamage[i] = 0;
+        this.moveDamage[i] = 1;
     }
 
     for(let i = 0; i < ARMOR_TYPE._COUNT; i++) {
-        this.armorDamage[i] = 0;
+        this.armorDamage[i] = 1;
     }
 }
 
@@ -64,6 +64,18 @@ TraitType.prototype.load = function(config, DEBUG_NAME) {
             this.armorDamage[index] = armorDamage[typeID];
         }
     }
+
+    for(let i = 0; i < ARMOR_TYPE._COUNT; i++) {
+        if(this.armorDamage[i] < 0) {
+            this.armorDamage[i] = 0;
+        }
+    }
+
+    for(let i = 0; i < MOVEMENT_TYPE._COUNT; i++) {
+        if(this.moveDamage[i] < 0) {
+            this.moveDamage[i] = 0;
+        }
+    }
 }
 
 TraitType.prototype.getMoveDamage = function(movementType) {
@@ -71,7 +83,7 @@ TraitType.prototype.getMoveDamage = function(movementType) {
         return 1;
     }
 
-    return (1 + this.moveDamage[movementType]);
+    return this.moveDamage[movementType];
 }
 
 TraitType.prototype.getArmorDamage = function(armorType) {
@@ -79,5 +91,5 @@ TraitType.prototype.getArmorDamage = function(armorType) {
         return 1;
     }
 
-    return (1 + this.armorDamage[armorType]);
+    return this.armorDamage[armorType];
 }
