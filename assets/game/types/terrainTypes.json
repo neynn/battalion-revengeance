@@ -99,6 +99,17 @@
         },
         "cost": {}
     },
+    "GARRISON": {
+        "name": "TERRAIN_NAME_GARRISON",
+        "desc": "TERRAIN_DESC_GARRISON",
+        "icon": "GARRISON",
+        "protection": {
+            "*": 0.5,
+            "FLIGHT": 0,
+            "STATIONARY": 0
+        },
+        "cost": {}
+    },
     "SHALLOW": {
         "name": "TERRAIN_NAME_SHALLOW",
         "desc": "TERRAIN_DESC_SHALLOW",

@@ -27,7 +27,10 @@
     "TERRAIN_DESC_NAVAL_CAMOUFLAGE": "Damage to sea units is reduced by 20%.",
 
     "TERRAIN_NAME_BUNKER": "Bunker",
-    "TERRAIN_DESC_BUNKER": "Damage to ground units reduced by 40%",
+    "TERRAIN_DESC_BUNKER": "Damage to ground units is reduced by 40%.",
+
+    "TERRAIN_NAME_GARRISON": "Garrison",
+    "TERRAIN_DESC_GARRISON": "Damage to non-air units is reduced by 50%.",
 
     "TERRAIN_NAME_SHALLOW": "Shallow",
     "TERRAIN_DESC_SHALLOW": "Large hulled ships cannot enter shallow waters.",

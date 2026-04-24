@@ -165,7 +165,7 @@ export const ICON_TYPE = {
     IMPASSABLE: 62,
     NAVAL_CONCEALMENT: 63,
     PRECIPITOUS: 64,
-    PROTECTION: 65, //City protection?
+    GARRISON: 65,
     RAIL_TRANSPORT: 66, //Informs about rail transport.
     RUGGED: 67,
     SHALLOW: 68,
@@ -407,7 +407,8 @@ export const TERRAIN_TYPE = {
     SHALLOW: 11,
     VANTAGE: 12,
     DANGEROUS: 13,
-    _COUNT: 14
+    GARRISON: 14,
+    _COUNT: 15
 };
 
 export const CLIMATE_TYPE = {

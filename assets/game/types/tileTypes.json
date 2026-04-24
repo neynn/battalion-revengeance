@@ -249,7 +249,7 @@
         "name": "TILE_NAME_ROCKS",
         "desc": "TILE_DESC_ROCKS",
         "climate": "NONE",
-        "terrain": ["__GARRISON", "DANGEROUS"],
+        "terrain": ["GARRISON", "DANGEROUS"],
         "passability": {
             "FLIGHT": 1,
             "RUDDER": 1,
@@ -260,7 +260,7 @@
         "name": "TILE_NAME_WASTELAND",
         "desc": "TILE_DESC_WASTELAND",
         "climate": "NONE",
-        "terrain": ["__GARRISON", "DANGEROUS"],
+        "terrain": ["GARRISON", "DANGEROUS"],
         "passability": {
             "FOOT": 1,
             "WHEELED": 1,
