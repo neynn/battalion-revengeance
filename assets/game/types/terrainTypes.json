@@ -33,7 +33,7 @@
     "EXTRACTABLE": {
         "name": "TERRAIN_NAME_EXTRACTABLE",
         "desc": "TERRAIN_DESC_EXTRACTABLE",
-        "icon": "NONE",
+        "icon": "TERRAIN_EXTRACTABLE",
         "note": "This terrain is purely cosmetic. Ore extraction is defined by TileID.",
         "protection": {},
         "cost": {}
@@ -57,7 +57,7 @@
     "COVER": {
         "name": "TERRAIN_NAME_COVER",
         "desc": "TERRAIN_DESC_COVER",
-        "icon": "CONCEALMENT",
+        "icon": "TERRAIN_COVER",
         "protection": {
             "FOOT": 0.1,
             "WHEELED": 0.1,
@@ -122,7 +122,7 @@
     "VANTAGE": {
         "name": "TERRAIN_NAME_VANTAGE",
         "desc": "TERRAIN_DESC_VANTAGE",
-        "icon": "VANTAGE",
+        "icon": "TERRAIN_VANTAGE",
         "rangeBoost": 1,
         "protection": {},
         "cost": {}
@@ -130,7 +130,7 @@
     "DANGEROUS": {
         "name": "TERRAIN_NAME_DANGEROUS",
         "desc": "TERRAIN_DESC_DANGEROUS",
-        "icon": "DANGEROUS",
+        "icon": "TERRAIN_HAZARD",
         "damage": {
             "*": 20,
             "FLIGHT": 0
@@ -141,7 +141,7 @@
     "SHIELDED": {
         "name": "TERRAIN_NAME_SHIELDED",
         "desc": "TERRAIN_DESC_SHIELDED",
-        "icon": "REINFORCED_ARMOR",
+        "icon": "TERRAIN_SHIELDED",
         "rangeGuard": true,
         "protection": {},
         "cost": {}

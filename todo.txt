@@ -11,4 +11,13 @@ MapEditor:
 
 Missing Terrain:
     Reduced Mobility: Ship movement is reduced.
-    Garrison: Damage to non-air units is reduced by 50%
+    Not Selectable: Trait that disallows selection of units.
+
+Building traits:
+    Proficiency traits: Each one gives its respective type -5% cost!
+
+Unit traits:
+    Landbound, Airbound?
+
+BUG:
+  With a selected entity -> clicking outside the game keeps it selected. Remove the state!

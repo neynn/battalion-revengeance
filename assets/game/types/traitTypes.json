@@ -2,7 +2,7 @@
     "REPAIR": {
         "name": "TRAIT_NAME_REPAIR",
         "desc": "TRAIT_DESC_REPAIR",
-        "icon": "SUPPLY_DISTRIBUTION"
+        "icon": "TRAIT_REPAIR"
     },
     "ENGINEER": {
         "name": "TRAIT_NAME_ENGINEER",
@@ -22,7 +22,7 @@
     "IRREPARABLE": {
         "name": "TRAIT_NAME_IRREPARABLE",
         "desc": "TRAIT_DESC_IRREPARABLE",
-        "icon": "DANGEROUS"
+        "icon": "TRAIT_IRREPARABLE"
     },
     "EXECUTIONER": {
         "name": "TRAIT_NAME_EXECUTIONER",
@@ -32,17 +32,17 @@
     "SPAWNER": {
         "name": "TRAIT_NAME_SPAWNER",
         "desc": "TRAIT_DESC_SPAWNER",
-        "icon": "TANK_POOPER"
+        "icon": "BUILDING_SPAWNER"
     },
     "EXTRACTOR": {
         "name": "TRAIT_NAME_EXTRACTOR",
         "desc": "TRAIT_DESC_EXTRACTOR",
-        "icon": null
+        "icon": "EXTRACTOR"
     },
     "CAPTURABLE": {
         "name": "TRAIT_NAME_CAPTURABLE",
         "desc": "TRAIT_DESC_CAPTURABLE",
-        "icon": null
+        "icon": "BUILDING_CAPTURABLE"
     },
     "HIGH_ALTITUDE": {
         "name": "TRAIT_NAME_HIGH_ALTITUDE",
@@ -57,12 +57,12 @@
     "BULLDOZE": {
         "name": "TRAIT_NAME_BULLDOZE",
         "desc": "TRAIT_DESC_BULLDOZE",
-        "icon": null
+        "icon": "TRAIT_ANNIHILATE_BULLDOZE"
     },
     "ANNIHILATE": {
         "name": "TRAIT_NAME_ANNIHILATE",
         "desc": "TRAIT_DESC_ANNIHILATE",
-        "icon": null
+        "icon": "TRAIT_ANNIHILATE_BULLDOZE"
     },
     "BLITZ": {
         "name": "TRAIT_NAME_BLITZ",
@@ -92,12 +92,12 @@
     "TRACKING": {
         "name": "TRAIT_NAME_TRACKING",
         "desc": "TRAIT_DESC_TRACKING",
-        "icon": null
+        "icon": "TRAIT_TRACKING"
     },
     "BLIND_SPOT": {
         "name": "TRAIT_NAME_BLIND_SPOT",
         "desc": "TRAIT_DESC_BLIND_SPOT",
-        "icon": null
+        "icon": "TRAIT_BLIND_SPOT"
     },
     "SLUGGER": {
         "name": "TRAIT_NAME_SLUGGER",
@@ -107,7 +107,7 @@
     "JAMMER": {
         "name": "TRAIT_NAME_JAMMER",
         "desc": "TRAIT_DESC_JAMMER",
-        "icon": "RADAR"
+        "icon": "TRAIT_JAMMER"
     },
     "ELUSIVE": {
         "name": "TRAIT_NAME_ELUSIVE",
@@ -223,7 +223,7 @@
     "JUDGEMENT": {
         "name": "TRAIT_NAME_JUDGEMENT",
         "desc": "TRAIT_DESC_JUDGEMENT",
-        "icon": "JUDGEMENT"
+        "icon": "TRAIT_JUDGEMENT"
     },
     "STEER": {
         "name": "TRAIT_NAME_STEER",
@@ -273,24 +273,24 @@
     "RADAR": {
         "name": "TRAIT_NAME_RADAR",
         "desc": "TRAIT_DESC_RADAR",
-        "icon": "RADAR"
+        "icon": "TRAIT_RADAR"
     },
     "FINANCIAL_CENTER": {
         "name": "TRAIT_NAME_FINANCIAL_CENTER",
         "desc": "TRAIT_DESC_FINANCIAL_CENTER",
-        "icon": "FINANCIAL_CENTER",
+        "icon": "BUILDING_FINANCIAL_CENTER",
         "cashPerTurn": 100
     },
     "FISCAL_CENTER": {
         "name": "TRAIT_NAME_FISCAL_CENTER",
         "desc": "TRAIT_DESC_FISCAL_CENTER",
-        "icon": "FISCAL_CENTER",
+        "icon": "BUILDING_FISCAL_CENTER",
         "cashPerTurn": 200
     },
     "FIDUCIARY_CENTER": {
         "name": "TRAIT_NAME_FIDUCIARY_CENTER",
         "desc": "TRAIT_DESC_FIDUCIARY_CENTER",
-        "icon": "FIDUCIARY_CENTER",
+        "icon": "BUILDING_FIDUCIARY_CENTER",
         "cashPerTurn": 300
     },
     "CONQUEROR": {
@@ -301,7 +301,7 @@
     "CRAB": {
         "name": "TRAIT_NAME_CRAB",
         "desc": "TRAIT_DESC_CRAB",
-        "icon": "CRAB",
+        "icon": "MARINES",
         "note": "This trait is purely cosmetic."
     },
     "NAVAL_TRANSPORT": {
