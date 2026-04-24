@@ -58,5 +58,8 @@
     },
     "Forest": {
         "tileType": "FOREST"
+    },
+    "Mountain": {
+        "tileType": "MOUNTAIN"
     }
 }

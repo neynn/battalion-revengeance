@@ -130,5 +130,12 @@
         "visuals": [
             "forest_1", "forest_2", "forest_3", "forest_4"
         ]
+    },
+    {
+        "logic": "Mountain",
+        "texture": "plains",
+        "visuals": [
+            "mountain_1", "mountain_2", "mountain_3", "mountain_4", "megamountain"
+        ]
     }
 ]

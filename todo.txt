@@ -20,3 +20,7 @@ Unit traits:
 
 BUG:
   With a selected entity -> clicking outside the game keeps it selected. Remove the state!
+
+Rendering:
+    Tile by tile -> no more layers.
+    This adds depth to entities and their map!
