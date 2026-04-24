@@ -137,5 +137,26 @@
         "visuals": [
             "mountain_1", "mountain_2", "mountain_3", "mountain_4", "megamountain"
         ]
+    },
+    {
+        "logic": "Boreal",
+        "texture": "boreal",
+        "visuals": [
+            "boreal_1", "boreal_2", "boreal_3", "boreal_4", "boreal_5", "boreal_6", "boreal_7", "boreal_8"
+        ]
+    },
+    {
+        "logic": "Forest",
+        "texture": "boreal",
+        "visuals": [
+            "forest_1", "forest_2", "forest_3", "forest_4"
+        ]
+    },
+    {
+        "logic": "Mountain",
+        "texture": "boreal",
+        "visuals": [
+            "mountain_1", "mountain_2", "mountain_3", "mountain_4", "megamountain"
+        ]
     }
 ]

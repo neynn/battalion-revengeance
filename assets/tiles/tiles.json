@@ -277,5 +277,31 @@
             "mountain_4": { "u": 7, "v": 3, "h": 60 },
             "megamountain": { "u": 6, "v": 2, "h": 77 }
         }
+    },
+    "boreal": {
+        "directory": ["assets", "tiles", "battalion"],
+        "source": "boreal.png",
+        "frameTime": 0.03,
+        "gridWidth": 56,
+        "gridHeight": 56,
+        "grid": {
+            "boreal_1": { "u": 0, "v": 0 },
+            "boreal_2": { "u": 1, "v": 0 },
+            "boreal_3": { "u": 2, "v": 0 },
+            "boreal_4": { "u": 3, "v": 0 },
+            "boreal_5": { "u": 4, "v": 0 },
+            "boreal_6": { "u": 5, "v": 0 },
+            "boreal_7": { "u": 6, "v": 0 },
+            "boreal_8": { "u": 7, "v": 0 },
+            "forest_1": { "u": 0, "v": 3, "h": 56 },
+            "forest_2": { "u": 1, "v": 3, "h": 60 },
+            "forest_3": { "u": 2, "v": 3, "h": 59 },
+            "forest_4": { "u": 3, "v": 3, "h": 68 },
+            "mountain_1": { "u": 4, "v": 3, "h": 65 },
+            "mountain_2": { "u": 5, "v": 3, "h": 66 },
+            "mountain_3": { "u": 6, "v": 3, "h": 56 },
+            "mountain_4": { "u": 7, "v": 3, "h": 60 },
+            "megamountain": { "u": 6, "v": 2, "h": 77 }
+        }
     }
 }
