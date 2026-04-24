@@ -8,3 +8,7 @@ train as transport.
 MapEditor:
     1. Add Text -> Runtime HashSet that gets turned into an array when creating the map.
     2. Add Custom -> Runtime HashSet that gets turned into an array when creating the map.
+
+Missing Terrain:
+    Reduced Mobility: Ship movement is reduced.
+    Garrison: Damage to non-air units is reduced by 50%

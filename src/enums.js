@@ -289,7 +289,8 @@ export const TILE_TYPE = {
     CANYON: 16,
     PATH: 17,
     RAIL: 18,
-    _COUNT: 19
+    WASTELAND: 19,
+    _COUNT: 20
 };
 
 export const TRAIT_TYPE = {
@@ -399,13 +400,14 @@ export const TERRAIN_TYPE = {
     PRECIPITOUS: 4,
     IMPASSABLE: 5,
     TRICKY_WATERS: 6,
-    CONCEALMENT: 7,
-    NAVAL_CONCEALMENT: 8,
-    BUNKER: 9,
-    SHALLOW: 10,
-    VANTAGE: 11,
-    DANGEROUS: 12,
-    _COUNT: 13
+    COVER: 7,
+    CAMOUFLAGE: 8,
+    NAVAL_CAMOUFLAGE: 9,
+    BUNKER: 10,
+    SHALLOW: 11,
+    VANTAGE: 12,
+    DANGEROUS: 13,
+    _COUNT: 14
 };
 
 export const CLIMATE_TYPE = {

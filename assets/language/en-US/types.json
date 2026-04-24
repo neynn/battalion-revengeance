@@ -1,12 +1,45 @@
 {
-    "TERRAIN_NAME_SHIELDED": "Shielded",
-    "TERRAIN_DESC_SHIELDED": "Units are protected from ranged attacks.",
+    "TERRAIN_NAME_UNEVEN": "Uneven",
+    "TERRAIN_DESC_UNEVEN": "Slows wheeled vehicles.",
 
-    "TERRAIN_NAME_IMPASSABLE": "Impassable",
-    "TERRAIN_DESC_IMPASSABLE": "No unit may enter.",
+    "TERRAIN_NAME_RUGGED": "Rugged",
+    "TERRAIN_DESC_RUGGED": "Slows wheeled vehicles and somewhat slows tracked vehicles.",
+
+    "TERRAIN_NAME_PRECIPITOUS": "Precipitous",
+    "TERRAIN_DESC_PRECIPITOUS": "Allows only commandos. Severe movement cost.",
 
     "TERRAIN_NAME_EXTRACTABLE": "Extractable",
     "TERRAIN_DESC_EXTRACTABLE": "Resources can be extracted from this tile.",
+
+    "TERRAIN_NAME_IMPASSABLE": "Impassable",
+    "TERRAIN_DESC_IMPASSABLE": "No unit may enter.",
+    
+    "TERRAIN_NAME_TRICKY_WATERS": "Tricky Waters",
+    "TERRAIN_DESC_TRICKY_WATERS": "Severly slows massive ships and slows all other units.",
+
+    "TERRAIN_NAME_COVER": "Cover",
+    "TERRAIN_DESC_COVER": "Damage to non-air units is reduced by 10%.",
+
+    "TERRAIN_NAME_CAMOUFLAGE": "Camouflage",
+    "TERRAIN_DESC_CAMOUFLAGE": "Damage to ground units is reduced by 20%.",
+
+    "TERRAIN_NAME_NAVAL_CAMOUFLAGE": "Naval Camouflage",
+    "TERRAIN_DESC_NAVAL_CAMOUFLAGE": "Damage to sea units is reduced by 20%.",
+
+    "TERRAIN_NAME_BUNKER": "Bunker",
+    "TERRAIN_DESC_BUNKER": "Damage to ground units reduced by 40%",
+
+    "TERRAIN_NAME_SHALLOW": "Shallow",
+    "TERRAIN_DESC_SHALLOW": "Large hulled ships cannot enter shallow waters.",
+
+    "TERRAIN_NAME_VANTAGE": "Vantage",
+    "TERRAIN_DESC_VANTAGE": "Increases maximum attack range by 1.",
+
+    "TERRAIN_NAME_DANGEROUS": "Hazard",
+    "TERRAIN_DESC_DANGEROUS": "Does 20 damage to any non-air unit at the start of each turn.",
+
+    "TERRAIN_NAME_SHIELDED": "Shielded",
+    "TERRAIN_DESC_SHIELDED": "Units are protected from ranged attacks.",
 
     "TILE_NAME_GRASS": "Plains",
     "TILE_DESC_GRASS": "Plains slow movement slighty but provide minimal cover against enemy attacks.",
@@ -67,6 +100,9 @@
 
     "TILE_NAME_ROCKS": "Rock Formation",
     "TILE_DESC_ROCKS": "Rocks provide heavy defensive cover but will damage units that rest on them.",
+
+    "TILE_NAME_WASTELAND": "Wasteland",
+    "TILE_DESC_WASTELAND": "Wastelands are dangerous but they provide massive defensive bonuses.",
 
     "ENTITY_NAME_ANTI_TANK": "Anti-Tank Artillery",
     "ENTITY_DESC_ANTI_TANK": "Armor-piercing artillery designed to wreck tanks.",

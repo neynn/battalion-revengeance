@@ -123,7 +123,5 @@ InteractionResolver.prototype.createResolutions = function(gameContext) {
         resolutions.push(fillEntityResolution(entityID, delta, health));
     }
 
-    console.log(this.resolutions, resolutions);
-
     return resolutions;
 }

@@ -12,7 +12,7 @@
         "name": "TILE_NAME_GRASS",
         "desc": "TILE_DESC_GRASS",
         "climate": "TEMPERATE",
-        "terrain": ["UNEVEN", "__COVER"],
+        "terrain": ["UNEVEN", "COVER"],
         "allowedMines": ["LAND"],
         "passability": {
             "FOOT": 1,
@@ -54,7 +54,7 @@
         "name": "TILE_NAME_FOREST",
         "desc": "TILE_DESC_FOREST",
         "climate": "TEMPERATE",
-        "terrain": ["RUGGED", "__CAMOUFLAGE"],
+        "terrain": ["RUGGED", "CAMOUFLAGE"],
         "allowedMines": ["LAND"],
         "passability": {
             "FOOT": 1,
@@ -68,7 +68,7 @@
         "name": "TILE_NAME_HILL",
         "desc": "TILE_DESC_HILL",
         "climate": "TEMPERATE",
-        "terrain": ["VANTAGE", "RUGGED", "__CAMOUFLAGE"],
+        "terrain": ["VANTAGE", "RUGGED", "CAMOUFLAGE"],
         "allowedMines": ["LAND"],
         "passability": {
             "FOOT": 1,
@@ -227,35 +227,45 @@
         "name": "TILE_NAME_ISLAND",
         "desc": "TILE_DESC_ISLAND",
         "climate": "TEMPERATE",
-        "terrain": ["__REDUCED_MOBILITY", "__CAMOUFLAGE"],
+        "terrain": ["__REDUCED_MOBILITY", "NAVAL_CAMOUFLAGE"],
         "passability": {
             "FLIGHT": 1,
             "RUDDER": 1,
-            "HEAVY_RUDDER": 1,
-            "AMPHIBIOUS": 1
+            "HEAVY_RUDDER": 1
         }
     },
     "SWIRL": {
         "name": "TILE_NAME_SWIRL",
         "desc": "TILE_DESC_SWIRL",
         "climate": "NONE",
-        "terrain": [],
+        "terrain": ["TRICKY_WATERS", "COVER"],
         "passability": {
             "FLIGHT": 1,
             "RUDDER": 1,
-            "HEAVY_RUDDER": 1,
-            "AMPHIBIOUS": 1
+            "HEAVY_RUDDER": 1
         }
     },
     "ROCKS": {
         "name": "TILE_NAME_ROCKS",
         "desc": "TILE_DESC_ROCKS",
         "climate": "NONE",
-        "terrain": ["DANGEROUS"],
+        "terrain": ["__GARRISON", "DANGEROUS"],
         "passability": {
             "FLIGHT": 1,
             "RUDDER": 1,
-            "HEAVY_RUDDER": 1,
+            "HEAVY_RUDDER": 1
+        }
+    },
+    "WASTELAND": {
+        "name": "TILE_NAME_WASTELAND",
+        "desc": "TILE_DESC_WASTELAND",
+        "climate": "NONE",
+        "terrain": ["__GARRISON", "DANGEROUS"],
+        "passability": {
+            "FOOT": 1,
+            "WHEELED": 1,
+            "TRACKED": 1,
+            "FLIGHT": 1,
             "AMPHIBIOUS": 1
         }
     }

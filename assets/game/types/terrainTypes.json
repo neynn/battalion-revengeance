@@ -54,18 +54,39 @@
         "protection": {},
         "cost": {}
     },
-    "CONCEALMENT": {
-        "name": "TERRAIN_NAME_CONCEALMENT",
-        "desc": "TERRAIN_DESC_CONCEALMENT",
+    "COVER": {
+        "name": "TERRAIN_NAME_COVER",
+        "desc": "TERRAIN_DESC_COVER",
         "icon": "CONCEALMENT",
-        "protection": {},
+        "protection": {
+            "FOOT": 0.1,
+            "WHEELED": 0.1,
+            "TRACKED": 0.1,
+            "AMPHIBIOUS": 0.1
+        },
         "cost": {}
     },
-    "NAVAL_CONCEALMENT": {
-        "name": "TERRAIN_NAME_NAVAL_CONCEALMENT",
-        "desc": "TERRAIN_DESC_NAVAL_CONCEALMENT",
+    "CAMOUFLAGE": {
+        "name": "TERRAIN_NAME_CAMOUFLAGE",
+        "desc": "TERRAIN_DESC_CAMOUFLAGE",
+        "icon": "CONCEALMENT",
+        "protection": {
+            "FOOT": 0.2,
+            "WHEELED": 0.2,
+            "TRACKED": 0.2,
+            "AMPHIBIOUS": 0.2
+        },
+        "cost": {}
+    },
+    "NAVAL_CAMOUFLAGE": {
+        "name": "TERRAIN_NAME_NAVAL_CAMOUFLAGE",
+        "desc": "TERRAIN_DESC_NAVAL_CAMOUFLAGE",
         "icon": "NAVAL_CONCEALMENT",
-        "protection": {},
+        "protection": {
+            "AMPHIBIOUS": 0.2,
+            "RUDDER": 0.2,
+            "HEAVY_RUDDER": 0.2
+        },
         "cost": {}
     },
     "BUNKER": {
@@ -73,7 +94,8 @@
         "desc": "TERRAIN_DESC_BUNKER",
         "icon": "BUNKER",
         "protection": {
-            "FOOT": 0.4
+            "FOOT": 0.4,
+            "AMPHIBIOUS": 0.4
         },
         "cost": {}
     },
