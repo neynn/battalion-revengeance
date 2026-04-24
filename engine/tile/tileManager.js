@@ -43,6 +43,22 @@ TileManager.prototype.createCategories = function(tileCategories) {
     }
 }
 
+TileManager.prototype.overrideTile = function(mapID, logicalID) {
+    const logicIndex = this.logicTableMap.get(logicalID);
+
+    if(logicIndex === undefined) {
+        return;
+    }
+
+    const index = mapID - 1;
+
+    if(index < 0 || index >= this.tileCount) {
+        return;
+    }
+
+    this.tileTable[index] = logicIndex;
+}
+
 TileManager.prototype.createCustomTile = function(mapID, typeID) {
     const oldTile = this.getTile(mapID);
     const tileID = this.tiles.length;

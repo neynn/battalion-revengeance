@@ -728,7 +728,7 @@ export const TILE_ID = {
 
     //21-68: RIVER
     RIVER_0: 21,
-    RIVER_10: 31,
+    RIVER_10: 31, //Full tile
     RIVER_47: 68,
 
     SHORE_0: 69,

@@ -4,7 +4,7 @@ import { TileManager } from "../../engine/tile/tileManager.js";
 import { ServerGameContext } from "./serverContext.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { MapRegistry } from "../map/mapRegistry.js";
-import { registerServerActions } from "../systems/context.js";
+import { overrideRiverTiles, registerServerActions } from "../systems/context.js";
 import { resolveTileType } from "../enumHelpers.js";
 import { MAX_TEAMS } from "../constants.js";
 import { TILE_ID, TILE_TYPE } from "../enums.js";
@@ -23,7 +23,7 @@ ServerApplication.prototype.constructor = ServerApplication;
 
 ServerApplication.prototype.init = function(resources) {
     this.tileManager.load(resources.tileCategories, resources.logicTiles, resources.visualTiles, resources.autotilers, resolveTileType);
-    this.tileManager.createCustomTile(TILE_ID.RIVER_10, TILE_TYPE.SEA);
+    overrideRiverTiles(this);
     this.mapRegistry.load(resources.maps);
     this.typeRegistry.load(resources);
 }

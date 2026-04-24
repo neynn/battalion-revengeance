@@ -15,8 +15,14 @@ import { PurchaseEntityAction } from "../action/types/purchaseEntity.js";
 import { InterruptAction } from "../action/types/interrupt.js";
 import { StartTurnAction } from "../action/types/startTurn.js";
 import { UncloakAction } from "../action/types/uncloak.js";
-import { ACTION_TYPE } from "../enums.js";
+import { ACTION_TYPE, TILE_ID } from "../enums.js";
 import { createClientEntityObject, createServerEntityObject, despawnClientEntity, despawnServerEntity } from "./spawn.js";
+
+export const overrideRiverTiles = function(gameContext) {
+    const { tileManager } = gameContext;
+
+    tileManager.overrideTile(TILE_ID.RIVER_10, "Sea");
+}
 
 export const registerClientActions = function(gameContext) {
     const { world } = gameContext;

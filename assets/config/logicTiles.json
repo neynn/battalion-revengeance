@@ -15,6 +15,10 @@
     "Volcano": {
         "tileType": "VOLCANO"
     },
+    "Sea": {
+        "tileType": "SEA",
+        "autotiler": "battalion_river"
+    },
     "River": {
         "tileType": "RIVER",
         "autotiler": "battalion_river"
