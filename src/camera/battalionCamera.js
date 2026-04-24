@@ -519,6 +519,66 @@ BattalionCamera.prototype.drawMines = function(gameContext, display, worldMap) {
     return count;
 }
 
+BattalionCamera.prototype.drawTiles = function(gameContext, display, worldMap) {
+    const { tileManager } = gameContext;
+    const { context } = display;
+
+    const groundLayer = worldMap.getLayer(BattalionMap.LAYER.GROUND).buffer;
+    const decoLayer = worldMap.getLayer(BattalionMap.LAYER.DECORATION).buffer;
+    const cloudLayer = worldMap.getLayer(BattalionMap.LAYER.CLOUD).buffer;
+
+    const wTileX = this.tileX;
+    const wTileY = this.tileY;
+    const startX = this.startX;
+    const startY = this.startY;
+    const endX = this.endX;
+    const endY = this.endY;
+    const mapWidth = this.mapWidth;
+    const tileWidth = this.tileWidth;
+    const tileHeight = this.tileHeight;
+    const viewportX = this.fOffsetX;
+    const viewportY = this.fOffsetY;
+
+    let inspectedEntity = null;
+    let entityCount = 0;
+    let tileCount = 0;
+
+    let renderY = (startY - wTileY) * tileHeight - viewportY;
+
+    for(let i = startY; i <= endY; i++) {
+        let index = i * mapWidth + startX;
+        let renderX = (startX - wTileX) * tileWidth - viewportX;
+
+        for(let j = startX; j <= endX; j++) {
+            const bottomID = groundLayer[index];
+            const middleID = decoLayer[index];
+            const topID = cloudLayer[index];
+
+            if(bottomID !== 0) {
+                this.drawTile(tileManager, bottomID, context, renderX, renderY);
+                tileCount++;
+            }
+
+            if(middleID !== 0) {
+                this.drawTile(tileManager, middleID, context, renderX, renderY);
+                tileCount++;
+            }
+
+            if(topID !== 0) {
+                this.drawTile(tileManager, topID, context, renderX, renderY);
+                tileCount++;
+            }
+
+            index++;
+            renderX += tileWidth;
+        }
+
+        renderY += tileHeight;
+    }
+
+    return tileCount;
+}
+
 BattalionCamera.prototype.update = function(gameContext, display) {
     const { client, world, tileManager, teamManager } = gameContext;
     const { session } = client;
@@ -545,9 +605,7 @@ BattalionCamera.prototype.update = function(gameContext, display) {
     }
 
     this.updateWorldBounds(worldMap.width, worldMap.height);
-    tiles += this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.GROUND));
-    tiles += this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
-    tiles += this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.CLOUD));
+    tiles += this.drawTiles(gameContext, display, worldMap);
     overlays += this.drawOverlay(tileManager, display, this.selectOverlay);
     sprites += this.drawSpriteLayer(gameContext, display, LAYER_TYPE.BUILDING);
     other += this.drawMines(gameContext, display, worldMap);
