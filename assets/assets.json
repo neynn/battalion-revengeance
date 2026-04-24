@@ -2,10 +2,10 @@
     "autotilers": { "directory": ["assets", "config"], "source": "autotilers.json" },
     "layouts": { "directory": ["assets", "config"], "source": "layouts.json" },
     "network": { "directory": ["assets", "config"], "source": "network.json" },
-    "tileCategories": { "directory": ["assets", "config"], "source": "tileCategories.json" },
-    "logicTiles": { "directory": ["assets", "config"], "source": "logicTiles.json" },
-    "visualTiles": { "directory": ["assets", "config"], "source": "visualTiles.json" },
     "keybinds": { "directory": ["assets", "config"], "source": "keybinds.json" },
+    "tileCategories": { "directory": ["assets", "config", "tiles"], "source": "categories.json" },
+    "logicTiles": { "directory": ["assets", "config", "tiles"], "source": "logic.json" },
+    "visualTiles": { "directory": ["assets", "config", "tiles"], "source": "meta.json" },
 
     "fonts": { "directory": ["assets", "fonts"], "source": "fonts.json" },
     "gui": { "directory": ["assets", "gui"], "source": "textures.json" },

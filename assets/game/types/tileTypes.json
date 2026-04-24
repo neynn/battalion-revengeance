@@ -111,7 +111,7 @@
     "RICH_ORE": {
         "name": "TILE_NAME_RICH_ORE",
         "desc": "TILE_DESC_RICH_ORE",
-        "climate": "TEMPERATE",
+        "climate": "NONE",
         "terrain": ["EXTRACTABLE"],
         "passability": {
             "FOOT": 1,
@@ -124,7 +124,7 @@
     "USED_ORE": {
         "name": "TILE_NAME_USED_ORE",
         "desc": "TILE_DESC_USED_ORE",
-        "climate": "TEMPERATE",
+        "climate": "NONE",
         "terrain": ["EXTRACTABLE"],
         "passability": {
             "FOOT": 1,
@@ -137,7 +137,7 @@
     "DEPLETED_ORE": {
         "name": "TILE_NAME_DEPLETED_ORE",
         "desc": "TILE_DESC_DEPLETED_ORE",
-        "climate": "TEMPERATE",
+        "climate": "NONE",
         "terrain": [],
         "passability": {
             "FOOT": 1,

@@ -69,23 +69,21 @@ TileVisual.prototype.pushElement = function(fp, x, y, w, h, ox, oy) {
     return next_frame_ptr;
 }
 
-TileVisual.prototype.createFrame = function(fp, region, offset) {
-    const { x, y, w, h } = region;
-    const offsetX = offset?.x ?? 0;
-    const offsetY = offset?.y ?? 0;
+TileVisual.prototype.createFrame = function(fp, region) {
+    const { x, y, w, h, offsetX, offsetY } = region;
     const next_frame_ptr = this.pushElement(fp, x, y, w, h, offsetX, offsetY);
 
     return next_frame_ptr;
 }
 
-TileVisual.prototype.createPattern = function(fp, texture, pattern, offsets) {
+TileVisual.prototype.createPattern = function(fp, texture, pattern) {
     let next_frame_ptr = fp;
 
     for(const { id, shiftX = 0, shiftY = 0 } of pattern) {
         const region = texture.getRegionByName(id);
 
         if(region) {
-            next_frame_ptr = this.createFrame(fp, region, offsets[id]);
+            next_frame_ptr = this.createFrame(fp, region);
 
             //Updates the offset of the last element.
             this.frameData[next_frame_ptr - TILE_FRAME_SIZE + 5] += shiftX;
@@ -97,21 +95,21 @@ TileVisual.prototype.createPattern = function(fp, texture, pattern, offsets) {
 }
 
 TileVisual.prototype.generate = function(texture, config, regionID) {
-    const { offsets = {}, patterns = {}, animations = {} } = config;
+    const { patterns = {}, animations = {} } = config;
     const frameData = texture.getRegionByName(regionID);
     const patternData = patterns[regionID];
     const animationData = animations[regionID];
     let fp = 0;
 
     if(frameData) {
-        this.createFrame(fp, frameData, offsets[regionID]);
+        this.createFrame(fp, frameData);
         this.frameCount++;
         this.setFrameTime(TileVisual.DEFAULT.FRAME_TIME);
         return;
     }
 
     if(patternData) {
-        this.createPattern(fp, texture, patternData, offsets);
+        this.createPattern(fp, texture, patternData);
         this.frameCount++;
         this.setFrameTime(TileVisual.DEFAULT.FRAME_TIME);
         return;
@@ -126,9 +124,9 @@ TileVisual.prototype.generate = function(texture, config, regionID) {
             let next_frame_ptr = fp;
 
             if(region) {
-                next_frame_ptr = this.createFrame(fp, region, offsets[frameID]);
+                next_frame_ptr = this.createFrame(fp, region);
             } else if(patterns[frameID]) {
-                next_frame_ptr = this.createPattern(fp, texture, patterns[frameID], offsets);
+                next_frame_ptr = this.createPattern(fp, texture, patterns[frameID]);
             }
 
             //A frame was created if the pointers do not match!

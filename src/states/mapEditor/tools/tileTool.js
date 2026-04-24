@@ -101,7 +101,8 @@ TileTool.prototype.init = function() {
     const seaSet = new BrushSet("MAP_EDITOR_SET_NAME_SEA", TileManager.TILE_ID.INVALID);
     const railSet = new BrushSet("MAP_EDITOR_SET_NAME_RAIL", TileManager.TILE_ID.INVALID);
 
-    for(let i = TILE_ID.GRASS; i < TILE_ID._COUNT; i++) {
+    //TODO(neyn): Update count!
+    for(let i = TILE_ID.GRASS; i < TILE_ID._COUNT + 100; i++) {
         allSet.addValue(i);
     }
 

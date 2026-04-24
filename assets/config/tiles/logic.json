@@ -55,5 +55,8 @@
     "Rail": {
         "tileType": "RAIL",
         "autotiler": "battalion_rail"
+    },
+    "Forest": {
+        "tileType": "FOREST"
     }
 }

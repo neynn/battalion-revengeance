@@ -64,8 +64,10 @@ TextureRegistry.prototype.createTextures = function(type, textures) {
             const { startX = 0, startY = 0, rows = 0, columns = 0, first = 1 } = autoGrid;
 
             texture.autoGrid(startX, startY, rows, columns, first, gridWidth, gridHeight);
-        } else if(regions) {
-            texture.initRegions(regions);
+        }
+        
+        if(regions) {
+            texture.initRegions(regions, gridWidth, gridHeight);
         }
 
         this.textures.push(texture);

@@ -7,6 +7,8 @@ export const Texture = function(id, name, path) {
     this.path = path;
     this.width = 0;
     this.height = 0;
+    this.gridWidth = 0;
+    this.gridHeight = 0;
     this.handle = new TextureHandle();
     this.variants = new Map();
     this.regionMap = new Map();
@@ -116,34 +118,51 @@ Texture.prototype.createHandle = function(handleID) {
     return nextHandle;
 }
 
-Texture.prototype.initGrid = function(grid, width, height) {
+Texture.prototype.initGrid = function(grid, gridWidth, gridHeight) {
     for(const regionID in grid) {
-        const { u, v } = grid[regionID];
-        const region = new TextureRegion(u * width, v * height, width, height);
+        const { u = 0, v = 0, h = 0 } = grid[regionID];
+        let regionX = u * gridWidth;
+        let regionY = v * gridHeight;
+        let regionHeight = gridHeight;
+        let offsetY = 0;
+
+        //Custom height. Move one cell down and subtract the height. 
+        if(h !== 0) {
+            regionY += gridHeight - h;
+            regionHeight = h;
+            offsetY = gridHeight - h;
+        }
+
+        const region = new TextureRegion(regionX, regionY, gridWidth, regionHeight);
+
+        region.offsetX = 0;
+        region.offsetY = offsetY;
 
         this.regions.push(region);
         this.regionMap.set(regionID, this.regions.length - 1);
     }
 }
 
-Texture.prototype.initRegions = function(regions) {
+Texture.prototype.initRegions = function(regions, gridWidth, gridHeight) {
     for(const regionID in regions) {
-        const { x = 0, y = 0, w = 0, h = 0 } = regions[regionID];
-        const region = new TextureRegion(x, y, w, h);
-
-        this.regions.push(region);
-        this.regionMap.set(regionID, this.regions.length - 1);
+        if(!this.regionMap.has(regionID)) {
+            const { x = 0, y = 0, w = 0, h = 0 } = regions[regionID];
+            const region = new TextureRegion(x, y, w, h);
+    
+            this.regions.push(region);
+            this.regionMap.set(regionID, this.regions.length - 1);
+        }
     }
 }
 
-Texture.prototype.autoGrid = function(startX, startY, rows, columns, firstID, width, height) {
+Texture.prototype.autoGrid = function(startX, startY, rows, columns, firstID, gridWidth, gridHeight) {
     let id = firstID;
 
     for(let i = 0; i < rows; i++) {
         for(let j = 0; j < columns; j++) {
-            const regionX = startX + j * width;
-            const regionY = startY + i * height;
-            const region = new TextureRegion(regionX, regionY, width, height);
+            const regionX = startX + j * gridWidth;
+            const regionY = startY + i * gridHeight;
+            const region = new TextureRegion(regionX, regionY, gridWidth, gridHeight);
             const regionID = (id++) + "";
 
             this.regions.push(region);

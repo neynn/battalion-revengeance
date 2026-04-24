@@ -310,7 +310,10 @@ export const TILE_TYPE = {
     PATH: 17,
     RAIL: 18,
     WASTELAND: 19,
-    _COUNT: 20
+    FOREST: 20,
+    HILL: 21,
+    MOUNTAIN: 22,
+    _COUNT: 23
 };
 
 export const TRAIT_TYPE = {

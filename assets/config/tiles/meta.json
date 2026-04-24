@@ -118,7 +118,17 @@
     },
     {
         "logic": "Grass",
-        "texture": "background",
-        "visuals": ["shrub_0", "shrub_1", "shrub_2", "shrub_3", "shrub_4"]
+        "texture": "plains",
+        "visuals": [
+            "plains_1", "plains_2", "plains_3", "plains_4", "plains_5", "plains_6", "plains_7", "plains_8",
+            "shrub_1", "shrub_2", "shrub_3", "shrub_4", "shrub_5"
+        ]
+    },
+    {
+        "logic": "Forest",
+        "texture": "plains",
+        "visuals": [
+            "forest_1", "forest_2", "forest_3", "forest_4"
+        ]
     }
 ]

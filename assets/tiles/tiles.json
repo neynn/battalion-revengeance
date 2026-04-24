@@ -130,18 +130,12 @@
         "source": "volcano.png",
         "frameTime": 0.03,
         "gridWidth": 56,
-        "gridHeight": 112,
+        "gridHeight": 56,
         "grid": {
-            "0": { "u": 0, "v": 0 },
-            "1": { "u": 1, "v": 0 },
-            "2": { "u": 2, "v": 0 },
-            "3": { "u": 3, "v": 0 }
-        },
-        "offsets": {
-            "0": { "x": 0, "y": -56 },
-            "1": { "x": 0, "y": -56 },
-            "2": { "x": 0, "y": -56 },
-            "3": { "x": 0, "y": -56 }
+            "0": { "u": 0, "v": 1, "h": 112 },
+            "1": { "u": 1, "v": 1, "h": 112 },
+            "2": { "u": 2, "v": 1, "h": 112 },
+            "3": { "u": 3, "v": 1, "h": 112 }
         },
         "animations": {
             "ANIMATION_0": {"frameTime":0.15,"frames":["0","1","2","3"]}
@@ -251,6 +245,32 @@
             "overlay_2": { "u": 2, "v": 2 },
             "overlay_3": { "u": 3, "v": 2 },
             "cash_box": { "u": 0, "v": 3 }
+        }
+    },
+    "plains": {
+        "directory": ["assets", "tiles", "battalion"],
+        "source": "plains.png",
+        "frameTime": 0.03,
+        "gridWidth": 56,
+        "gridHeight": 56,
+        "grid": {
+            "plains_1": { "u": 0, "v": 0 },
+            "plains_2": { "u": 1, "v": 0 },
+            "plains_3": { "u": 2, "v": 0 },
+            "plains_4": { "u": 3, "v": 0 },
+            "plains_5": { "u": 4, "v": 0 },
+            "plains_6": { "u": 5, "v": 0 },
+            "plains_7": { "u": 6, "v": 0 },
+            "plains_8": { "u": 7, "v": 0 },
+            "shrub_1": { "u": 0, "v": 1 },
+            "shrub_2": { "u": 1, "v": 1 },
+            "shrub_3": { "u": 2, "v": 1 },
+            "shrub_4": { "u": 3, "v": 1 },
+            "shrub_5": { "u": 4, "v": 1 },
+            "forest_1": { "u": 0, "v": 3, "h": 56 },
+            "forest_2": { "u": 1, "v": 3, "h": 60 },
+            "forest_3": { "u": 2, "v": 3, "h": 59 },
+            "forest_4": { "u": 3, "v": 3, "h": 68 }
         }
     }
 }
