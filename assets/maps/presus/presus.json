@@ -69,7 +69,8 @@
         { "x": 7, "y": 3, "health": 100, "type": "JAMMER_TRUCK", "team": "TRANSKAL", "direction": "WEST" },
         { "x": 7, "y": 5, "type": "JAMMER_TRUCK", "team": "DRAGOON", "direction": "WEST" },
         { "x": 8, "y": 5, "stealth": true, "type": "STEALTH_TANK", "team": "DRAGOON" },
-        { "x": 8, "y": 6, "type": "DEPOT", "team": "SOMERTIN" }
+        { "x": 8, "y": 6, "type": "DEPOT", "team": "SOMERTIN" },
+        { "x": 9, "y": 6, "type": "BLOCKADE", "team": "SOMERTIN" }
     ],
     "buildings": [
         { "x": 0, "y": 6, "type": "AIR_CONTROL", "team": "SOMERTIN" },

@@ -201,6 +201,7 @@ export const ICON_TYPE = {
     ANTI_STRUCTURE: 90,
     ANTI_TANK: 91,
     BLITZ: 92,
+    TRAIT_COUNTER_BATTERY: 93, //Shared with BEWEGUNGSKRIEG
     BEWEGUNGSKRIEG: 93,
     BROADSIDE: 94,
     CAVITATION_EXPLOSION: 95,
@@ -378,7 +379,8 @@ export const TRAIT_TYPE = {
     UNBUILT: 61,
     ENGINEER: 62,
     REPAIR: 63,
-    _COUNT: 64
+    NOT_SELECTABLE: 64,
+    _COUNT: 65
 };
 
 export const MOVEMENT_TYPE = {

@@ -1605,7 +1605,7 @@
         "movementType": "STATIONARY",
         "name": "ENTITY_NAME_BLOCKADE",
         "desc": "ENTITY_DESC_BLOCKADE",
-        "traits": ["FIXED", "IRREPARABLE"],
+        "traits": ["FIXED", "IRREPARABLE", "NOT_SELECTABLE"],
         "sprites": {
             "idle_right": "blockade_idle_right",
             "idle_left": "blockade_idle_left",
@@ -1730,6 +1730,21 @@
             "fire_left": "cockroach_fire_left",
             "fire_down": "cockroach_fire_down",
             "fire_up": "cockroach_fire_up"
+        }
+    },
+    "VANILLA_BLOCKADE": {
+        "health": 70,
+        "weaponType": "NONE",
+        "armorType": "MEDIUM",
+        "movementType": "STATIONARY",
+        "name": "ENTITY_NAME_VANILLA_BLOCKADE",
+        "desc": "ENTITY_DESC_VANILLA_BLOCKADE",
+        "traits": ["FIXED", "IRREPARABLE", "NOT_SELECTABLE"],
+        "sprites": {
+            "idle_right": "blockade_idle_right",
+            "idle_left": "blockade_idle_left",
+            "idle_down": "blockade_idle_down",
+            "idle_up": "blockade_idle_up"
         }
     }
 }

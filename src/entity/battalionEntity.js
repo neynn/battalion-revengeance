@@ -1268,7 +1268,7 @@ BattalionEntity.prototype.canActAndMove = function() {
 }
 
 BattalionEntity.prototype.isSelectable = function() {
-    return !this.isDead() && this.canActAndMove();
+    return !this.isDead() && this.canActAndMove() && !this.hasTrait(TRAIT_TYPE.NOT_SELECTABLE);
 }
 
 BattalionEntity.prototype.getUncloakedEntities = function(gameContext) {

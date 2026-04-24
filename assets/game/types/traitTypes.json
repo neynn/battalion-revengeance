@@ -1,4 +1,9 @@
 {
+    "NOT_SELECTABLE": {
+        "name": "TRAIT_NAME_NOT_SELECTABLE",
+        "desc": "TRAIT_DESC_NOT_SELECTABLE",
+        "icon": "TRAIT_NOT_SELECTABLE"
+    },
     "REPAIR": {
         "name": "TRAIT_NAME_REPAIR",
         "desc": "TRAIT_DESC_REPAIR",
@@ -12,7 +17,7 @@
     "COUNTER_BATTERY": {
         "name": "TRAIT_NAME_COUNTER_BATTERY",
         "desc": "TRAIT_DESC_COUNTER_BATTERY",
-        "icon": "STUN"
+        "icon": "TRAIT_COUNTER_BATTERY"
     },
     "STUN": {
         "name": "TRAIT_NAME_STUN",

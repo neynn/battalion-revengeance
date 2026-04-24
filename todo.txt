@@ -11,7 +11,6 @@ MapEditor:
 
 Missing Terrain:
     Reduced Mobility: Ship movement is reduced.
-    Not Selectable: Trait that disallows selection of units.
 
 Building traits:
     Proficiency traits: Each one gives its respective type -5% cost!
