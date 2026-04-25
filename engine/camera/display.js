@@ -1,7 +1,10 @@
+import { clampValue } from "../math/math.js";
+
 export const Display = function(width, height, type) {
     this.canvas = document.createElement("canvas");
     this.context = this.canvas.getContext("2d");
     this.type = type;
+    this.alpha = 1;
     this.width = 0;
     this.height = 0;
     this.centerX = 0;
@@ -102,8 +105,11 @@ Display.prototype.stackAlpha = function(alpha) {
 }
 
 Display.prototype.setAlpha = function(alpha) {
-    if(alpha >= 0 && alpha <= 1) {
-        this.context.globalAlpha = alpha;
+    if(alpha !== this.alpha) {
+        const clampedAlpha = clampValue(alpha, 1, 0);
+
+        this.context.globalAlpha = clampedAlpha;
+        this.alpha = clampedAlpha;
     }
 }
 

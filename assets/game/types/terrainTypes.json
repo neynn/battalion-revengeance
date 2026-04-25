@@ -59,10 +59,9 @@
         "desc": "TERRAIN_DESC_COVER",
         "icon": "TERRAIN_COVER",
         "protection": {
-            "FOOT": 0.1,
-            "WHEELED": 0.1,
-            "TRACKED": 0.1,
-            "AMPHIBIOUS": 0.1
+            "*": 0.1,
+            "FLIGHT": 0,
+            "STATIONARY": 0
         },
         "cost": {}
     },

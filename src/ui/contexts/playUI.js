@@ -469,7 +469,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
             const { terrain } = worldMap.getTileType(gameContext, tileX, tileY);
             const climateType = worldMap.getClimateType(gameContext, tileX, tileY);
 
-             uiData.getTexture(UI_TEXTURE.RECON_TERRAIN).draw(display, reconX, reconY);
+            uiData.getTexture(UI_TEXTURE.RECON_TERRAIN).draw(display, reconX, reconY);
 
             this.drawTile(gameContext, display, tileX, tileY, reconX, reconY);
             this.style.apply(context);

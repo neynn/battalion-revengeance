@@ -522,7 +522,6 @@ BattalionCamera.prototype.drawMines = function(gameContext, display, worldMap) {
 BattalionCamera.prototype.drawTiles = function(gameContext, display, worldMap) {
     const { tileManager } = gameContext;
     const { context } = display;
-
     const groundLayer = worldMap.getLayer(BattalionMap.LAYER.GROUND).buffer;
     const decoLayer = worldMap.getLayer(BattalionMap.LAYER.DECORATION).buffer;
     const cloudLayer = worldMap.getLayer(BattalionMap.LAYER.CLOUD).buffer;
@@ -542,9 +541,10 @@ BattalionCamera.prototype.drawTiles = function(gameContext, display, worldMap) {
     let inspectedEntity = null;
     let entityCount = 0;
     let tileCount = 0;
-
     let renderY = (startY - wTileY) * tileHeight - viewportY;
 
+    context.globalAlpha = 1;
+    
     for(let i = startY; i <= endY; i++) {
         let index = i * mapWidth + startX;
         let renderX = (startX - wTileX) * tileWidth - viewportX;
