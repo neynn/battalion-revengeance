@@ -1,18 +1,18 @@
 [
     { 
         "logic": "Grass",
-        "texture": "background",
-        "visuals": ["grass"]
+        "texture": "plains",
+        "visuals": ["plains_1"]
     },
     { 
         "logic": "Boreal",
-        "texture": "background",
-        "visuals": ["boreal"]
+        "texture": "boreal",
+        "visuals": ["boreal_1"]
     },
     { 
         "logic": "Arctic",
-        "texture": "background",
-        "visuals": ["arctic"]
+        "texture": "arctic",
+        "visuals": ["arctic_1"]
     },
     { 
         "id": "Road",
@@ -153,10 +153,10 @@
         ]
     },
     {
-        "logic": "Mountain",
-        "texture": "boreal",
+        "logic": "Hill",
+        "texture": "plains",
         "visuals": [
-            "mountain_1", "mountain_2", "mountain_3", "mountain_4", "megamountain"
+            "hills_1", "hills_2", "hills_3", "hills_4"
         ]
     }
 ]

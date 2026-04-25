@@ -61,5 +61,8 @@
     },
     "Mountain": {
         "tileType": "MOUNTAIN"
+    },
+    "Hill": {
+        "tileType": "HILL"
     }
 }

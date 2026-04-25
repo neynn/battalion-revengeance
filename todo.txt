@@ -24,3 +24,6 @@ BUG:
 Rendering:
     Tile by tile -> no more layers.
     This adds depth to entities and their map!
+
+Z-Buffer:
+    
