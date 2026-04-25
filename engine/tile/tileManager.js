@@ -148,9 +148,8 @@ TileManager.prototype.linkTables = function(tileMeta) {
         }
 
         mapID += visualCount;
+        this.tileCount += visualCount;
     }
-
-    this.tileCount = mapID;
 }
 
 TileManager.prototype.createVisuals = function(textureLoader, tileAtlases) {

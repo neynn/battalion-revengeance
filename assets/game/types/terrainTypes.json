@@ -34,7 +34,6 @@
         "name": "TERRAIN_NAME_EXTRACTABLE",
         "desc": "TERRAIN_DESC_EXTRACTABLE",
         "icon": "TERRAIN_EXTRACTABLE",
-        "note": "This terrain is purely cosmetic. Ore extraction is defined by TileID.",
         "protection": {},
         "cost": {}
     },
@@ -94,7 +93,9 @@
         "icon": "BUNKER",
         "protection": {
             "FOOT": 0.4,
-            "AMPHIBIOUS": 0.4
+            "AMPHIBIOUS": 0.4,
+            "WHEELED": 0.4,
+            "TRACKED": 0.4
         },
         "cost": {}
     },

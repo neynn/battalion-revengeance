@@ -1665,14 +1665,6 @@ BattalionEntity.prototype.removeFromMap = function(gameContext) {
     }
 }
 
-BattalionEntity.prototype.getOreValue = function(gameContext) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-
-    return worldMap.getOreValue(this.tileX, this.tileY);
-}
-
 BattalionEntity.prototype.extractOre = function(gameContext) {
     const { world } = gameContext;
     const { mapManager } = world;

@@ -1,6 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
-import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { TEAM_STAT, TERRAIN_TYPE, TRAIT_TYPE } from "../../enums.js";
 
 export const ExtractAction = function() {
     Action.call(this);
@@ -39,7 +39,7 @@ ExtractAction.prototype.execute = function(gameContext, data) {
 
 ExtractAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
-    const { entityManager } = world;
+    const { entityManager, mapManager } = world;
     const { entityID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
 
@@ -47,12 +47,15 @@ ExtractAction.prototype.fillExecutionPlan = function(gameContext, executionPlan,
         return;
     }
 
-    const oreValue = entity.getOreValue(gameContext);
+    const worldMap = mapManager.getActiveMap();
+    const { tileX, tileY } = entity;
+    const tileType = worldMap.getTileType(gameContext, tileX, tileY);
 
-    if(oreValue <= 0) {
+    if(!tileType.hasTerrain(TERRAIN_TYPE.EXTRACTABLE)) {
         return;
     }
 
+    const oreValue = Math.floor(worldMap.getOreValue(tileX, tileY));
     const data = ExtractAction.createData();
 
     data.entityID = entityID;

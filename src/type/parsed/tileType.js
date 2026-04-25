@@ -73,6 +73,16 @@ TileType.prototype.load = function(config, DEBUG_NAME) {
     }
 }
 
+TileType.prototype.hasTerrain = function(terrainID) {
+    for(let i = 0; i < this.terrain.length; i++) {
+        if(this.terrain[i] === terrainID) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 TileType.prototype.allowsMine = function(mineType) {
     for(let i = 0; i < this.allowedMines.length; i++) {
         if(this.allowedMines[i] === mineType) {

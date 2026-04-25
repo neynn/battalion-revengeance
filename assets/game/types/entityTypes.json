@@ -1087,7 +1087,7 @@
         "damage": 60,
         "weaponType": "MEDIUM",
         "armorType": "MEDIUM",
-        "movementRange": 1,
+        "movementRange": 2,
         "movementType": "TRACKED",
         "minRange": 2,
         "maxRange": 3,
