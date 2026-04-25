@@ -139,6 +139,13 @@
         ]
     },
     {
+        "logic": "Hill",
+        "texture": "plains",
+        "visuals": [
+            "hills_1", "hills_2", "hills_3", "hills_4"
+        ]
+    },
+    {
         "logic": "Boreal",
         "texture": "boreal",
         "visuals": [
@@ -153,8 +160,43 @@
         ]
     },
     {
+        "logic": "Mountain",
+        "texture": "boreal",
+        "visuals": [
+            "mountain_1", "mountain_2", "mountain_3", "mountain_4", "megamountain"
+        ]
+    },
+    {
         "logic": "Hill",
-        "texture": "plains",
+        "texture": "boreal",
+        "visuals": [
+            "hills_1", "hills_2", "hills_3", "hills_4"
+        ]
+    },
+    {
+        "logic": "Arctic",
+        "texture": "arctic",
+        "visuals": [
+            "arctic_1", "arctic_2", "arctic_3", "arctic_4", "arctic_5", "arctic_6", "arctic_7", "arctic_8"
+        ]
+    },
+    {
+        "logic": "Forest",
+        "texture": "arctic",
+        "visuals": [
+            "forest_1", "forest_2", "forest_3", "forest_4"
+        ]
+    },
+    {
+        "logic": "Mountain",
+        "texture": "arctic",
+        "visuals": [
+            "mountain_1", "mountain_2", "mountain_3", "mountain_4", "megamountain"
+        ]
+    },
+    {
+        "logic": "Hill",
+        "texture": "arctic",
         "visuals": [
             "hills_1", "hills_2", "hills_3", "hills_4"
         ]
