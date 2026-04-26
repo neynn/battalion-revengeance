@@ -8,7 +8,7 @@ import { CaptureActionVTable } from "./types/capture.js";
 import { CloakActionVTable } from "./types/cloak.js";
 import { DeathActionVTable } from "./types/death.js";
 import { EndTurnVTable } from "./types/endTurn.js";
-import { EntitySpawnAction } from "./types/entitySpawn.js";
+import { EntitySpawnVTable } from "./types/entitySpawn.js";
 import { ExplodeTileAction } from "./types/explodeTile.js";
 import { ExtractAction } from "./types/extract.js";
 import { HealAction } from "./types/heal.js";
@@ -556,7 +556,7 @@ export const unpackPlan = function(buffer) {
             break;
         }
         case ACTION_TYPE.ENTITY_SPAWN: {
-            data = EntitySpawnAction.createData();
+            data = EntitySpawnVTable.createData();
             data.entityID = view.getInt16(1, true);
             unpackEntitySnapshot(data.snapshot, view, 3);
             break;

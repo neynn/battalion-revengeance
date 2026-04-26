@@ -36,12 +36,6 @@ export const createExtractIntent = function(entityID) {
     });
 }
 
-export const createSpawnIntent = function(snapshot) {
-    return new ActionIntent(ACTION_TYPE.ENTITY_SPAWN, {
-        "snapshot": snapshot
-    });
-}
-
 export const createStartTurnIntent = function() {
     return new ActionIntent(ACTION_TYPE.START_TURN, {
 

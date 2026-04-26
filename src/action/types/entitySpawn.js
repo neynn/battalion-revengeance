@@ -1,26 +1,47 @@
 import { Action } from "../../../engine/action/action.js";
+import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
+import { ACTION_TYPE } from "../../enums.js";
 import { createEntitySnapshot } from "../../snapshot/entitySnapshot.js";
+import { createClientEntityObject, createServerEntityObject } from "../../systems/spawn.js";
 
-export const EntitySpawnAction = function(createEntity) {
-    Action.call(this);
-
-    this._createEntity = createEntity;
+const createEntitySpawnIntent = function(snapshot) {
+    return new ActionIntent(ACTION_TYPE.ENTITY_SPAWN, {
+        "snapshot": snapshot
+    });
 }
 
-EntitySpawnAction.createData = function() {
+const createEntitySpawnData = function() {
     return {
         "entityID": EntityManager.INVALID_ID,
         "snapshot": createEntitySnapshot()
     }
 }
 
-EntitySpawnAction.prototype = Object.create(Action.prototype);
-EntitySpawnAction.prototype.constructor = EntitySpawnAction;
+const fillEntitySpawnPlan = function(gameContext, executionPlan, actionIntent) {
+    const { world } = gameContext;
+    const { entityManager, mapManager } = world;
+    const { snapshot } = actionIntent;
+    const worldMap = mapManager.getActiveMap();
+    const data = createEntitySpawnData();
 
-EntitySpawnAction.prototype.execute = function(gameContext, data) {
+    //TODO(neyn): Verify!
+    data.entityID = entityManager.getNextID();
+    data.snapshot = snapshot;
+
+    executionPlan.setData(data);
+}
+
+const executeEntitySpawn = function(gameContext, data) {
+    const { isClient } = gameContext;
     const { entityID, snapshot } = data;
-    const entity = this._createEntity(gameContext, entityID, snapshot);
+    let entity = null;
+
+    if(isClient) {
+        entity = createClientEntityObject(gameContext, entityID, snapshot);
+    } else {
+        entity = createServerEntityObject(gameContext, entityID, snapshot);
+    }
 
     //Should never fail...
     if(entity) {
@@ -28,16 +49,24 @@ EntitySpawnAction.prototype.execute = function(gameContext, data) {
     }
 }
 
+export const EntitySpawnVTable = {
+    createIntent: createEntitySpawnIntent,
+    createData: createEntitySpawnData,
+    fillPlan: fillEntitySpawnPlan,
+    execute: executeEntitySpawn
+};
+
+export const EntitySpawnAction = function() {
+    Action.call(this);
+}
+
+EntitySpawnAction.prototype = Object.create(Action.prototype);
+EntitySpawnAction.prototype.constructor = EntitySpawnAction;
+
+EntitySpawnAction.prototype.execute = function(gameContext, data) {
+    executeEntitySpawn(gameContext, data);
+}
+
 EntitySpawnAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    const { world } = gameContext;
-    const { entityManager, mapManager } = world;
-    const { snapshot } = actionIntent;
-    const worldMap = mapManager.getActiveMap();
-    const data = EntitySpawnAction.createData();
-
-    //TODO(neyn): Verify!
-    data.entityID = entityManager.getNextID();
-    data.snapshot = snapshot;
-
-    executionPlan.setData(data);
+    fillEntitySpawnPlan(gameContext, executionPlan, actionIntent);
 }

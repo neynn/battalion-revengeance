@@ -1,5 +1,5 @@
 import { SimulationComponent } from "../../../engine/world/event/simulationComponent.js";
-import { createSpawnIntent } from "../../action/actionHelper.js";
+import { EntitySpawnVTable } from "../../action/types/entitySpawn.js";
 
 export const SpawnComponent = function(snapshot) {
     SimulationComponent.call(this);
@@ -12,7 +12,7 @@ SpawnComponent.prototype.constructor = SpawnComponent;
 
 SpawnComponent.prototype.execute = function(gameContext) {
     const { actionRouter } = gameContext;
-    const actionIntent = createSpawnIntent(this.snapshot);
+    const actionIntent = EntitySpawnVTable.createIntent(this.snapshot);
 
     actionRouter.forceEnqueue(gameContext, actionIntent);
 }

@@ -32,7 +32,7 @@ export const registerClientActions = function(gameContext) {
     actionQueue.registerAction(ACTION_TYPE.PRODUCE_ENTITY, new ProduceEntityAction(createClientEntityObject));
     actionQueue.registerAction(ACTION_TYPE.PURCHASE_ENTITY, new PurchaseEntityAction(createClientEntityObject));
     actionQueue.registerAction(ACTION_TYPE.EXTRACT, new ExtractAction());
-    actionQueue.registerAction(ACTION_TYPE.ENTITY_SPAWN, new EntitySpawnAction(createClientEntityObject));
+    actionQueue.registerAction(ACTION_TYPE.ENTITY_SPAWN, new EntitySpawnAction());
     actionQueue.registerAction(ACTION_TYPE.START_TURN, new StartTurnAction());
     actionQueue.registerAction(ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction(despawnClientEntity));
     actionQueue.registerAction(ACTION_TYPE.CAPTURE, new CaptureAction());
@@ -54,7 +54,7 @@ export const registerServerActions = function(gameContext) {
     actionQueue.registerAction(ACTION_TYPE.PRODUCE_ENTITY, new ProduceEntityAction(createServerEntityObject));
     actionQueue.registerAction(ACTION_TYPE.PURCHASE_ENTITY, new PurchaseEntityAction(createServerEntityObject));
     actionQueue.registerAction(ACTION_TYPE.EXTRACT, new ExtractAction());
-    actionQueue.registerAction(ACTION_TYPE.ENTITY_SPAWN, new EntitySpawnAction(createServerEntityObject));
+    actionQueue.registerAction(ACTION_TYPE.ENTITY_SPAWN, new EntitySpawnAction());
     actionQueue.registerAction(ACTION_TYPE.START_TURN, new StartTurnAction());
     actionQueue.registerAction(ACTION_TYPE.EXPLODE_TILE, new ExplodeTileAction(despawnServerEntity));
     actionQueue.registerAction(ACTION_TYPE.CAPTURE, new CaptureAction());
