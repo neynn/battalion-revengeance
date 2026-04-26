@@ -1,4 +1,4 @@
-import { createEndTurnIntent } from "../action/actionHelper.js";
+import { EndTurnVTable } from "../action/types/endTurn.js";
 import { BattalionActor } from "./battalionActor.js";
 
 export const StoryActor = function(id) {
@@ -16,5 +16,5 @@ StoryActor.prototype.activeUpdate = function(gameContext) {
         return;
     }
 
-    actionRouter.forceEnqueue(gameContext, createEndTurnIntent());
+    actionRouter.forceEnqueue(gameContext, EndTurnVTable.createIntent());
 }

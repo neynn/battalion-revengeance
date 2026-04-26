@@ -6,8 +6,8 @@ import { ENTITY_RESOLUTION_SIZE, ENTITY_SNAPSHOT_SIZE, MOVE_STEP_SIZE, packEntit
 import { AttackActionVTable } from "./types/attack.js";
 import { CaptureActionVTable } from "./types/capture.js";
 import { CloakActionVTable } from "./types/cloak.js";
-import { DeathAction, DeathActionVTable } from "./types/death.js";
-import { EndTurnAction } from "./types/endTurn.js";
+import { DeathActionVTable } from "./types/death.js";
+import { EndTurnVTable } from "./types/endTurn.js";
 import { EntitySpawnAction } from "./types/entitySpawn.js";
 import { ExplodeTileAction } from "./types/explodeTile.js";
 import { ExtractAction } from "./types/extract.js";
@@ -562,7 +562,7 @@ export const unpackPlan = function(buffer) {
             break;
         }
         case ACTION_TYPE.END_TURN: {
-            data = EndTurnAction.createData();
+            data = EndTurnVTable.createData();
             break;
         }
         case ACTION_TYPE.DEATH: {

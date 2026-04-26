@@ -8,8 +8,8 @@ import { COMMANDER_TYPE, ENTITY_SPRITE, TILE_ID } from "../../enums.js";
 import { UI_TEXTURE, HUD_BUTTON, GENERIC_BUTTON_STYLE, HUD_BUTTON_STYLE } from "../constants.js";
 import { BattalionMap } from "../../map/battalionMap.js";
 import { isDrawTime, mRegenerateLines } from "../helpers.js";
-import { createEndTurnIntent } from "../../action/actionHelper.js";
 import { ActorManager } from "../../../engine/world/actor/actorManager.js";
+import { EndTurnVTable } from "../../action/types/endTurn.js";
 
 const PORTRAIT_WIDTH = 130;
 const PORTRAIT_HEIGHT = 150;
@@ -279,7 +279,7 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
 
     if(actor && teamManager.isCurrent(actor.teamID)) {
         if(endTurnFlags & IM_FLAG.CLICKED) {
-            actor.addIntent(createEndTurnIntent());
+            actor.addIntent(EndTurnVTable.createIntent());
         }
 
         if(endTurnFlags & IM_FLAG.ACTIVE) {

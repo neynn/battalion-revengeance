@@ -5,9 +5,10 @@ import { IdleState } from "./player/idle.js";
 import { SelectState } from "./player/select.js";
 import { DIRECTION, ENTITY_TYPE } from "../enums.js";
 import { saveStoryMap } from "../systems/save.js";
-import { createEndTurnIntent, createExtractIntent, createProduceIntent } from "../action/actionHelper.js";
+import { createExtractIntent, createProduceIntent } from "../action/actionHelper.js";
 import { MapInspector } from "./player/inspector.js";
 import { DeathActionVTable } from "../action/types/death.js";
+import { EndTurnVTable } from "../action/types/endTurn.js";
 
 export const Player = function(id, inspector, camera) {
     BattalionActor.call(this, id);
@@ -110,7 +111,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
 
     router.on("DEBUG_SAVE", () => saveStoryMap(gameContext));
     router.on("END_TURN", () => {
-        this.addIntent(createEndTurnIntent());
+        this.addIntent(EndTurnVTable.createIntent());
     });
 
     router.on("EXTRACT", () => {

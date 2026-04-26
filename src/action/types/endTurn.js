@@ -1,22 +1,28 @@
 import { Action } from "../../../engine/action/action.js";
-import { TEAM_STAT } from "../../enums.js";
+import { ActionIntent } from "../../../engine/action/actionIntent.js";
+import { ACTION_TYPE, TEAM_STAT } from "../../enums.js";
 import { TeamManager } from "../../team/teamManager.js";
 import { createStartTurnIntent } from "../actionHelper.js";
 
-export const EndTurnAction = function() {
-    Action.call(this);
+const createEndTurnIntent = function() {
+    return new ActionIntent(ACTION_TYPE.END_TURN, {});
 }
 
-EndTurnAction.createData = function() {
-    return {
+const createEndTurnData = function() {
+    return {};
+}
 
+const fillEndTurnPlan = function(gameContext, executionPlan, actionIntent) {
+    const { teamManager } = gameContext;
+    const { currentTeam } = teamManager;
+
+    if(currentTeam !== TeamManager.INVALID_ID) {
+        executionPlan.setData(createEndTurnData());
+        executionPlan.addNext(createStartTurnIntent());
     }
 }
 
-EndTurnAction.prototype = Object.create(Action.prototype);
-EndTurnAction.prototype.constructor = EndTurnAction;
-
-EndTurnAction.prototype.execute = function(gameContext, data) {
+const executeEndTurn = function(gameContext, data) {
     const { world, teamManager } = gameContext;
     const { entityManager } = world;
     const team = teamManager.getCurrentTeam();
@@ -40,12 +46,24 @@ EndTurnAction.prototype.execute = function(gameContext, data) {
     teamManager.updateStatus();
 }
 
-EndTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    const { teamManager } = gameContext;
-    const { currentTeam } = teamManager;
+export const EndTurnVTable = {
+    createIntent: createEndTurnIntent,
+    createData: createEndTurnData,
+    fillPlan: fillEndTurnPlan,
+    execute: executeEndTurn
+};
 
-    if(currentTeam !== TeamManager.INVALID_ID) {
-        executionPlan.setData(EndTurnAction.createData());
-        executionPlan.addNext(createStartTurnIntent());
-    }
+export const EndTurnAction = function() {
+    Action.call(this);
+}
+
+EndTurnAction.prototype = Object.create(Action.prototype);
+EndTurnAction.prototype.constructor = EndTurnAction;
+
+EndTurnAction.prototype.execute = function(gameContext, data) {
+    executeEndTurn(gameContext, data);
+}
+
+EndTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
+    fillEndTurnPlan(gameContext, executionPlan, actionIntent);
 }

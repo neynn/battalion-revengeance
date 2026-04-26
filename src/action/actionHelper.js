@@ -56,10 +56,6 @@ export const createTileExplodeIntent = function(layerID, tileX, tileY) {
     });
 }
 
-export const createEndTurnIntent = function() {
-    return new ActionIntent(ACTION_TYPE.END_TURN, {});
-}
-
 export const createHealRequest = function(entityID, targetID) {
     return new ActionIntent(ACTION_TYPE.HEAL, {
         "entityID": entityID,
