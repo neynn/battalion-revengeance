@@ -76,20 +76,8 @@ export const createMoveRequest = function(entityID, path, command, targetID) {
     });
 }
 
-export const createCloakIntent = function(entityID) {
-    return new ActionIntent(ACTION_TYPE.CLOAK, {
-        "entityID": entityID
-    });
-}
-
 export const createUncloakIntent = function(entityID) {
     return new ActionIntent(ACTION_TYPE.UNCLOAK, {
         "entityID": entityID
-    });
-}
-
-export const createDeathIntent = function(entities) {
-    return new ActionIntent(ACTION_TYPE.DEATH, {
-        "entities": entities
     });
 }

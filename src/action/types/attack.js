@@ -6,8 +6,8 @@ import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ACTION_TYPE, ATTACK_TYPE, COMMAND_TYPE, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { playEntitySound } from "../../systems/sound.js";
 import { getAnimationDuration, playAttackEffect, updateEntitySprite } from "../../systems/sprite.js";
-import { createDeathIntent } from "../actionHelper.js";
 import { getDeadEntities, InteractionResolver } from "../interactionResolver.js";
+import { DeathActionVTable } from "./death.js";
 
 const ATTACK_FLAG = {
     NONE: 0,
@@ -150,7 +150,7 @@ const fillAttackPlan = function(gameContext, executionPlan, actionIntent) {
         const deadEntities = getDeadEntities(resolutions);
 
         if(deadEntities.length !== 0) {
-            executionPlan.addNext(createDeathIntent(deadEntities));
+            executionPlan.addNext(DeathActionVTable.createIntent(deadEntities));
         }               
 
         if(command !== COMMAND_TYPE.COUNTER) {
@@ -243,9 +243,9 @@ AttackAction.prototype.onEnd = function(gameContext, data) {
 }
 
 AttackAction.prototype.execute = function(gameContext, data) {
-    AttackActionVTable.execute(gameContext, data);
+    executeAttack(gameContext, data);
 }
 
 AttackAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    AttackActionVTable.fillPlan(gameContext, executionPlan, actionIntent);
+    fillAttackPlan(gameContext, executionPlan, actionIntent);
 }

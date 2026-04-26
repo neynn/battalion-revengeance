@@ -2,7 +2,7 @@ import { Action } from "../../../engine/action/action.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { WorldMap } from "../../../engine/map/worldMap.js";
 import { playExplosion } from "../../systems/sprite.js";
-import { createDeathIntent } from "../actionHelper.js";
+import { DeathActionVTable } from "./death.js";
 
 export const MineTriggerAction = function() {
     Action.call(this);
@@ -73,7 +73,7 @@ MineTriggerAction.prototype.fillExecutionPlan = function(gameContext, executionP
     const health = entity.getHealthFromDelta(delta);
 
     if(health <= 0) {
-        executionPlan.addNext(createDeathIntent([entityID]));
+        executionPlan.addNext(DeathActionVTable.createIntent([entityID]));
     }
 
     const data = MineTriggerAction.createData();

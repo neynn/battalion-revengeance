@@ -92,9 +92,9 @@ CaptureAction.prototype.onEnd = function(gameContext, data) {
 }
 
 CaptureAction.prototype.execute = function(gameContext, data) {
-    CaptureActionVTable.execute(gameContext, data);
+    executeCapture(gameContext, data);
 }
 
 CaptureAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    CaptureActionVTable.fillPlan(gameContext, executionPlan, actionIntent);
+    fillCapturePlan(gameContext, executionPlan, actionIntent);
 }

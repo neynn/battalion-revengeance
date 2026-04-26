@@ -31,6 +31,7 @@ export const ClientGameContext = function() {
     this.timer = new Timer();
     this.tweenManager = new TweenManager();
     this.dialogueHandler = new DialogueHandler();
+    this.isClient = true;
 
     this.timer.work = () => {
         this.gameWindow.update(this);

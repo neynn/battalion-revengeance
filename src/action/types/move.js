@@ -6,9 +6,10 @@ import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { COMMAND_TYPE, MOVE_COMMAND, PATH_INTERCEPT, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { playEntitySound, playUncloakSound } from "../../systems/sound.js";
 import { updateEntitySprite } from "../../systems/sprite.js";
-import { createCloakIntent, createHealRequest, createMineTriggerIntent, createUncloakIntent } from "../actionHelper.js";
+import { createHealRequest, createMineTriggerIntent, createUncloakIntent } from "../actionHelper.js";
 import { AttackActionVTable } from "./attack.js";
 import { CaptureActionVTable } from "./capture.js";
+import { CloakActionVTable } from "./cloak.js";
 
 export const MoveAction = function() {
     Action.call(this);
@@ -290,7 +291,7 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
     }
 
     if(entity.canCloakAt(gameContext, targetX, targetY)) {
-        executionPlan.addNext(createCloakIntent(entityID));
+        executionPlan.addNext(CloakActionVTable.createIntent(entityID));
     }
 
     if(entity.hasTrait(TRAIT_TYPE.ELUSIVE)) {

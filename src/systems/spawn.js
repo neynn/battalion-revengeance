@@ -31,7 +31,7 @@ const createEntity = function(gameContext, entityID, snapshot) {
     return entityObject;
 }
 
-const destroyEntity = function(gameContext, entity) {
+export const destroyEntity = function(gameContext, entity) {
     const { teamManager, world } = gameContext;
     const { entityManager } = world;
     const { activeTeams } = teamManager;
@@ -52,6 +52,13 @@ const destroyEntity = function(gameContext, entity) {
     teamManager.updateStatus();
 }
 
+export const destroyEntitySprite = function(gameContext, entity) {
+    const { spriteManager } = gameContext;
+
+    spriteManager.destroySprite(entity.spriteID);
+    entity.spriteID = SpriteManager.INVALID_ID;
+}
+
 const createBuilding = function(gameContext, worldMap, snapshot) {
     const { typeRegistry } = gameContext;
     const { teamID, type, tileX, tileY } = snapshot;
@@ -70,10 +77,7 @@ const createBuilding = function(gameContext, worldMap, snapshot) {
 }
 
 export const despawnClientEntity = function(gameContext, entity) {
-    const { spriteManager } = gameContext;
-
-    spriteManager.destroySprite(entity.spriteID);
-    entity.spriteID = SpriteManager.INVALID_ID;
+    destroyEntitySprite(gameContext, entity);
     destroyEntity(gameContext, entity);
 }
 

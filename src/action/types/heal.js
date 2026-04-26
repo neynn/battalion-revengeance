@@ -5,8 +5,8 @@ import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { SOUND_TYPE, TRAIT_TYPE } from "../../enums.js";
 import { playEntitySound } from "../../systems/sound.js";
 import { getAnimationDuration, playHealEffect, updateEntitySprite } from "../../systems/sprite.js";
-import { createDeathIntent } from "../actionHelper.js";
 import { getDeadEntities, InteractionResolver } from "../interactionResolver.js";
+import { DeathActionVTable } from "./death.js";
 
 const resolveHeal = function(gameContext, entity, target, resolver) {
     if(entity.isHealValid(gameContext, target) && entity.isHealPositionValid(gameContext, target)) {
@@ -121,7 +121,7 @@ HealAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
         const deadEntities = getDeadEntities(resolutions);
 
         if(deadEntities.length !== 0) {
-            executionPlan.addNext(createDeathIntent(deadEntities));
+            executionPlan.addNext(DeathActionVTable.createIntent(deadEntities));
         }
 
         const data = HealAction.createData();

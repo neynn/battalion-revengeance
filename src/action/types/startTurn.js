@@ -1,8 +1,9 @@
 import { Action } from "../../../engine/action/action.js";
 import { INTERRUPT_TYPE, TEAM_STAT, TRAIT_CONFIG, TRAIT_TYPE } from "../../enums.js";
 import { TeamManager } from "../../team/teamManager.js";
-import { createDeathIntent, createInterruptIntent, createUncloakIntent } from "../actionHelper.js";
+import { createInterruptIntent, createUncloakIntent } from "../actionHelper.js";
 import { fillEntityResolution } from "../interactionResolver.js";
+import { DeathActionVTable } from "./death.js";
 
 export const StartTurnAction = function() {
     Action.call(this);
@@ -113,7 +114,7 @@ StartTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPla
     }
 
     if(deadEntities.length !== 0) {
-        executionPlan.addNext(createDeathIntent(deadEntities));
+        executionPlan.addNext(DeathActionVTable.createIntent(deadEntities));
     }
 
     const data = StartTurnAction.createData();

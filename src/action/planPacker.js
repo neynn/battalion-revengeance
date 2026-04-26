@@ -5,8 +5,8 @@ import { createEntityResolution } from "./interactionResolver.js";
 import { ENTITY_RESOLUTION_SIZE, ENTITY_SNAPSHOT_SIZE, MOVE_STEP_SIZE, packEntityResolution, packEntitySnapshot, packStep, unpackEntityResolution, unpackEntitySnapshot, unpackStep } from "./packer_constants.js";
 import { AttackActionVTable } from "./types/attack.js";
 import { CaptureActionVTable } from "./types/capture.js";
-import { CloakAction } from "./types/cloak.js";
-import { DeathAction } from "./types/death.js";
+import { CloakActionVTable } from "./types/cloak.js";
+import { DeathAction, DeathActionVTable } from "./types/death.js";
 import { EndTurnAction } from "./types/endTurn.js";
 import { EntitySpawnAction } from "./types/entitySpawn.js";
 import { ExplodeTileAction } from "./types/explodeTile.js";
@@ -566,7 +566,7 @@ export const unpackPlan = function(buffer) {
             break;
         }
         case ACTION_TYPE.DEATH: {
-            data = DeathAction.createData();
+            data = DeathActionVTable.createData();
 
             const count = view.getUint16(1, true);
             let byteOffset = DEATH_HEADER_SIZE;
@@ -580,7 +580,7 @@ export const unpackPlan = function(buffer) {
             break;
         }
         case ACTION_TYPE.CLOAK: {
-            data = CloakAction.createData();
+            data = CloakActionVTable.createData();
             data.entityID = view.getInt16(1, true);
             break;
         }

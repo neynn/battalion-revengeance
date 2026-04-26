@@ -1,19 +1,59 @@
 import { Action } from "../../../engine/action/action.js";
+import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
-import { SOUND_TYPE } from "../../enums.js";
+import { ACTION_TYPE, SOUND_TYPE } from "../../enums.js";
 import { playEntitySound } from "../../systems/sound.js";
 import { CloakTween } from "../../tween/cloakTween.js";
+
+const createCloakIntent = function(entityID) {
+    return new ActionIntent(ACTION_TYPE.CLOAK, {
+        "entityID": entityID
+    });
+}
+
+const createCloakData = function() {
+    return {
+        "entityID": EntityManager.INVALID_ID
+    }
+}
+
+const fillCloakPlan = function(gameContext, executionPlan, actionIntent) {
+    const { world } = gameContext;
+    const { entityManager } = world;
+    const { entityID } = actionIntent;
+    const entity = entityManager.getEntity(entityID);
+
+    if(!entity || !entity.canCloakAtSelf(gameContext)) {
+        return;
+    }
+
+    const data = createCloakData();
+
+    data.entityID = entityID;
+
+    executionPlan.setData(data);
+}
+
+const executeCloak = function(gameContext, data) {
+    const { world } = gameContext;
+    const { entityManager } = world;
+    const { entityID } = data;
+    const entity = entityManager.getEntity(entityID);
+
+    entity.setCloaked();
+}
+
+export const CloakActionVTable = {
+    createIntent: createCloakIntent,
+    createData: createCloakData,
+    fillPlan: fillCloakPlan,
+    execute: executeCloak
+};
 
 export const CloakAction = function() {
     Action.call(this);
 
     this.tweens = [];
-}
-
-CloakAction.createData = function() {
-    return {
-        "entityID": EntityManager.INVALID_ID
-    }
 }
 
 CloakAction.prototype = Object.create(Action.prototype);
@@ -52,27 +92,9 @@ CloakAction.prototype.onEnd = function(gameContext, data) {
 }
 
 CloakAction.prototype.execute = function(gameContext, data) {
-    const { world } = gameContext;
-    const { entityManager } = world;
-    const { entityID } = data;
-    const entity = entityManager.getEntity(entityID);
-
-    entity.setCloaked();
+    executeCloak(gameContext, data);
 }
 
 CloakAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    const { world } = gameContext;
-    const { entityManager } = world;
-    const { entityID } = actionIntent;
-    const entity = entityManager.getEntity(entityID);
-
-    if(!entity || !entity.canCloakAtSelf(gameContext)) {
-        return;
-    }
-
-    const data = CloakAction.createData();
-
-    data.entityID = entityID;
-
-    executionPlan.setData(data);
+    fillCloakPlan(gameContext, executionPlan, actionIntent);
 }

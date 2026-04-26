@@ -5,8 +5,9 @@ import { IdleState } from "./player/idle.js";
 import { SelectState } from "./player/select.js";
 import { DIRECTION, ENTITY_TYPE } from "../enums.js";
 import { saveStoryMap } from "../systems/save.js";
-import { createDeathIntent, createEndTurnIntent, createExtractIntent, createProduceIntent } from "../action/actionHelper.js";
+import { createEndTurnIntent, createExtractIntent, createProduceIntent } from "../action/actionHelper.js";
 import { MapInspector } from "./player/inspector.js";
+import { DeathActionVTable } from "../action/types/death.js";
 
 export const Player = function(id, inspector, camera) {
     BattalionActor.call(this, id);
@@ -41,7 +42,7 @@ Player.prototype.surrender = function(gameContext) {
     
     if(team) {
         const { entities } = team;
-        const deathRequest = createDeathIntent(entities);
+        const deathRequest = DeathActionVTable.createIntent(entities);
 
         this.addIntent(deathRequest);
     }
