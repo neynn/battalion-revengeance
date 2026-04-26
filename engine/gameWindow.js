@@ -45,20 +45,21 @@ GameWindow.prototype.queueResize = function() {
 }
 
 GameWindow.prototype.drawDebug = function(gameContext) {
-    const { textureLoader } = gameContext;
+    const { textureLoader, timer } = gameContext;
     const { context } = this.display;
-    const { timer } = gameContext;
+    const { smoothFPS, targetFPS } = timer;
     const { x, y } = getCursorTile(gameContext);
-    const fps = Math.round(timer.getFPS());
+    const fps = Math.round(smoothFPS);
+    const delta = targetFPS - fps;
 
-    if(fps >= 120) {
-        context.fillStyle = "#00ff00";
-    } else if(fps >= 60) {
+    if(delta >= Math.floor(targetFPS / 2)) {
+        context.fillStyle = "#ff0000";
+    } else if(delta >= Math.floor(targetFPS / 4)) {
         context.fillStyle = "#ffff00";
     } else {
-        context.fillStyle = "#ff0000";
+        context.fillStyle = "#00ff00";
     }
-    
+
     const TEXT_SIZE = 10;
     const WINDOW_Y = 0;
     const DEBUG_Y = TEXT_SIZE * 6;
@@ -66,7 +67,7 @@ GameWindow.prototype.drawDebug = function(gameContext) {
     context.globalAlpha = 1;
     context.font = `${TEXT_SIZE}px Arial`;
 
-    context.fillText(`FPS: ${fps}`, 0, WINDOW_Y + TEXT_SIZE);
+    context.fillText(`FPS: ${fps} | ${delta}`, 0, WINDOW_Y + TEXT_SIZE);
     context.fillText(`WindowX: ${this.width}, WindowY: ${this.height}`, 0, WINDOW_Y + TEXT_SIZE * 2);
     context.fillText(`MouseX: ${x}, MouseY: ${y}`, 0, WINDOW_Y + TEXT_SIZE * 3);
     context.fillText(`Task: ${textureLoader.getCompletedTasks()}/${textureLoader.totalTasks}`, 0, WINDOW_Y + TEXT_SIZE * 4);

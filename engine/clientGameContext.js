@@ -32,6 +32,11 @@ export const ClientGameContext = function() {
     this.tweenManager = new TweenManager();
     this.dialogueHandler = new DialogueHandler();
 
+    this.timer.work = () => {
+        this.gameWindow.update(this);
+        this.textureLoader.update();
+    }
+
     this.timer.input = () => {
         this.client.update();
         this.uiManager.update(this);
@@ -43,8 +48,6 @@ export const ClientGameContext = function() {
     }
 
     this.timer.render = () => {
-        this.textureLoader.update();
-        this.gameWindow.update(this);
         this.dialogueHandler.update(this);
         this.tweenManager.update(this);
         this.spriteManager.update(this);
