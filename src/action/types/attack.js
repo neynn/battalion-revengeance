@@ -182,8 +182,8 @@ const fillAttackPlan = function(gameContext, executionPlan, actionIntent) {
 export const AttackActionVTable = {
     createIntent: createAttackIntent,
     createData: createAttackData,
-    execute: executeAttack,
-    fillPlan: fillAttackPlan
+    fillPlan: fillAttackPlan,
+    execute: executeAttack
 };
 
 export const AttackAction = function() {

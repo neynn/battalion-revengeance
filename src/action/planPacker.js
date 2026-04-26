@@ -4,7 +4,7 @@ import { createStep } from "../systems/pathfinding.js";
 import { createEntityResolution } from "./interactionResolver.js";
 import { ENTITY_RESOLUTION_SIZE, ENTITY_SNAPSHOT_SIZE, MOVE_STEP_SIZE, packEntityResolution, packEntitySnapshot, packStep, unpackEntityResolution, unpackEntitySnapshot, unpackStep } from "./packer_constants.js";
 import { AttackActionVTable } from "./types/attack.js";
-import { CaptureAction } from "./types/capture.js";
+import { CaptureActionVTable } from "./types/capture.js";
 import { CloakAction } from "./types/cloak.js";
 import { DeathAction } from "./types/death.js";
 import { EndTurnAction } from "./types/endTurn.js";
@@ -585,7 +585,7 @@ export const unpackPlan = function(buffer) {
             break;
         }
         case ACTION_TYPE.CAPTURE: {
-            data = CaptureAction.createData();
+            data = CaptureActionVTable.createData();
             data.entityID = view.getInt16(1, true);
             data.targetX = view.getInt16(3, true);
             data.targetY = view.getInt16(5, true);

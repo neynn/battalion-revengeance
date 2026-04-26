@@ -60,14 +60,6 @@ export const createEndTurnIntent = function() {
     return new ActionIntent(ACTION_TYPE.END_TURN, {});
 }
 
-export const createCaptureIntent = function(entityID, targetX, targetY) {
-    return new ActionIntent(ACTION_TYPE.CAPTURE, {
-        "entityID": entityID,
-        "targetX": targetX,
-        "targetY": targetY
-    });
-}
-
 export const createHealRequest = function(entityID, targetID) {
     return new ActionIntent(ACTION_TYPE.HEAL, {
         "entityID": entityID,

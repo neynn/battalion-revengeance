@@ -1,14 +1,19 @@
 import { Action } from "../../../engine/action/action.js";
+import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
-import { TEAM_STAT } from "../../enums.js";
+import { ACTION_TYPE, TEAM_STAT } from "../../enums.js";
 import { updateBuildingSprite } from "../../systems/sprite.js";
 
-export const CaptureAction = function() {
-    Action.call(this);
+const createCaptureIntent = function(entityID, targetX, targetY) {
+    return new ActionIntent(ACTION_TYPE.CAPTURE, {
+        "entityID": entityID,
+        "targetX": targetX,
+        "targetY": targetY
+    });
 }
 
-CaptureAction.createData = function() {
+const createCaptureData = function() {
     return {
         "entityID": EntityManager.INVALID_ID,
         "targetX": -1,
@@ -16,20 +21,34 @@ CaptureAction.createData = function() {
     }
 }
 
-CaptureAction.prototype = Object.create(Action.prototype);
-CaptureAction.prototype.constructor = CaptureAction;
-
-CaptureAction.prototype.onEnd = function(gameContext, data) {
+const fillCapturePlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
-    const { mapManager } = world;
-    const { targetX, targetY } = data;
-    const worldMap = mapManager.getActiveMap();
-    const building = worldMap.getBuilding(targetX, targetY);
+    const { entityManager } = world;
+    const { entityID, targetX, targetY } = actionIntent;
+    const entity = entityManager.getEntity(entityID);
 
-    updateBuildingSprite(gameContext, building);
+    if(!entity || entity.isDead()) {
+        return;
+    }
+
+    if(!entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) || entity.getDistanceToTile(targetX, targetY) !== 0) {
+        return;
+    }
+
+    if(!entity.canCapture(gameContext, targetX, targetY)) {
+        return;
+    }
+
+    const data = createCaptureData();
+
+    data.entityID = entityID;
+    data.targetX = targetX;
+    data.targetY = targetY;
+
+    executionPlan.setData(data);
 }
 
-CaptureAction.prototype.execute = function(gameContext, data) {
+const executeCapture = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager, mapManager } = world;
     const { entityID, targetX, targetY } = data;
@@ -48,29 +67,34 @@ CaptureAction.prototype.execute = function(gameContext, data) {
     building.setColor(nextTeam.color);
 }
 
-CaptureAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
+export const CaptureActionVTable = {
+    createIntent: createCaptureIntent,
+    createData: createCaptureData,
+    fillPlan: fillCapturePlan,
+    execute: executeCapture
+};
+
+export const CaptureAction = function() {
+    Action.call(this);
+}
+
+CaptureAction.prototype = Object.create(Action.prototype);
+CaptureAction.prototype.constructor = CaptureAction;
+
+CaptureAction.prototype.onEnd = function(gameContext, data) {
     const { world } = gameContext;
-    const { entityManager } = world;
-    const { entityID, targetX, targetY } = actionIntent;
-    const entity = entityManager.getEntity(entityID);
+    const { mapManager } = world;
+    const { targetX, targetY } = data;
+    const worldMap = mapManager.getActiveMap();
+    const building = worldMap.getBuilding(targetX, targetY);
 
-    if(!entity || entity.isDead()) {
-        return;
-    }
+    updateBuildingSprite(gameContext, building);
+}
 
-    if(!entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) || entity.getDistanceToTile(targetX, targetY) !== 0) {
-        return;
-    }
+CaptureAction.prototype.execute = function(gameContext, data) {
+    CaptureActionVTable.execute(gameContext, data);
+}
 
-    if(!entity.canCapture(gameContext, targetX, targetY)) {
-        return;
-    }
-
-    const data = CaptureAction.createData();
-
-    data.entityID = entityID;
-    data.targetX = targetX;
-    data.targetY = targetY;
-
-    executionPlan.setData(data);
+CaptureAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
+    CaptureActionVTable.fillPlan(gameContext, executionPlan, actionIntent);
 }
