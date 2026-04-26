@@ -30,8 +30,12 @@ const RECON_VITALITY_HEALTH_HEIGHT = 6;
 const DESCRIPTION_BOX_WIDTH_TILE_VANILLA = 421;
 const DESCRIPTION_BOX_WIDTH_TILE = 381;
 const DESCRIPTION_BOX_WIDTH_ENTITY = 215;
+
 const ICON_WIDTH = 20;
 const ICON_HEIGHT = 20;
+
+const RECON_MAIN_WIDTH = 154;
+const RECON_BAR_HEIGHT = 42;
 
 const TILE_DRAW_ORDER = [
     BattalionMap.LAYER.GROUND,
@@ -414,7 +418,8 @@ PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, scree
 }
 
 PlayUI.prototype.onImmediate = function(gameContext, display) {
-    const { uiData, world, language, timer, typeRegistry } = gameContext;
+    const { uiData, world, language, timer, typeRegistry, gameWindow } = gameContext;
+    const { width, height } = gameWindow;
     const { mapManager } = world;
     const { realTime, deltaTime } = timer;
     const { context } = display;
@@ -423,10 +428,17 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
     const worldMap = mapManager.getActiveMap();
     const index = worldMap.getIndex(tileX, tileY);
 
-    const mainX = this.cContext.positionX + this.cContext.camera.viewportWidth;
-    const mainY = this.cContext.positionY;
-    const reconX = this.cContext.positionX;
-    const reconY = this.cContext.positionY + this.cContext.camera.viewportHeight;
+    const gameWidth = this.cContext.camera.viewportWidth + RECON_MAIN_WIDTH;
+    const gameHeight = this.cContext.camera.viewportHeight + RECON_BAR_HEIGHT;
+    const gameX = Math.floor((width - gameWidth) / 2);
+    const gameY = Math.floor((height - gameHeight) / 2);
+
+    this.cContext.setPosition(gameX, gameY);
+
+    const mainX = gameX + this.cContext.camera.viewportWidth;
+    const mainY = gameY;
+    const reconX = gameX;
+    const reconY = gameY + this.cContext.camera.viewportHeight;
 
     //In all recons.
     const headY = reconY + 4;
