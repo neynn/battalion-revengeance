@@ -18,14 +18,6 @@ StartTurnAction.createData = function() {
 StartTurnAction.prototype = Object.create(Action.prototype);
 StartTurnAction.prototype.constructor = StartTurnAction;
 
-StartTurnAction.prototype.isFinished = function(gameContext, executionPlan) {
-    return true;
-}
-
-StartTurnAction.prototype.onEnd = function(gameContext, data) {
-    this.execute(gameContext, data);
-}
-
 StartTurnAction.prototype.execute = function(gameContext, data) {
     const { actionRouter, world, teamManager } = gameContext;
     const { entityManager, eventHandler, mapManager } = world;

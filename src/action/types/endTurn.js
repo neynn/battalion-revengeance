@@ -16,14 +16,6 @@ EndTurnAction.createData = function() {
 EndTurnAction.prototype = Object.create(Action.prototype);
 EndTurnAction.prototype.constructor = EndTurnAction;
 
-EndTurnAction.prototype.isFinished = function(gameContext, executionPlan) {
-    return true;
-}
-
-EndTurnAction.prototype.onEnd = function(gameContext, data) {
-    this.execute(gameContext, data);
-}
-
 EndTurnAction.prototype.execute = function(gameContext, data) {
     const { world, teamManager } = gameContext;
     const { entityManager } = world;

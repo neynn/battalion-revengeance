@@ -63,6 +63,7 @@ ActionQueue.prototype.update = function(gameContext) {
             actionType.onUpdate(gameContext, data);
 
             if(this.isSkipping || actionType.isFinished(gameContext, this.current)) {
+                actionType.execute(gameContext, data);
                 actionType.onEnd(gameContext, data);
                 this.endExecutionPlan();
                 this.state = ActionQueue.STATE.ACTIVE;

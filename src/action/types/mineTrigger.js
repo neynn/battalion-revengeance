@@ -29,14 +29,6 @@ MineTriggerAction.prototype.onStart = function(gameContext, data) {
     }
 }
 
-MineTriggerAction.prototype.isFinished = function(gameContext, executionPlan) {
-    return true;
-}
-
-MineTriggerAction.prototype.onEnd = function(gameContext, data) {
-    this.execute(gameContext, data);
-}
-
 MineTriggerAction.prototype.execute = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager, mapManager } = world;

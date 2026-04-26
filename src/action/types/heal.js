@@ -66,7 +66,6 @@ HealAction.prototype.onEnd = function(gameContext, data) {
     entity.setState(BattalionEntity.STATE.IDLE);
     updateEntitySprite(gameContext, entity);
 
-    this.execute(gameContext, data);
     this.duration = 0;
     this.passedTime = 0;
 }

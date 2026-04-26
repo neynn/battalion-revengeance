@@ -16,14 +16,6 @@ ExtractAction.createData = function() {
 ExtractAction.prototype = Object.create(Action.prototype);
 ExtractAction.prototype.constructor = ExtractAction;
 
-ExtractAction.prototype.isFinished = function(gameContext, executionPlan) {
-    return true;
-}
-
-ExtractAction.prototype.onEnd = function(gameContext, data) {
-    this.execute(gameContext, data);
-}
-
 ExtractAction.prototype.execute = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;

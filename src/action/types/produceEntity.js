@@ -24,14 +24,6 @@ ProduceEntityAction.createData = function() {
 ProduceEntityAction.prototype = Object.create(Action.prototype);
 ProduceEntityAction.prototype.constructor = ProduceEntityAction;
 
-ProduceEntityAction.prototype.isFinished = function(gameContext, executionPlan) {
-    return true;
-}
-
-ProduceEntityAction.prototype.onEnd = function(gameContext, data) {
-    this.execute(gameContext, data);
-}
-
 ProduceEntityAction.prototype.execute = function(gameContext, data) {
     const { world, teamManager } = gameContext;
     const { entityManager } = world;

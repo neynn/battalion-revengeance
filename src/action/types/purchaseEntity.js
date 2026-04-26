@@ -22,14 +22,6 @@ PurchaseEntityAction.createData = function() {
 PurchaseEntityAction.prototype = Object.create(Action.prototype);
 PurchaseEntityAction.prototype.constructor = PurchaseEntityAction;
 
-PurchaseEntityAction.prototype.isFinished = function(gameContext, executionPlan) {
-    return true;
-}
-
-PurchaseEntityAction.prototype.onEnd = function(gameContext, data) {
-    this.execute(gameContext, data);
-}
-
 PurchaseEntityAction.prototype.execute = function(gameContext, data) {
     const { teamManager } = gameContext;
     const { cost, nextID, snapshot } = data;

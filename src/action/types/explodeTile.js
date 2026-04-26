@@ -34,14 +34,6 @@ ExplodeTileAction.prototype.onStart = function(gameContext, data) {
     playExplosion(gameContext, tileX, tileY);
 }
 
-ExplodeTileAction.prototype.isFinished = function(gameContext, executionPlan) {
-    return true;
-}
-
-ExplodeTileAction.prototype.onEnd = function(gameContext, data) {
-    this.execute(gameContext, data);
-}
-
 ExplodeTileAction.prototype.execute = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager, mapManager } = world;

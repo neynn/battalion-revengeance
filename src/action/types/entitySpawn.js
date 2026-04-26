@@ -18,14 +18,6 @@ EntitySpawnAction.createData = function() {
 EntitySpawnAction.prototype = Object.create(Action.prototype);
 EntitySpawnAction.prototype.constructor = EntitySpawnAction;
 
-EntitySpawnAction.prototype.isFinished = function(gameContext, executionPlan) {
-    return true;
-}
-
-EntitySpawnAction.prototype.onEnd = function(gameContext, data) {
-    this.execute(gameContext, data);
-}
-
 EntitySpawnAction.prototype.execute = function(gameContext, data) {
     const { entityID, snapshot } = data;
     const entity = this._createEntity(gameContext, entityID, snapshot);

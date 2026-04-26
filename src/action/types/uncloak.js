@@ -63,7 +63,6 @@ UncloakAction.prototype.isFinished = function(gameContext, executionPlan) {
 
 UncloakAction.prototype.onEnd = function(gameContext, data) {
     this.tweens.length = 0;
-    this.execute(gameContext, data);
 }
 
 UncloakAction.prototype.execute = function(gameContext, data) {

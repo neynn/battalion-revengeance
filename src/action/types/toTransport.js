@@ -20,7 +20,6 @@ ToTransportAction.prototype.onStart = function(gameContext, data) {
     tweenManager.addTween(tween);
 
     this.tweens.push(tween);
-    this.execute(gameContext, data);
 }
 
 ToTransportAction.prototype.isFinished = function(gameContext, executionPlan) {

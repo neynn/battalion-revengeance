@@ -6,7 +6,8 @@ import { createClientMapLoader } from "../../systems/map.js";
 import { mRegenerateLines } from "../helpers.js";
 import { START_BUTTON_STYLE, UI_TEXTURE } from "../constants.js";
 import { TextureRegion } from "../../../engine/resources/texture/region.js";
-import { beginMatch } from "../../systems/launch.js";
+import { createInterruptIntent } from "../../action/actionHelper.js";
+import { INTERRUPT_TYPE } from "../../enums.js";
 
 const EMBLEM_GAP = 20;
 const EMBLEM_WIDTH = 70;
@@ -216,7 +217,7 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
                         }
 
                         loader.loadMapFromFile(gameContext, [over]);
-                        beginMatch(gameContext);
+                        actionRouter.forceEnqueue(gameContext, createInterruptIntent(INTERRUPT_TYPE.START_GAME, -1));
                         this.hide();
                     })
                     .catch(() => {

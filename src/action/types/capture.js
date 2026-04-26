@@ -19,13 +19,7 @@ CaptureAction.createData = function() {
 CaptureAction.prototype = Object.create(Action.prototype);
 CaptureAction.prototype.constructor = CaptureAction;
 
-CaptureAction.prototype.isFinished = function(gameContext, executionPlan) {
-    return true;
-}
-
 CaptureAction.prototype.onEnd = function(gameContext, data) {
-    this.execute(gameContext, data);
-
     const { world } = gameContext;
     const { mapManager } = world;
     const { targetX, targetY } = data;

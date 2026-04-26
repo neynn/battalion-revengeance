@@ -10,7 +10,6 @@ import { ServerActionRouter } from "../action/router/serverActionRouter.js";
 import { isIntentValid, unpackIntent } from "../action/intentPacker.js";
 import { ENTITY_SNAPSHOT_SIZE, packEntitySnapshot } from "../action/packer_constants.js";
 import { fillTurnSnapshot } from "../snapshot/turnSnapshot.js";
-import { beginMatch } from "../systems/launch.js";
 
 const isClientTurn = function(gameContext, messengerID) {
     const { world } = gameContext;
@@ -188,7 +187,7 @@ ServerGameContext.prototype.onMessage = async function(messengerID, type, payloa
             if(this.readyClients >= this.members.length && this.state === ServerGameContext.STATE.STARTING) {
                 this.broadcast(GAME_EVENT.MP_SERVER_START_MAP, 0);
                 this.state = ServerGameContext.STATE.STARTED;
-                beginMatch(this);
+                this.actionRouter.forceEnqueue(this, createInterruptIntent(INTERRUPT_TYPE.START_GAME, -1));
             }
 
             break;

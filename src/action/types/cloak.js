@@ -29,9 +29,9 @@ CloakAction.prototype.onStart = function(gameContext, data) {
     playEntitySound(gameContext, entity, SOUND_TYPE.CLOAK);
 
     tweenManager.addTween(tween);
+    entity.setCloaked(); //For visual purposes.
 
     this.tweens.push(tween);
-    this.execute(gameContext, data);
 }
 
 CloakAction.prototype.isFinished = function(gameContext, executionPlan) {
@@ -47,6 +47,10 @@ CloakAction.prototype.isFinished = function(gameContext, executionPlan) {
     return isFinished;
 }
 
+CloakAction.prototype.onEnd = function(gameContext, data) {
+    this.tweens.length = 0;
+}
+
 CloakAction.prototype.execute = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
@@ -54,10 +58,6 @@ CloakAction.prototype.execute = function(gameContext, data) {
     const entity = entityManager.getEntity(entityID);
 
     entity.setCloaked();
-}
-
-CloakAction.prototype.onEnd = function(gameContext, data) {
-    this.tweens.length = 0;
 }
 
 CloakAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {

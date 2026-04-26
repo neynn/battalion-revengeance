@@ -1,6 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
 import { WorldEvent } from "../../../engine/world/event/worldEvent.js";
 import { INTERRUPT_TYPE } from "../../enums.js";
+import { createStartTurnIntent } from "../actionHelper.js";
 
 export const InterruptAction = function() {
     Action.call(this);
@@ -86,6 +87,17 @@ InterruptAction.prototype.fillExecutionPlan = function(gameContext, executionPla
         return;
     }
 
+    switch(type) {
+        case INTERRUPT_TYPE.START_GAME: {
+            executionPlan.addNext(createStartTurnIntent());
+            break;
+        }
+        case INTERRUPT_TYPE.END_GAME: {
+            //TODO(neyn): Implement game-end.
+            break;
+        }
+    }
+    
     const data = InterruptAction.createData();
 
     data.type = type;

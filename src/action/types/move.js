@@ -121,7 +121,16 @@ MoveAction.prototype.isFinished = function(gameContext, executionPlan) {
         return false;
     }
 
-    return this.pathIndex < 0;
+    if(this.pathIndex >= 0) {
+        return false;
+    }
+
+    //Put entity back on origin.
+    //Client would otherwise bug out because it modifies tileX, tileY itself.
+    //HACK(neyn): This is a COLOSSAL hack and TERRIFIC code smell!
+    this.entity.setTile(this.originX, this.originY);
+
+    return true;
 }
 
 MoveAction.prototype.onEnd = function(gameContext, data) {
@@ -129,10 +138,6 @@ MoveAction.prototype.onEnd = function(gameContext, data) {
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
 
-    //Put entity back on origin.
-    //Client would otherwise bug out because it modifies tileX, tileY itself.
-    this.entity.setTile(this.originX, this.originY);
-    this.execute(gameContext, data);
     this.entity.setState(BattalionEntity.STATE.IDLE);
     this.entity.clearOffset();
 
