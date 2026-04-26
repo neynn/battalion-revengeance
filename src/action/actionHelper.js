@@ -68,29 +68,10 @@ export const createCaptureIntent = function(entityID, targetX, targetY) {
     });
 }
 
-export const createTrackingIntent = function(entity, potentialTargets) {
-    const entityID = entity.getID();
-    const targetID = potentialTargets[0].getID();
-    
-    return new ActionIntent(ACTION_TYPE.ATTACK, {
-        "entityID": entityID,
-        "targetID": targetID,
-        "command": COMMAND_TYPE.ATTACK
-    });
-}
-
 export const createHealRequest = function(entityID, targetID) {
     return new ActionIntent(ACTION_TYPE.HEAL, {
         "entityID": entityID,
         "targetID": targetID
-    });
-}
-
-export const createAttackRequest = function(entityID, targetID, command) {
-    return new ActionIntent(ACTION_TYPE.ATTACK, {
-        "entityID": entityID,
-        "targetID": targetID,
-        "command": command
     });
 }
 

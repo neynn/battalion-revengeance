@@ -1,9 +1,9 @@
 import { Action } from "../../../engine/action/action.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
-import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { COMMAND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { playUncloakSound } from "../../systems/sound.js";
 import { UncloakTween } from "../../tween/uncloakTween.js";
-import { createTrackingIntent } from "../actionHelper.js";
+import { AttackActionVTable } from "./attack.js";
 
 export const UncloakAction = function() {
     Action.call(this);
@@ -106,7 +106,10 @@ UncloakAction.prototype.fillExecutionPlan = function(gameContext, executionPlan,
     }
 
     if(uncloakedEntities.length !== 0 && entity.hasTrait(TRAIT_TYPE.TRACKING)) {
-        executionPlan.addNext(createTrackingIntent(entity, uncloakedEntities));
+        const entityID = entity.getID();
+        const targetID = uncloakedEntities[0].getID();
+
+        executionPlan.addNext(AttackActionVTable.createIntent(entityID, targetID, COMMAND_TYPE.ATTACK));
     }
 
     const data = UncloakAction.createData();

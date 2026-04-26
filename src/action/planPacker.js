@@ -3,7 +3,7 @@ import { ACTION_TYPE } from "../enums.js";
 import { createStep } from "../systems/pathfinding.js";
 import { createEntityResolution } from "./interactionResolver.js";
 import { ENTITY_RESOLUTION_SIZE, ENTITY_SNAPSHOT_SIZE, MOVE_STEP_SIZE, packEntityResolution, packEntitySnapshot, packStep, unpackEntityResolution, unpackEntitySnapshot, unpackStep } from "./packer_constants.js";
-import { AttackAction } from "./types/attack.js";
+import { AttackActionVTable } from "./types/attack.js";
 import { CaptureAction } from "./types/capture.js";
 import { CloakAction } from "./types/cloak.js";
 import { DeathAction } from "./types/death.js";
@@ -592,7 +592,7 @@ export const unpackPlan = function(buffer) {
             break;
         }
         case ACTION_TYPE.ATTACK: {
-            data = AttackAction.createData();
+            data = AttackActionVTable.createData();
             data.flags = view.getUint8(1);
             data.attackerID = view.getInt16(2, true);
             data.targetID = view.getInt16(4, true);

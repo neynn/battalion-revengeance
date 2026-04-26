@@ -1,6 +1,7 @@
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { FloodFill } from "../../../engine/pathfinders/floodFill.js";
-import { createAttackRequest, createHealRequest, createMoveRequest } from "../../action/actionHelper.js";
+import { createHealRequest, createMoveRequest } from "../../action/actionHelper.js";
+import { AttackActionVTable } from "../../action/types/attack.js";
 import { AUTOTILER_TYPE, COMMAND_TYPE, MOVE_COMMAND, RANGE_TYPE } from "../../enums.js";
 import { createStep, isNodeReachable, getBestPath } from "../../systems/pathfinding.js";
 import { Player } from "../player.js";
@@ -230,13 +231,13 @@ SelectState.prototype.getAttackRequest = function(entity) {
 
     switch(rangeType) {
         case RANGE_TYPE.RANGE: {
-            request = createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.ATTACK);
+            request = AttackActionVTable.createIntent(this.entity.getID(), entity.getID(), COMMAND_TYPE.ATTACK);
             break;
         }
         case RANGE_TYPE.MELEE:
         case RANGE_TYPE.HYBRID: {
             if(this.path.length === 0) {
-                request = createAttackRequest(this.entity.getID(), entity.getID(), COMMAND_TYPE.ATTACK);
+                request = AttackActionVTable.createIntent(this.entity.getID(), entity.getID(), COMMAND_TYPE.ATTACK);
             } else {
                 request = createMoveRequest(this.entity.getID(), this.path, MOVE_COMMAND.ATTACK, entity.getID());
             }

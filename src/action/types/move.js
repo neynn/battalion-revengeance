@@ -6,7 +6,8 @@ import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { COMMAND_TYPE, MOVE_COMMAND, PATH_INTERCEPT, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { playEntitySound, playUncloakSound } from "../../systems/sound.js";
 import { updateEntitySprite } from "../../systems/sprite.js";
-import { createAttackRequest, createCaptureIntent, createCloakIntent, createHealRequest, createMineTriggerIntent, createUncloakIntent } from "../actionHelper.js";
+import { createCaptureIntent, createCloakIntent, createHealRequest, createMineTriggerIntent, createUncloakIntent } from "../actionHelper.js";
+import { AttackActionVTable } from "./attack.js";
 
 export const MoveAction = function() {
     Action.call(this);
@@ -274,7 +275,7 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
             }
 
             if(entity.isAttackValid(gameContext, targetEntity)) {
-                executionPlan.addNext(createAttackRequest(entityID, targetID, COMMAND_TYPE.ATTACK));
+                executionPlan.addNext(AttackActionVTable.createIntent(entityID, targetID, COMMAND_TYPE.ATTACK));
             }
 
             break;
