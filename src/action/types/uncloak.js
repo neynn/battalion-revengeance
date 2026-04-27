@@ -1,22 +1,98 @@
 import { Action } from "../../../engine/action/action.js";
+import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
-import { COMMAND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { ACTION_TYPE, COMMAND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { playUncloakSound } from "../../systems/sound.js";
 import { UncloakTween } from "../../tween/uncloakTween.js";
 import { AttackActionVTable } from "./attack.js";
 
-export const UncloakAction = function() {
-    Action.call(this);
-
-    this.tweens = [];
+const createUncloakIntent = function(entityID) {
+    return new ActionIntent(ACTION_TYPE.UNCLOAK, {
+        "entityID": entityID
+    });
 }
 
-UncloakAction.createData = function() {
+const createUncloakData = function() {
     return {
         "entityID": EntityManager.INVALID_ID,
         "entities": [],
         "mines": []
     }
+}
+
+const fillUncloakPlan = function(gameContext, executionPlan, actionIntent) {
+    const { world } = gameContext;
+    const { entityManager } = world;
+    const { entityID } = actionIntent;
+    const entity = entityManager.getEntity(entityID);
+
+    if(!entity || entity.isDead()) {
+        return;
+    }
+
+    const uncloakedMines = entity.getUncloakedMines(gameContext);
+    const uncloakedEntities = entity.getUncloakedEntities(gameContext);
+
+    if(uncloakedEntities.length === 0 && uncloakedMines.length === 0) {
+        return;
+    }
+
+    if(uncloakedEntities.length !== 0 && entity.hasTrait(TRAIT_TYPE.TRACKING)) {
+        const entityID = entity.getID();
+        const targetID = uncloakedEntities[0].getID();
+
+        executionPlan.addNext(AttackActionVTable.createIntent(entityID, targetID, COMMAND_TYPE.ATTACK));
+    }
+
+    const data = createUncloakData();
+
+    data.entityID = entityID;
+    
+    for(const entity of uncloakedEntities) {
+        data.entities.push(entity.getID());
+    }
+
+    for(const mine of uncloakedMines) {
+        data.mines.push(mine.positionToJSON());
+    }
+
+    executionPlan.setData(data);
+}
+
+const executeUncloak = function(gameContext, data) {
+    const { world } = gameContext;
+    const { entityManager, mapManager } = world;
+    const { entities, mines, entityID } = data;
+    const worldMap = mapManager.getActiveMap();
+    const entity = entityManager.getEntity(entityID);
+    const team = entity.getTeam(gameContext);
+
+    for(const entityID of entities) {
+        const entity = entityManager.getEntity(entityID);
+
+        entity.setUncloaked();
+    }
+
+    for(const { x, y } of mines) {
+        const mine = worldMap.getMine(x, y);
+
+        mine.show();
+    }
+
+    team.addStatistic(TEAM_STAT.MINES_DISCOVERED, mines.length);
+}
+
+export const UncloakVTable = {
+    createIntent: createUncloakIntent,
+    createData: createUncloakData,
+    fillPlan: fillUncloakPlan,
+    execute: executeUncloak
+};
+
+export const UncloakAction = function() {
+    Action.call(this);
+
+    this.tweens = [];
 }
 
 UncloakAction.prototype = Object.create(Action.prototype);
@@ -63,66 +139,4 @@ UncloakAction.prototype.isFinished = function(gameContext, executionPlan) {
 
 UncloakAction.prototype.onEnd = function(gameContext, data) {
     this.tweens.length = 0;
-}
-
-UncloakAction.prototype.execute = function(gameContext, data) {
-    const { world } = gameContext;
-    const { entityManager, mapManager } = world;
-    const { entities, mines, entityID } = data;
-    const worldMap = mapManager.getActiveMap();
-    const entity = entityManager.getEntity(entityID);
-    const team = entity.getTeam(gameContext);
-
-    for(const entityID of entities) {
-        const entity = entityManager.getEntity(entityID);
-
-        entity.setUncloaked();
-    }
-
-    for(const { x, y } of mines) {
-        const mine = worldMap.getMine(x, y);
-
-        mine.show();
-    }
-
-    team.addStatistic(TEAM_STAT.MINES_DISCOVERED, mines.length);
-}
-
-UncloakAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    const { world } = gameContext;
-    const { entityManager } = world;
-    const { entityID } = actionIntent;
-    const entity = entityManager.getEntity(entityID);
-
-    if(!entity || entity.isDead()) {
-        return;
-    }
-
-    const uncloakedMines = entity.getUncloakedMines(gameContext);
-    const uncloakedEntities = entity.getUncloakedEntities(gameContext);
-
-    if(uncloakedEntities.length === 0 && uncloakedMines.length === 0) {
-        return;
-    }
-
-    if(uncloakedEntities.length !== 0 && entity.hasTrait(TRAIT_TYPE.TRACKING)) {
-        const entityID = entity.getID();
-        const targetID = uncloakedEntities[0].getID();
-
-        executionPlan.addNext(AttackActionVTable.createIntent(entityID, targetID, COMMAND_TYPE.ATTACK));
-    }
-
-    const data = UncloakAction.createData();
-
-    data.entityID = entityID;
-    
-    for(const entity of uncloakedEntities) {
-        data.entities.push(entity.getID());
-    }
-
-    for(const mine of uncloakedMines) {
-        data.mines.push(mine.positionToJSON());
-    }
-
-    executionPlan.setData(data);
 }

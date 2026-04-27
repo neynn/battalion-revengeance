@@ -90,11 +90,3 @@ CaptureAction.prototype.onEnd = function(gameContext, data) {
 
     updateBuildingSprite(gameContext, building);
 }
-
-CaptureAction.prototype.execute = function(gameContext, data) {
-    executeCapture(gameContext, data);
-}
-
-CaptureAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    fillCapturePlan(gameContext, executionPlan, actionIntent);
-}

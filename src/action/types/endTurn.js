@@ -2,7 +2,7 @@ import { Action } from "../../../engine/action/action.js";
 import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { ACTION_TYPE, TEAM_STAT } from "../../enums.js";
 import { TeamManager } from "../../team/teamManager.js";
-import { createStartTurnIntent } from "../actionHelper.js";
+import { StartTurnVTable } from "./startTurn.js";
 
 const createEndTurnIntent = function() {
     return new ActionIntent(ACTION_TYPE.END_TURN, {});
@@ -18,7 +18,7 @@ const fillEndTurnPlan = function(gameContext, executionPlan, actionIntent) {
 
     if(currentTeam !== TeamManager.INVALID_ID) {
         executionPlan.setData(createEndTurnData());
-        executionPlan.addNext(createStartTurnIntent());
+        executionPlan.addNext(StartTurnVTable.createIntent());
     }
 }
 
@@ -59,11 +59,3 @@ export const EndTurnAction = function() {
 
 EndTurnAction.prototype = Object.create(Action.prototype);
 EndTurnAction.prototype.constructor = EndTurnAction;
-
-EndTurnAction.prototype.execute = function(gameContext, data) {
-    executeEndTurn(gameContext, data);
-}
-
-EndTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    fillEndTurnPlan(gameContext, executionPlan, actionIntent);
-}

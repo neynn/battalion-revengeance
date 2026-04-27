@@ -62,11 +62,3 @@ export const EntitySpawnAction = function() {
 
 EntitySpawnAction.prototype = Object.create(Action.prototype);
 EntitySpawnAction.prototype.constructor = EntitySpawnAction;
-
-EntitySpawnAction.prototype.execute = function(gameContext, data) {
-    executeEntitySpawn(gameContext, data);
-}
-
-EntitySpawnAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    fillEntitySpawnPlan(gameContext, executionPlan, actionIntent);
-}

@@ -148,11 +148,3 @@ HealAction.prototype.onEnd = function(gameContext, data) {
     this.duration = 0;
     this.passedTime = 0;
 }
-
-HealAction.prototype.execute = function(gameContext, data) {
-    executeHeal(gameContext, data);
-}
-
-HealAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    fillHealPlan(gameContext, executionPlan, actionIntent);
-}

@@ -241,11 +241,3 @@ AttackAction.prototype.onEnd = function(gameContext, data) {
     this.duration = 0;
     this.passedTime = 0;
 }
-
-AttackAction.prototype.execute = function(gameContext, data) {
-    executeAttack(gameContext, data);
-}
-
-AttackAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    fillAttackPlan(gameContext, executionPlan, actionIntent);
-}

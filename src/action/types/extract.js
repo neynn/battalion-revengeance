@@ -69,11 +69,3 @@ export const ExtractAction = function() {
 
 ExtractAction.prototype = Object.create(Action.prototype);
 ExtractAction.prototype.constructor = ExtractAction;
-
-ExtractAction.prototype.execute = function(gameContext, data) {
-    executeExtract(gameContext, data);
-}
-
-ExtractAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    fillExtractPlan(gameContext, executionPlan, actionIntent);
-}

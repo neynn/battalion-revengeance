@@ -114,11 +114,3 @@ DeathAction.prototype.isFinished = function(gameContext, executionPlan) {
 DeathAction.prototype.onEnd = function(gameContext, data) {
     this.tweens.length = 0;
 }
-
-DeathAction.prototype.execute = function(gameContext, data) {
-    executeDeath(gameContext, data);
-}
-
-DeathAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    fillDeathPlan(gameContext, executionPlan, actionIntent);
-}

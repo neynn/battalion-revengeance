@@ -100,11 +100,3 @@ MineTriggerAction.prototype.onStart = function(gameContext, data) {
         playExplosion(gameContext, tileX, tileY);
     }
 }
-
-MineTriggerAction.prototype.execute = function(gameContext, data) {
-    executeMineTrigger(gameContext, data);
-}
-
-MineTriggerAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    fillMineTriggerPlan(gameContext, executionPlan, actionIntent);
-}

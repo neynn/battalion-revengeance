@@ -34,10 +34,10 @@ ActionQueue.prototype.mpFlushPlan = function(gameContext) {
 
     const currentPlan = this.current;
     const { type, data } = this.current;
-    const actionType = this.actionTypes.get(type);
+    const actionTable = this.actionTables.get(type);
 
     this.current.setState(ExecutionPlan.STATE.RUNNING);
-    actionType.execute(gameContext, data);
+    actionTable.execute(gameContext, data);
     this.endExecutionPlan();
 
     return currentPlan;
@@ -56,7 +56,9 @@ ActionQueue.prototype.update = function(gameContext) {
     switch(this.state) {
         case ActionQueue.STATE.NONE: {
             this.current.setState(ExecutionPlan.STATE.RUNNING);
+
             actionTable.execute(gameContext, data);
+
             this.endExecutionPlan();
             break;
         }
@@ -64,8 +66,9 @@ ActionQueue.prototype.update = function(gameContext) {
             const actionType = this.actionTypes.get(type);
 
             this.current.setState(ExecutionPlan.STATE.RUNNING);
-            actionType.onStart(gameContext, data);
             this.state = ActionQueue.STATE.PROCESSING;
+
+            actionType.onStart(gameContext, data);
             break;
         }
         case ActionQueue.STATE.PROCESSING: {
@@ -74,8 +77,9 @@ ActionQueue.prototype.update = function(gameContext) {
             actionType.onUpdate(gameContext, data);
 
             if(this.isSkipping || actionType.isFinished(gameContext, this.current)) {
-                actionType.execute(gameContext, data);
+                actionTable.execute(gameContext, data);
                 actionType.onEnd(gameContext, data);
+
                 this.endExecutionPlan();
                 this.state = ActionQueue.STATE.NONE;
             }
@@ -121,15 +125,15 @@ ActionQueue.prototype.endExecutionPlan = function() {
 
 ActionQueue.prototype.createExecutionPlan = function(gameContext, actionIntent) {
     const { type, data } = actionIntent;
-    const actionType = this.actionTypes.get(type);
+    const actionTable = this.actionTables.get(type);
 
-    if(!actionType) {
+    if(!actionTable) {
         return null;
     }
 
     const executionPlan = new ExecutionPlan(this.nextID++, type);
 
-    actionType.fillExecutionPlan(gameContext, executionPlan, data);
+    actionTable.fillPlan(gameContext, executionPlan, data);
 
     if(!executionPlan.isValid()) {
         console.error("Invalid plan!");
@@ -140,7 +144,7 @@ ActionQueue.prototype.createExecutionPlan = function(gameContext, actionIntent) 
 }
 
 ActionQueue.prototype.registerActionVTable = function(actionID, table) {
-    if(!this.actionTables.has(actionID)) {
+    if(this.actionTables.has(actionID)) {
         console.warn(`ActionVTable ${actionID} is already registered!`);
         return; 
     }

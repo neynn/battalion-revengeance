@@ -1,17 +1,21 @@
 import { Action } from "../../../engine/action/action.js";
+import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { mapCategoryToStat } from "../../enumHelpers.js";
-import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { ACTION_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { createEntitySnapshot } from "../../snapshot/entitySnapshot.js";
-import { createUncloakIntent } from "../actionHelper.js";
+import { createClientEntityObject, createServerEntityObject } from "../../systems/spawn.js";
+import { UncloakVTable } from "./uncloak.js";
 
-export const PurchaseEntityAction = function(createEntity) {
-    Action.call(this);
-
-    this._createEntity = createEntity;
+const createPurchaseIntent = function(tileX, tileY, typeID) {
+    return new ActionIntent(ACTION_TYPE.PURCHASE_ENTITY, {
+        "tileX": tileX,
+        "tileY": tileY,
+        "typeID": typeID
+    });
 }
 
-PurchaseEntityAction.createData = function() {
+const createPurchaseData = function() {
     return {
         "nextID": EntityManager.INVALID_ID,
         "cost": 0,
@@ -19,30 +23,7 @@ PurchaseEntityAction.createData = function() {
     }
 }
 
-PurchaseEntityAction.prototype = Object.create(Action.prototype);
-PurchaseEntityAction.prototype.constructor = PurchaseEntityAction;
-
-PurchaseEntityAction.prototype.execute = function(gameContext, data) {
-    const { teamManager } = gameContext;
-    const { cost, nextID, snapshot } = data;
-    const { teamID } = snapshot;
-    const team = teamManager.getTeam(teamID);
-    const entity = this._createEntity(gameContext, nextID, snapshot);
-
-    if(!entity) {
-        console.error("Critical Error: Entity could not be spawned!");
-        return;
-    }
-
-    //TODO: Apply morale
-    entity.setPurchased();
-    team.reduceCash(cost);
-    team.addStatistic(TEAM_STAT.UNITS_BUILT, 1);
-    team.addStatistic(TEAM_STAT.RESOURCES_SPENT, cost);
-    team.addStatistic(mapCategoryToStat(entity.config.category), 1);
-} 
-
-PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
+const fillPurchasePlan = function(gameContext, executionPlan, actionIntent) {
     const { world, teamManager, typeRegistry } = gameContext;
     const { mapManager, entityManager } = world;
     const { tileX, tileY, typeID } = actionIntent;
@@ -75,7 +56,7 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
 
     //TODO: Add morale calculation.
     const nextID = entityManager.getNextID();
-    const data = PurchaseEntityAction.createData();
+    const data = createPurchaseData();
 
     data.nextID = nextID;
     data.cost = adjustedCost;
@@ -86,6 +67,46 @@ PurchaseEntityAction.prototype.fillExecutionPlan = function(gameContext, executi
     data.snapshot.maxHealth = health;
     data.snapshot.teamID = currentTeam;
 
-    executionPlan.addNext(createUncloakIntent(nextID));
+    executionPlan.addNext(UncloakVTable.createIntent(nextID));
     executionPlan.setData(data);
 }
+
+const executePurchase = function(gameContext, data) {
+    const { teamManager, isClient } = gameContext;
+    const { cost, nextID, snapshot } = data;
+    const { teamID } = snapshot;
+    const team = teamManager.getTeam(teamID);
+    let entity = null;
+
+    if(isClient) {
+        entity = createClientEntityObject(gameContext, nextID, snapshot);
+    } else {
+        entity = createServerEntityObject(gameContext, nextID, snapshot);
+    }
+
+    if(!entity) {
+        console.error("Critical Error: Entity could not be spawned!");
+        return;
+    }
+
+    //TODO: Apply morale
+    entity.setPurchased();
+    team.reduceCash(cost);
+    team.addStatistic(TEAM_STAT.UNITS_BUILT, 1);
+    team.addStatistic(TEAM_STAT.RESOURCES_SPENT, cost);
+    team.addStatistic(mapCategoryToStat(entity.config.category), 1);
+}
+
+export const PurchaseVTable = {
+    createIntent: createPurchaseIntent,
+    createData: createPurchaseData,
+    fillPlan: fillPurchasePlan,
+    execute: executePurchase
+};
+
+export const PurchaseEntityAction = function() {
+    Action.call(this);
+}
+
+PurchaseEntityAction.prototype = Object.create(Action.prototype);
+PurchaseEntityAction.prototype.constructor = PurchaseEntityAction;

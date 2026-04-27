@@ -655,7 +655,9 @@ export const ACTION_TYPE = {
     CLOAK: 12,
     DEATH: 13,
     UNCLOAK: 14,
-    INTERRUPT: 15
+    INTERRUPT: 15,
+    TO_TRANSPORT: 16,
+    FROM_TRANSPORT: 17
 };
 
 export const OBJECTIVE_TYPE = {

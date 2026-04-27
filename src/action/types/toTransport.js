@@ -1,5 +1,44 @@
 import { Action } from "../../../engine/action/action.js";
+import { ActionIntent } from "../../../engine/action/actionIntent.js";
+import { ACTION_TYPE } from "../../enums.js";
 import { TransportTween } from "../../tween/transportTween.js";
+
+const createToTransportIntent = function() {
+    return new ActionIntent(ACTION_TYPE.TO_TRANSPORT, {});
+}
+
+const createToTransportData = function() {
+    return {
+
+    }
+}
+
+const fillToTransportPlan = function(gameContext, executionPlan, actionIntent) {
+    const { world } = gameContext;
+    const { entityManager } = world;
+    const { entityID } = actionIntent;
+    const entity = entityManager.getEntity(entityID);
+
+    if(!entity) {
+        return;
+    }
+}
+
+const executeToTransport = function(gameContext, data) {
+    const { world } = gameContext;
+    const { entityManager } = world;
+    const { entityID } = data;
+    const entity = entityManager.getEntity(entityID);
+
+    //TODO(neyn): Set Transport!
+}
+
+export const ToTransportVTable = {
+    createIntent: createToTransportIntent,
+    createData: createToTransportData,
+    fillPlan: fillToTransportPlan,
+    execute: executeToTransport
+};
 
 export const ToTransportAction = function() {
     Action.call(this);
@@ -37,24 +76,4 @@ ToTransportAction.prototype.isFinished = function(gameContext, executionPlan) {
 
 ToTransportAction.prototype.onEnd = function(gameContext, data) {
     this.tweens.length = 0;
-}
-
-ToTransportAction.prototype.execute = function(gameContext, data) {
-    const { world } = gameContext;
-    const { entityManager } = world;
-    const { entityID } = data;
-    const entity = entityManager.getEntity(entityID);
-
-    //TODO(neyn): Set Transport!
-}
-
-ToTransportAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    const { world } = gameContext;
-    const { entityManager } = world;
-    const { entityID } = actionIntent;
-    const entity = entityManager.getEntity(entityID);
-
-    if(!entity) {
-        return;
-    }
 }

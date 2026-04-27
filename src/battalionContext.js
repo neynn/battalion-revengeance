@@ -7,7 +7,7 @@ import { StoryState } from "./states/story/story.js";
 import { TeamManager } from "./team/teamManager.js";
 import { TypeRegistry } from "./type/typeRegistry.js";
 import { ArenaState } from "./states/arena/arena.js";
-import { addDebug, overrideRiverTiles, registerClientActions } from "./systems/context.js";
+import { addDebug, overrideRiverTiles, registerActionVTables, registerClientActions } from "./systems/context.js";
 import { resolveTileType } from "./enumHelpers.js";
 import { ShadeCache } from "./shadeCache.js";
 import { MapRegistry } from "./map/mapRegistry.js";
@@ -57,6 +57,7 @@ BattalionContext.prototype.init = function(resources) {
     this.typeRegistry.load(resources);
     this.uiData.load();
 
+    registerActionVTables(this);
     registerClientActions(this);
 
     this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);

@@ -1,11 +1,12 @@
 import { ACTION_TYPE, COMMAND_TYPE } from "../enums.js";
 import { createStep } from "../systems/pathfinding.js";
-import { createProduceIntent, createPurchaseIntent } from "./actionHelper.js";
 import { MOVE_STEP_SIZE, packStep, unpackStep } from "./packer_constants.js";
 import { AttackActionVTable } from "./types/attack.js";
 import { EndTurnVTable } from "./types/endTurn.js";
 import { HealVTable } from "./types/heal.js";
 import { MoveVTable } from "./types/move.js";
+import { ProduceVTable } from "./types/produceEntity.js";
+import { PurchaseVTable } from "./types/purchaseEntity.js";
 
 /*
     0x00 -> type,
@@ -198,14 +199,14 @@ export const unpackIntent = function(data) {
             const entityID = view.getInt16(2, true);
             const typeID = view.getInt16(4, true);
 
-            return createProduceIntent(entityID, typeID, direction);
+            return ProduceVTable.createIntent(entityID, typeID, direction);
         }
         case ACTION_TYPE.PURCHASE_ENTITY: {
             const typeID = view.getInt16(1, true);
             const tileX = view.getInt16(3, true);
             const tileY = view.getInt16(5, true);
 
-            return createPurchaseIntent(tileX, tileY, typeID);
+            return PurchaseVTable.createIntent(tileX, tileY, typeID);
         }
         case ACTION_TYPE.END_TURN: {
             return EndTurnVTable.createIntent();

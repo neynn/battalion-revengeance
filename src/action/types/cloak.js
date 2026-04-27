@@ -90,11 +90,3 @@ CloakAction.prototype.isFinished = function(gameContext, executionPlan) {
 CloakAction.prototype.onEnd = function(gameContext, data) {
     this.tweens.length = 0;
 }
-
-CloakAction.prototype.execute = function(gameContext, data) {
-    executeCloak(gameContext, data);
-}
-
-CloakAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    fillCloakPlan(gameContext, executionPlan, actionIntent);
-}

@@ -1,26 +1,71 @@
 import { Action } from "../../../engine/action/action.js";
-import { INTERRUPT_TYPE, TEAM_STAT, TRAIT_CONFIG, TRAIT_TYPE } from "../../enums.js";
+import { ActionIntent } from "../../../engine/action/actionIntent.js";
+import { ACTION_TYPE, INTERRUPT_TYPE, TEAM_STAT, TRAIT_CONFIG, TRAIT_TYPE } from "../../enums.js";
 import { TeamManager } from "../../team/teamManager.js";
-import { createUncloakIntent } from "../actionHelper.js";
 import { fillEntityResolution } from "../interactionResolver.js";
 import { DeathActionVTable } from "./death.js";
 import { InterruptVTable } from "./interrupt.js";
+import { UncloakVTable } from "./uncloak.js";
 
-export const StartTurnAction = function() {
-    Action.call(this);
+const createStartTurnIntent = function() {
+    return new ActionIntent(ACTION_TYPE.START_TURN, {});
 }
 
-StartTurnAction.createData = function() {
+const createStartTurnData = function() {
     return {
         "teamID": TeamManager.INVALID_ID,
         "resolutions": []
     }
 }
 
-StartTurnAction.prototype = Object.create(Action.prototype);
-StartTurnAction.prototype.constructor = StartTurnAction;
+const fillStartTurnPlan = function(gameContext, executionPlan, actionIntent) {
+    const { world, teamManager } = gameContext;
+    const { entityManager } = world;
+    const teamID = teamManager.getNextTeam();
 
-StartTurnAction.prototype.execute = function(gameContext, data) {
+    if(teamID === TeamManager.INVALID_ID) {
+        return;
+    }
+
+    const team = teamManager.getTeam(teamID);
+    const { entities } = team;
+    const deadEntities = [];
+    const resolutions = [];
+
+    for(const entityID of entities) {
+        const entity = entityManager.getEntity(entityID);
+
+        if(!entity) {
+            continue;
+        }
+
+        const sotDelta = entity.getStartOfTurnDelta(gameContext);
+        const sotHealth = entity.getHealthFromDelta(sotDelta);
+
+        if(sotHealth <= 0) {
+            deadEntities.push(entityID);
+        } else if(entity.hasTrait(TRAIT_TYPE.RADAR)) {
+            executionPlan.addNext(UncloakVTable.createIntent(entityID));
+        }
+
+        if(sotDelta !== 0) {
+            resolutions.push(fillEntityResolution(entityID, sotDelta, sotHealth));
+        }
+    }
+
+    if(deadEntities.length !== 0) {
+        executionPlan.addNext(DeathActionVTable.createIntent(deadEntities));
+    }
+
+    const data = createStartTurnData();
+
+    data.teamID = teamID;
+    data.resolutions = resolutions;
+
+    executionPlan.setData(data);
+}
+
+const executeStartTurn = function(gameContext, data) {
     const { actionRouter, world, teamManager } = gameContext;
     const { entityManager, eventHandler, mapManager } = world;
     const { teamID, resolutions } = data;
@@ -79,49 +124,16 @@ StartTurnAction.prototype.execute = function(gameContext, data) {
     //TODO: Get next turn, then check if any construction grows. Add that as next.
 }
 
-StartTurnAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    const { world, teamManager } = gameContext;
-    const { entityManager } = world;
-    const teamID = teamManager.getNextTeam();
+export const StartTurnVTable = {
+    createIntent: createStartTurnIntent,
+    createData: createStartTurnData,
+    fillPlan: fillStartTurnPlan,
+    execute: executeStartTurn
+};
 
-    if(teamID === TeamManager.INVALID_ID) {
-        return;
-    }
-
-    const team = teamManager.getTeam(teamID);
-    const { entities } = team;
-    const deadEntities = [];
-    const resolutions = [];
-
-    for(const entityID of entities) {
-        const entity = entityManager.getEntity(entityID);
-
-        if(!entity) {
-            continue;
-        }
-
-        const sotDelta = entity.getStartOfTurnDelta(gameContext);
-        const sotHealth = entity.getHealthFromDelta(sotDelta);
-
-        if(sotHealth <= 0) {
-            deadEntities.push(entityID);
-        } else if(entity.hasTrait(TRAIT_TYPE.RADAR)) {
-            executionPlan.addNext(createUncloakIntent(entityID));
-        }
-
-        if(sotDelta !== 0) {
-            resolutions.push(fillEntityResolution(entityID, sotDelta, sotHealth));
-        }
-    }
-
-    if(deadEntities.length !== 0) {
-        executionPlan.addNext(DeathActionVTable.createIntent(deadEntities));
-    }
-
-    const data = StartTurnAction.createData();
-
-    data.teamID = teamID;
-    data.resolutions = resolutions;
-
-    executionPlan.setData(data);
+export const StartTurnAction = function() {
+    Action.call(this);
 }
+
+StartTurnAction.prototype = Object.create(Action.prototype);
+StartTurnAction.prototype.constructor = StartTurnAction;

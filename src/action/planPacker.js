@@ -13,11 +13,11 @@ import { ExtractVTable } from "./types/extract.js";
 import { HealVTable } from "./types/heal.js";
 import { MineTriggerVTable } from "./types/mineTrigger.js";
 import { MoveVTable } from "./types/move.js";
-import { ProduceEntityAction } from "./types/produceEntity.js";
-import { PurchaseEntityAction } from "./types/purchaseEntity.js";
+import { ProduceVTable } from "./types/produceEntity.js";
+import { PurchaseVTable } from "./types/purchaseEntity.js";
 import { InterruptVTable } from "./types/interrupt.js";
-import { StartTurnAction } from "./types/startTurn.js";
-import { UncloakAction } from "./types/uncloak.js";
+import { StartTurnVTable } from "./types/startTurn.js";
+import { UncloakVTable } from "./types/uncloak.js";
 
 /*
     0x00 -> type,
@@ -437,7 +437,7 @@ export const unpackPlan = function(buffer) {
             break;
         }
         case ACTION_TYPE.UNCLOAK: {
-            data = UncloakAction.createData();
+            data = UncloakVTable.createData();
 
             const entityCount = view.getUint8(1);
             const mineCount = view.getUint8(2);
@@ -467,8 +467,7 @@ export const unpackPlan = function(buffer) {
             break;
         }
         case ACTION_TYPE.START_TURN: {
-            data = StartTurnAction.createData();
-
+            data = StartTurnVTable.createData();
             data.teamID = view.getInt8(1);
             
             const count = view.getUint16(2, true);
@@ -484,14 +483,14 @@ export const unpackPlan = function(buffer) {
             break;
         }
         case ACTION_TYPE.PURCHASE_ENTITY: {
-            data = PurchaseEntityAction.createData();
+            data = PurchaseVTable.createData();
             data.nextID = view.getInt16(1, true);
             data.cost = view.getUint16(3, true);
             unpackEntitySnapshot(data.snapshot, view, 5);
             break;
         }
         case ACTION_TYPE.PRODUCE_ENTITY: {
-            data = ProduceEntityAction.createData();
+            data = ProduceVTable.createData();
             data.entityID = view.getInt16(1, true);
             data.nextID = view.getInt16(3, true);
             data.cost = view.getUint16(5, true);

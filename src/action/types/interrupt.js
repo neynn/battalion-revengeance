@@ -2,7 +2,7 @@ import { Action } from "../../../engine/action/action.js";
 import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { WorldEvent } from "../../../engine/world/event/worldEvent.js";
 import { ACTION_TYPE, INTERRUPT_TYPE } from "../../enums.js";
-import { createStartTurnIntent } from "../actionHelper.js";
+import { StartTurnVTable } from "./startTurn.js";
 
 const createInterruptIntent = function(type, event) {
     return new ActionIntent(ACTION_TYPE.INTERRUPT, {
@@ -30,7 +30,7 @@ const fillInterruptPlan = function(gameContext, executionPlan, actionIntent) {
 
     switch(type) {
         case INTERRUPT_TYPE.START_GAME: {
-            executionPlan.addNext(createStartTurnIntent());
+            executionPlan.addNext(StartTurnVTable.createIntent());
             break;
         }
         case INTERRUPT_TYPE.END_GAME: {
@@ -123,8 +123,4 @@ InterruptAction.prototype.isFinished = function(gameContext, executionPlan) {
     }
 
     return isFinished;
-}
-
-InterruptAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    fillInterruptPlan(gameContext, executionPlan, actionIntent);
 }

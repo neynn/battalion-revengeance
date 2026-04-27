@@ -8,12 +8,12 @@ import { ACTION_TYPE, COMMAND_TYPE, MOVE_COMMAND, PATH_INTERCEPT, SOUND_TYPE, TE
 import { createStep } from "../../systems/pathfinding.js";
 import { playEntitySound, playUncloakSound } from "../../systems/sound.js";
 import { updateEntitySprite } from "../../systems/sprite.js";
-import { createUncloakIntent } from "../actionHelper.js";
 import { AttackActionVTable } from "./attack.js";
 import { CaptureActionVTable } from "./capture.js";
 import { CloakActionVTable } from "./cloak.js";
 import { HealVTable } from "./heal.js";
 import { MineTriggerVTable } from "./mineTrigger.js";
+import { UncloakVTable } from "./uncloak.js";
 
 const MOVE_FLAG = {
     NONE: 0,
@@ -130,7 +130,7 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
         }
     }
 
-    executionPlan.addNext(createUncloakIntent(entityID));
+    executionPlan.addNext(UncloakVTable.createIntent(entityID));
 
     if(entity.canCapture(gameContext, targetX, targetY)) {
         executionPlan.addNext(CaptureActionVTable.createIntent(entityID, targetX, targetY));
@@ -335,12 +335,4 @@ MoveAction.prototype.onEnd = function(gameContext, data) {
     this.opacity = 0;
     this.originX = -1;
     this.originY = -1;
-}
-
-MoveAction.prototype.execute = function(gameContext, data) {
-    executeMove(gameContext, data);
-}
-
-MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    fillMovePlan(gameContext, executionPlan, actionIntent);
 }

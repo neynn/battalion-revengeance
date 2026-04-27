@@ -1,19 +1,23 @@
 import { Action } from "../../../engine/action/action.js";
+import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { mapCategoryToStat } from "../../enumHelpers.js";
-import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { ACTION_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { createEntitySnapshot } from "../../snapshot/entitySnapshot.js";
 import { DIRECTION_DELTA_X, DIRECTION_DELTA_Y, isDirectionValid } from "../../systems/direction.js";
-import { createUncloakIntent } from "../actionHelper.js";
+import { createClientEntityObject, createServerEntityObject } from "../../systems/spawn.js";
 import { MineTriggerVTable } from "./mineTrigger.js";
+import { UncloakVTable } from "./uncloak.js";
 
-export const ProduceEntityAction = function(createEntity) {
-    Action.call(this);
+const createProduceIntent = function(entityID, typeID, direction) {
+    return new ActionIntent(ACTION_TYPE.PRODUCE_ENTITY, {
+        "entityID": entityID,
+        "typeID": typeID,
+        "direction": direction
+    });
+} 
 
-    this._createEntity = createEntity;
-}
-
-ProduceEntityAction.createData = function() {
+const createProduceData = function() {
     return {
         "entityID": EntityManager.INVALID_ID,
         "cost": 0,
@@ -22,33 +26,7 @@ ProduceEntityAction.createData = function() {
     }
 }
 
-ProduceEntityAction.prototype = Object.create(Action.prototype);
-ProduceEntityAction.prototype.constructor = ProduceEntityAction;
-
-ProduceEntityAction.prototype.execute = function(gameContext, data) {
-    const { world, teamManager } = gameContext;
-    const { entityManager } = world;
-    const { entityID, cost, nextID, snapshot } = data;
-    const { teamID } = snapshot;
-    const team = teamManager.getTeam(teamID);
-    const spawnerEntity = entityManager.getEntity(entityID);
-    const entity = this._createEntity(gameContext, nextID, snapshot);
-
-    if(!entity) {
-        console.error("Critical Error: Entity could not be spawned!");
-        return;
-    }
-
-    //TODO: Apply morale
-    entity.setPurchased();
-    spawnerEntity.reduceCash(cost);
-    spawnerEntity.setActed();
-    team.addStatistic(TEAM_STAT.UNITS_BUILT, 1);
-    team.addStatistic(TEAM_STAT.RESOURCES_SPENT, cost);
-    team.addStatistic(mapCategoryToStat(entity.config.category), 1);
-}
-
-ProduceEntityAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
+const fillProducePlan = function(gameContext, executionPlan, actionIntent) {
     const { world, typeRegistry } = gameContext;
     const { entityManager, mapManager } = world;
     const { entityID, typeID, direction } = actionIntent;
@@ -83,7 +61,7 @@ ProduceEntityAction.prototype.fillExecutionPlan = function(gameContext, executio
 
     //TODO: Add morale calculation.
     const nextID = entityManager.getNextID();
-    const data = ProduceEntityAction.createData();
+    const data = createProduceData();
 
     data.entityID = entityID;
     data.nextID = nextID;
@@ -96,6 +74,49 @@ ProduceEntityAction.prototype.fillExecutionPlan = function(gameContext, executio
     data.snapshot.teamID = team.getID();
 
     executionPlan.addNext(MineTriggerVTable.createIntent(nextID));
-    executionPlan.addNext(createUncloakIntent(nextID));
+    executionPlan.addNext(UncloakVTable.createIntent(nextID));
     executionPlan.setData(data);
 }
+
+const executeProduce = function(gameContext, data) {
+    const { world, teamManager, isClient } = gameContext;
+    const { entityManager } = world;
+    const { entityID, cost, nextID, snapshot } = data;
+    const { teamID } = snapshot;
+    const team = teamManager.getTeam(teamID);
+    const spawnerEntity = entityManager.getEntity(entityID);
+    let entity = null;
+
+    if(isClient) {
+        entity = createClientEntityObject(gameContext, nextID, snapshot);
+    } else {
+        entity = createServerEntityObject(gameContext, nextID, snapshot);
+    }
+
+    if(!entity) {
+        console.error("Critical Error: Entity could not be spawned!");
+        return;
+    }
+
+    //TODO: Apply morale
+    entity.setPurchased();
+    spawnerEntity.reduceCash(cost);
+    spawnerEntity.setActed();
+    team.addStatistic(TEAM_STAT.UNITS_BUILT, 1);
+    team.addStatistic(TEAM_STAT.RESOURCES_SPENT, cost);
+    team.addStatistic(mapCategoryToStat(entity.config.category), 1);
+}
+
+export const ProduceVTable = {
+    createIntent: createProduceIntent,
+    createData: createProduceData,
+    fillPlan: fillProducePlan,
+    execute: executeProduce
+};
+
+export const ProduceEntityAction = function() {
+    Action.call(this);
+}
+
+ProduceEntityAction.prototype = Object.create(Action.prototype);
+ProduceEntityAction.prototype.constructor = ProduceEntityAction;

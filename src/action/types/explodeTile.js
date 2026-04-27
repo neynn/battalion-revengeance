@@ -93,11 +93,3 @@ ExplodeTileAction.prototype.onStart = function(gameContext, data) {
 
     playExplosion(gameContext, tileX, tileY);
 }
-
-ExplodeTileAction.prototype.execute = function(gameContext, data) {
-    executeExplodeTile(gameContext, data);
-}
-
-ExplodeTileAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    fillExplodeTilePlan(gameContext, executionPlan, actionIntent);
-}
