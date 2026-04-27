@@ -1,9 +1,10 @@
 import { ACTION_TYPE, COMMAND_TYPE } from "../enums.js";
 import { createStep } from "../systems/pathfinding.js";
-import { createHealRequest, createMoveRequest, createProduceIntent, createPurchaseIntent } from "./actionHelper.js";
+import { createMoveRequest, createProduceIntent, createPurchaseIntent } from "./actionHelper.js";
 import { MOVE_STEP_SIZE, packStep, unpackStep } from "./packer_constants.js";
 import { AttackActionVTable } from "./types/attack.js";
 import { EndTurnVTable } from "./types/endTurn.js";
+import { HealVTable } from "./types/heal.js";
 
 /*
     0x00 -> type,
@@ -212,7 +213,7 @@ export const unpackIntent = function(data) {
             const entityID = view.getInt16(1, true);
             const targetID = view.getInt16(3, true);
 
-            return createHealRequest(entityID, targetID);
+            return HealVTable.createIntent(entityID, targetID);
         }
         case ACTION_TYPE.ATTACK: {
             const entityID = view.getInt16(1, true);

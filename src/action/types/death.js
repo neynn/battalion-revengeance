@@ -64,10 +64,9 @@ export const DeathActionVTable = {
     execute: executeDeath
 };
 
-export const DeathAction = function(despawn) {
+export const DeathAction = function() {
     Action.call(this);
 
-    this._despawn = despawn;
     this.tweens = [];
 }
 

@@ -9,9 +9,9 @@ import { CloakActionVTable } from "./types/cloak.js";
 import { DeathActionVTable } from "./types/death.js";
 import { EndTurnVTable } from "./types/endTurn.js";
 import { EntitySpawnVTable } from "./types/entitySpawn.js";
-import { ExplodeTileAction } from "./types/explodeTile.js";
-import { ExtractAction } from "./types/extract.js";
-import { HealAction } from "./types/heal.js";
+import { ExplodeTileVTable } from "./types/explodeTile.js";
+import { ExtractVTable } from "./types/extract.js";
+import { HealVTable } from "./types/heal.js";
 import { MineTriggerAction } from "./types/mineTrigger.js";
 import { MoveAction } from "./types/move.js";
 import { ProduceEntityAction } from "./types/produceEntity.js";
@@ -525,7 +525,7 @@ export const unpackPlan = function(buffer) {
             break;
         }
         case ACTION_TYPE.HEAL: {
-            data = HealAction.createData();
+            data = HealVTable.createData();
             data.entityID = view.getInt16(1, true);
             data.targetID = view.getInt16(3, true);
 
@@ -542,13 +542,13 @@ export const unpackPlan = function(buffer) {
             break;
         }
         case ACTION_TYPE.EXTRACT: {
-            data = ExtractAction.createData();
+            data = ExtractVTable.createData();
             data.entityID = view.getInt16(1, true);
             data.value = view.getUint16(3, true);
             break;
         }
         case ACTION_TYPE.EXPLODE_TILE: {
-            data = ExplodeTileAction.createData();
+            data = ExplodeTileVTable.createData();
             data.layer = view.getUint8(1);
             data.tileX = view.getInt16(2, true);
             data.tileY = view.getInt16(4, true);

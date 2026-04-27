@@ -30,30 +30,9 @@ export const createPurchaseIntent = function(tileX, tileY, typeID) {
     });
 }
 
-export const createExtractIntent = function(entityID) {
-    return new ActionIntent(ACTION_TYPE.EXTRACT, {
-        "entityID": entityID
-    });
-}
-
 export const createStartTurnIntent = function() {
     return new ActionIntent(ACTION_TYPE.START_TURN, {
 
-    });
-}
-
-export const createTileExplodeIntent = function(layerID, tileX, tileY) {
-    return new ActionIntent(ACTION_TYPE.EXPLODE_TILE, {
-        "layerID": layerID,
-        "tileX": tileX,
-        "tileY": tileY
-    });
-}
-
-export const createHealRequest = function(entityID, targetID) {
-    return new ActionIntent(ACTION_TYPE.HEAL, {
-        "entityID": entityID,
-        "targetID": targetID
     });
 }
 

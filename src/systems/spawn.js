@@ -76,15 +76,6 @@ const createBuilding = function(gameContext, worldMap, snapshot) {
     return building;
 }
 
-export const despawnClientEntity = function(gameContext, entity) {
-    destroyEntitySprite(gameContext, entity);
-    destroyEntity(gameContext, entity);
-}
-
-export const despawnServerEntity = function(gameContext, entity) {
-    destroyEntity(gameContext, entity);
-}
-
 export const createClientEntityObject = function(gameContext, entityID, snapshot) {
     const { teamManager, spriteManager, shadeCache } = gameContext;
     const { type, teamID } = snapshot;

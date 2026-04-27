@@ -3,12 +3,13 @@ import { Queue } from "../util/queue.js";
 
 export const ActionQueue = function() {
     this.nextID = 0;
+    this.actionTables = new Map();
     this.actionTypes = new Map();
     this.intentQueue = [];
     this.executionQueue = new Queue(ActionQueue.MAX_ACTIONS);
     this.current = null;
     this.isSkipping = false;
-    this.state = ActionQueue.STATE.ACTIVE;
+    this.state = ActionQueue.STATE.NONE;
 }
 
 ActionQueue.MAX_ACTIONS = 100;
@@ -50,23 +51,33 @@ ActionQueue.prototype.update = function(gameContext) {
     }
 
     const { type, data } = this.current;
-    const actionType = this.actionTypes.get(type);
+    const actionTable = this.actionTables.get(type);
 
     switch(this.state) {
+        case ActionQueue.STATE.NONE: {
+            this.current.setState(ExecutionPlan.STATE.RUNNING);
+            actionTable.execute(gameContext, data);
+            this.endExecutionPlan();
+            break;
+        }
         case ActionQueue.STATE.ACTIVE: {
+            const actionType = this.actionTypes.get(type);
+
             this.current.setState(ExecutionPlan.STATE.RUNNING);
             actionType.onStart(gameContext, data);
             this.state = ActionQueue.STATE.PROCESSING;
             break;
         }
         case ActionQueue.STATE.PROCESSING: {
+            const actionType = this.actionTypes.get(type);
+
             actionType.onUpdate(gameContext, data);
 
             if(this.isSkipping || actionType.isFinished(gameContext, this.current)) {
                 actionType.execute(gameContext, data);
                 actionType.onEnd(gameContext, data);
                 this.endExecutionPlan();
-                this.state = ActionQueue.STATE.ACTIVE;
+                this.state = ActionQueue.STATE.NONE;
             }
 
             break;
@@ -87,6 +98,10 @@ ActionQueue.prototype.getNextAction = function(gameContext) {
         }
 
         this.current = this.executionQueue.getNext();
+
+        if(this.current && this.actionTypes.has(this.current.type)) {
+            this.state = ActionQueue.STATE.ACTIVE;
+        }
     }
 
     return this.current;
@@ -122,6 +137,15 @@ ActionQueue.prototype.createExecutionPlan = function(gameContext, actionIntent) 
     }
 
     return executionPlan;
+}
+
+ActionQueue.prototype.registerActionVTable = function(actionID, table) {
+    if(!this.actionTables.has(actionID)) {
+        console.warn(`ActionVTable ${actionID} is already registered!`);
+        return; 
+    }
+
+    this.actionTables.set(actionID, table);
 }
 
 ActionQueue.prototype.registerAction = function(typeID, handler) {

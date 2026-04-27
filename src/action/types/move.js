@@ -6,10 +6,11 @@ import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { COMMAND_TYPE, MOVE_COMMAND, PATH_INTERCEPT, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { playEntitySound, playUncloakSound } from "../../systems/sound.js";
 import { updateEntitySprite } from "../../systems/sprite.js";
-import { createHealRequest, createMineTriggerIntent, createUncloakIntent } from "../actionHelper.js";
+import { createMineTriggerIntent, createUncloakIntent } from "../actionHelper.js";
 import { AttackActionVTable } from "./attack.js";
 import { CaptureActionVTable } from "./capture.js";
 import { CloakActionVTable } from "./cloak.js";
+import { HealVTable } from "./heal.js";
 
 export const MoveAction = function() {
     Action.call(this);
@@ -260,7 +261,7 @@ MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, ac
             }
 
             if(entity.isHealValid(gameContext, targetEntity)) {
-                executionPlan.addNext(createHealRequest(entityID, targetID));
+                executionPlan.addNext(HealVTable.createIntent(entityID, targetID));
             }
 
             break;

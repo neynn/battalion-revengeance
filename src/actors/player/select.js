@@ -1,7 +1,8 @@
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { FloodFill } from "../../../engine/pathfinders/floodFill.js";
-import { createHealRequest, createMoveRequest } from "../../action/actionHelper.js";
+import { createMoveRequest } from "../../action/actionHelper.js";
 import { AttackActionVTable } from "../../action/types/attack.js";
+import { HealVTable } from "../../action/types/heal.js";
 import { AUTOTILER_TYPE, COMMAND_TYPE, MOVE_COMMAND, RANGE_TYPE } from "../../enums.js";
 import { createStep, isNodeReachable, getBestPath } from "../../systems/pathfinding.js";
 import { Player } from "../player.js";
@@ -255,7 +256,7 @@ SelectState.prototype.getHealRequest = function(entity) {
 
     switch(rangeType) {
         case RANGE_TYPE.RANGE: {
-            request = createHealRequest(this.entity.getID(), entity.getID());
+            request = HealVTable.createIntent(this.entity.getID(), entity.getID());
             break;
         }
         case RANGE_TYPE.MELEE:
@@ -267,7 +268,7 @@ SelectState.prototype.getHealRequest = function(entity) {
                 }
                 case 1: {
                     //The ally is next to the healer, as the path is 1 longer than it should be. It's treated as melee.
-                    request = createHealRequest(this.entity.getID(), entity.getID());
+                    request = HealVTable.createIntent(this.entity.getID(), entity.getID());
                     break;
                 }
                 default: {
