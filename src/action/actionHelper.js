@@ -1,19 +1,6 @@
 import { ActionIntent } from "../../engine/action/actionIntent.js";
 import { ACTION_TYPE, COMMAND_TYPE } from "../enums.js";
 
-export const createInterruptIntent = function(type, event) {
-    return new ActionIntent(ACTION_TYPE.INTERRUPT, {
-        "type": type,
-        "event": event
-    });
-}
-
-export const createMineTriggerIntent = function(entityID) {
-    return new ActionIntent(ACTION_TYPE.MINE_TRIGGER, {
-        "entityID": entityID
-    });
-}
-
 export const createProduceIntent = function(entityID, typeID, direction) {
     return new ActionIntent(ACTION_TYPE.PRODUCE_ENTITY, {
         "entityID": entityID,
@@ -33,15 +20,6 @@ export const createPurchaseIntent = function(tileX, tileY, typeID) {
 export const createStartTurnIntent = function() {
     return new ActionIntent(ACTION_TYPE.START_TURN, {
 
-    });
-}
-
-export const createMoveRequest = function(entityID, path, command, targetID) {
-    return new ActionIntent(ACTION_TYPE.MOVE, {
-        "entityID": entityID,
-        "path": path,
-        "command": command,
-        "targetID": targetID
     });
 }
 

@@ -1,10 +1,10 @@
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { FloodFill } from "../../../engine/pathfinders/floodFill.js";
-import { createMoveRequest } from "../../action/actionHelper.js";
 import { AttackActionVTable } from "../../action/types/attack.js";
 import { HealVTable } from "../../action/types/heal.js";
+import { MoveVTable } from "../../action/types/move.js";
 import { AUTOTILER_TYPE, COMMAND_TYPE, MOVE_COMMAND, RANGE_TYPE } from "../../enums.js";
-import { createStep, isNodeReachable, getBestPath } from "../../systems/pathfinding.js";
+import { isNodeReachable, getBestPath, fillStep } from "../../systems/pathfinding.js";
 import { Player } from "../player.js";
 import { PlayerState } from "./playerState.js";
 
@@ -55,7 +55,7 @@ SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, t
         if(this.entity.isMoveTargetValid(gameContext, tileX, tileY)) {
             if(this.entity.isPathWalkable(gameContext, this.path)) {
                 const player = stateMachine.getContext();
-                const request = createMoveRequest(this.entity.getID(), this.path, MOVE_COMMAND.NONE, EntityManager.INVALID_ID);
+                const request = MoveVTable.createIntent(this.entity.getID(), this.path, MOVE_COMMAND.NONE, EntityManager.INVALID_ID);
         
                 player.addIntent(request);
             }
@@ -203,7 +203,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
         const isSplit = this.splitPath();
 
         if(!isSplit) {
-            this.path.unshift(createStep(deltaX, deltaY));
+            this.path.unshift(fillStep(deltaX, deltaY));
 
             if(!this.entity.isPathWalkable(gameContext, this.path)) {
                 this.path = getBestPath(gameContext, this.nodeMap, tileX, tileY);
@@ -240,7 +240,7 @@ SelectState.prototype.getAttackRequest = function(entity) {
             if(this.path.length === 0) {
                 request = AttackActionVTable.createIntent(this.entity.getID(), entity.getID(), COMMAND_TYPE.ATTACK);
             } else {
-                request = createMoveRequest(this.entity.getID(), this.path, MOVE_COMMAND.ATTACK, entity.getID());
+                request = MoveVTable.createIntent(this.entity.getID(), this.path, MOVE_COMMAND.ATTACK, entity.getID());
             }
 
             break;
@@ -274,7 +274,7 @@ SelectState.prototype.getHealRequest = function(entity) {
                 default: {
                     //Cut the final step (index 0) as the PATH sees an ally as walkable.
                     this.path.shift();
-                    request = createMoveRequest(this.entity.getID(), this.path, MOVE_COMMAND.HEAL, entity.getID());
+                    request = MoveVTable.createIntent(this.entity.getID(), this.path, MOVE_COMMAND.HEAL, entity.getID());
                     break;
                 }
             }

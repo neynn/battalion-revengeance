@@ -1,6 +1,5 @@
 import { ExecutionPlan } from "../../engine/action/executionPlan.js";
 import { ACTION_TYPE } from "../enums.js";
-import { createStep } from "../systems/pathfinding.js";
 import { createEntityResolution } from "./interactionResolver.js";
 import { ENTITY_RESOLUTION_SIZE, ENTITY_SNAPSHOT_SIZE, MOVE_STEP_SIZE, packEntityResolution, packEntitySnapshot, packStep, unpackEntityResolution, unpackEntitySnapshot, unpackStep } from "./packer_constants.js";
 import { AttackActionVTable } from "./types/attack.js";
@@ -12,11 +11,11 @@ import { EntitySpawnVTable } from "./types/entitySpawn.js";
 import { ExplodeTileVTable } from "./types/explodeTile.js";
 import { ExtractVTable } from "./types/extract.js";
 import { HealVTable } from "./types/heal.js";
-import { MineTriggerAction } from "./types/mineTrigger.js";
-import { MoveAction } from "./types/move.js";
+import { MineTriggerVTable } from "./types/mineTrigger.js";
+import { MoveVTable } from "./types/move.js";
 import { ProduceEntityAction } from "./types/produceEntity.js";
 import { PurchaseEntityAction } from "./types/purchaseEntity.js";
-import { InterruptAction } from "./types/interrupt.js";
+import { InterruptVTable } from "./types/interrupt.js";
 import { StartTurnAction } from "./types/startTurn.js";
 import { UncloakAction } from "./types/uncloak.js";
 
@@ -432,7 +431,7 @@ export const unpackPlan = function(buffer) {
 
     switch(type) {
         case ACTION_TYPE.INTERRUPT: {
-            data = InterruptAction.createData();
+            data = InterruptVTable.createData();
             data.type = view.getUint8(1);
             data.event = view.getInt16(2, true);
             break;
@@ -500,24 +499,21 @@ export const unpackPlan = function(buffer) {
             break;
         }
         case ACTION_TYPE.MOVE: {
-            data = MoveAction.createData();
-            data.flags = view.getUint8(1);
-            data.entityID = view.getInt16(2, true);
-
+            const flags = view.getUint8(1);
+            const entityID = view.getInt16(2, true);
             const count = view.getUint16(4, true);
             let byteOffset = MOVE_HEADER_SIZE;
 
-            for(let i = 0; i < count; i++) {
-                const step = createStep(0, 0);
+            data = MoveVTable.createData(count);
 
-                data.path.push(step);
-                byteOffset = unpackStep(step, view, byteOffset);
+            for(let i = 0; i < count; i++) {
+                byteOffset = unpackStep(data.path[i], view, byteOffset);
             }
 
             break;
         }
         case ACTION_TYPE.MINE_TRIGGER: {
-            data = MineTriggerAction.createData();
+            data = MineTriggerVTable.createData();
             data.entityID = view.getInt16(1, true);
             data.health = view.getUint16(3, true);
             data.tileX = view.getInt16(5, true);

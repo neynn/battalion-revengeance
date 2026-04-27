@@ -30,15 +30,24 @@ export const createNode = function(id, x, y, cost, type, parent, flags) {
     }
 }
 
-export const createStep = function(deltaX, deltaY) {
+export const createStep = function() {
     return {
-        "deltaX": deltaX,
-        "deltaY": deltaY
+        "deltaX": 0,
+        "deltaY": 0
     }
 }
 
+export const fillStep = function(deltaX, deltaY) {
+    const step = createStep();
+
+    step.deltaX = deltaX;
+    step.deltaY = deltaY;
+
+    return step;
+}
+
 export const directionToStep = function(direction) {
-    const step = createStep(0, 0);
+    const step = createStep();
 
     switch(direction) {
         case DIRECTION.NORTH: {
@@ -103,7 +112,7 @@ export const getBestPath = function(gameContext, nodes, targetX, targetY) {
         const deltaX = lastX - x;
         const deltaY = lastY - y;
 
-        path.push(createStep(deltaX, deltaY));
+        path.push(fillStep(deltaX, deltaY));
 
         i++;
         lastX = x;

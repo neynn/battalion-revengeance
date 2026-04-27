@@ -1,16 +1,207 @@
 import { Action } from "../../../engine/action/action.js";
+import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { FIXED_DELTA_TIME, TILE_HEIGHT, TILE_WIDTH } from "../../../engine/engine_constants.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { FADE_RATE } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
-import { COMMAND_TYPE, MOVE_COMMAND, PATH_INTERCEPT, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { ACTION_TYPE, COMMAND_TYPE, MOVE_COMMAND, PATH_INTERCEPT, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { createStep } from "../../systems/pathfinding.js";
 import { playEntitySound, playUncloakSound } from "../../systems/sound.js";
 import { updateEntitySprite } from "../../systems/sprite.js";
-import { createMineTriggerIntent, createUncloakIntent } from "../actionHelper.js";
+import { createUncloakIntent } from "../actionHelper.js";
 import { AttackActionVTable } from "./attack.js";
 import { CaptureActionVTable } from "./capture.js";
 import { CloakActionVTable } from "./cloak.js";
 import { HealVTable } from "./heal.js";
+import { MineTriggerVTable } from "./mineTrigger.js";
+
+const MOVE_FLAG = {
+    NONE: 0,
+    ELUSIVE: 1 << 0
+};
+
+const createMoveIntent = function(entityID, path, command, targetID) {
+    return new ActionIntent(ACTION_TYPE.MOVE, {
+        "entityID": entityID,
+        "path": path,
+        "command": command,
+        "targetID": targetID
+    });
+}
+
+const createMoveData = function(steps) {
+    const path = [];
+
+    for(let i = 0; i < steps; i++) {
+        path.push(createStep());
+    }
+
+    return {
+        "entityID": EntityManager.INVALID_ID,
+        "flags": MOVE_FLAG.NONE,
+        "path": path
+    }
+}
+
+const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
+    const { world } = gameContext;
+    const { entityManager } = world;
+    const { entityID, path, command, targetID } = actionIntent;
+    const entity = entityManager.getEntity(entityID);
+
+    if(!entity || !entity.hasFlag(BattalionEntity.FLAG.CAN_MOVE)) {
+        return;
+    }
+
+    let targetX = entity.tileX;
+    let targetY = entity.tileY;
+
+    for(let i = path.length - 1; i >= 0; i--) {
+        const { deltaX, deltaY } = path[i];
+
+        targetX += deltaX;
+        targetY += deltaY;
+    }
+
+    if(!entity.isMoveable() || entity.isDead() || !entity.isMoveTargetValid(gameContext, targetX, targetY) || !entity.isPathWalkable(gameContext, path)) {
+        return;
+    }
+
+    const newPath = [];
+
+    //Copies the path, which is essential for keeping the intent valid!
+    for(let i = 0; i < path.length; i++) {
+        newPath[i] = path[i];
+    }
+
+    const intercept = entity.mInterceptPath(gameContext, newPath);
+
+    if(newPath.length === 0 || intercept === PATH_INTERCEPT.ILLEGAL) {
+        console.error("EDGE CASE: Stealth unit was too close!");
+        return;
+    }
+
+    const mineIntercept = entity.mInterceptMine(gameContext, newPath);
+
+    if(mineIntercept === PATH_INTERCEPT.MINE) {
+        executionPlan.addNext(MineTriggerVTable.createIntent(entityID));
+    } 
+
+    let flags = MOVE_FLAG.NONE;
+
+    switch(command) {
+        //Follow-Up commands are ignored if there is no target.
+        //Follow-Up commands only work on neighboring entities.
+        //If a Follow-Up command is given but is invalid, the move is canceled.
+        //Move is NOT canceled if ANY intercept is triggered! Otherwise information might leak.
+        case MOVE_COMMAND.HEAL: {
+            const targetEntity = entityManager.getEntity(targetID);
+
+            if(!targetEntity || !targetEntity.isNextToTile(targetX, targetY)) {
+                if(mineIntercept === PATH_INTERCEPT.NONE && intercept === PATH_INTERCEPT.NONE) {
+                    return;
+                }
+
+                break;
+            }
+
+            if(entity.isHealValid(gameContext, targetEntity)) {
+                executionPlan.addNext(HealVTable.createIntent(entityID, targetID));
+            }
+
+            break;
+        }
+        case MOVE_COMMAND.ATTACK: {
+            const targetEntity = entityManager.getEntity(targetID);
+
+            if(!targetEntity || !targetEntity.isNextToTile(targetX, targetY)) {
+                if(mineIntercept === PATH_INTERCEPT.NONE && intercept === PATH_INTERCEPT.NONE) {
+                    return;
+                }
+
+                break;
+            }
+
+            if(entity.isAttackValid(gameContext, targetEntity)) {
+                executionPlan.addNext(AttackActionVTable.createIntent(entityID, targetID, COMMAND_TYPE.ATTACK));
+            }
+
+            break;
+        }
+    }
+
+    executionPlan.addNext(createUncloakIntent(entityID));
+
+    if(entity.canCapture(gameContext, targetX, targetY)) {
+        executionPlan.addNext(CaptureActionVTable.createIntent(entityID, targetX, targetY));
+    }
+
+    if(entity.canCloakAt(gameContext, targetX, targetY)) {
+        executionPlan.addNext(CloakActionVTable.createIntent(entityID));
+    }
+
+    if(entity.hasTrait(TRAIT_TYPE.ELUSIVE)) {
+        flags |= MOVE_FLAG.ELUSIVE;
+    }
+    
+    const data = createMoveData(newPath.length);
+
+    data.entityID = entityID;
+    data.flags = flags;
+
+    for(let i = 0; i < newPath.length; i++) {
+        data.path[i].deltaX = newPath[i].deltaX;
+        data.path[i].deltaY = newPath[i].deltaY;
+    }
+
+    executionPlan.setData(data);
+}
+
+const executeMove = function(gameContext, data) {
+    const { world } = gameContext;
+    const { entityManager } = world;
+    const { entityID, path, flags } = data;
+    const entity = entityManager.getEntity(entityID);
+    const team = entity.getTeam(gameContext);
+    let isDiscovered = false;
+
+    entity.removeFromMap(gameContext);
+    entity.setFlag(BattalionEntity.FLAG.HAS_MOVED);
+    entity.clearFlag(BattalionEntity.FLAG.CAN_MOVE);
+
+    for(let i = path.length - 1; i >= 0; i--) {
+        const { deltaX, deltaY } = path[i];
+
+        entity.updateTile(deltaX, deltaY);
+
+        if(!isDiscovered && entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && entity.isDiscoveredByJammer(gameContext)) {
+            entity.setUncloaked();
+            isDiscovered = true;
+        }
+    }
+
+    if(flags & MOVE_FLAG.ELUSIVE) {
+        entity.triggerElusive();
+    }
+
+    const lastDeltaX = path[0].deltaX;
+    const lastDeltaY = path[0].deltaY;
+
+    entity.setDirectionByDelta(lastDeltaX, lastDeltaY);
+    entity.placeOnMap(gameContext);
+    team.addStatistic(TEAM_STAT.UNITS_MOVED, 1);
+
+    if(entity.discoversMine(gameContext)) {
+        team.addStatistic(TEAM_STAT.MINES_DISCOVERED, 1);
+    }
+}
+
+export const MoveVTable = {
+    createIntent: createMoveIntent,
+    createData: createMoveData,
+    fillPlan: fillMovePlan,
+    execute: executeMove
+};
 
 export const MoveAction = function() {
     Action.call(this);
@@ -29,19 +220,6 @@ MoveAction.STATE = {
     NONE: 0,
     DISCOVERED: 1
 };
-
-MoveAction.FLAG = {
-    NONE: 0,
-    ELUSIVE: 1 << 0
-};
-
-MoveAction.createData = function() {
-    return {
-        "entityID": EntityManager.INVALID_ID,
-        "flags": MoveAction.FLAG.NONE,
-        "path": []
-    }
-}
 
 MoveAction.prototype = Object.create(Action.prototype);
 MoveAction.prototype.constructor = MoveAction;
@@ -160,150 +338,9 @@ MoveAction.prototype.onEnd = function(gameContext, data) {
 }
 
 MoveAction.prototype.execute = function(gameContext, data) {
-    const { world } = gameContext;
-    const { entityManager } = world;
-    const { entityID, path, flags } = data;
-    const entity = entityManager.getEntity(entityID);
-    const team = entity.getTeam(gameContext);
-    let isDiscovered = false;
-
-    entity.removeFromMap(gameContext);
-    entity.setFlag(BattalionEntity.FLAG.HAS_MOVED);
-    entity.clearFlag(BattalionEntity.FLAG.CAN_MOVE);
-
-    for(let i = path.length - 1; i >= 0; i--) {
-        const { deltaX, deltaY } = path[i];
-
-        entity.updateTile(deltaX, deltaY);
-
-        if(!isDiscovered && entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && entity.isDiscoveredByJammer(gameContext)) {
-            entity.setUncloaked();
-            isDiscovered = true;
-        }
-    }
-
-    if(flags & MoveAction.FLAG.ELUSIVE) {
-        entity.triggerElusive();
-    }
-
-    const lastDeltaX = path[0].deltaX;
-    const lastDeltaY = path[0].deltaY;
-
-    entity.setDirectionByDelta(lastDeltaX, lastDeltaY);
-    entity.placeOnMap(gameContext);
-    team.addStatistic(TEAM_STAT.UNITS_MOVED, 1);
-
-    if(entity.discoversMine(gameContext)) {
-        team.addStatistic(TEAM_STAT.MINES_DISCOVERED, 1);
-    }
+    executeMove(gameContext, data);
 }
 
 MoveAction.prototype.fillExecutionPlan = function(gameContext, executionPlan, actionIntent) {
-    const { world } = gameContext;
-    const { entityManager } = world;
-    const { entityID, path, command, targetID } = actionIntent;
-    const entity = entityManager.getEntity(entityID);
-
-    if(!entity || !entity.hasFlag(BattalionEntity.FLAG.CAN_MOVE)) {
-        return;
-    }
-
-    let targetX = entity.tileX;
-    let targetY = entity.tileY;
-
-    for(let i = path.length - 1; i >= 0; i--) {
-        const { deltaX, deltaY } = path[i];
-
-        targetX += deltaX;
-        targetY += deltaY;
-    }
-
-    if(!entity.isMoveable() || entity.isDead() || !entity.isMoveTargetValid(gameContext, targetX, targetY) || !entity.isPathWalkable(gameContext, path)) {
-        return;
-    }
-
-    const newPath = [];
-
-    //Copies the path, which is essential for keeping the intent valid!
-    for(let i = 0; i < path.length; i++) {
-        newPath[i] = path[i];
-    }
-
-    const intercept = entity.mInterceptPath(gameContext, newPath);
-
-    if(newPath.length === 0 || intercept === PATH_INTERCEPT.ILLEGAL) {
-        console.error("EDGE CASE: Stealth unit was too close!");
-        return;
-    }
-
-    const mineIntercept = entity.mInterceptMine(gameContext, newPath);
-
-    if(mineIntercept === PATH_INTERCEPT.MINE) {
-        executionPlan.addNext(createMineTriggerIntent(entityID));
-    } 
-
-    let flags = MoveAction.FLAG.NONE;
-
-    switch(command) {
-        //Follow-Up commands are ignored if there is no target.
-        //Follow-Up commands only work on neighboring entities.
-        //If a Follow-Up command is given but is invalid, the move is canceled.
-        //Move is NOT canceled if ANY intercept is triggered! Otherwise information might leak.
-        case MOVE_COMMAND.HEAL: {
-            const targetEntity = entityManager.getEntity(targetID);
-
-            if(!targetEntity || !targetEntity.isNextToTile(targetX, targetY)) {
-                if(mineIntercept === PATH_INTERCEPT.NONE && intercept === PATH_INTERCEPT.NONE) {
-                    return;
-                }
-
-                break;
-            }
-
-            if(entity.isHealValid(gameContext, targetEntity)) {
-                executionPlan.addNext(HealVTable.createIntent(entityID, targetID));
-            }
-
-            break;
-        }
-        case MOVE_COMMAND.ATTACK: {
-            const targetEntity = entityManager.getEntity(targetID);
-
-            if(!targetEntity || !targetEntity.isNextToTile(targetX, targetY)) {
-                if(mineIntercept === PATH_INTERCEPT.NONE && intercept === PATH_INTERCEPT.NONE) {
-                    return;
-                }
-
-                break;
-            }
-
-            if(entity.isAttackValid(gameContext, targetEntity)) {
-                executionPlan.addNext(AttackActionVTable.createIntent(entityID, targetID, COMMAND_TYPE.ATTACK));
-            }
-
-            break;
-        }
-    }
-
-    executionPlan.addNext(createUncloakIntent(entityID));
-
-    if(entity.canCapture(gameContext, targetX, targetY)) {
-        executionPlan.addNext(CaptureActionVTable.createIntent(entityID, targetX, targetY));
-    }
-
-    if(entity.canCloakAt(gameContext, targetX, targetY)) {
-        executionPlan.addNext(CloakActionVTable.createIntent(entityID));
-    }
-
-    if(entity.hasTrait(TRAIT_TYPE.ELUSIVE)) {
-        flags |= MoveAction.FLAG.ELUSIVE;
-    }
-    
-    const data = MoveAction.createData();
-
-    data.entityID = entityID;
-    data.flags = flags;
-    data.path = newPath;
-
-    executionPlan.setData(data);
+    fillMovePlan(gameContext, executionPlan, actionIntent);
 }

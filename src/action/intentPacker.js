@@ -1,10 +1,11 @@
 import { ACTION_TYPE, COMMAND_TYPE } from "../enums.js";
 import { createStep } from "../systems/pathfinding.js";
-import { createMoveRequest, createProduceIntent, createPurchaseIntent } from "./actionHelper.js";
+import { createProduceIntent, createPurchaseIntent } from "./actionHelper.js";
 import { MOVE_STEP_SIZE, packStep, unpackStep } from "./packer_constants.js";
 import { AttackActionVTable } from "./types/attack.js";
 import { EndTurnVTable } from "./types/endTurn.js";
 import { HealVTable } from "./types/heal.js";
+import { MoveVTable } from "./types/move.js";
 
 /*
     0x00 -> type,
@@ -231,13 +232,13 @@ export const unpackIntent = function(data) {
             let byteOffset = MOVE_HEADER_SIZE;
 
             for(let i = 0; i < pathLength; i++) {
-                const step = createStep(0, 0);
+                const step = createStep();
 
                 path.push(step);
                 byteOffset = unpackStep(step, view, byteOffset);
             }
 
-            return createMoveRequest(entityID, path, command, targetID);
+            return MoveVTable.createIntent(entityID, path, command, targetID);
         }
     }
 

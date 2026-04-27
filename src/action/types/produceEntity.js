@@ -4,7 +4,8 @@ import { mapCategoryToStat } from "../../enumHelpers.js";
 import { TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { createEntitySnapshot } from "../../snapshot/entitySnapshot.js";
 import { DIRECTION_DELTA_X, DIRECTION_DELTA_Y, isDirectionValid } from "../../systems/direction.js";
-import { createMineTriggerIntent, createUncloakIntent } from "../actionHelper.js";
+import { createUncloakIntent } from "../actionHelper.js";
+import { MineTriggerVTable } from "./mineTrigger.js";
 
 export const ProduceEntityAction = function(createEntity) {
     Action.call(this);
@@ -94,7 +95,7 @@ ProduceEntityAction.prototype.fillExecutionPlan = function(gameContext, executio
     data.snapshot.maxHealth = health;
     data.snapshot.teamID = team.getID();
 
-    executionPlan.addNext(createMineTriggerIntent(nextID));
+    executionPlan.addNext(MineTriggerVTable.createIntent(nextID));
     executionPlan.addNext(createUncloakIntent(nextID));
     executionPlan.setData(data);
 }

@@ -1,9 +1,10 @@
 import { Action } from "../../../engine/action/action.js";
 import { INTERRUPT_TYPE, TEAM_STAT, TRAIT_CONFIG, TRAIT_TYPE } from "../../enums.js";
 import { TeamManager } from "../../team/teamManager.js";
-import { createInterruptIntent, createUncloakIntent } from "../actionHelper.js";
+import { createUncloakIntent } from "../actionHelper.js";
 import { fillEntityResolution } from "../interactionResolver.js";
 import { DeathActionVTable } from "./death.js";
+import { InterruptVTable } from "./interrupt.js";
 
 export const StartTurnAction = function() {
     Action.call(this);
@@ -70,7 +71,7 @@ StartTurnAction.prototype.execute = function(gameContext, data) {
     for(const event of events) {
         const { id } = event;
 
-        actionRouter.forceEnqueue(gameContext, createInterruptIntent(INTERRUPT_TYPE.EVENT, id));
+        actionRouter.forceEnqueue(gameContext, InterruptVTable.createIntent(INTERRUPT_TYPE.EVENT, id));
         event.execute(gameContext);
     }
 
