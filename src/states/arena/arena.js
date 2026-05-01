@@ -55,11 +55,12 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
 
     socket.events.on(Socket.EVENT.JSON_FROM_SERVER, ({ type, payload }) => {
         console.log(type, payload);
+
         switch(type) {
             case GAME_EVENT.MP_SERVER_LOAD_MAP: {
                 const { snapshot, client, overrides } = payload;
                 const { mapID } = snapshot;
-            
+
                 createClientMapLoader(gameContext, mapID)
                 .then((mapLoader) => {
                     mapLoader.clientTeam = client;

@@ -1,6 +1,6 @@
 import { ActionRouter } from "../../../engine/action/actionRouter.js";
 import { GAME_EVENT } from "../../enums.js";
-import { packPlan } from "../planPacker.js";
+import { getPlanSize, packPlan } from "../planPacker.js";
 
 export const ServerActionRouter = function() {
     ActionRouter.call(this);
@@ -22,7 +22,6 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
     const { actionQueue } = world;
     const executedPlans = [];
     let count = 0;
-    let sentBytes = 0;
     let limitReached = false;
 
     this.isUpdating = true;
@@ -37,8 +36,8 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
         const packed = packPlan(plan);
 
         if(packed) {
-            sentBytes += packed.byteLength;
             executedPlans.push(packed);
+            //executedPlans.push(plan);
         }
 
         count++;
@@ -52,8 +51,43 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
     this.isUpdating = false;
 
     if(executedPlans.length !== 0) {
-        console.log("SENT BYTES:", sentBytes);
+        /*
+        const count = executedPlans.length;
+        let planBytes = 0;
 
+        for(let i = 0; i < count; i++) {
+            const bytes = getPlanSize(executedPlans[i]);
+
+            planBytes += bytes;
+
+            if(bytes === 0) {
+                //Something went wrong...
+            }
+        }   
+
+        const HEADER_SIZE = 4 + 2 + (2 * count);
+        const TOTAL_BYTES = HEADER_SIZE + planBytes;
+        const buffer = new ArrayBuffer(TOTAL_BYTES);
+        const view = new DataView(buffer);
+
+        view.setUint32(0, this.version++, true);
+        view.setUint16(4, count, true);
+
+        let offsetOffset = 6;
+        let planOffset = HEADER_SIZE;
+
+        for(let i = 0; i < count; i++) {
+            const bytes = getPlanSize(executedPlans[i]);
+
+            view.setUint16(offsetOffset, planOffset, true);
+            //write plan into buffer...
+            
+            offsetOffset += 2;
+            planOffset += bytes;
+        }
+
+        console.log("SENT BYTES:", TOTAL_BYTES);
+        */
         gameContext.sendGameUpdate({
             "version": this.version++,
             "plans": executedPlans

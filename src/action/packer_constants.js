@@ -1,5 +1,7 @@
+export const ENTITY_ID_SIZE = 2;
+export const MINE_SIZE = 4;
 export const MOVE_STEP_SIZE = 2;
-export const ENTITY_RESOLUTION_SIZE = 6;
+export const ENTITY_RESOLUTION_SIZE = ENTITY_ID_SIZE + 4;
 export const ENTITY_SNAPSHOT_SIZE = 31;
 
 const BIT_8 = 1;
