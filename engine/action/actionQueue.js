@@ -149,6 +149,16 @@ ActionQueue.prototype.registerActionVTable = function(actionID, table) {
         return; 
     }
 
+    if(
+        typeof table.execute !== "function"
+        || typeof table.fillPlan !== "function"
+        || typeof table.createData !== "function"
+        || typeof table.createIntent !== "function"
+    ) {
+        console.warn(`ActionVTable ${actionID} is invalid!`);
+        return;
+    }
+
     this.actionTables.set(actionID, table);
 }
 

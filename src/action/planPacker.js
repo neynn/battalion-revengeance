@@ -498,12 +498,12 @@ export const unpackPlan = function(buffer) {
             break;
         }
         case ACTION_TYPE.MOVE: {
-            const flags = view.getUint8(1);
-            const entityID = view.getInt16(2, true);
             const count = view.getUint16(4, true);
             let byteOffset = MOVE_HEADER_SIZE;
 
             data = MoveVTable.createData(count);
+            data.entityID = view.getInt16(2, true);;
+            data.flags = view.getUint8(1);;
 
             for(let i = 0; i < count; i++) {
                 byteOffset = unpackStep(data.path[i], view, byteOffset);

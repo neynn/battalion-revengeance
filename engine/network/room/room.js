@@ -16,6 +16,10 @@ Room.prototype.send = function(type, payload, clientID) {
     }
 }
 
+Room.prototype.sendGameUpdate = function(buffer) {
+    this.application.broadcastBinary(this.id, buffer);
+}
+
 Room.prototype.broadcast = function(type, payload) {
     this.application.broadcast(this.id, type, payload);
 }

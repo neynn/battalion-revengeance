@@ -9,13 +9,15 @@ export const Socket = function() {
     this.events = new EventEmitter();
     this.events.register(Socket.EVENT.CONNECTED_TO_SERVER);
     this.events.register(Socket.EVENT.DISCONNECTED_FROM_SERVER);
-    this.events.register(Socket.EVENT.MESSAGE_FROM_SERVER);
+    this.events.register(Socket.EVENT.JSON_FROM_SERVER);
+    this.events.register(Socket.EVENT.BINARY_FROM_SERVER);
 }
 
 Socket.EVENT = {
     CONNECTED_TO_SERVER: "CONNECTED_TO_SERVER",
     DISCONNECTED_FROM_SERVER: "DISCONNECTED_FROM_SERVER",
-    MESSAGE_FROM_SERVER: "MESSAGE_FROM_SERVER"
+    JSON_FROM_SERVER: "JSON_FROM_SERVER",
+    BINARY_FROM_SERVER: "BINARY_FROM_SERVER"
 };
 
 Socket.prototype.registerName = function(userID) {
@@ -69,10 +71,14 @@ Socket.prototype.connect = async function(address) {
         });
     });
     
-    socket.on(NETWORK_EVENTS.MESSAGE, (message) => {
+    socket.on(NETWORK_EVENTS.JSON_MESSAGE, (message) => {
         if(typeof message === "object") {
-            this.events.emit(Socket.EVENT.MESSAGE_FROM_SERVER, message);
+            this.events.emit(Socket.EVENT.JSON_FROM_SERVER, message);
         }
+    });
+
+    socket.on(NETWORK_EVENTS.BINARY_MESSAGE, (payload) => {
+        this.events.emit(Socket.EVENT.BINARY_FROM_SERVER, payload);
     });
 }
 

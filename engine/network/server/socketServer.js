@@ -18,17 +18,25 @@ export const SocketServer = function(io) {
 }
 
 SocketServer.prototype.send = function(clientID, messageType, payload) {
-    this.io.to(clientID).emit(NETWORK_EVENTS.MESSAGE, {
+    this.io.to(clientID).emit(NETWORK_EVENTS.JSON_MESSAGE, {
         "type": messageType,
         "payload": payload
     });
 }
 
 SocketServer.prototype.broadcast = function(roomID, messageType, payload) {
-    this.io.in(roomID).emit(NETWORK_EVENTS.MESSAGE, {
+    this.io.in(roomID).emit(NETWORK_EVENTS.JSON_MESSAGE, {
         "type": messageType,
         "payload": payload
     });
+}
+
+SocketServer.prototype.sendBinary = function(clientID, buffer) {
+    this.io.to(clientID).emit(NETWORK_EVENTS.BINARY_MESSAGE, buffer);
+}
+
+SocketServer.prototype.broadcastBinary = function(roomID, buffer) {
+    this.io.in(roomID).emit(NETWORK_EVENTS.BINARY_MESSAGE, buffer);
 }
 
 SocketServer.prototype.createRoom = function(roomID, roomType) {

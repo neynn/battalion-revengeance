@@ -30,7 +30,31 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
         socket.registerName(NAME);
     });
 
-    socket.events.on(Socket.EVENT.MESSAGE_FROM_SERVER, ({ type, payload }) => {
+    socket.events.on(Socket.EVENT.BINARY_FROM_SERVER, (binary) => {
+        console.log(binary);
+        const { version, plans } = binary;
+
+        for(const plan of plans) {
+            const executionPlan = unpackPlan(plan);
+
+            console.log(executionPlan);
+            
+            if(executionPlan.isValid()) {
+                actionQueue.enqueue(executionPlan);
+            } else {
+                //...
+            }
+        }
+
+        if((this.version + 1) === version) {
+            this.version = version;
+        } else {
+            //Version mismatch!
+        }
+    });
+
+    socket.events.on(Socket.EVENT.JSON_FROM_SERVER, ({ type, payload }) => {
+        console.log(type, payload);
         switch(type) {
             case GAME_EVENT.MP_SERVER_LOAD_MAP: {
                 const { snapshot, client, overrides } = payload;
@@ -51,27 +75,6 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
             case GAME_EVENT.MP_SERVER_START_MAP: {
                 console.log("MAP_STARTED");
                 this.arenaUI.hide();
-                break;
-            }
-            case GAME_EVENT.MP_SERVER_UPDATE: {
-                const { version, plans } = payload;
-
-                for(const plan of plans) {
-                    const executionPlan = unpackPlan(plan);
-
-                    if(executionPlan.isValid()) {
-                        actionQueue.enqueue(executionPlan);
-                    } else {
-                        //...
-                    }
-                }
-
-                if((this.version + 1) === version) {
-                    this.version = version;
-                } else {
-                    //Version mismatch!
-                }
-
                 break;
             }
             case ROOM_EVENTS.ROOM_UPDATE: {

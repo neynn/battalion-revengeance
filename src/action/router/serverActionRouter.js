@@ -54,7 +54,7 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
     if(executedPlans.length !== 0) {
         console.log("SENT BYTES:", sentBytes);
 
-        gameContext.broadcast(GAME_EVENT.MP_SERVER_UPDATE, {
+        gameContext.sendGameUpdate({
             "version": this.version++,
             "plans": executedPlans
         });

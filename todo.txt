@@ -27,3 +27,4 @@ Rendering:
 
 Z-Buffer:
     
+transportable terrain -> allows to use the sea transport
