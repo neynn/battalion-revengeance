@@ -45,45 +45,55 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
 
     this.isUpdating = false;
 
-    if(count !== 0) {
-        let planBytes = 0;
+    let planCount = 0;
+    let planBytes = 0;
 
-        for(let i = 0; i < count; i++) {
-            const bytes = getPlanSize(executedPlans[i]);
+    for(let i = 0; i < count; i++) {
+        const bytes = getPlanSize(executedPlans[i]);
 
-            planBytes += bytes;
+        planBytes += bytes;
 
-            if(bytes === 0) {
-                console.error("ActionType does not exist! Plan was not packed!");
-            }
-        }   
+        if(bytes === 0) {
+            console.error("ActionType does not exist! Plan was not packed!");
+        } else {
+            planCount++;
+        }
+    }
 
-        const HEADER_SIZE = getGameUpdateHeaderSize(count);
+    if(planCount !== 0) {
+        const HEADER_SIZE = getGameUpdateHeaderSize(planCount);
         const TOTAL_BYTES = HEADER_SIZE + planBytes;
         const buffer = new ArrayBuffer(TOTAL_BYTES);
         const view = new DataView(buffer);
 
         view.setUint32(0, this.version++, true);
-        view.setUint16(4, count, true);
+        view.setUint16(4, planCount, true);
 
         let offsetOffset = 6;
         let planWritePtr = HEADER_SIZE;
         let planOffset = 0;
 
         for(let i = 0; i < count; i++) {
-            const size = getPlanSize(executedPlans[i]);
+            const bytes = getPlanSize(executedPlans[i]);
 
-            view.setUint16(offsetOffset, planOffset, true);
-            writePlan(executedPlans[i], view, planWritePtr);
-            
-            offsetOffset += 2;
-            planOffset += size;
-            planWritePtr += size;
+            //Skips invalid plans.
+            if(bytes !== 0) {
+                view.setUint16(offsetOffset, planOffset, true);
+                
+                writePlan(executedPlans[i], view, planWritePtr);
+                planOffset += bytes;
+                planWritePtr += bytes;
+                offsetOffset += 2;
+            }
+        }
+
+        if(planOffset !== planBytes) {
+            console.error("Plan size mismatch!");
         }
 
         console.log("SENT BYTES:", TOTAL_BYTES);
         gameContext.sendGameUpdate(buffer);
-    }   
+    }
 }
 
 ServerActionRouter.prototype.forceEnqueue = function(gameContext, actionIntent) {
