@@ -7,6 +7,10 @@ export const ENTITY_SNAPSHOT_SIZE = 31;
 const BIT_8 = 1;
 const BIT_16 = 2;
 
+export const getGameUpdateHeaderSize = function(planCount) {
+    return 4 + 2 + (2 * planCount);
+}
+
 export const packStep = function(step, view, byteOffset) {
     view.setInt8(byteOffset, step.deltaX);
     byteOffset += BIT_8;

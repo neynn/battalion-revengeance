@@ -2,6 +2,7 @@ import { getRandomElement } from "../../../engine/math/math.js";
 import { ROOM_EVENTS } from "../../../engine/network/events.js";
 import { Socket } from "../../../engine/network/socket.js";
 import { State } from "../../../engine/state/state.js";
+import { getGameUpdateHeaderSize } from "../../action/packer_constants.js";
 import { unpackPlan } from "../../action/planPacker.js";
 import { GAME_EVENT } from "../../enums.js";
 import { createClientMapLoader } from "../../systems/map.js";
@@ -31,19 +32,24 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
     });
 
     socket.events.on(Socket.EVENT.BINARY_FROM_SERVER, (binary) => {
-        console.log(binary);
-        const { version, plans } = binary;
+        const view = new DataView(binary);
+        const version = view.getUint32(0, true);
+        const count = view.getUint16(4, true);
+        const HEADER_SIZE = getGameUpdateHeaderSize(count);
 
-        for(const plan of plans) {
-            const executionPlan = unpackPlan(plan);
+        let offsetOffset = 6;
 
-            console.log(executionPlan);
-            
+        for(let i = 0; i < count; i++) {
+            const beginPtr = HEADER_SIZE + view.getUint16(offsetOffset, true);
+            const executionPlan = unpackPlan(view, beginPtr);
+
             if(executionPlan.isValid()) {
                 actionQueue.enqueue(executionPlan);
             } else {
                 //...
             }
+
+            offsetOffset += 2;
         }
 
         if((this.version + 1) === version) {

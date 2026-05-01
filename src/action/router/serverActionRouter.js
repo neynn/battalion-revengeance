@@ -1,6 +1,7 @@
 import { ActionRouter } from "../../../engine/action/actionRouter.js";
 import { GAME_EVENT } from "../../enums.js";
-import { getPlanSize, packPlan } from "../planPacker.js";
+import { getGameUpdateHeaderSize } from "../packer_constants.js";
+import { getPlanSize, writePlan } from "../planPacker.js";
 
 export const ServerActionRouter = function() {
     ActionRouter.call(this);
@@ -33,13 +34,7 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
             break;
         }
 
-        const packed = packPlan(plan);
-
-        if(packed) {
-            executedPlans.push(packed);
-            //executedPlans.push(plan);
-        }
-
+        executedPlans.push(plan);
         count++;
 
         if(count >= this.maxActionsPerTick) {
@@ -50,9 +45,7 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
 
     this.isUpdating = false;
 
-    if(executedPlans.length !== 0) {
-        /*
-        const count = executedPlans.length;
+    if(count !== 0) {
         let planBytes = 0;
 
         for(let i = 0; i < count; i++) {
@@ -61,11 +54,11 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
             planBytes += bytes;
 
             if(bytes === 0) {
-                //Something went wrong...
+                console.error("ActionType does not exist! Plan was not packed!");
             }
         }   
 
-        const HEADER_SIZE = 4 + 2 + (2 * count);
+        const HEADER_SIZE = getGameUpdateHeaderSize(count);
         const TOTAL_BYTES = HEADER_SIZE + planBytes;
         const buffer = new ArrayBuffer(TOTAL_BYTES);
         const view = new DataView(buffer);
@@ -74,24 +67,22 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
         view.setUint16(4, count, true);
 
         let offsetOffset = 6;
-        let planOffset = HEADER_SIZE;
+        let planWritePtr = HEADER_SIZE;
+        let planOffset = 0;
 
         for(let i = 0; i < count; i++) {
-            const bytes = getPlanSize(executedPlans[i]);
+            const size = getPlanSize(executedPlans[i]);
 
             view.setUint16(offsetOffset, planOffset, true);
-            //write plan into buffer...
+            writePlan(executedPlans[i], view, planWritePtr);
             
             offsetOffset += 2;
-            planOffset += bytes;
+            planOffset += size;
+            planWritePtr += size;
         }
 
         console.log("SENT BYTES:", TOTAL_BYTES);
-        */
-        gameContext.sendGameUpdate({
-            "version": this.version++,
-            "plans": executedPlans
-        });
+        gameContext.sendGameUpdate(buffer);
     }   
 }
 

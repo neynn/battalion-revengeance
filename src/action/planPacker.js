@@ -26,16 +26,12 @@ import { UncloakVTable } from "./types/uncloak.js";
 */
 const INTERRUPT_HEADER_SIZE = 4;
 
-const packInterruptPlan = function(data) {
+const packInterruptPlan = function(data, view, beginPtr) {
     const { event, type } = data;
-    const buffer = new ArrayBuffer(INTERRUPT_HEADER_SIZE);
-    const view = new DataView(buffer);
 
-    view.setUint8(0, ACTION_TYPE.INTERRUPT);
-    view.setUint8(1, type);
-    view.setInt16(2, event, true);
-
-    return buffer;
+    view.setUint8(beginPtr + 0, ACTION_TYPE.INTERRUPT);
+    view.setUint8(beginPtr + 1, type);
+    view.setInt16(beginPtr + 2, event, true);
 }
 
 /*
@@ -46,18 +42,15 @@ const packInterruptPlan = function(data) {
 */
 const UNCLOAK_HEADER_SIZE = 5;
 
-const packUncloakPlan = function(data) {
+const packUncloakPlan = function(data, view, beginPtr) {
     const { entityID, entities, mines } = data;
-    const BUFFER_SIZE = UNCLOAK_HEADER_SIZE + ENTITY_ID_SIZE * entities.length + MINE_SIZE * mines.length;
-    const buffer = new ArrayBuffer(BUFFER_SIZE);
-    const view = new DataView(buffer);
 
-    view.setUint8(0, ACTION_TYPE.UNCLOAK);
-    view.setUint8(1, entities.length);
-    view.setUint8(2, mines.length);
-    view.setInt16(3, entityID, true);
+    view.setUint8(beginPtr + 0, ACTION_TYPE.UNCLOAK);
+    view.setUint8(beginPtr + 1, entities.length);
+    view.setUint8(beginPtr + 2, mines.length);
+    view.setInt16(beginPtr + 3, entityID, true);
 
-    let byteOffset = UNCLOAK_HEADER_SIZE;
+    let byteOffset = beginPtr + UNCLOAK_HEADER_SIZE;
 
     for(let i = 0; i < entities.length; i++) {
         view.setInt16(byteOffset, entities[i], true);
@@ -73,8 +66,6 @@ const packUncloakPlan = function(data) {
 
         byteOffset += 4;
     }
-
-    return buffer;
 }
 
 /*
@@ -84,23 +75,18 @@ const packUncloakPlan = function(data) {
 */
 const START_TURN_HEADER_SIZE = 4;
 
-const packStartTurnPlan = function(data) {
+const packStartTurnPlan = function(data, view, beginPtr) {
     const { teamID, resolutions } = data;
-    const BUFFER_SIZE = START_TURN_HEADER_SIZE + ENTITY_RESOLUTION_SIZE * resolutions.length;
-    const buffer = new ArrayBuffer(BUFFER_SIZE);
-    const view = new DataView(buffer);
     
-    view.setUint8(0, ACTION_TYPE.START_TURN);
-    view.setInt8(1, teamID);
-    view.setUint16(2, resolutions.length, true);
+    view.setUint8(beginPtr + 0, ACTION_TYPE.START_TURN);
+    view.setInt8(beginPtr + 1, teamID);
+    view.setUint16(beginPtr + 2, resolutions.length, true);
 
-    let byteOffset = START_TURN_HEADER_SIZE;
+    let byteOffset = beginPtr + START_TURN_HEADER_SIZE;
 
     for(let i = 0; i < resolutions.length; i++) {
         byteOffset = packEntityResolution(resolutions[i], view, byteOffset);
     }
-
-    return buffer;
 }
 
 /*
@@ -111,17 +97,14 @@ const packStartTurnPlan = function(data) {
 */
 const PURCHASE_HEADER_SIZE = 5 + ENTITY_SNAPSHOT_SIZE;
 
-const packPurchasePlan = function(data) {
+const packPurchasePlan = function(data, view, beginPtr) {
     const { nextID, cost, snapshot } = data;
-    const buffer = new ArrayBuffer(PURCHASE_HEADER_SIZE);
-    const view = new DataView(buffer);
 
-    view.setUint8(0, ACTION_TYPE.PURCHASE_ENTITY);
-    view.setInt16(1, nextID, true);
-    view.setUint16(3, cost, true);
-    packEntitySnapshot(snapshot, view, 5);
+    view.setUint8(beginPtr + 0, ACTION_TYPE.PURCHASE_ENTITY);
+    view.setInt16(beginPtr + 1, nextID, true);
+    view.setUint16(beginPtr + 3, cost, true);
 
-    return buffer;
+    packEntitySnapshot(snapshot, view, beginPtr + 5);
 }
 
 /*
@@ -133,18 +116,15 @@ const packPurchasePlan = function(data) {
 */
 const PRODUCE_HEADER_SIZE = 7 + ENTITY_SNAPSHOT_SIZE;
 
-const packProducePlan = function(data) {
+const packProducePlan = function(data, view, beginPtr) {
     const { entityID, nextID, cost, snapshot } = data;
-    const buffer = new ArrayBuffer(PRODUCE_HEADER_SIZE);
-    const view = new DataView(buffer);
 
-    view.setUint8(0, ACTION_TYPE.PRODUCE_ENTITY);
-    view.setInt16(1, entityID, true);
-    view.setInt16(3, nextID, true);
-    view.setUint16(5, cost, true);
-    packEntitySnapshot(snapshot, view, 7);
+    view.setUint8(beginPtr + 0, ACTION_TYPE.PRODUCE_ENTITY);
+    view.setInt16(beginPtr + 1, entityID, true);
+    view.setInt16(beginPtr + 3, nextID, true);
+    view.setUint16(beginPtr + 5, cost, true);
 
-    return buffer;
+    packEntitySnapshot(snapshot, view, beginPtr + 7);
 }
 
 /*
@@ -155,24 +135,19 @@ const packProducePlan = function(data) {
 */
 const MOVE_HEADER_SIZE = 6;
 
-const packMovePlan = function(data) {
+const packMovePlan = function(data, view, beginPtr) {
     const { entityID, flags, path } = data;
-    const BUFFER_SIZE = MOVE_HEADER_SIZE + MOVE_STEP_SIZE * path.length;
-    const buffer = new ArrayBuffer(BUFFER_SIZE);
-    const view = new DataView(buffer);
 
-    view.setUint8(0, ACTION_TYPE.MOVE);
-    view.setUint8(1, flags);
-    view.setInt16(2, entityID, true);
-    view.setUint16(4, path.length, true);
+    view.setUint8(beginPtr + 0, ACTION_TYPE.MOVE);
+    view.setUint8(beginPtr + 1, flags);
+    view.setInt16(beginPtr + 2, entityID, true);
+    view.setUint16(beginPtr + 4, path.length, true);
 
-    let byteOffset = MOVE_HEADER_SIZE;
+    let byteOffset = beginPtr + MOVE_HEADER_SIZE;
 
     for(let i = 0; i < path.length; i++) {
         byteOffset = packStep(path[i], view, byteOffset);
     }
-
-    return buffer;
 }
 
 /*
@@ -184,18 +159,14 @@ const packMovePlan = function(data) {
 */
 const MINE_TRIGGER_HEADER_SIZE = 9;
 
-const packMineTriggerPlan = function(data) {
+const packMineTriggerPlan = function(data, view, beginPtr) {
     const { entityID, health, tileX, tileY } = data;
-    const buffer = new ArrayBuffer(MINE_TRIGGER_HEADER_SIZE);
-    const view = new DataView(buffer);
 
-    view.setUint8(0, ACTION_TYPE.MINE_TRIGGER);
-    view.setInt16(1, entityID, true);
-    view.setUint16(3, health, true);
-    view.setInt16(5, tileX, true);
-    view.setInt16(7, tileY, true);
-
-    return buffer;
+    view.setUint8(beginPtr + 0, ACTION_TYPE.MINE_TRIGGER);
+    view.setInt16(beginPtr + 1, entityID, true);
+    view.setUint16(beginPtr + 3, health, true);
+    view.setInt16(beginPtr + 5, tileX, true);
+    view.setInt16(beginPtr + 7, tileY, true);
 }
 
 /*
@@ -206,24 +177,19 @@ const packMineTriggerPlan = function(data) {
 */
 const HEAL_HEADER_SIZE = 7;
 
-const packHealPlan = function(data) {
+const packHealPlan = function(data, view, beginPtr) {
     const { entityID, targetID, resolutions } = data;
-    const BUFFER_SIZE = HEAL_HEADER_SIZE + ENTITY_RESOLUTION_SIZE * resolutions.length;
-    const buffer = new ArrayBuffer(BUFFER_SIZE);
-    const view = new DataView(buffer);
 
-    view.setUint8(0, ACTION_TYPE.HEAL);
-    view.setInt16(1, entityID, true);
-    view.setInt16(3, targetID, true);
-    view.setUint16(5, resolutions.length, true);
+    view.setUint8(beginPtr + 0, ACTION_TYPE.HEAL);
+    view.setInt16(beginPtr + 1, entityID, true);
+    view.setInt16(beginPtr + 3, targetID, true);
+    view.setUint16(beginPtr + 5, resolutions.length, true);
 
-    let byteOffset = HEAL_HEADER_SIZE;
+    let byteOffset = beginPtr + HEAL_HEADER_SIZE;
 
     for(let i = 0; i < resolutions.length; i++) {
         byteOffset = packEntityResolution(resolutions[i], view, byteOffset);
     }
-
-    return buffer;
 }
 
 /*
@@ -233,16 +199,12 @@ const packHealPlan = function(data) {
 */
 const EXTRACT_ORE_HEADER_SIZE = 5;
 
-const packExtractOrePlan = function(data) {
+const packExtractOrePlan = function(data, view, beginPtr) {
     const { entityID, value } = data;
-    const buffer = new ArrayBuffer(EXTRACT_ORE_HEADER_SIZE);
-    const view = new DataView(buffer);
 
-    view.setUint8(0, ACTION_TYPE.EXTRACT);
-    view.setInt16(1, entityID, true);
-    view.setUint16(3, value, true);
-
-    return buffer;
+    view.setUint8(beginPtr + 0, ACTION_TYPE.EXTRACT);
+    view.setInt16(beginPtr + 1, entityID, true);
+    view.setUint16(beginPtr + 3, value, true);
 }
 
 /*
@@ -254,18 +216,14 @@ const packExtractOrePlan = function(data) {
 */
 const EXPLODE_TILE_HEADER_SIZE = 8;
 
-const packExplodeTilePlan = function(data) {
+const packExplodeTilePlan = function(data, view, beginPtr) {
     const { entityID, layer, tileX, tileY } = data;
-    const buffer = new ArrayBuffer(EXPLODE_TILE_HEADER_SIZE);
-    const view = new DataView(buffer);
 
-    view.setUint8(0, ACTION_TYPE.EXPLODE_TILE);
-    view.setUint8(1, layer);
-    view.setInt16(2, tileX, true);
-    view.setInt16(4, tileY, true);
-    view.setInt16(6, entityID, true);
-
-    return buffer;
+    view.setUint8(beginPtr + 0, ACTION_TYPE.EXPLODE_TILE);
+    view.setUint8(beginPtr + 1, layer);
+    view.setInt16(beginPtr + 2, tileX, true);
+    view.setInt16(beginPtr + 4, tileY, true);
+    view.setInt16(beginPtr + 6, entityID, true);
 }
 
 /*
@@ -275,17 +233,13 @@ const packExplodeTilePlan = function(data) {
 */
 const ENTITY_SPAWN_HEADER_SIZE = 3 + ENTITY_SNAPSHOT_SIZE;
 
-const packEntitySpawnPlan = function(data) {
+const packEntitySpawnPlan = function(data, view, beginPtr) {
     const { entityID, snapshot } = data;
-    const buffer = new ArrayBuffer(ENTITY_SPAWN_HEADER_SIZE);
-    const view = new DataView(buffer);
 
-    view.setUint8(0, ACTION_TYPE.ENTITY_SPAWN);
-    view.setInt16(1, entityID, true);
+    view.setUint8(beginPtr + 0, ACTION_TYPE.ENTITY_SPAWN);
+    view.setInt16(beginPtr + 1, entityID, true);
 
-    packEntitySnapshot(snapshot, view, 3);
-
-    return buffer;
+    packEntitySnapshot(snapshot, view, beginPtr + 3);
 }
 
 /*
@@ -293,13 +247,8 @@ const packEntitySpawnPlan = function(data) {
 */
 const END_TURN_HEADER_SIZE = 1;
 
-const packEndTurnPlan = function(data) {
-    const buffer = new ArrayBuffer(END_TURN_HEADER_SIZE);
-    const view = new DataView(buffer);
-
-    view.setUint8(0, ACTION_TYPE.END_TURN);
-
-    return buffer;
+const packEndTurnPlan = function(data, view, beginPtr) {
+    view.setUint8(beginPtr + 0, ACTION_TYPE.END_TURN);
 }
 
 /*
@@ -308,24 +257,19 @@ const packEndTurnPlan = function(data) {
 */
 const DEATH_HEADER_SIZE = 3;
 
-const packDeathPlan = function(data) {
+const packDeathPlan = function(data, view, beginPtr) {
     const { entities } = data;
-    const BUFFER_SIZE = DEATH_HEADER_SIZE + ENTITY_ID_SIZE * entities.length;
-    const buffer = new ArrayBuffer(BUFFER_SIZE);
-    const view = new DataView(buffer);
 
-    view.setUint8(0, ACTION_TYPE.DEATH);
-    view.setUint16(1, entities.length, true);
+    view.setUint8(beginPtr + 0, ACTION_TYPE.DEATH);
+    view.setUint16(beginPtr + 1, entities.length, true);
 
-    let byteOffset = DEATH_HEADER_SIZE;
+    let byteOffset = beginPtr + DEATH_HEADER_SIZE;
 
     for(let i = 0; i < entities.length; i++) {
         view.setInt16(byteOffset, entities[i], true);
 
         byteOffset += ENTITY_ID_SIZE;
     }
-
-    return buffer;
 }
 
 /*
@@ -334,15 +278,11 @@ const packDeathPlan = function(data) {
 */
 const CLOAK_HEADER_SIZE = 3;
 
-const packCloakPlan = function(data) {
+const packCloakPlan = function(data, view, beginPtr) {
     const { entityID } = data;
-    const buffer = new ArrayBuffer(CLOAK_HEADER_SIZE);
-    const view = new DataView(buffer);
 
-    view.setUint8(0, ACTION_TYPE.CLOAK);
-    view.setInt16(1, entityID, true);
-
-    return buffer;
+    view.setUint8(beginPtr + 0, ACTION_TYPE.CLOAK);
+    view.setInt16(beginPtr + 1, entityID, true);
 }
 
 /*
@@ -353,17 +293,13 @@ const packCloakPlan = function(data) {
 */
 const CAPTURE_HEADER_SIZE = 7;
 
-const packCapturePlan = function(data) {
+const packCapturePlan = function(data, view, beginPtr) {
     const { entityID, targetX, targetY } = data;
-    const buffer = new ArrayBuffer(CAPTURE_HEADER_SIZE);
-    const view = new DataView(buffer);
 
-    view.setUint8(0, ACTION_TYPE.CAPTURE);
-    view.setInt16(1, entityID, true);
-    view.setInt16(3, targetX, true);
-    view.setInt16(5, targetY, true);
-
-    return buffer;
+    view.setUint8(beginPtr + 0, ACTION_TYPE.CAPTURE);
+    view.setInt16(beginPtr + 1, entityID, true);
+    view.setInt16(beginPtr + 3, targetX, true);
+    view.setInt16(beginPtr + 5, targetY, true);
 }
 
 /*
@@ -376,106 +312,59 @@ const packCapturePlan = function(data) {
 */
 const ATTACK_HEADER_SIZE = 12;
 
-const packAttackPlan = function(data) {
+const packAttackPlan = function(data, view, beginPtr) {
     const { attackerID, targetID, resourceDamage, flags, resolutions } = data;
-    const BUFFER_SIZE = ATTACK_HEADER_SIZE + ENTITY_RESOLUTION_SIZE * resolutions.length;
-    const buffer = new ArrayBuffer(BUFFER_SIZE);
-    const view = new DataView(buffer);
 
-    view.setUint8(0, ACTION_TYPE.ATTACK);
-    view.setUint8(1, flags);
-    view.setInt16(2, attackerID, true);
-    view.setInt16(4, targetID, true);
-    view.setInt32(6, resourceDamage, true);
-    view.setUint16(10, resolutions.length, true);
+    view.setUint8(beginPtr + 0, ACTION_TYPE.ATTACK);
+    view.setUint8(beginPtr + 1, flags);
+    view.setInt16(beginPtr + 2, attackerID, true);
+    view.setInt16(beginPtr + 4, targetID, true);
+    view.setInt32(beginPtr + 6, resourceDamage, true);
+    view.setUint16(beginPtr + 10, resolutions.length, true);
 
-    let byteOffset = ATTACK_HEADER_SIZE;
+    let byteOffset = beginPtr + ATTACK_HEADER_SIZE;
 
     for(let i = 0; i < resolutions.length; i++) {
         byteOffset = packEntityResolution(resolutions[i], view, byteOffset);
     }
-
-    return buffer;
 }
 
+/**
+ * 
+ * @param {ExecutionPlan} executionPlan 
+ * @returns {number}
+ */
 export const getPlanSize = function(executionPlan) {
     const { id, type, data } = executionPlan;
-    let size = 0;
 
     switch(type) {
-        case ACTION_TYPE.ATTACK: {
-            size += ATTACK_HEADER_SIZE + ENTITY_RESOLUTION_SIZE * data.resolutions.length;
-            break;
-        }
-        case ACTION_TYPE.CAPTURE: {
-            size += CAPTURE_HEADER_SIZE;
-            break;
-        }
-        case ACTION_TYPE.CLOAK: {
-            size += CLOAK_HEADER_SIZE;
-            break;
-        }
-        case ACTION_TYPE.DEATH: {
-            size += DEATH_HEADER_SIZE + ENTITY_ID_SIZE + data.entities.length;
-            break;
-        }
-        case ACTION_TYPE.END_TURN: {
-            size += END_TURN_HEADER_SIZE;
-            break;
-        }
-        case ACTION_TYPE.ENTITY_SPAWN: {
-            size += ENTITY_SPAWN_HEADER_SIZE;
-            break;
-        }
-        case ACTION_TYPE.EXPLODE_TILE: {
-            size += EXPLODE_TILE_HEADER_SIZE;
-            break;
-        }
-        case ACTION_TYPE.EXTRACT: {
-            size += EXTRACT_ORE_HEADER_SIZE;
-            break;
-        }
-        case ACTION_TYPE.HEAL: {
-            size += HEAL_HEADER_SIZE + ENTITY_RESOLUTION_SIZE * data.resolutions.length;
-            break;
-        }
-        case ACTION_TYPE.MINE_TRIGGER: {
-            size += MINE_TRIGGER_HEADER_SIZE;
-            break;
-        }
-        case ACTION_TYPE.MOVE: {
-            size += MOVE_HEADER_SIZE + MOVE_STEP_SIZE * data.path.length;
-            break;
-        }
-        case ACTION_TYPE.PRODUCE_ENTITY: {
-            size += PRODUCE_HEADER_SIZE;
-            break;
-        }
-        case ACTION_TYPE.PURCHASE_ENTITY: {
-            size += PURCHASE_HEADER_SIZE;
-            break;
-        }
-        case ACTION_TYPE.START_TURN: {
-            size += START_TURN_HEADER_SIZE + ENTITY_RESOLUTION_SIZE * data.resolutions.length;
-            break;
-        }
-        case ACTION_TYPE.UNCLOAK: {
-            size += UNCLOAK_HEADER_SIZE + ENTITY_ID_SIZE * data.entities.length + MINE_SIZE * data.mines.length;
-            break;
-        }
-        case ACTION_TYPE.INTERRUPT: {
-            size += INTERRUPT_HEADER_SIZE;
-            break;
-        }
-        default: {
-            console.error("Unknown ActionType!");
-            break;
-        }
+        case ACTION_TYPE.ATTACK: return ATTACK_HEADER_SIZE + ENTITY_RESOLUTION_SIZE * data.resolutions.length;
+        case ACTION_TYPE.CAPTURE: return CAPTURE_HEADER_SIZE;
+        case ACTION_TYPE.CLOAK: return CLOAK_HEADER_SIZE;
+        case ACTION_TYPE.DEATH: return DEATH_HEADER_SIZE + ENTITY_ID_SIZE + data.entities.length;
+        case ACTION_TYPE.END_TURN: return END_TURN_HEADER_SIZE;
+        case ACTION_TYPE.ENTITY_SPAWN: return ENTITY_SPAWN_HEADER_SIZE;
+        case ACTION_TYPE.EXPLODE_TILE: return EXPLODE_TILE_HEADER_SIZE;
+        case ACTION_TYPE.EXTRACT: return EXTRACT_ORE_HEADER_SIZE;
+        case ACTION_TYPE.HEAL: return HEAL_HEADER_SIZE + ENTITY_RESOLUTION_SIZE * data.resolutions.length;
+        case ACTION_TYPE.MINE_TRIGGER: return MINE_TRIGGER_HEADER_SIZE;
+        case ACTION_TYPE.MOVE: return MOVE_HEADER_SIZE + MOVE_STEP_SIZE * data.path.length;
+        case ACTION_TYPE.PRODUCE_ENTITY: return PRODUCE_HEADER_SIZE;
+        case ACTION_TYPE.PURCHASE_ENTITY: return PURCHASE_HEADER_SIZE;
+        case ACTION_TYPE.START_TURN: return START_TURN_HEADER_SIZE + ENTITY_RESOLUTION_SIZE * data.resolutions.length;
+        case ACTION_TYPE.UNCLOAK: return UNCLOAK_HEADER_SIZE + ENTITY_ID_SIZE * data.entities.length + MINE_SIZE * data.mines.length;
+        case ACTION_TYPE.INTERRUPT: return INTERRUPT_HEADER_SIZE;
+        default: return 0;
     }
-
-    return size;
 }
 
+/**
+ * 
+ * @param {ExecutionPlan} executionPlan 
+ * @param {DataView} view 
+ * @param {number} beginPtr 
+ * @returns
+ */
 export const writePlan = function(executionPlan, view, beginPtr) {
     const { id, type, data } = executionPlan;
 
@@ -496,56 +385,36 @@ export const writePlan = function(executionPlan, view, beginPtr) {
         case ACTION_TYPE.START_TURN: return packStartTurnPlan(data, view, beginPtr);
         case ACTION_TYPE.UNCLOAK: return packUncloakPlan(data, view, beginPtr);
         case ACTION_TYPE.INTERRUPT: return packInterruptPlan(data, view, beginPtr);
-        default: return null;
     }
 }
 
-export const packPlan = function(executionPlan) {
-    const { id, type, data } = executionPlan;
-
-    switch(type) {
-        case ACTION_TYPE.ATTACK: return packAttackPlan(data);
-        case ACTION_TYPE.CAPTURE: return packCapturePlan(data);
-        case ACTION_TYPE.CLOAK: return packCloakPlan(data);
-        case ACTION_TYPE.DEATH: return packDeathPlan(data);
-        case ACTION_TYPE.END_TURN: return packEndTurnPlan(data);
-        case ACTION_TYPE.ENTITY_SPAWN: return packEntitySpawnPlan(data);
-        case ACTION_TYPE.EXPLODE_TILE: return packExplodeTilePlan(data);
-        case ACTION_TYPE.EXTRACT: return packExtractOrePlan(data);
-        case ACTION_TYPE.HEAL: return packHealPlan(data);
-        case ACTION_TYPE.MINE_TRIGGER: return packMineTriggerPlan(data);
-        case ACTION_TYPE.MOVE: return packMovePlan(data);
-        case ACTION_TYPE.PRODUCE_ENTITY: return packProducePlan(data);
-        case ACTION_TYPE.PURCHASE_ENTITY: return packPurchasePlan(data);
-        case ACTION_TYPE.START_TURN: return packStartTurnPlan(data);
-        case ACTION_TYPE.UNCLOAK: return packUncloakPlan(data);
-        case ACTION_TYPE.INTERRUPT: return packInterruptPlan(data);
-        default: return null;
-    }
-}
-
-export const unpackPlan = function(buffer) {
-    const view = new DataView(buffer);
-    const type = view.getUint8(0);
+/**
+ * 
+ * @param {DataView} view 
+ * @param {number} beginPtr 
+ * @returns {ExecutionPlan}
+ */
+export const unpackPlan = function(view, beginPtr) {
+    const type = view.getUint8(beginPtr + 0);
     const plan = new ExecutionPlan(-1, type);
     let data = null;
 
     switch(type) {
         case ACTION_TYPE.INTERRUPT: {
             data = InterruptVTable.createData();
-            data.type = view.getUint8(1);
-            data.event = view.getInt16(2, true);
+            data.type = view.getUint8(beginPtr + 1);
+            data.event = view.getInt16(beginPtr + 2, true);
             break;
         }
         case ACTION_TYPE.UNCLOAK: {
             data = UncloakVTable.createData();
 
-            const entityCount = view.getUint8(1);
-            const mineCount = view.getUint8(2);
+            const entityCount = view.getUint8(beginPtr + 1);
+            const mineCount = view.getUint8(beginPtr + 2);
             
-            data.entityID = view.getInt16(3, true);
+            data.entityID = view.getInt16(beginPtr + 3, true);
 
-            let byteOffset = UNCLOAK_HEADER_SIZE;
+            let byteOffset = beginPtr + UNCLOAK_HEADER_SIZE;
 
             for(let i = 0; i < entityCount; i++) {
                 data.entities.push(view.getInt16(byteOffset, true));
@@ -569,10 +438,10 @@ export const unpackPlan = function(buffer) {
         }
         case ACTION_TYPE.START_TURN: {
             data = StartTurnVTable.createData();
-            data.teamID = view.getInt8(1);
+            data.teamID = view.getInt8(beginPtr + 1);
             
-            const count = view.getUint16(2, true);
-            let byteOffset = START_TURN_HEADER_SIZE;
+            const count = view.getUint16(beginPtr + 2, true);
+            let byteOffset = beginPtr + START_TURN_HEADER_SIZE;
 
             for(let i = 0; i < count; i++) {
                 const resolution = createEntityResolution();
@@ -585,26 +454,29 @@ export const unpackPlan = function(buffer) {
         }
         case ACTION_TYPE.PURCHASE_ENTITY: {
             data = PurchaseVTable.createData();
-            data.nextID = view.getInt16(1, true);
-            data.cost = view.getUint16(3, true);
-            unpackEntitySnapshot(data.snapshot, view, 5);
+            data.nextID = view.getInt16(beginPtr + 1, true);
+            data.cost = view.getUint16(beginPtr + 3, true);
+
+            unpackEntitySnapshot(data.snapshot, view, beginPtr + 5);
             break;
         }
         case ACTION_TYPE.PRODUCE_ENTITY: {
             data = ProduceVTable.createData();
-            data.entityID = view.getInt16(1, true);
-            data.nextID = view.getInt16(3, true);
-            data.cost = view.getUint16(5, true);
-            unpackEntitySnapshot(data.snapshot, view, 7);
+            data.entityID = view.getInt16(beginPtr + 1, true);
+            data.nextID = view.getInt16(beginPtr + 3, true);
+            data.cost = view.getUint16(beginPtr + 5, true);
+
+            unpackEntitySnapshot(data.snapshot, view, beginPtr + 7);
             break;
         }
         case ACTION_TYPE.MOVE: {
-            const count = view.getUint16(4, true);
-            let byteOffset = MOVE_HEADER_SIZE;
-
+            const count = view.getUint16(beginPtr + 4, true);
+            
             data = MoveVTable.createData(count);
-            data.entityID = view.getInt16(2, true);;
-            data.flags = view.getUint8(1);;
+            data.entityID = view.getInt16(beginPtr + 2, true);;
+            data.flags = view.getUint8(beginPtr + 1);
+            
+            let byteOffset = beginPtr + MOVE_HEADER_SIZE;
 
             for(let i = 0; i < count; i++) {
                 byteOffset = unpackStep(data.path[i], view, byteOffset);
@@ -614,19 +486,19 @@ export const unpackPlan = function(buffer) {
         }
         case ACTION_TYPE.MINE_TRIGGER: {
             data = MineTriggerVTable.createData();
-            data.entityID = view.getInt16(1, true);
-            data.health = view.getUint16(3, true);
-            data.tileX = view.getInt16(5, true);
-            data.tileY = view.getInt16(7, true);
+            data.entityID = view.getInt16(beginPtr + 1, true);
+            data.health = view.getUint16(beginPtr + 3, true);
+            data.tileX = view.getInt16(beginPtr + 5, true);
+            data.tileY = view.getInt16(beginPtr + 7, true);
             break;
         }
         case ACTION_TYPE.HEAL: {
             data = HealVTable.createData();
-            data.entityID = view.getInt16(1, true);
-            data.targetID = view.getInt16(3, true);
+            data.entityID = view.getInt16(beginPtr + 1, true);
+            data.targetID = view.getInt16(beginPtr + 3, true);
 
-            const count = view.getUint16(5, true);
-            let byteOffset = HEAL_HEADER_SIZE;
+            const count = view.getUint16(beginPtr + 5, true);
+            let byteOffset = beginPtr + HEAL_HEADER_SIZE;
 
             for(let i = 0; i < count; i++) {
                 const resolution = createEntityResolution();
@@ -639,22 +511,23 @@ export const unpackPlan = function(buffer) {
         }
         case ACTION_TYPE.EXTRACT: {
             data = ExtractVTable.createData();
-            data.entityID = view.getInt16(1, true);
-            data.value = view.getUint16(3, true);
+            data.entityID = view.getInt16(beginPtr + 1, true);
+            data.value = view.getUint16(beginPtr + 3, true);
             break;
         }
         case ACTION_TYPE.EXPLODE_TILE: {
             data = ExplodeTileVTable.createData();
-            data.layer = view.getUint8(1);
-            data.tileX = view.getInt16(2, true);
-            data.tileY = view.getInt16(4, true);
-            data.entityID = view.getInt16(6, true);
+            data.layer = view.getUint8(beginPtr + 1);
+            data.tileX = view.getInt16(beginPtr + 2, true);
+            data.tileY = view.getInt16(beginPtr + 4, true);
+            data.entityID = view.getInt16(beginPtr + 6, true);
             break;
         }
         case ACTION_TYPE.ENTITY_SPAWN: {
             data = EntitySpawnVTable.createData();
-            data.entityID = view.getInt16(1, true);
-            unpackEntitySnapshot(data.snapshot, view, 3);
+            data.entityID = view.getInt16(beginPtr + 1, true);
+
+            unpackEntitySnapshot(data.snapshot, view, beginPtr + 3);
             break;
         }
         case ACTION_TYPE.END_TURN: {
@@ -664,8 +537,8 @@ export const unpackPlan = function(buffer) {
         case ACTION_TYPE.DEATH: {
             data = DeathActionVTable.createData();
 
-            const count = view.getUint16(1, true);
-            let byteOffset = DEATH_HEADER_SIZE;
+            const count = view.getUint16(beginPtr + 1, true);
+            let byteOffset = beginPtr + DEATH_HEADER_SIZE;
 
             for(let i = 0; i < count; i++) {
                 data.entities.push(view.getInt16(byteOffset, true));
@@ -677,25 +550,25 @@ export const unpackPlan = function(buffer) {
         }
         case ACTION_TYPE.CLOAK: {
             data = CloakActionVTable.createData();
-            data.entityID = view.getInt16(1, true);
+            data.entityID = view.getInt16(beginPtr + 1, true);
             break;
         }
         case ACTION_TYPE.CAPTURE: {
             data = CaptureActionVTable.createData();
-            data.entityID = view.getInt16(1, true);
-            data.targetX = view.getInt16(3, true);
-            data.targetY = view.getInt16(5, true);
+            data.entityID = view.getInt16(beginPtr + 1, true);
+            data.targetX = view.getInt16(beginPtr + 3, true);
+            data.targetY = view.getInt16(beginPtr + 5, true);
             break;
         }
         case ACTION_TYPE.ATTACK: {
             data = AttackActionVTable.createData();
-            data.flags = view.getUint8(1);
-            data.attackerID = view.getInt16(2, true);
-            data.targetID = view.getInt16(4, true);
-            data.resourceDamage = view.getInt32(6, true);
+            data.flags = view.getUint8(beginPtr + 1);
+            data.attackerID = view.getInt16(beginPtr + 2, true);
+            data.targetID = view.getInt16(beginPtr + 4, true);
+            data.resourceDamage = view.getInt32(beginPtr + 6, true);
             
-            const count = view.getUint16(10, true);
-            let byteOffset = ATTACK_HEADER_SIZE;
+            const count = view.getUint16(beginPtr + 10, true);
+            let byteOffset = beginPtr + ATTACK_HEADER_SIZE;
 
             for(let i = 0; i < count; i++) {
                 const resolution = createEntityResolution();
