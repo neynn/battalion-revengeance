@@ -18,6 +18,36 @@ import { PurchaseVTable } from "./types/purchaseEntity.js";
 import { InterruptVTable } from "./types/interrupt.js";
 import { StartTurnVTable } from "./types/startTurn.js";
 import { UncloakVTable } from "./types/uncloak.js";
+import { ToTransportVTable } from "./types/toTransport.js";
+
+/**
+ * 0x00 [U8] -> type
+ * 
+ * 0x01 [S16] -> entityID
+ * 
+ * 0x03 [S16] -> entityTypeID
+ * 
+ * 0x05 [U16] -> cost
+ * 
+ * 0x07 [U16] -> health
+ */
+const TO_TRANSPORT_HEADER_SIZE = 9;
+
+/**
+ * 
+ * @param {*} data 
+ * @param {DataView} view 
+ * @param {number} beginPtr 
+ */
+const packToTransportPlan = function(data, view, beginPtr) {
+    const { entityID, entityTypeID, health, cost } = data;
+
+    view.setUint8(beginPtr + 0, ACTION_TYPE.TO_TRANSPORT);
+    view.setInt16(beginPtr + 1, entityID, true);
+    view.setInt16(beginPtr + 3, entityTypeID, true);
+    view.setUint16(beginPtr + 5, cost, true);
+    view.setUint16(beginPtr + 7, health, true);
+}
 
 /*
     0x00 -> type,
@@ -366,6 +396,7 @@ export const getPlanSize = function(executionPlan) {
         case ACTION_TYPE.START_TURN: return START_TURN_HEADER_SIZE + ENTITY_RESOLUTION_SIZE * data.resolutions.length;
         case ACTION_TYPE.UNCLOAK: return UNCLOAK_HEADER_SIZE + ENTITY_ID_SIZE * data.entities.length + MINE_SIZE * data.mines.length;
         case ACTION_TYPE.INTERRUPT: return INTERRUPT_HEADER_SIZE;
+        case ACTION_TYPE.TO_TRANSPORT: return TO_TRANSPORT_HEADER_SIZE;
         default: return 0;
     }
 }
@@ -397,6 +428,7 @@ export const writePlan = function(executionPlan, view, beginPtr) {
         case ACTION_TYPE.START_TURN: return packStartTurnPlan(data, view, beginPtr);
         case ACTION_TYPE.UNCLOAK: return packUncloakPlan(data, view, beginPtr);
         case ACTION_TYPE.INTERRUPT: return packInterruptPlan(data, view, beginPtr);
+        case ACTION_TYPE.TO_TRANSPORT: return packToTransportPlan(data, view, beginPtr);
     }
 }
 
@@ -412,6 +444,14 @@ export const unpackPlan = function(view, beginPtr) {
     let data = null;
 
     switch(type) {
+        case ACTION_TYPE.TO_TRANSPORT: {
+            data = ToTransportVTable.createData();
+            data.entityID = view.getInt16(beginPtr + 1, true);
+            data.entityTypeID = view.getInt16(beginPtr + 3, true);
+            data.cost = view.getUint16(beginPtr + 5, true);
+            data.health = view.getUint16(beginPtr + 7, true);
+            break;
+        }
         case ACTION_TYPE.INTERRUPT: {
             data = InterruptVTable.createData();
             data.type = view.getUint8(beginPtr + 1);

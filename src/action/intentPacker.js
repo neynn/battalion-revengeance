@@ -7,6 +7,28 @@ import { HealVTable } from "./types/heal.js";
 import { MoveVTable } from "./types/move.js";
 import { ProduceVTable } from "./types/produceEntity.js";
 import { PurchaseVTable } from "./types/purchaseEntity.js";
+import { ToTransportVTable } from "./types/toTransport.js";
+
+/**
+ * 0x00 [U8] -> type
+ * 
+ * 0x01 [U8] -> transportID
+ * 
+ * 0x02 [S16] -> entityID
+ */
+const TO_TRANSPORT_HEADER_SIZE = 4;
+
+const packToTransportIntent = function(data) {
+    const { entityID, transportID } = data;
+    const buffer = new ArrayBuffer(TO_TRANSPORT_HEADER_SIZE)
+    const view = new DataView(buffer);
+
+    view.setUint8(0, ACTION_TYPE.TO_TRANSPORT);
+    view.setUint8(1, transportID);
+    view.setInt16(2, entityID, true);
+
+    return buffer;
+}
 
 /*
     0x00 -> type,
@@ -142,6 +164,12 @@ export const isIntentValid = function(gameContext, intent) {
     const { type, data } = intent;
 
     switch(type) {
+        case ACTION_TYPE.TO_TRANSPORT: {
+            const { entityID } = data;
+            const entity = entityManager.getEntity(entityID);
+
+            return entity && entity.belongsTo(currentTeam);
+        }
         case ACTION_TYPE.PRODUCE_ENTITY: {
             return true;
         }
@@ -179,6 +207,7 @@ export const packIntent = function(actionIntent) {
     const { type, data } = actionIntent;
 
     switch(type) {
+        case ACTION_TYPE.TO_TRANSPORT: return packToTransportIntent(data);
         case ACTION_TYPE.PRODUCE_ENTITY: return packProduceIntent(data);
         case ACTION_TYPE.PURCHASE_ENTITY: return packPurchaseIntent(data);
         case ACTION_TYPE.MOVE: return packMoveIntent(data);
@@ -194,6 +223,12 @@ export const unpackIntent = function(data) {
     const type = view.getUint8(0);
 
     switch(type) {
+        case ACTION_TYPE.TO_TRANSPORT: {
+            const transportID = view.getUint8(1);
+            const entityID = view.getInt16(2, true);
+
+            return ToTransportVTable.createIntent(entityID, transportID);
+        }
         case ACTION_TYPE.PRODUCE_ENTITY: {
             const direction = view.getUint8(1);
             const entityID = view.getInt16(2, true);

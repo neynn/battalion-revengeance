@@ -195,12 +195,19 @@ ServerGameContext.prototype.onMessage = async function(messengerID, type, payloa
         case GAME_EVENT.MP_CLIENT_ACTION_INTENT: {
             if(this.state === ServerGameContext.STATE.STARTED && isClientTurn(this, messengerID)) {
                 const arrayBuffer = payload.buffer.slice(payload.byteOffset, payload.byteOffset + payload.byteLength);
+
+                console.log("RECEIVED BYTES:", arrayBuffer.byteLength);
+
                 const intent = unpackIntent(arrayBuffer);
 
-                if(intent && isIntentValid(this, intent)) {
-                    console.log("RECEIVED BYTES:", arrayBuffer.byteLength);
-
-                    this.actionRouter.forceEnqueue(this, intent);
+                if(intent) {
+                    if(isIntentValid(this, intent)) {
+                        this.actionRouter.forceEnqueue(this, intent);
+                    } else {
+                        console.error("Invalid ActionIntent!");
+                    }
+                } else {
+                    console.error("ActionIntent is not supported!");
                 }
             }
 
