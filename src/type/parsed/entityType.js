@@ -1,6 +1,6 @@
 import { MAX_TRAITS } from "../../constants.js";
 import { mapMovementToCategory } from "../../enumHelpers.js";
-import { ARMOR_TYPE, ATTACK_TYPE, DIRECTION, EFFECT_SPRITE, ENTITY_CATEGORY, ENTITY_SPRITE, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../../enums.js";
+import { ARMOR_TYPE, ATTACK_TYPE, DIRECTION, EFFECT_SPRITE, ENTITY_CATEGORY, ENTITY_SPRITE, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, TRAIT_TYPE, TRANSPORT_TYPE, WEAPON_TYPE } from "../../enums.js";
 
 const TILE_STEP = 56;
 const ENABLE_HYBRID = false;
@@ -70,6 +70,7 @@ export const EntityType = function(id) {
     this.effects = [];
     this.sprites = [];
     this.traits = [];
+    this.allowedTransports = [];
     this.category = mapMovementToCategory(this.movementType);
     this.rangeType = getRangeType(this.minRange, this.maxRange);
     this.shop = SHOP_TYPE.NONE;
@@ -112,6 +113,7 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
         desc = "MISSING_DESC_ENTITY",
         name = "MISSING_NAME_ENTITY",
         traits = [],
+        transport = [],
         sounds = {},
         sprites = {},
         effects = {}
@@ -158,6 +160,14 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
 
         if(index !== undefined) {
             this.traits.push(index);
+        }
+    }
+
+    for(const transportID of transport) {
+        const index = TRANSPORT_TYPE[transportID];
+
+        if(index !== undefined) {
+            this.allowedTransports.push(index);
         }
     }
 
@@ -208,6 +218,16 @@ EntityType.prototype.hasTrait = function(traitID) {
     }
 
     return false;
+}
+
+EntityType.prototype.hasTransport = function(transportID) {
+    for(let i = 0; i < this.allowedTransports.length; i++) {
+        if(this.allowedTransports[i] === transportID) {
+            return true;
+        }
+    }
+
+    return false; 
 }
 
 EntityType.prototype.getJammerFlags = function() {

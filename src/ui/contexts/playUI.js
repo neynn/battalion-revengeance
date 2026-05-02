@@ -1,5 +1,5 @@
 import { TextStyle } from "../../../engine/graphics/textStyle.js";
-import { clampValue, toCenter } from "../../../engine/math/math.js";
+import { toCenter } from "../../../engine/math/math.js";
 import { SpriteManager } from "../../../engine/sprite/spriteManager.js";
 import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
 import { MapInspector } from "../../actors/player/inspector.js";
@@ -556,7 +556,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
             const armorType = typeRegistry.getArmorType(entity.config.armorType);
             const movementType = typeRegistry.getMovementType(entity.config.movementType);
             const weaponType = typeRegistry.getWeaponType(entity.config.weaponType);
-            const vitality = clampValue(entity.getVitality(), 1, 0);
+            const vitality = entity.getVitalityCapped();
             const healthColor = getHealthColor(vitality);
 
             context.fillText(entity.getName(gameContext), reconX + 41, headY);

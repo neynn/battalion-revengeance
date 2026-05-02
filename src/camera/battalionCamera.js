@@ -280,12 +280,6 @@ BattalionCamera.prototype.drawEntity = function(gameContext, display, entity, sp
     }
 
     if(alpha > 0) {
-        let vitality = entity.getVitality();
-
-        if(vitality > 1) {
-            vitality = 1;
-        }
-
         sprite.setPosition(screenX, screenY);
         sprite.setOpacity(alpha);
 
@@ -311,6 +305,8 @@ BattalionCamera.prototype.drawEntity = function(gameContext, display, entity, sp
             sprite.draw(display, 0, 0);
         }
 
+        const vitality = entity.getVitalityCapped();
+        
         if(PLAYER_PREFERENCE.FORCE_HEALTH_DRAW || vitality > 0 && vitality < 1) {
             this.drawEntityHealth(display, screenX, screenY, vitality);
         }

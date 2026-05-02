@@ -275,10 +275,11 @@ const packDeathPlan = function(data, view, beginPtr) {
     }
 }
 
-/*
-    0x00 -> type,
-    0x01 -> entityID
-*/
+/**
+ * 0x00 [U8] -> type
+ * 
+ * 0x01 [S16] -> entityID
+ */
 const CLOAK_HEADER_SIZE = 3;
 
 const packCloakPlan = function(data, view, beginPtr) {
@@ -343,7 +344,7 @@ const packAttackPlan = function(data, view, beginPtr) {
 /**
  * 
  * @param {ExecutionPlan} executionPlan 
- * @returns {number}
+ * @returns {number} Size of plan data in bytes.
  */
 export const getPlanSize = function(executionPlan) {
     const { id, type, data } = executionPlan;

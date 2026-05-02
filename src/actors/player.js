@@ -3,13 +3,14 @@ import { StateMachine } from "../../engine/state/stateMachine.js";
 import { BattalionActor } from "./battalionActor.js";
 import { IdleState } from "./player/idle.js";
 import { SelectState } from "./player/select.js";
-import { DIRECTION, ENTITY_TYPE } from "../enums.js";
+import { DIRECTION, ENTITY_TYPE, TRANSPORT_TYPE } from "../enums.js";
 import { saveStoryMap } from "../systems/save.js";
 import { MapInspector } from "./player/inspector.js";
 import { DeathActionVTable } from "../action/types/death.js";
 import { EndTurnVTable } from "../action/types/endTurn.js";
 import { ExtractVTable } from "../action/types/extract.js";
 import { ProduceVTable } from "../action/types/produceEntity.js";
+import { ToTransportVTable } from "../action/types/toTransport.js";
 
 export const Player = function(id, inspector, camera) {
     BattalionActor.call(this, id);
@@ -120,8 +121,9 @@ Player.prototype.loadKeybinds = function(gameContext) {
         const entity = this.inspector.getLastEntity(gameContext);
 
         if(entity) {
-            this.addIntent(ExtractVTable.createIntent(entity.id));
-            this.addIntent(ProduceVTable.createIntent(entity.id, ENTITY_TYPE.ANNIHILATOR_TANK, DIRECTION.NORTH));
+            //this.addIntent(ExtractVTable.createIntent(entity.id));
+            //this.addIntent(ProduceVTable.createIntent(entity.id, ENTITY_TYPE.ANNIHILATOR_TANK, DIRECTION.NORTH));
+            this.addIntent(ToTransportVTable.createIntent(entity.id, TRANSPORT_TYPE.BARGE));
         }
     });
 }

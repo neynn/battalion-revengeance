@@ -7,7 +7,6 @@ import { EntityType } from "../type/parsed/entityType.js";
 import { createNode, mGetLowestCostNode } from "../systems/pathfinding.js";
 import { DIRECTION_DELTA_X, DIRECTION_DELTA_Y, getDirectionByDelta } from "../systems/direction.js";
 import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE, PATH_INTERCEPT } from "../enums.js";
-import { mapTransportToEntity } from "../enumHelpers.js";
 import { TeamManager } from "../team/teamManager.js";
 import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
@@ -117,6 +116,22 @@ BattalionEntity.prototype.loadConfig = function(config) {
     this.setHealth(this.health);
 }
 
+BattalionEntity.prototype.saveTransport = function() {
+    this.transportID = this.config.id;
+}
+
+BattalionEntity.prototype.clearTransport = function() {
+    this.transportID = ENTITY_TYPE._INVALID;
+}
+
+BattalionEntity.prototype.isTransporting = function() {
+    return this.transportID !== ENTITY_TYPE._INVALID;
+}
+
+BattalionEntity.prototype.hasTransport = function(transportID) {
+    return this.config.hasTransport(transportID);
+}
+
 BattalionEntity.prototype.setState = function(stateID) {
     this.state = stateID;
 }
@@ -127,6 +142,16 @@ BattalionEntity.prototype.belongsTo = function(teamID) {
 
 BattalionEntity.prototype.getVitality = function() {
     return this.health / this.maxHealth;
+}
+
+BattalionEntity.prototype.getVitalityCapped = function() {
+    const vitality = this.getVitality();
+
+    if(vitality > 1) {
+        return 1;
+    }
+
+    return vitality;
 }
 
 BattalionEntity.prototype.getTeam = function(gameContext) {
@@ -1031,11 +1056,7 @@ BattalionEntity.prototype.getHealthFactor = function() {
     let healthFactor = 1;
 
     if(!this.hasTrait(TRAIT_TYPE.INDOMITABLE)) {
-        healthFactor = this.health / this.maxHealth;
-
-        if(healthFactor > 1) {
-            healthFactor = 1;
-        }
+        healthFactor = this.getVitalityCapped();
     }
 
     return healthFactor;
@@ -1396,31 +1417,6 @@ BattalionEntity.prototype.getMaxRange = function(gameContext) {
 
 BattalionEntity.prototype.getDistanceMoved = function(deltaTime) {
     return this.config.movementSpeed * deltaTime;
-}
-
-BattalionEntity.prototype.fromTransport = function(gameContext) {
-    if(this.transportID !== ENTITY_TYPE._INVALID) {
-        const { typeRegistry } = gameContext;
-        const transportType = typeRegistry.getEntityType(this.transportID);
-        const previousHealthFactor = this.health / this.maxHealth;
-
-        this.loadConfig(transportType);
-        this.setHealth(this.maxHealth * previousHealthFactor);
-        this.transportID = ENTITY_TYPE._INVALID;
-    }
-}
-
-BattalionEntity.prototype.toTransport = function(gameContext, transportType) {
-    if(this.transportID === ENTITY_TYPE._INVALID) {
-        const { typeRegistry } = gameContext;
-        const previousHealthFactor = this.health / this.maxHealth;
-        const entityTypeID = mapTransportToEntity(transportType);
-        const transportConfig = typeRegistry.getEntityType(entityTypeID);
-
-        this.transportID = this.config.id;
-        this.loadConfig(transportConfig);
-        this.setHealth(this.maxHealth * previousHealthFactor);
-    }
 }
 
 BattalionEntity.prototype.isJammer = function() {

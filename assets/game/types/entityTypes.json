@@ -1166,6 +1166,7 @@
         "name": "ENTITY_NAME_U_BOAT",
         "desc": "ENTITY_DESC_U_BOAT",
         "traits": ["STEALTH", "SUBMERGED", "DEPTH_CHARGE", "SEABOUND"],
+        "transport": ["BARGE"],
         "sprites": {
             "idle_right": "u_boat_idle_right",
             "idle_left": "u_boat_idle_left",
