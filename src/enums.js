@@ -81,6 +81,11 @@ export const TRAIT_CONFIG = {
     STREAMLINED_REDUCTION: 0.5
 };
 
+export const GAME_BINARY = {
+    NONE: 0,
+    GAME_UPDATE: 1
+};
+
 export const GAME_EVENT = {
     MP_CLIENT_SELECT_MAP: 8,
     MP_CLIENT_START_MATCH: 9,

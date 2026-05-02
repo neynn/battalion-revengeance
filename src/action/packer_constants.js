@@ -1,16 +1,61 @@
-export const ENTITY_ID_SIZE = 2;
-export const MINE_SIZE = 4;
-export const MOVE_STEP_SIZE = 2;
-export const ENTITY_RESOLUTION_SIZE = ENTITY_ID_SIZE + 4;
-export const ENTITY_SNAPSHOT_SIZE = 31;
-
 const BIT_8 = 1;
 const BIT_16 = 2;
 
+/**
+ * [S16]
+ */
+export const ENTITY_ID_SIZE = 2;
+
+/**
+ * 0x00 [S16] -> tileX
+ * 
+ * 0x02 [S16] -> tileY
+ */
+export const MINE_SIZE = 4;
+
+/**
+ * 0x00 [S8] -> deltaX
+ * 
+ * 0x01 [S8] -> deltaY
+ */
+export const MOVE_STEP_SIZE = 2;
+
+/**
+ * 0x00 [S16] -> entityID
+ * 
+ * 0x02 [S16] -> delta
+ * 
+ * 0x04 [U16] -> health
+ */
+export const ENTITY_RESOLUTION_SIZE = ENTITY_ID_SIZE + 4;
+
+export const ENTITY_SNAPSHOT_SIZE = 31;
+
+/**
+ * 0x00 [U8] -> type
+ * 
+ * 0x01 [U32] -> version
+ * 
+ * 0x05 [U16] -> planCount
+ */
+export const GAME_UPDATE_HEADER_SIZE = 7;
+
+/**
+ * 
+ * @param {number} planCount 
+ * @returns {number}
+ */
 export const getGameUpdateHeaderSize = function(planCount) {
-    return 4 + 2 + (2 * planCount);
+    return GAME_UPDATE_HEADER_SIZE + (BIT_16 * planCount);
 }
 
+/**
+ * 
+ * @param {*} step 
+ * @param {DataView} view 
+ * @param {number} byteOffset 
+ * @returns {number}
+ */
 export const packStep = function(step, view, byteOffset) {
     view.setInt8(byteOffset, step.deltaX);
     byteOffset += BIT_8;
@@ -20,6 +65,13 @@ export const packStep = function(step, view, byteOffset) {
     return byteOffset;
 }
 
+/**
+ * 
+ * @param {*} step 
+ * @param {DataView} view 
+ * @param {number} byteOffset 
+ * @returns {number}
+ */
 export const unpackStep = function(step, view, byteOffset) {
     step.deltaX = view.getInt8(byteOffset);
     byteOffset += BIT_8;
@@ -29,6 +81,13 @@ export const unpackStep = function(step, view, byteOffset) {
     return byteOffset;
 }
 
+/**
+ * 
+ * @param {*} resolution 
+ * @param {DataView} view 
+ * @param {number} byteOffset 
+ * @returns {number}
+ */
 export const packEntityResolution = function(resolution, view, byteOffset) {
     view.setInt16(byteOffset, resolution.entityID, true);
     byteOffset += BIT_16;
@@ -40,6 +99,13 @@ export const packEntityResolution = function(resolution, view, byteOffset) {
     return byteOffset;
 }
 
+/**
+ * 
+ * @param {*} resolution 
+ * @param {DataView} view 
+ * @param {number} byteOffset 
+ * @returns {number}
+ */
 export const unpackEntityResolution = function(resolution, view, byteOffset) {
     resolution.entityID = view.getInt16(byteOffset, true);
     byteOffset += BIT_16;
@@ -51,6 +117,13 @@ export const unpackEntityResolution = function(resolution, view, byteOffset) {
     return byteOffset;
 }
 
+/**
+ * 
+ * @param {*} snapshot 
+ * @param {DataView} view 
+ * @param {number} byteOffset 
+ * @returns {number}
+ */
 export const packEntitySnapshot = function(snapshot, view, byteOffset) {
     view.setUint8(byteOffset, snapshot.direction);
     byteOffset += BIT_8;
@@ -92,6 +165,13 @@ export const packEntitySnapshot = function(snapshot, view, byteOffset) {
     return byteOffset;
 }
 
+/**
+ * 
+ * @param {*} snapshot 
+ * @param {DataView} view 
+ * @param {number} byteOffset 
+ * @returns {number}
+ */
 export const unpackEntitySnapshot = function(snapshot, view, byteOffset) {
     snapshot.direction = view.getUint8(byteOffset);
     byteOffset += BIT_8;

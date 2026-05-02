@@ -2,9 +2,9 @@ import { getRandomElement } from "../../../engine/math/math.js";
 import { ROOM_EVENTS } from "../../../engine/network/events.js";
 import { Socket } from "../../../engine/network/socket.js";
 import { State } from "../../../engine/state/state.js";
-import { getGameUpdateHeaderSize } from "../../action/packer_constants.js";
+import { GAME_UPDATE_HEADER_SIZE, getGameUpdateHeaderSize } from "../../action/packer_constants.js";
 import { unpackPlan } from "../../action/planPacker.js";
-import { GAME_EVENT } from "../../enums.js";
+import { GAME_BINARY, GAME_EVENT } from "../../enums.js";
 import { createClientMapLoader } from "../../systems/map.js";
 import { ArenaUI } from "../../ui/contexts/arenaUI.js";
 
@@ -33,29 +33,35 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
 
     socket.events.on(Socket.EVENT.BINARY_FROM_SERVER, (binary) => {
         const view = new DataView(binary);
-        const version = view.getUint32(0, true);
-        const count = view.getUint16(4, true);
-        const HEADER_SIZE = getGameUpdateHeaderSize(count);
+        const type = view.getUint8(0);
 
-        let offsetOffset = 6;
+        switch(type) {
+            case GAME_BINARY.GAME_UPDATE: {
+                const version = view.getUint32(1, true);
+                const count = view.getUint16(5, true);
+                const fullHeaderSize = getGameUpdateHeaderSize(count);
 
-        for(let i = 0; i < count; i++) {
-            const beginPtr = HEADER_SIZE + view.getUint16(offsetOffset, true);
-            const executionPlan = unpackPlan(view, beginPtr);
+                let offsetOffset = GAME_UPDATE_HEADER_SIZE;
 
-            if(executionPlan.isValid()) {
-                actionQueue.enqueue(executionPlan);
-            } else {
-                //...
+                for(let i = 0; i < count; i++) {
+                    const beginPtr = fullHeaderSize + view.getUint16(offsetOffset, true);
+                    const executionPlan = unpackPlan(view, beginPtr);
+
+                    if(executionPlan.isValid()) {
+                        actionQueue.enqueue(executionPlan);
+                    } else {
+                        //...
+                    }
+
+                    offsetOffset += 2;
+                }
+
+                if((this.version + 1) === version) {
+                    this.version = version;
+                } else {
+                    //Version mismatch!
+                }
             }
-
-            offsetOffset += 2;
-        }
-
-        if((this.version + 1) === version) {
-            this.version = version;
-        } else {
-            //Version mismatch!
         }
     });
 

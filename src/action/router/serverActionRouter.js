@@ -1,6 +1,6 @@
 import { ActionRouter } from "../../../engine/action/actionRouter.js";
-import { GAME_EVENT } from "../../enums.js";
-import { getGameUpdateHeaderSize } from "../packer_constants.js";
+import { GAME_BINARY, GAME_EVENT } from "../../enums.js";
+import { GAME_UPDATE_HEADER_SIZE, getGameUpdateHeaderSize } from "../packer_constants.js";
 import { getPlanSize, writePlan } from "../planPacker.js";
 
 export const ServerActionRouter = function() {
@@ -66,10 +66,11 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
         const buffer = new ArrayBuffer(TOTAL_BYTES);
         const view = new DataView(buffer);
 
-        view.setUint32(0, this.version++, true);
-        view.setUint16(4, planCount, true);
+        view.setUint8(0, GAME_BINARY.GAME_UPDATE);
+        view.setUint32(1, this.version++, true);
+        view.setUint16(5, planCount, true);
 
-        let offsetOffset = 6;
+        let offsetOffset = GAME_UPDATE_HEADER_SIZE;
         let planWritePtr = HEADER_SIZE;
         let planOffset = 0;
 

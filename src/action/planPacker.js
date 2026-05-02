@@ -169,12 +169,15 @@ const packMineTriggerPlan = function(data, view, beginPtr) {
     view.setInt16(beginPtr + 7, tileY, true);
 }
 
-/*
-    0x00 -> type,
-    0x01 -> entityID,
-    0x03 -> targetID
-    0x05 -> count
-*/
+/**
+ * 0x00 [U8] -> type
+ * 
+ * 0x01 [S16] -> entityID
+ * 
+ * 0x03 [S16] -> targetID
+ * 
+ * 0x05 [U16] -> count
+ */
 const HEAL_HEADER_SIZE = 7;
 
 const packHealPlan = function(data, view, beginPtr) {
@@ -285,12 +288,15 @@ const packCloakPlan = function(data, view, beginPtr) {
     view.setInt16(beginPtr + 1, entityID, true);
 }
 
-/*
-    0x00 -> type,
-    0x01 -> entityID,
-    0x03 -> targetX,
-    0x05 -> targetY
-*/
+/**
+ *  0x00 [U8] -> type
+ * 
+ *  0x01 [S16] -> entityID
+ * 
+ *  0x03 [S16] -> targetX
+ * 
+ *  0x05 [S16] -> targetY
+ */
 const CAPTURE_HEADER_SIZE = 7;
 
 const packCapturePlan = function(data, view, beginPtr) {
@@ -302,14 +308,19 @@ const packCapturePlan = function(data, view, beginPtr) {
     view.setInt16(beginPtr + 5, targetY, true);
 }
 
-/*
-    0x00 -> type,
-    0x01 -> flags,
-    0x02 -> attackerID,
-    0x04 -> targetID,
-    0x06 -> resourceDamage,
-    0x10 -> resolutuions length
-*/
+/**
+ *  0x00 [U8] -> type
+ * 
+ *  0x01 [U8] -> flags
+ * 
+ *  0x02 [S16] -> attackerID
+ * 
+ *  0x04 [S16] -> targetID
+ * 
+ *  0x06 [S32] -> resourceDamage
+ * 
+ *  0x10 [U16] -> EntityResolution count
+ */
 const ATTACK_HEADER_SIZE = 12;
 
 const packAttackPlan = function(data, view, beginPtr) {
