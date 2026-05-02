@@ -3,11 +3,30 @@ import { createStep } from "../systems/pathfinding.js";
 import { MOVE_STEP_SIZE, packStep, unpackStep } from "./packer_constants.js";
 import { AttackActionVTable } from "./types/attack.js";
 import { EndTurnVTable } from "./types/endTurn.js";
+import { FromTransportVTable } from "./types/fromTransport.js";
 import { HealVTable } from "./types/heal.js";
 import { MoveVTable } from "./types/move.js";
 import { ProduceVTable } from "./types/produceEntity.js";
 import { PurchaseVTable } from "./types/purchaseEntity.js";
 import { ToTransportVTable } from "./types/toTransport.js";
+
+/**
+ * 0x00 [U8] -> type
+ * 
+ * 0x01 [S16] -> entityID
+ */
+const FROM_TRANSPORT_HEADER_SIZE = 3;
+
+const packFromTransportIntent = function(data) {
+    const { entityID } = data;
+    const buffer = new ArrayBuffer(FROM_TRANSPORT_HEADER_SIZE)
+    const view = new DataView(buffer);
+
+    view.setUint8(0, ACTION_TYPE.FROM_TRANSPORT);
+    view.setInt16(1, entityID, true);
+
+    return buffer;
+}
 
 /**
  * 0x00 [U8] -> type
@@ -164,6 +183,12 @@ export const isIntentValid = function(gameContext, intent) {
     const { type, data } = intent;
 
     switch(type) {
+        case ACTION_TYPE.FROM_TRANSPORT: {
+            const { entityID } = data;
+            const entity = entityManager.getEntity(entityID);
+
+            return entity && entity.belongsTo(currentTeam);
+        } 
         case ACTION_TYPE.TO_TRANSPORT: {
             const { entityID } = data;
             const entity = entityManager.getEntity(entityID);
@@ -207,6 +232,7 @@ export const packIntent = function(actionIntent) {
     const { type, data } = actionIntent;
 
     switch(type) {
+        case ACTION_TYPE.FROM_TRANSPORT: return packFromTransportIntent(data);
         case ACTION_TYPE.TO_TRANSPORT: return packToTransportIntent(data);
         case ACTION_TYPE.PRODUCE_ENTITY: return packProduceIntent(data);
         case ACTION_TYPE.PURCHASE_ENTITY: return packPurchaseIntent(data);
@@ -223,6 +249,11 @@ export const unpackIntent = function(data) {
     const type = view.getUint8(0);
 
     switch(type) {
+        case ACTION_TYPE.FROM_TRANSPORT: {
+            const entityID = view.getInt16(1, true);
+
+            return FromTransportVTable.createIntent(entityID);
+        }
         case ACTION_TYPE.TO_TRANSPORT: {
             const transportID = view.getUint8(1);
             const entityID = view.getInt16(2, true);

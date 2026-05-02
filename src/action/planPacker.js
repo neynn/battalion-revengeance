@@ -19,6 +19,33 @@ import { InterruptVTable } from "./types/interrupt.js";
 import { StartTurnVTable } from "./types/startTurn.js";
 import { UncloakVTable } from "./types/uncloak.js";
 import { ToTransportVTable } from "./types/toTransport.js";
+import { FromTransportVTable } from "./types/fromTransport.js";
+
+/**
+ * 0x00 [U8] -> type
+ * 
+ * 0x01 [S16] -> entityID
+ * 
+ * 0x03 [S16] -> entityTypeID
+ * 
+ * 0x05 [U16] -> health
+ */
+const FROM_TRANSPORT_HEADER_SIZE = 7;
+
+/**
+ * 
+ * @param {*} data 
+ * @param {DataView} view 
+ * @param {number} beginPtr 
+ */
+const packFromTransportPlan = function(data, view, beginPtr) {
+    const { entityID, entityTypeID, health } = data;
+
+    view.setUint8(beginPtr + 0, ACTION_TYPE.FROM_TRANSPORT);
+    view.setInt16(beginPtr + 1, entityID, true);
+    view.setInt16(beginPtr + 3, entityTypeID, true);
+    view.setUint16(beginPtr + 5, health, true);
+}
 
 /**
  * 0x00 [U8] -> type
@@ -397,6 +424,7 @@ export const getPlanSize = function(executionPlan) {
         case ACTION_TYPE.UNCLOAK: return UNCLOAK_HEADER_SIZE + ENTITY_ID_SIZE * data.entities.length + MINE_SIZE * data.mines.length;
         case ACTION_TYPE.INTERRUPT: return INTERRUPT_HEADER_SIZE;
         case ACTION_TYPE.TO_TRANSPORT: return TO_TRANSPORT_HEADER_SIZE;
+        case ACTION_TYPE.FROM_TRANSPORT: return FROM_TRANSPORT_HEADER_SIZE;
         default: return 0;
     }
 }
@@ -429,6 +457,7 @@ export const writePlan = function(executionPlan, view, beginPtr) {
         case ACTION_TYPE.UNCLOAK: return packUncloakPlan(data, view, beginPtr);
         case ACTION_TYPE.INTERRUPT: return packInterruptPlan(data, view, beginPtr);
         case ACTION_TYPE.TO_TRANSPORT: return packToTransportPlan(data, view, beginPtr);
+        case ACTION_TYPE.FROM_TRANSPORT: return packFromTransportPlan(data, view, beginPtr);
     }
 }
 
@@ -444,6 +473,13 @@ export const unpackPlan = function(view, beginPtr) {
     let data = null;
 
     switch(type) {
+        case ACTION_TYPE.FROM_TRANSPORT: {
+            data = FromTransportVTable.createData();
+            data.entityID = view.getInt16(beginPtr + 1, true);
+            data.entityTypeID = view.getInt16(beginPtr + 3, true);
+            data.health = view.getUint16(beginPtr + 5, true);
+            break;
+        }
         case ACTION_TYPE.TO_TRANSPORT: {
             data = ToTransportVTable.createData();
             data.entityID = view.getInt16(beginPtr + 1, true);

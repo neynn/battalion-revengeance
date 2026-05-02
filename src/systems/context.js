@@ -17,6 +17,7 @@ import { StartTurnAction, StartTurnVTable } from "../action/types/startTurn.js";
 import { UncloakAction, UncloakVTable } from "../action/types/uncloak.js";
 import { ACTION_TYPE, TILE_ID } from "../enums.js";
 import { ToTransportAction, ToTransportVTable } from "../action/types/toTransport.js";
+import { FromTransportAction, FromTransportVTable } from "../action/types/fromTransport.js";
 
 export const overrideRiverTiles = function(gameContext) {
     const { tileManager } = gameContext;
@@ -45,6 +46,7 @@ export const registerActionVTables = function(gameContext) {
     actionQueue.registerActionVTable(ACTION_TYPE.END_TURN, EndTurnVTable);
     actionQueue.registerActionVTable(ACTION_TYPE.INTERRUPT, InterruptVTable);
     actionQueue.registerActionVTable(ACTION_TYPE.TO_TRANSPORT, ToTransportVTable);
+    actionQueue.registerActionVTable(ACTION_TYPE.FROM_TRANSPORT, FromTransportVTable);
 }
 
 export const registerClientActions = function(gameContext) {
@@ -68,6 +70,7 @@ export const registerClientActions = function(gameContext) {
     actionQueue.registerAction(ACTION_TYPE.END_TURN, new EndTurnAction());
     actionQueue.registerAction(ACTION_TYPE.INTERRUPT, new InterruptAction());
     actionQueue.registerAction(ACTION_TYPE.TO_TRANSPORT, new ToTransportAction());
+    actionQueue.registerAction(ACTION_TYPE.FROM_TRANSPORT, new FromTransportAction());
 }
 
 export const addDebug = function(gameContext) {

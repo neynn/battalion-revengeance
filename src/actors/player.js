@@ -11,6 +11,7 @@ import { EndTurnVTable } from "../action/types/endTurn.js";
 import { ExtractVTable } from "../action/types/extract.js";
 import { ProduceVTable } from "../action/types/produceEntity.js";
 import { ToTransportVTable } from "../action/types/toTransport.js";
+import { FromTransportVTable } from "../action/types/fromTransport.js";
 
 export const Player = function(id, inspector, camera) {
     BattalionActor.call(this, id);
@@ -123,7 +124,11 @@ Player.prototype.loadKeybinds = function(gameContext) {
         if(entity) {
             //this.addIntent(ExtractVTable.createIntent(entity.id));
             //this.addIntent(ProduceVTable.createIntent(entity.id, ENTITY_TYPE.ANNIHILATOR_TANK, DIRECTION.NORTH));
-            this.addIntent(ToTransportVTable.createIntent(entity.id, TRANSPORT_TYPE.BARGE));
+            if(entity.transportID !== -1) {
+                this.addIntent(FromTransportVTable.createIntent(entity.id));
+            } else {
+                this.addIntent(ToTransportVTable.createIntent(entity.id, TRANSPORT_TYPE.BARGE));
+            }
         }
     });
 }
