@@ -1182,6 +1182,7 @@ BattalionEntity.prototype.getAttackDamage = function(gameContext, target, damage
 	}
 
     //Unknown calculation.
+    //Air units always take a max of 25 damage when the attacker does not have ANTI_AIR.
 	if(
         damage > 25 &&
         target.config.category === ENTITY_CATEGORY.AIR &&
@@ -1192,6 +1193,10 @@ BattalionEntity.prototype.getAttackDamage = function(gameContext, target, damage
 
     if(this.hasTrait(TRAIT_TYPE.JUDGEMENT)) {
         damage = TRAIT_CONFIG.JUDGEMENT_DAMAGE;
+    }
+
+    if(damage > 0 && damage < 1) {
+        damage = 1;
     }
 
     return Math.floor(damage);
