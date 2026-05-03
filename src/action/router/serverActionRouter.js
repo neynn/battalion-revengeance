@@ -1,5 +1,5 @@
 import { ActionRouter } from "../../../engine/action/actionRouter.js";
-import { GAME_BINARY, GAME_EVENT } from "../../enums.js";
+import { MP_SERVER_BINARY, MP_CLIENT_JSON } from "../../enums.js";
 import { GAME_UPDATE_HEADER_SIZE, getGameUpdateHeaderSize } from "../packer_constants.js";
 import { getPlanSize, writePlan } from "../planPacker.js";
 
@@ -66,7 +66,7 @@ ServerActionRouter.prototype.updateActionQueue = function(gameContext) {
         const buffer = new ArrayBuffer(TOTAL_BYTES);
         const view = new DataView(buffer);
 
-        view.setUint8(0, GAME_BINARY.GAME_UPDATE);
+        view.setUint8(0, MP_SERVER_BINARY.GAME_UPDATE);
         view.setUint32(1, this.version++, true);
         view.setUint16(5, planCount, true);
 

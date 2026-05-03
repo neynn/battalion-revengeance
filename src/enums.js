@@ -81,18 +81,24 @@ export const TRAIT_CONFIG = {
     STREAMLINED_REDUCTION: 0.5
 };
 
-export const GAME_BINARY = {
-    NONE: 0,
-    GAME_UPDATE: 1
+export const MP_SERVER_BINARY = {
+    GAME_UPDATE: 100
 };
 
-export const GAME_EVENT = {
-    MP_CLIENT_SELECT_MAP: 8,
-    MP_CLIENT_START_MATCH: 9,
-    MP_CLIENT_ACTION_INTENT: 10,
-    MP_CLIENT_MAP_LOADED: 11,
-    MP_SERVER_LOAD_MAP: 12,
-    MP_SERVER_START_MAP: 13
+export const MP_SERVER_JSON = {
+    LOAD_MAP: 100,
+    START_MAP: 101
+};
+
+export const MP_CLIENT_BINARY = {
+
+};
+
+export const MP_CLIENT_JSON = {
+    SELECT_MAP: 200,
+    START_MATCH: 201,
+    ACTION_INTENT: 202,
+    MAP_LOADED: 203,
 };
 
 export const TEAM_STAT = {

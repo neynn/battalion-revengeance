@@ -1,5 +1,5 @@
 import { ActionRouter } from "../../../engine/action/actionRouter.js";
-import { GAME_EVENT } from "../../enums.js";
+import { MP_CLIENT_JSON } from "../../enums.js";
 import { packIntent } from "../intentPacker.js";
 
 export const ClientActionRouter = function() {
@@ -23,7 +23,7 @@ ClientActionRouter.prototype.dispatch = function(gameContext, executionPlan, act
             const packed = packIntent(actionIntent);
 
             if(packed) {
-                socket.messageRoom(GAME_EVENT.MP_CLIENT_ACTION_INTENT, packed);
+                socket.messageRoom(MP_CLIENT_JSON.ACTION_INTENT, packed);
             } else {
                 console.log("Unsupported ActionType!");
             }

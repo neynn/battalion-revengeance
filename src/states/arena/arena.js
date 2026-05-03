@@ -4,7 +4,7 @@ import { Socket } from "../../../engine/network/socket.js";
 import { State } from "../../../engine/state/state.js";
 import { GAME_UPDATE_HEADER_SIZE, getGameUpdateHeaderSize } from "../../action/packer_constants.js";
 import { unpackPlan } from "../../action/planPacker.js";
-import { GAME_BINARY, GAME_EVENT } from "../../enums.js";
+import { MP_SERVER_BINARY, MP_CLIENT_JSON, MP_SERVER_JSON } from "../../enums.js";
 import { createClientMapLoader } from "../../systems/map.js";
 import { ArenaUI } from "../../ui/contexts/arenaUI.js";
 
@@ -36,7 +36,7 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
         const type = view.getUint8(0);
 
         switch(type) {
-            case GAME_BINARY.GAME_UPDATE: {
+            case MP_SERVER_BINARY.GAME_UPDATE: {
                 const version = view.getUint32(1, true);
                 const count = view.getUint16(5, true);
                 const fullHeaderSize = getGameUpdateHeaderSize(count);
@@ -69,7 +69,7 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
         console.log(type, payload);
 
         switch(type) {
-            case GAME_EVENT.MP_SERVER_LOAD_MAP: {
+            case MP_SERVER_JSON.LOAD_MAP: {
                 const { snapshot, client, overrides } = payload;
                 const { mapID } = snapshot;
 
@@ -77,7 +77,7 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
                 .then((mapLoader) => {
                     mapLoader.clientTeam = client;
                     mapLoader.loadInitialServerSnapshot(gameContext, snapshot, overrides);
-                    socket.messageRoom(GAME_EVENT.MP_CLIENT_MAP_LOADED, {});
+                    socket.messageRoom(MP_CLIENT_JSON.MAP_LOADED, {});
                 })
                 .catch(() => {
                     //TODO: Signal a failed load.
@@ -85,7 +85,7 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
 
                 break;
             }
-            case GAME_EVENT.MP_SERVER_START_MAP: {
+            case MP_SERVER_JSON.START_MAP: {
                 console.log("MAP_STARTED");
                 this.arenaUI.hide();
                 break;

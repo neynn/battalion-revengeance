@@ -1,7 +1,7 @@
 import { TextStyle } from "../../../engine/graphics/textStyle.js";
 import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
 import { BattalionContext } from "../../battalionContext.js";
-import { GAME_EVENT } from "../../enums.js";
+import { MP_CLIENT_JSON } from "../../enums.js";
 import { UI_TEXTURE, GENERIC_BUTTON_STYLE } from "../constants.js";
 
 const BUTTON_ID_REGION = 100;
@@ -134,7 +134,7 @@ ArenaUI.prototype.onImmediate = function(gameContext, display) {
         }
 
         if(startFlags & IM_FLAG.CLICKED) {
-            socket.messageRoom(GAME_EVENT.MP_CLIENT_START_MATCH, {});
+            socket.messageRoom(MP_CLIENT_JSON.START_MATCH, {});
         }
     } else {
         joinButton = GENERIC_BUTTON_STYLE.disabled;

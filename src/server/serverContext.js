@@ -2,7 +2,7 @@ import { Room } from "../../engine/network/room/room.js";
 import { StateMachine } from "../../engine/state/stateMachine.js";
 import { World } from "../../engine/world/world.js";
 import { TeamManager } from "../team/teamManager.js";
-import { GAME_EVENT, INTERRUPT_TYPE } from "../enums.js";
+import { MP_CLIENT_JSON, INTERRUPT_TYPE, MP_SERVER_JSON } from "../enums.js";
 import { createServerMapLoader } from "../systems/map.js";
 import { MapMaster } from "../map/mapMaster.js";
 import { ServerActionRouter } from "../action/router/serverActionRouter.js";
@@ -127,14 +127,14 @@ ServerGameContext.prototype.createRejoinSnapshot = function() {
 }
 
 ServerGameContext.prototype.onMessage = async function(messengerID, type, payload) {
-    //Client sends GAME_EVENT.PICK_COLOR
+    //Client sends MP_CLIENT_JSON.PICK_COLOR
     //mapSettings sets ClientID -> ColorPick
     switch(type) {
-        case GAME_EVENT.MP_CLIENT_SELECT_MAP: {
+        case MP_CLIENT_JSON.SELECT_MAP: {
 
             break;
         }
-        case GAME_EVENT.MP_CLIENT_START_MATCH: {
+        case MP_CLIENT_JSON.START_MATCH: {
             if(!this.isLeader(messengerID) || this.state !== ServerGameContext.STATE.NONE) {
                 return;
             }
@@ -168,7 +168,7 @@ ServerGameContext.prototype.onMessage = async function(messengerID, type, payloa
                     const memberID = this.members[i].getID();
                     const teamID = this.mapMaster.getTeamID(memberID);
 
-                    this.send(GAME_EVENT.MP_SERVER_LOAD_MAP, {
+                    this.send(MP_SERVER_JSON.LOAD_MAP, {
                         "snapshot": snapshot,
                         "client": teamID,
                         "overrides": overrides
@@ -181,18 +181,18 @@ ServerGameContext.prototype.onMessage = async function(messengerID, type, payloa
 
             break;
         }
-        case GAME_EVENT.MP_CLIENT_MAP_LOADED: {
+        case MP_CLIENT_JSON.MAP_LOADED: {
             this.readyClients++;
 
             if(this.readyClients >= this.members.length && this.state === ServerGameContext.STATE.STARTING) {
-                this.broadcast(GAME_EVENT.MP_SERVER_START_MAP, 0);
+                this.broadcast(MP_SERVER_JSON.START_MAP, 0);
                 this.state = ServerGameContext.STATE.STARTED;
                 this.actionRouter.forceEnqueue(this, InterruptVTable.createIntent(INTERRUPT_TYPE.START_GAME, -1));
             }
 
             break;
         }
-        case GAME_EVENT.MP_CLIENT_ACTION_INTENT: {
+        case MP_CLIENT_JSON.ACTION_INTENT: {
             if(this.state === ServerGameContext.STATE.STARTED && isClientTurn(this, messengerID)) {
                 const arrayBuffer = payload.buffer.slice(payload.byteOffset, payload.byteOffset + payload.byteLength);
 
