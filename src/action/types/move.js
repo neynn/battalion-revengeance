@@ -38,6 +38,8 @@ const createMoveData = function(steps) {
 
     return {
         "entityID": EntityManager.INVALID_ID,
+        "originX": -1,
+        "originY": -1,
         "flags": MOVE_FLAG.NONE,
         "path": path
     }
@@ -147,6 +149,8 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
     const data = createMoveData(newPath.length);
 
     data.entityID = entityID;
+    data.originX = entity.tileX;
+    data.originY = entity.tileY;
     data.flags = flags;
 
     for(let i = 0; i < newPath.length; i++) {
@@ -160,11 +164,12 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
 const executeMove = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID, path, flags } = data;
+    const { entityID, originX, originY, path, flags } = data;
     const entity = entityManager.getEntity(entityID);
     const team = entity.getTeam(gameContext);
     let isDiscovered = false;
 
+    entity.setTile(originX, originY);
     entity.removeFromMap(gameContext);
     entity.setFlag(BattalionEntity.FLAG.HAS_MOVED);
     entity.clearFlag(BattalionEntity.FLAG.CAN_MOVE);
@@ -212,8 +217,6 @@ export const MoveAction = function() {
     this.state = MoveAction.STATE.NONE;
     this.wasDiscovered = false;
     this.opacity = 0;
-    this.originX = -1;
-    this.originY = -1;
 }
 
 MoveAction.STATE = {
@@ -238,8 +241,6 @@ MoveAction.prototype.onStart = function(gameContext, data) {
     this.path = path;
     this.pathIndex = this.path.length - 1;
     this.entity = entity;
-    this.originX = entity.tileX;
-    this.originY = entity.tileY;
 
     worldMap.addMoving(entity.getIndex());
 }
@@ -307,11 +308,6 @@ MoveAction.prototype.isFinished = function(gameContext, executionPlan) {
         return false;
     }
 
-    //Put entity back on origin.
-    //Client would otherwise bug out because it modifies tileX, tileY itself.
-    //HACK(neyn): This is a COLOSSAL hack and TERRIFIC code smell!
-    this.entity.setTile(this.originX, this.originY);
-
     return true;
 }
 
@@ -333,6 +329,4 @@ MoveAction.prototype.onEnd = function(gameContext, data) {
     this.state = MoveAction.STATE.NONE;
     this.wasDiscovered = false;
     this.opacity = 0;
-    this.originX = -1;
-    this.originY = -1;
 }

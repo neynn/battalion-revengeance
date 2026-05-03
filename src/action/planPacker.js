@@ -190,15 +190,30 @@ const packProducePlan = function(data, view, beginPtr) {
     0x02 -> entityID,
     0x04 -> count
 */
-const MOVE_HEADER_SIZE = 6;
+/**
+ * 0x00 [U8] -> type
+ * 
+ * 0x01 [U8] -> flags
+ * 
+ * 0x02 [S16] -> entityID
+ * 
+ * 0x04 [S16] -> originX
+ * 
+ * 0x06 [S16] -> originY
+ * 
+ * 0x08 [U16] -> count
+ */
+const MOVE_HEADER_SIZE = 10;
 
 const packMovePlan = function(data, view, beginPtr) {
-    const { entityID, flags, path } = data;
+    const { entityID, originX, originY, flags, path } = data;
 
     view.setUint8(beginPtr + 0, ACTION_TYPE.MOVE);
     view.setUint8(beginPtr + 1, flags);
     view.setInt16(beginPtr + 2, entityID, true);
-    view.setUint16(beginPtr + 4, path.length, true);
+    view.setInt16(beginPtr + 4, originX, true);
+    view.setInt16(beginPtr + 6, originY, true);
+    view.setUint16(beginPtr + 8, path.length, true);
 
     let byteOffset = beginPtr + MOVE_HEADER_SIZE;
 
@@ -558,11 +573,17 @@ export const unpackPlan = function(view, beginPtr) {
             break;
         }
         case ACTION_TYPE.MOVE: {
-            const count = view.getUint16(beginPtr + 4, true);
-            
+            const flags = view.getUint8(beginPtr + 1);
+            const entityID = view.getInt16(beginPtr + 2, true);
+            const originX = view.getInt16(beginPtr + 4, true);
+            const originY = view.getInt16(beginPtr + 6, true);
+            const count = view.getUint16(beginPtr + 8, true);
+
             data = MoveVTable.createData(count);
-            data.entityID = view.getInt16(beginPtr + 2, true);;
-            data.flags = view.getUint8(beginPtr + 1);
+            data.flags = flags;
+            data.entityID = entityID;
+            data.originX = originX;
+            data.originY = originY;
             
             let byteOffset = beginPtr + MOVE_HEADER_SIZE;
 
