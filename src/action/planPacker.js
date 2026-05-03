@@ -372,14 +372,28 @@ const packCloakPlan = function(data, view, beginPtr) {
  */
 const CAPTURE_HEADER_SIZE = 7;
 
-const packCapturePlan = function(data, view, beginPtr) {
-    const { entityID, targetX, targetY } = data;
+const CaptureTable = {
+    getSize: function(data) {
+        return CAPTURE_HEADER_SIZE;
+    },
+    write: function(data, view, beginPtr) {
+        const { entityID, targetX, targetY } = data;
 
-    view.setUint8(beginPtr + 0, ACTION_TYPE.CAPTURE);
-    view.setInt16(beginPtr + 1, entityID, true);
-    view.setInt16(beginPtr + 3, targetX, true);
-    view.setInt16(beginPtr + 5, targetY, true);
-}
+        view.setUint8(beginPtr + 0, ACTION_TYPE.CAPTURE);
+        view.setInt16(beginPtr + 1, entityID, true);
+        view.setInt16(beginPtr + 3, targetX, true);
+        view.setInt16(beginPtr + 5, targetY, true);
+    },
+    read: function(view, beginPtr) {
+        const data = CaptureActionVTable.createData();
+
+        data.entityID = view.getInt16(beginPtr + 1, true);
+        data.targetX = view.getInt16(beginPtr + 3, true);
+        data.targetY = view.getInt16(beginPtr + 5, true);
+
+        return data;
+    }
+};
 
 /**
  *  0x00 [U8] -> type
@@ -396,20 +410,58 @@ const packCapturePlan = function(data, view, beginPtr) {
  */
 const ATTACK_HEADER_SIZE = 12;
 
-const packAttackPlan = function(data, view, beginPtr) {
-    const { attackerID, targetID, resourceDamage, flags, resolutions } = data;
+const AttackTable = {
+    getSize: function(data) {
+        return ATTACK_HEADER_SIZE + ENTITY_RESOLUTION_SIZE * data.resolutions.length;
+    },
+    write: function(data, view, beginPtr) {
+        const { attackerID, targetID, resourceDamage, flags, resolutions } = data;
 
-    view.setUint8(beginPtr + 0, ACTION_TYPE.ATTACK);
-    view.setUint8(beginPtr + 1, flags);
-    view.setInt16(beginPtr + 2, attackerID, true);
-    view.setInt16(beginPtr + 4, targetID, true);
-    view.setInt32(beginPtr + 6, resourceDamage, true);
-    view.setUint16(beginPtr + 10, resolutions.length, true);
+        view.setUint8(beginPtr + 0, ACTION_TYPE.ATTACK);
+        view.setUint8(beginPtr + 1, flags);
+        view.setInt16(beginPtr + 2, attackerID, true);
+        view.setInt16(beginPtr + 4, targetID, true);
+        view.setInt32(beginPtr + 6, resourceDamage, true);
+        view.setUint16(beginPtr + 10, resolutions.length, true);
 
-    let byteOffset = beginPtr + ATTACK_HEADER_SIZE;
+        let byteOffset = beginPtr + ATTACK_HEADER_SIZE;
 
-    for(let i = 0; i < resolutions.length; i++) {
-        byteOffset = packEntityResolution(resolutions[i], view, byteOffset);
+        for(let i = 0; i < resolutions.length; i++) {
+            byteOffset = packEntityResolution(resolutions[i], view, byteOffset);
+        }
+    },
+    read: function(view, beginPtr) {
+        const data = AttackActionVTable.createData();
+
+        data.flags = view.getUint8(beginPtr + 1);
+        data.attackerID = view.getInt16(beginPtr + 2, true);
+        data.targetID = view.getInt16(beginPtr + 4, true);
+        data.resourceDamage = view.getInt32(beginPtr + 6, true);
+        
+        const count = view.getUint16(beginPtr + 10, true);
+
+        let byteOffset = beginPtr + ATTACK_HEADER_SIZE;
+
+        for(let i = 0; i < count; i++) {
+            const resolution = createEntityResolution();
+
+            byteOffset = unpackEntityResolution(resolution, view, byteOffset);
+            data.resolutions.push(resolution);
+        }
+
+        return data;
+    }
+};
+
+const Table = {
+    getSize: function(data) {
+
+    },
+    write: function(data, view, beginPtr) {
+
+    },
+    read: function(view, beginPtr) {
+        
     }
 }
 
@@ -422,8 +474,8 @@ export const getPlanSize = function(executionPlan) {
     const { id, type, data } = executionPlan;
 
     switch(type) {
-        case ACTION_TYPE.ATTACK: return ATTACK_HEADER_SIZE + ENTITY_RESOLUTION_SIZE * data.resolutions.length;
-        case ACTION_TYPE.CAPTURE: return CAPTURE_HEADER_SIZE;
+        case ACTION_TYPE.ATTACK: return AttackTable.getSize(data);
+        case ACTION_TYPE.CAPTURE: return CaptureTable.getSize(data);
         case ACTION_TYPE.CLOAK: return CLOAK_HEADER_SIZE;
         case ACTION_TYPE.DEATH: return DEATH_HEADER_SIZE + ENTITY_ID_SIZE + data.entities.length;
         case ACTION_TYPE.END_TURN: return END_TURN_HEADER_SIZE;
@@ -455,8 +507,8 @@ export const writePlan = function(executionPlan, view, beginPtr) {
     const { id, type, data } = executionPlan;
 
     switch(type) {
-        case ACTION_TYPE.ATTACK: return packAttackPlan(data, view, beginPtr);
-        case ACTION_TYPE.CAPTURE: return packCapturePlan(data, view, beginPtr);
+        case ACTION_TYPE.ATTACK: return AttackTable.write(data, view, beginPtr);
+        case ACTION_TYPE.CAPTURE: return CaptureTable.write(data, view, beginPtr);
         case ACTION_TYPE.CLOAK: return packCloakPlan(data, view, beginPtr);
         case ACTION_TYPE.DEATH: return packDeathPlan(data, view, beginPtr);
         case ACTION_TYPE.END_TURN: return packEndTurnPlan(data, view, beginPtr);
@@ -663,29 +715,11 @@ export const unpackPlan = function(view, beginPtr) {
             break;
         }
         case ACTION_TYPE.CAPTURE: {
-            data = CaptureActionVTable.createData();
-            data.entityID = view.getInt16(beginPtr + 1, true);
-            data.targetX = view.getInt16(beginPtr + 3, true);
-            data.targetY = view.getInt16(beginPtr + 5, true);
+            data = CaptureTable.read(view, beginPtr);
             break;
         }
         case ACTION_TYPE.ATTACK: {
-            data = AttackActionVTable.createData();
-            data.flags = view.getUint8(beginPtr + 1);
-            data.attackerID = view.getInt16(beginPtr + 2, true);
-            data.targetID = view.getInt16(beginPtr + 4, true);
-            data.resourceDamage = view.getInt32(beginPtr + 6, true);
-            
-            const count = view.getUint16(beginPtr + 10, true);
-            let byteOffset = beginPtr + ATTACK_HEADER_SIZE;
-
-            for(let i = 0; i < count; i++) {
-                const resolution = createEntityResolution();
-
-                byteOffset = unpackEntityResolution(resolution, view, byteOffset);
-                data.resolutions.push(resolution);
-            }
-
+            data = AttackTable.read(view, beginPtr);
             break;
         }
     }
