@@ -10,6 +10,7 @@ import { BattalionMap } from "../../map/battalionMap.js";
 import { isDrawTime, mRegenerateLines } from "../helpers.js";
 import { ActorManager } from "../../../engine/world/actor/actorManager.js";
 import { EndTurnVTable } from "../../action/types/endTurn.js";
+import { EntityManager } from "../../../engine/entity/entityManager.js";
 
 const PORTRAIT_WIDTH = 130;
 const PORTRAIT_HEIGHT = 150;
@@ -43,6 +44,83 @@ const TILE_DRAW_ORDER = [
     BattalionMap.LAYER.CLOUD
 ];
 
+const LineCache = function() {
+    this.reconLineTime = 0;
+    this.reconLineIndex = 0;
+    this.reconLines = [];
+    this.tooltipLines = [];
+    this.dialogueLines = [];
+    this.lastTooltip = null;
+}
+
+LineCache.prototype.resetRecon = function() {
+    this.reconLines.length = 0;
+    this.reconLineTime = 0;
+    this.reconLineIndex = 0;
+}
+
+LineCache.prototype.updateRecon = function(context, text, maxWidth) {
+    this.resetRecon();
+    mRegenerateLines(this.reconLines, context, text, maxWidth);
+}
+
+LineCache.prototype.tryUpdateTooltip = function(languageHandler, context, tooltip) {
+    if(this.lastTooltip !== tooltip) {
+        this.tooltipLines.length = 0;
+        this.lastTooltip = tooltip;
+
+        if(tooltip.length !== 0) {
+            const text = languageHandler.getSystemTranslation(tooltip);
+
+            mRegenerateLines(this.tooltipLines, context, text, RECON_TOOLTIP_BOX_WIDTH);
+        }
+    }
+}
+
+LineCache.prototype.tryUpdateDialogue = function(dialogueHandler, context) {
+    const { fullText } = dialogueHandler;
+
+    if(dialogueHandler.hasEntryChanged()) {
+        this.dialogueLines.length = 0;
+
+        let charCount = 0;
+
+        mRegenerateLines(this.dialogueLines, context, fullText, 418);
+
+        for(let i = 0; i < this.dialogueLines.length; i++) {
+            charCount += this.dialogueLines[i].length;
+        }
+
+        dialogueHandler.setLetterCount(charCount);
+    }
+}
+
+LineCache.prototype.resetDialogue = function() {
+    this.dialogueLines.length = 0;
+}
+
+LineCache.prototype.updateReconIndex = function(deltaTime) {
+    if(this.reconLines.length > 2) {
+        const SECONDS_PER_LINE = 2;
+        const frameIndex = Math.floor(this.reconLineTime / SECONDS_PER_LINE) % this.reconLines.length;
+
+        this.reconLineIndex = frameIndex;
+        this.reconLineTime += deltaTime;
+    }
+}
+
+LineCache.prototype.drawRecon = function(context, reconX, reconY, deltaTime) {
+    if(this.reconLines.length !== 0) {
+        context.fillStyle = "#ffffff";
+        context.fillText(this.reconLines[this.reconLineIndex], reconX + 39, reconY);
+
+        //Always try to fit two lines into the box.
+        if(this.reconLineIndex < this.reconLines.length - 1) {
+            context.fillText(this.reconLines[this.reconLineIndex + 1], reconX + 39, reconY + 10);
+        }
+    }
+}
+
 export const PlayUI = function(cContext) {
     UIContext.call(this);
 
@@ -54,17 +132,13 @@ export const PlayUI = function(cContext) {
     this.style = new TextStyle();
     this.style.baseline = TextStyle.BASELINE.TOP;
     this.style.font = "10px arial";
-    this.reconLines = [];
-    this.tooltipLines = [];
-    this.dialogueLines = [];
-    this.dialogueChars = 0;
-    this.lineTime = 0;
 
-    this.lastInspect = MapInspector.STATE.NONE;
     this.lastIndex = -1;
-    this.lastTooltip = null;
+    this.lastEntityID = EntityManager.INVALID_ID;
+    this.lastEntityTypeID = -1;
 
     this.iconTick = 0;
+    this.lineCache = new LineCache();
 }
 
 PlayUI.WIDGET_ID = {
@@ -99,13 +173,6 @@ PlayUI.prototype.load = function(gameContext) {
     uiData.loadGenericTextures();
     uiData.loadPlayTextures();
     uiManager.addContext(this);
-}
-
-PlayUI.prototype.regenerateLines = function(context, text, maxWidth) {
-    this.reconLines.length = 0;
-    this.lineTime = 0;
-
-    mRegenerateLines(this.reconLines, context, text, maxWidth);
 }
 
 //TODO(neyn): Create a 28x28 ICON for each entity!
@@ -300,7 +367,7 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
 
 PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, screenY) {
     const { timer, uiData, dialogueHandler, typeRegistry, language } = gameContext;
-    const { fullText, letterIndex } = dialogueHandler;
+    const { letterIndex } = dialogueHandler;
     const dialogue = dialogueHandler.getCurrentEntry();
 
     if(!dialogue) {
@@ -334,24 +401,13 @@ PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, scree
     context.font = "16px Times New Roman";
     context.textAlign = TextStyle.ALIGN.LEFT;
 
-    if(dialogueHandler.hasEntryChanged()) {
-        this.dialogueLines.length = 0;
-        let charCount = 0;
-
-        mRegenerateLines(this.dialogueLines, context, fullText, 418);
-
-        for(let i = 0; i < this.dialogueLines.length; i++) {
-            charCount += this.dialogueLines[i].length;
-        }
-
-        dialogueHandler.setLetterCount(charCount);
-    }
+    this.lineCache.tryUpdateDialogue(dialogueHandler, context);
     
     let remainingChars = letterIndex;
     let fullLinesToDraw = 0;
 
-    for(let i = 0; i < this.dialogueLines.length; i++) {
-        const lineLength =  this.dialogueLines[i].length;
+    for(let i = 0; i < this.lineCache.dialogueLines.length; i++) {
+        const lineLength =  this.lineCache.dialogueLines[i].length;
         const remaining = remainingChars - lineLength;
 
         if(remaining < 0) {
@@ -374,16 +430,16 @@ PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, scree
     for(let i = 0; i < fullLinesToDraw; i++) {
         const drawY = textY + 20 * i;
 
-        context.fillText(this.dialogueLines[i], textX, drawY);
+        context.fillText(this.lineCache.dialogueLines[i], textX, drawY);
     }
 
-    if(fullLinesToDraw < this.dialogueLines.length) {
-        const nextLine = this.dialogueLines[fullLinesToDraw];
+    if(fullLinesToDraw < this.lineCache.dialogueLines.length) {
+        const nextLine = this.lineCache.dialogueLines[fullLinesToDraw];
         const text = nextLine.substring(0, remainingChars);
         const drawY = textY + 20 * fullLinesToDraw;
 
         context.fillText(text, textX, drawY);
-    } else if(fullLinesToDraw === this.dialogueLines.length) {
+    } else if(fullLinesToDraw === this.lineCache.dialogueLines.length) {
         if(isDrawTime(timer.realTime, 2, 0.5)) {
             nextTexture.draw(display, nextX, nextY);
         }
@@ -413,8 +469,23 @@ PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, scree
     ) & IM_FLAG.CLICKED) {
         dialogueHandler.onSkipButton();
 
-        this.dialogueLines.length = 0;
+        this.lineCache.resetDialogue();
     }
+}
+
+PlayUI.prototype.updateEntityState = function(entity) {
+    const entityID = entity.id;
+    const typeID = entity.config.id;
+    let hasChanged = false;
+
+    if(this.lastEntityID !== entityID || this.lastEntityTypeID !== typeID) {
+        this.lastEntityID = entityID;
+        this.lastEntityTypeID = typeID;
+        
+        hasChanged = true;
+    }
+
+    return hasChanged;
 }
 
 PlayUI.prototype.onImmediate = function(gameContext, display) {
@@ -457,10 +528,10 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
     let tooltipHead = "";
     let tooltip = "";
 
-    if(this.lastInspect !== this.inspector.state) {
+    if(this.inspector.checkChange()) {
         this.lastIndex = -1;
-        this.lastInspect = this.inspector.state;
-        this.reconLines.length = 0;
+        this.lineCache.resetRecon();
+        this.lastEntityID = EntityManager.INVALID_ID;
     }
 
     this.iconTick = 0;
@@ -476,7 +547,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
     this.style.apply(context);
     this.drawMainHud(gameContext, display, mainX, mainY);
 
-    switch(this.lastInspect) {
+    switch(this.inspector.state) {
         case MapInspector.STATE.TILE: {
             const { terrain } = worldMap.getTileType(gameContext, tileX, tileY);
             const climateType = worldMap.getClimateType(gameContext, tileX, tileY);
@@ -490,7 +561,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
             context.fillText(language.getSystemTranslation("RECON_TRAIT"), traitX + 2, headY);
 
             if(this.lastIndex !== index) {
-                this.regenerateLines(context, worldMap.getTileDesc(gameContext, tileX, tileY), DESCRIPTION_BOX_WIDTH_TILE);
+                this.lineCache.updateRecon(context, worldMap.getTileDesc(gameContext, tileX, tileY), DESCRIPTION_BOX_WIDTH_TILE);
                 this.lastIndex = index;
             }
 
@@ -512,7 +583,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
             const building = worldMap.getBuilding(tileX, tileY);
 
             if(this.lastIndex !== index) {
-                this.regenerateLines(context, building.getDescription(gameContext), DESCRIPTION_BOX_WIDTH_TILE);
+                this.lineCache.updateRecon(context, building.getDescription(gameContext), DESCRIPTION_BOX_WIDTH_TILE);
                 this.updateBuilding(gameContext, building);
                 this.lastIndex = index;
             }
@@ -539,10 +610,9 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
         case MapInspector.STATE.ENTITY: {
             const entity = world.getEntityAt(tileX, tileY);
 
-            if(this.lastIndex !== index) {
-                this.regenerateLines(context, entity.getDescription(gameContext), DESCRIPTION_BOX_WIDTH_ENTITY);
+            if(this.updateEntityState(entity)) {
+                this.lineCache.updateRecon(context, entity.getDescription(gameContext), DESCRIPTION_BOX_WIDTH_ENTITY);
                 this.updateInspectSprite(gameContext, entity);
-                this.lastIndex = index;
             }
 
             uiData.getTexture(UI_TEXTURE.RECON_UNIT).draw(display, reconX, reconY);
@@ -608,46 +678,9 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
         }
     }
 
-    context.fillStyle = "#ffffff";
-    
-    switch(this.reconLines.length) {
-        case 0: {
-            break;
-        }
-        case 1: {
-            context.fillText(this.reconLines[0], reconX + 39, bodyY);
-            break;
-        }
-        case 2: {
-            context.fillText(this.reconLines[0], reconX + 39, bodyY);
-            context.fillText(this.reconLines[1], reconX + 39, bodyY + 10);
-            break;
-        }
-        default: {
-            const SECONDS_PER_LINE = 2;
-            const frameIndex = Math.floor(this.lineTime / SECONDS_PER_LINE) % this.reconLines.length;
-
-            context.fillText(this.reconLines[frameIndex], reconX + 39, bodyY);
-
-            if(frameIndex < this.reconLines.length - 1) {
-                context.fillText(this.reconLines[frameIndex + 1], reconX + 39, bodyY + 10);
-            }
-
-            this.lineTime += gameContext.timer.deltaTime;
-            break;
-        }
-    }
-
-    if(this.lastTooltip !== tooltip) {
-        this.tooltipLines.length = 0;
-        this.lastTooltip = tooltip;
-
-        if(tooltip.length !== 0) {
-            const text = language.getSystemTranslation(tooltip);
-
-            mRegenerateLines(this.tooltipLines, context, text, RECON_TOOLTIP_BOX_WIDTH);
-        }
-    }
+    this.lineCache.updateReconIndex(deltaTime);
+    this.lineCache.drawRecon(context, reconX, bodyY);
+    this.lineCache.tryUpdateTooltip(language, context, tooltip);
 
     //If collided with any icon.
     if(this.hotWidget >= ICON_ID_REGION && this.hotWidget < DIALOGUE_ID_REGION) {
@@ -655,7 +688,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
         let tooltipY = reconY + 17;
         let tooltipSize = 0;
 
-        switch(this.tooltipLines.length) {
+        switch(this.lineCache.tooltipLines.length) {
             case 1: {
                 tooltipTexture = UI_TEXTURE.TOOLTIP_MINI;
                 tooltipY -= RECON_TOOLTIP_MINI_HEIGHT;
@@ -691,7 +724,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
         context.fillStyle = "#000000";
 
         for(let i = 0; i < tooltipSize; i++) {
-            context.fillText(this.tooltipLines[i], tooltipX + 3, tooltipY + 19 + 10 * i);
+            context.fillText(this.lineCache.tooltipLines[i], tooltipX + 3, tooltipY + 19 + 10 * i);
         }
     }
 }

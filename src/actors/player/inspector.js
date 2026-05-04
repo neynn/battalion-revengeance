@@ -7,8 +7,10 @@ export const MapInspector = function() {
     this.lastHoverX = -1;
     this.lastHoverY = -1;
     this.state = MapInspector.STATE.NONE;
+    this.previousState = MapInspector.STATE.NONE;
     this.nodeMap = new Map();
     this.isEnabled = true;
+    this.uncheckedChanges = 0;
 }
 
 MapInspector.STATE = {
@@ -18,6 +20,27 @@ MapInspector.STATE = {
     ENTITY: 3,
     ENTITY_MENU: 4
 };
+
+MapInspector.prototype.setState = function(state) {
+    this.previousState = this.state;
+    this.state = state;
+
+    if(this.previousState !== this.state) {
+        this.uncheckedChanges++;
+    }
+}
+
+MapInspector.prototype.checkChange = function() {
+    let hasChanged = false;
+
+    if(this.uncheckedChanges > 0) {
+        this.uncheckedChanges = 0;
+
+        hasChanged = true;
+    }
+
+    return hasChanged;
+}
 
 MapInspector.prototype.disable = function() {
     this.isEnabled = false;
@@ -51,7 +74,7 @@ MapInspector.prototype.tryInspectTile = function(gameContext, camera, tileX, til
     let isValid = false;
 
     if(index !== WorldMap.OUT_OF_BOUNDS) {
-        this.state = MapInspector.STATE.TILE;
+        this.setState(MapInspector.STATE.TILE);
         isValid = true;
     }
 
@@ -69,7 +92,7 @@ MapInspector.prototype.tryInspectBuilding = function(gameContext, tileX, tileY) 
 
     //A building was found and the last inspect was NOT a building.
     if(building && this.state !== MapInspector.STATE.BUILDING) {
-        this.state = MapInspector.STATE.BUILDING;
+        this.setState(MapInspector.STATE.BUILDING);
 
         console.log("Inspected Building", {
             "building": building
@@ -91,7 +114,7 @@ MapInspector.prototype.tryInspectEntity = function(gameContext, actor, camera, t
 
     if(entity && this.state !== MapInspector.STATE.ENTITY_MENU && this.state !== MapInspector.STATE.ENTITY && this.state !== MapInspector.STATE.BUILDING) {
         this.nodeMap.clear();
-        this.state = MapInspector.STATE.ENTITY;
+        this.setState(MapInspector.STATE.ENTITY);
 
         entity.mGetNodeMap(gameContext, this.nodeMap);
         camera.showEntityNodes(gameContext, entity, this.nodeMap);
@@ -118,7 +141,7 @@ MapInspector.prototype.inspect = function(gameContext, actor, camera, tileX, til
 
     //We MUST be inspecting a new tile!
     if(this.lastX !== tileX || this.lastY !== tileY) {
-        this.state = MapInspector.STATE.NONE;
+        this.setState(MapInspector.STATE.NONE);
     }
 
     //Always update the last click.
@@ -128,7 +151,7 @@ MapInspector.prototype.inspect = function(gameContext, actor, camera, tileX, til
     if(!this.tryInspectEntity(gameContext, actor, camera, tileX, tileY)) {
         if(!this.tryInspectBuilding(gameContext, tileX, tileY)) {
             if(!this.tryInspectTile(gameContext, camera, tileX, tileY)) {
-                this.state = MapInspector.STATE.NONE;
+                this.setState(MapInspector.STATE.NONE);
             }
         }
     }
@@ -151,7 +174,7 @@ MapInspector.prototype.update = function(gameContext, camera) {
 
     //The entity was deleted in between frames.
     if(this.state === MapInspector.STATE.ENTITY && this.getLastEntity(gameContext) === null) {
-        this.state = MapInspector.STATE.NONE;
+        this.setState(MapInspector.STATE.NONE);
 
         camera.clearOverlays();
     }
