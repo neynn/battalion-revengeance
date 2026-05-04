@@ -3,6 +3,7 @@ import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { mapTransportToEntity, transportToCost } from "../../enumHelpers.js";
 import { ACTION_TYPE, ENTITY_TYPE, TRANSPORT_TYPE } from "../../enums.js";
+import { canEntityTypeStandOnTile } from "../../systems/pathfinding.js";
 import { updateEntitySprite } from "../../systems/sprite.js";
 import { TransportTween } from "../../tween/transportTween.js";
 
@@ -29,18 +30,19 @@ const fillFromTransportPlan = function(gameContext, executionPlan, actionIntent)
     if(!entity || entity.isDead() || !entity.isTransporting() || !entity.canActAndMove()) {
         return;
     }
-    
-    //TODO(neyn): Check if the entity can be PLACED on the tile the transport reached.
-    //If the entity cannot be placed there then the action is invalid.
 
-    //What the entity is transporting.
-    const typeID = entity.transportID;
-    const { health } = typeRegistry.getEntityType(typeID);
+    const { tileX, tileY, teamID, transportID } = entity;
+
+    if(!canEntityTypeStandOnTile(gameContext, transportID, tileX, tileY, teamID)) {
+        return;
+    }
+
+    const { health } = typeRegistry.getEntityType(transportID);
     const vitality = entity.getVitality();
     const data = createFromTransportData();
 
     data.entityID = entityID;
-    data.entityTypeID = typeID;
+    data.entityTypeID = transportID;
     data.health = Math.ceil(health * vitality);
 
     executionPlan.setData(data);

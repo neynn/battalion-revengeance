@@ -96,10 +96,11 @@ Player.prototype.onClick = function(gameContext, tileX, tileY) {
 }
 
 Player.prototype.loadKeybinds = function(gameContext) {
-    const { client } = gameContext;
+    const { client, actionRouter } = gameContext;
     const { router } = client;
     
     router.bind(gameContext, "PLAY");
+
     router.on("CLICK", () => {
         const { world } = gameContext;
         const { mapManager } = world;
@@ -112,25 +113,70 @@ Player.prototype.loadKeybinds = function(gameContext) {
         }
     });
 
-    router.on("DEBUG_SAVE", () => saveStoryMap(gameContext));
     router.on("END_TURN", () => {
         this.addIntent(EndTurnVTable.createIntent());
     });
 
-    router.on("EXTRACT", () => {
-        //Do NOT cache the value. A lookup is meaningless in terms of performance.
+    router.on("TRANSPORT_BARGE", () => {
         const entity = this.inspector.getLastEntity(gameContext);
 
         if(entity) {
-            //this.addIntent(ExtractVTable.createIntent(entity.id));
-            this.addIntent(ProduceVTable.createIntent(entity.id, ENTITY_TYPE.ANNIHILATOR_TANK, DIRECTION.NORTH));
-        
-            //if(entity.transportID !== -1) {
-            //    this.addIntent(FromTransportVTable.createIntent(entity.id));
-            //} else {
-            //    this.addIntent(ToTransportVTable.createIntent(entity.id, TRANSPORT_TYPE.BARGE));
-            //}
+            if(entity.transportID !== -1) {
+                this.addIntent(FromTransportVTable.createIntent(entity.id));
+            } else {
+                this.addIntent(ToTransportVTable.createIntent(entity.id, TRANSPORT_TYPE.BARGE));
+            }
         }
+    });
+
+    router.on("TRANSPORT_PELICAN", () => {
+        const entity = this.inspector.getLastEntity(gameContext);
+
+        if(entity) {
+            if(entity.transportID !== -1) {
+                this.addIntent(FromTransportVTable.createIntent(entity.id));
+            } else {
+                this.addIntent(ToTransportVTable.createIntent(entity.id, TRANSPORT_TYPE.PELICAN));
+            }
+        }
+    });
+
+    router.on("TRANSPORT_STORK", () => {
+        const entity = this.inspector.getLastEntity(gameContext);
+
+        if(entity) {
+            if(entity.transportID !== -1) {
+                this.addIntent(FromTransportVTable.createIntent(entity.id));
+            } else {
+                this.addIntent(ToTransportVTable.createIntent(entity.id, TRANSPORT_TYPE.STORK));
+            }
+        }
+    });
+
+    router.on("EXTRACT", () => {
+        const entity = this.inspector.getLastEntity(gameContext);
+
+        if(entity) {
+            this.addIntent(ExtractVTable.createIntent(entity.id));
+        }
+    });
+
+    router.on("PRODUCE", () => {
+        const entity = this.inspector.getLastEntity(gameContext);
+
+        if(entity) {
+            this.addIntent(ProduceVTable.createIntent(entity.id, ENTITY_TYPE.ANNIHILATOR_TANK, DIRECTION.NORTH));
+        }  
+    });
+
+    router.on("DEBUG_SAVE", () => saveStoryMap(gameContext));
+
+    router.on("DEBUG_KILL", () => {
+        const entity = this.inspector.getLastEntity(gameContext);
+
+        if(entity) {
+            actionRouter.forceEnqueue(gameContext, DeathActionVTable.createIntent([entity.id]));
+        }  
     });
 }
 

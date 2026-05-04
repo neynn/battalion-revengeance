@@ -4,20 +4,17 @@
         "ESCAPE": "+Escape"
     },
     "PLAY": {
-        "TOGGLE_RANGE": "+v",
         "CLICK": "-M1",
         "ESCAPE": "+Escape",
-        "DEBUG_IDLE": "+1",
-        "DEBUG_HEAL": "+2",
-        "DEBUG_FIREMISSION": "+3",
-        "DEBUG_SELL": "+4",
-        "DEBUG_PLACE": "+5",
-        "DEBUG_DEBUG": "+0",
-        "DEBUG_LOAD": "+9",
+        "END_TURN": "+q",
+        "EXTRACT": "+e",
+        "TRANSPORT_BARGE": "+t",
+        "TRANSPORT_PELICAN": "+z",
+        "TRANSPORT_STORK": "+u",
+        "PRODUCE": "+p",
+
         "DEBUG_KILL": "+8",
-        "DEBUG_SAVE": "+q",
-        "END_TURN": "+t",
-        "EXTRACT": "+e"
+        "DEBUG_SAVE": "+9"
     },
     "EDIT": {
         "TOGGLE_AUTOTILER": "+a",
