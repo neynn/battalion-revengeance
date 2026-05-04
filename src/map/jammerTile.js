@@ -10,7 +10,9 @@ const createBlocker = function() {
     }
 }
 
-export const JammerTile = function() {
+export const JammerTile = function(tileX, tileY) {
+    this.tileX = tileX;
+    this.tileY = tileY;
     this.blockers = [];
 }
 

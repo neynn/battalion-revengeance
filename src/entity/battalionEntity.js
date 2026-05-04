@@ -4,7 +4,7 @@ import { WorldMap } from "../../engine/map/worldMap.js";
 import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { EntityType } from "../type/parsed/entityType.js";
-import { createNode, mGetLowestCostNode } from "../systems/pathfinding.js";
+import { createNode, getEntityTypeTileCost, isEntityTypeJammed, mGetLowestCostNode } from "../systems/pathfinding.js";
 import { DIRECTION_DELTA_X, DIRECTION_DELTA_Y, getDirectionByDelta } from "../systems/direction.js";
 import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE, PATH_INTERCEPT } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
@@ -310,6 +310,14 @@ BattalionEntity.prototype.setTile = function(tileX, tileY) {
     this.tileY = tileY;
 }
 
+BattalionEntity.prototype.getTileXByDirection = function(direction) {
+    return this.tileX + DIRECTION_DELTA_X[direction];
+}
+
+BattalionEntity.prototype.getTileYByDirection = function(direction) {
+    return this.tileY + DIRECTION_DELTA_Y[direction];
+}
+
 BattalionEntity.prototype.setDirection = function(direction) {
     if(this.direction === direction) {
         return false;
@@ -464,68 +472,49 @@ BattalionEntity.prototype.getTerrainDamage = function(gameContext) {
 }
 
 BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType, tileX, tileY) {
-    const { world, typeRegistry } = gameContext;
+    const { world } = gameContext;
     const { entityManager } = world;
-    const { terrain } = tileType;
-    let tileCost = tileType.getPassabilityCost(this.config.movementType);
+    const tileCost = getEntityTypeTileCost(gameContext, tileType, this.config);
 
-    //Prevents infinite/looping steps.
-    if(tileCost <= 0) {
+    if(tileCost >= EntityType.MAX_MOVE_COST) {
         return EntityType.MAX_MOVE_COST;
     }
 
-    //Airspace is blocked by a jammer.
-    //Units with HIGH_ALTITUDE may fly regardless.
-    if(this.config.category === ENTITY_CATEGORY.AIR && !this.hasTrait(TRAIT_TYPE.HIGH_ALTITUDE)) {
-        if(worldMap.isJammed(gameContext, tileX, tileY, this.teamID, JAMMER_FLAG.AIRSPACE_BLOCKED)) {
-            return EntityType.MAX_MOVE_COST;
-        }
-    }
-    
-    const terrainReduction = this.hasTrait(TRAIT_TYPE.STREAMLINED) ? TRAIT_CONFIG.STREAMLINED_REDUCTION : 1;
-    
-    for(let i = 0; i < terrain.length; i++) {
-        const terrainType = typeRegistry.getTerrainType(terrain[i]);
-        const cost = terrainType.getCost(this.config.movementType);
-
-        //Some terrains may disable entities from walking over them.
-        if(cost < 0) {
-            return EntityType.MAX_MOVE_COST;
-        }
-
-        tileCost += (cost * terrainReduction);
+    if(isEntityTypeJammed(gameContext, this.config, worldMap, tileX, tileY, this.teamID)) {
+        return EntityType.MAX_MOVE_COST;
     }
 
     const index = worldMap.getEntity(tileX, tileY);
     const entity = entityManager.getEntityByIndex(index);
     
-    if(entity) {
-        //Trains are always blocked if an entity is on rail, no matter the type.
-        //On the contrary, trains can move really fast.
-        if(this.config.movementType === MOVEMENT_TYPE.RAIL && tileType.id === TILE_TYPE.RAIL) {
-            //Always block on allied units and VISIBLE enemy units.
-            //Invisible enemy units get ignored.
-            if(this.isAllyWith(gameContext, entity) || !entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-                return EntityType.MAX_MOVE_COST;
-            }
-        }
+    if(!entity) {
+        return tileCost;
+    }
 
-        //Blocks on non-cloaked enemy units. Ignores cloaked enemy units and treats them as walkable.
-        if(!this.isAllyWith(gameContext, entity) && !entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-            return EntityType.MAX_MOVE_COST;
-        }
-
-        const mine = worldMap.getMine(tileX, tileY);
-
-        //We could always assume that an enemy mine is visible if an entity is on it, but safety first.
-        //Ally on tile but !isHidden && mine is an impossible state.
-        if(mine && !mine.isHidden() && this.triggersMine(gameContext, mine)) {
+    //Trains are always blocked if an entity is on rail, no matter the type.
+    //On the contrary, trains can move really fast.
+    if(this.config.movementType === MOVEMENT_TYPE.RAIL && tileType.id === TILE_TYPE.RAIL) {
+        //Always block on allied units and VISIBLE enemy units.
+        //Invisible enemy units get ignored.
+        if(this.isAllyWith(gameContext, entity) || !entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
             return EntityType.MAX_MOVE_COST;
         }
     }
 
-    if(tileCost < EntityType.MIN_MOVE_COST) {
-        tileCost = EntityType.MIN_MOVE_COST;
+    //Blocks on non-cloaked enemy units. Ignores cloaked enemy units and treats them as walkable.
+    if(!this.isAllyWith(gameContext, entity) && !entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+        return EntityType.MAX_MOVE_COST;
+    }
+
+    const mine = worldMap.getMine(tileX, tileY);
+
+    //We could always assume that an enemy mine is visible if an entity is on it, but safety first.
+    //Ally on tile but !isHidden && mine is an impossible state.
+    //This prevents entities from passing over a visible mine that they will trigger when an ally stands on it.
+    if(mine) {
+        if(!mine.isHidden() && this.triggersMine(gameContext, mine)) {
+            return EntityType.MAX_MOVE_COST;
+        }
     }
 
     return tileCost;

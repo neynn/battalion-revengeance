@@ -1,5 +1,99 @@
-import { DIRECTION, PATH_FLAG } from "../enums.js";
+import { DIRECTION, ENTITY_CATEGORY, JAMMER_FLAG, PATH_FLAG, TRAIT_CONFIG, TRAIT_TYPE } from "../enums.js";
+import { BattalionMap } from "../map/battalionMap.js";
 import { EntityType } from "../type/parsed/entityType.js";
+import { TileType } from "../type/parsed/tileType.js";
+
+/**
+ * 
+ * @param {*} gameContext 
+ * @param {TileType} tileType 
+ * @param {EntityType} entityType 
+ * @returns {number}
+ * 
+ * Returns a number between MIN_MOVE_COST and MAX_MOVE_COST.
+ */
+export const getEntityTypeTileCost = function(gameContext, tileType, entityType) {
+    const { typeRegistry } = gameContext;
+    const { terrain } = tileType;
+    const { movementType } = entityType;
+    let tileCost = tileType.getPassabilityCost(movementType);
+
+    //Prevents infinite/looping steps.
+    //Also negative costs block entities from walking over them.
+    if(tileCost <= 0) {
+        return EntityType.MAX_MOVE_COST;
+    }
+    
+    const terrainReduction = entityType.hasTrait(TRAIT_TYPE.STREAMLINED) ? TRAIT_CONFIG.STREAMLINED_REDUCTION : 1;
+
+    for(const terrainID of terrain) {
+        const terrainType = typeRegistry.getTerrainType(terrainID);
+        const cost = terrainType.getCost(movementType);
+
+        //Some terrains may disable entities from walking over them.
+        if(cost < 0) {
+            return EntityType.MAX_MOVE_COST;
+        }
+
+        tileCost += (cost * terrainReduction);
+    }
+
+    if(tileCost > EntityType.MAX_MOVE_COST) {
+        tileCost = EntityType.MAX_MOVE_COST;
+    } else if(tileCost < EntityType.MIN_MOVE_COST) {
+        tileCost = EntityType.MIN_MOVE_COST;
+    }
+    
+    return tileCost;
+}
+
+/**
+ * 
+ * @param {*} gameContext 
+ * @param {EntityType} entityType 
+ * @param {BattalionMap} worldMap 
+ * @param {number} tileX 
+ * @param {number} tileY 
+ * @param {number} teamID 
+ * @returns 
+ */
+export const isEntityTypeJammed = function(gameContext, entityType, worldMap, tileX, tileY, teamID) {
+    const { category } = entityType;
+
+    //Airspace is blocked by a jammer.
+    //Units with HIGH_ALTITUDE may fly regardless.
+    if(category === ENTITY_CATEGORY.AIR && !entityType.hasTrait(TRAIT_TYPE.HIGH_ALTITUDE)) {
+        return worldMap.isJammed(gameContext, tileX, tileY, teamID, JAMMER_FLAG.AIRSPACE_BLOCKED);
+    }
+
+    return false;
+}
+
+/**
+ * 
+ * @param {*} gameContext 
+ * @param {number} typeID 
+ * @param {number} tileX 
+ * @param {number} tileY 
+ * @param {number} teamID 
+ * @returns {boolean}
+ * 
+ * Only for moving entities.
+ */
+export const canEntityTypeStandOnTile = function(gameContext, typeID, tileX, tileY, teamID) {
+    const { typeRegistry, world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const tileType = worldMap.getTileType(gameContext, tileX, tileY);
+    const entityType = typeRegistry.getEntityType(typeID);
+    const tileCost = getEntityTypeTileCost(gameContext, tileType, entityType);
+
+    if(tileCost > entityType.movementRange) {
+        return false;
+    }
+
+    return !isEntityTypeJammed(gameContext, entityType, worldMap, tileX, tileY, teamID);
+}
 
 export const mGetLowestCostNode = function(queue) {
     let lowestNode = queue[0];

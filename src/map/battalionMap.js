@@ -370,7 +370,7 @@ BattalionMap.prototype.addJammer = function(tileX, tileY, entityID, teamID, flag
         if(jammerTile) {
             jammerTile.addBlocker(entityID, teamID, flags);
         } else {
-            const newTile = new JammerTile();
+            const newTile = new JammerTile(tileX, tileY);
 
             newTile.addBlocker(entityID, teamID, flags);
 

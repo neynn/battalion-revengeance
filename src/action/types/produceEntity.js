@@ -4,7 +4,8 @@ import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { mapCategoryToStat } from "../../enumHelpers.js";
 import { ACTION_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { createEntitySnapshot } from "../../snapshot/entitySnapshot.js";
-import { DIRECTION_DELTA_X, DIRECTION_DELTA_Y, isDirectionValid } from "../../systems/direction.js";
+import { isDirectionValid } from "../../systems/direction.js";
+import { canEntityTypeStandOnTile } from "../../systems/pathfinding.js";
 import { createClientEntityObject, createServerEntityObject } from "../../systems/spawn.js";
 import { MineTriggerVTable } from "./mineTrigger.js";
 import { UncloakVTable } from "./uncloak.js";
@@ -28,29 +29,28 @@ const createProduceData = function() {
 
 const fillProducePlan = function(gameContext, executionPlan, actionIntent) {
     const { world, typeRegistry } = gameContext;
-    const { entityManager, mapManager } = world;
+    const { entityManager } = world;
     const { entityID, typeID, direction } = actionIntent;
     const entity = entityManager.getEntity(entityID);
-    const worldMap = mapManager.getActiveMap();
 
     if(!entity || entity.isDead() || !entity.canActAndMove() || !entity.hasTrait(TRAIT_TYPE.TANK_POOPER) || !isDirectionValid(direction)) {
         return;
     }
 
-    const { health, cost, movementType } = typeRegistry.getEntityType(typeID);
-    const tileX = entity.tileX + DIRECTION_DELTA_X[direction];
-    const tileY = entity.tileY + DIRECTION_DELTA_Y[direction];
-    const tileType = worldMap.getTileType(gameContext, tileX, tileY);
-
-    //If the entity cannot move to a tile, it should not spawn there.
-    if(tileType.getPassabilityCost(movementType) <= 0) {
+    const tileX = entity.getTileXByDirection(direction);
+    const tileY = entity.getTileYByDirection(direction);
+    const canStandOn = canEntityTypeStandOnTile(gameContext, typeID, tileX, tileY, entity.teamID);
+    
+    //If the entity cannot stand on a tile, it should not spawn there.
+    if(!canStandOn) {
         return;
     }
-
+    
     if(world.getEntityAt(tileX, tileY) !== null) {
         return;
     }
-
+    
+    const { health, cost } = typeRegistry.getEntityType(typeID);
     const team = entity.getTeam(gameContext);
     const adjustedCost = team.getAdjustedCost(gameContext, cost);
 

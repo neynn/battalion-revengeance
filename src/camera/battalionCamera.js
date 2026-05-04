@@ -462,7 +462,7 @@ BattalionCamera.prototype.drawJammers = function(tileManager, display, worldMap)
     let count = 0;
 
     for(const [index, field] of jammers) {
-        const { tileX, tileY } = field;
+        const { tileX, tileY, blockers } = field;
 
         count += this.drawTileClipped(tileManager, TILE_ID.JAMMER, context, tileX, tileY);
     }

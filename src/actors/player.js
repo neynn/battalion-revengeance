@@ -123,12 +123,13 @@ Player.prototype.loadKeybinds = function(gameContext) {
 
         if(entity) {
             //this.addIntent(ExtractVTable.createIntent(entity.id));
-            //this.addIntent(ProduceVTable.createIntent(entity.id, ENTITY_TYPE.ANNIHILATOR_TANK, DIRECTION.NORTH));
-            if(entity.transportID !== -1) {
-                this.addIntent(FromTransportVTable.createIntent(entity.id));
-            } else {
-                this.addIntent(ToTransportVTable.createIntent(entity.id, TRANSPORT_TYPE.BARGE));
-            }
+            this.addIntent(ProduceVTable.createIntent(entity.id, ENTITY_TYPE.ANNIHILATOR_TANK, DIRECTION.NORTH));
+        
+            //if(entity.transportID !== -1) {
+            //    this.addIntent(FromTransportVTable.createIntent(entity.id));
+            //} else {
+            //    this.addIntent(ToTransportVTable.createIntent(entity.id, TRANSPORT_TYPE.BARGE));
+            //}
         }
     });
 }

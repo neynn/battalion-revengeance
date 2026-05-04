@@ -3,7 +3,7 @@
         "entities": ["TURRET"]
     },
     "WARMACHINE": {
-        "entities": ["TURRET", "ANNIHILATOR_TANK"]
+        "entities": ["TURRET", "ANNIHILATOR_TANK", "HEAVY_COMMANDO"]
     },
     "FACTORY": {
         "entities": ["TURRET", "JAMMER_TRUCK", "HEAVY_COMMANDO"]
