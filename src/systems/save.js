@@ -59,17 +59,6 @@ const saveMines = function(worldMap) {
     return data;
 }
 
-const saveEdits = function(worldMap) {
-    const { edits } = worldMap;
-    const data = [];
-
-    for(const edit of edits) {
-        data.push(edit);
-    }
-
-    return data;
-}
-
 export const saveStoryMap = function(gameContext) {
     const { world } = gameContext;
     const { mapManager, eventHandler } = world;
@@ -80,14 +69,14 @@ export const saveStoryMap = function(gameContext) {
     const teams = saveTeams(gameContext);
     const buildings = saveBuildings(worldMap);
     const mines = saveMines(worldMap);
-    const edits = saveEdits(worldMap);
+    const data = worldMap.saveLayers();
     const events = eventHandler.saveTriggeredEvents();
 
     file.open();
     file.writeLine("mapID", worldMap.preview.id);
     file.writeLine("turn", fillTurnSnapshot(gameContext));
     file.writeLine("events", events);
-    file.writeLine("edits", edits, PrettyJSON.LIST_TYPE.ARRAY);
+    file.writeList("data", data);
     file.writeList("entities", entities, PrettyJSON.LIST_TYPE.ARRAY);
     file.writeList("teams", teams, PrettyJSON.LIST_TYPE.ARRAY);
     file.writeList("mines", mines, PrettyJSON.LIST_TYPE.ARRAY);
@@ -98,6 +87,6 @@ export const saveStoryMap = function(gameContext) {
 
 export const loadStoryMap = function(gameContext, data) {
     createClientMapLoader(gameContext, data.mapID)
-    .then(loader => loader.loadMapFromSnapshot(gameContext, []))
+    .then(loader => loader.loadMapFromSnapshot(gameContext, data, []))
     .catch(() => {});
 }

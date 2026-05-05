@@ -51,7 +51,7 @@ WorldMap.prototype.applyAutotiler = function(autotiler, tileX, tileY, layerID, i
     });
 
     if(responseID !== TileManager.TILE_ID.EMPTY) {
-        this.placeTile(responseID, layerID, tileX, tileY);
+        this.setTile(responseID, layerID, tileX, tileY);
     }
 
     return responseID;
@@ -160,19 +160,11 @@ WorldMap.prototype.resize = function(width, height) {
     this.entities = newEntities;
 }
 
-WorldMap.prototype.clearTile = function(layerID, tileX, tileY) {
-    if(this.isTileOutOfBounds(tileX, tileY)) {
-        console.warn(`Tile ${tileY},${tileX} does not exist! Returning...`);
-        return;
-    }
-
-    const layer = this.getLayer(layerID);
-    const index = tileY * this.width + tileX;
-    
-    layer.setItem(0, index);
+WorldMap.prototype.isTileOutOfBounds = function(tileX, tileY) {
+    return tileX < 0 || tileX >= this.width || tileY < 0 || tileY >= this.height;
 }
 
-WorldMap.prototype.placeTile = function(data, layerID, tileX, tileY) {
+WorldMap.prototype.setTile = function(data, layerID, tileX, tileY) {
     if(typeof data !== "number") {
         console.warn(`Data ${data} is not a number! It is ${typeof data}! Returning...`);
         return;
@@ -189,8 +181,8 @@ WorldMap.prototype.placeTile = function(data, layerID, tileX, tileY) {
     layer.setItem(data, index);
 }
 
-WorldMap.prototype.isTileOutOfBounds = function(tileX, tileY) {
-    return tileX < 0 || tileX >= this.width || tileY < 0 || tileY >= this.height;
+WorldMap.prototype.clearTile = function(layerID, tileX, tileY) {
+    this.setTile(0, layerID, tileX, tileY);
 }
 
 WorldMap.prototype.getTile = function(layerID, tileX, tileY) {

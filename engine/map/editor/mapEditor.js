@@ -72,7 +72,7 @@ MapEditor.prototype.undo = function(gameContext) {
 
     if(worldMap) {
         for(const { layerID, tileX, tileY, oldID } of actions) {
-            worldMap.placeTile(oldID, layerID, tileX, tileY);
+            worldMap.setTile(oldID, layerID, tileX, tileY);
         }
     }
 }

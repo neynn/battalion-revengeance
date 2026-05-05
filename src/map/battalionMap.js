@@ -13,30 +13,20 @@ export const BattalionMap = function(id, width, height, preview) {
     this.climate = CLIMATE_TYPE.NONE;
     this.buildings = [];
     this.mines = [];
-    this.edits = [];
     this.jammers = new Map();
     this.localization = new Map();
     this.text = new Map();
     this.customs = new Map();
 
-    for(let i = 0; i < BattalionMap.LAYER._COUNT; i++) {
-        this.createLayer(Layer.TYPE.BIT_16);
-    }
+    this.createLayer(Layer.TYPE.BIT_16);
+    this.createLayer(Layer.TYPE.BIT_16);
+    this.createLayer(Layer.TYPE.BIT_16);
 }
-
-BattalionMap.LAYER_NAME = {
-    GROUND: "GROUND",
-    DECORATION: "DECORATION",
-    CLOUD: "CLOUD",
-    FLAG: "FLAG",
-    TEAM: "TEAM"
-};
 
 BattalionMap.LAYER = {
     GROUND: 0,
     DECORATION: 1,
-    CLOUD: 2,
-    _COUNT: 3
+    CLOUD: 2
 };
 
 BattalionMap.SEARCH_ORDER = [
@@ -89,35 +79,6 @@ BattalionMap.prototype.createCustomMapping = function(customs) {
 BattalionMap.prototype.createTextMapping = function(text) {
     for(let i = 0; i < text.length; i++) {
         this.text.set(text[i], i);
-    }
-}
-
-BattalionMap.prototype.loadEdits = function(edits) {
-    for(const { layer, index, previous, current } of edits) {
-        this.getLayer(layer).setItem(current, index);
-    }
-
-    this.edits = edits;
-}
-
-BattalionMap.prototype.editTile = function(layerID, tileX, tileY, tileID) {
-    const index = this.getIndex(tileX, tileY);
-
-    if(index !== WorldMap.OUT_OF_BOUNDS) {
-        const layer = this.getLayer(layerID);
-
-        if(layer !== WorldMap.EMPTY_LAYER) {
-            const previous = layer.getItem(index);
-
-            layer.setItem(tileID, index);
-
-            this.edits.push({
-                "layer": layerID,
-                "index": index,
-                "previous": previous,
-                "current": tileID
-            });
-        }
     }
 }
 
@@ -174,7 +135,7 @@ BattalionMap.prototype.extractOre = function(tileX, tileY) {
         const tileID = this.getTile(layerID, tileX, tileY);
         const oreID = downgradeOre(tileID);
 
-        this.placeTile(oreID, layerID, tileX, tileY);
+        this.setTile(oreID, layerID, tileX, tileY);
     }
 }
 

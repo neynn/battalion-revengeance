@@ -112,7 +112,6 @@ BattalionEntity.prototype.loadConfig = function(config) {
     this.health = health;
     this.maxHealth = health;
     this.damage = damage;
-
     this.setHealth(this.health);
 }
 

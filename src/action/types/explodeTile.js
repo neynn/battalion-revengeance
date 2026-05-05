@@ -66,7 +66,7 @@ const executeExplodeTile = function(gameContext, data) {
         destroyEntity(gameContext, entity);
     }
 
-    worldMap.editTile(layer, tileX, tileY, TILE_ID.NONE);
+    worldMap.setTile(TILE_ID.NONE, layer, tileX, tileY);
 }
 
 export const ExplodeTileVTable = {

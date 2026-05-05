@@ -44,7 +44,7 @@ BattalionMapEditor.prototype.onPaint = function(gameContext, tileX, tileY) {
             const tileID = this.targetMap.getTile(this.targetLayer, j, i);
 
             if(tileID !== TileManager.TILE_ID.INVALID && tileID !== brushID) {
-                this.targetMap.placeTile(brushID, this.targetLayer, j, i);
+                this.targetMap.setTile(brushID, this.targetLayer, j, i);
 
                 const action = createBrushAction();
 

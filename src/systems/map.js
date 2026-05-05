@@ -162,7 +162,7 @@ ClientMatchLoader.prototype.loadInitialServerSnapshot = function(gameContext, sn
 ClientMatchLoader.prototype.loadMapFromSnapshot = function(gameContext, snapshot, overrides) {
     const { world, dialogueHandler, teamManager, spriteManager } = gameContext;
     const { entityManager, eventHandler } = world;
-    const { mapID, turn, events, edits, entities, teams, mines, buildings } = snapshot;
+    const { mapID, turn, events, data, entities, teams, mines, buildings } = snapshot;
 
     this.rules |= LOADER_RULE.FIXED_ALLIES;
     this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
@@ -198,7 +198,7 @@ ClientMatchLoader.prototype.loadMapFromSnapshot = function(gameContext, snapshot
     this.loadMusic(gameContext);
     this.createWorldEvents(gameContext);
     this.worldMap.loadLocalization(this.localization);
-    this.worldMap.loadEdits(edits);
+    this.worldMap.decodeLayers(data);
 
     eventHandler.loadTriggeredEvents(events);
     dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);
