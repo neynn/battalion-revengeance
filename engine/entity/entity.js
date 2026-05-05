@@ -6,6 +6,7 @@ export const Entity = function(id) {
     this.index = EntityManager.INVALID_INDEX;
     this.spriteID = SpriteManager.INVALID_ID;
     this.isMarkedForDestroy = false;
+    this.isHot = false;
     this.offsetX = 0;
     this.offsetY = 0;
     this.flags = 0;
@@ -57,5 +58,3 @@ Entity.prototype.getID = function() {
 }
 
 Entity.prototype.update = function(gameContext) {}
-Entity.prototype.load = function(gameContext, data) {}
-Entity.prototype.save = function() {}

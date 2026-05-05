@@ -1,5 +1,6 @@
 export const EntityManager = function() {
     this.nextID = 0;
+    this.hotEntities = [];
     this.entities = [];
     this.openSlots = [];
     this.entityMap = new Map();
@@ -14,9 +15,50 @@ EntityManager.FLAG = {
 EntityManager.INVALID_INDEX = -1;
 EntityManager.INVALID_ID = -1;
 
+EntityManager.prototype.addHot = function(index) {
+    if(index < 0 || index >= this.entities.length) {
+        return;
+    }
+
+    const entity = this.entities[index];
+
+    if(entity.isHot) {
+        return;
+    }
+
+    entity.isHot = true;
+
+    if(!this.hotEntities.includes(index)) {
+        this.hotEntities.push(index);
+    }
+}
+
+EntityManager.prototype.removeHot = function(index) {
+    if(index < 0 || index >= this.entities.length) {
+        return;
+    }
+
+    const entity = this.entities[index];
+
+    if(!entity.isHot) {
+        return;
+    }
+
+    entity.isHot = false;
+
+    for(let i = 0; i < this.hotEntities.length; i++) {
+        if(this.hotEntities[i] === index) {
+            this.hotEntities[i] = this.hotEntities[this.hotEntities.length - 1];
+            this.hotEntities.pop();
+            break;
+        }
+    }
+}
+
 EntityManager.prototype.exit = function() {
     this.nextID = 0;
     this.entities.length = 0;
+    this.hotEntities.length = 0;
     this.openSlots.length = 0;
     this.entityMap.clear();
 }
@@ -115,6 +157,7 @@ EntityManager.prototype.destroyEntity = function(index) {
     const entity = this.entities[index];
     const entityID = entity.getID();
 
+    this.removeHot(index);
     this.entityMap.delete(entityID);
 
     //Always remove the trailing entity but keep any other.

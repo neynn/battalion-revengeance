@@ -14,15 +14,14 @@ export const BattalionMap = function(id, width, height, preview) {
     this.buildings = [];
     this.mines = [];
     this.edits = [];
-    this.movingEntities = [];
     this.jammers = new Map();
     this.localization = new Map();
     this.text = new Map();
     this.customs = new Map();
 
-    this.createLayer(Layer.TYPE.BIT_16);
-    this.createLayer(Layer.TYPE.BIT_16);
-    this.createLayer(Layer.TYPE.BIT_16);
+    for(let i = 0; i < BattalionMap.LAYER._COUNT; i++) {
+        this.createLayer(Layer.TYPE.BIT_16);
+    }
 }
 
 BattalionMap.LAYER_NAME = {
@@ -36,7 +35,8 @@ BattalionMap.LAYER_NAME = {
 BattalionMap.LAYER = {
     GROUND: 0,
     DECORATION: 1,
-    CLOUD: 2
+    CLOUD: 2,
+    _COUNT: 3
 };
 
 BattalionMap.SEARCH_ORDER = [
@@ -89,22 +89,6 @@ BattalionMap.prototype.createCustomMapping = function(customs) {
 BattalionMap.prototype.createTextMapping = function(text) {
     for(let i = 0; i < text.length; i++) {
         this.text.set(text[i], i);
-    }
-}
-
-BattalionMap.prototype.addMoving = function(index) {
-    if(!this.movingEntities.includes(index)) {
-        this.movingEntities.push(index);
-    }
-}
-
-BattalionMap.prototype.removeMoving = function(index) {
-    for(let i = 0; i < this.movingEntities.length; i++) {
-        if(this.movingEntities[i] === index) {
-            this.movingEntities[i] = this.movingEntities[this.movingEntities.length - 1];
-            this.movingEntities.pop();
-            break;
-        }
     }
 }
 

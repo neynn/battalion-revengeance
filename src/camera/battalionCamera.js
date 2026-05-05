@@ -332,11 +332,10 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
     const { timer, world, spriteManager, tileManager } = gameContext;
     const { realTime, deltaTime } = timer;
     const { entityManager } = world;
+    const { entities, hotEntities } = entityManager;
 
-    const movingEntities = worldMap.movingEntities;
     const mapEntities = worldMap.entities;
     const sprites = spriteManager.pool.elements;
-    const entities = entityManager.entities;
 
     const startX = this.startX;
     const startY = this.startY;
@@ -399,8 +398,8 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
         }
     }
 
-    for(let i = 0; i < movingEntities.length; i++) {
-        const eIndex = movingEntities[i];
+    for(let i = 0; i < hotEntities.length; i++) {
+        const eIndex = hotEntities[i];
         const { tileX, tileY, spriteID } = entities[eIndex];
 
         if(spriteID !== SpriteManager.INVALID_ID) {   

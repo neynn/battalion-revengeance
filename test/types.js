@@ -1,4 +1,4 @@
-import { TRAIT_TYPE } from "../enums.js";
+import { TRAIT_TYPE } from "../src/enums.js";
 
 const checkEnum = function(enumValues, count) {
     const seenValues = new Set();

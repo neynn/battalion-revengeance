@@ -3,7 +3,7 @@ import { loadResourcesDev } from "./engine/resources/assetLoader.js";
 import { PrettyJSON } from "./engine/resources/prettyJSON.js";
 import { generateAutoSheet, makeLanguageFile } from "./helpers.js";
 import { BattalionContext } from "./src/battalionContext.js";
-import { validateTraitTypes } from "./src/type/validateTypes.js";
+import { validateTraitTypes } from "./test/types.js"
 import { tAllNamesAndDescriptionsPresent } from "./test/language.js";
 
 const gameContext = new BattalionContext();

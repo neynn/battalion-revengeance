@@ -5,7 +5,7 @@ import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { createNode, getEntityTypeTileCost, isEntityTypeJammed, mGetLowestCostNode } from "../systems/pathfinding.js";
-import { DIRECTION_DELTA_X, DIRECTION_DELTA_Y, getDirectionByDelta } from "../systems/direction.js";
+import { DIRECTION_DELTA_X, DIRECTION_DELTA_Y, getDirectionByDelta, isDirectionValid } from "../systems/direction.js";
 import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE, PATH_INTERCEPT } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
 import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
@@ -319,17 +319,13 @@ BattalionEntity.prototype.getTileYByDirection = function(direction) {
 }
 
 BattalionEntity.prototype.setDirection = function(direction) {
-    if(this.direction === direction) {
+    if(this.direction === direction || !isDirectionValid(direction)) {
         return false;
     }
 
-    if(Object.values(DIRECTION).includes(direction)) {
-        this.direction = direction;
+    this.direction = direction;
 
-        return true;
-    }
-
-    return false;
+    return true;
 }
 
 BattalionEntity.prototype.setDirectionByDelta = function(deltaX, deltaY) {
