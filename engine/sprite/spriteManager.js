@@ -4,6 +4,7 @@ import { SpriteContainer } from "./spriteContainer.js";
 import { TextureHandle } from "../resources/texture/textureHandle.js";
 import { RenderState } from "./renderState.js";
 import { TextureRegistry } from "../resources/texture/textureRegistry.js";
+import { Texture } from "../resources/texture/texture.js";
 
 export const SpriteManager = function(textureLoader) {
     this.resources = textureLoader;
@@ -18,7 +19,6 @@ export const SpriteManager = function(textureLoader) {
 }
 
 SpriteManager.INVALID_ID = -1;
-SpriteManager.NO_VARIANT = -1;
 SpriteManager.SECONDS_TO_CLEANUP = 5;
 SpriteManager.EMPTY_SPRITE = new Sprite(SpriteManager.INVALID_ID, "EMPTY_SPRITE");
 SpriteManager.EMPTY_LAYER = [];
@@ -119,7 +119,7 @@ SpriteManager.prototype.getSpriteDuration = function(spriteID) {
     return totalFrameTime;
 }
 
-SpriteManager.prototype.createCopyTexture = function(spriteID, variantID, colorMap) {
+SpriteManager.prototype.createCopyTexture = function(spriteID, colorID, colorMap) {
     //TODO(neyn): Replace with numbers.
     spriteID = this.getSpriteID(spriteID);
 
@@ -131,7 +131,7 @@ SpriteManager.prototype.createCopyTexture = function(spriteID, variantID, colorM
     const { texture } = container;
     const { id } = texture;
 
-    this.resources.addRecolorTask(id, variantID, colorMap);
+    this.resources.addRecolorTask(id, colorID, colorMap);
 }
 
 SpriteManager.prototype.update = function(gameContext) {
@@ -256,7 +256,7 @@ SpriteManager.prototype.createEmptySprite = function(layerID = null) {
     return sprite;
 }
 
-SpriteManager.prototype.createSprite = function(spriteID, layerID = null, variantID = SpriteManager.NO_VARIANT) {
+SpriteManager.prototype.createSprite = function(spriteID, layerID = null, colorID = Texture.DEFAULT_COLOR) {
     const sprite = this.pool.reserveElement();
 
     if(!sprite) {
@@ -273,7 +273,7 @@ SpriteManager.prototype.createSprite = function(spriteID, layerID = null, varian
     const index = sprite.getIndex();
 
     this.spriteTracker.add(graphID);
-    this.updateSprite(index, spriteID, variantID);
+    this.updateSprite(index, spriteID, colorID);
 
     return sprite;
 }
@@ -360,7 +360,7 @@ SpriteManager.prototype.removeSpriteFromLayers = function(spriteIndex) {
     }
 }
 
-SpriteManager.prototype.updateSprite = function(spriteIndex, spriteID, variantID = SpriteManager.NO_VARIANT) {
+SpriteManager.prototype.updateSprite = function(spriteIndex, spriteID, colorID = Texture.DEFAULT_COLOR) {
     //TODO(neyn): Replace with numbers.
     spriteID = this.getSpriteID(spriteID);
 
@@ -379,20 +379,11 @@ SpriteManager.prototype.updateSprite = function(spriteIndex, spriteID, variantID
     const { id, handle } = texture;
 
     sprite.init(container, this.timestamp, spriteID);
+    sprite.setColor(colorID);
 
-    //If the handle is unknown, the default handle is used.
-    //If the specific handle is not found, the default handle is used.
-    if(variantID === SpriteManager.NO_VARIANT) {
-        sprite.setHandle(handle);
-
-        //Lazy-Load the default handle.
-        if(handle.state === TextureHandle.STATE.EMPTY) {
-            this.resources.loadTexture(id);
-        }
-    } else {
-        const variantHandle = texture.getHandle(variantID);
-
-        sprite.setHandle(variantHandle);
+    //Lazy-Load the default handle.
+    if(colorID === Texture.DEFAULT_COLOR && handle.state === TextureHandle.STATE.EMPTY) {
+        this.resources.loadTexture(id);
     }
 }
 

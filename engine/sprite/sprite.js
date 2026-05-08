@@ -2,13 +2,14 @@ import { Graph } from "../graphics/graph.js";
 import { isRectangleRectangleIntersect } from "../math/math.js";
 import { Texture } from "../resources/texture/texture.js";
 import { TextureHandle } from "../resources/texture/textureHandle.js";
+import { TextureRegistry } from "../resources/texture/textureRegistry.js";
+import { SpriteContainer } from "./spriteContainer.js";
 
 export const Sprite = function(index, DEBUG_NAME) {
     Graph.call(this, DEBUG_NAME);
     
     this.index = index;
-    this.handle = Texture.EMPTY_HANDLE;
-    this.container = null;
+    this.container = Sprite.EMPTY_CONTAINER;
     this.lastFrame = 0;
     this.lastCallTime = 0;
     this.frameCount = 1;
@@ -19,9 +20,12 @@ export const Sprite = function(index, DEBUG_NAME) {
     this.loopLimit = 0;
     this.offsetX = 0;
     this.offsetY = 0;
-    this.flags = Sprite.FLAG.NONE;
     this.scale = 1;
+    this.flags = Sprite.FLAG.NONE;
+    this.colorID = Texture.DEFAULT_COLOR;
 }
+
+Sprite.EMPTY_CONTAINER = new SpriteContainer(-1, TextureRegistry.EMPTY_TEXTURE, []);
 
 Sprite.DEBUG = {
     COLOR: "#ff00ff",
@@ -62,25 +66,20 @@ Sprite.prototype.onDraw = function(display, localX, localY) {
         display.unflip();
     }
 
-    switch(this.handle.state) {
-        case TextureHandle.STATE.LOADED: {
-            const { x, y, w, h } = this.container.frames[this.currentFrame];
+    const { texture } = this.container;
+    const { bitmap, state } = texture.getVariant(this.colorID);
 
-            context.drawImage(
-                this.handle.bitmap,
-                x, y, w, h,
-                renderX, renderY, w * this.scale, h * this.scale
-            );
-            break;
-        }
-        default: {
-            if(Sprite.DEBUG.RENDER_PLACEHOLDER) {
-                context.fillStyle = Sprite.DEBUG.PLACEHOLDER;
-                context.fillRect(renderX, renderY, this.width * this.scale, this.height * this.scale);
-            }
+    if(state === TextureHandle.STATE.LOADED) {
+        const { x, y, w, h } = this.container.frames[this.currentFrame];
 
-            break;
-        }
+        context.drawImage(
+            bitmap,
+            x, y, w, h,
+            renderX, renderY, w * this.scale, h * this.scale
+        );
+    } else if(Sprite.DEBUG.RENDER_PLACEHOLDER) {
+        context.fillStyle = Sprite.DEBUG.PLACEHOLDER;
+        context.fillRect(renderX, renderY, this.width * this.scale, this.height * this.scale);
     }
 }
 
@@ -128,9 +127,12 @@ Sprite.prototype.getIndex = function() {
     return this.index;
 }
 
+Sprite.prototype.setColor = function(colorID) {
+    this.colorID = colorID;
+}
+
 Sprite.prototype.reset = function() {
-    this.handle = Texture.EMPTY_HANDLE;
-    this.container = null;
+    this.container = Sprite.EMPTY_CONTAINER;
     this.lastCallTime = 0;
     this.frameCount = 1;
     this.frameTime = 1;
@@ -146,19 +148,16 @@ Sprite.prototype.reset = function() {
     this.opacity = 1;
     this.lastFrame = 0;
     this.scale = 1;
+    this.colorID = Texture.DEFAULT_COLOR;
     this.setPosition(0, 0);
     this.show();
     this.clear();
 }
 
-Sprite.prototype.setHandle = function(handle) {
-    this.handle = handle;
-}
-
 Sprite.prototype.init = function(container, lastCallTime, DEBUG_NAME) {
-    if(this.container !== container) {
-        const { frameTime, frameCount, boundsW, boundsH, offsetX, offsetY } = container;
+    const { id, frameTime, frameCount, boundsW, boundsH, offsetX, offsetY } = container;
 
+    if(this.container.id !== id) {
         this.container = container;
         this.lastCallTime = lastCallTime;
         this.frameCount = frameCount;

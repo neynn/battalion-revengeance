@@ -28,3 +28,5 @@ Rendering:
 Z-Buffer:
     
 transportable terrain -> allows to use the sea transport
+
+metasprite: directions as table. all else use start.

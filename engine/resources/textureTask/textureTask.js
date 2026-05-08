@@ -59,9 +59,14 @@ export const createEmptyImageData = function(width, height, bitmap, copyX, copyY
     return imageData;
 }
 
-export const TextureTask = function(texture, handle) {
-    this.texture = texture;
-    this.handle = handle;
+/**
+ * 
+ * @param {TextureHandle} source 
+ * @param {TextureHandle} target 
+ */
+export const TextureTask = function(source, target) {
+    this.source = source;
+    this.target = target;
     this.state = TextureTask.STATE.NOT_STARTED;
 }
 
@@ -77,8 +82,8 @@ TextureTask.prototype.execute = function() {
 
 TextureTask.prototype.run = function() {
     if(this.state === TextureTask.STATE.NOT_STARTED) {
-        if(this.texture.handle.state === TextureHandle.STATE.LOADED) {
-            if(this.handle.state === TextureHandle.STATE.EMPTY) {
+        if(this.source.state === TextureHandle.STATE.LOADED) {
+            if(this.target.state === TextureHandle.STATE.EMPTY) {
                 this.state = TextureTask.STATE.RUNNING;
                 this.execute();
             }
@@ -87,5 +92,5 @@ TextureTask.prototype.run = function() {
 }
 
 TextureTask.prototype.isFinished = function() {
-    return this.state === TextureTask.STATE.FINISHED || this.handle.state === TextureHandle.STATE.LOADED;
+    return this.state === TextureTask.STATE.FINISHED || this.target.state === TextureHandle.STATE.LOADED;
 }

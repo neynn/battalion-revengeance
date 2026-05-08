@@ -1,5 +1,6 @@
 import { TextureHandle } from "./textureHandle.js";
 import { TextureRegion } from "./region.js";
+import { MAX_TEXTURE_VARIANTS } from "../../engine_constants.js";
 
 export const Texture = function(id, name, path) {
     this.id = id;
@@ -10,13 +11,19 @@ export const Texture = function(id, name, path) {
     this.gridWidth = 0;
     this.gridHeight = 0;
     this.handle = new TextureHandle();
-    this.variants = new Map();
+    this.variants = [this.handle];
+    this.variantMap = new Uint8Array(MAX_TEXTURE_VARIANTS);
     this.regionMap = new Map();
     this.regions = [];
 }
 
+Texture.DEFAULT_COLOR = 0;
 Texture.EMPTY_REGION = new TextureRegion(0, 0, 0, 0);
 Texture.EMPTY_HANDLE = new TextureHandle();
+
+Texture.prototype.getID = function() {
+    return this.id;
+}
 
 Texture.prototype.getRegion = function(index) {
     if(index < 0 || index >= this.regions.length) {
@@ -47,9 +54,9 @@ Texture.prototype.getRegionIndex = function(name) {
 }
 
 Texture.prototype.getSizeBytes = function() {
-    let bytes = this.handle.getBytes();
+    let bytes = 0;
 
-    for(const [id, variant] of this.variants) {
+    for(const variant of this.variants) {
         bytes += variant.getBytes();
     }
 
@@ -57,13 +64,12 @@ Texture.prototype.getSizeBytes = function() {
 }
 
 Texture.prototype.clear = function() {
-    this.handle.clear();
-    
-    for(const [id, variant] of this.variants) {
+    for(const variant of this.variants) {
         variant.clear();
     }
 
-    this.variants.clear();
+    this.variants.length = 1;
+    this.variantMap.fill(0);
 }
 
 Texture.prototype.requestBitmap = function() {
@@ -100,22 +106,29 @@ Texture.prototype.requestBitmap = function() {
     });
 };
 
-Texture.prototype.getID = function() {
-    return this.id;
-}
-
-Texture.prototype.createHandle = function(handleID) {
-    const handle = this.variants.get(handleID);
-
-    if(handle) {
-        return handle;
+Texture.prototype.createOrGetVariant = function(index) {
+    if(index <= 0 || index >= MAX_TEXTURE_VARIANTS) {
+        return this.handle;
     }
 
-    const nextHandle = new TextureHandle();
+    if(this.variantMap[index] !== 0) {
+        return this.getVariant(index);
+    }
 
-    this.variants.set(handleID, nextHandle);
+    const handle = new TextureHandle();
 
-    return nextHandle;
+    this.variantMap[index] = this.variants.length;
+    this.variants.push(handle);
+
+    return handle;
+}
+
+Texture.prototype.getVariant = function(index) {
+    if(index < 0 || index >= MAX_TEXTURE_VARIANTS) {
+        return this.handle;
+    }
+
+    return this.variants[this.variantMap[index]]
 }
 
 Texture.prototype.initGrid = function(grid, gridWidth, gridHeight) {
@@ -205,16 +218,6 @@ Texture.prototype.getFrames = function(regions) {
     }
 
     return frames;
-}
-
-Texture.prototype.getHandle = function(handleID) {
-    const handle = this.variants.get(handleID);
-
-    if(!handle) {
-        return this.handle;
-    }
-
-    return handle;
 }
 
 Texture.prototype.drawOffset = function(display, screenX, screenY) {

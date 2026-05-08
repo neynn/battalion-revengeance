@@ -1,7 +1,7 @@
 import { createEmptyImageData, TextureTask } from "./textureTask.js";
 
-export const ShadeTask = function(texture, handle) {
-    TextureTask.call(this, texture, handle);
+export const ShadeTask = function(source, target) {
+    TextureTask.call(this, source, target);
 
     this.rect = null;
 }
@@ -11,7 +11,7 @@ ShadeTask.prototype.constructor = ShadeTask;
 
 ShadeTask.prototype.execute = function() {
     const { x, y, w, h } = this.rect; 
-    const imageData = createEmptyImageData(w, h, this.texture.handle.bitmap, x, y);
+    const imageData = createEmptyImageData(w, h, this.source.bitmap, x, y);
     const buffer = imageData.data;
 
     for(let i = 0; i < h; i++) {
@@ -33,11 +33,11 @@ ShadeTask.prototype.execute = function() {
 
     createImageBitmap(imageData)
     .then(bitmap => {
-        this.handle.setImage(bitmap);
+        this.target.setImage(bitmap);
         this.state = TextureTask.STATE.FINISHED;
     })
     .catch(error => {
-        this.handle.clear();
+        this.target.clear();
         this.state = TextureTask.STATE.FINISHED;
     });
 }

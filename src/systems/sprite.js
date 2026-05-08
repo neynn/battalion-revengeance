@@ -1,4 +1,5 @@
 import { transformTileToWorld } from "../../engine/math/transform2D.js";
+import { Texture } from "../../engine/resources/texture/texture.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { ATTACK_TYPE, DIRECTION, EFFECT_SPRITE, ENTITY_SPRITE, LAYER_TYPE, SCHEMA_TYPE } from "../enums.js";
@@ -99,10 +100,9 @@ export const updateEntitySprite = function(gameContext, entity) {
             const { colorMap } = typeRegistry.getSchemaType(color);
 
             spriteManager.createCopyTexture(spriteName, color, colorMap);
-            spriteManager.updateSprite(spriteID, spriteName, color);
-        } else {
-            spriteManager.updateSprite(spriteID, spriteName, SpriteManager.NO_VARIANT);
         }
+
+        spriteManager.updateSprite(spriteID, spriteName, color);
     }
 
     if(state === BattalionEntity.STATE.FIRE) {

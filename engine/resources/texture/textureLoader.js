@@ -80,11 +80,13 @@ TextureLoader.prototype.addShadeTask = function(textureID, rect, handle) {
         return;
     }
 
-    if(texture.handle.state === TextureHandle.STATE.EMPTY) {
+    const source = texture.handle;
+
+    if(source.state === TextureHandle.STATE.EMPTY) {
         this.loadTexture(textureID);
     }
 
-    const task = new ShadeTask(texture, handle);
+    const task = new ShadeTask(source, handle);
 
     task.rect = rect;
 
@@ -108,14 +110,15 @@ TextureLoader.prototype.addRecolorTask = function(textureID, colorID, colorMap) 
         return;
     }
 
-    const handle = texture.createHandle(colorID);
+    const source = texture.handle;
+    const target = texture.createOrGetVariant(colorID);
 
-    if(handle.state === TextureHandle.STATE.EMPTY) {
-        if(texture.handle.state === TextureHandle.STATE.EMPTY) {
+    if(target.state === TextureHandle.STATE.EMPTY) {
+        if(source.state === TextureHandle.STATE.EMPTY) {
             this.loadTexture(textureID);
         }
 
-        const task = new RecolorRegionTask(texture, handle);
+        const task = new RecolorRegionTask(source, target, texture.regions);
 
         task.colorID = colorID;
         task.colorMap = colorMap;
