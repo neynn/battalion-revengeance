@@ -498,13 +498,13 @@ BattalionCamera.prototype.drawMines = function(gameContext, display, worldMap) {
         }
     } else {
         for(let i = 0; i < length; i++) {
-            const { tileX, tileY, state } = mines[i];
+            const { tileX, tileY, flags } = mines[i];
             const tileID = mines[i].getTileSprite();
 
-            if(state === Mine.STATE.VISIBLE) {
-                display.setAlpha(1);
-            } else {
+            if(flags & Mine.FLAG.HIDDEN) {
                 display.setAlpha(BattalionCamera.STEALTH_THRESHOLD);
+            } else {
+                display.setAlpha(1);
             }
 
             count += this.drawTileClipped(tileManager, tileID, context, tileX, tileY);

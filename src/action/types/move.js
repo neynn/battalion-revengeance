@@ -16,8 +16,7 @@ import { MineTriggerVTable } from "./mineTrigger.js";
 import { UncloakVTable } from "./uncloak.js";
 
 const MOVE_FLAG = {
-    NONE: 0,
-    ELUSIVE: 1 << 0
+    NONE: 0
 };
 
 const createMoveIntent = function(entityID, path, command, targetID) {
@@ -89,8 +88,6 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
         executionPlan.addNext(MineTriggerVTable.createIntent(entityID));
     } 
 
-    let flags = MOVE_FLAG.NONE;
-
     switch(command) {
         //Follow-Up commands are ignored if there is no target.
         //Follow-Up commands only work on neighboring entities.
@@ -141,17 +138,12 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
     if(entity.canCloakAt(gameContext, targetX, targetY)) {
         executionPlan.addNext(CloakActionVTable.createIntent(entityID));
     }
-
-    if(entity.hasTrait(TRAIT_TYPE.ELUSIVE)) {
-        flags |= MOVE_FLAG.ELUSIVE;
-    }
     
     const data = createMoveData(newPath.length);
 
     data.entityID = entityID;
     data.originX = entity.tileX;
     data.originY = entity.tileY;
-    data.flags = flags;
 
     for(let i = 0; i < newPath.length; i++) {
         data.path[i].deltaX = newPath[i].deltaX;
@@ -164,7 +156,7 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
 const executeMove = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID, originX, originY, path, flags } = data;
+    const { entityID, originX, originY, path } = data;
     const entity = entityManager.getEntity(entityID);
     const team = entity.getTeam(gameContext);
     let isDiscovered = false;
@@ -185,7 +177,7 @@ const executeMove = function(gameContext, data) {
         }
     }
 
-    if(flags & MOVE_FLAG.ELUSIVE) {
+    if(entity.hasTrait(TRAIT_TYPE.ELUSIVE)) {
         entity.triggerElusive();
     }
 

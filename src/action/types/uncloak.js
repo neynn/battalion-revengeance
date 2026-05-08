@@ -53,7 +53,12 @@ const fillUncloakPlan = function(gameContext, executionPlan, actionIntent) {
     }
 
     for(const mine of uncloakedMines) {
-        data.mines.push(mine.positionToJSON());
+        const { tileX, tileY } = mine;
+
+        data.mines.push({
+            "x": tileX,
+            "y": tileY
+        });
     }
 
     executionPlan.setData(data);

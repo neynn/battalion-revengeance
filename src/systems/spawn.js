@@ -65,7 +65,8 @@ const createBuilding = function(gameContext, worldMap, snapshot) {
     const buildingType = typeRegistry.getBuildingType(type);
     const building = new Building(buildingType);
 
-    building.setTile(tileX, tileY);
+    building.tileX = tileX;
+    building.tileY = tileY;
     building.setTeam(teamID);
     building.load(snapshot);
 
@@ -128,8 +129,9 @@ export const createMineObject = function(gameContext, teamID, typeID, tileX, til
     const mineType = typeRegistry.getMineType(typeID);
     const mine = new Mine(mineType);
 
-    mine.setTile(tileX, tileY);
-    mine.setTeam(teamID);
+    mine.tileX = tileX;
+    mine.tileY = tileY;
+    mine.teamID = teamID;
 
     return mine;
 }

@@ -1,21 +1,25 @@
 import { JAMMER_FLAG, MINE_CATEGORY, MINE_TYPE, TILE_ID, TRAIT_TYPE } from "../enums.js";
 import { createMineSnapshot } from "../snapshot/mineSnapshot.js";
-import { StaticObject } from "./staticObject.js";
+import { TeamManager } from "../team/teamManager.js";
+import { MineType } from "../type/parsed/mineType.js";
 
+/**
+ * 
+ * @param {MineType} config 
+ */
 export const Mine = function(config) {
-    StaticObject.call(this, config);
-
-    this.state = Mine.STATE.HIDDEN;
+    this.config = config;
+    this.tileX = -1;
+    this.tileY = -1;
+    this.teamID = TeamManager.INVALID_ID;
     this.opacity = 0;
+    this.flags = Mine.FLAG.HIDDEN;
 }
 
-Mine.STATE = {
-    HIDDEN: 0,
-    VISIBLE: 1
+Mine.FLAG = {
+    NONE: 0,
+    HIDDEN: 1 << 0
 };
-
-Mine.prototype = Object.create(StaticObject.prototype);
-Mine.prototype.constructor = Mine;
 
 Mine.prototype.save = function() {
     const snapshot = createMineSnapshot();
@@ -24,14 +28,24 @@ Mine.prototype.save = function() {
     snapshot.tileX = this.tileX;
     snapshot.tileY = this.tileY;
     snapshot.teamID = this.teamID;
-    snapshot.state = this.state;
+    snapshot.flags = this.flags;
 
     return snapshot;
 }
 
+Mine.prototype.load = function(data) {
+    this.flags = data.flags;
+
+    if(this.flags & Mine.FLAG.HIDDEN) {
+        this.opacity = 0;
+    } else {
+        this.opacity = 1;
+    }
+} 
+
 Mine.prototype.isVisibleTo = function(gameContext, teamID) {
-    if(this.state === Mine.STATE.VISIBLE) {
-        return true;
+    if(!(this.flags & Mine.FLAG.HIDDEN)) {
+        return false;
     }
 
     const { teamManager } = gameContext;
@@ -44,23 +58,18 @@ Mine.prototype.setOpacity = function(opacity) {
     this.opacity = opacity;
 }
 
-Mine.prototype.load = function(data) {
-    this.state = data.state;
-    this.opacity = this.state === Mine.STATE.HIDDEN ? 0 : 1;
-} 
-
 Mine.prototype.hide = function() {
-    this.state = Mine.STATE.HIDDEN;
+    this.flags |= Mine.FLAG.HIDDEN;
     this.opacity = 0;
 }
 
 Mine.prototype.show = function() {
-    this.state = Mine.STATE.VISIBLE;
+    this.flags &= ~Mine.FLAG.HIDDEN;
     this.opacity = 1;
 }
 
 Mine.prototype.isHidden = function() {
-    return this.state === Mine.STATE.HIDDEN;
+    return (this.flags & Mine.FLAG.HIDDEN) !== 0;
 }
 
 Mine.prototype.getJammerFlag = function() {
@@ -89,4 +98,8 @@ Mine.prototype.getNullifierTrait = function() {
         case MINE_CATEGORY.SEA: return TRAIT_TYPE.STEER;
         default: return TRAIT_TYPE._INVALID;
     }
+}
+
+Mine.prototype.isPlacedOn = function(tileX, tileY) {
+    return this.tileX === tileX && this.tileY === tileY;
 }

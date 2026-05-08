@@ -588,7 +588,7 @@ BattalionEntity.prototype.canCapture = function(gameContext, tileX, tileY) {
         return false;
     }
 
-    const { world } = gameContext;
+    const { world, teamManager } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
 
@@ -606,7 +606,7 @@ BattalionEntity.prototype.canCapture = function(gameContext, tileX, tileY) {
         return false;
     }
 
-    return building.isEnemy(gameContext, this.teamID);
+    return !teamManager.isAlly(this.teamID, building.teamID);
 }
 
 BattalionEntity.prototype.canSee = function(gameContext, entity) {
@@ -1221,11 +1221,11 @@ BattalionEntity.prototype.canCloak = function() {
 }
 
 BattalionEntity.prototype.isSpottedBySpawner = function(gameContext, tileX, tileY) {
-    const { world } = gameContext;
+    const { world, teamManager } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
     const building = worldMap.getBuilding(tileX, tileY);
-    const isSpotted = building && building.hasTrait(TRAIT_TYPE.SPAWNER) && building.isEnemy(gameContext, this.teamID);
+    const isSpotted = building && building.hasTrait(TRAIT_TYPE.SPAWNER) && !teamManager.isAlly(this.teamID, building.teamID);
 
     //Enemy stealth units must uncloak on a spawner as they'd leak information otherwise (spawning wouldn't work).
     return isSpotted;
@@ -1359,7 +1359,7 @@ BattalionEntity.prototype.isDiscoveredByJammerAt = function(gameContext, tileX, 
 }
 
 BattalionEntity.prototype.getUncloakedMines = function(gameContext) {
-    const { world } = gameContext;
+    const { world, teamManager } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
     const jammerFlags = this.config.getJammerFlags();
@@ -1380,7 +1380,7 @@ BattalionEntity.prototype.getUncloakedMines = function(gameContext) {
                 isDetected = (jammerFlags & neededFlag) !== 0;
             }
 
-            if(isDetected && mine.isEnemy(gameContext, this.teamID)) {
+            if(isDetected && !teamManager.isAlly(this.teamID, mine.teamID)) {
                 uncloakedMines.push(mine);
             }
         }
@@ -1667,7 +1667,7 @@ BattalionEntity.prototype.setPurchased = function() {
 }
 
 BattalionEntity.prototype.discoversMine = function(gameContext) {
-    const { world } = gameContext;
+    const { world, teamManager } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
     const mine = worldMap.getMine(this.tileX, this.tileY);
@@ -1676,10 +1676,11 @@ BattalionEntity.prototype.discoversMine = function(gameContext) {
         return false;
     }
 
-    return mine.isHidden() && mine.isEnemy(gameContext, this.teamID);
+    return mine.isHidden() && !teamManager.isAlly(this.teamID, mine.teamID);
 }
  
 BattalionEntity.prototype.triggersMine = function(gameContext, mine) {
+    const { teamManager } = gameContext;
     const damage = mine.getDamage(this.config.movementType);
 
     //Only mines that deal damage blow up.
@@ -1696,7 +1697,7 @@ BattalionEntity.prototype.triggersMine = function(gameContext, mine) {
     }
 
     //Only enemy mines blow up.
-    return mine.isEnemy(gameContext, this.teamID);
+    return !teamManager.isAlly(this.teamID, mine.teamID);
 }
 
 BattalionEntity.prototype.canPurchase = function(gameContext, typeID, cost) {

@@ -1,12 +1,21 @@
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
+import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { SCHEMA_TYPE, SHOP_TYPE } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { createBuildingSnapshot } from "../snapshot/buildingSnapshot.js";
-import { StaticObject } from "./staticObject.js";
+import { TeamManager } from "../team/teamManager.js";
+import { BuildingType } from "../type/parsed/buildingType.js";
 
+/**
+ * 
+ * @param {BuildingType} config 
+ */
 export const Building = function(config) {
-    StaticObject.call(this, config);
-
+    this.config = config;
+    this.tileX = -1;
+    this.tileY = -1;
+    this.teamID = TeamManager.INVALID_ID;
+    this.spriteID = SpriteManager.INVALID_ID;
     this.customID = BattalionMap.INVALID_CUSTOM_ID;
     this.customName = LanguageHandler.INVALID_ID;
     this.customDesc = LanguageHandler.INVALID_ID;
@@ -14,9 +23,6 @@ export const Building = function(config) {
     this.color = SCHEMA_TYPE.RED;
     this.shop = SHOP_TYPE.NONE;
 }
-
-Building.prototype = Object.create(StaticObject.prototype);
-Building.prototype.constructor = Building;
 
 Building.prototype.save = function() {
     const snapshot = createBuildingSnapshot();
@@ -35,10 +41,6 @@ Building.prototype.save = function() {
     return snapshot;
 }
 
-Building.prototype.setColor = function(color) {
-    this.color = color;
-}
-
 Building.prototype.load = function(data) {
     this.customID = data.id;
     this.customName = data.name;
@@ -48,11 +50,44 @@ Building.prototype.load = function(data) {
     this.color = data.color;
 }
 
+Building.prototype.setTeam = function(teamID) {
+    this.teamID = teamID;
+}
+
+Building.prototype.getTeam = function(gameContext) {
+    const { teamManager } = gameContext;
+
+    return teamManager.getTeam(this.teamID);
+}
+
+Building.prototype.belongsTo = function(teamID) {
+    return this.teamID !== TeamManager.INVALID_ID && this.teamID === teamID;
+}
+
+Building.prototype.isPlacedOn = function(tileX, tileY) {
+    return this.tileX === tileX && this.tileY === tileY;
+}
+
+Building.prototype.hasTrait = function(traitID) {
+    for(let i = 0; i < this.config.traits.length; i++) {
+        if(this.config.traits[i] === traitID) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+Building.prototype.setColor = function(color) {
+    this.color = color;
+}
+
 Building.prototype.generateCash = function(gameContext) {
     const { typeRegistry } = gameContext;
+    const { traits } = this.config;
     let generatedCash = 0;
 
-    for(const traitID of this.config.traits) {
+    for(const traitID of traits) {
         const { cashPerTurn } = typeRegistry.getTraitType(traitID);
 
         generatedCash += cashPerTurn;
@@ -92,3 +127,4 @@ Building.prototype.getShop = function(gameContext) {
 
     return typeRegistry.getShopType(this.config.shop);
 }
+

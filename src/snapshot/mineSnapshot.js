@@ -8,6 +8,6 @@ export const createMineSnapshot = function() {
         "tileX": -1,
         "tileY": -1,
         "teamID": TeamManager.INVALID_ID,
-        "state": Mine.STATE.HIDDEN
+        "flags": Mine.FLAG.NONE
     }
 }
