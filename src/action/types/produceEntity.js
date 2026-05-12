@@ -33,7 +33,7 @@ const fillProducePlan = function(gameContext, executionPlan, actionIntent) {
     const { entityID, typeID, direction } = actionIntent;
     const entity = entityManager.getEntity(entityID);
 
-    if(!entity || entity.isDead() || !entity.canActAndMove() || !entity.hasTrait(TRAIT_TYPE.TANK_POOPER) || !isDirectionValid(direction)) {
+    if(!entity || entity.isDead() || !entity.isAllowedToActAndMove() || !entity.hasTrait(TRAIT_TYPE.TANK_POOPER) || !isDirectionValid(direction)) {
         return;
     }
 
@@ -101,7 +101,7 @@ const executeProduce = function(gameContext, data) {
     //TODO: Apply morale
     entity.setPurchased();
     spawnerEntity.reduceCash(cost);
-    spawnerEntity.setActed();
+    spawnerEntity.consumeAct();
     team.addStatistic(TEAM_STAT.UNITS_BUILT, 1);
     team.addStatistic(TEAM_STAT.RESOURCES_SPENT, cost);
     team.addStatistic(mapCategoryToStat(entity.config.category), 1);

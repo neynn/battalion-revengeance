@@ -28,7 +28,7 @@ const fillToTransportPlan = function(gameContext, executionPlan, actionIntent) {
     const { entityID, transportID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
 
-    if(!entity || entity.isDead() || entity.isTransporting() || !entity.canActAndMove()) {
+    if(!entity || entity.isDead() || entity.isTransporting() || !entity.isAllowedToActAndMove()) {
         return;
     }
 

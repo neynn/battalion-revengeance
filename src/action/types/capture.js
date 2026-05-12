@@ -31,7 +31,7 @@ const fillCapturePlan = function(gameContext, executionPlan, actionIntent) {
         return;
     }
 
-    if(!entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) || entity.getDistanceToTile(targetX, targetY) !== 0) {
+    if(!entity.hasMoved() || entity.getDistanceToTile(targetX, targetY) !== 0) {
         return;
     }
 

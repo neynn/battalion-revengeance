@@ -22,7 +22,7 @@ const fillExtractPlan = function(gameContext, executionPlan, actionIntent) {
     const { entityID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
 
-    if(!entity || entity.isDead() || !entity.canActAndMove() || !entity.hasTrait(TRAIT_TYPE.EXTRACTOR)) {
+    if(!entity || entity.isDead() || !entity.isAllowedToActAndMove() || !entity.hasTrait(TRAIT_TYPE.EXTRACTOR)) {
         return;
     }
 
@@ -51,7 +51,7 @@ const executeExtract = function(gameContext, data) {
     const team = entity.getTeam(gameContext);
 
     entity.addCash(value);
-    entity.setActed();
+    entity.consumeAct();
     entity.extractOre(gameContext);
     team.addStatistic(TEAM_STAT.ORE_EXTRACTED, value);
 }

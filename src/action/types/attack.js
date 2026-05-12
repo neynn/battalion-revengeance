@@ -100,7 +100,7 @@ const executeAttack = function(gameContext, data) {
         entity.clearLastAttacker();
     } else {
         target.setLastAttacker(attackerID);
-        entity.setActed();
+        entity.consumeAct();
 
         if(flags & ATTACK_FLAG.BEWEGUNGSKRIEG) {
             entity.triggerBewegungskrieg();
@@ -127,14 +127,14 @@ const fillAttackPlan = function(gameContext, executionPlan, actionIntent) {
 
     switch(command) {
         case ATTACK_COMMAND_TYPE.DIRECT: {
-            if(entity.canActAndMove()) {
+            if(entity.isAllowedToActAndMove()) {
                 resolveFirstAttack(gameContext, entity, target, resolver);
             }
 
             break;
         }
         case ATTACK_COMMAND_TYPE.FOLLOW_UP: {
-            if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && entity.hasFlag(BattalionEntity.FLAG.CAN_ACT) && entity.isNextToEntity(target)) {
+            if(entity.hasMoved() && entity.isAllowedToAct() && entity.isNextToEntity(target)) {
                 resolveFirstAttack(gameContext, entity, target, resolver);
             }
 

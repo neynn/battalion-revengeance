@@ -46,7 +46,7 @@ const fillHealPlan = function(gameContext, executionPlan, actionIntent) {
 
     switch(commandID) {
         case HEAL_COMMAND_TYPE.DIRECT: {
-            if(entity.canActAndMove()) {
+            if(entity.isAllowedToActAndMove()) {
                 resolveHeal(gameContext, entity, target, resolver);
             }
 
@@ -54,7 +54,7 @@ const fillHealPlan = function(gameContext, executionPlan, actionIntent) {
         }
         case HEAL_COMMAND_TYPE.FOLLOW_UP: {
             //Melee healers.
-            if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && entity.hasFlag(BattalionEntity.FLAG.CAN_ACT) && entity.isNextToEntity(target)) {
+            if(entity.hasMoved() && entity.isAllowedToAct() && entity.isNextToEntity(target)) {
                 resolveHeal(gameContext, entity, target, resolver);
             } 
 
@@ -101,7 +101,7 @@ const executeHeal = function(gameContext, data) {
         }
     }
 
-    entity.setActed();
+    entity.consumeAct();
 }
 
 export const HealVTable = {

@@ -50,7 +50,7 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
     const { entityID, path, command, targetID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
 
-    if(!entity || !entity.hasFlag(BattalionEntity.FLAG.CAN_MOVE)) {
+    if(!entity || !entity.isAllowedToMove()) {
         return;
     }
 
@@ -163,7 +163,7 @@ const executeMove = function(gameContext, data) {
 
     entity.setTile(originX, originY);
     entity.removeFromMap(gameContext);
-    entity.setMoved();
+    entity.consumeMove();
 
     for(let i = path.length - 1; i >= 0; i--) {
         const { deltaX, deltaY } = path[i];

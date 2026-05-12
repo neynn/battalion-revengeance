@@ -63,14 +63,10 @@ BattalionEntity.FLAG = {
     NONE: 0,
     IS_CLOAKED: 1 << 0,
     IS_SUBMERGED: 1 << 1,
-    HAS_MOVED: 1 << 2,
-    HAS_ACTED: 1 << 3,
-    CAN_MOVE: 1 << 4,
-    CAN_ACT: 1 << 5,
-    BEWEGUNGSKRIEG_TRIGGERED: 1 << 7,
-    ELUSIVE_TRIGGERED: 1 << 8,
-    IS_TURN: 1 << 9,
-    IS_PROTECTED: 1 << 10
+    IS_PROTECTED: 1 << 2,
+    IS_TURN: 1 << 3,
+    BEWEGUNGSKRIEG_TRIGGERED: 1 << 4,
+    ELUSIVE_TRIGGERED: 1 << 5
 };
 
 BattalionEntity.STATE = {
@@ -1291,64 +1287,24 @@ BattalionEntity.prototype.isMoveable = function() {
     return this.config.movementRange !== 0 && this.config.movementType !== MOVEMENT_TYPE.STATIONARY;
 }
 
-BattalionEntity.prototype.onTurnStart = function() {
-    this.clearFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ACTED);
-    this.clearFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
-    this.setFlag(BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT | BattalionEntity.FLAG.IS_TURN);
-    this.clearLastAttacker();
-    this.allowedActions = ACTIONS_PER_TURN;
-    this.allowedMoves = MOVES_PER_TURN;
-    this.bonusMoves = 0;
-    this.bonusActions = 0;
-    this.syncRenderFlags();
-} 
-
-BattalionEntity.prototype.onTurnEnd = function() {
-    this.setFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ACTED);
-    this.clearFlag(BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT | BattalionEntity.FLAG.IS_TURN);
-    this.clearLastAttacker();
-    this.allowedActions = ACTIONS_PER_TURN;
-    this.allowedMoves = MOVES_PER_TURN;
-    this.bonusMoves = 0;
-    this.bonusActions = 0;
-    this.syncRenderFlags();
-    this.turns++;
+BattalionEntity.prototype.getMaxMoves = function() {
+    return this.allowedMoves + this.bonusMoves;
 }
 
-BattalionEntity.prototype.triggerBewegungskrieg = function() {
-    if(!this.hasFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED)) {
-        //Clear HAS_ACTED and HAS_MOVED to allow MoveAction to potentially queue again.
-        this.clearFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ACTED);
-        this.setFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT);
-        this.syncRenderFlags();
-    }
-}
-
-BattalionEntity.prototype.triggerElusive = function() {
-    if(!this.hasFlag(BattalionEntity.FLAG.ELUSIVE_TRIGGERED)) {
-        this.setFlag(BattalionEntity.FLAG.ELUSIVE_TRIGGERED | BattalionEntity.FLAG.CAN_MOVE);
-        this.syncRenderFlags();
-    }
-}
-
-BattalionEntity.prototype.setMoved = function() {
-    this.setFlag(BattalionEntity.FLAG.HAS_MOVED);
-    this.clearFlag(BattalionEntity.FLAG.CAN_MOVE);
-    this.syncRenderFlags();
-}
-
-BattalionEntity.prototype.setActed = function() {
-    this.setFlag(BattalionEntity.FLAG.HAS_ACTED);
-    this.clearFlag(BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT);
-    this.syncRenderFlags();
+BattalionEntity.prototype.getMaxActions = function() {
+    return this.allowedActions + this.bonusActions;
 }
 
 BattalionEntity.prototype.isAllowedToMove = function() {
-    return (this.allowedMoves + this.bonusMoves) < this.allowedMoves;
+    return this.doneMoves < this.getMaxMoves();
 }
 
 BattalionEntity.prototype.isAllowedToAct = function() {
-    return (this.allowedActions + this.bonusActions) < this.allowedActions;
+    return this.doneActions < this.getMaxActions();
+}
+
+BattalionEntity.prototype.isAllowedToActAndMove = function() {
+    return this.isAllowedToMove() && this.isAllowedToAct();
 }
 
 BattalionEntity.prototype.hasMoved = function() {
@@ -1359,16 +1315,71 @@ BattalionEntity.prototype.hasActed = function() {
     return this.doneActions > 0;
 }
 
-BattalionEntity.prototype.isAllowedToActAndMove = function() {
-    return this.isAllowedToMove() && this.isAllowedToAct();
+BattalionEntity.prototype.onTurnStart = function() {
+    this.setFlag(BattalionEntity.FLAG.IS_TURN);
+    this.clearFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
+    this.clearLastAttacker();
+    this.doneMoves = 0;
+    this.doneActions = 0;
+    this.allowedMoves = MOVES_PER_TURN;
+    this.allowedActions = ACTIONS_PER_TURN;
+    this.bonusMoves = 0;
+    this.bonusActions = 0;
+    this.syncRenderFlags();
+} 
+
+BattalionEntity.prototype.onTurnEnd = function() {
+    this.clearFlag(BattalionEntity.FLAG.IS_TURN);
+    this.clearLastAttacker();
+    this.doneMoves = MOVES_PER_TURN;
+    this.doneActions = ACTIONS_PER_TURN;
+    this.allowedMoves = MOVES_PER_TURN;
+    this.allowedActions = ACTIONS_PER_TURN;
+    this.bonusMoves = 0;
+    this.bonusActions = 0;
+    this.turns++;
+    this.syncRenderFlags();
 }
 
-BattalionEntity.prototype.canActAndMove = function() {
-    return (this.flags & BattalionEntity.FLAG.CAN_MOVE) && (this.flags & BattalionEntity.FLAG.CAN_ACT);
+BattalionEntity.prototype.triggerBewegungskrieg = function() {
+    if(!this.hasFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED)) {
+        this.bonusMoves++;
+        this.bonusActions++;
+        this.setFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED);
+        this.syncRenderFlags();
+    }
+}
+
+BattalionEntity.prototype.triggerElusive = function() {
+    if(!this.hasFlag(BattalionEntity.FLAG.ELUSIVE_TRIGGERED)) {
+        this.bonusMoves++;
+        this.setFlag(BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
+        this.syncRenderFlags();
+    }
+}
+
+BattalionEntity.prototype.consumeMove = function() {
+    //Moves only consume a point and do not care about acting.
+    this.doneMoves++;
+    this.syncRenderFlags();
+}
+
+BattalionEntity.prototype.consumeAct = function() {
+    const maxActions = this.getMaxActions();
+
+    this.doneActions++;
+
+    //When an entity has consumes all its action points, then it will also consume all its move points.
+    if(this.doneActions >= maxActions) {
+        this.doneActions = maxActions;
+        this.doneMoves = this.getMaxMoves();
+    }
+
+    this.syncRenderFlags();
 }
 
 BattalionEntity.prototype.isSelectable = function() {
-    return !this.isDead() && this.canActAndMove() && !this.hasTrait(TRAIT_TYPE.NOT_SELECTABLE);
+    return !this.isDead() && this.isAllowedToActAndMove() && !this.hasTrait(TRAIT_TYPE.NOT_SELECTABLE);
 }
 
 BattalionEntity.prototype.getUncloakedEntities = function(gameContext) {
@@ -1730,6 +1741,7 @@ BattalionEntity.prototype.setPurchased = function() {
     this.onTurnEnd();
     this.flags |= BattalionEntity.FLAG.IS_TURN;
     this.turns = 0;
+    this.syncRenderFlags();
 }
 
 BattalionEntity.prototype.discoversMine = function(gameContext) {
@@ -1843,15 +1855,7 @@ BattalionEntity.prototype.syncRenderFlags = function() {
         this.renderFlags |= BattalionEntity.RENDER_FLAG.PROTECTED;
     }
 
-    let hasActed = false;
-
-    if(this.flags & BattalionEntity.FLAG.HAS_ACTED) {
-        hasActed = true;
-    } else if((this.flags & BattalionEntity.FLAG.HAS_MOVED) && !(this.flags & BattalionEntity.FLAG.CAN_MOVE)) {
-        hasActed = true;
-    }
-
-    if(hasActed) {
+    if(!this.isAllowedToAct() || !this.isAllowedToMove()) {
         this.renderFlags |= BattalionEntity.RENDER_FLAG.ACTED;
 
         if(this.flags & BattalionEntity.FLAG.IS_TURN) {
