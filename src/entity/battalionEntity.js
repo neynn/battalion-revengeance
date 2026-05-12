@@ -12,6 +12,8 @@ import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { BattalionMap } from "../map/battalionMap.js";
 
+const ACTIONS_PER_TURN = 1;
+const MOVES_PER_TURN = 1;
 const MORALE_DELTA_MAX = 3;
 const MORALE_DELTA_MIN = -3;
 
@@ -38,7 +40,22 @@ export const BattalionEntity = function(id) {
     this.turns = 0;
     this.cash = 0;
     this.opacity = 1;
+
+    this.doneMoves = 0;
+    this.doneActions = 0;
+    this.allowedMoves = MOVES_PER_TURN;
+    this.allowedActions = ACTIONS_PER_TURN;
 }
+
+BattalionEntity.RENDER_FLAG = {
+    NONE: 0,
+    CLOAKED: 1 << 0,
+    PROTECTED: 1 << 1,
+    ACTING: 1 << 2,
+    ACTED: 1 << 3,
+    SHADED: 1 << 4,
+    MARKABLE: 1 << 5
+};
 
 BattalionEntity.FLAG = {
     NONE: 0,
@@ -102,6 +119,7 @@ BattalionEntity.prototype.load = function(data) {
     this.customDesc = data.desc;
     this.setDirection(data.direction);
     this.setHealth(data.health);
+    this.syncRenderFlags();
 }
 
 BattalionEntity.prototype.loadConfig = function(config) {
@@ -132,6 +150,7 @@ BattalionEntity.prototype.hasTransport = function(transportID) {
 
 BattalionEntity.prototype.setState = function(stateID) {
     this.state = stateID;
+    this.syncRenderFlags();
 }
 
 BattalionEntity.prototype.belongsTo = function(teamID) {
@@ -889,6 +908,7 @@ BattalionEntity.prototype.updateRangeGuard = function(gameContext) {
     //Air units are never protected by tiles/canyons!
     if(this.config.category === ENTITY_CATEGORY.AIR) {
         this.flags &= ~BattalionEntity.FLAG.IS_PROTECTED;
+        this.renderFlags &= ~BattalionEntity.RENDER_FLAG.PROTECTED;
 
         return false;
     }
@@ -911,6 +931,7 @@ BattalionEntity.prototype.updateRangeGuard = function(gameContext) {
 
                 if(rangeGuard) {
                     this.flags |= BattalionEntity.FLAG.IS_PROTECTED;
+                    this.renderFlags |= BattalionEntity.RENDER_FLAG.PROTECTED;
 
                     return true;
                 }
@@ -919,6 +940,7 @@ BattalionEntity.prototype.updateRangeGuard = function(gameContext) {
     }
 
     this.flags &= ~BattalionEntity.FLAG.IS_PROTECTED;
+    this.renderFlags &= ~BattalionEntity.RENDER_FLAG.PROTECTED;
 
     return false;
 }
@@ -1267,9 +1289,52 @@ BattalionEntity.prototype.isMoveable = function() {
     return this.config.movementRange !== 0 && this.config.movementType !== MOVEMENT_TYPE.STATIONARY;
 }
 
+BattalionEntity.prototype.onTurnStart = function() {
+    this.clearFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ACTED);
+    this.clearFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
+    this.setFlag(BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT | BattalionEntity.FLAG.IS_TURN);
+    this.clearLastAttacker();
+    this.allowedActions = ACTIONS_PER_TURN;
+    this.allowedMoves = MOVES_PER_TURN;
+    this.syncRenderFlags();
+} 
+
+BattalionEntity.prototype.onTurnEnd = function() {
+    this.setFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ACTED);
+    this.clearFlag(BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT | BattalionEntity.FLAG.IS_TURN);
+    this.clearLastAttacker();
+    this.allowedActions = ACTIONS_PER_TURN;
+    this.allowedMoves = MOVES_PER_TURN;
+    this.syncRenderFlags();
+    this.turns++;
+}
+
+BattalionEntity.prototype.triggerBewegungskrieg = function() {
+    if(!this.hasFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED)) {
+        //Clear HAS_ACTED and HAS_MOVED to allow MoveAction to potentially queue again.
+        this.clearFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ACTED);
+        this.setFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT);
+        this.syncRenderFlags();
+    }
+}
+
+BattalionEntity.prototype.triggerElusive = function() {
+    if(!this.hasFlag(BattalionEntity.FLAG.ELUSIVE_TRIGGERED)) {
+        this.setFlag(BattalionEntity.FLAG.ELUSIVE_TRIGGERED | BattalionEntity.FLAG.CAN_MOVE);
+        this.syncRenderFlags();
+    }
+}
+
+BattalionEntity.prototype.setMoved = function() {
+    this.setFlag(BattalionEntity.FLAG.HAS_MOVED);
+    this.clearFlag(BattalionEntity.FLAG.CAN_MOVE);
+    this.syncRenderFlags();
+}
+
 BattalionEntity.prototype.setActed = function() {
     this.setFlag(BattalionEntity.FLAG.HAS_ACTED);
     this.clearFlag(BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT);
+    this.syncRenderFlags();
 }
 
 BattalionEntity.prototype.canActAndMove = function() {
@@ -1417,6 +1482,8 @@ BattalionEntity.prototype.setUncloaked = function() {
     if(this.hasTrait(TRAIT_TYPE.SUBMERGED)) {
         this.clearFlag(BattalionEntity.FLAG.IS_SUBMERGED);
     }
+
+    this.clearRFlag(BattalionEntity.RENDER_FLAG.CLOAKED);
 }
 
 BattalionEntity.prototype.setCloaked = function() {
@@ -1425,6 +1492,8 @@ BattalionEntity.prototype.setCloaked = function() {
     if(this.hasTrait(TRAIT_TYPE.SUBMERGED)) {
         this.setFlag(BattalionEntity.FLAG.IS_SUBMERGED);
     }
+
+    this.setRFlag(BattalionEntity.RENDER_FLAG.CLOAKED);
 }
 
 BattalionEntity.prototype.clearLastAttacker = function() {
@@ -1434,34 +1503,6 @@ BattalionEntity.prototype.clearLastAttacker = function() {
 BattalionEntity.prototype.setLastAttacker = function(entityID) {
     if(entityID !== this.id) {
         this.lastAttacker = entityID;
-    }
-}
-
-BattalionEntity.prototype.onTurnStart = function() {
-    this.clearFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ACTED);
-    this.clearFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
-    this.setFlag(BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT | BattalionEntity.FLAG.IS_TURN);
-    this.clearLastAttacker();
-} 
-
-BattalionEntity.prototype.onTurnEnd = function() {
-    this.setFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ACTED);
-    this.clearFlag(BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT | BattalionEntity.FLAG.IS_TURN);
-    this.clearLastAttacker();
-    this.turns++;
-}
-
-BattalionEntity.prototype.triggerBewegungskrieg = function() {
-    if(!this.hasFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED)) {
-        //Clear HAS_ACTED and HAS_MOVED to allow MoveAction to potentially queue again.
-        this.clearFlag(BattalionEntity.FLAG.HAS_MOVED | BattalionEntity.FLAG.HAS_ACTED);
-        this.setFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT);
-    }
-}
-
-BattalionEntity.prototype.triggerElusive = function() {
-    if(!this.hasFlag(BattalionEntity.FLAG.ELUSIVE_TRIGGERED)) {
-        this.setFlag(BattalionEntity.FLAG.ELUSIVE_TRIGGERED | BattalionEntity.FLAG.CAN_MOVE);
     }
 }
 
@@ -1763,4 +1804,43 @@ BattalionEntity.prototype.getName = function(gameContext) {
 
 BattalionEntity.prototype.setOpacity = function(opacity) {
     this.opacity = opacity;
+}
+
+BattalionEntity.prototype.syncRenderFlags = function() {
+    this.renderFlags = BattalionEntity.RENDER_FLAG.NONE;
+
+    if(this.flags & BattalionEntity.FLAG.IS_CLOAKED) {
+        this.renderFlags |= BattalionEntity.RENDER_FLAG.CLOAKED;
+    }
+
+    if(this.flags & BattalionEntity.FLAG.IS_PROTECTED) {
+        this.renderFlags |= BattalionEntity.RENDER_FLAG.PROTECTED;
+    }
+
+    let hasActed = false;
+
+    if(this.flags & BattalionEntity.FLAG.HAS_ACTED) {
+        hasActed = true;
+    } else if((this.flags & BattalionEntity.FLAG.HAS_MOVED) && !(this.flags & BattalionEntity.FLAG.CAN_MOVE)) {
+        hasActed = true;
+    }
+
+    if(hasActed) {
+        this.renderFlags |= BattalionEntity.RENDER_FLAG.ACTED;
+
+        if(this.flags & BattalionEntity.FLAG.IS_TURN) {
+            if(this.state === BattalionEntity.STATE.IDLE) {
+                this.renderFlags |= BattalionEntity.RENDER_FLAG.SHADED;
+            }
+        }
+    }
+
+    if(this.state === BattalionEntity.STATE.IDLE) {
+        //Todo(neyn): This needs more options: Barricades NEVER have a marker for example as they cannot move!
+        if(!this.hasTrait(TRAIT_TYPE.NOT_SELECTABLE)) {
+            this.renderFlags |= BattalionEntity.RENDER_FLAG.MARKABLE;
+        }
+    } else {
+        this.renderFlags |= BattalionEntity.RENDER_FLAG.ACTING;
+    }
 }

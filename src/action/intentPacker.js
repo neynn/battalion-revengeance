@@ -1,4 +1,4 @@
-import { ACTION_TYPE, COMMAND_TYPE } from "../enums.js";
+import { ACTION_TYPE, ATTACK_COMMAND_TYPE, HEAL_COMMAND_TYPE } from "../enums.js";
 import { createStep } from "../systems/pathfinding.js";
 import { MOVE_STEP_SIZE, packStep, unpackStep } from "./packer_constants.js";
 import { AttackActionVTable } from "./types/attack.js";
@@ -130,9 +130,10 @@ const ProduceTable = {
 /*
     0x00 -> type,
     0x01 -> entityID,
-    0x03 -> targetID
+    0x03 -> targetID,
+    0x05 -> commandID
 */
-const HEAL_HEADER_SIZE = 5;
+const HEAL_HEADER_SIZE = 6;
 
 const HealTable = {
     /**
@@ -145,27 +146,29 @@ const HealTable = {
         const { world, teamManager } = gameContext;
         const { currentTeam } = teamManager;
         const { entityManager } = world;
-        const { entityID } = data;
+        const { entityID, commandID } = data;
         const entity = entityManager.getEntity(entityID);
 
-        return entity && entity.belongsTo(currentTeam);
+        return commandID === HEAL_COMMAND_TYPE.DIRECT && entity && entity.belongsTo(currentTeam);
     },
     write: function(data) {
-        const { entityID, targetID } = data;
+        const { entityID, targetID, commandID } = data;
         const buffer = new ArrayBuffer(HEAL_HEADER_SIZE);
         const view = new DataView(buffer);
 
         view.setUint8(0, ACTION_TYPE.HEAL);
         view.setInt16(1, entityID, true);
         view.setInt16(3, targetID, true);
+        view.setUint8(5, commandID)
 
         return buffer;
     },
     read: function(view) {
         const entityID = view.getInt16(1, true);
         const targetID = view.getInt16(3, true);
+        const commandID = view.getUint8(5);
 
-        return HealVTable.createIntent(entityID, targetID);
+        return HealVTable.createIntent(entityID, targetID, commandID);
     }
 }
 
@@ -248,7 +251,7 @@ const AttackTable = {
         const { entityID, command } = data;
         const entity = entityManager.getEntity(entityID);
 
-        return command === COMMAND_TYPE.ATTACK && entity && entity.belongsTo(currentTeam);
+        return command === ATTACK_COMMAND_TYPE.DIRECT && entity && entity.belongsTo(currentTeam);
     },
     write: function(data) {
         const { entityID, targetID, command } = data;

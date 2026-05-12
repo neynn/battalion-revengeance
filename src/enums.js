@@ -685,9 +685,15 @@ export const MOVE_COMMAND = {
     ATTACK: 2
 };
 
-export const COMMAND_TYPE = {
-    ATTACK: 0,
-    COUNTER: 1
+export const HEAL_COMMAND_TYPE = {
+    DIRECT: 0,
+    FOLLOW_UP: 1
+};
+
+export const ATTACK_COMMAND_TYPE = {
+    DIRECT: 0,
+    COUNTER: 1,
+    FOLLOW_UP: 2
 };
 
 export const EFFECT_TYPE = {

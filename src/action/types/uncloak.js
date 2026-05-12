@@ -1,7 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
 import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
-import { ACTION_TYPE, COMMAND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { ACTION_TYPE, ATTACK_COMMAND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { playUncloakSound } from "../../systems/sound.js";
 import { UncloakTween } from "../../tween/uncloakTween.js";
 import { AttackActionVTable } from "./attack.js";
@@ -41,7 +41,7 @@ const fillUncloakPlan = function(gameContext, executionPlan, actionIntent) {
         const entityID = entity.getID();
         const targetID = uncloakedEntities[0].getID();
 
-        executionPlan.addNext(AttackActionVTable.createIntent(entityID, targetID, COMMAND_TYPE.ATTACK));
+        executionPlan.addNext(AttackActionVTable.createIntent(entityID, targetID, ATTACK_COMMAND_TYPE.FOLLOW_UP));
     }
 
     const data = createUncloakData();

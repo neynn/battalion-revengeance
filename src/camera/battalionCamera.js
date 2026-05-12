@@ -242,31 +242,21 @@ BattalionCamera.prototype.drawEntityHealth = function(display, drawX, drawY, vit
 
 BattalionCamera.prototype.drawEntity = function(gameContext, display, entity, sprite, realTime, deltaTime) {
     const { teamManager, shadeCache, tileManager } = gameContext;
-    const { tileX, tileY, offsetX, offsetY, state, teamID, flags, opacity, config, direction } = entity;
+    const { tileX, tileY, offsetX, offsetY, teamID, renderFlags, opacity, config, direction } = entity;
     const screenX = this.getScreenX(tileX) + offsetX;
     const screenY = this.getScreenY(tileY) + offsetY;
     let alpha = opacity;
-    let hasActed = false;
-    let isInactive = false;
     let marker = TILE_ID.NONE;
 
-    if(flags & BattalionEntity.FLAG.HAS_ACTED) {
-        hasActed = true;
-    } else if((flags & BattalionEntity.FLAG.HAS_MOVED) && !(flags & BattalionEntity.FLAG.CAN_MOVE)) {
-        hasActed = true;
-    }
-
     if(this.flags & BattalionCamera.FLAG.USE_PERSPECTIVES) {
-        if(opacity < BattalionCamera.STEALTH_THRESHOLD && (flags & BattalionEntity.FLAG.IS_CLOAKED) && teamManager.isAlly(teamID, this.teamID)) {
+        //Is the entity visible to the viewer but below the alpha threshold.
+        if(opacity < BattalionCamera.STEALTH_THRESHOLD && (renderFlags & BattalionEntity.RENDER_FLAG.CLOAKED) && teamManager.isAlly(teamID, this.teamID)) {
             alpha = BattalionCamera.STEALTH_THRESHOLD;
         }
 
-        isInactive = (flags & BattalionEntity.FLAG.IS_TURN) && state === BattalionEntity.STATE.IDLE && hasActed;
-
-        //Todo(neyn): This needs more options: Barricades NEVER have a marker for example as they cannot move!
-        if(this.isCurrentActor && state === BattalionEntity.STATE.IDLE) {
+        if(this.isCurrentActor && (renderFlags & BattalionEntity.RENDER_FLAG.MARKABLE)) {
             if(teamID === this.teamID) {
-                if(!hasActed) {
+                if(!(renderFlags & BattalionEntity.RENDER_FLAG.ACTED)) {
                     marker = TILE_ID.MARKER;
                 }
             } else {
@@ -283,7 +273,8 @@ BattalionCamera.prototype.drawEntity = function(gameContext, display, entity, sp
         sprite.setPosition(screenX, screenY);
         sprite.setOpacity(alpha);
 
-        if(isInactive) {
+        //Draw the shaded frame over the sprite and lock the sprite to the first frame.
+        if(renderFlags & BattalionEntity.RENDER_FLAG.SHADED) {
             const shadeIndex = config.id * DIRECTION._COUNT + direction;
             const { state, bitmap, width, height } = shadeCache.getShade(shadeIndex);
 
@@ -317,7 +308,7 @@ BattalionCamera.prototype.drawEntity = function(gameContext, display, entity, sp
             this.drawTile(tileManager, marker, display.context, screenX, screenY);
         }
 
-        if(flags & BattalionEntity.FLAG.IS_PROTECTED) {
+        if(renderFlags & BattalionEntity.RENDER_FLAG.PROTECTED) {
             this.drawTile(tileManager, TILE_ID.MARKER_PROTECTED, display.context, screenX, screenY);
         }
     } else {
@@ -375,7 +366,7 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
 
             if(eIndex !== EntityManager.INVALID_INDEX) {
                 const entity = entities[eIndex];
-                const { spriteID, state } = entity;
+                const { spriteID, renderFlags } = entity;
 
                 if(spriteID !== SpriteManager.INVALID_ID) {
                     const sprite = sprites[spriteID];
@@ -383,10 +374,10 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
                     if(sprite.lastFrame < currentFrame) {
                         sprite.lastFrame = currentFrame;
 
-                        if(state === BattalionEntity.STATE.IDLE) {
-                            this.drawEntity(gameContext, display, entity, sprite, realTime, deltaTime);
-                        } else {
+                        if(renderFlags & BattalionEntity.RENDER_FLAG.ACTING) {
                             this.addDeferred(eIndex);
+                        } else {
+                            this.drawEntity(gameContext, display, entity, sprite, realTime, deltaTime);
                         }
 
                         count++;
@@ -538,7 +529,7 @@ BattalionCamera.prototype.drawTiles = function(gameContext, display, worldMap) {
     let tileCount = 0;
     let renderY = (startY - wTileY) * tileHeight - viewportY;
 
-    context.globalAlpha = 1;
+    display.setAlpha(1);
     
     for(let i = startY; i <= endY; i++) {
         let index = i * mapWidth + startX;

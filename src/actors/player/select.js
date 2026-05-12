@@ -3,7 +3,7 @@ import { FloodFill } from "../../../engine/pathfinders/floodFill.js";
 import { AttackActionVTable } from "../../action/types/attack.js";
 import { HealVTable } from "../../action/types/heal.js";
 import { MoveVTable } from "../../action/types/move.js";
-import { AUTOTILER_TYPE, COMMAND_TYPE, MOVE_COMMAND, RANGE_TYPE } from "../../enums.js";
+import { AUTOTILER_TYPE, ATTACK_COMMAND_TYPE, HEAL_COMMAND_TYPE, MOVE_COMMAND, RANGE_TYPE } from "../../enums.js";
 import { isNodeReachable, getBestPath, fillStep } from "../../systems/pathfinding.js";
 import { Player } from "../player.js";
 import { PlayerState } from "./playerState.js";
@@ -232,13 +232,13 @@ SelectState.prototype.getAttackRequest = function(entity) {
 
     switch(rangeType) {
         case RANGE_TYPE.RANGE: {
-            request = AttackActionVTable.createIntent(this.entity.getID(), entity.getID(), COMMAND_TYPE.ATTACK);
+            request = AttackActionVTable.createIntent(this.entity.getID(), entity.getID(), ATTACK_COMMAND_TYPE.DIRECT);
             break;
         }
         case RANGE_TYPE.MELEE:
         case RANGE_TYPE.HYBRID: {
             if(this.path.length === 0) {
-                request = AttackActionVTable.createIntent(this.entity.getID(), entity.getID(), COMMAND_TYPE.ATTACK);
+                request = AttackActionVTable.createIntent(this.entity.getID(), entity.getID(), ATTACK_COMMAND_TYPE.DIRECT);
             } else {
                 request = MoveVTable.createIntent(this.entity.getID(), this.path, MOVE_COMMAND.ATTACK, entity.getID());
             }
@@ -256,7 +256,7 @@ SelectState.prototype.getHealRequest = function(entity) {
 
     switch(rangeType) {
         case RANGE_TYPE.RANGE: {
-            request = HealVTable.createIntent(this.entity.getID(), entity.getID());
+            request = HealVTable.createIntent(this.entity.getID(), entity.getID(), HEAL_COMMAND_TYPE.DIRECT);
             break;
         }
         case RANGE_TYPE.MELEE:
@@ -268,7 +268,7 @@ SelectState.prototype.getHealRequest = function(entity) {
                 }
                 case 1: {
                     //The ally is next to the healer, as the path is 1 longer than it should be. It's treated as melee.
-                    request = HealVTable.createIntent(this.entity.getID(), entity.getID());
+                    request = HealVTable.createIntent(this.entity.getID(), entity.getID(), HEAL_COMMAND_TYPE.DIRECT);
                     break;
                 }
                 default: {

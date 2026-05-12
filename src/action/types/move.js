@@ -4,7 +4,7 @@ import { FIXED_DELTA_TIME, TILE_HEIGHT, TILE_WIDTH } from "../../../engine/engin
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { FADE_RATE } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
-import { ACTION_TYPE, COMMAND_TYPE, MOVE_COMMAND, PATH_INTERCEPT, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { ACTION_TYPE, ATTACK_COMMAND_TYPE, HEAL_COMMAND_TYPE, MOVE_COMMAND, PATH_INTERCEPT, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { createStep } from "../../systems/pathfinding.js";
 import { playEntitySound, playUncloakSound } from "../../systems/sound.js";
 import { updateEntitySprite } from "../../systems/sprite.js";
@@ -105,7 +105,7 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
             }
 
             if(entity.isHealValid(gameContext, targetEntity)) {
-                executionPlan.addNext(HealVTable.createIntent(entityID, targetID));
+                executionPlan.addNext(HealVTable.createIntent(entityID, targetID, HEAL_COMMAND_TYPE.FOLLOW_UP));
             }
 
             break;
@@ -122,7 +122,7 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
             }
 
             if(entity.isAttackValid(gameContext, targetEntity)) {
-                executionPlan.addNext(AttackActionVTable.createIntent(entityID, targetID, COMMAND_TYPE.ATTACK));
+                executionPlan.addNext(AttackActionVTable.createIntent(entityID, targetID, ATTACK_COMMAND_TYPE.FOLLOW_UP));
             }
 
             break;
@@ -163,8 +163,7 @@ const executeMove = function(gameContext, data) {
 
     entity.setTile(originX, originY);
     entity.removeFromMap(gameContext);
-    entity.setFlag(BattalionEntity.FLAG.HAS_MOVED);
-    entity.clearFlag(BattalionEntity.FLAG.CAN_MOVE);
+    entity.setMoved();
 
     for(let i = path.length - 1; i >= 0; i--) {
         const { deltaX, deltaY } = path[i];

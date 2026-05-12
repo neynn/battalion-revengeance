@@ -10,6 +10,7 @@ export const Entity = function(id) {
     this.offsetX = 0;
     this.offsetY = 0;
     this.flags = 0;
+    this.renderFlags = 0;
 }
 
 Entity.prototype.clearOffset = function() {
@@ -31,10 +32,23 @@ Entity.prototype.reset = function() {
     this.index = EntityManager.INVALID_INDEX;
     this.spriteID = SpriteManager.INVALID_ID;
     this.flags = 0;
+    this.renderFlags = 0;
 }
 
-Entity.prototype.clearFlags = function() {
-    this.flags = 0;
+Entity.prototype.hasRFlag = function(flag) {
+    return (this.renderFlags & flag) !== 0;
+}
+
+Entity.prototype.setRFlag = function(flag) {
+    this.renderFlags |= flag;
+}
+
+Entity.prototype.clearRFlag = function(flag) {
+    this.renderFlags &= ~flag;
+}
+
+Entity.prototype.clearRFlags = function() {
+    this.renderFlags = 0;
 }
 
 Entity.prototype.hasFlag = function(flag) {
@@ -47,6 +61,10 @@ Entity.prototype.setFlag = function(flag) {
 
 Entity.prototype.clearFlag = function(flag) {
     this.flags &= ~flag;
+}
+
+Entity.prototype.clearFlags = function() {
+    this.flags = 0;
 }
 
 Entity.prototype.getIndex = function() {

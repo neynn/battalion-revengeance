@@ -1,6 +1,7 @@
 import { Action } from "../../../engine/action/action.js";
 import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
+import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ACTION_TYPE, SOUND_TYPE } from "../../enums.js";
 import { playEntitySound } from "../../systems/sound.js";
 import { CloakTween } from "../../tween/cloakTween.js";
@@ -69,7 +70,7 @@ CloakAction.prototype.onStart = function(gameContext, data) {
     playEntitySound(gameContext, entity, SOUND_TYPE.CLOAK);
 
     tweenManager.addTween(tween);
-    entity.setCloaked(); //For visual purposes.
+    entity.setRFlag(BattalionEntity.RENDER_FLAG.CLOAKED);
 
     this.tweens.push(tween);
 }

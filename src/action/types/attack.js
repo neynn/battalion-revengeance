@@ -3,7 +3,7 @@ import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { FIXED_DELTA_TIME } from "../../../engine/engine_constants.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
-import { ACTION_TYPE, ATTACK_TYPE, COMMAND_TYPE, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { ACTION_TYPE, ATTACK_TYPE, ATTACK_COMMAND_TYPE, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { playEntitySound } from "../../systems/sound.js";
 import { getAnimationDuration, playAttackEffect, updateEntitySprite } from "../../systems/sprite.js";
 import { getDeadEntities, InteractionResolver } from "../interactionResolver.js";
@@ -56,6 +56,14 @@ const createAttackData = function() {
     }
 }
 
+const createAttackIntent = function(entityID, targetID, command) {
+    return new ActionIntent(ACTION_TYPE.ATTACK, {
+        "entityID": entityID,
+        "targetID": targetID,
+        "command": command
+    });
+}
+
 const executeAttack = function(gameContext, data) {
     const { world } = gameContext;
     const { entityManager } = world;
@@ -103,14 +111,6 @@ const executeAttack = function(gameContext, data) {
     team.addStatistic(TEAM_STAT.RESOURCE_DAMAGE, resourceDamage);
 }
 
-const createAttackIntent = function(entityID, targetID, command) {
-    return new ActionIntent(ACTION_TYPE.ATTACK, {
-        "entityID": entityID,
-        "targetID": targetID,
-        "command": command
-    });
-}
-
 const fillAttackPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
     const { entityManager } = world;
@@ -126,18 +126,21 @@ const fillAttackPlan = function(gameContext, executionPlan, actionIntent) {
     let flags = ATTACK_FLAG.NONE;
 
     switch(command) {
-        case COMMAND_TYPE.ATTACK: {
+        case ATTACK_COMMAND_TYPE.DIRECT: {
             if(entity.canActAndMove()) {
-            resolveFirstAttack(gameContext, entity, target, resolver);
-            } else {
-                if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && entity.hasFlag(BattalionEntity.FLAG.CAN_ACT) && entity.isNextToEntity(target)) {
-                    resolveFirstAttack(gameContext, entity, target, resolver);
-                }
+                resolveFirstAttack(gameContext, entity, target, resolver);
             }
 
             break;
         }
-        case COMMAND_TYPE.COUNTER: {
+        case ATTACK_COMMAND_TYPE.FOLLOW_UP: {
+            if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && entity.hasFlag(BattalionEntity.FLAG.CAN_ACT) && entity.isNextToEntity(target)) {
+                resolveFirstAttack(gameContext, entity, target, resolver);
+            }
+
+            break;
+        }
+        case ATTACK_COMMAND_TYPE.COUNTER: {
             resolveCounterAttack(gameContext, entity, target, resolver);
             flags |= ATTACK_FLAG.COUNTER;
             break;
@@ -153,7 +156,7 @@ const fillAttackPlan = function(gameContext, executionPlan, actionIntent) {
             executionPlan.addNext(DeathActionVTable.createIntent(deadEntities));
         }               
 
-        if(command !== COMMAND_TYPE.COUNTER) {
+        if(command !== ATTACK_COMMAND_TYPE.COUNTER) {
             if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
                 flags |= ATTACK_FLAG.UNCLOAK;
             } 
@@ -165,7 +168,7 @@ const fillAttackPlan = function(gameContext, executionPlan, actionIntent) {
             }
         }
 
-        executionPlan.addNext(createAttackIntent(targetID, entityID, COMMAND_TYPE.COUNTER));
+        executionPlan.addNext(createAttackIntent(targetID, entityID, ATTACK_COMMAND_TYPE.COUNTER));
 
         const data = createAttackData();
 

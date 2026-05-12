@@ -3,7 +3,7 @@ import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { FIXED_DELTA_TIME } from "../../../engine/engine_constants.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
-import { ACTION_TYPE, SOUND_TYPE, TRAIT_TYPE } from "../../enums.js";
+import { ACTION_TYPE, HEAL_COMMAND_TYPE, SOUND_TYPE, TRAIT_TYPE } from "../../enums.js";
 import { playEntitySound } from "../../systems/sound.js";
 import { getAnimationDuration, playHealEffect, updateEntitySprite } from "../../systems/sprite.js";
 import { getDeadEntities, InteractionResolver } from "../interactionResolver.js";
@@ -15,10 +15,11 @@ const resolveHeal = function(gameContext, entity, target, resolver) {
     }
 }
 
-const createHealIntent = function(entityID, targetID) {
+const createHealIntent = function(entityID, targetID, command) {
     return new ActionIntent(ACTION_TYPE.HEAL, {
         "entityID": entityID,
-        "targetID": targetID
+        "targetID": targetID,
+        "commandID": command
     });
 }
 
@@ -33,7 +34,7 @@ const createHealData = function() {
 const fillHealPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
     const { entityManager } = world;
-    const { entityID, targetID } = actionIntent;
+    const { entityID, targetID, commandID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
     const target = entityManager.getEntity(targetID);
 
@@ -43,13 +44,22 @@ const fillHealPlan = function(gameContext, executionPlan, actionIntent) {
 
     const resolver = new InteractionResolver();
 
-    if(entity.canActAndMove()) {
-        resolveHeal(gameContext, entity, target, resolver);
-    } else {
-        //Melee healers.
-        if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && entity.hasFlag(BattalionEntity.FLAG.CAN_ACT) && entity.isNextToEntity(target)) {
-            resolveHeal(gameContext, entity, target, resolver);
-        } 
+    switch(commandID) {
+        case HEAL_COMMAND_TYPE.DIRECT: {
+            if(entity.canActAndMove()) {
+                resolveHeal(gameContext, entity, target, resolver);
+            }
+
+            break;
+        }
+        case HEAL_COMMAND_TYPE.FOLLOW_UP: {
+            //Melee healers.
+            if(entity.hasFlag(BattalionEntity.FLAG.HAS_MOVED) && entity.hasFlag(BattalionEntity.FLAG.CAN_ACT) && entity.isNextToEntity(target)) {
+                resolveHeal(gameContext, entity, target, resolver);
+            } 
+
+            break;
+        }
     }
 
     const resolutions = resolver.createResolutions(gameContext);
