@@ -125,6 +125,18 @@ export const unpackEntityResolution = function(resolution, view, byteOffset) {
  * @returns {number}
  */
 export const packEntitySnapshot = function(snapshot, view, byteOffset) {
+    view.setUint8(byteOffset, snapshot.doneMoves);
+    byteOffset += BIT_8;
+    view.setUint8(byteOffset, snapshot.doneActions);
+    byteOffset += BIT_8;
+    view.setUint8(byteOffset, snapshot.allowedMoves);
+    byteOffset += BIT_8;
+    view.setUint8(byteOffset, snapshot.allowedActions);
+    byteOffset += BIT_8;
+    view.setUint8(byteOffset, snapshot.bonusMoves);
+    byteOffset += BIT_8;
+    view.setUint8(byteOffset, snapshot.bonusActions);
+    byteOffset += BIT_8;
     view.setUint8(byteOffset, snapshot.direction);
     byteOffset += BIT_8;
     view.setUint8(byteOffset, snapshot.state);
@@ -173,6 +185,18 @@ export const packEntitySnapshot = function(snapshot, view, byteOffset) {
  * @returns {number}
  */
 export const unpackEntitySnapshot = function(snapshot, view, byteOffset) {
+    napshot.doneMoves = view.setUint8(byteOffset);
+    byteOffset += BIT_8;
+    snapshot.doneActions = view.setUint8(byteOffset);
+    byteOffset += BIT_8;
+    snapshot.allowedMoves = view.setUint8(byteOffset);
+    byteOffset += BIT_8;
+    snapshot.allowedActions = view.setUint8(byteOffset);
+    byteOffset += BIT_8;
+    snapshot.bonusMoves = view.setUint8(byteOffset);
+    byteOffset += BIT_8;
+    snapshot.bonusActions = view.setUint8(byteOffset);
+    byteOffset += BIT_8;
     snapshot.direction = view.getUint8(byteOffset);
     byteOffset += BIT_8;
     snapshot.state = view.getUint8(byteOffset);

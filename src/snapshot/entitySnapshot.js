@@ -6,6 +6,12 @@ import { TeamManager } from "../team/teamManager.js";
 
 export const createEntitySnapshot = function() {
     return {
+        "doneMoves": 0, //UINT8
+        "doneActions": 0, //UINT8
+        "allowedMoves": 0, //UINT8
+        "allowedActions": 0, //UINT8
+        "bonusMoves": 0, //UINT8
+        "bonusActions": 0, //UINT8
         "direction": DIRECTION.EAST, //UINT8
         "state": BattalionEntity.STATE.IDLE, //UINT8
         "morale": MORALE_TYPE.NORMAL, //UINT8

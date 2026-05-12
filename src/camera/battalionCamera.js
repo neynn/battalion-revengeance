@@ -242,9 +242,11 @@ BattalionCamera.prototype.drawEntityHealth = function(display, drawX, drawY, vit
 
 BattalionCamera.prototype.drawEntity = function(gameContext, display, entity, sprite, realTime, deltaTime) {
     const { teamManager, shadeCache, tileManager } = gameContext;
+    const { context } = display;
     const { tileX, tileY, offsetX, offsetY, teamID, renderFlags, opacity, config, direction } = entity;
     const screenX = this.getScreenX(tileX) + offsetX;
     const screenY = this.getScreenY(tileY) + offsetY;
+
     let alpha = opacity;
     let marker = TILE_ID.NONE;
 
@@ -285,7 +287,7 @@ BattalionCamera.prototype.drawEntity = function(gameContext, display, entity, sp
                 const shadeX = screenX + sprite.offsetX;
                 const shadeY = screenY + sprite.offsetY;
 
-                display.context.drawImage(
+                context.drawImage(
                     bitmap,
                     0, 0, width, height,
                     shadeX, shadeY, width, height
@@ -305,11 +307,11 @@ BattalionCamera.prototype.drawEntity = function(gameContext, display, entity, sp
         if(marker !== TILE_ID.NONE) {
             display.setAlpha(1);
 
-            this.drawTile(tileManager, marker, display.context, screenX, screenY);
+            this.drawTile(tileManager, marker, context, screenX, screenY);
         }
 
         if(renderFlags & BattalionEntity.RENDER_FLAG.PROTECTED) {
-            this.drawTile(tileManager, TILE_ID.MARKER_PROTECTED, display.context, screenX, screenY);
+            this.drawTile(tileManager, TILE_ID.MARKER_PROTECTED, context, screenX, screenY);
         }
     } else {
         if(DEBUG.SPRITES) {

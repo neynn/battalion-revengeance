@@ -45,6 +45,8 @@ export const BattalionEntity = function(id) {
     this.doneActions = 0;
     this.allowedMoves = MOVES_PER_TURN;
     this.allowedActions = ACTIONS_PER_TURN;
+    this.bonusMoves = 0;
+    this.bonusActions = 0;
 }
 
 BattalionEntity.RENDER_FLAG = {
@@ -1296,6 +1298,8 @@ BattalionEntity.prototype.onTurnStart = function() {
     this.clearLastAttacker();
     this.allowedActions = ACTIONS_PER_TURN;
     this.allowedMoves = MOVES_PER_TURN;
+    this.bonusMoves = 0;
+    this.bonusActions = 0;
     this.syncRenderFlags();
 } 
 
@@ -1305,6 +1309,8 @@ BattalionEntity.prototype.onTurnEnd = function() {
     this.clearLastAttacker();
     this.allowedActions = ACTIONS_PER_TURN;
     this.allowedMoves = MOVES_PER_TURN;
+    this.bonusMoves = 0;
+    this.bonusActions = 0;
     this.syncRenderFlags();
     this.turns++;
 }
@@ -1335,6 +1341,26 @@ BattalionEntity.prototype.setActed = function() {
     this.setFlag(BattalionEntity.FLAG.HAS_ACTED);
     this.clearFlag(BattalionEntity.FLAG.CAN_MOVE | BattalionEntity.FLAG.CAN_ACT);
     this.syncRenderFlags();
+}
+
+BattalionEntity.prototype.isAllowedToMove = function() {
+    return (this.allowedMoves + this.bonusMoves) < this.allowedMoves;
+}
+
+BattalionEntity.prototype.isAllowedToAct = function() {
+    return (this.allowedActions + this.bonusActions) < this.allowedActions;
+}
+
+BattalionEntity.prototype.hasMoved = function() {
+    return this.doneMoves > 0;
+}
+
+BattalionEntity.prototype.hasActed = function() {
+    return this.doneActions > 0;
+}
+
+BattalionEntity.prototype.isAllowedToActAndMove = function() {
+    return this.isAllowedToMove() && this.isAllowedToAct();
 }
 
 BattalionEntity.prototype.canActAndMove = function() {
