@@ -576,7 +576,7 @@
         "movementRange": 5,
         "movementType": "WHEELED",
         "minRange": 1,
-        "maxRange": 2,
+        "maxRange": 1,
         "name": "ENTITY_NAME_SUPPLY_TRUCK",
         "desc": "ENTITY_DESC_SUPPLY_TRUCK",
         "traits": ["SUPPLY_DISTRIBUTION", "INFLAMING"],

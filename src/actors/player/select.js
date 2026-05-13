@@ -4,17 +4,18 @@ import { AttackActionVTable } from "../../action/types/attack.js";
 import { HealVTable } from "../../action/types/heal.js";
 import { MoveVTable } from "../../action/types/move.js";
 import { AUTOTILER_TYPE, ATTACK_COMMAND_TYPE, HEAL_COMMAND_TYPE, MOVE_COMMAND, RANGE_TYPE } from "../../enums.js";
-import { isNodeReachable, getBestPath, fillStep } from "../../systems/pathfinding.js";
+import { isNodeReachable, getBestPath, fillStep, createStep } from "../../systems/pathfinding.js";
 import { Player } from "../player.js";
 import { PlayerState } from "./playerState.js";
 
 export const SelectState = function() {
     PlayerState.call(this);
 
-    this.targetX = -1;
-    this.targetY = -1;
-    this.goalX = -1;
-    this.goalY = -1;
+    this.cursorX = -1;
+    this.cursorY = -1;
+    this.originX = -1;
+    this.originY = -1;
+
     this.path = [];
     this.entity = null;
     this.nodeMap = null;
@@ -39,23 +40,21 @@ SelectState.prototype.selectEntity = function(gameContext, stateMachine, entity)
 
     this.entity = entity;
     this.nodeMap = player.inspector.nodeMap;
-    this.targetX = entity.tileX;
-    this.targetY = entity.tileY;
-    this.goalX = entity.tileX;
-    this.goalY = entity.tileY;
-    this.onTileChange(gameContext, stateMachine, this.targetX, this.targetY);
-}
-
-SelectState.prototype.isTargetValid = function(targetX, targetY) {
-    return this.path.length !== 0 && this.targetX === targetX && this.targetY === targetY;
+    this.cursorX = entity.tileX;
+    this.cursorY = entity.tileY;
+    this.originX = entity.tileX;
+    this.originY = entity.tileY;
+    this.onTileChange(gameContext, stateMachine, this.cursorX, this.cursorY);
 }
 
 SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, tileY) {
-    if(this.isTargetValid(tileX, tileY)) {
+    const { targetX, targetY } = this.getPathTarget();
+
+    if(tileX === targetX && tileY === targetY) {
         if(this.entity.isMoveTargetValid(gameContext, tileX, tileY)) {
             if(this.entity.isPathWalkable(gameContext, this.path)) {
                 const player = stateMachine.getContext();
-                const request = MoveVTable.createIntent(this.entity.getID(), this.path, MOVE_COMMAND.NONE, EntityManager.INVALID_ID);
+                const request = MoveVTable.createIntent(this.entity.getID(), this.createDefaultPath(), MOVE_COMMAND.NONE, EntityManager.INVALID_ID);
         
                 player.addIntent(request);
             }
@@ -66,13 +65,13 @@ SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, t
 }
 
 SelectState.prototype.splitPath = function() {
-    if(this.targetX === this.entity.tileX && this.targetY === this.entity.tileY) {
+    if(this.cursorX === this.originX && this.cursorY === this.originY) {
         this.path.length = 0;
         return true;
     }
 
-    let tileX = this.entity.tileX;
-    let tileY = this.entity.tileY;
+    let tileX = this.originX;
+    let tileY = this.originY;
 
     for(let i = this.path.length - 1; i >= 0; i--) {
         const { deltaX, deltaY } = this.path[i];
@@ -80,7 +79,7 @@ SelectState.prototype.splitPath = function() {
         tileX += deltaX;
         tileY += deltaY;
 
-        if(tileX === this.targetX && tileY === this.targetY) {
+        if(tileX === this.cursorX && tileY === this.cursorY) {
             this.path.splice(0, i);
             return true;
         }
@@ -95,14 +94,38 @@ SelectState.prototype.isAttackPathValid = function(gameContext, entity) {
         return this.entity.getDistanceToEntity(entity) === 1;
     }
 
-    const deltaX = Math.abs(entity.tileX - this.goalX);
-    const deltaY = Math.abs(entity.tileY - this.goalY);
+    const { targetX, targetY } = this.getPathTarget();
+    const deltaX = Math.abs(entity.tileX - targetX);
+    const deltaY = Math.abs(entity.tileY - targetY);
     
     if((deltaX + deltaY) !== 1) {
         return false;
     }
 
-    return this.entity.isMoveTargetValid(gameContext, this.goalX, this.goalY) && this.entity.isPathWalkable(gameContext, this.path);
+    return this.entity.isMoveTargetValid(gameContext, targetX, targetY) && this.entity.isPathWalkable(gameContext, this.path);
+}
+
+SelectState.prototype.isHealPathValid = function(gameContext, entity) {
+    if(this.path.length === 0) {
+        return false;
+    }
+
+    if(this.path.length === 1) {
+        return true;
+    }
+
+    let targetX = this.originX;
+    let targetY = this.originY;
+
+    //Ignore the target tile.
+    for(let i = 1; i < this.path.length; i++) {
+        const { deltaX, deltaY } = this.path[i];
+
+        targetX += deltaX;
+        targetY += deltaY;
+    }
+
+    return this.entity.isMoveTargetValid(gameContext, targetX, targetY);
 }
 
 SelectState.prototype.setOptimalAttackPath = function(gameContext) {
@@ -112,8 +135,8 @@ SelectState.prototype.setOptimalAttackPath = function(gameContext) {
     let bestNode = null;
 
     for(const [deltaX, deltaY, type] of FloodFill.NEIGHBORS) {
-        const neighborX = this.targetX + deltaX;
-        const neighborY = this.targetY + deltaY;
+        const neighborX = this.cursorX + deltaX;
+        const neighborY = this.cursorY + deltaY;
         const isOccupied = worldMap.isTileOccupied(neighborX, neighborY);
 
         if(!isOccupied) {
@@ -137,6 +160,23 @@ SelectState.prototype.setOptimalAttackPath = function(gameContext) {
     }
 }
 
+SelectState.prototype.getPathTarget = function() {
+    let targetX = this.originX;
+    let targetY = this.originY;
+
+    for(let i = 0; i < this.path.length; i++) {
+        const { deltaX, deltaY } = this.path[i];
+
+        targetX += deltaX;
+        targetY += deltaY;
+    }
+
+    return {
+        "targetX": targetX,
+        "targetY": targetY
+    }
+}
+
 SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, tileY) {
     const { world, tileManager } = gameContext;
     const { mapManager } = world;
@@ -146,22 +186,10 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
     const entity = player.getVisibleEntity(gameContext, tileX, tileY);
     const walkAutotiler = tileManager.getAutotilerByID(AUTOTILER_TYPE.PATH);
     const attackAutotiler = tileManager.getAutotilerByID(AUTOTILER_TYPE.PATH);
+    const { targetX, targetY } = this.getPathTarget();
 
-    this.targetX = tileX;
-    this.targetY = tileY;
-    this.goalX = this.entity.tileX;
-    this.goalY = this.entity.tileY;
-
-    for(let i = this.path.length - 1; i >= 0; i--) {
-        const { deltaX, deltaY } = this.path[i];
-
-        this.goalX += deltaX;
-        this.goalY += deltaY;
-    }
-
-    const deltaX = this.targetX - this.goalX;
-    const deltaY = this.targetY - this.goalY;
-    const absDelta = Math.abs(deltaX) + Math.abs(deltaY);
+    this.cursorX = tileX;
+    this.cursorY = tileY;
 
     if(entity) {
         if(!this.entity.isAllyWith(gameContext, entity) && this.entity.isAttackValid(gameContext, entity)) {
@@ -186,7 +214,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
                 }
             }
 
-            player.camera.showEntityPath(attackAutotiler, this.path, this.entity.tileX, this.entity.tileY);
+            player.camera.showEntityPath(attackAutotiler, this.path, this.originX, this.originY);
             return;
         }
     }
@@ -195,6 +223,10 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
         //No path update if the node is not reachable.
         return;
     }
+
+    const deltaX = this.cursorX - targetX;
+    const deltaY = this.cursorY - targetY;
+    const absDelta = Math.abs(deltaX) + Math.abs(deltaY);
 
     //If the next step is valid, then check if the path cuts itself.
     //If the path does not cut itself, then check if it's walkable.
@@ -213,10 +245,10 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
         this.path = getBestPath(gameContext, this.nodeMap, tileX, tileY);
     }
 
-    player.camera.showEntityPath(walkAutotiler, this.path, this.entity.tileX, this.entity.tileY);
+    player.camera.showEntityPath(walkAutotiler, this.path, this.originX, this.originY);
 
     if(this.entity.isJammer()) {
-        player.camera.showEntityJammerAt(gameContext, this.entity, this.targetX, this.targetY);
+        player.camera.showEntityJammerAt(gameContext, this.entity, this.cursorX, this.cursorY);
     }
 }
 
@@ -224,6 +256,39 @@ SelectState.prototype.onBuildingClick = function(gameContext, stateMachine, buil
     const { tileX, tileY } = building;
 
     this.onTileClick(gameContext, stateMachine, tileX, tileY);
+}
+
+SelectState.prototype.createDefaultPath = function() {
+    const defaultPath = [];
+
+    for(let i = 0; i < this.path.length; i++) {
+        const { deltaX, deltaY } = this.path[i];
+        const step = createStep(deltaX, deltaY);
+
+        step.deltaX = deltaX;
+        step.deltaY = deltaY;
+
+        defaultPath.push(step);
+    }
+
+    return defaultPath;
+}
+
+SelectState.prototype.createHealPath = function() {
+    const healPath = [];
+
+    //Since the healer can pass through friendly entities the last element has to be ignored.
+    for(let i = 1; i < this.path.length; i++) {
+        const { deltaX, deltaY } = this.path[i];
+        const step = createStep(deltaX, deltaY);
+
+        step.deltaX = deltaX;
+        step.deltaY = deltaY;
+
+        healPath.push(step);
+    }
+
+    return healPath;
 }
 
 SelectState.prototype.getAttackRequest = function(entity) {
@@ -240,7 +305,7 @@ SelectState.prototype.getAttackRequest = function(entity) {
             if(this.path.length === 0) {
                 request = AttackActionVTable.createIntent(this.entity.getID(), entity.getID(), ATTACK_COMMAND_TYPE.DIRECT);
             } else {
-                request = MoveVTable.createIntent(this.entity.getID(), this.path, MOVE_COMMAND.ATTACK, entity.getID());
+                request = MoveVTable.createIntent(this.entity.getID(), this.createDefaultPath(), MOVE_COMMAND.ATTACK, entity.getID());
             }
 
             break;
@@ -273,8 +338,7 @@ SelectState.prototype.getHealRequest = function(entity) {
                 }
                 default: {
                     //Cut the final step (index 0) as the PATH sees an ally as walkable.
-                    this.path.shift();
-                    request = MoveVTable.createIntent(this.entity.getID(), this.path, MOVE_COMMAND.HEAL, entity.getID());
+                    request = MoveVTable.createIntent(this.entity.getID(), this.createHealPath(), MOVE_COMMAND.HEAL, entity.getID());
                     break;
                 }
             }
@@ -309,7 +373,7 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
 
         stateMachine.setNextState(gameContext, Player.STATE.IDLE);
     } else {
-        if(this.entity.isHealValid(gameContext, entity)) {
+        if(this.entity.isHealValid(gameContext, entity) && this.isHealPathValid(gameContext, entity)) {
             const request = this.getHealRequest(entity);
 
             if(request) {
