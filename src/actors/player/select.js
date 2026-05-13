@@ -25,7 +25,7 @@ SelectState.prototype = Object.create(PlayerState.prototype);
 SelectState.prototype.constructor = SelectState;
 
 SelectState.prototype.onExit = function(gameContext, stateMachine) {
-    this.path = [];
+    this.path.length = 0;
     this.entity = null;
 }
 
@@ -44,6 +44,7 @@ SelectState.prototype.selectEntity = function(gameContext, stateMachine, entity)
     this.cursorY = entity.tileY;
     this.originX = entity.tileX;
     this.originY = entity.tileY;
+    this.path.length = 0;
     this.onTileChange(gameContext, stateMachine, this.cursorX, this.cursorY);
 }
 
@@ -73,14 +74,15 @@ SelectState.prototype.splitPath = function() {
     let tileX = this.originX;
     let tileY = this.originY;
 
-    for(let i = this.path.length - 1; i >= 0; i--) {
+    for(let i = 0; i < this.path.length; i++) {
         const { deltaX, deltaY } = this.path[i];
 
         tileX += deltaX;
         tileY += deltaY;
 
         if(tileX === this.cursorX && tileY === this.cursorY) {
-            this.path.splice(0, i);
+            this.path.length = i + 1;
+
             return true;
         }
     }
@@ -117,8 +119,8 @@ SelectState.prototype.isHealPathValid = function(gameContext, entity) {
     let targetX = this.originX;
     let targetY = this.originY;
 
-    //Ignore the target tile.
-    for(let i = 1; i < this.path.length; i++) {
+    //Ignore the target tile by excluding the last element.
+    for(let i = 0; i < this.path.length - 1; i++) {
         const { deltaX, deltaY } = this.path[i];
 
         targetX += deltaX;
@@ -235,7 +237,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
         const isSplit = this.splitPath();
 
         if(!isSplit) {
-            this.path.unshift(fillStep(deltaX, deltaY));
+            this.path.push(fillStep(deltaX, deltaY));
 
             if(!this.entity.isPathWalkable(gameContext, this.path)) {
                 this.path = getBestPath(gameContext, this.nodeMap, tileX, tileY);
@@ -278,7 +280,7 @@ SelectState.prototype.createHealPath = function() {
     const healPath = [];
 
     //Since the healer can pass through friendly entities the last element has to be ignored.
-    for(let i = 1; i < this.path.length; i++) {
+    for(let i = 0; i < this.path.length - 1; i++) {
         const { deltaX, deltaY } = this.path[i];
         const step = createStep(deltaX, deltaY);
 

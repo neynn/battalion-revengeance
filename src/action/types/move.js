@@ -4,8 +4,8 @@ import { FIXED_DELTA_TIME, TILE_HEIGHT, TILE_WIDTH } from "../../../engine/engin
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { FADE_RATE } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
-import { ACTION_TYPE, ATTACK_COMMAND_TYPE, HEAL_COMMAND_TYPE, MOVE_COMMAND, PATH_INTERCEPT, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
-import { createStep } from "../../systems/pathfinding.js";
+import { ACTION_TYPE, ATTACK_COMMAND_TYPE, HEAL_COMMAND_TYPE, MOVE_COMMAND, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { createStep, Interception } from "../../systems/pathfinding.js";
 import { playEntitySound, playUncloakSound } from "../../systems/sound.js";
 import { updateEntitySprite } from "../../systems/sprite.js";
 import { AttackActionVTable } from "./attack.js";
@@ -14,6 +14,9 @@ import { CloakActionVTable } from "./cloak.js";
 import { HealVTable } from "./heal.js";
 import { MineTriggerVTable } from "./mineTrigger.js";
 import { UncloakVTable } from "./uncloak.js";
+
+const EntityInterception = new Interception();
+const MineInterception = new Interception();
 
 const MOVE_FLAG = {
     NONE: 0
@@ -57,7 +60,7 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
     let targetX = entity.tileX;
     let targetY = entity.tileY;
 
-    for(let i = path.length - 1; i >= 0; i--) {
+    for(let i = 0; i < path.length; i++) {
         const { deltaX, deltaY } = path[i];
 
         targetX += deltaX;
@@ -68,25 +71,23 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
         return;
     }
 
-    const newPath = [];
+    EntityInterception.reset();
+    MineInterception.reset();
 
-    //Copies the path, which is essential for keeping the intent valid!
-    for(let i = 0; i < path.length; i++) {
-        newPath[i] = path[i];
-    }
+    EntityInterception.pathLength = path.length;
+    entity.mInterceptEntity(gameContext, path, path.length, EntityInterception);
 
-    const intercept = entity.mInterceptPath(gameContext, newPath);
-
-    if(newPath.length === 0 || intercept === PATH_INTERCEPT.ILLEGAL) {
+    if(EntityInterception.pathLength === 0) {
         console.error("EDGE CASE: Stealth unit was too close!");
         return;
     }
 
-    const mineIntercept = entity.mInterceptMine(gameContext, newPath);
+    MineInterception.pathLength = EntityInterception.pathLength;
+    entity.mInterceptMine(gameContext, path, EntityInterception.pathLength, MineInterception);
 
-    if(mineIntercept === PATH_INTERCEPT.MINE) {
+    if(MineInterception.isIntercepted) {
         executionPlan.addNext(MineTriggerVTable.createIntent(entityID));
-    } 
+    }
 
     switch(command) {
         //Follow-Up commands are ignored if there is no target.
@@ -97,7 +98,7 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
             const targetEntity = entityManager.getEntity(targetID);
 
             if(!targetEntity || !targetEntity.isNextToTile(targetX, targetY)) {
-                if(mineIntercept === PATH_INTERCEPT.NONE && intercept === PATH_INTERCEPT.NONE) {
+                if(!MineInterception.isIntercepted && !EntityInterception.isIntercepted) {
                     return;
                 }
 
@@ -114,7 +115,7 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
             const targetEntity = entityManager.getEntity(targetID);
 
             if(!targetEntity || !targetEntity.isNextToTile(targetX, targetY)) {
-                if(mineIntercept === PATH_INTERCEPT.NONE && intercept === PATH_INTERCEPT.NONE) {
+                if(!MineInterception.isIntercepted && !EntityInterception.isIntercepted) {
                     return;
                 }
 
@@ -139,15 +140,16 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
         executionPlan.addNext(CloakActionVTable.createIntent(entityID));
     }
     
-    const data = createMoveData(newPath.length);
+    const pathLength = MineInterception.pathLength;
+    const data = createMoveData(pathLength);
 
     data.entityID = entityID;
     data.originX = entity.tileX;
     data.originY = entity.tileY;
 
-    for(let i = 0; i < newPath.length; i++) {
-        data.path[i].deltaX = newPath[i].deltaX;
-        data.path[i].deltaY = newPath[i].deltaY;
+    for(let i = 0; i < pathLength; i++) {
+        data.path[i].deltaX = path[i].deltaX;
+        data.path[i].deltaY = path[i].deltaY;
     }
 
     executionPlan.setData(data);
@@ -165,7 +167,7 @@ const executeMove = function(gameContext, data) {
     entity.removeFromMap(gameContext);
     entity.consumeMove();
 
-    for(let i = path.length - 1; i >= 0; i--) {
+    for(let i = 0; i < path.length; i++) {
         const { deltaX, deltaY } = path[i];
 
         entity.updateTile(deltaX, deltaY);
@@ -180,8 +182,8 @@ const executeMove = function(gameContext, data) {
         entity.triggerElusive();
     }
 
-    const lastDeltaX = path[0].deltaX;
-    const lastDeltaY = path[0].deltaY;
+    const lastDeltaX = path[path.length - 1].deltaX;
+    const lastDeltaY = path[path.length - 1].deltaY;
 
     entity.setDirectionByDelta(lastDeltaX, lastDeltaY);
     entity.placeOnMap(gameContext);
@@ -231,7 +233,7 @@ MoveAction.prototype.onStart = function(gameContext, data) {
     updateEntitySprite(gameContext, entity);
 
     this.path = path;
-    this.pathIndex = this.path.length - 1;
+    this.pathIndex = 0;
     this.entity = entity;
 }
 
@@ -255,13 +257,13 @@ MoveAction.prototype.onUpdate = function(gameContext, data) {
             const overstepY = Math.floor(Math.abs(this.entity.offsetY) / TILE_HEIGHT);
             let oversteps = Math.max(overstepX, overstepY);
 
-            while(this.pathIndex >= 0 && oversteps > 0) {
+            while(this.pathIndex < this.path.length && oversteps > 0) {
                 const { deltaX, deltaY } = this.path[this.pathIndex];
 
                 this.entity.clearOffset();
                 this.entity.updateTile(deltaX, deltaY);
                 this.entity.setDirectionByDelta(deltaX, deltaY);
-                this.pathIndex--;
+                this.pathIndex++;
                 oversteps--;
 
                 if(!this.wasDiscovered && this.entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.entity.isDiscoveredByJammer(gameContext)) {
@@ -294,7 +296,7 @@ MoveAction.prototype.isFinished = function(gameContext, executionPlan) {
         return false;
     }
 
-    if(this.pathIndex >= 0) {
+    if(this.pathIndex < this.path.length) {
         return false;
     }
 

@@ -1,7 +1,24 @@
+import { WorldMap } from "../../engine/map/worldMap.js";
+import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { DIRECTION, ENTITY_CATEGORY, JAMMER_FLAG, PATH_FLAG, TRAIT_CONFIG, TRAIT_TYPE } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { TileType } from "../type/parsed/tileType.js";
+
+export const Interception = function() {
+    this.isIntercepted = false;
+    this.pathLength = 0;
+}
+
+Interception.prototype.reset = function() {
+    this.isIntercepted = false;
+    this.pathLength = 0;
+}
+
+Interception.prototype.intercept = function(pathLength) {
+    this.isIntercepted = true;
+    this.pathLength = pathLength;
+}
 
 /**
  * 
@@ -199,20 +216,87 @@ export const getBestPath = function(gameContext, nodes, targetX, targetY) {
     let i = 0;
     let lastX = targetX;
     let lastY = targetY;
-    let currentNode = nodes.get(targetNode.parent);
+    let currentNode = targetNode.parent;
 
-    while(currentNode !== undefined && i < EntityType.MAX_MOVE_COST) {
+    while(currentNode !== null && i < EntityType.MAX_MOVE_COST) {
         const { x, y, parent } = currentNode;
         const deltaX = lastX - x;
         const deltaY = lastY - y;
 
-        path.push(fillStep(deltaX, deltaY));
-
+        path.unshift(fillStep(deltaX, deltaY));
         i++;
         lastX = x;
         lastY = y;
-        currentNode = nodes.get(parent);
+        currentNode = parent;
     }
 
     return path;
+}
+
+export const mGetNodeMap = function(gameContext, entity, nodeMap) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const { tileX, tileY, config } = entity;
+    const { movementRange } = config;
+    const worldMap = mapManager.getActiveMap();
+
+    const startID = worldMap.getIndex(tileX, tileY);
+    const startNode = createNode(startID, tileX, tileY, 0, null, null, PATH_FLAG.START);
+    const queue = [startNode];
+    const visitedCost = new Map();
+    const typeCache = new Map();
+
+    nodeMap.set(startID, startNode);
+    visitedCost.set(startID, 0);
+
+    while(queue.length > 0) {
+        const node = mGetLowestCostNode(queue);
+        const { cost, x, y } = node;
+
+        if(cost > movementRange) {
+            continue;
+        }
+
+        for(let i = 0; i < FloodFill.NEIGHBORS.length; i++) {
+            const [deltaX, deltaY, type] = FloodFill.NEIGHBORS[i];
+            const neighborX = x + deltaX;
+            const neighborY = y + deltaY;
+            const neighborID = worldMap.getIndex(neighborX, neighborY);
+
+            if(neighborID === WorldMap.OUT_OF_BOUNDS) {
+                continue;
+            }
+
+            let flags = PATH_FLAG.NONE;
+            let tileType = typeCache.get(neighborID);
+
+            if(!tileType) {
+                tileType = worldMap.getTileType(gameContext, neighborX, neighborY);
+                typeCache.set(neighborID, tileType);
+            }
+
+            const tileCost = cost + entity.getTileCost(gameContext, worldMap, tileType, neighborX, neighborY);
+
+            if(tileCost <= movementRange) {
+                const bestCost = visitedCost.get(neighborID);
+
+                if(bestCost === undefined || tileCost < bestCost) {
+                    const childNode = createNode(neighborID, neighborX, neighborY, tileCost, type, node, flags);
+
+                    queue.push(childNode);
+                    visitedCost.set(neighborID, tileCost);
+                    nodeMap.set(neighborID, childNode);
+                }
+            } else if(!nodeMap.has(neighborID)) {
+                //Hacky but possible because every node has a minimum cost of 1.
+                flags |= PATH_FLAG.UNREACHABLE;
+
+                const childNode = createNode(neighborID, neighborX, neighborY, tileCost, type, node, flags);
+
+                nodeMap.set(neighborID, childNode);
+            }
+        }
+    }
+
+    console.log(nodeMap);
 }

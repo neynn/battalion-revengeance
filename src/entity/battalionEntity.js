@@ -2,11 +2,10 @@ import { Entity } from "../../engine/entity/entity.js";
 import { EntityManager } from "../../engine/entity/entityManager.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
-import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { EntityType } from "../type/parsed/entityType.js";
-import { createNode, getEntityTypeTileCost, isEntityTypeJammed, mGetLowestCostNode } from "../systems/pathfinding.js";
+import { getEntityTypeTileCost, Interception, isEntityTypeJammed, mGetNodeMap } from "../systems/pathfinding.js";
 import { DIRECTION_DELTA_X, DIRECTION_DELTA_Y, getDirectionByDelta, isDirectionValid } from "../systems/direction.js";
-import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE, PATH_INTERCEPT } from "../enums.js";
+import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
 import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
@@ -536,67 +535,7 @@ BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
         return;
     }
 
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-
-    const startID = worldMap.getIndex(this.tileX, this.tileY);
-    const startNode = createNode(startID, this.tileX, this.tileY, 0, null, null, PATH_FLAG.START);
-    const queue = [startNode];
-    const visitedCost = new Map();
-    const typeCache = new Map();
-
-    nodeMap.set(startID, startNode);
-    visitedCost.set(startID, 0);
-
-    while(queue.length > 0) {
-        const node = mGetLowestCostNode(queue);
-        const { cost, x, y, id } = node;
-
-        if(cost > this.config.movementRange) {
-            continue;
-        }
-
-        for(let i = 0; i < FloodFill.NEIGHBORS.length; i++) {
-            const [deltaX, deltaY, type] = FloodFill.NEIGHBORS[i];
-            const neighborX = x + deltaX;
-            const neighborY = y + deltaY;
-            const neighborID = worldMap.getIndex(neighborX, neighborY);
-
-            if(neighborID === WorldMap.OUT_OF_BOUNDS) {
-                continue;
-            }
-
-            let flags = PATH_FLAG.NONE;
-            let tileType = typeCache.get(neighborID);
-
-            if(!tileType) {
-                tileType = worldMap.getTileType(gameContext, neighborX, neighborY);
-                typeCache.set(neighborID, tileType);
-            }
-
-            const tileCost = cost + this.getTileCost(gameContext, worldMap, tileType, neighborX, neighborY);
-
-            if(tileCost <= this.config.movementRange) {
-                const bestCost = visitedCost.get(neighborID);
-
-                if(bestCost === undefined || tileCost < bestCost) {
-                    const childNode = createNode(neighborID, neighborX, neighborY, tileCost, type, id, flags);
-
-                    queue.push(childNode);
-                    visitedCost.set(neighborID, tileCost);
-                    nodeMap.set(neighborID, childNode);
-                }
-            } else if(!nodeMap.has(neighborID)) {
-                //Hacky but possible because every node has a minimum cost of 1.
-                flags |= PATH_FLAG.UNREACHABLE;
-
-                const childNode = createNode(neighborID, neighborX, neighborY, tileCost, type, id, flags);
-
-                nodeMap.set(neighborID, childNode);
-            }
-        }
-    }
+    mGetNodeMap(gameContext, this, nodeMap);
 }
 
 BattalionEntity.prototype.canCapture = function(gameContext, tileX, tileY) {
@@ -648,8 +587,8 @@ BattalionEntity.prototype.isPathWalkable = function(gameContext, path) {
     let nextY = this.tileY;
     let totalCost = 0;
 
-    //Path[0] is the target.
-    for(let i = path.length - 1; i >= 0; i--) {
+    //Path[path.length -1] is the target.
+    for(let i = 0; i < path.length; i++) {
         const { deltaX, deltaY } = path[i];
         const totalDelta = Math.abs(deltaX) + Math.abs(deltaY);
 
@@ -691,14 +630,22 @@ BattalionEntity.prototype.isMoveTargetValid = function(gameContext, targetX, tar
     return true;
 }
 
-BattalionEntity.prototype.mInterceptPath = function(gameContext, mPath) {
+/**
+ * 
+ * @param {*} gameContext 
+ * @param {*} path 
+ * @param {Interception} entityInterception 
+ * @returns 
+ */
+BattalionEntity.prototype.mInterceptEntity = function(gameContext, path, pathLength, entityInterception) {
     const { world } = gameContext;
+
     let nextX = this.tileX;
     let nextY = this.tileY;
-    let elementsToDelete = mPath.length;
+    let lastEmptyIndex = -1;
 
-    for(let i = mPath.length - 1; i >= 0; i--) {
-        const { deltaX, deltaY } = mPath[i];
+    for(let i = 0; i < pathLength; i++) {
+        const { deltaX, deltaY } = path[i];
 
         nextX += deltaX;
         nextY += deltaY;
@@ -706,30 +653,39 @@ BattalionEntity.prototype.mInterceptPath = function(gameContext, mPath) {
         const entity = world.getEntityAt(nextX, nextY);
 
         if(!entity) {
-            elementsToDelete = i;
+            lastEmptyIndex = i;
         } else if(!entity.isVisibleTo(gameContext, this.teamID)) {
-            mPath.splice(0, elementsToDelete);
-
-            if(elementsToDelete !== i + 1) {
-                return PATH_INTERCEPT.ILLEGAL;
+            //If the entity has passed through an entity before.
+            //This is a defensive check to enforce the 1-gap-stealth rule between entities. 
+            if(lastEmptyIndex !== i - 1) {
+                entityInterception.reset();
+                break;
             }
 
-            return PATH_INTERCEPT.VALID;
+            //i means ending NEXT TO the invisible entity.
+            entityInterception.intercept(i);
+            break;
         }
     }
-
-    return PATH_INTERCEPT.NONE;
 }
 
-BattalionEntity.prototype.mInterceptMine = function(gameContext, mPath) {
+/**
+ * 
+ * @param {*} gameContext 
+ * @param {*} path 
+ * @param {Interception} mineInterception 
+ * @returns 
+ */
+BattalionEntity.prototype.mInterceptMine = function(gameContext, path, pathLength, mineInterception) {
     const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
+
     let nextX = this.tileX;
     let nextY = this.tileY;
 
-    for(let i = mPath.length - 1; i >= 0; i--) {
-        const { deltaX, deltaY } = mPath[i];
+    for(let i = 0; i < pathLength; i++) {
+        const { deltaX, deltaY } = path[i];
 
         nextX += deltaX;
         nextY += deltaY;
@@ -737,13 +693,11 @@ BattalionEntity.prototype.mInterceptMine = function(gameContext, mPath) {
         const mine = worldMap.getMine(nextX, nextY);
 
         if(mine && this.triggersMine(gameContext, mine)) {
-            mPath.splice(0, i);
-
-            return PATH_INTERCEPT.MINE;
+            //i + 1 means ending ON the mine tile.
+            mineInterception.intercept(i + 1);
+            break;
         }
     }
-
-    return PATH_INTERCEPT.NONE;
 }
 
 BattalionEntity.prototype.getTerrainTypes = function(gameContext) {
