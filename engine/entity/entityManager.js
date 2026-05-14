@@ -57,8 +57,8 @@ EntityManager.prototype.removeHot = function(index) {
 
 EntityManager.prototype.exit = function() {
     this.nextID = 0;
-    this.entities.length = 0;
     this.hotEntities.length = 0;
+    this.entities.length = 0;
     this.openSlots.length = 0;
     this.entityMap.clear();
 }
@@ -77,14 +77,14 @@ EntityManager.prototype.cleanup = function() {
     for(let i = this.entities.length - 1; i >= 0; i--) {
         const entity = this.entities[i];
 
-        if(entity.isMarkedForDestroy) {
-            const entityID = entity.getID();
-
-            this.entityMap.delete(entityID);
-        } else {
+        if(!entity.isMarkedForDestroy) {
             this.entities.length = i + 1;
             break;
         }
+
+        const entityID = entity.getID();
+
+        this.entityMap.delete(entityID);
     }
 }
 
@@ -138,13 +138,13 @@ EntityManager.prototype.addEntity = function(entity) {
 
         if(this.openSlots.length === 0) {
             index = this.entities.length;
-            this.entities.push(entity);
         } else {
             index = this.openSlots.pop();
-            this.entities[index] = entity;
         }
 
+        this.entities[index] = entity;
         this.entityMap.set(entityID, index);
+
         entity.index = index;
     }
 }

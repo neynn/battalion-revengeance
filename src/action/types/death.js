@@ -38,9 +38,8 @@ const fillDeathPlan = function(gameContext, executionPlan, actionIntent) {
     }
 }
 
-//TODO(neyn): Hacky. isClient is bad!
 const executeDeath = function(gameContext, data) {
-    const { world, isClient } = gameContext;
+    const { teamManager, world, isClient } = gameContext;
     const { entityManager } = world;
     const { entities } = data;
 
@@ -55,6 +54,8 @@ const executeDeath = function(gameContext, data) {
 
         killEntity(gameContext, entity);
     }
+
+    teamManager.updateStatus();
 }
 
 export const DeathActionVTable = {

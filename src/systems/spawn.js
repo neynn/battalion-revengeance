@@ -14,6 +14,7 @@ export const killEntity = function(gameContext, entity) {
     const team = entity.getTeam(gameContext);
 
     entity.removeFromMap(gameContext);
+    entityManager.removeHot(entity.index);
     team.addStatistic(TEAM_STAT.UNITS_LOST, 1);
 
     for(const teamID of activeTeams) {
@@ -21,8 +22,6 @@ export const killEntity = function(gameContext, entity) {
 
         team.onEntityDeath(entity);
     }
-
-    teamManager.updateStatus();
 }
 
 export const destroyEntitySprite = function(gameContext, entity) {

@@ -22,7 +22,15 @@ const fillEntitySpawnPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
     const { entityManager, mapManager } = world;
     const { snapshot } = actionIntent;
+    const { tileX, tileY } = snapshot;
     const worldMap = mapManager.getActiveMap();
+    const isOccupied = worldMap.isTileOccupied(tileX, tileY);
+
+    if(isOccupied) {
+        console.error("EntitySpawn: Spawn tile was occupied. Entity did not spawn.");
+        return;
+    }
+
     const data = createEntitySpawnData();
 
     //TODO(neyn): Verify!

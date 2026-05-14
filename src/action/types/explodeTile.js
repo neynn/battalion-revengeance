@@ -51,7 +51,7 @@ const fillExplodeTilePlan = function(gameContext, executionPlan, actionIntent) {
 }
 
 const executeExplodeTile = function(gameContext, data) {
-    const { world, isClient } = gameContext;
+    const { teamManager, world, isClient } = gameContext;
     const { entityManager, mapManager } = world;
     const { entityID, tileX, tileY, layer } = data;
     const worldMap = mapManager.getActiveMap();
@@ -63,10 +63,13 @@ const executeExplodeTile = function(gameContext, data) {
             destroyEntitySprite(gameContext, entity);
         }
 
+        entity.setHealth(0);
+
         killEntity(gameContext, entity);
     }
 
     worldMap.setTile(TILE_ID.NONE, layer, tileX, tileY);
+    teamManager.updateStatus();
 }
 
 export const ExplodeTileVTable = {
