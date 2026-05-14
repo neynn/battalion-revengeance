@@ -3,7 +3,7 @@ import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ACTION_TYPE, SOUND_TYPE } from "../../enums.js";
 import { playEntitySound } from "../../systems/sound.js";
-import { destroyEntity, destroyEntitySprite } from "../../systems/spawn.js";
+import { destroyEntitySprite, killEntity } from "../../systems/spawn.js";
 import { playDeathEffect } from "../../systems/sprite.js";
 import { DeathTween } from "../../tween/deathTween.js";
 
@@ -53,7 +53,7 @@ const executeDeath = function(gameContext, data) {
             destroyEntitySprite(gameContext, entity);
         }
 
-        destroyEntity(gameContext, entity);
+        killEntity(gameContext, entity);
     }
 }
 

@@ -7,39 +7,13 @@ import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { bufferEntitySounds } from "./sound.js";
 import { transformTileToWorld } from "../../engine/math/transform2D.js";
 
-const createEntity = function(gameContext, entityID, snapshot) {
-    const { teamManager, typeRegistry, world } = gameContext;
-    const { entityManager } = world;
-    const { teamID, type, tileX, tileY } = snapshot;
-    const team = teamManager.getTeam(teamID);
-
-    if(!team) {
-        return null;
-    }
-
-    const entityType = typeRegistry.getEntityType(type);
-    const entityObject = new BattalionEntity(entityID);
-
-    entityObject.loadConfig(entityType);
-    entityObject.load(snapshot);
-    entityObject.setTeam(teamID);
-    entityObject.setTile(tileX, tileY);
-    team.addEntity(entityObject);
-    entityManager.addEntity(entityObject);
-    entityObject.placeOnMap(gameContext);
-    
-    return entityObject;
-}
-
-export const destroyEntity = function(gameContext, entity) {
+export const killEntity = function(gameContext, entity) {
     const { teamManager, world } = gameContext;
     const { entityManager } = world;
     const { activeTeams } = teamManager;
     const team = entity.getTeam(gameContext);
 
     entity.removeFromMap(gameContext);
-    entity.isMarkedForDestroy = true;
-    
     team.addStatistic(TEAM_STAT.UNITS_LOST, 1);
 
     for(const teamID of activeTeams) {
@@ -48,7 +22,6 @@ export const destroyEntity = function(gameContext, entity) {
         team.onEntityDeath(entity);
     }
 
-    entityManager.destroyEntity(entity.index);
     teamManager.updateStatus();
 }
 
@@ -77,34 +50,72 @@ const createBuilding = function(gameContext, worldMap, snapshot) {
     return building;
 }
 
+const createEntity = function(gameContext, entityID, snapshot) {
+    const { typeRegistry, world } = gameContext;
+    const { entityManager } = world;
+    const { teamID, type, tileX, tileY } = snapshot;
+    const entityType = typeRegistry.getEntityType(type);
+    const entityObject = new BattalionEntity(entityID);
+
+    entityObject.loadConfig(entityType);
+    entityObject.load(snapshot);
+    entityObject.setTeam(teamID);
+    entityObject.setTile(tileX, tileY);
+    entityManager.addEntity(entityObject);
+    
+    return entityObject;
+}
+
 export const createClientEntityObject = function(gameContext, entityID, snapshot) {
     const { teamManager, spriteManager, shadeCache } = gameContext;
     const { type, teamID } = snapshot;
-    const entity = createEntity(gameContext, entityID, snapshot);
+    const team = teamManager.getTeam(teamID);
 
-    if(!entity) {
+    if(!team) {
         return null;
     }
 
-    const { color } = teamManager.getTeam(teamID);
-    const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
-
-    entity.spriteID = visualSprite.getIndex();
-
-    bufferEntitySounds(gameContext, entity);
-    bufferEntitySprites(gameContext, entity, color);
-    updateEntitySprite(gameContext, entity);
-    shadeCache.loadShades(gameContext, type);
+    const entity = createEntity(gameContext, entityID, snapshot);
 
     if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
         entity.setOpacity(0);
+    }
+
+    if(!entity.isDead()) {
+        const { color } = teamManager.getTeam(teamID);
+        const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
+    
+        entity.spriteID = visualSprite.getIndex();
+    
+        bufferEntitySounds(gameContext, entity);
+        bufferEntitySprites(gameContext, entity, color);
+        updateEntitySprite(gameContext, entity);
+        shadeCache.loadShades(gameContext, type);
+
+        team.addToRoster(entity);
+        entity.placeOnMap(gameContext);
     }
 
     return entity;
 }
 
 export const createServerEntityObject = function(gameContext, entityID, snapshot) {
-    return createEntity(gameContext, entityID, snapshot);
+    const { teamManager, spriteManager, shadeCache } = gameContext;
+    const { type, teamID } = snapshot;
+    const team = teamManager.getTeam(teamID);
+
+    if(!team) {
+        return null;
+    }
+
+    const entity = createEntity(gameContext, entityID, snapshot);
+
+    if(!entity.isDead()) {
+        team.addToRoster(entity);
+        entity.placeOnMap(gameContext);
+    }
+
+    return entity;
 }
 
 export const createClientBuildingObject = function(gameContext, worldMap, snapshot) {

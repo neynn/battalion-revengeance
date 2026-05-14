@@ -27,9 +27,9 @@ const executeEndTurn = function(gameContext, data) {
     const { entityManager } = world;
     const team = teamManager.getCurrentTeam();
     const turn = team.getStatistic(TEAM_STAT.ROUNDS_TAKEN);
-    const { id, entities, objectives } = team;
+    const { id, roster, objectives } = team;
 
-    for(const entityID of entities) {
+    for(const entityID of roster) {
         const entity = entityManager.getEntity(entityID);
 
         if(entity) {

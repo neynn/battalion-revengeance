@@ -30,3 +30,7 @@ Z-Buffer:
 transportable terrain -> allows to use the sea transport
 
 metasprite: directions as table. all else use start.
+
+Misconception: Entities do NOT get deleted, they are kept in memory until the match ends.
+EntityManager keeps them ALL until the simulation is terminated.
+DestroyEntity does not really destroy it.

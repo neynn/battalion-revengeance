@@ -4,7 +4,7 @@ import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { WorldMap } from "../../../engine/map/worldMap.js";
 import { ACTION_TYPE, ENTITY_CATEGORY, TILE_ID } from "../../enums.js";
 import { BattalionMap } from "../../map/battalionMap.js";
-import { destroyEntity, destroyEntitySprite } from "../../systems/spawn.js";
+import { destroyEntitySprite, killEntity } from "../../systems/spawn.js";
 import { playExplosion } from "../../systems/sprite.js";
 
 const createExplodeTileIntent = function(layerID, tileX, tileY) {
@@ -63,7 +63,7 @@ const executeExplodeTile = function(gameContext, data) {
             destroyEntitySprite(gameContext, entity);
         }
 
-        destroyEntity(gameContext, entity);
+        killEntity(gameContext, entity);
     }
 
     worldMap.setTile(TILE_ID.NONE, layer, tileX, tileY);

@@ -28,11 +28,11 @@ const fillStartTurnPlan = function(gameContext, executionPlan, actionIntent) {
     }
 
     const team = teamManager.getTeam(teamID);
-    const { entities } = team;
+    const { roster } = team;
     const deadEntities = [];
     const resolutions = [];
 
-    for(const entityID of entities) {
+    for(const entityID of roster) {
         const entity = entityManager.getEntity(entityID);
 
         if(!entity) {
@@ -71,9 +71,9 @@ const executeStartTurn = function(gameContext, data) {
     const { teamID, resolutions } = data;
     const worldMap = mapManager.getActiveMap();
     const team = teamManager.getTeam(teamID);
-    const { entities } = team;
+    const { roster } = team;
 
-    for(const entityID of entities) {
+    for(const entityID of roster) {
         const entity = entityManager.getEntity(entityID);
 
         if(entity) {

@@ -40,18 +40,6 @@ Player.STATE = {
 Player.prototype = Object.create(BattalionActor.prototype);
 Player.prototype.constructor = Player;
 
-Player.prototype.surrender = function(gameContext) {
-    const { teamManager } = gameContext;
-    const team = teamManager.getTeam(this.teamID);
-    
-    if(team) {
-        const { entities } = team;
-        const deathRequest = DeathActionVTable.createIntent(entities);
-
-        this.addIntent(deathRequest);
-    }
-}
-
 Player.prototype.onTurnStart = function(gameContext) {
     const { client } = gameContext;
     const { session } = client;

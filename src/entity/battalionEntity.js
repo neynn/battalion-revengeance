@@ -65,7 +65,8 @@ BattalionEntity.FLAG = {
     IS_PROTECTED: 1 << 2,
     IS_TURN: 1 << 3,
     BEWEGUNGSKRIEG_TRIGGERED: 1 << 4,
-    ELUSIVE_TRIGGERED: 1 << 5
+    ELUSIVE_TRIGGERED: 1 << 5,
+    IS_DISABLED: 1 << 6
 };
 
 BattalionEntity.STATE = {
@@ -127,6 +128,14 @@ BattalionEntity.prototype.loadConfig = function(config) {
     this.maxHealth = health;
     this.damage = damage;
     this.setHealth(this.health);
+}
+
+BattalionEntity.prototype.isDisabled = function() {
+    return this.hasFlag(BattalionEntity.FLAG.IS_DISABLED);
+}
+
+BattalionEntity.prototype.disable = function() {
+    this.setFlag(BattalionEntity.FLAG.IS_DISABLED);
 }
 
 BattalionEntity.prototype.saveTransport = function() {

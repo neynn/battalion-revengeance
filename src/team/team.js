@@ -8,7 +8,7 @@ import { createTeamSnapshot } from "../snapshot/teamSnapshot.js";
 export const Team = function(id) {
     this.id = id;
     this.allies = [];
-    this.entities = [];
+    this.roster = [];
     this.color = SCHEMA_TYPE.RED;
     this.currency = CURRENCY_TYPE.NONE;
     this.commander = COMMANDER_TYPE.NONE;
@@ -177,7 +177,7 @@ Team.prototype.getID = function() {
 Team.prototype.onEntityDeath = function(entity) {
     const entityID = entity.getID();
 
-    this.removeEntity(entityID);
+    this.removeFromRoster(entityID);
 
     for(const objective of this.objectives) {
         objective.onEntityDeath(entity);
@@ -271,10 +271,10 @@ Team.prototype.addGeneratedCash = function(cash) {
     return this.cash;
 }
 
-Team.prototype.addEntity = function(entity) {
+Team.prototype.addToRoster = function(entity) {
     const entityID = entity.getID();
 
-    if(!this.hasEntity(entityID)) {
+    if(!this.hasInRoster(entityID)) {
         if(!entity.hasTrait(TRAIT_TYPE.FIXED)) {
             this.objectives[Team.OBJECTIVE.UNIT_SURVIVE].addUnit(entityID);
         }
@@ -283,23 +283,23 @@ Team.prototype.addEntity = function(entity) {
             this.objectives[Team.OBJECTIVE.LYNCHPIN].addLynchpin(entityID);
         }
         
-        this.entities.push(entityID);
+        this.roster.push(entityID);
     }
 }
 
-Team.prototype.removeEntity = function(entityID) {
-    for(let i = 0; i < this.entities.length; i++) {
-        if(this.entities[i] === entityID) {
-            this.entities[i] = this.entities[this.entities.length - 1];
-            this.entities.pop();
+Team.prototype.removeFromRoster = function(entityID) {
+    for(let i = 0; i < this.roster.length; i++) {
+        if(this.roster[i] === entityID) {
+            this.roster[i] = this.roster[this.roster.length - 1];
+            this.roster.pop();
             return;
         }
     }
 }
 
-Team.prototype.hasEntity = function(entityID) {
-    for(let i = 0; i < this.entities.length; i++) {
-        if(this.entities[i] === entityID) {
+Team.prototype.hasInRoster = function(entityID) {
+    for(let i = 0; i < this.roster.length; i++) {
+        if(this.roster[i] === entityID) {
             return true;
         }
     }
