@@ -1,19 +1,19 @@
 import { CameraContext } from "./cameraContext.js";
-import { DEBUG } from "../debug.js";
 
-export const Renderer = function(windowWidth, windowHeight) {
+export const ContextManager = function(windowWidth, windowHeight) {
     this.nextID = 0;
     this.contexts = [];
     this.windowWidth = windowWidth;
     this.windowHeight = windowHeight;
+    this.debug = false;
 }
 
-Renderer.prototype.exit = function() {
+ContextManager.prototype.exit = function() {
     this.nextID = 0;
     this.contexts.length = 0;
 }
 
-Renderer.prototype.getContext = function(contextID) {
+ContextManager.prototype.getContext = function(contextID) {
     for(let i = 0; i < this.contexts.length; i++) {
         const context = this.contexts[i];
         const id = context.getID();
@@ -26,7 +26,7 @@ Renderer.prototype.getContext = function(contextID) {
     return null;
 }
 
-Renderer.prototype.hasContext = function(contextID) {
+ContextManager.prototype.hasContext = function(contextID) {
     for(let i = 0; i < this.contexts.length; i++) {
         const context = this.contexts[i];
         const id = context.getID();
@@ -39,7 +39,7 @@ Renderer.prototype.hasContext = function(contextID) {
     return false;
 }
 
-Renderer.prototype.createContext = function() {
+ContextManager.prototype.createContext = function() {
     const contextID = this.nextID++;
     const context = new CameraContext(contextID);
 
@@ -50,7 +50,7 @@ Renderer.prototype.createContext = function() {
     return context;
 }
 
-Renderer.prototype.destroyContext = function(contextID) {
+ContextManager.prototype.destroyContext = function(contextID) {
     for(let i = 0; i < this.contexts.length; i++) {
         const context = this.contexts[i];
         const id = context.getID();
@@ -62,38 +62,21 @@ Renderer.prototype.destroyContext = function(contextID) {
     }
 }
 
-Renderer.prototype.update = function(gameContext) {
-    const { uiManager, gameWindow } = gameContext; 
-    const display = gameWindow.display;
-    
-    display.clear();
-
+ContextManager.prototype.draw = function(gameContext, display) {    
     for(let i = 0; i < this.contexts.length; i++) {
         this.contexts[i].draw(gameContext, display);
     }
 
-    if(DEBUG.CONTEXT) {
+    if(this.debug) {
         const context = display.context;
 
         for(let i = 0; i < this.contexts.length; i++) {
             this.contexts[i].debug(context);
         }
     }
-
-    display.save();
-    uiManager.draw(gameContext, display);
-    display.reset();
-
-    if(DEBUG.UI) {
-        uiManager.debug(display);
-    }
-
-    if(DEBUG.SHOW_INFO) {
-        gameWindow.drawDebug(gameContext);
-    }
 }
 
-Renderer.prototype.onWindowResize = function(width, height) {
+ContextManager.prototype.onWindowResize = function(width, height) {
     this.windowWidth = width;
     this.windowHeight = height;
 
@@ -102,7 +85,7 @@ Renderer.prototype.onWindowResize = function(width, height) {
     }
 }
 
-Renderer.prototype.getCollidedContext = function(mouseX, mouseY, mouseRange) {
+ContextManager.prototype.getCollidedContext = function(mouseX, mouseY, mouseRange) {
     for(let i = this.contexts.length - 1; i >= 0; i--) {
         const context = this.contexts[i];
         const isColliding = context.isColliding(mouseX, mouseY, mouseRange);
@@ -115,19 +98,19 @@ Renderer.prototype.getCollidedContext = function(mouseX, mouseY, mouseRange) {
     return null;
 }
 
-Renderer.prototype.onDragUpdate = function(buttonID, deltaX, deltaY) {
+ContextManager.prototype.onDragUpdate = function(buttonID, deltaX, deltaY) {
     for(let i = this.contexts.length - 1; i >= 0; i--) {
         this.contexts[i].updateDrag(buttonID, deltaX, deltaY);
     }
 }
 
-Renderer.prototype.onDragStart = function(buttonID, buttonX, buttonY, buttonR) {
+ContextManager.prototype.onDragStart = function(buttonID, buttonX, buttonY, buttonR) {
     for(let i = this.contexts.length - 1; i >= 0; i--) {
         this.contexts[i].startDrag(buttonID, buttonX, buttonY, buttonR);
     }
 }
 
-Renderer.prototype.onDragEnd = function(buttonID) {
+ContextManager.prototype.onDragEnd = function(buttonID) {
     for(let i = this.contexts.length - 1; i >= 0; i--) {
         this.contexts[i].endDrag(buttonID);
     }

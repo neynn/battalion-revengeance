@@ -144,6 +144,15 @@ MapInspector.prototype.enable = function() {
     this.isEnabled = true;
 }
 
+MapInspector.prototype.getLastMine = function(gameContext) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const building = worldMap.getMine(this.lastX, this.lastY);
+
+    return building;
+}
+
 MapInspector.prototype.getLastBuilding = function(gameContext) {
     const { world } = gameContext;
     const { mapManager } = world;
@@ -250,6 +259,10 @@ MapInspector.prototype.update = function(gameContext) {
         this.lastInspectedEntity = null;
 
         flags |= MapInspector.FLAG.ENTITY_REMOVED;
+    }
+
+    if(this.inspectionLevel === MapInspector.INSPECT_LEVEL.MINE && this.getLastMine(gameContext) === null) {
+        this.setState(MapInspector.STATE.NONE);
     }
 
     return flags;

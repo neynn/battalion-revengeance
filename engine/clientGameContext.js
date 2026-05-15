@@ -5,7 +5,7 @@ import { UIManager } from "./ui/uiManager.js";
 import { StateMachine } from "./state/stateMachine.js";
 import { Timer } from "./timer.js";
 import { TileManager } from "./tile/tileManager.js";
-import { Renderer } from "./renderer/renderer.js";
+import { ContextManager } from "./renderer/contextManager.js";
 import { World } from "./world/world.js";
 import { LanguageHandler } from "./language/languageHandler.js";
 import { FontHandler } from "./fontHandler.js";
@@ -20,7 +20,7 @@ export const ClientGameContext = function() {
     this.world = new World();
     this.pathHandler = PathHandler;
     this.gameWindow = new GameWindow();
-    this.renderer = new Renderer(window.innerWidth, window.innerHeight);
+    this.contextManager = new ContextManager(window.innerWidth, window.innerHeight);
     this.textureLoader = new TextureLoader();
     this.tileManager = new TileManager();
     this.spriteManager = new SpriteManager(this.textureLoader);
@@ -53,7 +53,16 @@ export const ClientGameContext = function() {
         this.tweenManager.update(this);
         this.spriteManager.update(this);
         this.tileManager.update(this);
-        this.renderer.update(this);
+        
+        this.gameWindow.display.clear();
+        this.contextManager.draw(this, this.gameWindow.display);
+        this.gameWindow.display.save();
+        this.uiManager.draw(this, this.gameWindow.display);
+        this.gameWindow.display.reset();
+
+        if(this.gameWindow.debug) {
+            this.gameWindow.drawDebug(this);
+        }
     }
 
     this.client.cursor.events.on(Cursor.EVENT.BUTTON_CLICK, (event) => {
@@ -65,15 +74,15 @@ export const ClientGameContext = function() {
     }, { permanent: true });
 
     this.client.cursor.events.on(Cursor.EVENT.BUTTON_DOWN, ({ button, x, y, radius }) => {
-        this.renderer.onDragStart(button, x, y, radius);
+        this.contextManager.onDragStart(button, x, y, radius);
     }, { permanent: true });
 
     this.client.cursor.events.on(Cursor.EVENT.DRAG, ({ button, deltaX, deltaY }) => {
-        this.renderer.onDragUpdate(button, deltaX, deltaY);
+        this.contextManager.onDragUpdate(button, deltaX, deltaY);
     }, { permanent: true });
 
     this.client.cursor.events.on(Cursor.EVENT.BUTTON_UP, ({ button }) => {
-        this.renderer.onDragEnd(button);
+        this.contextManager.onDragEnd(button);
     }, { permanent: true });
 }
 
@@ -82,7 +91,7 @@ ClientGameContext.prototype.onExit = function() {}
 ClientGameContext.prototype.exit = function() {
     this.client.exit(this);
     this.world.exit();
-    this.renderer.exit();
+    this.contextManager.exit();
     this.spriteManager.exit();
     this.uiManager.exit();
     this.language.exit();

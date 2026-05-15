@@ -1,6 +1,5 @@
 import { Camera2D } from "../../engine/camera/camera2D.js";
-import { TileOverlay } from "../../engine/camera/tileOverlay.js";
-import { DEBUG } from "../../engine/debug.js";
+import { TileOverlay } from "../../engine/renderer/tileOverlay.js";
 import { EntityManager } from "../../engine/entity/entityManager.js";
 import { SHAPE } from "../../engine/math/constants.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
@@ -317,7 +316,7 @@ BattalionRenderer2D.prototype.drawEntity = function(gameContext, camera, display
             this.drawTile(tileManager, TILE_ID.MARKER_PROTECTED, context, screenX, screenY);
         }
     } else {
-        if(DEBUG.SPRITES) {
+        if(Renderer2D.DEBUG.SPRITES) {
             sprite.setPosition(screenX, screenY);
             sprite.debug(display, 0, 0);
         }
@@ -624,7 +623,7 @@ BattalionRenderer2D.prototype.render = function(gameContext, camera, display) {
     sprites += this.drawSortedSpriteLayer(gameContext, camera, display, LAYER_TYPE.GFX);
     //this.shadeScreen(camera, display, "#000000", 0.5);
 
-    if(DEBUG.WORLD) {
+    if(Renderer2D.DEBUG.WORLD) {
         this.debugMap(camera, display, worldMap);
         this.drawInfo(gameContext, display, tiles, sprites, overlays, other);
     }

@@ -3,6 +3,7 @@ import { TextureRegistry } from "../resources/texture/textureRegistry.js";
 export const UIManager = function() {
     this.layouts = {};
     this.contexts = [];
+    this.debug = false;
 }
 
 UIManager.prototype.load = function(textureLoader, layouts, textures) {
@@ -12,12 +13,6 @@ UIManager.prototype.load = function(textureLoader, layouts, textures) {
 
     if(textures) {
         textureLoader.createGUITextures(textures);
-    }
-}
-
-UIManager.prototype.debug = function(display) {
-    for(let i = this.contexts.length - 1; i >= 0; i--) {
-        this.contexts[i].debug(display, 0, 0);
     }
 }
 
@@ -50,6 +45,12 @@ UIManager.prototype.draw = function(gameContext, display) {
         if(context.doImmediate && context.isVisible()) {
             context.hotWidget = -1;
             context.onImmediate(gameContext, display);
+        }
+    }
+
+    if(this.debug) {
+        for(let i = this.contexts.length - 1; i >= 0; i--) {
+            this.contexts[i].debug(display, 0, 0);
         }
     }
 }

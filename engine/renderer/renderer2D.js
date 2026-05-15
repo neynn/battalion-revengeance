@@ -1,5 +1,4 @@
 import { Camera2D } from "../camera/camera2D.js";
-import { DEBUG } from "../debug.js";
 import { TILE_FRAME_SIZE, TILE_HEIGHT, TILE_WIDTH } from "../engine_constants.js";
 import { TextureHandle } from "../resources/texture/textureHandle.js";
 
@@ -11,14 +10,9 @@ export const Renderer2D = function() {
     this.halfTileHeight = this.tileHeight / 2;
 }
 
-Renderer2D.COLOR = {
-    EMPTY_TILE_FIRST: "#000000",
-    EMPTY_TILE_SECOND: "#701867"
-};
-
-Renderer2D.MAP_OUTLINE = {
-    LINE_SIZE: 2,
-    COLOR: "#dddddd"
+Renderer2D.DEBUG = {
+    SPRITES: false,
+    WORLD: false
 };
 
 Renderer2D.prototype.render = function(gameContext, camera, context) {}
@@ -29,11 +23,11 @@ Renderer2D.prototype.drawEmptyTile = function(context, screenX, screenY, scale) 
     const width = Math.floor(this.halfTileWidth * scale);
     const height = Math.floor(this.halfTileHeight * scale);
 
-    context.fillStyle = Renderer2D.COLOR.EMPTY_TILE_FIRST;
+    context.fillStyle = "#000000";
     context.fillRect(drawX, drawY, width, height);
     context.fillRect(drawX + width, drawY + height, width, height);
 
-    context.fillStyle = Renderer2D.COLOR.EMPTY_TILE_SECOND;
+    context.fillStyle = "#701867";
     context.fillRect(drawX + width, drawY, width, height);
     context.fillRect(drawX, drawY + height, width, height);
 }
@@ -233,7 +227,7 @@ Renderer2D.prototype.drawSpriteLayer = function(gameContext, camera, display, la
             sprite.update(realTime, deltaTime);
             sprite.draw(display, viewportLeftEdge, viewportTopEdge);
 
-            if(DEBUG.SPRITES) {
+            if(Renderer2D.DEBUG.SPRITES) {
                 sprite.debug(display, viewportLeftEdge, viewportTopEdge);
             }
 
@@ -274,7 +268,7 @@ Renderer2D.prototype.drawSortedSpriteLayer = function(gameContext, camera, displ
         sprite.update(realTime, deltaTime);
         sprite.draw(display, viewportLeftEdge, viewportTopEdge);
 
-        if(DEBUG.SPRITES) {
+        if(Renderer2D.DEBUG.SPRITES) {
             sprite.debug(display, viewportLeftEdge, viewportTopEdge);
         }
     }
@@ -303,20 +297,20 @@ Renderer2D.prototype.drawTilesWithCallback = function(camera, onDraw) {
 }
 
 Renderer2D.prototype.drawMapOutlines = function(camera, context) {
-    const endX = camera.endX + 1;
-    const endY = camera.endY + 1;
+    const LINE_SIZE = 2;
+    const { startY, endY, startX, endX, wViewportWidth, wViewportHeight } = camera;
 
-    context.fillStyle = Renderer2D.MAP_OUTLINE.COLOR;
+    context.fillStyle = "#dddddd";
 
-    for(let i = camera.startY; i <= endY; i++) {
+    for(let i = startY; i <= endY + 1; i++) {
         const renderY = camera.getScreenY(i);
 
-        context.fillRect(0, renderY, camera.wViewportWidth, Renderer2D.MAP_OUTLINE.LINE_SIZE);
+        context.fillRect(0, renderY, wViewportWidth, LINE_SIZE);
     }
 
-    for (let j = camera.startX; j <= endX; j++) {
+    for (let j = startX; j <= endX + 1; j++) {
         const renderX = camera.getScreenX(j);
 
-        context.fillRect(renderX, 0, Renderer2D.MAP_OUTLINE.LINE_SIZE, camera.wViewportHeight);
+        context.fillRect(renderX, 0, LINE_SIZE, wViewportHeight);
     }
 }

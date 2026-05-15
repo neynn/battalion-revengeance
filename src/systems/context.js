@@ -1,4 +1,3 @@
-import { DEBUG } from "../../engine/debug.js";
 import { AttackAction, AttackActionVTable } from "../action/types/attack.js";
 import { CaptureAction, CaptureActionVTable } from "../action/types/capture.js";
 import { CloakAction, CloakActionVTable } from "../action/types/cloak.js";
@@ -18,6 +17,7 @@ import { UncloakAction, UncloakVTable } from "../action/types/uncloak.js";
 import { ACTION_TYPE, TILE_ID } from "../enums.js";
 import { ToTransportAction, ToTransportVTable } from "../action/types/toTransport.js";
 import { FromTransportAction, FromTransportVTable } from "../action/types/fromTransport.js";
+import { Renderer2D } from "../../engine/renderer/renderer2D.js";
 
 export const overrideRiverTiles = function(gameContext) {
     const { tileManager } = gameContext;
@@ -74,13 +74,13 @@ export const registerClientActions = function(gameContext) {
 }
 
 export const addDebug = function(gameContext) {
-    const { client } = gameContext;
+    const { client, uiManager, gameWindow, contextManager } = gameContext;
     const { router } = client;
 
     router.bind(gameContext, "DEBUG");
-    router.on("DEBUG_MAP", () => DEBUG.WORLD = 1 -DEBUG.WORLD);
-    router.on("DEBUG_CONTEXT", () => DEBUG.CONTEXT = 1 - DEBUG.CONTEXT);
-    router.on("DEBUG_INTERFACE", () => DEBUG.UI = 1 - DEBUG.UI);
-    router.on("DEBUG_SPRITES", () => DEBUG.SPRITES = 1 - DEBUG.SPRITES);
-    router.on("DEBUG_INFO", () => DEBUG.SHOW_INFO = 1 - DEBUG.SHOW_INFO);
+    router.on("DEBUG_MAP", () => Renderer2D.DEBUG.WORLD = !Renderer2D.DEBUG.WORLD);
+    router.on("DEBUG_CONTEXT", () => contextManager.debug = !contextManager.debug);
+    router.on("DEBUG_INTERFACE", () => uiManager.debug = !uiManager.debug);
+    router.on("DEBUG_SPRITES", () => Renderer2D.DEBUG.SPRITES = !Renderer2D.DEBUG.SPRITES);
+    router.on("DEBUG_INFO", () => gameWindow.debug = !gameWindow.debug);
 }

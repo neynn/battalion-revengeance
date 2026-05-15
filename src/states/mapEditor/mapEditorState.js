@@ -39,10 +39,10 @@ MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
 }
 
 MapEditorState.prototype.onExit = function(gameContext, stateMachine) {
-    const { uiManager, renderer } = gameContext;
+    const { uiManager, contextManager } = gameContext;
 
     uiManager.destroyContext(this.interfaceID);
-    renderer.destroyContext(this.contextID);
+    contextManager.destroyContext(this.contextID);
 
     this.interfaceID = -1;
     this.contextID = -1;

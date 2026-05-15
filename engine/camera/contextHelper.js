@@ -1,9 +1,9 @@
 import { transformWorldToTile } from "../math/transform2D.js";
 
 const getContextAtMouse = function(gameContext) {
-    const { renderer, client } = gameContext;
+    const { contextManager, client } = gameContext;
     const { cursor } = client;
-    const context = renderer.getCollidedContext(cursor.positionX, cursor.positionY, cursor.radius);
+    const context = contextManager.getCollidedContext(cursor.positionX, cursor.positionY, cursor.radius);
 
     return context;
 }

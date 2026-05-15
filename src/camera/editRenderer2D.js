@@ -1,5 +1,5 @@
 import { getCursorTile } from "../../engine/camera/contextHelper.js";
-import { DEBUG } from "../../engine/debug.js";
+import { Renderer2D } from "../../engine/renderer/renderer2D.js";
 import { TileManager } from "../../engine/tile/tileManager.js";
 import { LAYER_TYPE } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
@@ -39,7 +39,7 @@ EditRenderer2D.prototype.render = function(gameContext, camera, display) {
     this.drawSpriteLayer(gameContext, camera, display, LAYER_TYPE.BUILDING);
     this.drawHoverTile(gameContext, camera, display);
 
-    if(DEBUG.WORLD) {
+    if(Renderer2D.DEBUG.WORLD) {
         this.debugMap(camera, display, worldMap);
     }
 }

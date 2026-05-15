@@ -30,9 +30,9 @@ export const addZoom = function(gameContext, cContext) {
 }
 
 export const createEditCamera = function(gameContext, brush) {
-    const { renderer } = gameContext;
+    const { contextManager } = gameContext;
     const editRenderer = new EditRenderer2D(brush);
-    const context = renderer.createContext();
+    const context = contextManager.createContext();
     
     context.renderer = editRenderer;
     context.camera.freeViewport();
@@ -49,9 +49,9 @@ export const createEditCamera = function(gameContext, brush) {
 }
 
 export const createPlayCamera = function(gameContext) {
-    const { renderer } = gameContext;
+    const { contextManager } = gameContext;
     const battalionRenderer = new BattalionRenderer2D();
-    const context = renderer.createContext();
+    const context = contextManager.createContext();
 
     battalionRenderer.flags |= BattalionRenderer2D.FLAG.USE_PERSPECTIVES;
 
