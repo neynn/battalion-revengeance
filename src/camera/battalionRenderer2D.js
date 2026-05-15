@@ -16,6 +16,9 @@ import { TextureHandle } from "../../engine/resources/texture/textureHandle.js";
 import { getHealthColor } from "../entity/helpers.js";
 import { Autotiler } from "../../engine/tile/autotiler.js";
 import { TextStyle } from "../../engine/graphics/textStyle.js";
+import { Renderer2D } from "../../engine/renderer/renderer2D.js";
+import { Display } from "../../engine/renderer/display.js";
+import { WorldMap } from "../../engine/map/worldMap.js";
 
 const BLOCK = { COUNT: 4, WIDTH: 4, HEIGHT: 8, GAP: 1 };
 const WIDTH = (BLOCK.GAP * (BLOCK.COUNT + 1)) + BLOCK.WIDTH * BLOCK.COUNT;
@@ -28,8 +31,8 @@ const BACKGROUND_COLOR = "#000000";
 //Maybe do not let DEAD be a deferred state?
 const MAX_DEFERRED = 64;
 
-export const BattalionCamera = function() {
-    Camera2D.call(this);
+export const BattalionRenderer2D = function() {
+    Renderer2D.call(this);
 
     //Maximum number of tiles a jammer can cover, using the Manhattan distance.
     const JAMMER_MAX_USED_TILES = 1 + 2 * EntityType.MAX_JAMMER_RANGE * (EntityType.MAX_JAMMER_RANGE + 1);
@@ -38,7 +41,7 @@ export const BattalionCamera = function() {
     this.pathOverlay = new TileOverlay(EntityType.MAX_MOVE_COST);
     this.jammerOverlay = new TileOverlay(JAMMER_MAX_USED_TILES);
     this.selectOverlay = new TileOverlay(1000);
-    this.flags = BattalionCamera.FLAG.NONE;
+    this.flags = BattalionRenderer2D.FLAG.NONE;
     this.deferred = new Int32Array(MAX_DEFERRED);
     this.deferredCount = 0;
     this.inspectX = -1;
@@ -48,29 +51,29 @@ export const BattalionCamera = function() {
     this.isCurrentActor = false;
 }
 
-BattalionCamera.FLAG = {
+BattalionRenderer2D.FLAG = {
     NONE: 0,
     SHOW_ALL_JAMMERS: 1 << 0,
     USE_PERSPECTIVES: 1 << 1
 }
 
-BattalionCamera.STEALTH_THRESHOLD = 0.5;
+BattalionRenderer2D.STEALTH_THRESHOLD = 0.5;
 
-BattalionCamera.prototype = Object.create(Camera2D.prototype);
-BattalionCamera.prototype.constructor = BattalionCamera;
+BattalionRenderer2D.prototype = Object.create(Renderer2D.prototype);
+BattalionRenderer2D.prototype.constructor = BattalionRenderer2D;
 
-BattalionCamera.prototype.setInspect = function(inspectX, inspectY) {
+BattalionRenderer2D.prototype.setInspect = function(inspectX, inspectY) {
     this.inspectX = inspectX;
     this.inspectY = inspectY;
 }
 
-BattalionCamera.prototype.clearOverlays = function() {
+BattalionRenderer2D.prototype.clearOverlays = function() {
     this.selectOverlay.clear();
     this.pathOverlay.clear();
     this.jammerOverlay.clear();
 }
 
-BattalionCamera.prototype.showEntityJammerAt = function(gameContext, entity, jammerX, jammerY) {
+BattalionRenderer2D.prototype.showEntityJammerAt = function(gameContext, entity, jammerX, jammerY) {
     const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
@@ -83,7 +86,7 @@ BattalionCamera.prototype.showEntityJammerAt = function(gameContext, entity, jam
     });
 }
 
-BattalionCamera.prototype.showEntityNodes = function(gameContext, entity, nodeMap) {
+BattalionRenderer2D.prototype.showEntityNodes = function(gameContext, entity, nodeMap) {
     const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
@@ -150,7 +153,7 @@ BattalionCamera.prototype.showEntityNodes = function(gameContext, entity, nodeMa
     }
 }
 
-BattalionCamera.prototype.showEntityPath = function(autotiler, path, entityX, entityY) {
+BattalionRenderer2D.prototype.showEntityPath = function(autotiler, path, entityX, entityY) {
     let previousX = entityX;
     let previousY = entityY;
     let nextX = -2;
@@ -210,7 +213,7 @@ BattalionCamera.prototype.showEntityPath = function(autotiler, path, entityX, en
     this.pathOverlay.add(tileID, entityX, entityY);
 }
 
-BattalionCamera.prototype.drawEntityHealth = function(display, drawX, drawY, vitality) {
+BattalionRenderer2D.prototype.drawEntityHealth = function(display, drawX, drawY, vitality) {
     const { context } = display;
     const healthX = drawX + OFFSET_X;
     const healthY = drawY + OFFSET_Y;
@@ -240,20 +243,20 @@ BattalionCamera.prototype.drawEntityHealth = function(display, drawX, drawY, vit
     }
 }
 
-BattalionCamera.prototype.drawEntity = function(gameContext, display, entity, sprite, realTime, deltaTime) {
+BattalionRenderer2D.prototype.drawEntity = function(gameContext, camera, display, entity, sprite, realTime, deltaTime) {
     const { teamManager, shadeCache, tileManager } = gameContext;
     const { context } = display;
     const { tileX, tileY, offsetX, offsetY, teamID, renderFlags, opacity, config, direction } = entity;
-    const screenX = this.getScreenX(tileX) + offsetX;
-    const screenY = this.getScreenY(tileY) + offsetY;
+    const screenX = camera.getScreenX(tileX) + offsetX;
+    const screenY = camera.getScreenY(tileY) + offsetY;
 
     let alpha = opacity;
     let marker = TILE_ID.NONE;
 
-    if(this.flags & BattalionCamera.FLAG.USE_PERSPECTIVES) {
+    if(this.flags & BattalionRenderer2D.FLAG.USE_PERSPECTIVES) {
         //Is the entity visible to the viewer but below the alpha threshold.
-        if(opacity < BattalionCamera.STEALTH_THRESHOLD && (renderFlags & BattalionEntity.RENDER_FLAG.CLOAKED) && teamManager.isAlly(teamID, this.teamID)) {
-            alpha = BattalionCamera.STEALTH_THRESHOLD;
+        if(opacity < BattalionRenderer2D.STEALTH_THRESHOLD && (renderFlags & BattalionEntity.RENDER_FLAG.CLOAKED) && teamManager.isAlly(teamID, this.teamID)) {
+            alpha = BattalionRenderer2D.STEALTH_THRESHOLD;
         }
 
         if(this.isCurrentActor && (renderFlags & BattalionEntity.RENDER_FLAG.MARKABLE)) {
@@ -266,8 +269,8 @@ BattalionCamera.prototype.drawEntity = function(gameContext, display, entity, sp
             }
         }
     } else {
-        if(opacity < BattalionCamera.STEALTH_THRESHOLD) {
-            alpha = BattalionCamera.STEALTH_THRESHOLD;
+        if(opacity < BattalionRenderer2D.STEALTH_THRESHOLD) {
+            alpha = BattalionRenderer2D.STEALTH_THRESHOLD;
         }
     }
 
@@ -321,20 +324,22 @@ BattalionCamera.prototype.drawEntity = function(gameContext, display, entity, sp
     }
 }
 
-BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap) {
+/**
+ * 
+ * @param {*} gameContext 
+ * @param {Camera2D} camera 
+ * @param {Display} display 
+ * @param {WorldMap} worldMap 
+ * @returns 
+ */
+BattalionRenderer2D.prototype.drawEntities = function(gameContext, camera, display, worldMap) {
     const { timer, world, spriteManager, tileManager } = gameContext;
+    const { startX, startY, endX, endY, mapWidth } = camera;
     const { realTime, deltaTime } = timer;
     const { entityManager } = world;
     const { entities, hotEntities } = entityManager;
-
     const mapEntities = worldMap.entities;
     const sprites = spriteManager.pool.elements;
-
-    const startX = this.startX;
-    const startY = this.startY;
-    const endX = this.endX;
-    const endY = this.endY;
-    const mapWidth = this.mapWidth;
     const currentFrame = this.currentFrame;
     let inspectedEntity = null;
     let count = 0;
@@ -347,7 +352,7 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
             const { spriteID } = entity;
 
             if(spriteID !== SpriteManager.INVALID_ID) {
-                if(this.flags & BattalionCamera.FLAG.USE_PERSPECTIVES) {
+                if(this.flags & BattalionRenderer2D.FLAG.USE_PERSPECTIVES) {
                     if(entity.isVisibleTo(gameContext, this.teamID)) {
                         sprites[spriteID].lastFrame = currentFrame;
                         inspectedEntity = entity;
@@ -379,7 +384,7 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
                         if(renderFlags & BattalionEntity.RENDER_FLAG.ACTING) {
                             this.addDeferred(eIndex);
                         } else {
-                            this.drawEntity(gameContext, display, entity, sprite, realTime, deltaTime);
+                            this.drawEntity(gameContext, camera, display, entity, sprite, realTime, deltaTime);
                         }
 
                         count++;
@@ -412,18 +417,18 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
         const entity = entities[this.deferred[i]];
         const spriteID = entity.spriteID;
 
-        this.drawEntity(gameContext, display, entity, sprites[spriteID], realTime, deltaTime);
+        this.drawEntity(gameContext, camera, display, entity, sprites[spriteID], realTime, deltaTime);
     }
 
     if(inspectedEntity) {
         const { spriteID, tileX, tileY, cash } = inspectedEntity;
 
-        this.drawEntity(gameContext, display, inspectedEntity, sprites[spriteID], realTime, deltaTime);
+        this.drawEntity(gameContext, camera, display, inspectedEntity, sprites[spriteID], realTime, deltaTime);
 
         if(cash !== 0) {
             const { context } = display;
-            const screenX = this.tileXToScreen(tileX);
-            const screenY = this.tileYToScreen(tileY);
+            const screenX = camera.tileXToScreen(tileX);
+            const screenY = camera.tileYToScreen(tileY);
 
             this.drawTile(tileManager, TILE_ID.CASH_BOX, display.context, screenX, screenY);
 
@@ -442,13 +447,13 @@ BattalionCamera.prototype.drawEntities = function(gameContext, display, worldMap
     return count;
 }
 
-BattalionCamera.prototype.addDeferred = function(index) {
+BattalionRenderer2D.prototype.addDeferred = function(index) {
     if(this.deferredCount < MAX_DEFERRED) {
         this.deferred[this.deferredCount++] = index;
     }
 }
 
-BattalionCamera.prototype.drawJammers = function(tileManager, display, worldMap) {
+BattalionRenderer2D.prototype.drawJammers = function(camera, tileManager, display, worldMap) {
     const { jammers } = worldMap;
     const { context } = display;
     let count = 0;
@@ -456,27 +461,27 @@ BattalionCamera.prototype.drawJammers = function(tileManager, display, worldMap)
     for(const [index, field] of jammers) {
         const { tileX, tileY, blockers } = field;
 
-        count += this.drawTileClipped(tileManager, TILE_ID.JAMMER, context, tileX, tileY);
+        count += this.drawTileClipped(camera, tileManager, TILE_ID.JAMMER, context, tileX, tileY);
     }
 
     return count;
 }
 
-BattalionCamera.prototype.drawMines = function(gameContext, display, worldMap) {
+BattalionRenderer2D.prototype.drawMines = function(gameContext, camera, display, worldMap) {
     const { tileManager } = gameContext;
     const { context } = display;
     const { mines } = worldMap;
     const length = mines.length;
     let count = 0;
 
-    if(this.flags & BattalionCamera.FLAG.USE_PERSPECTIVES) {
+    if(this.flags & BattalionRenderer2D.FLAG.USE_PERSPECTIVES) {
         for(let i = 0; i < length; i++) {
             const mine = mines[i];
             const { tileX, tileY, opacity } = mine;
             let alpha = 1;
             
-            if(opacity < BattalionCamera.STEALTH_THRESHOLD && mine.isVisibleTo(gameContext, this.teamID)) {
-                alpha = BattalionCamera.STEALTH_THRESHOLD;
+            if(opacity < BattalionRenderer2D.STEALTH_THRESHOLD && mine.isVisibleTo(gameContext, this.teamID)) {
+                alpha = BattalionRenderer2D.STEALTH_THRESHOLD;
             } else {
                 alpha = opacity;
             }
@@ -486,7 +491,7 @@ BattalionCamera.prototype.drawMines = function(gameContext, display, worldMap) {
                 
                 display.setAlpha(alpha);
 
-                count += this.drawTileClipped(tileManager, tileID, context, tileX, tileY);
+                count += this.drawTileClipped(camera, tileManager, tileID, context, tileX, tileY);
             }
         }
     } else {
@@ -495,36 +500,44 @@ BattalionCamera.prototype.drawMines = function(gameContext, display, worldMap) {
             const tileID = mines[i].getTileSprite();
 
             if(flags & Mine.FLAG.HIDDEN) {
-                display.setAlpha(BattalionCamera.STEALTH_THRESHOLD);
+                display.setAlpha(BattalionRenderer2D.STEALTH_THRESHOLD);
             } else {
                 display.setAlpha(1);
             }
 
-            count += this.drawTileClipped(tileManager, tileID, context, tileX, tileY);
+            count += this.drawTileClipped(camera, tileManager, tileID, context, tileX, tileY);
         }
     }
 
     return count;
 }
 
-BattalionCamera.prototype.drawTiles = function(gameContext, display, worldMap) {
+/**
+ * 
+ * @param {*} gameContext 
+ * @param {Camera2D} camera 
+ * @param {Display} display 
+ * @param {WorldMap} worldMap 
+ * @returns 
+ */
+BattalionRenderer2D.prototype.drawTiles = function(gameContext, camera, display, worldMap) {
     const { tileManager } = gameContext;
     const { context } = display;
     const groundLayer = worldMap.getLayer(BattalionMap.LAYER.GROUND).buffer;
     const decoLayer = worldMap.getLayer(BattalionMap.LAYER.DECORATION).buffer;
     const cloudLayer = worldMap.getLayer(BattalionMap.LAYER.CLOUD).buffer;
 
-    const wTileX = this.tileX;
-    const wTileY = this.tileY;
-    const startX = this.startX;
-    const startY = this.startY;
-    const endX = this.endX;
-    const endY = this.endY;
-    const mapWidth = this.mapWidth;
-    const tileWidth = this.tileWidth;
-    const tileHeight = this.tileHeight;
-    const viewportX = this.fOffsetX;
-    const viewportY = this.fOffsetY;
+    const wTileX = camera.tileX;
+    const wTileY = camera.tileY;
+    const startX = camera.startX;
+    const startY = camera.startY;
+    const endX = camera.endX;
+    const endY = camera.endY;
+    const mapWidth = camera.mapWidth;
+    const tileWidth = camera.tileWidth;
+    const tileHeight = camera.tileHeight;
+    const viewportX = camera.fOffsetX;
+    const viewportY = camera.fOffsetY;
 
     let inspectedEntity = null;
     let entityCount = 0;
@@ -567,7 +580,7 @@ BattalionCamera.prototype.drawTiles = function(gameContext, display, worldMap) {
     return tileCount;
 }
 
-BattalionCamera.prototype.update = function(gameContext, display) {
+BattalionRenderer2D.prototype.render = function(gameContext, camera, display) {
     const { client, world, tileManager, teamManager } = gameContext;
     const { session } = client;
     const { mapManager, actorManager } = world;
@@ -592,46 +605,49 @@ BattalionCamera.prototype.update = function(gameContext, display) {
         this.teamID = TeamManager.INVALID_ID;
     }
 
-    this.updateWorldBounds(worldMap.width, worldMap.height);
-    tiles += this.drawTiles(gameContext, display, worldMap);
-    overlays += this.drawOverlay(tileManager, display, this.selectOverlay);
-    sprites += this.drawSpriteLayer(gameContext, display, LAYER_TYPE.BUILDING);
-    other += this.drawMines(gameContext, display, worldMap);
+    this.currentFrame++;
+    
+    camera.updateWorldBounds(worldMap.width, worldMap.height);
+    tiles += this.drawTiles(gameContext, camera, display, worldMap);
+    overlays += this.drawOverlay(camera, tileManager, display, this.selectOverlay);
+    sprites += this.drawSpriteLayer(gameContext, camera, display, LAYER_TYPE.BUILDING);
+    other += this.drawMines(gameContext, camera, display, worldMap);
 
-    if(this.flags & BattalionCamera.FLAG.SHOW_ALL_JAMMERS) {
-        other += this.drawJammers(tileManager, display, worldMap);
+    if(this.flags & BattalionRenderer2D.FLAG.SHOW_ALL_JAMMERS) {
+        other += this.drawJammers(camera, tileManager, display, worldMap);
     } else {
-        overlays += this.drawOverlay(tileManager, display, this.jammerOverlay);
+        overlays += this.drawOverlay(camera, tileManager, display, this.jammerOverlay);
     }
 
-    overlays += this.drawOverlay(tileManager, display, this.pathOverlay);
-    sprites += this.drawEntities(gameContext, display, worldMap);
-    sprites += this.drawSortedSpriteLayer(gameContext, display, LAYER_TYPE.GFX);
-    //this.shadeScreen(display, "#000000", 0.5);
+    overlays += this.drawOverlay(camera, tileManager, display, this.pathOverlay);
+    sprites += this.drawEntities(gameContext, camera, display, worldMap);
+    sprites += this.drawSortedSpriteLayer(gameContext, camera, display, LAYER_TYPE.GFX);
+    //this.shadeScreen(camera, display, "#000000", 0.5);
 
     if(DEBUG.WORLD) {
-        this.debugMap(display, worldMap);
+        this.debugMap(camera, display, worldMap);
         this.drawInfo(gameContext, display, tiles, sprites, overlays, other);
     }
 }
 
-BattalionCamera.prototype.shadeScreen = function(display, color, alpha) {
+BattalionRenderer2D.prototype.shadeScreen = function(camera, display, color, alpha) {
+    const { worldWidth, worldHeight } = camera;
     const { width, height } = display;
     let drawWidth = width;
     let drawHeight = height;
 
-    if(this.worldWidth < drawWidth) {
-        drawWidth = this.worldWidth;
+    if(worldWidth < drawWidth) {
+        drawWidth = worldWidth;
     }
 
-    if(this.worldHeight < drawHeight) {
-        drawHeight = this.worldHeight;
+    if(worldHeight < drawHeight) {
+        drawHeight = worldHeight;
     }
 
     shadeScreen(display, color, alpha, drawWidth, drawHeight);
 }
 
-BattalionCamera.prototype.drawInfo = function(gameContext, display, tiles, sprites, overlays, other) {
+BattalionRenderer2D.prototype.drawInfo = function(gameContext, display, tiles, sprites, overlays, other) {
     const { teamManager } = gameContext;
     const { round, turn } = teamManager;
     const { context } = display;
@@ -644,20 +660,21 @@ BattalionCamera.prototype.drawInfo = function(gameContext, display, tiles, sprit
     context.fillText(`Overlays ${overlays} | Other ${other}`, 0, 25);
 }
 
-BattalionCamera.prototype.debugMap = function(display, worldMap) {
+BattalionRenderer2D.prototype.debugMap = function(camera, display, worldMap) {
     const { context } = display;
-    const scaleX = Math.floor(this.tileWidth / 6);
-    const scaleY = Math.floor(this.tileHeight / 6);
+    const { tileWidth, tileHeight } = camera;
+    const scaleX = Math.floor(tileWidth / 6);
+    const scaleY = Math.floor(tileHeight / 6);
 
     context.globalAlpha = 1;
     context.font = `${scaleX}px Arial`;
     context.textBaseline = "middle";
     context.textAlign = "left";
 
-    this.drawTilesWithCallback((tileX, tileY, index, renderX, renderY) => {
+    this.drawTilesWithCallback(camera, (tileX, tileY, index, renderX, renderY) => {
         context.fillStyle = "#0000ff";
-        context.fillText(`${tileX} | ${tileY}`, renderX + scaleX, renderY + this.tileHeight - scaleY);
+        context.fillText(`${tileX} | ${tileY}`, renderX + scaleX, renderY + tileHeight - scaleY);
     });
 
-    this.drawMapOutlines(context);
+    this.drawMapOutlines(camera, context);
 }

@@ -1,17 +1,13 @@
 import { Display } from "./display.js";
 import { isRectangleRectangleIntersect } from "../math/math.js";
 import { Cursor } from "../client/cursor/cursor.js";
-import { Camera } from "../camera/camera.js";
 import { Camera2D } from "../camera/camera2D.js";
+import { Renderer2D } from "./renderer2D.js";
 
-/**
- * 
- * @param {number} id 
- * @param {Camera2D} camera 
- */
-export const CameraContext = function(id, camera) {
+export const CameraContext = function(id) {
     this.id = id;
-    this.camera = camera;
+    this.camera = new Camera2D();
+    this.renderer = null;
     this.positionX = 0;
     this.positionY = 0;
     this.flags = CameraContext.FLAG.NONE;
@@ -219,7 +215,7 @@ CameraContext.prototype.onWindowResize = function(windowWidth, windowHeight) {
 }
 
 CameraContext.prototype.draw = function(gameContext, display) {
-    if(this.flags & CameraContext.FLAG.HIDDEN) {
+    if(this.flags & CameraContext.FLAG.HIDDEN || !this.renderer) {
         return;
     }
 
@@ -241,10 +237,10 @@ CameraContext.prototype.draw = function(gameContext, display) {
         }
 
         this.display.clear();
-        this.camera.update(gameContext, this.display);
+        this.renderer.render(gameContext, this.camera, this.display);
         this.display.copyTo(display, scaledWidth, scaledHeight);
     } else {
-        this.camera.update(gameContext, display);
+        this.renderer.render(gameContext, this.camera, display);
     }
 
     if(this.camera.doUpdate) {

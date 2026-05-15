@@ -2,10 +2,10 @@ import { getCursorTile } from "../../engine/camera/contextHelper.js";
 import { BattalionActor } from "./battalionActor.js";
 import { MapInspector } from "../map/mapInspector.js";
 
-export const Spectator = function(id, inspector, camera) {
+export const Spectator = function(id, inspector, renderer) {
     BattalionActor.call(this, id);
 
-    this.camera = camera;
+    this.renderer = renderer;
     this.inspector = inspector;
 }
 

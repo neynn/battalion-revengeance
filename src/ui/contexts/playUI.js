@@ -200,7 +200,7 @@ PlayUI.prototype.drawTile = function(gameContext, display, tileX, tileY, screenX
         const tileID = worldMap.getTile(layerID, tileX, tileY);
 
         if(tileID > TILE_ID.NONE) {
-            this.cameraContext.camera.drawTile(tileManager, tileID, context, screenX + 4, screenY + 11, 0.5);
+            this.cameraContext.renderer.drawTile(tileManager, tileID, context, screenX + 4, screenY + 11, 0.5);
         }
     }
 }

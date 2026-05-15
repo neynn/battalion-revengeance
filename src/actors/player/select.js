@@ -216,7 +216,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
                 }
             }
 
-            player.camera.showEntityPath(attackAutotiler, this.path, this.originX, this.originY);
+            player.renderer.showEntityPath(attackAutotiler, this.path, this.originX, this.originY);
             return;
         }
     }
@@ -247,10 +247,10 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
         this.path = getBestPath(gameContext, this.nodeMap, tileX, tileY);
     }
 
-    player.camera.showEntityPath(walkAutotiler, this.path, this.originX, this.originY);
+    player.renderer.showEntityPath(walkAutotiler, this.path, this.originX, this.originY);
 
     if(this.entity.isJammer()) {
-        player.camera.showEntityJammerAt(gameContext, this.entity, this.cursorX, this.cursorY);
+        player.renderer.showEntityJammerAt(gameContext, this.entity, this.cursorX, this.cursorY);
     }
 }
 
@@ -373,7 +373,7 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
             }
 
             //Clears visual overlays when clicking on an enemy entity.
-            player.camera.clearOverlays();
+            player.renderer.clearOverlays();
         }
 
         stateMachine.setNextState(gameContext, Player.STATE.IDLE);
@@ -382,7 +382,7 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
             const request = this.getHealRequest(entity);
 
             //Clears visual overlays when clicking on an enemy entity.
-            player.camera.clearOverlays();
+            player.renderer.clearOverlays();
 
             if(request) {
                 player.addIntent(request);

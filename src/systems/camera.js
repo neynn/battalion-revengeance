@@ -1,8 +1,8 @@
 import { Cursor } from "../../engine/client/cursor/cursor.js";
 import { TILE_HEIGHT, TILE_WIDTH } from "../../engine/engine_constants.js";
 import { Scroller } from "../../engine/util/scroller.js";
-import { BattalionCamera } from "../camera/battalionCamera.js";
-import { EditCamera } from "../camera/editCamera.js";
+import { BattalionRenderer2D } from "../camera/battalionRenderer2D.js";
+import { EditRenderer2D } from "../camera/editRenderer2D.js";
 
 export const addZoom = function(gameContext, cContext) {
     const { client } = gameContext;
@@ -31,16 +31,17 @@ export const addZoom = function(gameContext, cContext) {
 
 export const createEditCamera = function(gameContext, brush) {
     const { renderer } = gameContext;
-    const camera = new EditCamera(brush);
-    const context = renderer.createContext(camera);
-
-    camera.freeViewport();
-    camera.setTileSize(TILE_WIDTH, TILE_HEIGHT);
-
+    const editRenderer = new EditRenderer2D(brush);
+    const context = renderer.createContext();
+    
+    context.renderer = editRenderer;
+    context.camera.freeViewport();
+    context.camera.setTileSize(TILE_WIDTH, TILE_HEIGHT);
+    
     context.setDragButton(Cursor.BUTTON.LEFT);
     context.enableBuffer();
     context.forceReload();
-    camera.reloadViewport();
+    context.camera.reloadViewport();
 
     //addZoom(gameContext, context);
 
@@ -49,12 +50,14 @@ export const createEditCamera = function(gameContext, brush) {
 
 export const createPlayCamera = function(gameContext) {
     const { renderer } = gameContext;
-    const camera = new BattalionCamera();
-    const context = renderer.createContext(camera);
+    const battalionRenderer = new BattalionRenderer2D();
+    const context = renderer.createContext();
 
-    camera.flags |= BattalionCamera.FLAG.USE_PERSPECTIVES;
-    camera.bindViewport();
-    camera.setTileSize(TILE_WIDTH, TILE_HEIGHT);
+    battalionRenderer.flags |= BattalionRenderer2D.FLAG.USE_PERSPECTIVES;
+
+    context.renderer = battalionRenderer;
+    context.camera.bindViewport();
+    context.camera.setTileSize(TILE_WIDTH, TILE_HEIGHT);
 
     context.setDragButton(Cursor.BUTTON.LEFT);
     context.enableBuffer();
@@ -62,7 +65,7 @@ export const createPlayCamera = function(gameContext) {
     context.fixBuffer(560, 560);
     context.setScale(1);
     context.forceReload();
-    camera.reloadViewport();
+    context.camera.reloadViewport();
 
     addZoom(gameContext, context);
 

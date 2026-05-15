@@ -19,7 +19,7 @@ MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
     const controller = new EditorController(mapEditor);
     const context = createEditCamera(gameContext, mapEditor.brush);
     const camera = context.getCamera();
-    const userInterface = new MapEditorInterface(controller, mapEditor, camera);
+    const userInterface = new MapEditorInterface(controller, mapEditor, context.renderer);
 
     userInterface.load(gameContext);
     userInterface.addClickByName("BUTTON_BACK", (e) => states.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));

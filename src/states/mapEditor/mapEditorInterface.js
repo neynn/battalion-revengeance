@@ -29,12 +29,12 @@ const TEXT_COLOR_VIEW = getRGBAString(238, 238, 238, 255);
 const TEXT_COLOR_EDIT = getRGBAString(252, 252, 63, 255);
 const TEXT_COLOR_HIDE = getRGBAString(207, 55, 35, 255);
 
-export const MapEditorInterface = function(controller, editor, camera) {
+export const MapEditorInterface = function(controller, editor, renderer) {
     UIContext.call(this);
 
     this.controller = controller;
     this.editor = editor;
-    this.camera = camera;
+    this.renderer = renderer;
     this.doImmediate = true;
 
     this.textColorView = [238, 238, 238, 255];
@@ -104,7 +104,7 @@ MapEditorInterface.prototype.drawTileEditor = function(gameContext, display, too
             const tileID = tileSet.getValue(palletIndex);
 
             if(tileID !== TileManager.TILE_ID.INVALID) {
-                this.camera.drawTile(tileManager, tileID, context, positionX, positionY, scale);
+                this.renderer.drawTile(tileManager, tileID, context, positionX, positionY, scale);
 
                 if(buttonFlags & IM_FLAG.HOT) {
                     context.fillRect(positionX, positionY, SLOT_BUTTON_SIZE, SLOT_BUTTON_SIZE);

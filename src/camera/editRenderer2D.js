@@ -3,20 +3,20 @@ import { DEBUG } from "../../engine/debug.js";
 import { TileManager } from "../../engine/tile/tileManager.js";
 import { LAYER_TYPE } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
-import { BattalionCamera } from "./battalionCamera.js";
+import { BattalionRenderer2D } from "./battalionRenderer2D.js";
 
-export const EditCamera = function(brush) {
-    BattalionCamera.call(this);
+export const EditRenderer2D = function(brush) {
+    BattalionRenderer2D.call(this);
 
     this.overlayAlpha = 0.75;
     this.overlayColor = "#eeeeee";
     this.brush = brush;
 }
 
-EditCamera.prototype = Object.create(BattalionCamera.prototype);
-EditCamera.prototype.constructor = EditCamera;
+EditRenderer2D.prototype = Object.create(BattalionRenderer2D.prototype);
+EditRenderer2D.prototype.constructor = EditRenderer2D;
 
-EditCamera.prototype.update = function(gameContext, display) {
+EditRenderer2D.prototype.render = function(gameContext, camera, display) {
     const { world, tileManager } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
@@ -25,25 +25,26 @@ EditCamera.prototype.update = function(gameContext, display) {
         return;
     }
 
-    this.updateWorldBounds(worldMap.width, worldMap.height);
-    this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.GROUND));
-    this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
-    this.drawLayer(tileManager, display, worldMap.getLayer(BattalionMap.LAYER.CLOUD));
+    camera.updateWorldBounds(worldMap.width, worldMap.height);
+
+    this.drawLayer(camera, tileManager, display, worldMap.getLayer(BattalionMap.LAYER.GROUND));
+    this.drawLayer(camera, tileManager, display, worldMap.getLayer(BattalionMap.LAYER.DECORATION));
+    this.drawLayer(camera, tileManager, display, worldMap.getLayer(BattalionMap.LAYER.CLOUD));
 
     if(this.showAllJammers) {
-        this.drawJammers(tileManager, display, worldMap);
+        this.drawJammers(camera, tileManager, display, worldMap);
     }
 
-    this.drawEntities(gameContext, display, worldMap);
-    this.drawSpriteLayer(gameContext, display, LAYER_TYPE.BUILDING);
-    this.drawHoverTile(gameContext, display);
+    this.drawEntities(gameContext, camera, display, worldMap);
+    this.drawSpriteLayer(gameContext, camera, display, LAYER_TYPE.BUILDING);
+    this.drawHoverTile(gameContext, camera, display);
 
     if(DEBUG.WORLD) {
-        this.debugMap(display, worldMap);
+        this.debugMap(camera, display, worldMap);
     }
 }
 
-EditCamera.prototype.drawHoverTile = function(gameContext, display) {
+EditRenderer2D.prototype.drawHoverTile = function(gameContext, camera, display) {
     const { context } = display;
     const { id, name, width, height } = this.brush;
 
@@ -65,8 +66,8 @@ EditCamera.prototype.drawHoverTile = function(gameContext, display) {
 
     for(let i = startY; i <= endY; i++) {
         for(let j = startX; j <= endX; j++) {
-            const screenX = this.getScreenX(j);
-            const screenY = this.getScreenY(i);
+            const screenX = camera.getScreenX(j);
+            const screenY = camera.getScreenY(i);
 
             this.drawTile(tileManager, id, context, screenX, screenY);
 

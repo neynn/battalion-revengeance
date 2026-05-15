@@ -39,9 +39,9 @@ Renderer.prototype.hasContext = function(contextID) {
     return false;
 }
 
-Renderer.prototype.createContext = function(camera) {
+Renderer.prototype.createContext = function() {
     const contextID = this.nextID++;
-    const context = new CameraContext(contextID, camera);
+    const context = new CameraContext(contextID);
 
     context.onWindowResize(this.windowWidth, this.windowHeight);
 

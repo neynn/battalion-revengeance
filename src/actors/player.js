@@ -12,18 +12,18 @@ import { ExtractVTable } from "../action/types/extract.js";
 import { ProduceVTable } from "../action/types/produceEntity.js";
 import { ToTransportVTable } from "../action/types/toTransport.js";
 import { FromTransportVTable } from "../action/types/fromTransport.js";
-import { BattalionCamera } from "../camera/battalionCamera.js";
+import { BattalionRenderer2D } from "../camera/battalionRenderer2D.js";
 
 /**
  * 
  * @param {*} id 
  * @param {MapInspector} inspector 
- * @param {BattalionCamera} camera 
+ * @param {BattalionRenderer2D} renderer 
  */
-export const Player = function(id, inspector, camera) {
+export const Player = function(id, inspector, renderer) {
     BattalionActor.call(this, id);
 
-    this.camera = camera;
+    this.renderer = renderer;
     this.inspector = inspector;
     this.nodeMap = new Map();
     this.maxIntents = 10;
@@ -59,17 +59,17 @@ Player.prototype.onTurnStart = function(gameContext) {
 
 Player.prototype.onTurnEnd = function(gameContext) {
     this.clearIntents();
-    this.camera.clearOverlays();
+    this.renderer.clearOverlays();
     this.states.setNextState(gameContext, Player.STATE.IDLE);
 }
 
 Player.prototype.refreshEntityNodeMap = function(gameContext, entity) {
-    this.camera.clearOverlays();
+    this.renderer.clearOverlays();
     this.nodeMap.clear();
 
     entity.mGetNodeMap(gameContext, this.nodeMap);
 
-    this.camera.showEntityNodes(gameContext, entity, this.nodeMap);
+    this.renderer.showEntityNodes(gameContext, entity, this.nodeMap);
 }
 
 Player.prototype.onClick = function(gameContext, tileX, tileY) {
@@ -77,7 +77,7 @@ Player.prototype.onClick = function(gameContext, tileX, tileY) {
     const { mapManager } = world;
     const inspectorState = this.inspector.inspect(gameContext, this, tileX, tileY);
 
-    this.camera.clearOverlays();
+    this.renderer.clearOverlays();
 
     switch(inspectorState) {
         case MapInspector.STATE.TILE: {
@@ -201,10 +201,10 @@ Player.prototype.activeUpdate = function(gameContext) {
 Player.prototype.update = function(gameContext) {
     const flags = this.inspector.update(gameContext);
 
-    this.camera.setInspect(this.inspector.lastHoverX, this.inspector.lastHoverY);
+    this.renderer.setInspect(this.inspector.lastHoverX, this.inspector.lastHoverY);
 
     if(flags & MapInspector.FLAG.ENTITY_REMOVED) {
-        this.camera.clearOverlays();
+        this.renderer.clearOverlays();
     }
 
     if(flags & MapInspector.FLAG.HOVER_CHANGED) {
