@@ -1,4 +1,4 @@
-import { CameraContext } from "../camera/cameraContext.js";
+import { CameraContext } from "./cameraContext.js";
 import { DEBUG } from "../debug.js";
 
 export const Renderer = function(windowWidth, windowHeight) {
@@ -41,7 +41,7 @@ Renderer.prototype.hasContext = function(contextID) {
 
 Renderer.prototype.createContext = function(camera) {
     const contextID = this.nextID++;
-    const context = new CameraContext(contextID, this, camera);
+    const context = new CameraContext(contextID, camera);
 
     context.onWindowResize(this.windowWidth, this.windowHeight);
 

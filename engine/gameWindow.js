@@ -1,5 +1,5 @@
 import { getCursorTile } from "./camera/contextHelper.js";
-import { Display } from "./camera/display.js";
+import { Display } from "./renderer/display.js";
 import { DEBUG } from "./debug.js";
 
 const RESIZE_BUFFER_TIME = 0.2;

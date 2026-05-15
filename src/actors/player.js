@@ -12,7 +12,14 @@ import { ExtractVTable } from "../action/types/extract.js";
 import { ProduceVTable } from "../action/types/produceEntity.js";
 import { ToTransportVTable } from "../action/types/toTransport.js";
 import { FromTransportVTable } from "../action/types/fromTransport.js";
+import { BattalionCamera } from "../camera/battalionCamera.js";
 
+/**
+ * 
+ * @param {*} id 
+ * @param {MapInspector} inspector 
+ * @param {BattalionCamera} camera 
+ */
 export const Player = function(id, inspector, camera) {
     BattalionActor.call(this, id);
 

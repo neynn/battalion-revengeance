@@ -1,16 +1,24 @@
 import { Display } from "./display.js";
 import { isRectangleRectangleIntersect } from "../math/math.js";
 import { Cursor } from "../client/cursor/cursor.js";
+import { Camera } from "../camera/camera.js";
+import { Camera2D } from "../camera/camera2D.js";
 
-export const CameraContext = function(id, renderer, camera) {
+/**
+ * 
+ * @param {number} id 
+ * @param {Camera2D} camera 
+ */
+export const CameraContext = function(id, camera) {
     this.id = id;
-    this.renderer = renderer;
     this.camera = camera;
     this.positionX = 0;
     this.positionY = 0;
     this.flags = CameraContext.FLAG.NONE;
     this.dragButton = Cursor.BUTTON._INVALID;
     this.display = new Display(1, 1, Display.TYPE.BUFFER);
+    this.screenWidth = 0;
+    this.screenHeight = 0;
 }
 
 CameraContext.FLAG = {
@@ -54,7 +62,7 @@ CameraContext.prototype.enableBuffer = function() {
 CameraContext.prototype.disableBuffer = function() {
     this.flags &= ~CameraContext.FLAG.USE_BUFFER;
     this.camera.setScale(1);
-    this.camera.setViewportSize(this.renderer.windowWidth, this.renderer.windowHeight);
+    this.camera.setViewportSize(this.screenWidth, this.screenHeight);
     this.refresh();
 }
 
@@ -102,7 +110,6 @@ CameraContext.prototype.setPosition = function(x, y) {
 CameraContext.prototype.centerCameraOnScreen = function() {
     const { scale, mapWidth, mapHeight, tileWidth, tileHeight, sViewportWidth, sViewportHeight } = this.camera;
     const { width, height } = this.display;
-    const { windowWidth, windowHeight } = this.renderer;
     const sWorldWidth = mapWidth * tileWidth * scale;
     const sWorldHeight = mapHeight * tileHeight * scale;
 
@@ -133,16 +140,16 @@ CameraContext.prototype.centerCameraOnScreen = function() {
         usedHeight = visibleHeight;
     }
 
-    if(windowWidth < usedWidth) {
+    if(this.screenWidth < usedWidth) {
         positionX = 0;
     } else {
-        positionX = (windowWidth - usedWidth) * 0.5;
+        positionX = (this.screenWidth - usedWidth) * 0.5;
     }
 
-    if(windowHeight < usedHeight) {
+    if(this.screenHeight < usedHeight) {
         positionY = 0;
     } else {
-        positionY = (windowHeight - usedHeight) * 0.5;
+        positionY = (this.screenHeight - usedHeight) * 0.5;
     }
 
     this.setPosition(positionX, positionY);
@@ -167,8 +174,8 @@ CameraContext.prototype.endDrag = function(buttonID) {
 }
 
 CameraContext.prototype.autoScaleToScreen = function(isFractured) {
-    let width = this.renderer.windowWidth;
-    let height = this.renderer.windowHeight;
+    let width = this.screenWidth;
+    let height = this.screenHeight;
 
     if(this.flags & CameraContext.FLAG.AUTO_CENTER) {
         width -= this.positionX;
@@ -191,12 +198,13 @@ CameraContext.prototype.refresh = function() {
 }
 
 CameraContext.prototype.forceReload = function() {
-    const { windowWidth, windowHeight } = this.renderer;
-
-    this.onWindowResize(windowWidth, windowHeight);
+    this.onWindowResize(this.screenWidth, this.screenHeight);
 }
 
 CameraContext.prototype.onWindowResize = function(windowWidth, windowHeight) {
+    this.screenWidth = windowWidth;
+    this.screenHeight = windowHeight;
+
     if(this.flags & CameraContext.FLAG.USE_BUFFER) {
         if(!(this.flags & CameraContext.FLAG.FIX_BUFFER)) {
             this.display.resize(windowWidth, windowHeight);

@@ -11,6 +11,7 @@ import { isDrawTime, mRegenerateLines } from "../helpers.js";
 import { ActorManager } from "../../../engine/world/actor/actorManager.js";
 import { EndTurnVTable } from "../../action/types/endTurn.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
+import { CameraContext } from "../../../engine/renderer/cameraContext.js";
 
 const PORTRAIT_WIDTH = 130;
 const PORTRAIT_HEIGHT = 150;
@@ -121,11 +122,15 @@ LineCache.prototype.drawRecon = function(context, reconX, reconY, deltaTime) {
     }
 }
 
-export const PlayUI = function(cContext) {
+/**
+ * 
+ * @param {CameraContext} cameraContext 
+ */
+export const PlayUI = function(cameraContext) {
     UIContext.call(this);
 
     this.doImmediate = true;
-    this.cContext = cContext;
+    this.cameraContext = cameraContext;
     this.inspector = new MapInspector();
     this.inspectSprite = SpriteManager.EMPTY_SPRITE;
 
@@ -140,12 +145,6 @@ export const PlayUI = function(cContext) {
     this.iconTick = 0;
     this.lineCache = new LineCache();
 }
-
-PlayUI.WIDGET_ID = {
-    HUD_UNDO: 0,
-    HUD_MENU: 1,
-    HUD_QUIT: 2
-};
 
 PlayUI.prototype = Object.create(UIContext.prototype);
 PlayUI.prototype.constructor = PlayUI;
@@ -201,7 +200,7 @@ PlayUI.prototype.drawTile = function(gameContext, display, tileX, tileY, screenX
         const tileID = worldMap.getTile(layerID, tileX, tileY);
 
         if(tileID > TILE_ID.NONE) {
-            this.cContext.camera.drawTile(tileManager, tileID, context, screenX + 4, screenY + 11, 0.5);
+            this.cameraContext.camera.drawTile(tileManager, tileID, context, screenX + 4, screenY + 11, 0.5);
         }
     }
 }
@@ -499,17 +498,17 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
     const worldMap = mapManager.getActiveMap();
     const index = worldMap.getIndex(tileX, tileY);
 
-    const gameWidth = this.cContext.camera.viewportWidth + RECON_MAIN_WIDTH;
-    const gameHeight = this.cContext.camera.viewportHeight + RECON_BAR_HEIGHT;
+    const gameWidth = this.cameraContext.camera.viewportWidth + RECON_MAIN_WIDTH;
+    const gameHeight = this.cameraContext.camera.viewportHeight + RECON_BAR_HEIGHT;
     const gameX = Math.floor((width - gameWidth) / 2);
     const gameY = Math.floor((height - gameHeight) / 2);
 
-    this.cContext.setPosition(gameX, gameY);
+    this.cameraContext.setPosition(gameX, gameY);
 
-    const mainX = gameX + this.cContext.camera.viewportWidth;
+    const mainX = gameX + this.cameraContext.camera.viewportWidth;
     const mainY = gameY;
     const reconX = gameX;
-    const reconY = gameY + this.cContext.camera.viewportHeight;
+    const reconY = gameY + this.cameraContext.camera.viewportHeight;
 
     //In all recons.
     const headY = reconY + 4;
