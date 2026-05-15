@@ -1,6 +1,6 @@
 import { getCursorTile } from "../../engine/camera/contextHelper.js";
 import { BattalionActor } from "./battalionActor.js";
-import { MapInspector } from "./player/inspector.js";
+import { MapInspector } from "../map/mapInspector.js";
 
 export const Spectator = function(id, inspector, camera) {
     BattalionActor.call(this, id);
@@ -13,7 +13,7 @@ Spectator.prototype = Object.create(BattalionActor.prototype);
 Spectator.prototype.constructor = Spectator;
 
 Spectator.prototype.onClick = function(gameContext, tileX, tileY) {
-    this.inspector.inspect(gameContext, this, this.camera, tileX, tileY);
+    this.inspector.inspect(gameContext, this, tileX, tileY);
 }
 
 Spectator.prototype.loadKeybinds = function(gameContext) {
@@ -36,9 +36,5 @@ Spectator.prototype.loadKeybinds = function(gameContext) {
 
 
 Spectator.prototype.update = function(gameContext) {
-    const hoverChanged = this.inspector.update(gameContext, this.camera);
-
-    if(hoverChanged) {
-        //TODO: Update camera.
-    }
+    const flags = this.inspector.update(gameContext);
 }

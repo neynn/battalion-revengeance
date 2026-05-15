@@ -45,7 +45,7 @@ Mine.prototype.load = function(data) {
 
 Mine.prototype.isVisibleTo = function(gameContext, teamID) {
     if(!(this.flags & Mine.FLAG.HIDDEN)) {
-        return false;
+        return true;
     }
 
     const { teamManager } = gameContext;

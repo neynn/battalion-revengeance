@@ -5,7 +5,7 @@ import { IdleState } from "./player/idle.js";
 import { SelectState } from "./player/select.js";
 import { DIRECTION, ENTITY_TYPE, TRANSPORT_TYPE } from "../enums.js";
 import { saveStoryMap } from "../systems/save.js";
-import { MapInspector } from "./player/inspector.js";
+import { MapInspector } from "../map/mapInspector.js";
 import { DeathActionVTable } from "../action/types/death.js";
 import { EndTurnVTable } from "../action/types/endTurn.js";
 import { ExtractVTable } from "../action/types/extract.js";
@@ -18,6 +18,7 @@ export const Player = function(id, inspector, camera) {
 
     this.camera = camera;
     this.inspector = inspector;
+    this.nodeMap = new Map();
     this.maxIntents = 10;
 
     this.states = new StateMachine(this);
@@ -25,16 +26,16 @@ export const Player = function(id, inspector, camera) {
     this.states.addState(Player.STATE.SELECT, new SelectState());
 }
 
+Player.STATE = {
+    IDLE: 0,
+    SELECT: 1
+};
+
 Player.EVENT = {
     ENTITY_CLICK: 0,
     BUILDING_CLICK: 1,
     TILE_CLICK: 2,
     TILE_CHANGE: 3
-};
-
-Player.STATE = {
-    IDLE: "IDLE",
-    SELECT: "SELECT"
 };
 
 Player.prototype = Object.create(BattalionActor.prototype);
@@ -55,13 +56,28 @@ Player.prototype.onTurnEnd = function(gameContext) {
     this.states.setNextState(gameContext, Player.STATE.IDLE);
 }
 
+Player.prototype.refreshEntityNodeMap = function(gameContext, entity) {
+    this.camera.clearOverlays();
+    this.nodeMap.clear();
+
+    entity.mGetNodeMap(gameContext, this.nodeMap);
+
+    this.camera.showEntityNodes(gameContext, entity, this.nodeMap);
+}
+
 Player.prototype.onClick = function(gameContext, tileX, tileY) {
     const { teamManager, world } = gameContext;
     const { mapManager } = world;
-    const inspectorState = this.inspector.inspect(gameContext, this, this.camera, tileX, tileY);
+    const inspectorState = this.inspector.inspect(gameContext, this, tileX, tileY);
+
+    this.camera.clearOverlays();
 
     switch(inspectorState) {
         case MapInspector.STATE.TILE: {
+            this.states.handleEvent(gameContext, Player.EVENT.TILE_CLICK, { "x": tileX, "y": tileY });
+            break;
+        }
+        case MapInspector.STATE.MINE: {
             this.states.handleEvent(gameContext, Player.EVENT.TILE_CLICK, { "x": tileX, "y": tileY });
             break;
         }
@@ -74,10 +90,13 @@ Player.prototype.onClick = function(gameContext, tileX, tileY) {
         }
         case MapInspector.STATE.ENTITY: {
             const entity = world.getEntityAt(tileX, tileY);
-            const isAlly = teamManager.isAlly(this.teamID, entity.teamID);
-            const isControlled = entity.belongsTo(this.teamID);
 
-            this.states.handleEvent(gameContext, Player.EVENT.ENTITY_CLICK, { "entity": entity, "isAlly": isAlly, "isControlled": isControlled });
+            this.refreshEntityNodeMap(gameContext, entity);
+            this.states.handleEvent(gameContext, Player.EVENT.ENTITY_CLICK, { "entity": entity });
+            break;
+        }
+        case MapInspector.STATE.ENTITY_MENU: {
+            this.states.setNextState(gameContext, Player.STATE.IDLE, {});
             break;
         }
     }
@@ -173,9 +192,15 @@ Player.prototype.activeUpdate = function(gameContext) {
 }
 
 Player.prototype.update = function(gameContext) {
-    const hoverChanged = this.inspector.update(gameContext, this.camera);
+    const flags = this.inspector.update(gameContext);
 
-    if(hoverChanged) {
+    this.camera.setInspect(this.inspector.lastHoverX, this.inspector.lastHoverY);
+
+    if(flags & MapInspector.FLAG.ENTITY_REMOVED) {
+        this.camera.clearOverlays();
+    }
+
+    if(flags & MapInspector.FLAG.HOVER_CHANGED) {
         this.states.handleEvent(gameContext, Player.EVENT.TILE_CHANGE, {
             "x": this.inspector.lastHoverX,
             "y": this.inspector.lastHoverY

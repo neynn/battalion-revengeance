@@ -39,7 +39,7 @@ SelectState.prototype.selectEntity = function(gameContext, stateMachine, entity)
     const player = stateMachine.getContext();
 
     this.entity = entity;
-    this.nodeMap = player.inspector.nodeMap;
+    this.nodeMap = player.nodeMap;
     this.cursorX = entity.tileX;
     this.cursorY = entity.tileY;
     this.originX = entity.tileX;
@@ -371,12 +371,18 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
             if(request) {
                 player.addIntent(request);
             }
+
+            //Clears visual overlays when clicking on an enemy entity.
+            player.camera.clearOverlays();
         }
 
         stateMachine.setNextState(gameContext, Player.STATE.IDLE);
     } else {
-        if(this.entity.isHealValid(gameContext, entity) && this.isHealPathValid(gameContext, entity)) {
+        if(this.entity.isHealValid(gameContext, entity)) {
             const request = this.getHealRequest(entity);
+
+            //Clears visual overlays when clicking on an enemy entity.
+            player.camera.clearOverlays();
 
             if(request) {
                 player.addIntent(request);

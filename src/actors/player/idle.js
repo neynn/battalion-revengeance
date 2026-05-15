@@ -10,11 +10,7 @@ export const IdleState = function() {
 IdleState.prototype = Object.create(PlayerState.prototype);
 IdleState.prototype.constructor = IdleState;
 
-IdleState.prototype.onEnter = function(gameContext, stateMachine, enterData) {
-    const player = stateMachine.getContext();
-
-    player.camera.clearOverlays();
-}
+IdleState.prototype.onEnter = function(gameContext, stateMachine, enterData) {}
 
 IdleState.prototype.onEntityClick = function(gameContext, stateMachine, entity) {
     const { teamID } = stateMachine.getContext();

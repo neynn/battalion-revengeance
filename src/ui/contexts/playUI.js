@@ -2,7 +2,7 @@ import { TextStyle } from "../../../engine/graphics/textStyle.js";
 import { toCenter } from "../../../engine/math/math.js";
 import { SpriteManager } from "../../../engine/sprite/spriteManager.js";
 import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
-import { MapInspector } from "../../actors/player/inspector.js";
+import { MapInspector } from "../../map/mapInspector.js";
 import { getHealthColor } from "../../entity/helpers.js";
 import { COMMANDER_TYPE, ENTITY_SPRITE, TILE_ID } from "../../enums.js";
 import { UI_TEXTURE, HUD_BUTTON, GENERIC_BUTTON_STYLE, HUD_BUTTON_STYLE } from "../constants.js";
@@ -579,6 +579,12 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
 
             break;
         }
+        case MapInspector.STATE.MINE: {
+            const { config } = worldMap.getMine(tileX, tileY);
+            
+            //TODO(neyn): Mine UI!
+            break;
+        }
         case MapInspector.STATE.BUILDING: {
             const building = worldMap.getBuilding(tileX, tileY);
 
@@ -607,6 +613,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
 
             break;
         }
+        case MapInspector.STATE.ENTITY_MENU:
         case MapInspector.STATE.ENTITY: {
             const entity = world.getEntityAt(tileX, tileY);
 
