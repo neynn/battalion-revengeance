@@ -303,12 +303,11 @@ export const createEmptyMap = function(gameContext, width, height) {
 const createWorldMap = function(gameContext, file, source) {
     const { world } = gameContext;
     const { mapManager } = world;
-    const { width, height, data, buildings = [], localization = [], text = [] } = file;
+    const { width, height, data, buildings = [], localization = [], text = {} } = file;
     const nextID = mapManager.getNextID();
     const worldMap = new BattalionMap(nextID, width, height);
 
     worldMap.name = source.title;
-    worldMap.createTextMapping(text);
     worldMap.decodeLayers(data);
     worldMap.loadLocalization(localization);
 
@@ -325,22 +324,17 @@ const loadClientMap = async function(gameContext, sourceID) {
     const { pathHandler, mapRegistry, world, language, scenarioRegistry } = gameContext;
     const { mapManager } = world;
     const mapSource = mapRegistry.getMapPreview(sourceID);
-    const [file, translations] = await Promise.all([mapSource.promiseFile(pathHandler), mapSource.promiseTranslations(pathHandler)]);
+    const file = await mapSource.promiseFile(pathHandler);
 
     if(file === null) {
         return Promise.reject();
     }
 
-    //TODO(neyn): Text needs a separate file!
-    const { text = [] } = file;
-
-    language.clearMapTranslations();
-
-    if(translations !== null) {
-        language.registerMapText(translations, text);
-    }
-
+    const { text = {} } = file;
     const worldMap = createWorldMap(gameContext, file, mapSource);
+
+    language.clearScenarioAndMapText();
+    language.registerMapText(text, worldMap.text);
 
     mapManager.addMap(worldMap);
     mapManager.enableMap(worldMap.getID());

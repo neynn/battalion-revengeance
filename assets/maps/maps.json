@@ -1,6 +1,6 @@
 {
     "volcano": {
-        "directory": ["assets", "maps", "volcano"],
+        "directory": ["assets", "maps"],
         "source": "volcano.json",
         "text": "volcano_text.json",
         "title": "Volcano",
@@ -8,19 +8,19 @@
         "teams": ["TEST", "TEST2"]
     },
     "oasis": {
-        "directory": ["assets", "maps", "oasis"],
+        "directory": ["assets", "maps"],
         "source": "oasis.json",
         "text": "oasis_text.json",
         "title": "Oasis"
     },
     "presus": {
-        "directory": ["assets", "maps", "presus"],
+        "directory": ["assets", "maps"],
         "source": "presus.json",
         "text": "presus_text.json",
         "title": "Presus"
     },
     "kanye_911": {
-        "directory": ["assets", "maps", "kanye_911"],
+        "directory": ["assets", "maps"],
         "source": "kanye_911.json",
         "text": "kanye_911_text.json",
         "title": "Kanye does 9/11"

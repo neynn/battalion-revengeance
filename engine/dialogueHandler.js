@@ -187,7 +187,7 @@ DialogueHandler.prototype.showNextEntry = function(gameContext) {
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
     const textID = worldMap.getTextID(text);
-    const translation = language.getMapTranslation(textID);
+    const translation = language.getScenarioTranslation(textID);
 
     this.fullText = translation;
 

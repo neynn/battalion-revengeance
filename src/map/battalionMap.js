@@ -17,8 +17,12 @@ export const BattalionMap = function(id, width, height) {
     this.mines = [];
     this.jammers = new Map();
     this.localization = new Map();
+
+    this.buildingIDs = new Map();
+    this.buildingID = 0;
+
     this.text = new Map();
-    this.customs = new Map();
+    this.textID = 0;
 
     this.createLayer(Layer.TYPE.BIT_16);
     this.createLayer(Layer.TYPE.BIT_16);
@@ -60,10 +64,28 @@ BattalionMap.prototype.getTextID = function(name) {
     return index;
 }
 
-BattalionMap.prototype.createTextMapping = function(text) {
-    for(let i = 0; i < text.length; i++) {
-        this.text.set(text[i], i);
+BattalionMap.prototype.getOrCreateBuildingID = function(name) {
+    let buildingID = -1;
+
+    if(name !== null && !this.buildingIDs.has(name)) {
+        buildingID = this.buildingID++;
+
+        this.buildingIDs.set(name, buildingID);
     }
+
+    return buildingID;
+}
+
+BattalionMap.prototype.getOrCreateTextID = function(name) {
+    let textID = LanguageHandler.INVALID_ID;
+
+    if(name !== null && !this.text.has(name)) {
+        textID = this.textID++;
+
+        this.text.set(name, textID);
+    }
+
+    return textID;
 }
 
 BattalionMap.prototype.saveFlags = function() {
@@ -181,26 +203,17 @@ BattalionMap.prototype.removeLocalization = function(tileX, tileY) {
 
 BattalionMap.prototype.loadLocalization = function(localization) {
     for(let i = 0; i < localization.length; i++) {
-        const {
-            x = -1,
-            y = -1,
-            name = "",
-            desc = ""
-        } = localization[i];
-
+        const { x = -1, y = -1, name = null, desc = null } = localization[i];
+        const nameID = this.getOrCreateTextID(name);
+        const descID = this.getOrCreateTextID(desc);
         const index = this.getIndex(x, y);
 
-        if(index === WorldMap.OUT_OF_BOUNDS || this.localization.has(index)) {
-            continue;
+        if(index !== WorldMap.OUT_OF_BOUNDS && !this.localization.has(index)) {
+            this.localization.set(index, {
+                "name": nameID,
+                "desc": descID
+            });
         }
-
-        const nameID = this.getTextID(name);
-        const descID = this.getTextID(desc);
-
-        this.localization.set(index, {
-            "name": nameID,
-            "desc": descID
-        });
     }
 }
 

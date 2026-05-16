@@ -72,3 +72,4 @@ TODO on the server: selectSCENARIO, not just map.
 Remove playlist from mission
 
 CreateObjective NEEDS parsed data.
+MapPreview -> remove TEXT

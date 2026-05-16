@@ -115,7 +115,6 @@ ScenarioModel.prototype.load = function(data) {
 
     for(let i = 0; i < buildingSettings.length; i++) {
         const {
-            id = null,
             x = -1,
             y = -1,
             team = null,
@@ -125,7 +124,6 @@ ScenarioModel.prototype.load = function(data) {
         this.buildingSettings.push({
             "x": x,
             "y": y,
-            "customID": this.getAndSetCustomID(id),
             "team": team,
             "shop": SHOP_TYPE[shop] ?? SHOP_TYPE.NONE
         });

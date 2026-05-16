@@ -64,6 +64,7 @@ export const createEntitySnapshotFromJSON = function(gameContext, worldMap, json
     snapshot.direction = DIRECTION[direction] ?? DIRECTION.EAST;
     snapshot.cash = cash;
 
+    //TODO(neyn): These MUST be bound to the scenario.
     if(name !== null) {
         snapshot.name = worldMap.getTextID(name);
     }

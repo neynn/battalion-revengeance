@@ -30,6 +30,7 @@ export const createBuildingSnapshot = function() {
  */
 export const createBuildingSnapshotFromJSON = function(worldMap, json) {
     const {
+        id = null,
         name = null,
         desc = null,
         x = -1,
@@ -44,14 +45,9 @@ export const createBuildingSnapshotFromJSON = function(worldMap, json) {
     snapshot.type = typeID;
     snapshot.tileX = x;
     snapshot.tileY = y;
-
-    if(name !== null) {
-        snapshot.name = worldMap.getTextID(name);
-    }
-
-    if(desc !== null) {
-        snapshot.desc = worldMap.getTextID(desc);
-    }
+    snapshot.id = worldMap.getOrCreateBuildingID(id);
+    snapshot.name = worldMap.getOrCreateTextID(name);
+    snapshot.desc = worldMap.getOrCreateTextID(desc);
 
     if(color !== null) {
         snapshot.color = SCHEMA_TYPE[color] ?? SCHEMA_TYPE.RED;

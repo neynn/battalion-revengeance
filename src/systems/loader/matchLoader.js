@@ -76,7 +76,7 @@ MatchLoader.prototype.applyBuildingSettings = function(gameContext) {
     const { teamManager } = gameContext;
 
     for(const settings of this.scenario.buildingSettings) {
-        const { x, y, team, shop, customID } = settings;
+        const { x, y, team, shop } = settings;
         const building = this.worldMap.getBuilding(x, y);
 
         if(building) {
@@ -89,7 +89,6 @@ MatchLoader.prototype.applyBuildingSettings = function(gameContext) {
                 building.setColor(team.color);
             }
 
-            building.customID = customID;
             building.shop = shop;
         }
     }

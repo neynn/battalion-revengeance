@@ -15,23 +15,10 @@
         { "x": 0, "y": 0, "name": "TILE_NAME_TEST" },
         { "x": 1, "y": 0, "desc": "TILE_DESC_TEST" }
     ],
-    "custom": [
-        "BOAT_1"
-    ],
-    "text": [
-        "PRESUS_PRELOGUE_1",
-        "PRESUS_PRELOGUE_2",
-        "PRESUS_POSTLOGUE_1",
-        "PRESUS_POSTLOGUE_2",
-        "PRESUS_DEFEAT_1",
-        "PRESUS_DEFEAT_2",
-        "PRESUS_EVENT_TEST",
-        "ENTITY_NAME_1",
-        "ENTITY_DESC_1",
-        "TILE_NAME_TEST",
-        "TILE_DESC_TEST",
-        "PRESUS_EVENT_TEXT"
-    ],
+    "text": {
+        "TILE_NAME_TEST": { "en-US": "This is a test name." },
+        "TILE_DESC_TEST": { "en-US": "This is a test description." }
+    },
     "flags": [],
     "data": {
         "GROUND": [1,18,2,1,1,9,3,1,1,2,211,1,1,2,208,2,1,1,210,1,1,16,207,1,211,1,1,30,210,1,1,13],

@@ -1799,7 +1799,7 @@ BattalionEntity.prototype.getDescription = function(gameContext) {
     const { language } = gameContext;
     
     if(this.customDesc !== LanguageHandler.INVALID_ID) {
-        return language.getMapTranslation(this.customDesc);
+        return language.getScenarioTranslation(this.customDesc);
     }
 
     return language.getSystemTranslation(this.config.desc);
@@ -1809,7 +1809,7 @@ BattalionEntity.prototype.getName = function(gameContext) {
     const { language } = gameContext;
     
     if(this.customName !== LanguageHandler.INVALID_ID) {
-        return language.getMapTranslation(this.customName);
+        return language.getScenarioTranslation(this.customName);
     }
 
     return language.getSystemTranslation(this.config.name);

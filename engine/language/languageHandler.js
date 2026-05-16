@@ -9,7 +9,8 @@ export const LanguageHandler = function() {
     this.currentLanguage = LanguageHandler.LANGUAGE._INVALID;
     this.fallbackLanguage = LanguageHandler.LANGUAGE._INVALID;
     this.systemText = new Map();
-    this.mapText = [];
+    this.mapText = new Map();
+    this.scenarioText = new Map();
 
     this.events = new EventEmitter();
     this.events.register(LanguageHandler.EVENT.LANGUAGE_CHANGE);
@@ -62,21 +63,29 @@ LanguageHandler.prototype.load = function(languages) {
     }
 }
 
-LanguageHandler.prototype.registerMapText = function(translations, text) {
-    for(let i = 0; i < text.length; i++) {
-        const textID = text[i];
-        const translation = translations[textID];
+LanguageHandler.prototype.registerScenarioText = function(scenarioText, textMapping) {
+    for(const [key, id] of textMapping) {
+        const translation = scenarioText[key];
 
-        if(translation === undefined) {
-            this.mapText.push({});
-        } else {
-            this.mapText.push(translation);
+        if(translation) {
+            this.scenarioText.set(id, translation);
         }
     }
 }
 
-LanguageHandler.prototype.clearMapTranslations = function() {
-    this.mapText.length = 0;
+LanguageHandler.prototype.registerMapText = function(mapText, textMapping) {
+    for(const [key, id] of textMapping) {
+        const translation = mapText[key];
+
+        if(translation) {
+            this.mapText.set(id, translation);
+        }
+    }
+}
+
+LanguageHandler.prototype.clearScenarioAndMapText = function() {
+    this.mapText.clear();
+    this.scenarioText.clear();
 }
 
 LanguageHandler.prototype.clear = function() {
@@ -85,7 +94,8 @@ LanguageHandler.prototype.clear = function() {
 }
 
 LanguageHandler.prototype.exit = function() {
-    this.mapText.length = 0;
+    this.mapText.clear();
+    this.scenarioText.clear();
 }
 
 LanguageHandler.prototype.selectLanguage = function(languageID) {
@@ -142,12 +152,39 @@ LanguageHandler.prototype.getSystemTranslation = function(key) {
     return translation;
 }
 
-LanguageHandler.prototype.getMapTranslation = function(index) {
-    if(index < 0 || index >= this.mapText.length) {
+LanguageHandler.prototype.getMapTranslation = function(key) {
+    const translations = this.mapText.get(key);
+
+    if(!translations) {
         return "";
     }
 
-    const translations = this.mapText[index];
+    const languageKey = LanguageHandler.getKey(this.currentLanguage);
+    const translation = translations[languageKey];
+
+    if(translation) {
+        return translation;
+    }
+
+    if(this.fallbackLanguage !== LanguageHandler.LANGUAGE._INVALID) {
+        const fallbackKey = LanguageHandler.getKey(this.fallbackLanguage);
+        const fallback = translations[fallbackKey];
+
+        if(fallback) {
+            return fallback;
+        }
+    }
+
+    return "";
+}
+
+LanguageHandler.prototype.getScenarioTranslation = function(key) {
+    const translations = this.scenarioText.get(key);
+
+    if(!translations) {
+        return "";
+    }
+
     const languageKey = LanguageHandler.getKey(this.currentLanguage);
     const translation = translations[languageKey];
 
