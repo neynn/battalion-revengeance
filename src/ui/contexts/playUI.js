@@ -157,7 +157,7 @@ PlayUI.prototype.getHudTitle = function(gameContext) {
     if(!currentMission) {
         const worldMap = mapManager.getActiveMap();
         
-        return worldMap.preview.title;
+        return worldMap.name;
     }
 
     return language.getSystemTranslation(currentMission.name);

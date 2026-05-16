@@ -18,8 +18,16 @@ export const createBuildingSnapshot = function() {
     }
 }
 
-export const createBuildingSnapshotFromJSON = function(gameContext, worldMap, json) {
-    const { teamManager } = gameContext;
+/**
+ * 
+ * @param {BattalionMap} worldMap 
+ * @param {*} json 
+ * @returns 
+ * 
+ * Does not have ALL the data. The rest gets added by the loaders.
+ * Shop/Team are added later.
+ */
+export const createBuildingSnapshotFromJSON = function(worldMap, json) {
     const {
         id = null,
         name = null,
@@ -27,19 +35,15 @@ export const createBuildingSnapshotFromJSON = function(gameContext, worldMap, js
         x = -1,
         y = -1,
         type = null,
-        team = null,
-        color = null,
-        shop = null
+        color = null
     } = json;
 
     const snapshot = createBuildingSnapshot();
     const typeID = BUILDING_TYPE[type] ?? BUILDING_TYPE.AIR_CONTROL;
 
     snapshot.type = typeID;
-    snapshot.teamID = teamManager.getTeamID(team);
     snapshot.tileX = x;
     snapshot.tileY = y;
-    snapshot.shop = SHOP_TYPE[shop] ?? SHOP_TYPE.NONE;
 
     if(id !== null) {
         snapshot.id = worldMap.getCustomID(id);
@@ -55,8 +59,6 @@ export const createBuildingSnapshotFromJSON = function(gameContext, worldMap, js
 
     if(color !== null) {
         snapshot.color = SCHEMA_TYPE[color] ?? SCHEMA_TYPE.RED;
-    } else if(snapshot.teamID !== TeamManager.INVALID_ID) {
-        snapshot.color = teamManager.getTeam(snapshot.teamID).color;
     }
 
     return snapshot;

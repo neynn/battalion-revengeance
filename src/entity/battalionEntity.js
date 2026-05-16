@@ -81,8 +81,15 @@ BattalionEntity.prototype.constructor = BattalionEntity;
 BattalionEntity.prototype.save = function() {
     const snapshot = createEntitySnapshot();
 
+    snapshot.doneMoves = this.doneMoves;
+    snapshot.doneActions = this.doneActions;
+    snapshot.allowedMoves = this.allowedMoves;
+    snapshot.allowedActions = this.allowedActions;
+    snapshot.bonusMoves = this.bonusMoves;
+    snapshot.bonusActions = this.bonusActions;
     snapshot.type = this.config.id;
     snapshot.flags = this.flags;
+    snapshot.renderFlags = this.renderFlags;
     snapshot.health = this.health;
     snapshot.maxHealth = this.maxHealth;
     snapshot.morale = this.moraleType;
@@ -104,7 +111,14 @@ BattalionEntity.prototype.save = function() {
 }
 
 BattalionEntity.prototype.load = function(data) {
+    this.doneMoves = data.doneMoves;
+    this.doneActions = data.doneActions;
+    this.allowedMoves = data.allowedMoves;
+    this.allowedActions = data.allowedActions;
+    this.bonusMoves = data.bonusMoves;
+    this.bonusActions = data.bonusActions;
     this.flags = data.flags;
+    this.renderFlags = data.renderFlags;
     this.maxHealth = data.maxHealth;
     this.moraleType = data.morale;
     this.tileZ = data.tileZ;

@@ -4,8 +4,7 @@ export const Mission = function(id) {
     this.id = id;
     this.name = "";
     this.desc = "";
-    this.playlist = null;
-    this.map = null;
+    this.scenarioID = null;
     this.state = COMPLETION_STATE.NOT_COMPLETED;
 }
 

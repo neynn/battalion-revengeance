@@ -21,18 +21,14 @@ MissionManager.prototype.load = function(resources) {
     const { scenarios, campaigns, chapters, missions } = resources;
 
     for(const missionID in missions) {
-        const { name, desc, playlist = null, map = null } = missions[missionID];
+        const { name, desc, scenario = null } = missions[missionID];
         const mission = new Mission(missionID);
 
         mission.name = name;
         mission.desc = desc;
-        
-        if(playlist !== null) {
-            mission.playlist = playlist;
-        }
 
-        if(map !== null) {
-            mission.map = map;
+        if(scenario !== null) {
+            mission.scenarioID = scenario;
         }
 
         this.missions.set(missionID, mission);

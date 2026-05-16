@@ -1,53 +1,14 @@
 {
-    "music": null,
     "width": 9,
     "height": 9,
-    "client": "TEST",
-    "teams": [
-        { "id": "TEST", "commander": "KANYE", "faction": "GREEN" },
-        { "id": "TEST2", "commander": "KANYE", "faction": "GOLD" }
-    ],
-    "entities": [
-        { "x": 1, "y": 2, "type": "WARMACHINE", "team": "TEST", "cash": 5000 },
-        { "x": 2, "y": 1, "type": "ENTWICKLUNG", "team": "TEST" },
-        { "x": 2, "y": 2, "stealth": false, "type": "STEALTH_TANK", "team": "TEST" },
-        { "x": 1, "y": 3, "stealth": true, "type": "INFANTRY", "team": "TEST" },
-
-        { "x": 7, "y": 1, "type": "ENTWICKLUNG", "team": "TEST2" },
-        { "x": 7, "y": 2, "stealth": false, "type": "STEALTH_TANK", "team": "TEST2" },
-        { "x": 7, "y": 3, "type": "ASSAULT_INFANTRY", "team": "TEST2" },
-
-        { "x": 1, "y": 5, "stealth": true, "type": "PROFESSIONAL_TERRORIST", "team": "TEST" }
-    ],
     "buildings": [
-        { "x": 5, "y": 5, "type": "FACTORY", "team": "TEST" }
+        { "x": 5, "y": 5, "type": "FACTORY" }
     ],
-    "objectives": {},
-    "prelogue": [],
-    "postlogue": [],
-    "defeat": [],
     "localization": [],
-    "eventNames": [
-        "BOOM"
-    ],
-    "events": {
-        "BOOM": {
-            "turn": 2,
-            "simulation": [
-                { "type": "SPAWN_ENTITY", "entity": { "x": 4, "y": 3, "type": "BOLT_TANK", "team": "TEST2" } }
-            ],
-            "effects": [
-                { "type": "PLAY_SOUND", "sound": "explosion" },
-                { "type": "PLAY_SPRITE", "sprite": "explosion", "x": 4, "y": 4 }
-            ]
-        }
-    },
     "flags": [],
     "data": {
         "GROUND": [1,81],
         "DECORATION": [44,1,48,7,32,1,56,1,0,7,52,1,56,1,0,7,52,1,56,1,0,7,52,1,56,1,0,7,52,1,56,1,0,7,52,1,56,1,0,7,52,1,56,1,0,7,52,1,45,1,60,7,36,1],
-        "CLOUD": [0,40,20,1,0,40],
-        "FLAG": [0,81],
-        "TEAM": [0,81]
+        "CLOUD": [0,40,20,1,0,40]
     }
 }

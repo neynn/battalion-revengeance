@@ -1,6 +1,6 @@
 import { PrettyJSON } from "../../engine/resources/prettyJSON.js";
 import { fillTurnSnapshot } from "../snapshot/turnSnapshot.js";
-import { createClientMapLoader } from "./map.js";
+import { loadClientScenario } from "./map.js";
 
 const saveEntities = function(gameContext) {
     const { world } = gameContext;
@@ -73,7 +73,7 @@ export const saveStoryMap = function(gameContext) {
     const events = eventHandler.saveTriggeredEvents();
 
     file.open();
-    file.writeLine("mapID", worldMap.preview.id);
+    file.writeLine("scenario", worldMap.scenario);
     file.writeLine("turn", fillTurnSnapshot(gameContext));
     file.writeLine("events", events);
     file.writeList("data", data);
@@ -85,8 +85,10 @@ export const saveStoryMap = function(gameContext) {
     file.download("map");
 }
 
-export const loadStoryMap = function(gameContext, data) {
-    createClientMapLoader(gameContext, data.mapID)
-    .then(loader => loader.loadMapFromSnapshot(gameContext, data, []))
-    .catch(() => {});
+export const loadSavedScenario = function(gameContext, data, overrides) {
+    const { actionRouter } = gameContext;
+    const { scenario } = data;
+    
+    return loadClientScenario(gameContext, scenario)
+    .then(loader => loader.createSavedMatch(gameContext, data, overrides));
 }

@@ -1,6 +1,6 @@
 import { PrettyJSON } from "../../../engine/resources/prettyJSON.js";
 import { BattalionContext } from "../../battalionContext.js";
-import { createEditorMap, createEmptyMap } from "../../systems/map.js";
+import { loadEditorMap, createEmptyMap } from "../../systems/map.js";
 import { clampValue } from "../../../engine/math/math.js";
 import { getCursorTile } from "../../../engine/camera/contextHelper.js";
 import { Cursor } from "../../../engine/client/cursor/cursor.js";
@@ -133,7 +133,7 @@ EditorController.prototype.createMap = function(gameContext) {
 EditorController.prototype.loadMap = async function(gameContext) {
     const { language } = gameContext;
     const mapID = prompt(language.getSystemTranslation("EDITOR_LOAD_MAP"));
-    const worldMap = await createEditorMap(gameContext, mapID);
+    const worldMap = await loadEditorMap(gameContext, mapID);
 
     if(worldMap) {
         this.editor.setTargetMap(worldMap);

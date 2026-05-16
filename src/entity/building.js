@@ -48,6 +48,7 @@ Building.prototype.load = function(data) {
     this.totalGeneratedCash = data.totalGeneratedCash;
     this.shop = data.shop;
     this.color = data.color;
+    this.teamID = data.teamID;
 }
 
 Building.prototype.setTeam = function(teamID) {

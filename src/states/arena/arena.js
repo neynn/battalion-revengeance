@@ -5,7 +5,7 @@ import { State } from "../../../engine/state/state.js";
 import { GAME_UPDATE_HEADER_SIZE, getGameUpdateHeaderSize } from "../../action/packer_constants.js";
 import { unpackPlan } from "../../action/planPacker.js";
 import { MP_SERVER_BINARY, MP_CLIENT_JSON, MP_SERVER_JSON } from "../../enums.js";
-import { createClientMapLoader } from "../../systems/map.js";
+import { loadClientScenario } from "../../systems/map.js";
 import { ArenaUI } from "../../ui/contexts/arenaUI.js";
 
 export const ArenaState = function() {
@@ -70,19 +70,18 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
 
         switch(type) {
             case MP_SERVER_JSON.LOAD_MAP: {
-                const { snapshot, client, overrides } = payload;
-                const { mapID } = snapshot;
+                const { scenario, snapshot, client, overrides } = payload;
 
-                createClientMapLoader(gameContext, mapID)
-                .then((mapLoader) => {
-                    mapLoader.clientTeam = client;
-                    mapLoader.loadInitialServerSnapshot(gameContext, snapshot, overrides);
+                loadClientScenario(gameContext, scenario)
+                .then(loader => {
+                    loader.clientTeam = client;
+                    loader.createServerMatch(gameContext, snapshot, overrides);
                     socket.messageRoom(MP_CLIENT_JSON.MAP_LOADED, {});
                 })
                 .catch(() => {
                     //TODO: Signal a failed load.
                 });
-
+                
                 break;
             }
             case MP_SERVER_JSON.START_MAP: {

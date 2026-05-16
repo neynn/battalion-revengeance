@@ -8,6 +8,7 @@ import { overrideRiverTiles, registerActionVTables } from "../systems/context.js
 import { resolveTileType } from "../enumHelpers.js";
 import { MAX_TEAMS } from "../constants.js";
 import { TILE_ID, TILE_TYPE } from "../enums.js";
+import { ScenarioRegistry } from "../scenarioRegistry.js";
 
 export const ServerApplication = function(io) {
     SocketServer.call(this, io);
@@ -16,6 +17,7 @@ export const ServerApplication = function(io) {
     this.typeRegistry = new TypeRegistry();
     this.tileManager = new TileManager();
     this.mapRegistry = new MapRegistry();
+    this.scenarioRegistry = new ScenarioRegistry();
 }
 
 ServerApplication.prototype = Object.create(SocketServer.prototype);
@@ -26,6 +28,7 @@ ServerApplication.prototype.init = function(resources) {
     overrideRiverTiles(this);
     this.mapRegistry.load(resources.maps);
     this.typeRegistry.load(resources);
+    this.scenarioRegistry.load(resources.scenarioTypes);
 }
 
 ServerApplication.prototype.createRoom = function(roomID, roomType) {

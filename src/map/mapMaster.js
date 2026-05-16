@@ -1,5 +1,5 @@
 export const MapMaster = function() {
-    this.mapID = null;
+    this.scenarioID = null;
     this.slots = [];
     this.maxPlayers = 0;
     this.players = 0;
@@ -19,7 +19,7 @@ MapMaster.SLOT_TYPE = {
 };
 
 MapMaster.prototype.clear = function() {
-    this.mapID = null;
+    this.scenarioID = null;
     this.slots.length = 0;
     this.maxPlayers = 0;
     this.players = 0;

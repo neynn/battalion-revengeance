@@ -1,26 +1,41 @@
 import { BattalionMap } from "../map/battalionMap.js";
-import { createClientBuildingObject, createClientEntityObject, createMineObject, createServerBuildingObject, createServerEntityObject } from "./spawn.js";
+import { createClientEntityObject, createMineObject, createServerEntityObject } from "./spawn.js";
 import { LAYER_TYPE, LOADER_RULE, MINE_TYPE } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
 import { createEntitySnapshot, createEntitySnapshotFromJSON } from "../snapshot/entitySnapshot.js";
 import { MatchLoader } from "./loader/matchLoader.js";
 import { unpackEntitySnapshot } from "../action/packer_constants.js";
 import { createBuildingSnapshotFromJSON } from "../snapshot/buildingSnapshot.js";
+import { transformTileToWorld } from "../../engine/math/transform2D.js";
+import { createSchematicSprite } from "./sprite.js";
+import { MapPreview } from "../map/mapPreview.js";
 
-export const ClientMatchLoader = function(worldMap, mapFile) {
-    MatchLoader.call(this, worldMap, mapFile);
+export const ClientMatchLoader = function(worldMap, scenario) {
+    MatchLoader.call(this, worldMap, scenario);
 
-    this.music = mapFile.music ?? "rivers_of_steel";
-    this.playlist = mapFile.playlist ?? null;
-    this.localization = mapFile.localization ?? [];
-    this.prelogue = mapFile.prelogue ?? [];
-    this.postlogue = mapFile.postlogue ?? [];
-    this.defeat = mapFile.defeat ?? [];
-    this.clientTeam = mapFile.client ?? null;
+    this.music = scenario.music ?? "rivers_of_steel";    
+    this.playlist = scenario.playlist ?? null;
+    this.prelogue = scenario.prelogue ?? [];
+    this.postlogue = scenario.postlogue ?? [];
+    this.defeat = scenario.defeat ?? [];
+    this.clientTeam = scenario.client ?? null;
 }
 
 ClientMatchLoader.prototype = Object.create(MatchLoader.prototype);
 ClientMatchLoader.prototype.constructor = ClientMatchLoader;
+
+ClientMatchLoader.prototype.createBuildingSprites = function(gameContext) {
+    for(const building of this.worldMap.buildings) {
+        const { tileX, tileY, color, config } = building;
+        const { sprite } = config;
+
+        const position = transformTileToWorld(tileX, tileY);
+        const visualSprite = createSchematicSprite(gameContext, sprite, color, LAYER_TYPE.BUILDING);
+
+        visualSprite.setPosition(position.x, position.y);
+        building.spriteID = visualSprite.getIndex();
+    }
+}
 
 ClientMatchLoader.prototype.createActors = function(gameContext) {
     const { teamManager } = gameContext;
@@ -44,14 +59,6 @@ ClientMatchLoader.prototype.createActors = function(gameContext) {
             this.createActor(gameContext, id);
         }
     });
-}
-
-ClientMatchLoader.prototype.createBuildings = function(gameContext) {
-    for(const building of this.buildings) {
-        const snapshot = createBuildingSnapshotFromJSON(gameContext, this.worldMap, building);
-
-        createClientBuildingObject(gameContext, this.worldMap, snapshot); 
-    }
 }
 
 ClientMatchLoader.prototype.createEntities = function(gameContext) {
@@ -133,9 +140,9 @@ ClientMatchLoader.prototype.unpackTotalEntityBuffer = function(gameContext, enti
     }
 }
 
-ClientMatchLoader.prototype.loadInitialServerSnapshot = function(gameContext, snapshot, overrides) {
+ClientMatchLoader.prototype.createServerMatch = function(gameContext, snapshot, overrides) {
     const { dialogueHandler, teamManager, spriteManager } = gameContext;
-    const { mapID, turn, entities, teams } = snapshot; //TODO(neyn): Colors to team overrides!
+    const { turn, entities, teams } = snapshot; //TODO(neyn): Colors to team overrides!
 
     this.rules |= LOADER_RULE.ALLOW_SPECTATOR;
     this.rules |= LOADER_RULE.CUSTOM_COLOR;
@@ -144,11 +151,11 @@ ClientMatchLoader.prototype.loadInitialServerSnapshot = function(gameContext, sn
     this.createTeams(gameContext, overrides);
     this.createActors(gameContext);
     this.unpackTotalEntityBuffer(gameContext, entities);
-    this.createBuildings(gameContext);
     this.createMines(gameContext);
+    this.applyBuildingSettings(gameContext);
+    this.createBuildingSprites(gameContext);
     this.loadMusic(gameContext);
     this.createWorldEvents(gameContext);
-    this.worldMap.loadLocalization(this.localization);
 
     dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);
     teamManager.updateStatus(); //TODO(neyn): Really necessary?
@@ -159,7 +166,7 @@ ClientMatchLoader.prototype.loadInitialServerSnapshot = function(gameContext, sn
     spriteManager.sortLayer(LAYER_TYPE.BUILDING);
 }
 
-ClientMatchLoader.prototype.loadMapFromSnapshot = function(gameContext, snapshot, overrides) {
+ClientMatchLoader.prototype.createSavedMatch = function(gameContext, snapshot, overrides) {
     const { world, dialogueHandler, teamManager, spriteManager } = gameContext;
     const { entityManager, eventHandler } = world;
     const { mapID, turn, events, data, entities, teams, mines, buildings } = snapshot;
@@ -170,6 +177,7 @@ ClientMatchLoader.prototype.loadMapFromSnapshot = function(gameContext, snapshot
     this.rules |= LOADER_RULE.CREATE_EVENT_EFFECTS;
     this.rules |= LOADER_RULE.CREATE_EVENT_SIMULATION;
 
+    this.worldMap.decodeLayers(data);
     this.createTeams(gameContext, overrides);
     this.createActors(gameContext);
 
@@ -177,16 +185,21 @@ ClientMatchLoader.prototype.loadMapFromSnapshot = function(gameContext, snapshot
         teamManager.teams[i].load(teams[i]);
     }
 
-    for(const blob of mines) {
-        const { type, tileX, tileY, teamID } = blob;
+    for(const snapshot of mines) {
+        const { type, tileX, tileY, teamID } = snapshot;
         const mine = createMineObject(gameContext, teamID, type, tileX, tileY);
 
-        mine.load(blob);
+        mine.load(snapshot);
         this.worldMap.addMine(mine);
     }
 
-    for(const blob of buildings) {
-        createClientBuildingObject(gameContext, this.worldMap, blob);
+    for(const snapshot of buildings) {
+        const { tileX, tileY } = snapshot;
+        const building = this.worldMap.getBuilding(tileX, tileY);
+
+        if(building) {
+            building.load(snapshot);
+        }
     }
 
     for(const blob of entities) {
@@ -197,8 +210,7 @@ ClientMatchLoader.prototype.loadMapFromSnapshot = function(gameContext, snapshot
 
     this.loadMusic(gameContext);
     this.createWorldEvents(gameContext);
-    this.worldMap.loadLocalization(this.localization);
-    this.worldMap.decodeLayers(data);
+    this.createBuildingSprites(gameContext);
 
     eventHandler.loadTriggeredEvents(events);
     dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);
@@ -210,7 +222,7 @@ ClientMatchLoader.prototype.loadMapFromSnapshot = function(gameContext, snapshot
     spriteManager.sortLayer(LAYER_TYPE.BUILDING);
 }
 
-ClientMatchLoader.prototype.loadMapFromFile = function(gameContext, overrides) {
+ClientMatchLoader.prototype.createDefaultMatch = function(gameContext, overrides) {
     const { dialogueHandler, teamManager, spriteManager } = gameContext;
 
     this.rules |= LOADER_RULE.FIXED_ALLIES;
@@ -222,11 +234,11 @@ ClientMatchLoader.prototype.loadMapFromFile = function(gameContext, overrides) {
     this.createTeams(gameContext, overrides);
     this.createActors(gameContext);
     this.createEntities(gameContext);
-    this.createBuildings(gameContext);
+    this.applyBuildingSettings(gameContext);
+    this.createBuildingSprites(gameContext);
     this.createMines(gameContext);
     this.loadMusic(gameContext);
     this.createWorldEvents(gameContext);
-    this.worldMap.loadLocalization(this.localization);
 
     dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);
     teamManager.updateStatus();
@@ -235,8 +247,8 @@ ClientMatchLoader.prototype.loadMapFromFile = function(gameContext, overrides) {
     spriteManager.sortLayer(LAYER_TYPE.BUILDING);
 }
 
-export const ServerMatchLoader = function(worldMap, mapFile) {
-    MatchLoader.call(this, worldMap, mapFile);
+export const ServerMatchLoader = function(worldMap, scenario) {
+    MatchLoader.call(this, worldMap, scenario);
 }
 
 ServerMatchLoader.prototype = Object.create(MatchLoader.prototype);
@@ -261,14 +273,6 @@ ServerMatchLoader.prototype.createActors = function(gameContext) {
 
         this.createServerActor(gameContext, id, client);
     })
-}
-
-ServerMatchLoader.prototype.createBuildings = function(gameContext) {
-    for(const building of this.buildings) {
-        const snapshot = createBuildingSnapshotFromJSON(gameContext, this.worldMap, building);
-
-        createServerBuildingObject(gameContext, this.worldMap, snapshot);
-    }
 }
 
 ServerMatchLoader.prototype.createEntities = function(gameContext) {
@@ -326,39 +330,18 @@ ServerMatchLoader.prototype.loadMap = function(gameContext, overrides) {
     this.createTeams(gameContext, overrides);
     this.createActors(gameContext);
     this.createEntities(gameContext);
-    this.createBuildings(gameContext);
+    this.applyBuildingSettings(gameContext);
     this.createMines(gameContext);
     this.createWorldEvents(gameContext);
 
     teamManager.updateStatus();
 }
 
-export const createEditorMap = async function(gameContext, sourceID) {
-    const { pathHandler, mapRegistry, world } = gameContext;
-    const { mapManager } = world;
-    const mapSource = mapRegistry.getMapPreview(sourceID);
-    const file = await mapSource.promiseFile(pathHandler);
-
-    if(file !== null) {
-        const { width, height, data } = file;
-        const nextID = mapManager.getNextID();
-        const worldMap = new BattalionMap(nextID, width, height, mapSource);
-
-        worldMap.decodeLayers(data);
-        mapManager.addMap(worldMap);
-        mapManager.enableMap(nextID);
-        
-        return worldMap;
-    }
-
-    return null;
-}
-
 export const createEmptyMap = function(gameContext, width, height) {     
     const { world } = gameContext;
     const { mapManager } = world;
     const nextID = mapManager.getNextID();
-    const worldMap = new BattalionMap(nextID, width, height, null);
+    const worldMap = new BattalionMap(nextID, width, height);
 
     mapManager.addMap(worldMap);
     mapManager.enableMap(nextID);
@@ -366,8 +349,37 @@ export const createEmptyMap = function(gameContext, width, height) {
     return worldMap;
 }
 
-export const createClientMapLoader = async function(gameContext, sourceID) {
-    const { pathHandler, mapRegistry, world, language } = gameContext;
+/**
+ * 
+ * @param {*} gameContext 
+ * @param {*} file 
+ * @param {MapPreview} source 
+ * @returns 
+ */
+const createWorldMap = function(gameContext, file, source) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const { width, height, data, buildings = [], localization = [], text = [], custom = [] } = file;
+    const nextID = mapManager.getNextID();
+    const worldMap = new BattalionMap(nextID, width, height);
+
+    worldMap.name = source.title;
+    worldMap.createTextMapping(text);
+    worldMap.createCustomMapping(custom);
+    worldMap.decodeLayers(data);
+    worldMap.loadLocalization(localization);
+
+    for(const setup of buildings) {
+        const snapshot = createBuildingSnapshotFromJSON(worldMap, setup);
+
+        worldMap.createBuilding(gameContext, snapshot);
+    }
+
+    return worldMap;
+}
+
+const loadClientMap = async function(gameContext, sourceID) {
+    const { pathHandler, mapRegistry, world, language, scenarioRegistry } = gameContext;
     const { mapManager } = world;
     const mapSource = mapRegistry.getMapPreview(sourceID);
     const [file, translations] = await Promise.all([mapSource.promiseFile(pathHandler), mapSource.promiseTranslations(pathHandler)]);
@@ -376,26 +388,24 @@ export const createClientMapLoader = async function(gameContext, sourceID) {
         return Promise.reject();
     }
 
-    const { width, height, data, text = [], custom = [] } = file;
-    const nextID = mapManager.getNextID();
-    const worldMap = new BattalionMap(nextID, width, height, mapSource);
+    //TODO(neyn): Text needs a separate file!
+    const { text = [] } = file;
 
-    worldMap.createTextMapping(text);
-    worldMap.createCustomMapping(custom);
-    worldMap.decodeLayers(data);
     language.clearMapTranslations();
 
     if(translations !== null) {
         language.registerMapText(translations, text);
     }
 
-    mapManager.addMap(worldMap);
-    mapManager.enableMap(nextID);
+    const worldMap = createWorldMap(gameContext, file, mapSource);
 
-    return new ClientMatchLoader(worldMap, file);
+    mapManager.addMap(worldMap);
+    mapManager.enableMap(worldMap.getID());
+
+    return worldMap;
 }
 
-export const createServerMapLoader = async function(gameContext, sourceID) {
+const loadServerMap = async function(gameContext, sourceID) {
     const { pathHandler, mapRegistry, world } = gameContext;
     const { mapManager } = world;
     const mapSource = mapRegistry.getMapPreview(sourceID);
@@ -405,15 +415,64 @@ export const createServerMapLoader = async function(gameContext, sourceID) {
         return Promise.reject();
     }
 
-    const { width, height, data, text = [], custom = [] } = file;
-    const nextID = mapManager.getNextID();
-    const worldMap = new BattalionMap(nextID, width, height, mapSource);
-
-    worldMap.createTextMapping(text);
-    worldMap.createCustomMapping(custom);
-    worldMap.decodeLayers(data);
+    const worldMap = createWorldMap(gameContext, file, mapSource);
+    
     mapManager.addMap(worldMap);
-    mapManager.enableMap(nextID);
+    mapManager.enableMap(worldMap.getID());
 
-    return new ServerMatchLoader(worldMap, file);
+    return worldMap;
+}
+
+export const loadEditorMap = async function(gameContext, sourceID) {
+    const { pathHandler, mapRegistry, world } = gameContext;
+    const { mapManager } = world;
+    const mapSource = mapRegistry.getMapPreview(sourceID);
+    const file = await mapSource.promiseFile(pathHandler);
+
+    if(file !== null) {
+        const worldMap = createWorldMap(gameContext, file, mapSource);
+
+        mapManager.addMap(worldMap);
+        mapManager.enableMap(worldMap.getID());
+        
+        return worldMap;
+    }
+
+    return null;
+}
+
+export const loadClientScenario = async function(gameContext, scenarioID) {
+    const { scenarioRegistry } = gameContext;
+    const scenario = scenarioRegistry.getScenario(scenarioID);
+
+    if(!scenario) {
+        return Promise.reject();
+    }
+
+    const { map } = scenario;
+    const worldMap = await loadClientMap(gameContext, map);
+
+    worldMap.scenario = scenarioID;
+
+    const matchLoader = new ClientMatchLoader(worldMap, scenario);
+
+    return matchLoader;
+}
+
+export const loadServerScenario = async function(gameContext, scenarioID) {
+    const { scenarioRegistry } = gameContext;
+    const scenario = scenarioRegistry.getScenario(scenarioID);
+
+    if(!scenario) {
+        return Promise.reject();
+    }
+
+    const { map } = scenario;
+    const worldMap = await loadServerMap(gameContext, map);
+
+    worldMap.scenario = scenarioID;
+
+    const matchLoader = new ServerMatchLoader(worldMap, scenario);
+
+    return matchLoader;
 }

@@ -14,6 +14,7 @@ import { MapRegistry } from "./map/mapRegistry.js";
 import { ClientActionRouter } from "./action/router/clientActionRouter.js";
 import { UIData } from "./ui/uiData.js";
 import { MissionManager } from "./mission/missionManager.js";
+import { ScenarioRegistry } from "./scenarioRegistry.js";
 
 export const BattalionContext = function() {
     ClientGameContext.call(this);
@@ -24,6 +25,7 @@ export const BattalionContext = function() {
     this.shadeCache = new ShadeCache();
     this.mapRegistry = new MapRegistry();
     this.missionManager = new MissionManager();
+    this.scenarioRegistry = new ScenarioRegistry();
     this.uiData = new UIData(this.textureLoader);
 }
 
@@ -43,6 +45,7 @@ BattalionContext.prototype.init = function(resources) {
     this.tileManager.enableAllVisuals();
     overrideRiverTiles(this);
 
+    this.scenarioRegistry.load(resources.scenarioTypes);
     this.spriteManager.load(resources.spriteTextures, resources.sprites);
     this.uiManager.load(this.textureLoader, resources.layouts, resources.gui);
     this.fonts.load(resources.fonts);

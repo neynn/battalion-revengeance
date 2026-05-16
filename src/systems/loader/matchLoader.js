@@ -1,4 +1,4 @@
-import { COMMANDER_TYPE, COMPONENT_TYPE, FACTION_TYPE, LOADER_RULE, OBJECTIVE_TYPE, SCHEMA_TYPE } from "../../enums.js";
+import { COMMANDER_TYPE, COMPONENT_TYPE, FACTION_TYPE, LOADER_RULE, OBJECTIVE_TYPE, SCHEMA_TYPE, SHOP_TYPE } from "../../enums.js";
 import { BattalionMap } from "../../map/battalionMap.js";
 
 import { CaptureObjective } from "../../team/objective/types/capture.js";
@@ -37,17 +37,39 @@ const createCustomSchema = function(gameContext, team, colorMap) {
     team.color = colorID;
 }
 
-export const MatchLoader = function(worldMap, mapFile) {
+export const MatchLoader = function(worldMap, scenario) {
     this.rules = LOADER_RULE.NONE;
     this.worldMap = worldMap;
 
-    this.teams = mapFile.teams ?? [];
-    this.entities = mapFile.entities ?? [];
-    this.objectives = mapFile.objectives ?? {};
-    this.eventNames = mapFile.eventNames ?? [];
-    this.events = mapFile.events ?? {};
-    this.buildings = mapFile.buildings ?? [];
-    this.mines = mapFile.mines ?? [];
+    this.buildingSettings = scenario.buildingSettings ?? [];
+    this.teams = scenario.teams ?? [];
+    this.entities = scenario.entities ?? [];
+    this.objectives = scenario.objectives ?? {};
+    this.eventNames = scenario.eventNames ?? [];
+    this.events = scenario.events ?? {};
+    this.mines = scenario.mines ?? [];
+}
+
+MatchLoader.prototype.applyBuildingSettings = function(gameContext) {
+    const { teamManager } = gameContext;
+
+    for(const settings of this.buildingSettings) {
+        const { x, y, team, shop } = settings;
+        const building = this.worldMap.getBuilding(x, y);
+
+        if(building) {
+            const teamID = teamManager.getTeamID(team);
+
+            if(teamID !== TeamManager.INVALID_ID) {
+                const team = teamManager.getTeam(teamID);
+
+                building.setTeam(teamID);
+                building.setColor(team.color);
+            }
+
+            building.shop = SHOP_TYPE[shop] ?? SHOP_TYPE.NONE;
+        }
+    }
 }
 
 MatchLoader.prototype.createEventComponents = function(gameContext, event, simulation, effects) {

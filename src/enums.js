@@ -95,7 +95,7 @@ export const MP_CLIENT_BINARY = {
 };
 
 export const MP_CLIENT_JSON = {
-    SELECT_MAP: 200,
+    SELECT_SCENARIO: 200,
     START_MATCH: 201,
     ACTION_INTENT: 202,
     MAP_LOADED: 203,

@@ -36,3 +36,37 @@ EntityManager keeps them ALL until the simulation is terminated.
 DestroyEntity does not really destroy it.
 
 Replicated authoritative state driven by command intents
+
+Missions contain data like units and spawns.
+Move stuff like dialogue ect OUT of the map.
+Problem: ONE global "text" array for maps. This is SHIT. Separate them!
+entity custom ids should be mission defined!
+map.json is JUST world template.
+separate map from mission
+
+Static World Data:
+    Music
+    Data
+    Buildings
+    Flags
+    Localization
+Scenario:
+    Client
+    Teams
+    Entities
+    BuildingOwnership
+    Mines
+    Objectives
+    Prelogue
+    Postlogue
+    Defeat
+    Events
+    Playlist
+
+
+Mode is external
+Instead of eventName give each event an id. When loading check if they are valid.
+save/load does NOT care about the split in scenario, it does however save missionID and the general mission tree.
+
+TODO on the server: selectSCENARIO, not just map.
+Remove playlist from mission

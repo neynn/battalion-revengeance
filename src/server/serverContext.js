@@ -3,13 +3,13 @@ import { StateMachine } from "../../engine/state/stateMachine.js";
 import { World } from "../../engine/world/world.js";
 import { TeamManager } from "../team/teamManager.js";
 import { MP_CLIENT_JSON, INTERRUPT_TYPE, MP_SERVER_JSON } from "../enums.js";
-import { createServerMapLoader } from "../systems/map.js";
 import { MapMaster } from "../map/mapMaster.js";
 import { ServerActionRouter } from "../action/router/serverActionRouter.js";
 import { isIntentValid, unpackIntent } from "../action/intentPacker.js";
 import { ENTITY_SNAPSHOT_SIZE, packEntitySnapshot } from "../action/packer_constants.js";
 import { fillTurnSnapshot } from "../snapshot/turnSnapshot.js";
 import { InterruptVTable } from "../action/types/interrupt.js";
+import { loadServerScenario } from "../systems/map.js";
 
 const isClientTurn = function(gameContext, messengerID) {
     const { world } = gameContext;
@@ -30,13 +30,15 @@ export const ServerGameContext = function(serverApplication, id) {
         typeRegistry,
         tileManager,
         pathHandler,
-        mapRegistry
+        mapRegistry,
+        scenarioRegistry
     } = serverApplication;
 
     this.pathHandler = pathHandler;
     this.typeRegistry = typeRegistry;
     this.tileManager = tileManager;
     this.mapRegistry = mapRegistry;
+    this.scenarioRegistry = scenarioRegistry;
 
     this.world = new World();
     this.teamManager = new TeamManager();
@@ -66,13 +68,29 @@ ServerGameContext.prototype.onClientLeave = function(clientID) {
     this.mapMaster.removePlayer(clientID);
 }
 
-ServerGameContext.prototype.mpSelectMap = function(mapID) {
-    const preview = this.mapRegistry.getMapPreview(mapID);
+ServerGameContext.prototype.selectScenario = function(scenarioID) {
+    const scenario = this.scenarioRegistry.getScenario(scenarioID);
+
+    if(!scenario) {
+        console.warn("Scenario does not exist!");
+
+        return false;
+    }
+
+    const { map } = scenario;
+    const preview = this.mapRegistry.getMapPreview(map);
+
+    if(!preview) {
+        console.warn("Preview does not exist!");
+
+        return false;
+    }
+
     const { maxPlayers, teams } = preview;
 
     this.mapMaster.clear();
     this.mapMaster.maxPlayers = maxPlayers;
-    this.mapMaster.mapID = mapID;
+    this.mapMaster.scenarioID = scenarioID;
 
     for(const teamID of teams) {
         this.mapMaster.createSlot(teamID);
@@ -108,14 +126,13 @@ ServerGameContext.prototype.createTotalEntityBuffer = function() {
     return buffer;
 }
 
-ServerGameContext.prototype.createInitialSnapshot = function(mapID) {
+ServerGameContext.prototype.createInitialSnapshot = function() {
     const { teamManager } = this;
     const teams = [];
 
     teamManager.forEachTeam((team) => teams.push(team.save()));
 
     return {
-        "mapID": mapID,
         "turn": fillTurnSnapshot(this),
         "entities": this.createTotalEntityBuffer(),
         "teams": teams
@@ -130,7 +147,7 @@ ServerGameContext.prototype.onMessage = async function(messengerID, type, payloa
     //Client sends MP_CLIENT_JSON.PICK_COLOR
     //mapSettings sets ClientID -> ColorPick
     switch(type) {
-        case MP_CLIENT_JSON.SELECT_MAP: {
+        case MP_CLIENT_JSON.SELECT_SCENARIO: {
 
             break;
         }
@@ -139,8 +156,8 @@ ServerGameContext.prototype.onMessage = async function(messengerID, type, payloa
                 return;
             }
 
-            //Done in MP_CLIENT_SELECT_MAP!!!
-            this.mpSelectMap("volcano");
+            //Done in MP_CLIENT_SELECT_SCENARIO!!!
+            this.selectScenario("PVP_VOLCANO");
 
             if(!this.mapMaster.canStart()) {
                 console.error("Map could not start!");
@@ -155,20 +172,21 @@ ServerGameContext.prototype.onMessage = async function(messengerID, type, payloa
                 "0xFF9085": [71, 75, 136]
             });
 
-            const sourceID = this.mapMaster.mapID;
+            const scenarioID = this.mapMaster.scenarioID;
             const overrides = this.mapMaster.createOverrides();
 
-            createServerMapLoader(this, sourceID)
-            .then((loader) => {
+            loadServerScenario(this, scenarioID)
+            .then(loader => {
                 loader.loadMap(this, overrides);
 
-                const snapshot = this.createInitialSnapshot(sourceID);
+                const snapshot = this.createInitialSnapshot();
 
                 for(let i = 0; i < this.members.length; i++) {
                     const memberID = this.members[i].getID();
                     const teamID = this.mapMaster.getTeamID(memberID);
 
                     this.send(MP_SERVER_JSON.LOAD_MAP, {
+                        "scenario": scenarioID,
                         "snapshot": snapshot,
                         "client": teamID,
                         "overrides": overrides

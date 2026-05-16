@@ -1,14 +1,16 @@
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
+import { Building } from "../entity/building.js";
 import { downgradeOre, oreToValue } from "../enumHelpers.js";
 import { CLIMATE_TYPE, TILE_TYPE } from "../enums.js";
 import { JammerTile } from "./jammerTile.js";
 
-export const BattalionMap = function(id, width, height, preview) {
+export const BattalionMap = function(id, width, height) {
     WorldMap.call(this, id, width, height);
 
-    this.preview = preview;
+    this.scenario = null;
+    this.name = "MAP_NAME";
     this.globalClimate = CLIMATE_TYPE.NONE;
     this.climate = CLIMATE_TYPE.NONE;
     this.buildings = [];
@@ -286,8 +288,19 @@ BattalionMap.prototype.isBuildingPlaceable = function(tileX, tileY) {
     return true;
 }
 
-BattalionMap.prototype.addBuilding = function(building) {
-    this.buildings.push(building);
+BattalionMap.prototype.createBuilding = function(gameContext, snapshot) {
+    const { typeRegistry } = gameContext;
+    const { tileX, tileY, type, color } = snapshot;
+    const buildingType = typeRegistry.getBuildingType(type);
+    const building = new Building(buildingType);
+
+    building.tileX = tileX;
+    building.tileY = tileY;
+    building.load(snapshot);
+
+    if(this.isBuildingPlaceable(tileX, tileY)) {
+        this.buildings.push(building);
+    }
 }
 
 BattalionMap.prototype.getBuilding = function(tileX, tileY) {
