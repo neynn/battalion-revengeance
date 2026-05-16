@@ -1,6 +1,6 @@
 import { EffectComponent } from "../../../engine/world/event/effectComponent.js";
 
-export const PlaySoundComponent = function(sound) {
+export const PlaySoundComponent = function({ sound }) {
     EffectComponent.call(this);
 
     this.sound = sound;

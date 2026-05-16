@@ -1,12 +1,12 @@
 import { EffectComponent } from "../../../engine/world/event/effectComponent.js";
 import { playSprite } from "../../systems/sprite.js";
 
-export const PlaySpriteComponent = function(sprite, x, y) {
+export const PlaySpriteComponent = function({ sprite, tileX, tileY }) {
     EffectComponent.call(this);
 
     this.sprite = sprite;
-    this.tileX = x;
-    this.tileY = y;
+    this.tileX = tileX;
+    this.tileY = tileY;
 }
 
 PlaySpriteComponent.prototype = Object.create(EffectComponent.prototype);

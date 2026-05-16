@@ -103,18 +103,16 @@ MatchLoader.prototype.applyBuildingSettings = function(gameContext) {
 
 MatchLoader.prototype.createEventComponents = function(gameContext, event, simulation, effects) {
     if(this.rules & LOADER_RULE.CREATE_EVENT_SIMULATION) {
-        for(const sim of simulation) {
-            switch(sim.type) {
+        for(const { type, data } of simulation) {
+            switch(type) {
                 case COMPONENT_TYPE.EXPLODE_TILE: {
-                    const { layer, x, y } = sim;
-                    const component = new ExplodeTileComponent(layer, x, y);
+                    const component = new ExplodeTileComponent(data);
 
                     event.addSimulation(component);
                     break;
                 }
                 case COMPONENT_TYPE.SPAWN_ENTITY: {
-                    const { entity } = sim;
-                    const snapshot = createEntitySnapshotFromJSON(gameContext, this.worldMap, entity);
+                    const snapshot = createEntitySnapshotFromJSON(gameContext, this.worldMap, data.entity);
                     const component = new SpawnComponent(snapshot);
 
                     event.addSimulation(component);
@@ -125,30 +123,22 @@ MatchLoader.prototype.createEventComponents = function(gameContext, event, simul
     }
 
     if(this.rules & LOADER_RULE.CREATE_EVENT_EFFECTS) {
-        for(const effect of effects) {
-            switch(effect.type) {
+        for(const { type, data } of effects) {
+            switch(type) {
                 case COMPONENT_TYPE.PLAY_SOUND: {
-                    const { sound } = effect;
-                    const component = new PlaySoundComponent(sound);
+                    const component = new PlaySoundComponent(data);
 
                     event.addEffect(component);
                     break;
                 }
                 case COMPONENT_TYPE.PLAY_SPRITE: {
-                    const { sprite, x, y } = effect;
-                    const component = new PlaySpriteComponent(sprite, x, y);
+                    const component = new PlaySpriteComponent(data);
 
                     event.addEffect(component);
                     break;
                 }
                 case COMPONENT_TYPE.DIALOGUE: {
-                    const { dialogue } = effect;
-
-                    for(const entry of dialogue) {
-                        entry.narrator = COMMANDER_TYPE[entry.narrator] ?? COMMANDER_TYPE.NONE;
-                    }
-
-                    const component = new DialogueComponent(dialogue);
+                    const component = new DialogueComponent(data);
 
                     event.addEffect(component);
                     break;

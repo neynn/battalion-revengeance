@@ -1,9 +1,6 @@
+import { WorldMap } from "../engine/map/worldMap.js";
 import { WorldEvent } from "../engine/world/event/worldEvent.js";
 import { COMMANDER_TYPE, COMPONENT_TYPE, FACTION_TYPE, MINE_TYPE, SHOP_TYPE } from "./enums.js";
-import { DialogueComponent } from "./event/components/dialogue.js";
-import { ExplodeTileComponent } from "./event/components/explodeTile.js";
-import { PlaySoundComponent } from "./event/components/playSound.js";
-import { PlaySpriteComponent } from "./event/components/playSprite.js";
 
 const createDialogueEntry = function() {
     return {
@@ -88,7 +85,8 @@ ScenarioModel.prototype.load = function(data) {
         prelogue = [],
         postlogue = [],
         defeat = [],
-        events = []
+        events = [],
+        objectives = {}
     } = data;
 
     const resolvedEvents = new Map();
@@ -141,9 +139,9 @@ ScenarioModel.prototype.load = function(data) {
         } = buildingSettings[i];
 
         this.buildingSettings.push({
-            "id": this.getAndSetCustomID(id),
             "x": x,
             "y": y,
+            "customID": this.getAndSetCustomID(id),
             "team": team,
             "shop": SHOP_TYPE[shop] ?? SHOP_TYPE.NONE
         });
@@ -236,20 +234,109 @@ ScenarioModel.prototype.load = function(data) {
             effects = []
         } = events[i];
 
+        const resolvedSimulation = [];
+        const resolvedEffects = [];
         const eventID = this.events.length;
 
         if(id !== null && !resolvedEvents.has(id)) {
             resolvedEvents.set(id, eventID);
         }
 
-        //TODO(neyn): Find a way to do simulation and effects properly!!!
+        for(const sim of simulation) {
+            const type = COMPONENT_TYPE[sim.type] ?? COMPONENT_TYPE.NONE;
+            let data = null;
+
+            switch(type) {
+                case COMPONENT_TYPE.EXPLODE_TILE: {
+                    data = {
+                        "layerID": WorldMap.INVALID_LAYER_ID,
+                        "tileX": WorldMap.OUT_OF_BOUNDS,
+                        "tileY": WorldMap.OUT_OF_BOUNDS
+                    };
+
+                    data.layerID = sim.layer ?? WorldMap.INVALID_LAYER_ID;
+                    data.tileX = sim.x ?? WorldMap.OUT_OF_BOUNDS;
+                    data.tileY = sim.y ?? WorldMap.OUT_OF_BOUNDS;
+                    break;
+                }
+                case COMPONENT_TYPE.SPAWN_ENTITY: {
+                    data = {
+                        "entity": null
+                    };
+
+                    data.entity = sim.entity;
+                    break;
+                }
+            }
+
+            if(data !== null) {
+                resolvedSimulation.push({
+                    "type": type,
+                    "data": data
+                });
+            }
+        }
+
+        for(const eff of effects) {
+            const type = COMPONENT_TYPE[eff.type] ?? COMPONENT_TYPE.NONE;
+            let data = null;
+
+            switch(type) {
+                case COMPONENT_TYPE.DIALOGUE: {
+                    data = {
+                        "dialogue": []
+                    };
+
+                    for(const entry of eff.dialogue) {
+                        const { narrator, text, voice } = entry;
+                        const dialogueEntry = createDialogueEntry();
+
+                        dialogueEntry.narrator = COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE;
+                        dialogueEntry.text = text;
+                        dialogueEntry.voice = voice;
+
+                        data.dialogue.push(dialogueEntry);
+                    }
+
+                    break;
+                }
+                case COMPONENT_TYPE.PLAY_SOUND: {
+                    data = {
+                        "sound": null
+                    };
+
+                    data.sound = eff.sound;
+                    break;
+                }
+                case COMPONENT_TYPE.PLAY_SPRITE: {
+                    data = {
+                        "sprite": null,
+                        "tileX": WorldMap.OUT_OF_BOUNDS,
+                        "tileY": WorldMap.OUT_OF_BOUNDS
+                    };
+
+                    data.sprite = eff.sprite;
+                    data.tileX = eff.x;
+                    data.tileY = eff.y;
+                    break;
+                }
+            }
+
+            if(data !== null) {
+                resolvedEffects.push({
+                    "type": type,
+                    "data": data
+                });
+            }
+        }
+
         this.events.push({
             "id": eventID,
             "turn": turn,
             "round": round,
             "next": WorldEvent.INVALID_ID,
-            "simulation": simulation,
-            "effects": effects
+            "simulation": resolvedSimulation,
+            "effects": resolvedEffects
         });
     }
 
@@ -261,5 +348,5 @@ ScenarioModel.prototype.load = function(data) {
         }
     }
 
-    this.objectives = data.objectives;
+    this.objectives = objectives;
 }
