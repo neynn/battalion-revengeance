@@ -20,7 +20,6 @@ export const createEntitySnapshot = function() {
         "turns": 0, //UINT16
         "cash": 0, //UINT16
         "flags": BattalionEntity.FLAG.NONE, //UINT16
-        "renderFlags": BattalionEntity.RENDER_FLAG.NONE, //UINT16 DOES NOT GET PACKED
         "health": 1, //UINT16
         "maxHealth": 1, //UINT16
         "type": ENTITY_TYPE._INVALID, //INT16
