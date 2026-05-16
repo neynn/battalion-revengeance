@@ -104,13 +104,9 @@
             { "narrator": "KANYE", "text": "PRESUS_DEFEAT_1" },
             { "narrator": "KANYE", "text": "PRESUS_DEFEAT_2" }
         ],
-        "eventNames": [
-            "DESTROY_BRIDGE",
-            "DESTROY_BRIDGE_DIALOGUE",
-            "SPAWN_TANK"
-        ],
-        "events": {
-            "DESTROY_BRIDGE": {
+        "events": [
+            {
+                "id": "DESTROY_BRIDGE",
                 "turn": 2,
                 "next": "DESTROY_BRIDGE_DIALOGUE",
                 "simulation": [
@@ -118,7 +114,8 @@
                     { "type": "EXPLODE_TILE", "layer": "CLOUD", "x": 3, "y": 7 }
                 ]
             },
-            "DESTROY_BRIDGE_DIALOGUE": { 
+            { 
+                "id": "DESTROY_BRIDGE_DIALOGUE",
                 "effects": [
                     {
                         "type": "DIALOGUE",
@@ -129,7 +126,8 @@
                     }
                 ]
             },
-            "SPAWN_TANK": {
+            {
+                "id": "SPAWN_TANK",
                 "turn": 2,
                 "simulation": [
                     { "type": "SPAWN_ENTITY", "entity": { "x": 0, "y": 9, "type": "STEALTH_TANK", "team": "SOMERTIN" } }
@@ -137,9 +135,9 @@
                 "effects": [
                     { "type": "PLAY_SOUND", "sound": "uncloak" },
                     { "type": "PLAY_SPRITE", "sprite": "explosion", "x": 0, "y": 9 }
-                ]
+                ]  
             }
-        }
+        ]
     },
     "PVP_VOLCANO": {
         "map": "volcano",
@@ -169,11 +167,9 @@
         "prelogue": [],
         "postlogue": [],
         "defeat": [],
-        "eventNames": [
-            "BOOM"
-        ],
-        "events": {
-            "BOOM": {
+        "events": [
+            {
+                "id": "BOOM",
                 "turn": 2,
                 "simulation": [
                     { "type": "SPAWN_ENTITY", "entity": { "x": 4, "y": 3, "type": "BOLT_TANK", "team": "TEST2" } }
@@ -183,6 +179,6 @@
                     { "type": "PLAY_SPRITE", "sprite": "explosion", "x": 4, "y": 4 }
                 ]
             }
-        }
+        ]
     }
 }

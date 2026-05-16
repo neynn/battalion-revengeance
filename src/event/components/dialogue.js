@@ -1,4 +1,5 @@
 import { EffectComponent } from "../../../engine/world/event/effectComponent.js";
+import { COMMANDER_TYPE } from "../../enums.js";
 
 export const DialogueComponent = function(dialogue) {
     EffectComponent.call(this);

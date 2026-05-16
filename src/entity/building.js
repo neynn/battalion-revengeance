@@ -1,7 +1,7 @@
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { SCHEMA_TYPE, SHOP_TYPE } from "../enums.js";
-import { BattalionMap } from "../map/battalionMap.js";
+import { ScenarioModel } from "../scenarioModel.js";
 import { createBuildingSnapshot } from "../snapshot/buildingSnapshot.js";
 import { TeamManager } from "../team/teamManager.js";
 import { BuildingType } from "../type/parsed/buildingType.js";
@@ -16,7 +16,7 @@ export const Building = function(config) {
     this.tileY = -1;
     this.teamID = TeamManager.INVALID_ID;
     this.spriteID = SpriteManager.INVALID_ID;
-    this.customID = BattalionMap.INVALID_CUSTOM_ID;
+    this.customID = ScenarioModel.INVALID_CUSTOM_ID;
     this.customName = LanguageHandler.INVALID_ID;
     this.customDesc = LanguageHandler.INVALID_ID;
     this.totalGeneratedCash = 0;

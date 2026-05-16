@@ -2,7 +2,6 @@ import { WorldEvent } from "./worldEvent.js";
 
 export const WorldEventRegistry = function() {
     this.worldEvents = [];
-    this.nameMap = new Map();
     this.isAuthority = true;
 }
 
@@ -24,7 +23,6 @@ WorldEventRegistry.prototype.createEvent = function(name) {
     const event = new WorldEvent(eventID, name);
 
     this.worldEvents.push(event);
-    this.nameMap.set(name, eventID);
 
     return event;
 }
@@ -48,12 +46,7 @@ WorldEventRegistry.prototype.getTriggerableEvents = function(turn, round) {
 
                 events.push(currentEvent);
 
-                if(next !== null) {
-                    currentEvent = this.getEventByName(next);
-                } else {
-                    currentEvent = null;
-                }
-
+                currentEvent = this.getEvent(next);
                 depth++;
             }
         }
@@ -82,16 +75,6 @@ WorldEventRegistry.prototype.saveTriggeredEvents = function() {
     }
 
     return events;
-}
-
-WorldEventRegistry.prototype.getEventByName = function(name) {
-    const eventID = this.nameMap.get(name);
-
-    if(eventID === undefined) {
-        return null;
-    }
-
-    return this.getEvent(eventID);
 }
 
 WorldEventRegistry.prototype.getEvent = function(eventID) {

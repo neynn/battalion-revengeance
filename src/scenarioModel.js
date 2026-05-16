@@ -1,0 +1,265 @@
+import { WorldEvent } from "../engine/world/event/worldEvent.js";
+import { COMMANDER_TYPE, COMPONENT_TYPE, FACTION_TYPE, MINE_TYPE, SHOP_TYPE } from "./enums.js";
+import { DialogueComponent } from "./event/components/dialogue.js";
+import { ExplodeTileComponent } from "./event/components/explodeTile.js";
+import { PlaySoundComponent } from "./event/components/playSound.js";
+import { PlaySpriteComponent } from "./event/components/playSprite.js";
+
+const createDialogueEntry = function() {
+    return {
+        "narrator": COMMANDER_TYPE.NONE,
+        "text": null,
+        "voice": null
+    }
+}
+
+export const ScenarioModel = function(id) {
+    this.id = id;
+    this.mapID = null;
+    this.client = null;
+    this.music = "rivers_of_steel";
+    this.playlist = null;
+    this.teams = [];
+    this.entities = [];
+    this.mines = [];
+    this.buildingSettings = [];
+    this.objectives = {};
+    this.prelogue = [];
+    this.postlogue = [];
+    this.defeat = [];
+    this.events = [];
+
+    this.customEntityIDs = new Map();
+    this.customEntityCount = 0;
+}
+
+ScenarioModel.INVALID_CUSTOM_ID = -1;
+
+ScenarioModel.prototype.getCustomID = function(name) {
+    const customID = this.customEntityIDs.get(name);
+    
+    if(customID === undefined) {
+        return ScenarioModel.INVALID_CUSTOM_ID;
+    }
+
+    return customID;
+}
+
+ScenarioModel.prototype.getAndSetCustomID = function(name) {
+    let customID = ScenarioModel.INVALID_CUSTOM_ID;
+    
+    if(name !== null) {
+        if(this.customEntityIDs.has(name)) {
+            customID = this.customEntityIDs.get(name);
+        } else {
+            customID = this.customEntityCount++;
+
+            this.customEntityIDs.set(name, customID);
+        }
+    }
+
+    return customID;
+}
+
+ScenarioModel.prototype.getAndSetCustomEventID = function(name) {
+    let customID = ScenarioModel.INVALID_CUSTOM_ID;
+    
+    if(name !== null) {
+        if(this.eventIDs.has(name)) {
+            customID = this.eventIDs.get(name);
+        } else {
+            customID = this.customEntityCount++;
+
+            this.eventIDs.set(name, customID);
+        }
+    }
+
+    return customID;
+}
+
+ScenarioModel.prototype.load = function(data) {
+    const {
+        map = null,
+        client = null,
+        teams = [],
+        entities = [],
+        mines = [],
+        buildingSettings = [],
+        prelogue = [],
+        postlogue = [],
+        defeat = [],
+        events = []
+    } = data;
+
+    const resolvedEvents = new Map();
+    const resolvedTeams = new Set();
+
+    this.mapID = map;
+    this.client = client;
+    
+    if(data.music) {
+        this.music = data.music;
+    }
+
+    if(data.playlist) {
+        this.playlist = data.playlist;
+    }
+
+    for(let i = 0; i < teams.length; i++) {
+        const {
+            id = null,
+            cash = 0,
+            commander = null,
+            faction = null,
+            allies = [],
+            objectives = []
+        } = teams[i];
+
+        if(id === null || resolvedTeams.has(id)) {
+            continue;
+        }
+
+        this.teams.push({
+            "id": id,
+            "cash": cash,
+            "commander": COMMANDER_TYPE[commander] ?? COMMANDER_TYPE.NONE,
+            "faction": FACTION_TYPE[faction] ?? FACTION_TYPE.RED,
+            "allies": allies,
+            "objectives": objectives
+        });
+
+        resolvedTeams.add(id);
+    }
+
+    for(let i = 0; i < buildingSettings.length; i++) {
+        const {
+            id = null,
+            x = -1,
+            y = -1,
+            team = null,
+            shop = null
+        } = buildingSettings[i];
+
+        this.buildingSettings.push({
+            "id": this.getAndSetCustomID(id),
+            "x": x,
+            "y": y,
+            "team": team,
+            "shop": SHOP_TYPE[shop] ?? SHOP_TYPE.NONE
+        });
+    }
+
+    for(let i = 0; i < mines.length; i++) {
+        const {
+            x = -1,
+            y = -1,
+            team = null,
+            type = null,
+            visible = false
+        } = mines[i];
+
+        this.mines.push({
+            "x": x,
+            "y": y,
+            "team": team,
+            "type": MINE_TYPE[type] ?? MINE_TYPE.LAND,
+            "isVisible": visible
+        });
+    }
+
+    for(let i = 0; i < prelogue.length; i++) {
+        const {
+            narrator = null,
+            text = null,
+            voice = null
+        } = prelogue[i];
+
+        const entry = createDialogueEntry();
+
+        entry.narrator = COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE;
+        entry.text = text;
+        entry.voice = voice;
+
+        this.prelogue.push(entry);
+    }
+
+    for(let i = 0; i < postlogue.length; i++) {
+        const {
+            narrator = null,
+            text = null,
+            voice = null
+        } = postlogue[i];
+
+        const entry = createDialogueEntry();
+
+        entry.narrator = COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE;
+        entry.text = text;
+        entry.voice = voice;
+
+        this.postlogue.push(entry);
+    }
+
+    for(let i = 0; i < defeat.length; i++) {
+        const {
+            narrator = null,
+            text = null,
+            voice = null
+        } = defeat[i];
+
+        const entry = createDialogueEntry();
+
+        entry.narrator = COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE;
+        entry.text = text;
+        entry.voice = voice;
+
+        this.defeat.push(entry);
+    }
+
+    for(let i = 0; i < entities.length; i++) {
+        const { 
+            id = null
+        } = entities[i];
+
+        //TODO(neyn): Later.
+        entities[i].id = this.getAndSetCustomID(id);
+
+        this.entities.push(entities[i]);
+    }
+
+    for(let i = 0; i < events.length; i++) {
+        const {
+            id = null,
+            next = null,
+            turn = WorldEvent.INVALID_TIME,
+            round = WorldEvent.INVALID_TIME,
+            simulation = [],
+            effects = []
+        } = events[i];
+
+        const eventID = this.events.length;
+
+        if(id !== null && !resolvedEvents.has(id)) {
+            resolvedEvents.set(id, eventID);
+        }
+
+        //TODO(neyn): Find a way to do simulation and effects properly!!!
+        this.events.push({
+            "id": eventID,
+            "turn": turn,
+            "round": round,
+            "next": WorldEvent.INVALID_ID,
+            "simulation": simulation,
+            "effects": effects
+        });
+    }
+
+    for(let i = 0; i < events.length; i++) {
+        const eventID = resolvedEvents.get(events[i].next);
+
+        if(eventID !== undefined) {
+            this.events[i].next = eventID;
+        }
+    }
+
+    this.objectives = data.objectives;
+}

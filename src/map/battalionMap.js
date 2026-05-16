@@ -37,8 +37,6 @@ BattalionMap.SEARCH_ORDER = [
     BattalionMap.LAYER.GROUND
 ];
 
-BattalionMap.INVALID_CUSTOM_ID = -1;
-
 BattalionMap.getLayerIndex = function(name) {
     const index = BattalionMap.LAYER[name];
 
@@ -52,16 +50,6 @@ BattalionMap.getLayerIndex = function(name) {
 BattalionMap.prototype = Object.create(WorldMap.prototype);
 BattalionMap.prototype.constructor = BattalionMap;
 
-BattalionMap.prototype.getCustomID = function(name) {
-    const index = this.customs.get(name);
-
-    if(index === undefined) {
-        return BattalionMap.INVALID_CUSTOM_ID;
-    }
-
-    return index;
-}
-
 BattalionMap.prototype.getTextID = function(name) {
     const index = this.text.get(name);
 
@@ -70,12 +58,6 @@ BattalionMap.prototype.getTextID = function(name) {
     }
 
     return index;
-}
-
-BattalionMap.prototype.createCustomMapping = function(customs) {
-    for(let i = 0; i < customs.length; i++) {
-        this.customs.set(customs[i], i);
-    }
 }
 
 BattalionMap.prototype.createTextMapping = function(text) {

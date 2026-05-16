@@ -1,7 +1,7 @@
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { DIRECTION, ENTITY_TYPE, MORALE_TYPE, TRAIT_TYPE } from "../enums.js";
-import { BattalionMap } from "../map/battalionMap.js";
+import { ScenarioModel } from "../scenarioModel.js";
 import { TeamManager } from "../team/teamManager.js";
 
 export const createEntitySnapshot = function() {
@@ -27,7 +27,7 @@ export const createEntitySnapshot = function() {
         "tileY": -1, //INT16
         "tileZ": -1, //INT16
         "transport": ENTITY_TYPE._INVALID, //INT16
-        "id": BattalionMap.INVALID_CUSTOM_ID, //INT16
+        "id": ScenarioModel.INVALID_CUSTOM_ID, //INT16
         "name": LanguageHandler.INVALID_ID, //INT16
         "desc": LanguageHandler.INVALID_ID, //INT16
     };
@@ -36,9 +36,9 @@ export const createEntitySnapshot = function() {
 export const createEntitySnapshotFromJSON = function(gameContext, worldMap, json) {
     const { teamManager, typeRegistry } = gameContext;
     const { 
+        id, //Is set by ScenarioModel.
         x = -1,
         y = -1,
-        id = null,
         name = null,
         desc = null,
         type = null,
@@ -54,6 +54,7 @@ export const createEntitySnapshotFromJSON = function(gameContext, worldMap, json
     const typeID = ENTITY_TYPE[type] ?? ENTITY_TYPE._INVALID;
     const entityType = typeRegistry.getEntityType(typeID);
 
+    snapshot.id = id;
     snapshot.type = typeID;
     snapshot.health = entityType.health;
     snapshot.maxHealth = entityType.health;
@@ -62,10 +63,6 @@ export const createEntitySnapshotFromJSON = function(gameContext, worldMap, json
     snapshot.tileY = y;
     snapshot.direction = DIRECTION[direction] ?? DIRECTION.EAST;
     snapshot.cash = cash;
-
-    if(id !== null) {
-        snapshot.id = worldMap.getCustomID(id);
-    }
 
     if(name !== null) {
         snapshot.name = worldMap.getTextID(name);

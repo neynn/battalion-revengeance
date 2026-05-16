@@ -1,6 +1,7 @@
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { BUILDING_TYPE, SCHEMA_TYPE, SHOP_TYPE } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
+import { ScenarioModel } from "../scenarioModel.js";
 import { TeamManager } from "../team/teamManager.js";
 
 export const createBuildingSnapshot = function() {
@@ -9,7 +10,7 @@ export const createBuildingSnapshot = function() {
         "teamID": TeamManager.INVALID_ID,
         "tileX": -1,
         "tileY": -1,
-        "id": BattalionMap.INVALID_CUSTOM_ID,
+        "id": ScenarioModel.INVALID_CUSTOM_ID,
         "desc": LanguageHandler.INVALID_ID,
         "name": LanguageHandler.INVALID_ID,
         "totalGeneratedCash": 0,
@@ -29,7 +30,6 @@ export const createBuildingSnapshot = function() {
  */
 export const createBuildingSnapshotFromJSON = function(worldMap, json) {
     const {
-        id = null,
         name = null,
         desc = null,
         x = -1,
@@ -44,10 +44,6 @@ export const createBuildingSnapshotFromJSON = function(worldMap, json) {
     snapshot.type = typeID;
     snapshot.tileX = x;
     snapshot.tileY = y;
-
-    if(id !== null) {
-        snapshot.id = worldMap.getCustomID(id);
-    }
 
     if(name !== null) {
         snapshot.name = worldMap.getTextID(name);

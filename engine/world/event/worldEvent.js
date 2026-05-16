@@ -1,7 +1,7 @@
 export const WorldEvent = function(id, name) {
     this.id = id;
     this.name = name;
-    this.next = null;
+    this.next = WorldEvent.INVALID_ID;
     this.turn = WorldEvent.INVALID_TIME;
     this.round = WorldEvent.INVALID_TIME;
     this.simulation = [];

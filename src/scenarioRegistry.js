@@ -1,12 +1,17 @@
+import { ScenarioModel } from "./scenarioModel.js";
+
 export const ScenarioRegistry = function() {
     this.scenarios = new Map();
 }
 
 ScenarioRegistry.prototype.load = function(scenarios) {
     for(const scenarioID in scenarios) {
-        const scenario = scenarios[scenarioID];
+        const model = new ScenarioModel(scenarioID);
+        const data = scenarios[scenarioID];
 
-        this.scenarios.set(scenarioID, scenario);
+        model.load(data);
+
+        this.scenarios.set(scenarioID, model);
     }
 }
 

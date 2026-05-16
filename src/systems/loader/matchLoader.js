@@ -24,6 +24,8 @@ import { PlaySoundComponent } from "../../event/components/playSound.js";
 import { PlaySpriteComponent } from "../../event/components/playSprite.js";
 import { TeamManager } from "../../team/teamManager.js";
 import { StoryActor } from "../../actors/storyActor.js";
+import { ScenarioModel } from "../../scenarioModel.js";
+import { createMineObject } from "../spawn.js";
 
 const createCustomSchema = function(gameContext, team, colorMap) {
     const { typeRegistry } = gameContext;
@@ -37,24 +39,50 @@ const createCustomSchema = function(gameContext, team, colorMap) {
     team.color = colorID;
 }
 
+/**
+ * 
+ * @param {BattalionMap} worldMap 
+ * @param {ScenarioModel} scenario 
+ */
 export const MatchLoader = function(worldMap, scenario) {
     this.rules = LOADER_RULE.NONE;
     this.worldMap = worldMap;
+    this.scenario = scenario;
 
-    this.buildingSettings = scenario.buildingSettings ?? [];
-    this.teams = scenario.teams ?? [];
-    this.entities = scenario.entities ?? [];
-    this.objectives = scenario.objectives ?? {};
-    this.eventNames = scenario.eventNames ?? [];
-    this.events = scenario.events ?? {};
-    this.mines = scenario.mines ?? [];
+    this.buildingSettings = scenario.buildingSettings;
+    this.teams = scenario.teams;
+    this.mines = scenario.mines;
+    this.entities = scenario.entities;
+
+    this.objectives = scenario.objectives;
+    this.events = scenario.events;
+}
+
+MatchLoader.prototype.createMines = function(gameContext) {
+    const { teamManager, typeRegistry } = gameContext;
+
+    for(const mine of this.mines) {
+        const { x, y, team, type, isVisible } = mine;
+        const { category } = typeRegistry.getMineType(type);
+
+        if(this.worldMap.isMinePlaceable(gameContext, x, y, category)) {
+            const teamID = teamManager.getTeamID(team);
+            const mineObject = createMineObject(gameContext, teamID, type, x, y);
+
+            if(isVisible) {
+                mineObject.show();
+            }
+            
+            this.worldMap.addMine(mineObject);
+        }
+    }
 }
 
 MatchLoader.prototype.applyBuildingSettings = function(gameContext) {
     const { teamManager } = gameContext;
 
     for(const settings of this.buildingSettings) {
-        const { x, y, team, shop } = settings;
+        const { x, y, team, shop, customID } = settings;
         const building = this.worldMap.getBuilding(x, y);
 
         if(building) {
@@ -67,7 +95,8 @@ MatchLoader.prototype.applyBuildingSettings = function(gameContext) {
                 building.setColor(team.color);
             }
 
-            building.shop = SHOP_TYPE[shop] ?? SHOP_TYPE.NONE;
+            building.customID = customID;
+            building.shop = shop;
         }
     }
 }
@@ -114,6 +143,11 @@ MatchLoader.prototype.createEventComponents = function(gameContext, event, simul
                 }
                 case COMPONENT_TYPE.DIALOGUE: {
                     const { dialogue } = effect;
+
+                    for(const entry of dialogue) {
+                        entry.narrator = COMMANDER_TYPE[entry.narrator] ?? COMMANDER_TYPE.NONE;
+                    }
+
                     const component = new DialogueComponent(dialogue);
 
                     event.addEffect(component);
@@ -128,19 +162,14 @@ MatchLoader.prototype.createWorldEvents = function(gameContext) {
     const { world } = gameContext;
     const { eventHandler } = world;
 
-    for(let i = 0; i < this.eventNames.length; i++) {
-        const eventName = this.eventNames[i];
-        const config = this.events[eventName];
-        const event = eventHandler.createEvent(eventName);
+    for(let i = 0; i < this.scenario.events.length; i++) {
+        const { id, turn, round, next, simulation, effects } = this.scenario.events[i];
+        const event = eventHandler.createEvent(id);
 
-        if(config) {
-            const { turn, round, next = null, simulation = [], effects = [] } = config;
+        this.createEventComponents(gameContext, event, simulation, effects);
 
-            this.createEventComponents(gameContext, event, simulation, effects);
-
-            event.setTriggerTime(turn, round);
-            event.setNext(next);
-        }
+        event.setTriggerTime(turn, round);
+        event.setNext(next);
     }
 }
 
@@ -197,9 +226,9 @@ MatchLoader.prototype.createObjective = function(config) {
     switch(config.type) {
         case OBJECTIVE_TYPE.DEFEAT: {
             const objective = new DefeatObjective();
-            const targetID = this.worldMap.getCustomID(config.target);
+            const targetID = this.scenario.getCustomID(config.target);
 
-            if(targetID !== BattalionMap.INVALID_CUSTOM_ID) {
+            if(targetID !== ScenarioModel.INVALID_CUSTOM_ID) {
                 objective.targetID = targetID;
             }
 
@@ -209,9 +238,9 @@ MatchLoader.prototype.createObjective = function(config) {
             const objective = new ProtectObjective();
 
             for(const targetName of config.targets) {
-                const targetID = this.worldMap.getCustomID(targetName);
+                const targetID = this.scenario.getCustomID(targetName);
 
-                if(targetID !== BattalionMap.INVALID_CUSTOM_ID) {
+                if(targetID !== ScenarioModel.INVALID_CUSTOM_ID) {
                     objective.addTarget(targetID);
                 }
             }
@@ -230,33 +259,12 @@ MatchLoader.prototype.createTeams = function(gameContext, overrides) {
     const { teamManager } = gameContext;
 
     for(let i = 0; i < this.teams.length; i++) {
-        const { 
-            id = null,
-            cash = 0,
-            faction = null,
-            objectives = [],
-            color = null,
-            commander = null
-        } = this.teams[i];
-
+        const { id, cash, commander, faction, objectives } = this.teams[i];
         const team = teamManager.createTeam(id);
 
-        if(commander !== null) {
-            team.commander = COMMANDER_TYPE[commander] ?? COMMANDER_TYPE.NONE;
-        }
-
-        if(faction !== null) {
-            const factionID = FACTION_TYPE[faction] ?? FACTION_TYPE.RED;
-
-            team.loadAsFaction(gameContext, factionID);
-        }
-
-        if(color !== null) {
-            team.color = SCHEMA_TYPE[color] ?? SCHEMA_TYPE.RED;
-        }
-
-        //The map may have a preset cash for each team.
         team.cash = cash;
+        team.commander = commander;
+        team.loadAsFaction(gameContext, faction);
 
         //Most game modes have objectives, except custom PvP.
         if(this.rules & LOADER_RULE.LOAD_OBJECTIVES) {
@@ -275,9 +283,7 @@ MatchLoader.prototype.createTeams = function(gameContext, overrides) {
     //When allies are fixed, the map determines them.
     if(this.rules & LOADER_RULE.FIXED_ALLIES) {
         for(let i = 0; i < this.teams.length; i++) {
-            const {
-                allies = []
-            } = this.teams[i];
+            const { allies } = this.teams[i];
 
             teamManager.loadAllies(i, allies);
         }

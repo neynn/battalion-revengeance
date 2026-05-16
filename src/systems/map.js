@@ -13,12 +13,12 @@ import { MapPreview } from "../map/mapPreview.js";
 export const ClientMatchLoader = function(worldMap, scenario) {
     MatchLoader.call(this, worldMap, scenario);
 
-    this.music = scenario.music ?? "rivers_of_steel";    
-    this.playlist = scenario.playlist ?? null;
-    this.prelogue = scenario.prelogue ?? [];
-    this.postlogue = scenario.postlogue ?? [];
-    this.defeat = scenario.defeat ?? [];
-    this.clientTeam = scenario.client ?? null;
+    this.music = scenario.music; 
+    this.playlist = scenario.playlist;
+    this.prelogue = scenario.prelogue;
+    this.postlogue = scenario.postlogue;
+    this.defeat = scenario.defeat;
+    this.clientTeam = scenario.client;
 }
 
 ClientMatchLoader.prototype = Object.create(MatchLoader.prototype);
@@ -72,34 +72,6 @@ ClientMatchLoader.prototype.createEntities = function(gameContext) {
 
         if(entity) {
             //...
-        }
-    }
-}
-
-ClientMatchLoader.prototype.createMines = function(gameContext) {
-    const { teamManager, typeRegistry } = gameContext;
-
-    for(const mine of this.mines) {
-        const { 
-            x = -1, 
-            y = -1,
-            team = null,
-            type = "NONE",
-            visible = false
-        } = mine;
-
-        const teamID = teamManager.getTeamID(team);
-        const typeID = MINE_TYPE[type] ?? MINE_TYPE.LAND;
-        const { category } = typeRegistry.getMineType(typeID);
-
-        if(this.worldMap.isMinePlaceable(gameContext, x, y, category)) {
-            const mineObject = createMineObject(gameContext, teamID, typeID, x, y);
-
-            if(visible) {
-                mineObject.show();
-            }
-            
-            this.worldMap.addMine(mineObject);
         }
     }
 }
@@ -290,34 +262,6 @@ ServerMatchLoader.prototype.createEntities = function(gameContext) {
     }
 }
 
-ServerMatchLoader.prototype.createMines = function(gameContext) {
-    const { teamManager, typeRegistry } = gameContext;
-
-    for(const mine of this.mines) {
-        const { 
-            x = -1, 
-            y = -1,
-            team = null,
-            type = "NONE",
-            hidden = false
-        } = mine;
-
-        const teamID = teamManager.getTeamID(team);
-        const typeID = MINE_TYPE[type] ?? MINE_TYPE.LAND;
-        const { category } = typeRegistry.getMineType(typeID);
-
-        if(this.worldMap.isMinePlaceable(gameContext, x, y, category)) {
-            const mineObject = createMineObject(gameContext, teamID, typeID, x, y);
-
-            if(hidden) {
-                mineObject.hide();
-            }
-
-            this.worldMap.addMine(mineObject);
-        }
-    }
-}
-
 ServerMatchLoader.prototype.loadMap = function(gameContext, overrides) {
     const { teamManager } = gameContext;
 
@@ -359,13 +303,12 @@ export const createEmptyMap = function(gameContext, width, height) {
 const createWorldMap = function(gameContext, file, source) {
     const { world } = gameContext;
     const { mapManager } = world;
-    const { width, height, data, buildings = [], localization = [], text = [], custom = [] } = file;
+    const { width, height, data, buildings = [], localization = [], text = [] } = file;
     const nextID = mapManager.getNextID();
     const worldMap = new BattalionMap(nextID, width, height);
 
     worldMap.name = source.title;
     worldMap.createTextMapping(text);
-    worldMap.createCustomMapping(custom);
     worldMap.decodeLayers(data);
     worldMap.loadLocalization(localization);
 
@@ -449,8 +392,8 @@ export const loadClientScenario = async function(gameContext, scenarioID) {
         return Promise.reject();
     }
 
-    const { map } = scenario;
-    const worldMap = await loadClientMap(gameContext, map);
+    const { mapID } = scenario;
+    const worldMap = await loadClientMap(gameContext, mapID);
 
     worldMap.scenario = scenarioID;
 
@@ -467,8 +410,8 @@ export const loadServerScenario = async function(gameContext, scenarioID) {
         return Promise.reject();
     }
 
-    const { map } = scenario;
-    const worldMap = await loadServerMap(gameContext, map);
+    const { mapID } = scenario;
+    const worldMap = await loadServerMap(gameContext, mapID);
 
     worldMap.scenario = scenarioID;
 

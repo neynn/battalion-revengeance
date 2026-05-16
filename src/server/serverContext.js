@@ -77,8 +77,8 @@ ServerGameContext.prototype.selectScenario = function(scenarioID) {
         return false;
     }
 
-    const { map } = scenario;
-    const preview = this.mapRegistry.getMapPreview(map);
+    const { mapID } = scenario;
+    const preview = this.mapRegistry.getMapPreview(mapID);
 
     if(!preview) {
         console.warn("Preview does not exist!");

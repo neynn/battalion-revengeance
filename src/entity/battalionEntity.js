@@ -9,7 +9,7 @@ import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLA
 import { TeamManager } from "../team/teamManager.js";
 import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
-import { BattalionMap } from "../map/battalionMap.js";
+import { ScenarioModel } from "../scenarioModel.js";
 
 const ACTIONS_PER_TURN = 1;
 const MOVES_PER_TURN = 1;
@@ -20,7 +20,7 @@ export const BattalionEntity = function(id) {
     Entity.call(this, id);
 
     this.config = null;
-    this.customID = BattalionMap.INVALID_CUSTOM_ID;
+    this.customID = ScenarioModel.INVALID_CUSTOM_ID;
     this.customName = LanguageHandler.INVALID_ID;
     this.customDesc = LanguageHandler.INVALID_ID;
     this.health = 1;
