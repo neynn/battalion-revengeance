@@ -33,14 +33,14 @@ export const createEntitySnapshot = function() {
     };
 }
 
-export const createEntitySnapshotFromJSON = function(gameContext, worldMap, json) {
+export const createEntitySnapshotFromJSON = function(gameContext, json) {
     const { teamManager, typeRegistry } = gameContext;
     const { 
         id, //Is set by ScenarioModel.
+        name,
+        desc,
         x = -1,
         y = -1,
-        name = null,
-        desc = null,
         type = null,
         team = null,
         direction = null,
@@ -55,6 +55,8 @@ export const createEntitySnapshotFromJSON = function(gameContext, worldMap, json
     const entityType = typeRegistry.getEntityType(typeID);
 
     snapshot.id = id;
+    snapshot.name = name;
+    snapshot.desc = desc;
     snapshot.type = typeID;
     snapshot.health = entityType.health;
     snapshot.maxHealth = entityType.health;
@@ -63,15 +65,6 @@ export const createEntitySnapshotFromJSON = function(gameContext, worldMap, json
     snapshot.tileY = y;
     snapshot.direction = DIRECTION[direction] ?? DIRECTION.EAST;
     snapshot.cash = cash;
-
-    //TODO(neyn): These MUST be bound to the scenario.
-    if(name !== null) {
-        snapshot.name = worldMap.getTextID(name);
-    }
-
-    if(desc !== null) {
-        snapshot.desc = worldMap.getTextID(desc);
-    }
 
     if(health > 0) {
         snapshot.health = health;

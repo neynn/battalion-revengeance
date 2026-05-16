@@ -1,3 +1,4 @@
+import { LanguageHandler } from "../engine/language/languageHandler.js";
 import { WorldMap } from "../engine/map/worldMap.js";
 import { WorldEvent } from "../engine/world/event/worldEvent.js";
 import { COMMANDER_TYPE, COMPONENT_TYPE, FACTION_TYPE, MINE_TYPE, OBJECTIVE_TYPE, SHOP_TYPE } from "./enums.js";
@@ -25,9 +26,13 @@ export const ScenarioModel = function(id) {
     this.postlogue = [];
     this.defeat = [];
     this.events = [];
+    this.text = {};
 
     this.customIDs = new Map();
     this.customIDCount = 0;
+
+    this.textMap = new Map();
+    this.textID = 0;
 }
 
 ScenarioModel.INVALID_CUSTOM_ID = -1;
@@ -58,6 +63,22 @@ ScenarioModel.prototype.getAndSetCustomID = function(name) {
     return customID;
 }
 
+ScenarioModel.prototype.getOrCreateTextID = function(name) {
+    let textID = LanguageHandler.INVALID_ID;
+
+    if(name !== null) {
+        if(this.textMap.has(name)) {
+            textID = this.textMap.get(name);
+        } else {
+            textID = this.textID++;
+
+            this.textMap.set(name, textID);
+        }
+    }
+
+    return textID;
+}
+
 ScenarioModel.prototype.load = function(data) {
     const {
         map = null,
@@ -70,7 +91,8 @@ ScenarioModel.prototype.load = function(data) {
         postlogue = [],
         defeat = [],
         events = [],
-        objectives = {}
+        objectives = {},
+        text = {}
     } = data;
 
     const resolvedEvents = new Map();
@@ -78,6 +100,9 @@ ScenarioModel.prototype.load = function(data) {
 
     this.mapID = map;
     this.client = client;
+
+    //TODO(neyn): Must be loaded separately!
+    this.text = text;
     
     if(data.music) {
         this.music = data.music;
@@ -157,7 +182,7 @@ ScenarioModel.prototype.load = function(data) {
         const entry = createDialogueEntry();
 
         entry.narrator = COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE;
-        entry.text = text;
+        entry.text = this.getOrCreateTextID(text);
         entry.voice = voice;
 
         this.prelogue.push(entry);
@@ -173,7 +198,7 @@ ScenarioModel.prototype.load = function(data) {
         const entry = createDialogueEntry();
 
         entry.narrator = COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE;
-        entry.text = text;
+        entry.text = this.getOrCreateTextID(text);
         entry.voice = voice;
 
         this.postlogue.push(entry);
@@ -189,7 +214,7 @@ ScenarioModel.prototype.load = function(data) {
         const entry = createDialogueEntry();
 
         entry.narrator = COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE;
-        entry.text = text;
+        entry.text = this.getOrCreateTextID(text);
         entry.voice = voice;
 
         this.defeat.push(entry);
@@ -197,11 +222,15 @@ ScenarioModel.prototype.load = function(data) {
 
     for(let i = 0; i < entities.length; i++) {
         const { 
-            id = null
+            id = null,
+            name = null,
+            desc = null
         } = entities[i];
 
         //TODO(neyn): Later. Turn this into a ScenarioNotation
         entities[i].id = this.getAndSetCustomID(id);
+        entities[i].name = this.getOrCreateTextID(name);
+        entities[i].desc = this.getOrCreateTextID(desc);
 
         this.entities.push(entities[i]);
     }
@@ -252,6 +281,9 @@ ScenarioModel.prototype.load = function(data) {
                     };
 
                     data.entity = sim.entity;
+                    data.entity.id = this.getAndSetCustomID(sim.entity.id ?? null);
+                    data.entity.name = this.getOrCreateTextID(sim.entity.name ?? null);
+                    data.entity.desc = this.getOrCreateTextID(sim.entity.desc ?? null);
                     break;
                 }
             }
@@ -279,7 +311,7 @@ ScenarioModel.prototype.load = function(data) {
                         const dialogueEntry = createDialogueEntry();
 
                         dialogueEntry.narrator = COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE;
-                        dialogueEntry.text = text;
+                        dialogueEntry.text = this.getOrCreateTextID(text);
                         dialogueEntry.voice = voice;
 
                         data.dialogue.push(dialogueEntry);

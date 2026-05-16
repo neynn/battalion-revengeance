@@ -63,21 +63,23 @@ LanguageHandler.prototype.load = function(languages) {
     }
 }
 
-LanguageHandler.prototype.registerScenarioText = function(scenarioText, textMapping) {
-    for(const [key, id] of textMapping) {
-        const translation = scenarioText[key];
+LanguageHandler.prototype.registerScenarioText = function(scenarioText, textTable) {
+    for(const name in scenarioText) {
+        const translation = scenarioText[name];
+        const id = textTable.get(name);
 
-        if(translation) {
+        if(id !== undefined) {
             this.scenarioText.set(id, translation);
         }
     }
 }
 
-LanguageHandler.prototype.registerMapText = function(mapText, textMapping) {
-    for(const [key, id] of textMapping) {
-        const translation = mapText[key];
+LanguageHandler.prototype.registerMapText = function(mapText, textTable) {
+    for(const name in mapText) {
+        const translation = mapText[name];
+        const id = textTable.get(name);
 
-        if(translation) {
+        if(id !== undefined) {
             this.mapText.set(id, translation);
         }
     }

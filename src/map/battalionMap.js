@@ -54,16 +54,6 @@ BattalionMap.getLayerIndex = function(name) {
 BattalionMap.prototype = Object.create(WorldMap.prototype);
 BattalionMap.prototype.constructor = BattalionMap;
 
-BattalionMap.prototype.getTextID = function(name) {
-    const index = this.text.get(name);
-
-    if(index === undefined) {
-        return LanguageHandler.INVALID_ID;
-    }
-
-    return index;
-}
-
 BattalionMap.prototype.getOrCreateBuildingID = function(name) {
     let buildingID = -1;
 
@@ -79,10 +69,14 @@ BattalionMap.prototype.getOrCreateBuildingID = function(name) {
 BattalionMap.prototype.getOrCreateTextID = function(name) {
     let textID = LanguageHandler.INVALID_ID;
 
-    if(name !== null && !this.text.has(name)) {
-        textID = this.textID++;
+    if(name !== null) {
+        if(this.text.has(name)) {
+            textID = this.text.get(name);
+        } else {
+            textID = this.textID++;
 
-        this.text.set(name, textID);
+            this.text.set(name, textID);
+        }
     }
 
     return textID;

@@ -105,7 +105,7 @@ MatchLoader.prototype.createEventComponents = function(gameContext, event, simul
                     break;
                 }
                 case COMPONENT_TYPE.SPAWN_ENTITY: {
-                    const snapshot = createEntitySnapshotFromJSON(gameContext, this.worldMap, data.entity);
+                    const snapshot = createEntitySnapshotFromJSON(gameContext, data.entity);
                     const component = new SpawnComponent(snapshot);
 
                     event.addSimulation(component);

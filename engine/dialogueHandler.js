@@ -182,12 +182,9 @@ DialogueHandler.prototype.showNextEntry = function(gameContext) {
     }
 
     const { text, voice } = this.currentDialogue[this.currentIndex];
-    const { world, client, language } = gameContext;
+    const { client, language } = gameContext;
     const { soundPlayer } = client;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-    const textID = worldMap.getTextID(text);
-    const translation = language.getScenarioTranslation(textID);
+    const translation = language.getScenarioTranslation(text);
 
     this.fullText = translation;
 

@@ -61,13 +61,21 @@ ClientMatchLoader.prototype.createActors = function(gameContext) {
     });
 }
 
+ClientMatchLoader.prototype.loadScenarioText = function(gameContext) {
+    const { language } = gameContext;
+    const text = this.scenario.text;
+    const table = this.scenario.textMap;
+
+    language.registerScenarioText(text, table);
+}
+
 ClientMatchLoader.prototype.createEntities = function(gameContext) {
     const { world } = gameContext;
     const { entityManager } = world;
 
     for(const config of this.entities) {
         const entityID = entityManager.getNextID();
-        const snapshot = createEntitySnapshotFromJSON(gameContext, this.worldMap, config);
+        const snapshot = createEntitySnapshotFromJSON(gameContext, config);
         const entity = createClientEntityObject(gameContext, entityID, snapshot);
 
         if(entity) {
@@ -133,6 +141,7 @@ ClientMatchLoader.prototype.createServerMatch = function(gameContext, snapshot, 
     teamManager.updateStatus(); //TODO(neyn): Really necessary?
 
     this.loadTurnFromSnapshot(gameContext, turn);
+    this.loadScenarioText(gameContext);
 
     //Sort buildings once after all are created!
     spriteManager.sortLayer(LAYER_TYPE.BUILDING);
@@ -189,6 +198,7 @@ ClientMatchLoader.prototype.createSavedMatch = function(gameContext, snapshot, o
     teamManager.updateStatus();
 
     this.loadTurnFromSnapshot(gameContext, turn);
+    this.loadScenarioText(gameContext);
 
     //Sort buildings once after all are created!
     spriteManager.sortLayer(LAYER_TYPE.BUILDING);
@@ -211,6 +221,7 @@ ClientMatchLoader.prototype.createDefaultMatch = function(gameContext, overrides
     this.createMines(gameContext);
     this.loadMusic(gameContext);
     this.createWorldEvents(gameContext);
+    this.loadScenarioText(gameContext);
 
     dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);
     teamManager.updateStatus();
@@ -253,7 +264,7 @@ ServerMatchLoader.prototype.createEntities = function(gameContext) {
 
     for(let i = 0; i < this.entities.length; i++) {
         const entityID = entityManager.getNextID();
-        const snapshot = createEntitySnapshotFromJSON(gameContext, this.worldMap, this.entities[i]);
+        const snapshot = createEntitySnapshotFromJSON(gameContext, this.entities[i]);
         const entity = createServerEntityObject(gameContext, entityID, snapshot);
 
         if(entity) {
