@@ -33,38 +33,38 @@ export const createEntitySnapshot = function() {
     };
 }
 
-export const createEntitySnapshotFromJSON = function(gameContext, json) {
+export const createEntitySnapshotFromEntry = function(gameContext, entry) {
     const { teamManager, typeRegistry } = gameContext;
-    const { 
-        id, //Is set by ScenarioModel.
+    const {
+        id,
         name,
         desc,
-        x = -1,
-        y = -1,
-        type = null,
-        team = null,
-        direction = null,
-        health = -1,
-        stealth = false,
-        cash = 0,
-        cargo = null
-    } = json;
+        type,
+        x,
+        y,
+        direction,
+        health,
+        stealth,
+        cash,
+        cargo,
+        team
+    } = entry;
 
     const snapshot = createEntitySnapshot();
-    const typeID = ENTITY_TYPE[type] ?? ENTITY_TYPE._INVALID;
-    const entityType = typeRegistry.getEntityType(typeID);
+    const entityType = typeRegistry.getEntityType(type);
 
     snapshot.id = id;
     snapshot.name = name;
     snapshot.desc = desc;
-    snapshot.type = typeID;
+    snapshot.type = type;
     snapshot.health = entityType.health;
     snapshot.maxHealth = entityType.health;
     snapshot.teamID = teamManager.getTeamID(team);
     snapshot.tileX = x;
     snapshot.tileY = y;
-    snapshot.direction = DIRECTION[direction] ?? DIRECTION.EAST;
+    snapshot.direction = direction;
     snapshot.cash = cash;
+    snapshot.transport = cargo;
 
     if(health > 0) {
         snapshot.health = health;
@@ -76,10 +76,6 @@ export const createEntitySnapshotFromJSON = function(gameContext, json) {
         if(entityType.hasTrait(TRAIT_TYPE.SUBMERGED)) {
             snapshot.flags |= BattalionEntity.FLAG.IS_SUBMERGED;
         }
-    }
-
-    if(cargo !== null) {
-        snapshot.transport = ENTITY_TYPE[cargo] ?? ENTITY_TYPE._INVALID;
     }
 
     return snapshot;

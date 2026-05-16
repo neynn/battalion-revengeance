@@ -2,7 +2,7 @@ import { BattalionMap } from "../map/battalionMap.js";
 import { createClientEntityObject, createMineObject, createServerEntityObject } from "./spawn.js";
 import { LAYER_TYPE, LOADER_RULE, MINE_TYPE } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
-import { createEntitySnapshot, createEntitySnapshotFromJSON } from "../snapshot/entitySnapshot.js";
+import { createEntitySnapshot, createEntitySnapshotFromEntry } from "../snapshot/entitySnapshot.js";
 import { MatchLoader } from "./loader/matchLoader.js";
 import { unpackEntitySnapshot } from "../action/packer_constants.js";
 import { createBuildingSnapshotFromJSON } from "../snapshot/buildingSnapshot.js";
@@ -75,7 +75,7 @@ ClientMatchLoader.prototype.createEntities = function(gameContext) {
 
     for(const config of this.entities) {
         const entityID = entityManager.getNextID();
-        const snapshot = createEntitySnapshotFromJSON(gameContext, config);
+        const snapshot = createEntitySnapshotFromEntry(gameContext, config);
         const entity = createClientEntityObject(gameContext, entityID, snapshot);
 
         if(entity) {
@@ -264,7 +264,7 @@ ServerMatchLoader.prototype.createEntities = function(gameContext) {
 
     for(let i = 0; i < this.entities.length; i++) {
         const entityID = entityManager.getNextID();
-        const snapshot = createEntitySnapshotFromJSON(gameContext, this.entities[i]);
+        const snapshot = createEntitySnapshotFromEntry(gameContext, this.entities[i]);
         const entity = createServerEntityObject(gameContext, entityID, snapshot);
 
         if(entity) {

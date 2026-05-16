@@ -1,15 +1,7 @@
 import { LanguageHandler } from "../engine/language/languageHandler.js";
 import { WorldMap } from "../engine/map/worldMap.js";
 import { WorldEvent } from "../engine/world/event/worldEvent.js";
-import { COMMANDER_TYPE, COMPONENT_TYPE, FACTION_TYPE, MINE_TYPE, OBJECTIVE_TYPE, SHOP_TYPE } from "./enums.js";
-
-const createDialogueEntry = function() {
-    return {
-        "narrator": COMMANDER_TYPE.NONE,
-        "text": null,
-        "voice": null
-    }
-}
+import { COMMANDER_TYPE, COMPONENT_TYPE, DIRECTION, ENTITY_TYPE, FACTION_TYPE, MINE_TYPE, OBJECTIVE_TYPE, SHOP_TYPE } from "./enums.js";
 
 export const ScenarioModel = function(id) {
     this.id = id;
@@ -77,6 +69,52 @@ ScenarioModel.prototype.getOrCreateTextID = function(name) {
     }
 
     return textID;
+}
+
+ScenarioModel.prototype.createDialogueEntry = function(config) {
+    const {
+        narrator = null,
+        text = null,
+        voice = null
+    } = config;
+
+    return {
+        "narrator": COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE,
+        "text": this.getOrCreateTextID(text),
+        "voice": voice
+    }
+}
+
+ScenarioModel.prototype.createEntityEntry = function(config) {
+    const {
+        id = null,
+        name = null,
+        desc = null,
+        team = null,
+        type = null,
+        direction = null,
+        cargo = null,
+        stealth = false,
+        health = -1,
+        x = -1,
+        y = -1,
+        cash = 0
+    } = config;
+
+    return {
+        "id": this.getAndSetCustomID(id),
+        "name": this.getOrCreateTextID(name),
+        "desc": this.getOrCreateTextID(desc),
+        "type": ENTITY_TYPE[type] ?? ENTITY_TYPE._INVALID,
+        "x": x,
+        "y": y,
+        "direction": DIRECTION[direction] ?? DIRECTION.EAST,
+        "health": health,
+        "stealth": stealth,
+        "cash": cash,
+        "cargo": ENTITY_TYPE[cargo] ?? ENTITY_TYPE._INVALID,
+        "team": team
+    }
 }
 
 ScenarioModel.prototype.load = function(data) {
@@ -173,66 +211,27 @@ ScenarioModel.prototype.load = function(data) {
     }
 
     for(let i = 0; i < prelogue.length; i++) {
-        const {
-            narrator = null,
-            text = null,
-            voice = null
-        } = prelogue[i];
-
-        const entry = createDialogueEntry();
-
-        entry.narrator = COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE;
-        entry.text = this.getOrCreateTextID(text);
-        entry.voice = voice;
+        const entry = this.createDialogueEntry(prelogue[i]);
 
         this.prelogue.push(entry);
     }
 
     for(let i = 0; i < postlogue.length; i++) {
-        const {
-            narrator = null,
-            text = null,
-            voice = null
-        } = postlogue[i];
-
-        const entry = createDialogueEntry();
-
-        entry.narrator = COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE;
-        entry.text = this.getOrCreateTextID(text);
-        entry.voice = voice;
+        const entry = this.createDialogueEntry(postlogue[i]);
 
         this.postlogue.push(entry);
     }
 
     for(let i = 0; i < defeat.length; i++) {
-        const {
-            narrator = null,
-            text = null,
-            voice = null
-        } = defeat[i];
-
-        const entry = createDialogueEntry();
-
-        entry.narrator = COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE;
-        entry.text = this.getOrCreateTextID(text);
-        entry.voice = voice;
+        const entry = this.createDialogueEntry(defeat[i]);
 
         this.defeat.push(entry);
     }
 
     for(let i = 0; i < entities.length; i++) {
-        const { 
-            id = null,
-            name = null,
-            desc = null
-        } = entities[i];
+        const entry = this.createEntityEntry(entities[i]);
 
-        //TODO(neyn): Later. Turn this into a ScenarioNotation
-        entities[i].id = this.getAndSetCustomID(id);
-        entities[i].name = this.getOrCreateTextID(name);
-        entities[i].desc = this.getOrCreateTextID(desc);
-
-        this.entities.push(entities[i]);
+        this.entities.push(entry);
     }
 
     for(let i = 0; i < events.length; i++) {
@@ -277,13 +276,9 @@ ScenarioModel.prototype.load = function(data) {
                 }
                 case COMPONENT_TYPE.SPAWN_ENTITY: {
                     data = {
-                        "entity": null
+                        "entity": this.createEntityEntry(sim.entity)
                     };
 
-                    data.entity = sim.entity;
-                    data.entity.id = this.getAndSetCustomID(sim.entity.id ?? null);
-                    data.entity.name = this.getOrCreateTextID(sim.entity.name ?? null);
-                    data.entity.desc = this.getOrCreateTextID(sim.entity.desc ?? null);
                     break;
                 }
             }
@@ -307,12 +302,7 @@ ScenarioModel.prototype.load = function(data) {
                     };
 
                     for(const entry of eff.dialogue) {
-                        const { narrator, text, voice } = entry;
-                        const dialogueEntry = createDialogueEntry();
-
-                        dialogueEntry.narrator = COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE;
-                        dialogueEntry.text = this.getOrCreateTextID(text);
-                        dialogueEntry.voice = voice;
+                        const dialogueEntry = this.createDialogueEntry(entry);
 
                         data.dialogue.push(dialogueEntry);
                     }

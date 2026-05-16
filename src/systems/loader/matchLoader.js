@@ -18,7 +18,7 @@ import { createPlayCamera } from "../camera.js";
 import { DialogueComponent } from "../../event/components/dialogue.js";
 import { ExplodeTileComponent } from "../../event/components/explodeTile.js";
 import { SpawnComponent } from "../../event/components/spawn.js";
-import { createEntitySnapshotFromJSON } from "../../snapshot/entitySnapshot.js";
+import { createEntitySnapshotFromEntry } from "../../snapshot/entitySnapshot.js";
 import { PlaySoundComponent } from "../../event/components/playSound.js";
 import { PlaySpriteComponent } from "../../event/components/playSprite.js";
 import { TeamManager } from "../../team/teamManager.js";
@@ -105,7 +105,7 @@ MatchLoader.prototype.createEventComponents = function(gameContext, event, simul
                     break;
                 }
                 case COMPONENT_TYPE.SPAWN_ENTITY: {
-                    const snapshot = createEntitySnapshotFromJSON(gameContext, data.entity);
+                    const snapshot = createEntitySnapshotFromEntry(gameContext, data.entity);
                     const component = new SpawnComponent(snapshot);
 
                     event.addSimulation(component);
