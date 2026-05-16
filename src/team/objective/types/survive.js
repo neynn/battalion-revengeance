@@ -1,6 +1,6 @@
 import { Objective } from "../objective.js";
 
-export const SurviveObjective = function(turn) {
+export const SurviveObjective = function({ turn }) {
     Objective.call(this, "SURVIVE");
 
     this.turn = turn;

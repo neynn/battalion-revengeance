@@ -671,12 +671,13 @@ export const ACTION_TYPE = {
 };
 
 export const OBJECTIVE_TYPE = {
-    DEFEAT: "DEFEAT",
-    PROTECT: "PROTECT",
-    CAPTURE: "CAPTURE",
-    DEFEND: "DEFEND",
-    SURVIVE: "SURVIVE",
-    TIME_LIMIT: "TIME_LIMIT"
+    NONE: 0,
+    DEFEAT: 1,
+    PROTECT: 2,
+    CAPTURE: 3,
+    DEFEND: 4,
+    SURVIVE: 5,
+    TIME_LIMIT: 6
 };
 
 export const MOVE_COMMAND = {

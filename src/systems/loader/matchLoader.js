@@ -4,7 +4,6 @@ import { BattalionMap } from "../../map/battalionMap.js";
 import { CaptureObjective } from "../../team/objective/types/capture.js";
 import { DefeatObjective } from "../../team/objective/types/defeat.js";
 import { DefendObjective } from "../../team/objective/types/defend.js";
-import { ErrorObjective } from "../../team/objective/types/error.js";
 import { ProtectObjective } from "../../team/objective/types/protect.js";
 import { SurviveObjective } from "../../team/objective/types/survive.js";
 import { TimeLimitObjective } from "../../team/objective/types/timeLimit.js";
@@ -49,19 +48,14 @@ export const MatchLoader = function(worldMap, scenario) {
     this.worldMap = worldMap;
     this.scenario = scenario;
 
-    this.buildingSettings = scenario.buildingSettings;
     this.teams = scenario.teams;
-    this.mines = scenario.mines;
     this.entities = scenario.entities;
-
-    this.objectives = scenario.objectives;
-    this.events = scenario.events;
 }
 
 MatchLoader.prototype.createMines = function(gameContext) {
     const { teamManager, typeRegistry } = gameContext;
 
-    for(const mine of this.mines) {
+    for(const mine of this.scenario.mines) {
         const { x, y, team, type, isVisible } = mine;
         const { category } = typeRegistry.getMineType(type);
 
@@ -81,7 +75,7 @@ MatchLoader.prototype.createMines = function(gameContext) {
 MatchLoader.prototype.applyBuildingSettings = function(gameContext) {
     const { teamManager } = gameContext;
 
-    for(const settings of this.buildingSettings) {
+    for(const settings of this.scenario.buildingSettings) {
         const { x, y, team, shop, customID } = settings;
         const building = this.worldMap.getBuilding(x, y);
 
@@ -153,8 +147,8 @@ MatchLoader.prototype.createWorldEvents = function(gameContext) {
     const { eventHandler } = world;
 
     for(let i = 0; i < this.scenario.events.length; i++) {
-        const { id, turn, round, next, simulation, effects } = this.scenario.events[i];
-        const event = eventHandler.createEvent(id);
+        const { turn, round, next, simulation, effects } = this.scenario.events[i];
+        const event = eventHandler.createEvent();
 
         this.createEventComponents(gameContext, event, simulation, effects);
 
@@ -212,36 +206,15 @@ MatchLoader.prototype.createSpectator = function(gameContext) {
     actor.loadKeybinds(gameContext);
 }
 
-MatchLoader.prototype.createObjective = function(config) {
-    switch(config.type) {
-        case OBJECTIVE_TYPE.DEFEAT: {
-            const objective = new DefeatObjective();
-            const targetID = this.scenario.getCustomID(config.target);
-
-            if(targetID !== ScenarioModel.INVALID_CUSTOM_ID) {
-                objective.targetID = targetID;
-            }
-
-            return objective;
-        }
-        case OBJECTIVE_TYPE.PROTECT: {
-            const objective = new ProtectObjective();
-
-            for(const targetName of config.targets) {
-                const targetID = this.scenario.getCustomID(targetName);
-
-                if(targetID !== ScenarioModel.INVALID_CUSTOM_ID) {
-                    objective.addTarget(targetID);
-                }
-            }
-
-            return objective;
-        }
-        case OBJECTIVE_TYPE.CAPTURE: return new CaptureObjective(config.tiles);
-        case OBJECTIVE_TYPE.DEFEND: return new DefendObjective(config.tiles);
-        case OBJECTIVE_TYPE.SURVIVE: return new SurviveObjective(config.turn);
-        case OBJECTIVE_TYPE.TIME_LIMIT: return new TimeLimitObjective(config.turn);
-        default: return new ErrorObjective();
+MatchLoader.prototype.createObjective = function(type, data) {
+    switch(type) {
+        case OBJECTIVE_TYPE.DEFEAT: return new DefeatObjective(data);
+        case OBJECTIVE_TYPE.PROTECT: return new ProtectObjective(data);
+        case OBJECTIVE_TYPE.CAPTURE: return new CaptureObjective(data);
+        case OBJECTIVE_TYPE.DEFEND: return new DefendObjective(data);
+        case OBJECTIVE_TYPE.SURVIVE: return new SurviveObjective(data);
+        case OBJECTIVE_TYPE.TIME_LIMIT: return new TimeLimitObjective(data);
+        default: return null;
     }
 }
 
@@ -259,12 +232,15 @@ MatchLoader.prototype.createTeams = function(gameContext, overrides) {
         //Most game modes have objectives, except custom PvP.
         if(this.rules & LOADER_RULE.LOAD_OBJECTIVES) {
             for(const objectiveID of objectives) {
-                const config = this.objectives[objectiveID];
+                const config = this.scenario.objectives[objectiveID];
 
                 if(config) {
-                    const objective = this.createObjective(config);
+                    const { type, data } = config;
+                    const objective = this.createObjective(type, data);
 
-                    team.addObjective(objective);
+                    if(objective) {
+                        team.addObjective(objective);
+                    }
                 }
             }
         }

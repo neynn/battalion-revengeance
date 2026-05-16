@@ -1,6 +1,6 @@
 import { Objective } from "../objective.js";
 
-export const TimeLimitObjective = function(turn) {
+export const TimeLimitObjective = function({ turn }) {
     Objective.call(this, "TIME_LIMIT");
 
     this.turn = turn;

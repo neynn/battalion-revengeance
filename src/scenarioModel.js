@@ -1,6 +1,6 @@
 import { WorldMap } from "../engine/map/worldMap.js";
 import { WorldEvent } from "../engine/world/event/worldEvent.js";
-import { COMMANDER_TYPE, COMPONENT_TYPE, FACTION_TYPE, MINE_TYPE, SHOP_TYPE } from "./enums.js";
+import { COMMANDER_TYPE, COMPONENT_TYPE, FACTION_TYPE, MINE_TYPE, OBJECTIVE_TYPE, SHOP_TYPE } from "./enums.js";
 
 const createDialogueEntry = function() {
     return {
@@ -26,14 +26,14 @@ export const ScenarioModel = function(id) {
     this.defeat = [];
     this.events = [];
 
-    this.customEntityIDs = new Map();
-    this.customEntityCount = 0;
+    this.customIDs = new Map();
+    this.customIDCount = 0;
 }
 
 ScenarioModel.INVALID_CUSTOM_ID = -1;
 
 ScenarioModel.prototype.getCustomID = function(name) {
-    const customID = this.customEntityIDs.get(name);
+    const customID = this.customIDs.get(name);
     
     if(customID === undefined) {
         return ScenarioModel.INVALID_CUSTOM_ID;
@@ -46,28 +46,12 @@ ScenarioModel.prototype.getAndSetCustomID = function(name) {
     let customID = ScenarioModel.INVALID_CUSTOM_ID;
     
     if(name !== null) {
-        if(this.customEntityIDs.has(name)) {
-            customID = this.customEntityIDs.get(name);
+        if(this.customIDs.has(name)) {
+            customID = this.customIDs.get(name);
         } else {
-            customID = this.customEntityCount++;
+            customID = this.customIDCount++;
 
-            this.customEntityIDs.set(name, customID);
-        }
-    }
-
-    return customID;
-}
-
-ScenarioModel.prototype.getAndSetCustomEventID = function(name) {
-    let customID = ScenarioModel.INVALID_CUSTOM_ID;
-    
-    if(name !== null) {
-        if(this.eventIDs.has(name)) {
-            customID = this.eventIDs.get(name);
-        } else {
-            customID = this.customEntityCount++;
-
-            this.eventIDs.set(name, customID);
+            this.customIDs.set(name, customID);
         }
     }
 
@@ -218,10 +202,19 @@ ScenarioModel.prototype.load = function(data) {
             id = null
         } = entities[i];
 
-        //TODO(neyn): Later.
+        //TODO(neyn): Later. Turn this into a ScenarioNotation
         entities[i].id = this.getAndSetCustomID(id);
 
         this.entities.push(entities[i]);
+    }
+
+    for(let i = 0; i < events.length; i++) {
+        const eventID = i;
+        const eventName = events[i].id;
+
+        if(eventName !== null && !resolvedEvents.has(eventName)) {
+            resolvedEvents.set(eventName, eventID);
+        }
     }
 
     for(let i = 0; i < events.length; i++) {
@@ -236,11 +229,7 @@ ScenarioModel.prototype.load = function(data) {
 
         const resolvedSimulation = [];
         const resolvedEffects = [];
-        const eventID = this.events.length;
-
-        if(id !== null && !resolvedEvents.has(id)) {
-            resolvedEvents.set(id, eventID);
-        }
+        const nextID = resolvedEvents.get(next) ?? WorldEvent.INVALID_ID;
 
         for(const sim of simulation) {
             const type = COMPONENT_TYPE[sim.type] ?? COMPONENT_TYPE.NONE;
@@ -331,22 +320,99 @@ ScenarioModel.prototype.load = function(data) {
         }
 
         this.events.push({
-            "id": eventID,
             "turn": turn,
             "round": round,
-            "next": WorldEvent.INVALID_ID,
+            "next": nextID,
             "simulation": resolvedSimulation,
             "effects": resolvedEffects
         });
     }
 
-    for(let i = 0; i < events.length; i++) {
-        const eventID = resolvedEvents.get(events[i].next);
+    for(const name in objectives) {
+        const config = objectives[name];
+        const type = OBJECTIVE_TYPE[config.type] ?? OBJECTIVE_TYPE.NONE;
+        let data = null;
 
-        if(eventID !== undefined) {
-            this.events[i].next = eventID;
+        switch(type) {
+            case OBJECTIVE_TYPE.DEFEAT: {
+                const customID = this.getCustomID(config.target);
+
+                if(customID !== ScenarioModel.INVALID_CUSTOM_ID) {
+                    data = {
+                        "targetID": customID
+                    };
+                }
+
+                break;
+            }
+            case OBJECTIVE_TYPE.PROTECT: {
+                data = {
+                    "targets": []
+                };
+
+                for(const targetName of config.targets) {
+                    const customID = this.getCustomID(targetName);
+
+                    if(customID !== ScenarioModel.INVALID_CUSTOM_ID) {
+                        data.targets.push(customID);
+                    }
+                }
+
+                break;
+            }
+            case OBJECTIVE_TYPE.CAPTURE: {
+                data = {
+                    "tiles": []
+                };
+
+                for(const { x = WorldMap.OUT_OF_BOUNDS, y = WorldMap.OUT_OF_BOUNDS } of config.tiles) {
+                    data.tiles.push({
+                        "tileX": x,
+                        "tileY": y
+                    });
+                }
+
+                break;
+            }
+            case OBJECTIVE_TYPE.DEFEND: {
+                data = {
+                    "tiles": []
+                };
+
+                for(const { x = WorldMap.OUT_OF_BOUNDS, y = WorldMap.OUT_OF_BOUNDS } of config.tiles) {
+                    data.tiles.push({
+                        "tileX": x,
+                        "tileY": y
+                    });
+                } 
+
+                break;
+            }
+            case OBJECTIVE_TYPE.SURVIVE: {
+                data = {
+                    "turn": 0
+                };
+
+                data.turn = config.turn ?? 0;
+
+                break;
+            }
+            case OBJECTIVE_TYPE.TIME_LIMIT: {
+                data = {
+                    "turn": 0
+                };
+
+                data.turn = config.turn ?? 0;
+
+                break;
+            }
+        }
+
+        if(data !== null) {
+            this.objectives[name] = {
+                "type": type,
+                "data": data
+            }
         }
     }
-
-    this.objectives = objectives;
 }

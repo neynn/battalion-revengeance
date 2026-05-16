@@ -1,9 +1,9 @@
 import { Objective } from "../objective.js";
 
-export const DefeatObjective = function() {
+export const DefeatObjective = function({ targetID }) {
     Objective.call(this, "DEFEAT");
 
-    this.targetID = -2; //-2 NEVER exists.
+    this.targetID = targetID;
 }
 
 DefeatObjective.prototype = Object.create(Objective.prototype);

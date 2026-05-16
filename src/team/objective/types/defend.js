@@ -1,6 +1,6 @@
 import { Objective } from "../objective.js";
 
-export const DefendObjective = function(tiles) {
+export const DefendObjective = function({ tiles }) {
     Objective.call(this, "DEFEND");
 
     this.tiles = tiles;
@@ -14,8 +14,8 @@ DefendObjective.prototype.onTurnEnd = function(gameContext, turn, teamID) {
     const { world, teamManager } = gameContext;
 
     //This objective fails if any enemy is on the specified tile during checking phase.
-    for(const { x, y } of this.tiles) {
-        const entity = world.getEntityAt(x, y);
+    for(const { tileX, tileY } of this.tiles) {
+        const entity = world.getEntityAt(tileX, tileY);
 
         if(entity && !teamManager.isAlly(teamID, entity.teamID)) {
             this.fail();

@@ -18,9 +18,9 @@ WorldEventRegistry.prototype.exit = function() {
     this.isAuthority = true;
 }
 
-WorldEventRegistry.prototype.createEvent = function(name) {
+WorldEventRegistry.prototype.createEvent = function() {
     const eventID = this.worldEvents.length;
-    const event = new WorldEvent(eventID, name);
+    const event = new WorldEvent(eventID);
 
     this.worldEvents.push(event);
 

@@ -1,6 +1,6 @@
 import { Objective } from "../objective.js";
 
-export const CaptureObjective = function(tiles) {
+export const CaptureObjective = function({ tiles }) {
     Objective.call(this, "CAPTURE");
 
     this.tiles = tiles;
@@ -14,8 +14,8 @@ CaptureObjective.prototype.onTurnEnd = function(gameContext, turn, teamID) {
     let totalCaptures = 0;
 
     //This objective succeeds if all specified tiles are under the teams, and only the teams, control.
-    for(const { x, y } of this.tiles) {
-        const entity = world.getEntityAt(x, y);
+    for(const { tileX, tileY } of this.tiles) {
+        const entity = world.getEntityAt(tileX, tileY);
 
         if(entity && entity.teamID === teamID) {
             totalCaptures++;
