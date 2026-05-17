@@ -64,7 +64,6 @@ const executeCapture = function(gameContext, data) {
 
     nextTeam.addStatistic(TEAM_STAT.STRUCTURES_CAPTURED, 1);
     building.setTeam(entity.teamID);
-    building.setColor(nextTeam.color);
 }
 
 export const CaptureActionVTable = {
@@ -88,5 +87,5 @@ CaptureAction.prototype.onEnd = function(gameContext, data) {
     const worldMap = mapManager.getActiveMap();
     const building = worldMap.getBuilding(targetX, targetY);
 
-    updateBuildingSprite(gameContext, building);
+    updateBuildingSprite(gameContext, building, building.spriteID);
 }

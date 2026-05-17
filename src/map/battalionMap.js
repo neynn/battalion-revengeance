@@ -18,12 +18,6 @@ export const BattalionMap = function(id, width, height) {
     this.jammers = new Map();
     this.localization = new Map();
 
-    this.buildingIDs = new Map();
-    this.buildingID = 0;
-
-    this.text = new Map();
-    this.textID = 0;
-
     this.createLayer(Layer.TYPE.BIT_16);
     this.createLayer(Layer.TYPE.BIT_16);
     this.createLayer(Layer.TYPE.BIT_16);
@@ -53,34 +47,6 @@ BattalionMap.getLayerIndex = function(name) {
 
 BattalionMap.prototype = Object.create(WorldMap.prototype);
 BattalionMap.prototype.constructor = BattalionMap;
-
-BattalionMap.prototype.getOrCreateBuildingID = function(name) {
-    let buildingID = -1;
-
-    if(name !== null && !this.buildingIDs.has(name)) {
-        buildingID = this.buildingID++;
-
-        this.buildingIDs.set(name, buildingID);
-    }
-
-    return buildingID;
-}
-
-BattalionMap.prototype.getOrCreateTextID = function(name) {
-    let textID = LanguageHandler.INVALID_ID;
-
-    if(name !== null) {
-        if(this.text.has(name)) {
-            textID = this.text.get(name);
-        } else {
-            textID = this.textID++;
-
-            this.text.set(name, textID);
-        }
-    }
-
-    return textID;
-}
 
 BattalionMap.prototype.saveFlags = function() {
     return [];
@@ -165,7 +131,7 @@ BattalionMap.prototype.getTileName = function(gameContext, tileX, tileY) {
     const localization = this.localization.get(index);
 
     if(localization && localization.name !== LanguageHandler.INVALID_ID) {
-        return language.getMapTranslation(localization.name);
+        return language.getScenarioTranslation(localization.name);
     }
 
     const { name } = this.getTileType(gameContext, tileX, tileY);
@@ -179,7 +145,7 @@ BattalionMap.prototype.getTileDesc = function(gameContext, tileX, tileY) {
     const localization = this.localization.get(index);
 
     if(localization && localization.desc !== LanguageHandler.INVALID_ID) {
-        return language.getMapTranslation(localization.desc);
+        return language.getScenarioTranslation(localization.desc);
     }
 
     const { desc } = this.getTileType(gameContext, tileX, tileY);
@@ -195,19 +161,14 @@ BattalionMap.prototype.removeLocalization = function(tileX, tileY) {
     }
 }
 
-BattalionMap.prototype.loadLocalization = function(localization) {
-    for(let i = 0; i < localization.length; i++) {
-        const { x = -1, y = -1, name = null, desc = null } = localization[i];
-        const nameID = this.getOrCreateTextID(name);
-        const descID = this.getOrCreateTextID(desc);
-        const index = this.getIndex(x, y);
+BattalionMap.prototype.localizeTile = function(tileX, tileY, nameID, descID) {
+    const index = this.getIndex(tileX, tileY);
 
-        if(index !== WorldMap.OUT_OF_BOUNDS && !this.localization.has(index)) {
-            this.localization.set(index, {
-                "name": nameID,
-                "desc": descID
-            });
-        }
+    if(index !== WorldMap.OUT_OF_BOUNDS && !this.localization.has(index)) {
+        this.localization.set(index, {
+            "name": nameID,
+            "desc": descID
+        });
     }
 }
 

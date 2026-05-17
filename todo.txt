@@ -73,3 +73,11 @@ Remove playlist from mission
 
 CreateObjective NEEDS parsed data.
 MapPreview -> remove TEXT
+
+if building is unclaimed -> use unclaimed sprite
+
+buildings do not have their own color.
+if a building is unclaimed it has the unclaimed sprite that is always the same,
+if a building is claimed it has the teams color
+the teams color is determined when the scenario is loaded
+loadAsFaction in its current form does not work it has to collapse the color into one value that is read when the team is loaded intor the runtime

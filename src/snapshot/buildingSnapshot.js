@@ -14,29 +14,15 @@ export const createBuildingSnapshot = function() {
         "desc": LanguageHandler.INVALID_ID,
         "name": LanguageHandler.INVALID_ID,
         "totalGeneratedCash": 0,
-        "color": SCHEMA_TYPE.RED,
         "shop": SHOP_TYPE.NONE
     }
 }
 
-/**
- * 
- * @param {BattalionMap} worldMap 
- * @param {*} json 
- * @returns 
- * 
- * Does not have ALL the data. The rest gets added by the loaders.
- * Shop/Team are added later.
- */
-export const createBuildingSnapshotFromJSON = function(worldMap, json) {
+export const createBuildingSnapshotFromJSON = function(json) {
     const {
-        id = null,
-        name = null,
-        desc = null,
         x = -1,
         y = -1,
-        type = null,
-        color = null
+        type = null
     } = json;
 
     const snapshot = createBuildingSnapshot();
@@ -45,13 +31,6 @@ export const createBuildingSnapshotFromJSON = function(worldMap, json) {
     snapshot.type = typeID;
     snapshot.tileX = x;
     snapshot.tileY = y;
-    snapshot.id = worldMap.getOrCreateBuildingID(id);
-    snapshot.name = worldMap.getOrCreateTextID(name);
-    snapshot.desc = worldMap.getOrCreateTextID(desc);
-
-    if(color !== null) {
-        snapshot.color = SCHEMA_TYPE[color] ?? SCHEMA_TYPE.RED;
-    }
 
     return snapshot;
 }

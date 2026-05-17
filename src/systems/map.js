@@ -1,14 +1,15 @@
 import { BattalionMap } from "../map/battalionMap.js";
 import { createClientEntityObject, createMineObject, createServerEntityObject } from "./spawn.js";
-import { LAYER_TYPE, LOADER_RULE, MINE_TYPE } from "../enums.js";
+import { LAYER_TYPE, LOADER_RULE, MINE_TYPE, SCHEMA_TYPE } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
 import { createEntitySnapshot, createEntitySnapshotFromEntry } from "../snapshot/entitySnapshot.js";
 import { MatchLoader } from "./loader/matchLoader.js";
 import { unpackEntitySnapshot } from "../action/packer_constants.js";
 import { createBuildingSnapshotFromJSON } from "../snapshot/buildingSnapshot.js";
 import { transformTileToWorld } from "../../engine/math/transform2D.js";
-import { createSchematicSprite } from "./sprite.js";
 import { MapPreview } from "../map/mapPreview.js";
+import { Texture } from "../../engine/resources/texture/texture.js";
+import { updateBuildingSprite } from "./sprite.js";
 
 export const ClientMatchLoader = function(worldMap, scenario) {
     MatchLoader.call(this, worldMap, scenario);
@@ -25,15 +26,19 @@ ClientMatchLoader.prototype = Object.create(MatchLoader.prototype);
 ClientMatchLoader.prototype.constructor = ClientMatchLoader;
 
 ClientMatchLoader.prototype.createBuildingSprites = function(gameContext) {
+    const { teamManager, spriteManager, typeRegistry } = gameContext;
+
     for(const building of this.worldMap.buildings) {
-        const { tileX, tileY, color, config } = building;
-        const { sprite } = config;
-
+        const { tileX, tileY, config, teamID } = building;
+        const { sprite, neutralSprite } = config;
         const position = transformTileToWorld(tileX, tileY);
-        const visualSprite = createSchematicSprite(gameContext, sprite, color, LAYER_TYPE.BUILDING);
+        const spriteObject = spriteManager.createEmptySprite(LAYER_TYPE.BUILDING);
+        const spriteIndex = spriteObject.getIndex();
 
-        visualSprite.setPosition(position.x, position.y);
-        building.spriteID = visualSprite.getIndex();
+        spriteObject.setPosition(position.x, position.y);
+        building.spriteID = spriteIndex;
+
+        updateBuildingSprite(gameContext, building, spriteIndex);
     }
 }
 
@@ -66,6 +71,9 @@ ClientMatchLoader.prototype.loadScenarioText = function(gameContext) {
     const text = this.scenario.text;
     const table = this.scenario.textMap;
 
+    this.localizeTiles();
+    
+    language.clearScenarioAndMapText();
     language.registerScenarioText(text, table);
 }
 
@@ -314,16 +322,15 @@ export const createEmptyMap = function(gameContext, width, height) {
 const createWorldMap = function(gameContext, file, source) {
     const { world } = gameContext;
     const { mapManager } = world;
-    const { width, height, data, buildings = [], localization = [], text = {} } = file;
+    const { width, height, data, buildings = [] } = file;
     const nextID = mapManager.getNextID();
     const worldMap = new BattalionMap(nextID, width, height);
 
     worldMap.name = source.title;
     worldMap.decodeLayers(data);
-    worldMap.loadLocalization(localization);
 
     for(const setup of buildings) {
-        const snapshot = createBuildingSnapshotFromJSON(worldMap, setup);
+        const snapshot = createBuildingSnapshotFromJSON(setup);
 
         worldMap.createBuilding(gameContext, snapshot);
     }
@@ -341,11 +348,7 @@ const loadClientMap = async function(gameContext, sourceID) {
         return Promise.reject();
     }
 
-    const { text = {} } = file;
     const worldMap = createWorldMap(gameContext, file, mapSource);
-
-    language.clearScenarioAndMapText();
-    language.registerMapText(text, worldMap.text);
 
     mapManager.addMap(worldMap);
     mapManager.enableMap(worldMap.getID());

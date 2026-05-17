@@ -99,6 +99,7 @@ export const MP_CLIENT_JSON = {
     START_MATCH: 201,
     ACTION_INTENT: 202,
     MAP_LOADED: 203,
+    SELECT_COLOR: 204
 };
 
 export const TEAM_STAT = {

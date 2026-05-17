@@ -1,6 +1,6 @@
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
-import { SCHEMA_TYPE, SHOP_TYPE } from "../enums.js";
+import { SHOP_TYPE } from "../enums.js";
 import { ScenarioModel } from "../scenarioModel.js";
 import { createBuildingSnapshot } from "../snapshot/buildingSnapshot.js";
 import { TeamManager } from "../team/teamManager.js";
@@ -20,7 +20,6 @@ export const Building = function(config) {
     this.customName = LanguageHandler.INVALID_ID;
     this.customDesc = LanguageHandler.INVALID_ID;
     this.totalGeneratedCash = 0;
-    this.color = SCHEMA_TYPE.RED;
     this.shop = SHOP_TYPE.NONE;
 }
 
@@ -35,7 +34,6 @@ Building.prototype.save = function() {
     snapshot.desc = this.customDesc;
     snapshot.name = this.customName;
     snapshot.totalGeneratedCash = this.totalGeneratedCash;
-    snapshot.color = this.color;
     snapshot.shop = this.shop;
 
     return snapshot;
@@ -47,7 +45,6 @@ Building.prototype.load = function(data) {
     this.customDesc = data.desc;
     this.totalGeneratedCash = data.totalGeneratedCash;
     this.shop = data.shop;
-    this.color = data.color;
     this.teamID = data.teamID;
 }
 
@@ -79,10 +76,6 @@ Building.prototype.hasTrait = function(traitID) {
     return false;
 }
 
-Building.prototype.setColor = function(color) {
-    this.color = color;
-}
-
 Building.prototype.generateCash = function(gameContext) {
     const { typeRegistry } = gameContext;
     const { traits } = this.config;
@@ -103,7 +96,7 @@ Building.prototype.getDescription = function(gameContext) {
     const { language } = gameContext;
     
     if(this.customDesc !== LanguageHandler.INVALID_ID) {
-        return language.getMapTranslation(this.customDesc);
+        return language.getScenarioTranslation(this.customDesc);
     }
 
     return language.getSystemTranslation(this.config.desc);
@@ -113,7 +106,7 @@ Building.prototype.getName = function(gameContext) {
     const { language } = gameContext;
     
     if(this.customName !== LanguageHandler.INVALID_ID) {
-        return language.getMapTranslation(this.customName);
+        return language.getScenarioTranslation(this.customName);
     }
 
     return language.getSystemTranslation(this.config.name);

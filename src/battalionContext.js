@@ -45,7 +45,6 @@ BattalionContext.prototype.init = function(resources) {
     this.tileManager.enableAllVisuals();
     overrideRiverTiles(this);
 
-    this.scenarioRegistry.load(resources.scenarioTypes);
     this.spriteManager.load(resources.spriteTextures, resources.sprites);
     this.uiManager.load(this.textureLoader, resources.layouts, resources.gui);
     this.fonts.load(resources.fonts);
@@ -58,6 +57,7 @@ BattalionContext.prototype.init = function(resources) {
     this.missionManager.load(resources);
     this.spriteManager.initLayers(LAYER_TYPE._COUNT);
     this.typeRegistry.load(resources);
+    this.scenarioRegistry.load(this, resources.scenarioTypes);
     this.uiData.load();
 
     registerActionVTables(this);

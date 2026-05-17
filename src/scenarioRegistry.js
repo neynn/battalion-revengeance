@@ -4,7 +4,7 @@ export const ScenarioRegistry = function() {
     this.scenarios = new Map();
 }
 
-ScenarioRegistry.prototype.load = function(scenarios) {
+ScenarioRegistry.prototype.load = function(gameContext, scenarios) {
     for(const scenarioID in scenarios) {
         const model = new ScenarioModel(scenarioID);
         const data = scenarios[scenarioID];

@@ -18,9 +18,11 @@ export const ScenarioModel = function(id) {
     this.postlogue = [];
     this.defeat = [];
     this.events = [];
+    this.localization = [];
     this.text = {};
     this.maxPlayers = 0;
-
+    this.minPlayers = 0;
+    
     this.customIDs = new Map();
     this.customIDCount = 0;
 
@@ -130,6 +132,7 @@ ScenarioModel.prototype.load = function(data) {
         postlogue = [],
         defeat = [],
         events = [],
+        localization = [],
         objectives = {},
         text = {},
         maxPlayers = 0
@@ -181,6 +184,9 @@ ScenarioModel.prototype.load = function(data) {
 
     for(let i = 0; i < buildingSettings.length; i++) {
         const {
+            id = null,
+            name = null,
+            desc = null,
             x = -1,
             y = -1,
             team = null,
@@ -191,7 +197,10 @@ ScenarioModel.prototype.load = function(data) {
             "x": x,
             "y": y,
             "team": team,
-            "shop": SHOP_TYPE[shop] ?? SHOP_TYPE.NONE
+            "shop": SHOP_TYPE[shop] ?? SHOP_TYPE.NONE,
+            "customID": this.getAndSetCustomID(id),
+            "customName": this.getOrCreateTextID(name),
+            "customDesc": this.getOrCreateTextID(desc)
         });
     }
 
@@ -235,6 +244,19 @@ ScenarioModel.prototype.load = function(data) {
         const entry = this.createEntityEntry(entities[i]);
 
         this.entities.push(entry);
+    }
+
+    for(let i = 0; i < localization.length; i++) {
+        const { x = -1, y = -1, name = null, desc = null } = localization[i];
+        const nameID = this.getOrCreateTextID(name);
+        const descID = this.getOrCreateTextID(desc);
+
+        this.localization.push({
+            "tileX": x,
+            "tileY": y,
+            "name": nameID,
+            "desc": descID
+        });
     }
 
     for(let i = 0; i < events.length; i++) {

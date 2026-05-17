@@ -2,7 +2,7 @@ import { BattalionEntity } from "../entity/battalionEntity.js";
 import { LAYER_TYPE, TEAM_STAT } from "../enums.js";
 import { Building } from "../entity/building.js";
 import { Mine } from "../entity/mine.js";
-import { bufferEntitySprites, createSchematicSprite, updateEntitySprite } from "./sprite.js";
+import { bufferEntitySprites, updateEntitySprite } from "./sprite.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { bufferEntitySounds } from "./sound.js";
 import { transformTileToWorld } from "../../engine/math/transform2D.js";

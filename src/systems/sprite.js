@@ -3,6 +3,7 @@ import { Texture } from "../../engine/resources/texture/texture.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { ATTACK_TYPE, DIRECTION, EFFECT_SPRITE, ENTITY_SPRITE, LAYER_TYPE, SCHEMA_TYPE } from "../enums.js";
+import { TeamManager } from "../team/teamManager.js";
 
 const SPRITE_TABLE = [
     ENTITY_SPRITE.IDLE_UP,
@@ -61,30 +62,24 @@ export const playExplosion = function(gameContext, tileX, tileY) {
     playSprite(gameContext, "explosion", tileX, tileY);
 }
 
-export const createSchematicSprite = function(gameContext, spriteID, color, layerID) {
-    const { spriteManager, typeRegistry } = gameContext;
-    const { id, colorMap } = typeRegistry.getSchemaType(color);
+export const updateBuildingSprite = function(gameContext, building, spriteIndex) {
+    const { spriteManager, typeRegistry, teamManager } = gameContext;
+    const { teamID, config } = building;
+    const { sprite, neutralSprite } = config;
 
-    if(id !== SCHEMA_TYPE.RED) {
-        spriteManager.createCopyTexture(spriteID, id, colorMap);
+    if(teamID === TeamManager.INVALID_ID) {
+        spriteManager.updateSprite(spriteIndex, neutralSprite);
+    } else {
+        const { color } = teamManager.getTeam(teamID);
+
+        if(color !== SCHEMA_TYPE.RED) {
+            const { colorMap } = typeRegistry.getSchemaType(color);
+
+            spriteManager.createCopyTexture(sprite, color, colorMap);
+        }
+
+        spriteManager.updateSprite(spriteIndex, sprite, color);
     }
-
-    return spriteManager.createSprite(spriteID, layerID, id);
-}
-
-export const updateBuildingSprite = function(gameContext, building) {
-    const { spriteManager, typeRegistry } = gameContext;
-    const color = building.color;
-    const spriteType = building.config.sprite;
-    const spriteID = building.spriteID;
-
-    if(color !== SCHEMA_TYPE.RED) {
-        const { colorMap } = typeRegistry.getSchemaType(color);
-
-        spriteManager.createCopyTexture(spriteType, color, colorMap);
-    }
-
-    spriteManager.updateSprite(spriteID, spriteType, color);
 }
 
 export const updateEntitySprite = function(gameContext, entity) {

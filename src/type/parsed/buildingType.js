@@ -6,6 +6,7 @@ export const BuildingType = function(id) {
     this.name = "MISSING_NAME_BUILDING";
     this.desc = "MISSING_DESC_BUILDING";
     this.sprite = null;
+    this.neutralSprite = null;
     this.shop = SHOP_TYPE.NONE;
     this.traits = [];
 }
@@ -15,6 +16,7 @@ BuildingType.prototype.load = function(config, DEBUG_NAME) {
         name = "MISSING_NAME_BUILDING",
         desc = "MISSING_DESC_BUILDING",
         sprite = null,
+        neutralSprite = null,
         traits = [],
         shop = "NONE"
     } = config; 
@@ -22,6 +24,7 @@ BuildingType.prototype.load = function(config, DEBUG_NAME) {
     this.name = name;
     this.desc = desc;
     this.sprite = sprite;
+    this.neutralSprite = neutralSprite;
     this.shop = SHOP_TYPE[shop] ?? SHOP_TYPE.NONE;
  
     for(const traitID of traits) {

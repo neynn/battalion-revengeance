@@ -1,3 +1,27 @@
+import { SCHEMA_TYPE } from "../enums.js";
+import { TeamManager } from "../team/teamManager.js";
+
+
+//If a client has select their custom color the bitpacker will get the clients color data
+//and pack it along with the colorID.
+const isColorCustom = function(colorID) {
+    return colorID >= SCHEMA_TYPE.CUSTOM_1 && colorID <= SCHEMA_TYPE.CUSTOM_8;
+} 
+
+const MapSlot = function() {
+    this.clientID = null;
+    this.teamID = TeamManager.INVALID_ID;
+    this.type = MapSlot.TYPE.CLOSED;
+    this.colorID = SCHEMA_TYPE.RED;
+    this.originalColorID = SCHEMA_TYPE.RED;
+}
+
+MapSlot.TYPE = {
+    CLOSED: 0,
+    NPC: 1,
+    PLAYER: 2
+};
+
 export const MapMaster = function() {
     this.scenarioID = null;
     this.slots = [];
@@ -25,14 +49,21 @@ MapMaster.prototype.clear = function() {
     this.players = 0;
 }
 
-MapMaster.prototype.createSlot = function(teamID) {
-    this.slots.push({
-        "clientID": null,
-        "teamID": teamID,
-        "type": MapMaster.SLOT_TYPE.CLOSED,
-        "colorMap": null,
-        "name": null
-    });
+MapMaster.prototype.createSlots = function(teams) {
+    const slotCount = teams.length;
+
+    for(let i = 0; i < slotCount; i++) {
+        const slot = new MapSlot();
+        const team = teams[i];
+
+        slot.teamID = team.id;
+
+        this.slots.push(slot);
+    }
+
+    for(const team of teams) {
+        const { id } = team;
+    }
 }
 
 MapMaster.prototype.getFreeSlotIndex = function() {
@@ -103,6 +134,15 @@ MapMaster.prototype.getTeamID = function(clientID) {
     }
 
     return null;
+}
+
+MapMaster.prototype.selectColor = function(clientID, colorID) {
+    for(let i = 0; i < this.slots.length; i++) {
+        //player team found!
+        if(this.slots[i].clientID === clientID) {
+
+        }
+    }
 }
 
 MapMaster.prototype.selectColor = function(clientID, colorMap) {

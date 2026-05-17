@@ -28,7 +28,7 @@ ServerApplication.prototype.init = function(resources) {
     overrideRiverTiles(this);
     this.mapRegistry.load(resources.maps);
     this.typeRegistry.load(resources);
-    this.scenarioRegistry.load(resources.scenarioTypes);
+    this.scenarioRegistry.load(this, resources.scenarioTypes);
 }
 
 ServerApplication.prototype.createRoom = function(roomID, roomType) {

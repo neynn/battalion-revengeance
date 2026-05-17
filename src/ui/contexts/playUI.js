@@ -12,6 +12,8 @@ import { ActorManager } from "../../../engine/world/actor/actorManager.js";
 import { EndTurnVTable } from "../../action/types/endTurn.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { CameraContext } from "../../../engine/renderer/cameraContext.js";
+import { TeamManager } from "../../team/teamManager.js";
+import { updateBuildingSprite } from "../../systems/sprite.js";
 
 const PORTRAIT_WIDTH = 130;
 const PORTRAIT_HEIGHT = 150;
@@ -182,12 +184,6 @@ PlayUI.prototype.updateInspectSprite = function(gameContext, entity) {
     const spriteName = entity.config.sprites[ENTITY_SPRITE.IDLE_RIGHT];
 
     spriteManager.updateSprite(this.inspectSprite.index, spriteName, color);
-}
-
-PlayUI.prototype.updateBuilding = function(gameContext, building) {
-    const { spriteManager } = gameContext;
-
-    spriteManager.updateSprite(this.inspectSprite.index, building.config.sprite, building.color);
 }
 
 PlayUI.prototype.drawTile = function(gameContext, display, tileX, tileY, screenX, screenY) {
@@ -589,8 +585,8 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
 
             if(this.lastIndex !== index) {
                 this.lineCache.updateRecon(context, building.getDescription(gameContext), DESCRIPTION_BOX_WIDTH_TILE);
-                this.updateBuilding(gameContext, building);
                 this.lastIndex = index;
+                updateBuildingSprite(gameContext, building, this.inspectSprite.index);
             }
 
             uiData.getTexture(UI_TEXTURE.RECON_TERRAIN).draw(display, reconX, reconY);

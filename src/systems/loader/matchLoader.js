@@ -52,6 +52,14 @@ export const MatchLoader = function(worldMap, scenario) {
     this.entities = scenario.entities;
 }
 
+MatchLoader.prototype.localizeTiles = function() {
+    for(let i = 0; i < this.scenario.localization.length; i++) {
+        const { tileX, tileY, name, desc } = this.scenario.localization[i];
+
+        this.worldMap.localizeTile(tileX, tileY, name, desc);
+    }
+}
+
 MatchLoader.prototype.createMines = function(gameContext) {
     const { teamManager, typeRegistry } = gameContext;
 
@@ -76,19 +84,14 @@ MatchLoader.prototype.applyBuildingSettings = function(gameContext) {
     const { teamManager } = gameContext;
 
     for(const settings of this.scenario.buildingSettings) {
-        const { x, y, team, shop } = settings;
+        const { x, y, team, shop, customID, customName, customDesc } = settings;
         const building = this.worldMap.getBuilding(x, y);
 
         if(building) {
-            const teamID = teamManager.getTeamID(team);
-
-            if(teamID !== TeamManager.INVALID_ID) {
-                const team = teamManager.getTeam(teamID);
-
-                building.setTeam(teamID);
-                building.setColor(team.color);
-            }
-
+            building.teamID = teamManager.getTeamID(team);
+            building.customID = customID;
+            building.customName = customName;
+            building.customDesc = customDesc;
             building.shop = shop;
         }
     }

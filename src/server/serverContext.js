@@ -10,6 +10,7 @@ import { ENTITY_SNAPSHOT_SIZE, packEntitySnapshot } from "../action/packer_const
 import { fillTurnSnapshot } from "../snapshot/turnSnapshot.js";
 import { InterruptVTable } from "../action/types/interrupt.js";
 import { loadServerScenario } from "../systems/map.js";
+import { Lobby } from "./lobby.js";
 
 const isClientTurn = function(gameContext, messengerID) {
     const { world } = gameContext;
@@ -45,6 +46,7 @@ export const ServerGameContext = function(serverApplication, id) {
     this.states = new StateMachine(this);
     this.actionRouter = new ServerActionRouter();
     this.mapMaster = new MapMaster();
+    this.lobby = new Lobby();
     this.state = ServerGameContext.STATE.NONE;
     this.readyClients = 0;
 }
@@ -82,10 +84,7 @@ ServerGameContext.prototype.selectScenario = function(scenarioID) {
     this.mapMaster.clear();
     this.mapMaster.maxPlayers = maxPlayers;
     this.mapMaster.scenarioID = scenarioID;
-
-    for(const team of teams) {
-        this.mapMaster.createSlot(team.id);
-    }
+    this.mapMaster.createSlots(teams);
 
     for(let i = 0; i < this.members.length; i++) {
         const member = this.members[i];
@@ -140,6 +139,13 @@ ServerGameContext.prototype.onMessage = async function(messengerID, type, payloa
     switch(type) {
         case MP_CLIENT_JSON.SELECT_SCENARIO: {
 
+            break;
+        }
+        case MP_CLIENT_JSON.SELECT_COLOR: {
+            const { colorID } = payload;
+
+            this.mapMaster.selectColor(messengerID, colorID);
+            //Ask the MapMaster to select the color
             break;
         }
         case MP_CLIENT_JSON.START_MATCH: {

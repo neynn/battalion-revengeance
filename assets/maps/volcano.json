@@ -4,7 +4,6 @@
     "buildings": [
         { "x": 5, "y": 5, "type": "FACTORY" }
     ],
-    "localization": [],
     "flags": [],
     "data": {
         "GROUND": [1,81],

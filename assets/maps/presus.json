@@ -11,14 +11,6 @@
         { "x": 6, "y": 6, "type": "OIL_RIG" },
         { "x": 7, "y": 6, "type": "SEA_CONTROL" }
     ],
-    "localization": [
-        { "x": 0, "y": 0, "name": "TILE_NAME_TEST" },
-        { "x": 1, "y": 0, "desc": "TILE_DESC_TEST" }
-    ],
-    "text": {
-        "TILE_NAME_TEST": { "en-US": "This is a test name." },
-        "TILE_DESC_TEST": { "en-US": "This is a test description." }
-    },
     "flags": [],
     "data": {
         "GROUND": [1,18,2,1,1,9,3,1,1,2,211,1,1,2,208,2,1,1,210,1,1,16,207,1,211,1,1,30,210,1,1,13],

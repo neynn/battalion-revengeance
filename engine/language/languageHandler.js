@@ -9,7 +9,6 @@ export const LanguageHandler = function() {
     this.currentLanguage = LanguageHandler.LANGUAGE._INVALID;
     this.fallbackLanguage = LanguageHandler.LANGUAGE._INVALID;
     this.systemText = new Map();
-    this.mapText = new Map();
     this.scenarioText = new Map();
 
     this.events = new EventEmitter();
@@ -74,19 +73,7 @@ LanguageHandler.prototype.registerScenarioText = function(scenarioText, textTabl
     }
 }
 
-LanguageHandler.prototype.registerMapText = function(mapText, textTable) {
-    for(const name in mapText) {
-        const translation = mapText[name];
-        const id = textTable.get(name);
-
-        if(id !== undefined) {
-            this.mapText.set(id, translation);
-        }
-    }
-}
-
 LanguageHandler.prototype.clearScenarioAndMapText = function() {
-    this.mapText.clear();
     this.scenarioText.clear();
 }
 
@@ -96,7 +83,6 @@ LanguageHandler.prototype.clear = function() {
 }
 
 LanguageHandler.prototype.exit = function() {
-    this.mapText.clear();
     this.scenarioText.clear();
 }
 
@@ -152,32 +138,6 @@ LanguageHandler.prototype.getSystemTranslation = function(key) {
     }
 
     return translation;
-}
-
-LanguageHandler.prototype.getMapTranslation = function(key) {
-    const translations = this.mapText.get(key);
-
-    if(!translations) {
-        return "";
-    }
-
-    const languageKey = LanguageHandler.getKey(this.currentLanguage);
-    const translation = translations[languageKey];
-
-    if(translation) {
-        return translation;
-    }
-
-    if(this.fallbackLanguage !== LanguageHandler.LANGUAGE._INVALID) {
-        const fallbackKey = LanguageHandler.getKey(this.fallbackLanguage);
-        const fallback = translations[fallbackKey];
-
-        if(fallback) {
-            return fallback;
-        }
-    }
-
-    return "";
 }
 
 LanguageHandler.prototype.getScenarioTranslation = function(key) {

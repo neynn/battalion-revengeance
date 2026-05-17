@@ -10,12 +10,18 @@
             "PRESUS_EVENT_TEST": { "en-US": "They bombed a tile!" },
             "ENTITY_NAME_1": { "en-US": "A name!" },
             "ENTITY_DESC_1": { "en-US": "A description!" },
-            "PRESUS_EVENT_TEXT": { "en-US": "This is a test custom dialogue event!" }
+            "PRESUS_EVENT_TEXT": { "en-US": "This is a test custom dialogue event!" },
+            "TILE_NAME_TEST": { "en-US": "This is a test name." },
+            "TILE_DESC_TEST": { "en-US": "This is a test description." }
         },
         "map": "presus",
         "client": "SOMERTIN",
         "playlist": "LAMENTOSO",
         "music": "rivers_of_steel",
+        "localization": [
+            { "x": 0, "y": 0, "name": "TILE_NAME_TEST" },
+            { "x": 1, "y": 0, "desc": "TILE_DESC_TEST" }
+        ],
         "teams": [
             { "id": "SOMERTIN", "commander": "PLAYER", "cash": 1000, "faction": "SOMERTIN", "allies": ["DRAGOON"], "objectives": ["DEFEAT_BOAT_1", "CAPTURE_0_0", "SURVIVE_TURN_2"] },
             { "id": "TRANSKAL", "commander": "KANYE", "faction": "TRANSKAL", "objectives": ["PROTECT_BOAT_1"] },
