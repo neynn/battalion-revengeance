@@ -12,12 +12,12 @@ export const Team = function(id) {
     this.color = SCHEMA_TYPE.RED;
     this.currency = CURRENCY_TYPE.NONE;
     this.commander = COMMANDER_TYPE.NONE;
+    this.customName = null;
     this.name = "MISSING_NAME_TEAM";
     this.desc = "MISSING_DESC_TEAM";
     this.cash = 0;
     this.stats = [];
     this.status = Team.STATUS.IDLE;
-    this.flags = Team.FLAG.NONE;
     this.objectives = [
         new UnitSurviveObjective(),
         new LynchpinObjective()
@@ -27,11 +27,6 @@ export const Team = function(id) {
         this.stats[i] = 0;
     }
 }
-
-Team.FLAG = {
-    NONE: 0,
-    CUSTOM_NAME: 1 << 0
-};
 
 Team.OBJECTIVE = {
     UNIT_SURVIVE: 0,
@@ -78,11 +73,6 @@ Team.prototype.load = function(data) {
 
         this.objectives[i].load(objectiveData);
     }
-}
-
-Team.prototype.setCustomName = function(name) {
-    this.name = name;
-    this.flags |= Team.FLAG.CUSTOM_NAME;
 }
 
 Team.prototype.getStatistic = function(statID) {
@@ -161,8 +151,8 @@ Team.prototype.getDisplayDesc = function(gameContext) {
 }
 
 Team.prototype.getDisplayName = function(gameContext) {
-    if(this.flags & Team.FLAG.CUSTOM_NAME) {
-        return this.name;
+    if(this.customName) {
+        return this.customName;
     }
 
     const { language } = gameContext;

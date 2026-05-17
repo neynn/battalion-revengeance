@@ -263,10 +263,7 @@ MatchLoader.prototype.createTeams = function(gameContext, overrides) {
         const teamObject = teamManager.getTeam(teamID);
 
         if(teamObject) {
-            if(name !== null) {
-                //Names can always be overridden!
-                teamObject.setCustomName(name);
-            }
+            teamObject.customName = name;
 
             if(this.rules & LOADER_RULE.CUSTOM_COLOR) {
                 if(color !== null) {
