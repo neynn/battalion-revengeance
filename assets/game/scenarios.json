@@ -153,6 +153,7 @@
     },
     "PVP_VOLCANO": {
         "map": "volcano",
+        "maxPlayers": 2,
         "client": "TEST",
         "music": "rivers_of_steel",
         "teams": [

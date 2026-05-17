@@ -2,18 +2,15 @@ export const MapPreview = function(id, config) {
     const {
         directory = [],
         source = "",
-        text = "",
         title = "",
-        maxPlayers = 0,
         teams = []
     } = config;
 
     this.id = id;
     this.directory = directory;
     this.source = source;
-    this.text = text;
+    this.text = "";
     this.title = title;
-    this.maxPlayers = maxPlayers;
     this.file = null;
     this.translations = null;
     this.teams = teams;

@@ -77,23 +77,14 @@ ServerGameContext.prototype.selectScenario = function(scenarioID) {
         return false;
     }
 
-    const { mapID } = scenario;
-    const preview = this.mapRegistry.getMapPreview(mapID);
-
-    if(!preview) {
-        console.warn("Preview does not exist!");
-
-        return false;
-    }
-
-    const { maxPlayers, teams } = preview;
+    const { maxPlayers, teams } = scenario;
 
     this.mapMaster.clear();
     this.mapMaster.maxPlayers = maxPlayers;
     this.mapMaster.scenarioID = scenarioID;
 
-    for(const teamID of teams) {
-        this.mapMaster.createSlot(teamID);
+    for(const team of teams) {
+        this.mapMaster.createSlot(team.id);
     }
 
     for(let i = 0; i < this.members.length; i++) {

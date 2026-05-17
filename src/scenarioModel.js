@@ -19,6 +19,7 @@ export const ScenarioModel = function(id) {
     this.defeat = [];
     this.events = [];
     this.text = {};
+    this.maxPlayers = 0;
 
     this.customIDs = new Map();
     this.customIDCount = 0;
@@ -130,7 +131,8 @@ ScenarioModel.prototype.load = function(data) {
         defeat = [],
         events = [],
         objectives = {},
-        text = {}
+        text = {},
+        maxPlayers = 0
     } = data;
 
     const resolvedEvents = new Map();
@@ -138,6 +140,7 @@ ScenarioModel.prototype.load = function(data) {
 
     this.mapID = map;
     this.client = client;
+    this.maxPlayers = maxPlayers;
 
     //TODO(neyn): Must be loaded separately!
     this.text = text;
