@@ -55,7 +55,9 @@ export const ClientGameContext = function() {
         this.tileManager.update(this);
         
         this.gameWindow.display.clear();
+        this.gameWindow.display.save();
         this.contextManager.draw(this, this.gameWindow.display);
+        this.gameWindow.display.reset();
         this.gameWindow.display.save();
         this.uiManager.draw(this, this.gameWindow.display);
         this.gameWindow.display.reset();

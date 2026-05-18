@@ -7,7 +7,7 @@ export const Timer = function() {
     this.lastDraw = 0;
     this.deltaTime = 0;
     this.accumulatedTime = 0;
-    this.targetFPS = 60;
+    this.targetFPS = 55;
     this.targetDelta = 1 / this.targetFPS;
     this.smoothFPS = this.targetFPS;
     this.smoothFactor = 0.05;
@@ -34,7 +34,7 @@ Timer.prototype.nextFrame = function(timestamp) {
         this.accumulatedTime -= FIXED_DELTA_TIME;
     }
 
-    if(this.realTime - this.lastDraw >= this.targetDelta) {
+    if((this.realTime - this.lastDraw + 0.0001) >= this.targetDelta) {
         this.deltaTime = this.realTime - this.lastDraw;
         this.smoothFPS = (1 - this.smoothFactor) * this.smoothFPS + this.smoothFactor * (1 / this.deltaTime);
         this.input();
