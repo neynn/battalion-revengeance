@@ -1,6 +1,8 @@
 import { ExecutionPlan } from "./executionPlan.js";
 import { Queue } from "../util/queue.js";
 
+const MAX_ACTIONS_PER_BATCH = 100;
+
 export const ActionQueue = function() {
     this.nextID = 0;
     this.actionTables = new Map();
@@ -44,48 +46,62 @@ ActionQueue.prototype.mpFlushPlan = function(gameContext) {
 }
 
 ActionQueue.prototype.update = function(gameContext) {
-    this.getNextAction(gameContext);
+    let doEscape = false; 
+    let i = 0;
 
-    if(!this.current) {
-        return;
-    }
+    while(i < MAX_ACTIONS_PER_BATCH) {
+        this.getNextAction(gameContext);
 
-    const { type, data } = this.current;
-    const actionTable = this.actionTables.get(type);
-
-    switch(this.state) {
-        case ActionQueue.STATE.NONE: {
-            this.current.setState(ExecutionPlan.STATE.RUNNING);
-
-            actionTable.execute(gameContext, data);
-
-            this.endExecutionPlan();
+        if(!this.current) {
             break;
         }
-        case ActionQueue.STATE.ACTIVE: {
-            const actionType = this.actionTypes.get(type);
 
-            this.current.setState(ExecutionPlan.STATE.RUNNING);
-            this.state = ActionQueue.STATE.PROCESSING;
+        const { type, data } = this.current;
+        const actionTable = this.actionTables.get(type);
 
-            actionType.onStart(gameContext, data);
-            break;
-        }
-        case ActionQueue.STATE.PROCESSING: {
-            const actionType = this.actionTypes.get(type);
 
-            actionType.onUpdate(gameContext, data);
+        switch(this.state) {
+            case ActionQueue.STATE.NONE: {
+                this.current.setState(ExecutionPlan.STATE.RUNNING);
 
-            if(this.isSkipping || actionType.isFinished(gameContext, this.current)) {
                 actionTable.execute(gameContext, data);
-                actionType.onEnd(gameContext, data);
 
                 this.endExecutionPlan();
-                this.state = ActionQueue.STATE.NONE;
+                break;
             }
+            case ActionQueue.STATE.ACTIVE: {
+                const actionType = this.actionTypes.get(type);
 
+                this.current.setState(ExecutionPlan.STATE.RUNNING);
+                this.state = ActionQueue.STATE.PROCESSING;
+
+                actionType.onStart(gameContext, data);
+                break;
+            }
+            case ActionQueue.STATE.PROCESSING: {
+                const actionType = this.actionTypes.get(type);
+
+                actionType.onUpdate(gameContext, data);
+
+                if(this.isSkipping || actionType.isFinished(gameContext, this.current)) {
+                    actionTable.execute(gameContext, data);
+                    actionType.onEnd(gameContext, data);
+
+                    this.endExecutionPlan();
+                    this.state = ActionQueue.STATE.NONE;
+                } else {
+                    doEscape = true;
+                }
+
+                break;
+            }
+        }
+
+        if(doEscape) {
             break;
         }
+
+        i++;
     }
 }
 

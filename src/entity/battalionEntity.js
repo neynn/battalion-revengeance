@@ -55,8 +55,7 @@ BattalionEntity.RENDER_FLAG = {
     ACTING: 1 << 2,
     ACTED: 1 << 3,
     SHADED: 1 << 4,
-    MARKABLE: 1 << 5,
-    DELAY_SHADE: 1 << 6
+    MARKABLE: 1 << 5
 };
 
 BattalionEntity.FLAG = {
@@ -1837,7 +1836,6 @@ BattalionEntity.prototype.syncRenderFlags = function() {
         if(this.flags & BattalionEntity.FLAG.IS_TURN) {
             if(this.state === BattalionEntity.STATE.IDLE) {
                 this.renderFlags |= BattalionEntity.RENDER_FLAG.SHADED;
-                this.renderFlags |= BattalionEntity.RENDER_FLAG.DELAY_SHADE;
             }
         }
     }

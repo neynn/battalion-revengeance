@@ -290,27 +290,21 @@ BattalionRenderer2D.prototype.drawEntity = function(gameContext, camera, display
 
         //Draw the shaded frame over the sprite and lock the sprite to the first frame.
         if(renderFlags & BattalionEntity.RENDER_FLAG.SHADED) {
-            if(renderFlags & BattalionEntity.RENDER_FLAG.DELAY_SHADE) {
-                entity.clearRFlag(BattalionEntity.RENDER_FLAG.DELAY_SHADE);
-                sprite.update(realTime, deltaTime);
-                sprite.draw(display, 0, 0);
-            } else {
-                const shadeIndex = config.id * DIRECTION._COUNT + direction;
-                const { state, bitmap, width, height } = shadeCache.getShade(shadeIndex);
+            const shadeIndex = config.id * DIRECTION._COUNT + direction;
+            const { state, bitmap, width, height } = shadeCache.getShade(shadeIndex);
 
-                sprite.setFrame(0);
-                sprite.draw(display, 0, 0);
+            sprite.setFrame(0);
+            sprite.draw(display, 0, 0);
 
-                if(state === TextureHandle.STATE.LOADED) {
-                    const shadeX = screenX + sprite.offsetX;
-                    const shadeY = screenY + sprite.offsetY;
+            if(state === TextureHandle.STATE.LOADED) {
+                const shadeX = screenX + sprite.offsetX;
+                const shadeY = screenY + sprite.offsetY;
 
-                    context.drawImage(
-                        bitmap,
-                        0, 0, width, height,
-                        shadeX, shadeY, width, height
-                    );
-                }
+                context.drawImage(
+                    bitmap,
+                    0, 0, width, height,
+                    shadeX, shadeY, width, height
+                );
             }
         } else {
             sprite.update(realTime, deltaTime);
