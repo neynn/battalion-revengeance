@@ -6,7 +6,7 @@ export const Renderer2D = function() {
     this.currentFrame = 0;
     this.tileWidth = TILE_WIDTH;
     this.tileHeight = TILE_HEIGHT;
-    this.halfTileHeight = this.tileWidth / 2;
+    this.halfTileWidth = this.tileWidth / 2;
     this.halfTileHeight = this.tileHeight / 2;
 }
 
@@ -17,7 +17,7 @@ Renderer2D.DEBUG = {
 
 Renderer2D.prototype.render = function(gameContext, camera, context) {}
 
-Renderer2D.prototype.drawEmptyTile = function(context, screenX, screenY, scale) {
+Renderer2D.prototype.drawEmptyTile = function(context, screenX, screenY, scale = 1) {
     const drawX = Math.floor(screenX);
     const drawY = Math.floor(screenY);
     const width = Math.floor(this.halfTileWidth * scale);

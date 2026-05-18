@@ -1,7 +1,7 @@
 import { getCursorTile } from "../../engine/camera/contextHelper.js";
 import { Renderer2D } from "../../engine/renderer/renderer2D.js";
 import { TileManager } from "../../engine/tile/tileManager.js";
-import { LAYER_TYPE } from "../enums.js";
+import { LAYER_TYPE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { BattalionRenderer2D } from "./battalionRenderer2D.js";
 
@@ -70,6 +70,7 @@ EditRenderer2D.prototype.drawHoverTile = function(gameContext, camera, display) 
             const screenY = camera.getScreenY(i);
 
             this.drawTile(tileManager, id, context, screenX, screenY);
+            this.drawTile(tileManager, TILE_ID.JAMMER, context, screenX, screenY);
 
             context.fillText(name, screenX + this.halfTileWidth, screenY);
         }
