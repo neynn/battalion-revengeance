@@ -18,6 +18,7 @@ import { TextStyle } from "../../engine/graphics/textStyle.js";
 import { Renderer2D } from "../../engine/renderer/renderer2D.js";
 import { Display } from "../../engine/renderer/display.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
+import { Sprite } from "../../engine/sprite/sprite.js";
 
 const BLOCK = { COUNT: 4, WIDTH: 4, HEIGHT: 8, GAP: 1 };
 const WIDTH = (BLOCK.GAP * (BLOCK.COUNT + 1)) + BLOCK.WIDTH * BLOCK.COUNT;
@@ -242,6 +243,16 @@ BattalionRenderer2D.prototype.drawEntityHealth = function(display, drawX, drawY,
     }
 }
 
+/**
+ * 
+ * @param {*} gameContext 
+ * @param {Camera2D} camera 
+ * @param {Display} display 
+ * @param {BattalionEntity} entity 
+ * @param {Sprite} sprite 
+ * @param {number} realTime 
+ * @param {number} deltaTime 
+ */
 BattalionRenderer2D.prototype.drawEntity = function(gameContext, camera, display, entity, sprite, realTime, deltaTime) {
     const { teamManager, shadeCache, tileManager } = gameContext;
     const { context } = display;
@@ -279,21 +290,27 @@ BattalionRenderer2D.prototype.drawEntity = function(gameContext, camera, display
 
         //Draw the shaded frame over the sprite and lock the sprite to the first frame.
         if(renderFlags & BattalionEntity.RENDER_FLAG.SHADED) {
-            const shadeIndex = config.id * DIRECTION._COUNT + direction;
-            const { state, bitmap, width, height } = shadeCache.getShade(shadeIndex);
+            if(renderFlags & BattalionEntity.RENDER_FLAG.DELAY_SHADE) {
+                entity.clearRFlag(BattalionEntity.RENDER_FLAG.DELAY_SHADE);
+                sprite.update(realTime, deltaTime);
+                sprite.draw(display, 0, 0);
+            } else {
+                const shadeIndex = config.id * DIRECTION._COUNT + direction;
+                const { state, bitmap, width, height } = shadeCache.getShade(shadeIndex);
 
-            sprite.setFrame(0);
-            sprite.draw(display, 0, 0);
+                sprite.setFrame(0);
+                sprite.draw(display, 0, 0);
 
-            if(state === TextureHandle.STATE.LOADED) {
-                const shadeX = screenX + sprite.offsetX;
-                const shadeY = screenY + sprite.offsetY;
+                if(state === TextureHandle.STATE.LOADED) {
+                    const shadeX = screenX + sprite.offsetX;
+                    const shadeY = screenY + sprite.offsetY;
 
-                context.drawImage(
-                    bitmap,
-                    0, 0, width, height,
-                    shadeX, shadeY, width, height
-                );
+                    context.drawImage(
+                        bitmap,
+                        0, 0, width, height,
+                        shadeX, shadeY, width, height
+                    );
+                }
             }
         } else {
             sprite.update(realTime, deltaTime);
