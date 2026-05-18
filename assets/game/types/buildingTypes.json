@@ -3,21 +3,18 @@
         "name": "BUILDING_NAME_AIR_CONTROL",
         "desc": "BUILDING_DESC_AIR_CONTROL",
         "sprite": "air_control",
-        "neutralSprite": "air_control",
         "traits": ["CAPTURABLE", "FISCAL_CENTER"]
     },
     "COMMAND_CENTER": {
         "name": "BUILDING_NAME_COMMAND_CENTER",
         "desc": "BUILDING_DESC_COMMAND_CENTER",
         "sprite": "command_center",
-        "neutralSprite": "command_center",
         "traits": ["CAPTURABLE", "FISCAL_CENTER"]
     },
     "FACTORY": {
         "name": "BUILDING_NAME_FACTORY",
         "desc": "BUILDING_DESC_FACTORY",
         "sprite": "factory",
-        "neutralSprite": "factory",
         "shop": "FACTORY",
         "traits": ["CAPTURABLE", "FISCAL_CENTER", "SPAWNER"]
     },
@@ -25,35 +22,30 @@
         "name": "BUILDING_NAME_GROUND_CONTROL",
         "desc": "BUILDING_DESC_GROUND_CONTROL",
         "sprite": "ground_control",
-        "neutralSprite": "ground_control",
         "traits": ["CAPTURABLE", "FISCAL_CENTER"]
     },
     "OIL_ADVANCED_REFINERY": {
         "name": "BUILDING_NAME_OIL_ADVANCED_REFINERY",
         "desc": "BUILDING_DESC_OIL_ADVANCED_REFINERY",
         "sprite": "oil_advanced_refinery",
-        "neutralSprite": "oil_advanced_refinery",
         "traits": ["CAPTURABLE", "FISCAL_CENTER"]
     },
     "OIL_REFINERY": {
         "name": "BUILDING_NAME_OIL_REFINERY",
         "desc": "BUILDING_DESC_OIL_REFINERY",
         "sprite": "oil_refinery",
-        "neutralSprite": "oil_refinery",
         "traits": ["CAPTURABLE", "FISCAL_CENTER"]
     },
     "OIL_RIG": {
         "name": "BUILDING_NAME_OIL_RIG",
         "desc": "BUILDING_DESC_OIL_RIG",
         "sprite": "oil_rig",
-        "neutralSprite": "oil_rig",
         "traits": ["CAPTURABLE", "FISCAL_CENTER"]
     },
     "SEA_CONTROL": {
         "name": "BUILDING_NAME_SEA_CONTROL",
         "desc": "BUILDING_DESC_SEA_CONTROL",
         "sprite": "sea_control",
-        "neutralSprite": "sea_control",
         "traits": ["CAPTURABLE", "FISCAL_CENTER"]
     }
 }

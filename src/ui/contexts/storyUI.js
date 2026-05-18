@@ -213,13 +213,13 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
                     };
 
                     if(DO_SAVED) {
-                        loadSavedScenario(gameContext, DATA, [over]).then(() => this.hide())
+                        loadSavedScenario(gameContext, DATA, []).then(() => this.hide())
                     } else {
                         loadClientScenario(gameContext, scenarioID)
                         .then(loader => {
                             const { actionRouter } = gameContext;
 
-                            loader.createDefaultMatch(gameContext, [over]);
+                            loader.createDefaultMatch(gameContext, []);
                             actionRouter.forceEnqueue(gameContext, InterruptVTable.createIntent(INTERRUPT_TYPE.START_GAME, -1));
 
                             this.hide();

@@ -1,19 +1,19 @@
 import { getRGBAStringByArray } from "../../../engine/graphics/colorHelper.js";
 
-export const SchemaType = function(id) {
+export const ColorType = function(id) {
     this.id = id;
     this.colorMap = {};
     this.hudColor = "#222222";
     this.textColor = "#eeeeee";
 }
 
-SchemaType.prototype.reset = function() {
+ColorType.prototype.reset = function() {
     this.colorMap = {};
     this.hudColor = "#222222";
     this.textColor = "#eeeeee";
 }
 
-SchemaType.prototype.loadCustom = function(colors) {
+ColorType.prototype.loadCustom = function(colors) {
     for(const colorHex in colors) {
         const colorVal = Number(colorHex);
 
@@ -21,7 +21,7 @@ SchemaType.prototype.loadCustom = function(colors) {
     }
 }
 
-SchemaType.prototype.load = function(config, DEBUG_NAME) {
+ColorType.prototype.load = function(config, DEBUG_NAME) {
     const {
         colors = {},
         hud = null,

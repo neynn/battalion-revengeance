@@ -1,5 +1,5 @@
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
-import { BUILDING_TYPE, SCHEMA_TYPE, SHOP_TYPE } from "../enums.js";
+import { BUILDING_TYPE, SHOP_TYPE } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { ScenarioModel } from "../scenarioModel.js";
 import { TeamManager } from "../team/teamManager.js";

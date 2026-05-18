@@ -1,13 +1,13 @@
 import { MAX_TEAMS } from "../constants";
-import { SCHEMA_TYPE } from "../enums.js";
+import { COLOR_TYPE } from "../enums.js";
 
 const isColorCustom = function(colorID) {
-    return colorID >= SCHEMA_TYPE.CUSTOM_1 && colorID <= SCHEMA_TYPE.CUSTOM_8;
+    return colorID >= COLOR_TYPE.CUSTOM_1 && colorID <= COLOR_TYPE.CUSTOM_8;
 } 
 
 const LobbySlot = function() {
     this.type = LobbySlot.TYPE.EMPTY;
-    this.colorID = SCHEMA_TYPE.RED;
+    this.colorID = COLOR_TYPE.RED;
     this.isReady = false;
     this.clientID = null;
 }

@@ -313,7 +313,7 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
         const nextY = teamY + TEAM_OFFSET_Y * i;
         const teamID = activeTeams[i];
         const team = teamManager.getTeam(teamID);
-        const { hudColor, textColor } = typeRegistry.getSchemaType(team.color);
+        const { hudColor, textColor } = typeRegistry.getColorType(team.color);
 
         context.fillStyle = hudColor;
         context.fillRect(colorX, nextY + 4, COLOR_WIDTH, COLOR_HEIGHT);

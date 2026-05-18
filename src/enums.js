@@ -459,34 +459,36 @@ export const CLIMATE_TYPE = {
     _COUNT: 9
 };
 
-export const SCHEMA_TYPE = {
+export const COLOR_TYPE = {
     RED: 0,
     BLUE: 1,
     GREEN: 2,
     YELLOW: 3,
-    DARK_RED: 4,
-    DARK_BLUE: 5,
-    BRONZE: 6,
-    DARK_GREEN: 7,
-    GOLD: 8,
-    CYAN: 9,
+    DARK_RED: 4, //MAROON
+    DARK_BLUE: 5, //DK_BLUE
+    BRONZE: 6, //BROWN
+    DARK_GREEN: 7, //OLIVE
+    GOLD: 8, //ORANGE
+    CYAN: 9, //TEAL
     PINK: 10,
     WHITE: 11,
-    PURPLE: 12,
+    PURPLE: 12, //VIOLET
     BLACK: 13,
     GRAY: 14,
-    CREAM: 15,
-    LIME: 16,
-    CUSTOM_1: 17,
-    CUSTOM_2: 18,
-    CUSTOM_3: 19,
-    CUSTOM_4: 20,
-    CUSTOM_5: 21,
-    CUSTOM_6: 22,
-    CUSTOM_7: 23,
-    CUSTOM_8: 24,
-    SUNSET: 25,
-    _COUNT: 26
+    CREAM: 15, //UNFINISHED
+    LIME: 16, //?
+    BUILDING: 17,
+    COIN_GOLD: 18,
+    COIN_GRAY: 19,
+    CUSTOM_1: 20,
+    CUSTOM_2: 21,
+    CUSTOM_3: 22,
+    CUSTOM_4: 23,
+    CUSTOM_5: 24,
+    CUSTOM_6: 25,
+    CUSTOM_7: 26,
+    CUSTOM_8: 27,
+    _COUNT: 28
 };
 
 export const POWER_TYPE = {

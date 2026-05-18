@@ -1,6 +1,6 @@
 import { BattalionMap } from "../map/battalionMap.js";
 import { createClientEntityObject, createMineObject, createServerEntityObject } from "./spawn.js";
-import { LAYER_TYPE, LOADER_RULE, MINE_TYPE, SCHEMA_TYPE } from "../enums.js";
+import { LAYER_TYPE, LOADER_RULE, MINE_TYPE } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
 import { createEntitySnapshot, createEntitySnapshotFromEntry } from "../snapshot/entitySnapshot.js";
 import { MatchLoader } from "./loader/matchLoader.js";
@@ -29,8 +29,7 @@ ClientMatchLoader.prototype.createBuildingSprites = function(gameContext) {
     const { teamManager, spriteManager, typeRegistry } = gameContext;
 
     for(const building of this.worldMap.buildings) {
-        const { tileX, tileY, config, teamID } = building;
-        const { sprite, neutralSprite } = config;
+        const { tileX, tileY } = building;
         const position = transformTileToWorld(tileX, tileY);
         const spriteObject = spriteManager.createEmptySprite(LAYER_TYPE.BUILDING);
         const spriteIndex = spriteObject.getIndex();

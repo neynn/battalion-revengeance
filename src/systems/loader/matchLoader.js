@@ -1,4 +1,4 @@
-import { COMMANDER_TYPE, COMPONENT_TYPE, FACTION_TYPE, LOADER_RULE, OBJECTIVE_TYPE, SCHEMA_TYPE, SHOP_TYPE } from "../../enums.js";
+import { COMMANDER_TYPE, COMPONENT_TYPE, FACTION_TYPE, LOADER_RULE, OBJECTIVE_TYPE, COLOR_TYPE, SHOP_TYPE } from "../../enums.js";
 import { BattalionMap } from "../../map/battalionMap.js";
 
 import { CaptureObjective } from "../../team/objective/types/capture.js";
@@ -26,14 +26,14 @@ import { StoryActor } from "../../actors/storyActor.js";
 import { ScenarioModel } from "../../scenarioModel.js";
 import { createMineObject } from "../spawn.js";
 
-const createCustomSchema = function(gameContext, team, colorMap) {
+const createCustomColor = function(gameContext, team, colorMap) {
     const { typeRegistry } = gameContext;
     const { id } = team;
-    const colorID = SCHEMA_TYPE.CUSTOM_1 + id; //TeamID from 0 to n (max 8).
-    const schema = typeRegistry.getSchemaType(colorID);
+    const colorID = COLOR_TYPE.CUSTOM_1 + id; //TeamID from 0 to n (max 8).
+    const colorType = typeRegistry.getColorType(colorID);
 
-    schema.reset();
-    schema.loadCustom(colorMap);
+    colorType.reset();
+    colorType.loadCustom(colorMap);
 
     team.color = colorID;
 }
@@ -267,7 +267,7 @@ MatchLoader.prototype.createTeams = function(gameContext, overrides) {
 
             if(this.rules & LOADER_RULE.CUSTOM_COLOR) {
                 if(color !== null) {
-                    createCustomSchema(gameContext, teamObject, color);
+                    createCustomColor(gameContext, teamObject, color);
                 }
             }
 

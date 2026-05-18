@@ -1,19 +1,19 @@
-import { SCHEMA_TYPE } from "../enums.js";
+import { COLOR_TYPE } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
 
 
 //If a client has select their custom color the bitpacker will get the clients color data
 //and pack it along with the colorID.
 const isColorCustom = function(colorID) {
-    return colorID >= SCHEMA_TYPE.CUSTOM_1 && colorID <= SCHEMA_TYPE.CUSTOM_8;
+    return colorID >= COLOR_TYPE.CUSTOM_1 && colorID <= COLOR_TYPE.CUSTOM_8;
 } 
 
 const MapSlot = function() {
     this.clientID = null;
     this.teamID = TeamManager.INVALID_ID;
     this.type = MapSlot.TYPE.CLOSED;
-    this.colorID = SCHEMA_TYPE.RED;
-    this.originalColorID = SCHEMA_TYPE.RED;
+    this.colorID = COLOR_TYPE.RED;
+    this.originalColorID = COLOR_TYPE.RED;
 }
 
 MapSlot.TYPE = {

@@ -12,15 +12,15 @@ import { BuildingType } from "./parsed/buildingType.js";
 import { MoraleType } from "./parsed/moraleType.js";
 import { EntityType } from "./parsed/entityType.js";
 import { ShopType } from "./parsed/shopType.js";
-import { SchemaType } from "./parsed/schemaType.js";
-import { ARMOR_TYPE, BUILDING_TYPE, CLIMATE_TYPE, COMMANDER_TYPE, CURRENCY_TYPE, ENTITY_TYPE, FACTION_TYPE, MINE_TYPE, MORALE_TYPE, MOVEMENT_TYPE, NATION_TYPE, POWER_TYPE, SCHEMA_TYPE, SHOP_TYPE, TERRAIN_TYPE, TILE_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../enums.js";
+import { ColorType } from "./parsed/colorType.js";
+import { ARMOR_TYPE, BUILDING_TYPE, CLIMATE_TYPE, COMMANDER_TYPE, CURRENCY_TYPE, ENTITY_TYPE, FACTION_TYPE, MINE_TYPE, MORALE_TYPE, MOVEMENT_TYPE, NATION_TYPE, POWER_TYPE, COLOR_TYPE, SHOP_TYPE, TERRAIN_TYPE, TILE_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../enums.js";
 import { PowerType } from "./parsed/powerType.js";
 import { CurrencyType } from "./parsed/currencyType.js";
 import { MineType } from "./parsed/mineType.js";
 
 const STUB_MINE = new MineType(-1);
 const STUB_ENTITY = new EntityType(-1);
-const STUB_SCHEMA = new SchemaType(-1);
+const STUB_COLOR = new ColorType(-1);
 const STUB_MORALE = new MoraleType(-1);
 const STUB_SHOP = new ShopType(-1);
 const STUB_FACTION = new FactionType(-1);
@@ -76,14 +76,14 @@ export const TypeRegistry = function() {
     this.factionTypes = createTypeCategory(FactionType, FACTION_TYPE._COUNT);
     this.shopTypes = createTypeCategory(ShopType, SHOP_TYPE._COUNT);
     this.moraleTypes = createTypeCategory(MoraleType, MORALE_TYPE._COUNT);
-    this.schemaTypes = createTypeCategory(SchemaType, SCHEMA_TYPE._COUNT);
+    this.colorTypes = createTypeCategory(ColorType, COLOR_TYPE._COUNT);
     this.entityTypes = createTypeCategory(EntityType, ENTITY_TYPE._COUNT);
     this.mineTypes = createTypeCategory(MineType, MINE_TYPE._COUNT);
 }
 
 TypeRegistry.prototype.load = function(resources) {
     mLoadTypeCategory(resources.entityTypes, this.entityTypes, ENTITY_TYPE);
-    mLoadTypeCategory(resources.schemaTypes, this.schemaTypes, SCHEMA_TYPE);
+    mLoadTypeCategory(resources.colorTypes, this.colorTypes, COLOR_TYPE);
     mLoadTypeCategory(resources.moraleTypes, this.moraleTypes, MORALE_TYPE);
     mLoadTypeCategory(resources.shopTypes, this.shopTypes, SHOP_TYPE);
     mLoadTypeCategory(resources.factionTypes, this.factionTypes, FACTION_TYPE);
@@ -222,12 +222,12 @@ TypeRegistry.prototype.getMoraleType = function(typeID) {
     return this.moraleTypes[typeID];
 }
 
-TypeRegistry.prototype.getSchemaType = function(typeID) {
-    if(typeID < 0 || typeID >= SCHEMA_TYPE._COUNT) {
-        return STUB_SCHEMA;
+TypeRegistry.prototype.getColorType = function(typeID) {
+    if(typeID < 0 || typeID >= COLOR_TYPE._COUNT) {
+        return STUB_COLOR;
     }
     
-    return this.schemaTypes[typeID];
+    return this.colorTypes[typeID];
 }
 
 TypeRegistry.prototype.getCurrencyType = function(typeID) {

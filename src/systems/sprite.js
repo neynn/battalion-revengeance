@@ -2,7 +2,7 @@ import { transformTileToWorld } from "../../engine/math/transform2D.js";
 import { Texture } from "../../engine/resources/texture/texture.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { ATTACK_TYPE, DIRECTION, EFFECT_SPRITE, ENTITY_SPRITE, LAYER_TYPE, SCHEMA_TYPE } from "../enums.js";
+import { ATTACK_TYPE, DIRECTION, EFFECT_SPRITE, ENTITY_SPRITE, LAYER_TYPE, COLOR_TYPE } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
 
 const SPRITE_TABLE = [
@@ -62,18 +62,34 @@ export const playExplosion = function(gameContext, tileX, tileY) {
     playSprite(gameContext, "explosion", tileX, tileY);
 }
 
+//INFO(neyn): This is hard-coded but I don't really care :)
+const BUILDING_NEUTRAL_COLORS = {
+    //Base Sprite -> Gray Sprite
+    0x661A5E: [68, 86, 65],
+    0xAA162C: [128, 102, 104],
+    0xE9332E: [177, 173, 123],
+    0xFF9085: [238, 225, 156],
+
+    //Gold Icon -> Gray Icon
+    0x964E38: [35, 59, 84],
+    0xE5C234: [95, 111, 101],
+    0xFFE975: [125, 153, 138],
+    0xFFFFDC: [173, 183, 170]
+};
+
 export const updateBuildingSprite = function(gameContext, building, spriteIndex) {
     const { spriteManager, typeRegistry, teamManager } = gameContext;
     const { teamID, config } = building;
-    const { sprite, neutralSprite } = config;
+    const { sprite } = config;
 
     if(teamID === TeamManager.INVALID_ID) {
-        spriteManager.updateSprite(spriteIndex, neutralSprite);
+        spriteManager.createCopyTexture(sprite, COLOR_TYPE.BUILDING, BUILDING_NEUTRAL_COLORS);
+        spriteManager.updateSprite(spriteIndex, sprite, COLOR_TYPE.BUILDING);
     } else {
         const { color } = teamManager.getTeam(teamID);
 
-        if(color !== SCHEMA_TYPE.RED) {
-            const { colorMap } = typeRegistry.getSchemaType(color);
+        if(color !== COLOR_TYPE.RED) {
+            const { colorMap } = typeRegistry.getColorType(color);
 
             spriteManager.createCopyTexture(sprite, color, colorMap);
         }
@@ -91,8 +107,8 @@ export const updateEntitySprite = function(gameContext, entity) {
     if(spriteName !== null) {
         const { color } = entity.getTeam(gameContext);
 
-        if(color !== SCHEMA_TYPE.RED) {
-            const { colorMap } = typeRegistry.getSchemaType(color);
+        if(color !== COLOR_TYPE.RED) {
+            const { colorMap } = typeRegistry.getColorType(color);
 
             spriteManager.createCopyTexture(spriteName, color, colorMap);
         }
@@ -151,12 +167,12 @@ export const playAttackEffect = function(gameContext, entity, target, resolution
 }
 
 export const bufferEntitySprites = function(gameContext, entity, colorID) {
-    if(colorID === SCHEMA_TYPE.RED) {
+    if(colorID === COLOR_TYPE.RED) {
         return;
     }
 
     const { spriteManager, typeRegistry } = gameContext;
-    const { id, colorMap } = typeRegistry.getSchemaType(colorID);
+    const { id, colorMap } = typeRegistry.getColorType(colorID);
 
     for(const spriteIndex of SPRITE_TABLE) {
         const spriteName = entity.config.sprites[spriteIndex];

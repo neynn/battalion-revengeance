@@ -1,7 +1,7 @@
 import { Objective } from "./objective/objective.js";
 import { UnitSurviveObjective } from "./objective/types/unitSurvive.js";
 import { LynchpinObjective } from "./objective/types/lynchpin.js";
-import { COMMANDER_TYPE, CURRENCY_TYPE, SCHEMA_TYPE, TEAM_STAT, TRAIT_TYPE } from "../enums.js";
+import { COMMANDER_TYPE, CURRENCY_TYPE, COLOR_TYPE, TEAM_STAT, TRAIT_TYPE } from "../enums.js";
 import { SCORE_BONUS, VICTORY_BONUS } from "../constants.js";
 import { createTeamSnapshot } from "../snapshot/teamSnapshot.js";
 
@@ -9,7 +9,7 @@ export const Team = function(id) {
     this.id = id;
     this.allies = [];
     this.roster = [];
-    this.color = SCHEMA_TYPE.RED;
+    this.color = COLOR_TYPE.RED;
     this.currency = CURRENCY_TYPE.NONE;
     this.commander = COMMANDER_TYPE.NONE;
     this.customName = null;
