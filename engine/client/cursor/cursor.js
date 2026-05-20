@@ -61,6 +61,28 @@ Cursor.SCROLL = {
     DOWN: 1
 };
 
+Cursor.prototype.update = function(router) {
+    for(let i = 0; i < this.buttons.length; i++) {
+        const button = this.buttons[i];
+        const clicks = button.update();
+
+        if(button.flags & MouseButton.FLAG.DOWN) {
+            this.downEvent.update(i, this.positionX, this.positionY, this.radius);
+            this.events.emit(Cursor.EVENT.BUTTON_DOWN, this.downEvent);
+        }
+
+        if(button.flags & MouseButton.FLAG.UP) {
+            this.upEvent.update(i, this.positionX, this.positionY, this.radius);
+            this.events.emit(Cursor.EVENT.BUTTON_UP, this.upEvent);
+        }
+
+        for(let j = 0; j < clicks; j++) {
+            this.clickEvent.update(i, this.positionX, this.positionY, this.radius);
+            this.events.emit(Cursor.EVENT.BUTTON_CLICK, this.clickEvent);
+        }
+    }
+}
+
 Cursor.prototype.collidesRect = function(screenX, screenY, width, height) {
     return isRectangleRectangleIntersect(
         this.positionX, this.positionY, this.radius, this.radius,
@@ -110,12 +132,7 @@ Cursor.prototype.eventMouseDown = function(event) {
         return;
     }
 
-    const button = this.buttons[buttonID];
-
-    this.downEvent.update(buttonID, this.positionX, this.positionY, this.radius);
-    this.events.emit(Cursor.EVENT.BUTTON_DOWN, this.downEvent);
-
-    button.onMouseDown();
+    this.buttons[buttonID].onMouseDown();
 }   
 
 Cursor.prototype.eventMouseUp = function(event) {
@@ -125,17 +142,7 @@ Cursor.prototype.eventMouseUp = function(event) {
         return;
     }
 
-    const button = this.buttons[buttonID];
-
-    if(!(button.flags & MouseButton.FLAG.DRAG)) {
-        this.clickEvent.update(buttonID, this.positionX, this.positionY, this.radius);
-        this.events.emit(Cursor.EVENT.BUTTON_CLICK, this.clickEvent);
-    }
-
-    this.upEvent.update(buttonID, this.positionX, this.positionY, this.radius);
-    this.events.emit(Cursor.EVENT.BUTTON_UP, this.upEvent);
-    
-    button.onMouseUp();
+    this.buttons[buttonID].onMouseUp();
 }
 
 Cursor.prototype.eventMouseScroll = function(event) {

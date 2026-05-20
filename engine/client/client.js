@@ -58,12 +58,10 @@ Client.prototype.update = function() {
         this.router.handleInput(InputRouter.PREFIX.HOLD, key);
     }
 
+    this.cursor.update();
+
     for(let i = 0; i < this.cursor.buttons.length; i++) {
-        const button = this.cursor.buttons[i];
-
-        button.update();
-
-        if(button.flags & MouseButton.FLAG.HELD) {
+        if(this.cursor.buttons[i].downImpulses > 0) {
             this.router.handleInput(InputRouter.PREFIX.HOLD, Client.BUTTON_TABLE[i]);
         }
     }

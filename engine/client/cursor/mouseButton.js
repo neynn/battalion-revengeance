@@ -1,17 +1,16 @@
 export const MouseButton = function() {
-    this.previous = MouseButton.STATE.UP;
     this.state = MouseButton.STATE.UP; 
     this.flags = MouseButton.FLAG.NONE;
     this.downStartTime = 0;
+    this.downImpulses = 0;
+    this.upImpulses = 0;
 }
 
 MouseButton.FLAG = {
     NONE: 0,
     DRAG: 1 << 0,
     UP: 1 << 1,
-    DOWN: 1 << 2,
-    HELD: 1 << 3,
-    CLICK: 1 << 4
+    DOWN: 1 << 2
 };
 
 MouseButton.STATE = {
@@ -19,49 +18,54 @@ MouseButton.STATE = {
     DOWN: 1
 };
 
+//Assume downImpulses is always >= upImpulses.
 MouseButton.prototype.update = function() {
-    this.flags &= ~(MouseButton.FLAG.UP | MouseButton.FLAG.DOWN | MouseButton.FLAG.CLICK);
+    this.flags &= ~(MouseButton.FLAG.UP | MouseButton.FLAG.DOWN);
+    let clicks = Math.min(this.downImpulses, this.upImpulses);
 
-    switch(this.state) {
-        case MouseButton.STATE.UP: {
-            if(this.previous === MouseButton.STATE.DOWN) {
-                this.flags |= MouseButton.FLAG.UP;
-
-                if(!(this.flags & MouseButton.FLAG.DRAG)) {
-                    this.flags |= MouseButton.FLAG.CLICK;
-                }
-
-                this.flags &= ~MouseButton.FLAG.DRAG;
-            }
-
-            this.flags &= ~MouseButton.FLAG.HELD;
-            break;
-        }
-        case MouseButton.STATE.DOWN: {
-            if(this.previous === MouseButton.STATE.UP) {
-                this.flags |= MouseButton.FLAG.DOWN;
-            }
-
-            this.flags |= MouseButton.FLAG.HELD;
-            break;
+    if(this.downImpulses > 0) {
+        if(this.state !== MouseButton.STATE.DOWN) {
+            this.flags |= MouseButton.FLAG.DOWN;
         }
     }
 
-    this.previous = this.state;
+    if(this.upImpulses > 0) {
+        this.flags |= MouseButton.FLAG.UP;
+
+        if(clicks === 0 && !(this.flags & MouseButton.FLAG.DRAG)) {
+            clicks = 1;
+        }
+    }
+
+    if(this.downImpulses > this.upImpulses) {
+        if(this.state === MouseButton.STATE.UP) {
+            this.state = MouseButton.STATE.DOWN;
+        }
+    } else {
+        if(this.state === MouseButton.STATE.DOWN) {
+            this.state = MouseButton.STATE.UP;
+            this.flags &= ~MouseButton.FLAG.DRAG;
+        }
+    }
+
+    this.downImpulses -= this.upImpulses;
+    this.upImpulses = 0;
+
+    if(this.downImpulses < 0) {
+        this.downImpulses = 0;
+    }
+
+    return clicks;
 }
 
 MouseButton.prototype.onMouseUp = function() {
-    if(this.state !== MouseButton.STATE.UP) {
-        this.state = MouseButton.STATE.UP;
-        this.downStartTime = 0;
-    }
+    this.upImpulses++;
+    this.downStartTime = 0;
 }
 
 MouseButton.prototype.onMouseDown = function() {
-    if(this.state === MouseButton.STATE.UP) {
-        this.state = MouseButton.STATE.DOWN;
-        this.downStartTime = Date.now();
-    }
+    this.downImpulses++;
+    this.downStartTime = Date.now();
 }
 
 MouseButton.prototype.onMouseMove = function(deltaX, deltaY) {
@@ -69,7 +73,7 @@ MouseButton.prototype.onMouseMove = function(deltaX, deltaY) {
         return;
     }
 
-    if(this.state === MouseButton.STATE.DOWN) {
+    if(this.downImpulses > 0) {
         const isDragging = this.isDragging(deltaX, deltaY);
         
         if(isDragging) {
