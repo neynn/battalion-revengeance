@@ -94,61 +94,44 @@ TileTool.prototype.onScrollUp = function(gameContext) {
 TileTool.prototype.init = function() {
     const allSet = new BrushSet("MAP_EDITOR_SET_NAME_ALL", TileManager.TILE_ID.INVALID);
     const canyonSet = new BrushSet("MAP_EDITOR_SET_NAME_CANYON", TileManager.TILE_ID.INVALID);
-    const roadSet = new BrushSet("MAP_EDITOR_SET_NAME_ROAD", TileManager.TILE_ID.INVALID);
+    const transportSet = new BrushSet("MAP_EDITOR_SET_NAME_TRANSPORT", TileManager.TILE_ID.INVALID);
     const groundSet = new BrushSet("MAP_EDITOR_SET_NAME_GROUND", TileManager.TILE_ID.INVALID);
-    const shoreSet = new BrushSet("MAP_EDITOR_SET_NAME_SHORE", TileManager.TILE_ID.INVALID);
+    const waterSet = new BrushSet("MAP_EDITOR_SET_NAME_WATER", TileManager.TILE_ID.INVALID);
     const riverSet = new BrushSet("MAP_EDITOR_SET_NAME_RIVER", TileManager.TILE_ID.INVALID);
-    const seaSet = new BrushSet("MAP_EDITOR_SET_NAME_SEA", TileManager.TILE_ID.INVALID);
-    const railSet = new BrushSet("MAP_EDITOR_SET_NAME_RAIL", TileManager.TILE_ID.INVALID);
+    const plainsSet = new BrushSet("MAP_EDITOR_SET_NAME_PLAINS", TileManager.TILE_ID.INVALID);
 
-    //TODO(neyn): Update count!
-    for(let i = TILE_ID.GRASS; i < TILE_ID._COUNT + 100; i++) {
-        allSet.addValue(i);
-    }
+    allSet.addValues(TILE_ID.GRASS, TILE_ID._COUNT - 1);
 
-    for(let i = TILE_ID.CANYON_0; i <= TILE_ID.CANYON_47; i++) {
-        canyonSet.addValue(i);
-    }
+    groundSet.addValue(TILE_ID.VOLANO);
+    groundSet.addValue(TILE_ID.ORE_LEFT);
+    groundSet.addValue(TILE_ID.ORE_LEFT_USED);
+    groundSet.addValue(TILE_ID.ORE_LEFT_DEPLETED);
+    groundSet.addValue(TILE_ID.ORE_RIGHT);
+    groundSet.addValue(TILE_ID.ORE_RIGHT_USED);
+    groundSet.addValue(TILE_ID.ORE_RIGHT_DEPLETED);
+    
+    riverSet.addValues(TILE_ID.RIVER_0, TILE_ID.RIVER_46); //NOT 47 because one tile does not exist!
 
-    groundSet.values = [
-        TILE_ID.VOLANO,
-        TILE_ID.ORE_LEFT,
-        TILE_ID.ORE_LEFT_USED,
-        TILE_ID.ORE_LEFT_DEPLETED,
-        TILE_ID.ORE_RIGHT,
-        TILE_ID.ORE_RIGHT_USED,
-        TILE_ID.ORE_RIGHT_DEPLETED
-    ];
+    waterSet.addValues(TILE_ID.ISLAND_1, TILE_ID.ROCKS_4);
+    waterSet.addValues(TILE_ID.SHORE_0, TILE_ID.SHORE_11);
 
-    for(let i = TILE_ID.SHORE_0; i <= TILE_ID.SHORE_11; i++) {
-        shoreSet.addValue(i);
-    }
+    canyonSet.addValues(TILE_ID.CANYON_0, TILE_ID.CANYON_47);
 
-    for(let i = TILE_ID.ROAD_0; i <= TILE_ID.ROAD_15; i++) {
-        roadSet.addValue(i);
-    }
+    transportSet.addValues(TILE_ID.ROAD_0, TILE_ID.ROAD_15);
+    transportSet.addValues(TILE_ID.RAIL_0, TILE_ID.RAIL_15);
 
-    for(let i = TILE_ID.RIVER_0; i <= TILE_ID.RIVER_47; i++) {
-        riverSet.addValue(i);
-    }
-
-    for(let i = TILE_ID.ISLAND_1; i <= TILE_ID.ROCKS_4; i++) {
-        seaSet.addValue(i);
-    }
-
-    for(let i = TILE_ID.RAIL_0; i <= TILE_ID.RAIL_15; i++) {
-        railSet.addValue(i);
-    }
-
+    plainsSet.addValues(TILE_ID.PLAINS_GROUND_1, TILE_ID.PLAINS_GROUND_8);
+    plainsSet.addValues(TILE_ID.PLAINS_SHRUB_1, TILE_ID.PLAINS_SHRUB_5);
+    plainsSet.addValues(TILE_ID.PLAINS_FOREST_1, TILE_ID.PLAINS_FOREST_4);
+    plainsSet.addValues(TILE_ID.PLAINS_MOUNTAIN_1, TILE_ID.PLAINS_MOUNTAIN_5);
 
     this.tileSets.addValue(allSet);
-    this.tileSets.addValue(roadSet);
+    this.tileSets.addValue(transportSet);
     this.tileSets.addValue(canyonSet);
     this.tileSets.addValue(groundSet);
-    this.tileSets.addValue(shoreSet);
+    this.tileSets.addValue(waterSet);
     this.tileSets.addValue(riverSet);
-    this.tileSets.addValue(seaSet);
-    this.tileSets.addValue(railSet);
+    this.tileSets.addValue(plainsSet);
     
     this.brushSizes.addValue(fillBrushSize(0, 0));
     this.brushSizes.addValue(fillBrushSize(1, 1));

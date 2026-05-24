@@ -128,7 +128,7 @@ ClientMatchLoader.prototype.unpackTotalEntityBuffer = function(gameContext, enti
 }
 
 ClientMatchLoader.prototype.createServerMatch = function(gameContext, snapshot, overrides) {
-    const { dialogueHandler, teamManager, spriteManager } = gameContext;
+    const { dialogueHandler, spriteManager } = gameContext;
     const { turn, entities, teams } = snapshot; //TODO(neyn): Colors to team overrides!
 
     this.rules |= LOADER_RULE.ALLOW_SPECTATOR;
@@ -145,7 +145,6 @@ ClientMatchLoader.prototype.createServerMatch = function(gameContext, snapshot, 
     this.createWorldEvents(gameContext);
 
     dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);
-    teamManager.updateStatus(); //TODO(neyn): Really necessary?
 
     this.loadTurnFromSnapshot(gameContext, turn);
     this.loadScenarioText(gameContext);
@@ -202,7 +201,6 @@ ClientMatchLoader.prototype.createSavedMatch = function(gameContext, snapshot, o
 
     eventHandler.loadTriggeredEvents(events);
     dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);
-    teamManager.updateStatus();
 
     this.loadTurnFromSnapshot(gameContext, turn);
     this.loadScenarioText(gameContext);
@@ -212,7 +210,7 @@ ClientMatchLoader.prototype.createSavedMatch = function(gameContext, snapshot, o
 }
 
 ClientMatchLoader.prototype.createDefaultMatch = function(gameContext, overrides) {
-    const { dialogueHandler, teamManager, spriteManager } = gameContext;
+    const { dialogueHandler, spriteManager } = gameContext;
 
     this.rules |= LOADER_RULE.FIXED_ALLIES;
     this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
@@ -231,7 +229,6 @@ ClientMatchLoader.prototype.createDefaultMatch = function(gameContext, overrides
     this.loadScenarioText(gameContext);
 
     dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);
-    teamManager.updateStatus();
 
     //Sort buildings once after all are created!
     spriteManager.sortLayer(LAYER_TYPE.BUILDING);
@@ -281,8 +278,6 @@ ServerMatchLoader.prototype.createEntities = function(gameContext) {
 }
 
 ServerMatchLoader.prototype.loadMap = function(gameContext, overrides) {
-    const { teamManager } = gameContext;
-
     //TODO(neyn): Split into PvP and COOP.
     //COOP has fixed allies, PvP does not.
     this.rules |= LOADER_RULE.FIXED_ALLIES;
@@ -295,8 +290,6 @@ ServerMatchLoader.prototype.loadMap = function(gameContext, overrides) {
     this.applyBuildingSettings(gameContext);
     this.createMines(gameContext);
     this.createWorldEvents(gameContext);
-
-    teamManager.updateStatus();
 }
 
 export const createEmptyMap = function(gameContext, width, height) {     

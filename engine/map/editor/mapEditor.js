@@ -29,13 +29,18 @@ export const createActivity = function() {
 export const MapEditor = function() {
     this.brush = new Brush();
     this.activityStack = [];
-    this.permutations = {};
     this.fill = [];
     this.flags = MapEditor.FLAG.NONE;
     this.layerStates = [];
     this.targetLayer = WorldMap.INVALID_LAYER_ID;
     this.targetMap = null;
+
+    this.nextVariantFamily = 0;
+    this.variantFamilies = [];
+    this.variantTable = [];
 }
+
+MapEditor.INVALID_FAMILY_ID = -1;
 
 MapEditor.LAYER_STATE = {
     VISIBLE: 0,
@@ -58,6 +63,45 @@ MapEditor.prototype.paint = function(gameContext, tileX, tileY) {
             this.onPaint(gameContext, tileX, tileY);
         }
     }
+}
+
+MapEditor.prototype.initVariantTable = function(count) {
+    this.variantTable.length = 0;
+
+    for(let i = 0; i < count; i++) {
+        this.variantTable[i] = MapEditor.INVALID_FAMILY_ID;
+    }
+}
+
+MapEditor.prototype.registerVariantFamily = function(members) {
+    const familyID = this.nextVariantFamily++;
+    const family = [];
+
+    for(const member of members) {
+        if(member >= 0 && member < this.variantTable.length) {
+            this.variantTable[member] = familyID;
+            
+            family.push(member);
+        }
+    }
+
+    this.variantFamilies[familyID] = family;
+}
+
+MapEditor.prototype.getBrushTile = function() {
+    const brushID = this.brush.id;
+
+    if((this.flags & MapEditor.FLAG.USE_PERMUTATION)) {
+        if(brushID >= 0 && brushID < this.variantTable.length) {
+            const familyID = this.variantTable[brushID];
+
+            if(familyID !== MapEditor.INVALID_FAMILY_ID) {
+                return getRandomElement(this.variantFamilies[this.variantTable[brushID]]);
+            }
+        }
+    }
+
+    return brushID;
 }
 
 MapEditor.prototype.undo = function(gameContext) {
@@ -109,24 +153,6 @@ MapEditor.prototype.getBrushArea = function() {
     const { width, height } = this.brush;
 
     return `${(width + 1) * 2 - 1}x${(height + 1) * 2 - 1}`;
-}
-
-MapEditor.prototype.getBrushTile = function() {
-    if((this.flags & MapEditor.FLAG.USE_PERMUTATION)) {
-        return this.getPermutation(this.brush.id);
-    }
-
-    return this.brush.id;
-}
-
-MapEditor.prototype.getPermutation = function(originID) {
-    const permutations = this.permutations[originID];
-
-    if(permutations === undefined || permutations.length === 0) {
-        return originID;
-    }
-
-    return getRandomElement(permutations);
 }
 
 MapEditor.prototype.getLayerState = function(layerID) {
@@ -270,23 +296,4 @@ MapEditor.prototype.registerFill = function(layerID, value) {
     fill.value = value;
 
     this.fill.push(fill);
-}
-
-MapEditor.prototype.registerVariants = function(originID, variants) {
-    if(variants.length === 0) {
-        return;
-    }
-
-    let permutations = this.permutations[originID];
-
-    if(permutations === undefined) {
-        permutations = [];
-        this.permutations[originID] = permutations;
-    }
-
-    for(const mutationID of variants) {
-        if(!permutations.includes(mutationID)) {
-            permutations.push(mutationID);
-        }
-    }
 }

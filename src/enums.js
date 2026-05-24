@@ -755,6 +755,7 @@ export const TILE_ID = {
     //21-68: RIVER
     RIVER_0: 21,
     RIVER_10: 31, //Full tile
+    RIVER_46: 67,
     RIVER_47: 68,
 
     SHORE_0: 69,
@@ -820,10 +821,19 @@ export const TILE_ID = {
 
     CASH_BOX: 189,
 
-    SHRUB_0: 190,
-    SHRUB_4: 194,
+    PLAINS_GROUND_1: 190,
+    PLAINS_GROUND_8: 197,
 
-    _COUNT: 195
+    PLAINS_SHRUB_1: 198,
+    PLAINS_SHRUB_5: 202,
+
+    PLAINS_FOREST_1: 203,
+    PLAINS_FOREST_4: 206,
+
+    PLAINS_MOUNTAIN_1: 207,
+    PLAINS_MOUNTAIN_5: 211,
+
+    _COUNT: 212
 };
 
 export const DIRECTION = {

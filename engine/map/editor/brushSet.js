@@ -8,6 +8,12 @@ BrushSet.prototype.setValues = function(values) {
     this.values = values;
 }
 
+BrushSet.prototype.addValues = function(begin, end) {
+    for(let i = begin; i <= end; i++) {
+        this.values.push(i);
+    }
+}
+
 BrushSet.prototype.addValue = function(value) {
     this.values.push(value);
 }

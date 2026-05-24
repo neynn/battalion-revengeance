@@ -3,6 +3,16 @@ import { TileManager } from "../../../engine/tile/tileManager.js";
 import { TILE_ID } from "../../enums.js";
 import { BattalionMap } from "../../map/battalionMap.js";
 
+const generateVariantFamily = function(begin, end) {
+    const list = [];
+
+    for(let i = begin; i <= end; i++) {
+        list.push(i);
+    }
+
+    return list;
+}
+
 export const BattalionMapEditor = function() {
     MapEditor.call(this);
 
@@ -14,14 +24,20 @@ BattalionMapEditor.prototype = Object.create(MapEditor.prototype);
 BattalionMapEditor.prototype.constructor = BattalionMapEditor;
 
 BattalionMapEditor.prototype.initVariants = function() {
-    const island = [TILE_ID.ISLAND_1, TILE_ID.ISLAND_2, TILE_ID.ISLAND_3, TILE_ID.ISLAND_4];
-    const rocks = [TILE_ID.ROCKS_1, TILE_ID.ROCKS_2, TILE_ID.ROCKS_3, TILE_ID.ROCKS_4];
-    const swirl = [TILE_ID.SWIRL_1, TILE_ID.SWIRL_2, TILE_ID.SWIRL_3, TILE_ID.SWIRL_4];
+    const families = [
+        generateVariantFamily(TILE_ID.ISLAND_1, TILE_ID.ISLAND_4),
+        generateVariantFamily(TILE_ID.SWIRL_1, TILE_ID.SWIRL_4),
+        generateVariantFamily(TILE_ID.ROCKS_1, TILE_ID.ROCKS_4),
+        generateVariantFamily(TILE_ID.PLAINS_GROUND_1, TILE_ID.PLAINS_GROUND_8),
+        generateVariantFamily(TILE_ID.PLAINS_SHRUB_1, TILE_ID.PLAINS_SHRUB_5),
+        generateVariantFamily(TILE_ID.PLAINS_FOREST_1, TILE_ID.PLAINS_FOREST_4),
+        generateVariantFamily(TILE_ID.PLAINS_MOUNTAIN_1, TILE_ID.PLAINS_MOUNTAIN_5)
+    ];
 
-    for(const variants of [island, rocks, swirl]) {
-        for(const origin of variants) {
-            this.registerVariants(origin, variants);
-        }
+    this.initVariantTable(TILE_ID._COUNT);
+
+    for(const family of families) {
+        this.registerVariantFamily(family);
     }
 }
 
