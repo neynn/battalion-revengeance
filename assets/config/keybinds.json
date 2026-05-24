@@ -20,7 +20,11 @@
         "TOGGLE_AUTOTILER": "+a",
         "TOGGLE_ERASER": "+e",
         "TOGGLE_INVERSION": "+q",
-        "TOGGLE_RANDOM": "+r"
+        "TOGGLE_RANDOM": "+r",
+        "LAYER_BOTTOM": "+1",
+        "LAYER_MIDDLE": "+2",
+        "LAYER_TOP": "+3",
+        "VIEW_ALL": "+4"
     },
     "DEBUG": {
         "ESCAPE": "+Escape",

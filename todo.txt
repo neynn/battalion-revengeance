@@ -75,3 +75,4 @@ loadAsFaction in its current form does not work it has to collapse the color int
 
 MapEditor places based on FACTIONS.
 OG Battalion had all the data INSIDE the map, NOT the scenario.
+Teams dont cache status. If it's an active team it gets recomputed. Only calculate isLoser(). The team must NOT be a loser to win. If it/its alliance is all that remains then it won.

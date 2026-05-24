@@ -44,8 +44,8 @@ BattalionMapEditor.prototype.initVariants = function() {
 BattalionMapEditor.prototype.onPaint = function(gameContext, tileX, tileY) {
     const { tileManager } = gameContext;
     const { id, width, height } = this.brush;
+    const brushID = this.getBrushTile(id);
     const autotiler = tileManager.getAutotilerByVisual(id);
-    const brushID = this.getBrushTile();
     const activity = createActivity();
 
     const startX = tileX - width;
@@ -60,8 +60,6 @@ BattalionMapEditor.prototype.onPaint = function(gameContext, tileX, tileY) {
             const tileID = this.targetMap.getTile(this.targetLayer, j, i);
 
             if(tileID !== TileManager.TILE_ID.INVALID && tileID !== brushID) {
-                this.targetMap.setTile(brushID, this.targetLayer, j, i);
-
                 const action = createBrushAction();
 
                 action.layerID = this.targetLayer;
@@ -70,11 +68,11 @@ BattalionMapEditor.prototype.onPaint = function(gameContext, tileX, tileY) {
                 action.oldID = tileID;
 
                 activity.actions.push(action);
+
+                this.targetMap.setTile(brushID, this.targetLayer, j, i);
             }
 
-            if(autotiler) {
-                this.applyAutotiler(autotiler, j, i);
-            }
+            this.updateAutotilers(gameContext, j, i);
         }
     }
 

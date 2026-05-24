@@ -88,20 +88,18 @@ MapEditor.prototype.registerVariantFamily = function(members) {
     this.variantFamilies[familyID] = family;
 }
 
-MapEditor.prototype.getBrushTile = function() {
-    const brushID = this.brush.id;
-
+MapEditor.prototype.getBrushTile = function(tileID) {
     if((this.flags & MapEditor.FLAG.USE_PERMUTATION)) {
-        if(brushID >= 0 && brushID < this.variantTable.length) {
-            const familyID = this.variantTable[brushID];
+        if(tileID >= 0 && tileID < this.variantTable.length) {
+            const familyID = this.variantTable[tileID];
 
             if(familyID !== MapEditor.INVALID_FAMILY_ID) {
-                return getRandomElement(this.variantFamilies[this.variantTable[brushID]]);
+                return getRandomElement(this.variantFamilies[this.variantTable[tileID]]);
             }
         }
     }
 
-    return brushID;
+    return tileID;
 }
 
 MapEditor.prototype.undo = function(gameContext) {
@@ -121,7 +119,30 @@ MapEditor.prototype.undo = function(gameContext) {
     }
 }
 
-MapEditor.prototype.applyAutotiler = function(autotiler, tileX, tileY) {
+MapEditor.prototype.updateAutotilers = function(gameContext, tileX, tileY) {
+    const { tileManager } = gameContext;
+
+    if(this.targetMap && (this.flags & MapEditor.FLAG.USE_AUTOTILER) !== 0) {
+        const startX = tileX - 1;
+        const startY = tileY - 1;
+        const endX = tileX + 1;
+        const endY = tileY + 1;
+        const isInverted = (this.flags & MapEditor.FLAG.INVERT_AUTOTILER) !== 0;
+
+        for(let i = startY; i <= endY; i++) {
+            for(let j = startX; j <= endX; j++) {
+                const tileID = this.targetMap.getTile(this.targetLayer, j, i);
+                const autotiler = tileManager.getAutotilerByVisual(tileID);
+
+                if(autotiler) {
+                    this.targetMap.applyAutotiler(autotiler, j, i, this.targetLayer, isInverted);
+                }
+            }
+        }
+    }
+}
+
+MapEditor.prototype.useAutotiler = function(autotiler, tileX, tileY) {
     if(this.targetMap && (this.flags & MapEditor.FLAG.USE_AUTOTILER) !== 0) {
         const startX = tileX - 1;
         const startY = tileY - 1;

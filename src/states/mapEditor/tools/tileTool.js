@@ -3,6 +3,8 @@ import { loopValue } from "../../../../engine/math/math.js";
 import { TileManager } from "../../../../engine/tile/tileManager.js";
 import { Scroller } from "../../../../engine/util/scroller.js";
 import { TILE_ID } from "../../../enums.js";
+import { BattalionMap } from "../../../map/battalionMap.js";
+import { BattalionMapEditor } from "../battalionMapEditor.js";
 import { BUTTON_COUNT } from "../mapEditorInterface.js";
 import { EditorTool } from "./tool.js";
 
@@ -22,6 +24,10 @@ const fillBrushSize = function(width, height) {
     return size;
 }
 
+/**
+ * 
+ * @param {BattalionMapEditor} mapEditor 
+ */
 export const TileTool = function(mapEditor) {
     EditorTool.call(this);
     
@@ -57,6 +63,13 @@ TileTool.prototype.onEnable = function(gameContext, userInterface) {
     router.on("TOGGLE_ERASER", () => this.toggleEraser());
     router.on("TOGGLE_INVERSION", () => this.toggleInversion());
     router.on("TOGGLE_RANDOM", () => this.togglePermutation());
+    router.on("LAYER_BOTTOM", () => this.editor.toggleLayerState(BattalionMap.LAYER.GROUND));
+    router.on("LAYER_MIDDLE", () => this.editor.toggleLayerState(BattalionMap.LAYER.DECORATION));
+    router.on("LAYER_TOP", () => this.editor.toggleLayerState(BattalionMap.LAYER.CLOUD));
+    router.on("VIEW_ALL", () => {
+        this.editor.resetLayerStates();
+        this.resetBrush();
+    });
 
     this.userInterface.addClickByName("BUTTON_INVERT", (e) => this.toggleInversion());
     this.userInterface.addClickByName("BUTTON_AUTO", (e) => this.toggleAutotiler());
