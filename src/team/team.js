@@ -7,17 +7,16 @@ import { createTeamSnapshot } from "../snapshot/teamSnapshot.js";
 
 export const Team = function(id) {
     this.id = id;
-    this.allies = [];
     this.roster = [];
     this.color = COLOR_TYPE.RED;
     this.currency = CURRENCY_TYPE.NONE;
     this.commander = COMMANDER_TYPE.NONE;
     this.customName = null;
     this.name = "MISSING_NAME_TEAM";
-    this.desc = "MISSING_DESC_TEAM";
     this.cash = 0;
     this.stats = [];
     this.status = Team.STATUS.IDLE;
+    this.isReserved = false;
     this.objectives = [
         new UnitSurviveObjective(),
         new LynchpinObjective()
@@ -28,16 +27,36 @@ export const Team = function(id) {
     }
 }
 
-Team.OBJECTIVE = {
-    UNIT_SURVIVE: 0,
-    LYNCHPIN: 1
-};
-
 Team.STATUS = {
     IDLE: 0,
     WINNER: 1,
     LOSER: 2
 };
+
+Team.OBJECTIVE = {
+    UNIT_SURVIVE: 0,
+    LYNCHPIN: 1
+};
+
+Team.prototype.reset = function() {
+    this.roster.length = 0;
+    this.color = COLOR_TYPE.RED;
+    this.currency = CURRENCY_TYPE.NONE;
+    this.commander = COMMANDER_TYPE.NONE;
+    this.customName = null;
+    this.name = "MISSING_NAME_TEAM";
+    this.cash = 0;
+    this.status = Team.STATUS.IDLE;
+    this.isReserved = false;
+
+    this.objectives[Team.OBJECTIVE.UNIT_SURVIVE].reset();
+    this.objectives[Team.OBJECTIVE.LYNCHPIN].reset();
+    this.objectives.length = 2;
+
+    for(let i = 0; i < TEAM_STAT._COUNT; i++) {
+        this.stats[i] = 0;
+    }
+}
 
 Team.prototype.save = function() {
     const snapshot = createTeamSnapshot();
@@ -136,18 +155,11 @@ Team.prototype.hasEnoughCash = function(cost) {
 
 Team.prototype.loadAsFaction = function(gameContext, factionID) {
     const { typeRegistry } = gameContext;
-    const { color, name, desc, currency } = typeRegistry.getFactionType(factionID);
+    const { color, name, currency } = typeRegistry.getFactionType(factionID);
 
     this.name = name;
-    this.desc = desc;
-    this.currency = currency;
     this.color = color;
-}
-
-Team.prototype.getDisplayDesc = function(gameContext) {
-    const { language } = gameContext;
-
-    return language.getSystemTranslation(this.desc);
+    this.currency = currency;
 }
 
 Team.prototype.getDisplayName = function(gameContext) {
@@ -171,36 +183,6 @@ Team.prototype.onEntityDeath = function(entity) {
 
     for(const objective of this.objectives) {
         objective.onEntityDeath(entity);
-    }
-}
-
-Team.prototype.isAlly = function(teamID) {
-    if(this.id === teamID) {
-        return true;
-    }
-    
-    for(let i = 0; i < this.allies.length; i++) {
-        if(this.allies[i] === teamID) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-Team.prototype.removeAlly = function(teamID) {
-    for(let i = 0; i < this.allies.length; i++) {
-        if(this.allies[i] === teamID) {
-            this.allies[i] = this.allies[this.allies.length - 1];
-            this.allies.pop();
-            break;
-        }
-    }
-}
-
-Team.prototype.addAlly = function(teamID) {
-    if(!this.isAlly(teamID)) {
-        this.allies.push(teamID);
     }
 }
 

@@ -29,7 +29,7 @@ export const MOVE_STEP_SIZE = 2;
  */
 export const ENTITY_RESOLUTION_SIZE = ENTITY_ID_SIZE + 4;
 
-export const ENTITY_SNAPSHOT_SIZE = 37;
+export const ENTITY_SNAPSHOT_SIZE = 38;
 
 /**
  * 0x00 [U8] -> type
@@ -125,6 +125,8 @@ export const unpackEntityResolution = function(resolution, view, byteOffset) {
  * @returns {number}
  */
 export const packEntitySnapshot = function(snapshot, view, byteOffset) {
+    view.setUint8(byteOffset, snapshot.shop);
+    byteOffset += BIT_8;
     view.setUint8(byteOffset, snapshot.doneMoves);
     byteOffset += BIT_8;
     view.setUint8(byteOffset, snapshot.doneActions);
@@ -185,6 +187,8 @@ export const packEntitySnapshot = function(snapshot, view, byteOffset) {
  * @returns {number}
  */
 export const unpackEntitySnapshot = function(snapshot, view, byteOffset) {
+    snapshot.shop = view.getUint8(byteOffset);
+    byteOffset += BIT_8;
     snapshot.doneMoves = view.getUint8(byteOffset);
     byteOffset += BIT_8;
     snapshot.doneActions = view.getUint8(byteOffset);

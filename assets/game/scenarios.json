@@ -22,8 +22,11 @@
             { "x": 0, "y": 0, "name": "TILE_NAME_TEST" },
             { "x": 1, "y": 0, "desc": "TILE_DESC_TEST" }
         ],
+        "alliances": [
+            ["SOMERTIN", "DRAGOON"]
+        ],
         "teams": [
-            { "id": "SOMERTIN", "commander": "PLAYER", "cash": 1000, "faction": "SOMERTIN", "allies": ["DRAGOON"], "objectives": ["DEFEAT_BOAT_1", "CAPTURE_0_0", "SURVIVE_TURN_2"] },
+            { "id": "SOMERTIN", "commander": "PLAYER", "cash": 1000, "faction": "SOMERTIN", "objectives": ["DEFEAT_BOAT_1", "CAPTURE_0_0", "SURVIVE_TURN_2"] },
             { "id": "TRANSKAL", "commander": "KANYE", "faction": "TRANSKAL", "objectives": ["PROTECT_BOAT_1"] },
             { "id": "DRAGOON", "commander": "KANYE", "faction": "ELAM" }
         ],

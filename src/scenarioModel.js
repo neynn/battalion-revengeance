@@ -19,6 +19,7 @@ export const ScenarioModel = function(id) {
     this.defeat = [];
     this.events = [];
     this.localization = [];
+    this.alliances = [];
     this.text = {};
     this.maxPlayers = 0;
     this.minPlayers = 0;
@@ -101,7 +102,8 @@ ScenarioModel.prototype.createEntityEntry = function(config) {
         health = -1,
         x = -1,
         y = -1,
-        cash = 0
+        cash = 0,
+        shop = null
     } = config;
 
     return {
@@ -116,7 +118,8 @@ ScenarioModel.prototype.createEntityEntry = function(config) {
         "stealth": stealth,
         "cash": cash,
         "cargo": ENTITY_TYPE[cargo] ?? ENTITY_TYPE._INVALID,
-        "team": team
+        "team": team,
+        "shop": SHOP_TYPE[shop] ?? SHOP_TYPE.NONE
     }
 }
 
@@ -133,6 +136,7 @@ ScenarioModel.prototype.load = function(data) {
         defeat = [],
         events = [],
         localization = [],
+        alliances = [],
         objectives = {},
         text = {},
         maxPlayers = 0
@@ -180,6 +184,24 @@ ScenarioModel.prototype.load = function(data) {
         });
 
         resolvedTeams.add(id);
+    }
+
+    for(let i = 0; i < alliances.length; i++) {
+        const alliance = alliances[i];
+        const mAlliance = [];
+
+        for(let j = 0; j < alliance.length; j++) {
+            const teamName = alliance[j];
+
+            if(resolvedTeams.has(teamName)) {
+                mAlliance.push(teamName);
+                resolvedTeams.delete(teamName);
+            }
+        }
+
+        if(mAlliance.length > 1) {
+            this.alliances.push(mAlliance);
+        }
     }
 
     for(let i = 0; i < buildingSettings.length; i++) {

@@ -48,7 +48,6 @@ export const MatchLoader = function(worldMap, scenario) {
     this.worldMap = worldMap;
     this.scenario = scenario;
 
-    this.teams = scenario.teams;
     this.entities = scenario.entities;
 }
 
@@ -223,9 +222,13 @@ MatchLoader.prototype.createObjective = function(type, data) {
 MatchLoader.prototype.createTeams = function(gameContext, overrides) {
     const { teamManager } = gameContext;
 
-    for(let i = 0; i < this.teams.length; i++) {
-        const { id, cash, commander, faction, objectives } = this.teams[i];
-        const team = teamManager.createTeam(id);
+    for(let i = 0; i < this.scenario.teams.length; i++) {
+        const { id, cash, commander, faction, objectives } = this.scenario.teams[i];
+        const team = teamManager.reserveTeam(i, id);
+
+        if(!team) {
+            continue;
+        }
 
         team.cash = cash;
         team.commander = commander;
@@ -250,10 +253,8 @@ MatchLoader.prototype.createTeams = function(gameContext, overrides) {
 
     //When allies are fixed, the map determines them.
     if(this.rules & LOADER_RULE.FIXED_ALLIES) {
-        for(let i = 0; i < this.teams.length; i++) {
-            const { allies } = this.teams[i];
-
-            teamManager.loadAllies(i, allies);
+        for(let i = 0; i < this.scenario.alliances.length; i++) {
+            teamManager.loadAlliance(this.scenario.alliances[i]);
         }
     }
 
@@ -273,7 +274,7 @@ MatchLoader.prototype.createTeams = function(gameContext, overrides) {
 
             //In dynamic PvP games, the allies are set by the overrides.
             if(!(this.rules & LOADER_RULE.FIXED_ALLIES)) {
-                teamManager.loadAllies(teamID, allies);
+                //TODO(neyn): Implement this!
             }
         }
     }

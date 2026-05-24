@@ -11,6 +11,12 @@ export const LynchpinObjective = function() {
 LynchpinObjective.prototype = Object.create(Objective.prototype);
 LynchpinObjective.prototype.constructor = LynchpinObjective;
 
+LynchpinObjective.prototype.reset = function() {
+    this.lynchpins.length = 0;
+    this.hasLynchpin = false;
+    this.status = Objective.STATUS.IDLE;    
+}
+
 LynchpinObjective.prototype.addLynchpin = function(entityID) {
     this.lynchpins.push(entityID);
     this.hasLynchpin = true;

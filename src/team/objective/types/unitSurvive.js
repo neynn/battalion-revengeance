@@ -10,6 +10,11 @@ export const UnitSurviveObjective = function() {
 UnitSurviveObjective.prototype = Object.create(Objective.prototype);
 UnitSurviveObjective.prototype.constructor = UnitSurviveObjective;
 
+UnitSurviveObjective.prototype.reset = function() {
+    this.units.length = 0;
+    this.status = Objective.STATUS.IDLE;
+}
+
 UnitSurviveObjective.prototype.isEmpty = function() {
     return this.units.length === 0;
 }

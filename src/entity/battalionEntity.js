@@ -5,11 +5,12 @@ import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { getEntityTypeTileCost, Interception, isEntityTypeJammed, mGetNodeMap } from "../systems/pathfinding.js";
 import { DIRECTION_DELTA_X, DIRECTION_DELTA_Y, getDirectionByDelta, isDirectionValid } from "../systems/direction.js";
-import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE } from "../enums.js";
+import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE, SHOP_TYPE } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
 import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { ScenarioModel } from "../scenarioModel.js";
+import { ShopType } from "../type/parsed/shopType.js";
 
 const ACTIONS_PER_TURN = 1;
 const MOVES_PER_TURN = 1;
@@ -39,6 +40,7 @@ export const BattalionEntity = function(id) {
     this.turns = 0;
     this.cash = 0;
     this.opacity = 1;
+    this.shop = SHOP_TYPE.NONE;
 
     this.doneMoves = 0;
     this.doneActions = 0;
@@ -81,6 +83,7 @@ BattalionEntity.prototype.constructor = BattalionEntity;
 BattalionEntity.prototype.save = function() {
     const snapshot = createEntitySnapshot();
 
+    snapshot.shop = this.shop;
     snapshot.doneMoves = this.doneMoves;
     snapshot.doneActions = this.doneActions;
     snapshot.allowedMoves = this.allowedMoves;
@@ -110,6 +113,7 @@ BattalionEntity.prototype.save = function() {
 }
 
 BattalionEntity.prototype.load = function(data) {
+    this.shop = data.shop;
     this.doneMoves = data.doneMoves;
     this.doneActions = data.doneActions;
     this.allowedMoves = data.allowedMoves;
@@ -140,6 +144,21 @@ BattalionEntity.prototype.loadConfig = function(config) {
     this.maxHealth = health;
     this.damage = damage;
     this.setHealth(this.health);
+}
+
+/**
+ * 
+ * @param {*} gameContext 
+ * @returns {ShopType}
+ */
+BattalionEntity.prototype.getShop = function(gameContext) {
+    const { typeRegistry } = gameContext;
+
+    if(this.shop !== SHOP_TYPE.NONE) {
+        return typeRegistry.getShopType(this.shop);
+    }
+
+    return typeRegistry.getShopType(this.config.shop);
 }
 
 BattalionEntity.prototype.isDisabled = function() {
@@ -1758,8 +1777,7 @@ BattalionEntity.prototype.canPurchase = function(gameContext, typeID, cost) {
         return false;
     }
 
-    const { typeRegistry } = gameContext;
-    const shopType = typeRegistry.getShopType(this.config.shop);
+    const shopType = this.getShop(gameContext);
     const hasEntity = shopType.hasEntity(typeID);
 
     return hasEntity;
@@ -1780,7 +1798,7 @@ BattalionEntity.prototype.canPlaceMine = function(gameContext) {
     }
 
     //TODO: Cost needs inflation adjustment
-    const { mine } = typeRegistry.getShopType(this.config.shop);
+    const { mine } = this.getShop(gameContext);
     const { cost, category } = typeRegistry.getMineType(mine);
 
     if(this.cash < cost) {
@@ -1841,7 +1859,6 @@ BattalionEntity.prototype.syncRenderFlags = function() {
     }
 
     if(this.state === BattalionEntity.STATE.IDLE) {
-        //Todo(neyn): This needs more options: Barricades NEVER have a marker for example as they cannot move!
         if(!this.hasTrait(TRAIT_TYPE.NOT_SELECTABLE)) {
             this.renderFlags |= BattalionEntity.RENDER_FLAG.MARKABLE;
         }

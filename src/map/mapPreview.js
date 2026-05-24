@@ -2,8 +2,7 @@ export const MapPreview = function(id, config) {
     const {
         directory = [],
         source = "",
-        title = "",
-        teams = []
+        title = ""
     } = config;
 
     this.id = id;
@@ -13,7 +12,6 @@ export const MapPreview = function(id, config) {
     this.title = title;
     this.file = null;
     this.translations = null;
-    this.teams = teams;
 }
 
 MapPreview.CACHE_ENABLED = 1;

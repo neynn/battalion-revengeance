@@ -1,11 +1,12 @@
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { DIRECTION, ENTITY_TYPE, MORALE_TYPE, TRAIT_TYPE } from "../enums.js";
+import { DIRECTION, ENTITY_TYPE, MORALE_TYPE, SHOP_TYPE, TRAIT_TYPE } from "../enums.js";
 import { ScenarioModel } from "../scenarioModel.js";
 import { TeamManager } from "../team/teamManager.js";
 
 export const createEntitySnapshot = function() {
     return {
+        "shop": SHOP_TYPE.NONE, //UINT8
         "doneMoves": 0, //UINT8
         "doneActions": 0, //UINT8
         "allowedMoves": 0, //UINT8
@@ -47,7 +48,8 @@ export const createEntitySnapshotFromEntry = function(gameContext, entry) {
         stealth,
         cash,
         cargo,
-        team
+        team,
+        shop
     } = entry;
 
     const snapshot = createEntitySnapshot();
@@ -65,6 +67,7 @@ export const createEntitySnapshotFromEntry = function(gameContext, entry) {
     snapshot.direction = direction;
     snapshot.cash = cash;
     snapshot.transport = cargo;
+    snapshot.shop = shop;
 
     if(health > 0) {
         snapshot.health = health;

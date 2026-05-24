@@ -1,8 +1,10 @@
 import { EventEmitter } from "../../engine/events/eventEmitter.js";
+import { MAX_TEAMS } from "../constants.js";
 import { Team } from "./team.js";
 
 export const TeamManager = function() {
-    this.teams = []
+    this.teams = [];
+    this.alliances = new Uint8Array(MAX_TEAMS * MAX_TEAMS);
     this.nameMap = new Map();
     this.activeTeams = [];
     this.currentTeam = TeamManager.INVALID_ID;
@@ -21,7 +23,11 @@ export const TeamManager = function() {
     this.events.on(TeamManager.EVENT.TEAM_WON, ({ id }) => console.log("TEAM WON!", id));
     this.events.on(TeamManager.EVENT.ALLIANCE_WON, ({ teams }) => console.log("ALLIANCE_WON!", teams));
     this.events.on(TeamManager.EVENT.DRAW, () => console.log("DRAW!"));
-}
+
+    for(let i = 0; i < MAX_TEAMS; i++) {
+        this.teams[i] = new Team(i);
+    }
+} 
 
 TeamManager.INVALID_ID = -1;
 
@@ -32,8 +38,14 @@ TeamManager.EVENT = {
     DRAW: "DRAW"
 };
 
+TeamManager.prototype.resetTeams = function() {
+    for(let i = 0; i < MAX_TEAMS; i++) {
+        this.teams[i].reset();
+    }
+}
+
 TeamManager.prototype.exit = function() {
-    this.teams.length = 0;
+    this.resetTeams();
     this.nameMap.clear();
     this.activeTeams.length = 0;
     this.isConcluded = false;
@@ -41,6 +53,34 @@ TeamManager.prototype.exit = function() {
     this.round = 0;
     this.currentTeam = TeamManager.INVALID_ID;
     this.previousTeam = TeamManager.INVALID_ID;
+    this.alliances.fill(0);
+}
+
+TeamManager.prototype.setAlliance = function(teamA, teamB) {
+    if(teamA < 0 || teamA >= MAX_TEAMS || teamB < 0 || teamB >= MAX_TEAMS) {
+        return false;
+    }
+
+    if(teamA === teamB) {
+        return false;
+    }
+
+    this.alliances[teamA * MAX_TEAMS + teamB] = 1;
+    this.alliances[teamB * MAX_TEAMS + teamA] = 1;
+    
+    return true;
+}
+
+TeamManager.prototype.isAlly = function(teamA, teamB) {
+    if(teamA < 0 || teamA >= MAX_TEAMS || teamB < 0 || teamB >= MAX_TEAMS) {
+        return false;
+    }
+
+    if(teamA === teamB) {
+        return true;
+    }
+
+    return this.alliances[teamA * MAX_TEAMS + teamB] === 1;
 }
 
 TeamManager.prototype.isCurrent = function(teamID) {
@@ -48,7 +88,7 @@ TeamManager.prototype.isCurrent = function(teamID) {
 }
 
 TeamManager.prototype.getCurrentTeam = function() {
-    if(this.currentTeam < 0 || this.currentTeam >= this.teams.length) {
+    if(this.currentTeam < 0 || this.currentTeam >= MAX_TEAMS) {
         return null;
     }
 
@@ -61,7 +101,7 @@ TeamManager.prototype.clearActive = function() {
 }
 
 TeamManager.prototype.setActive = function(teamID) {
-    if(teamID < 0 || teamID >= this.teams.length) {
+    if(teamID < 0 || teamID >= MAX_TEAMS) {
         return;
     }
 
@@ -78,49 +118,40 @@ TeamManager.prototype.setActive = function(teamID) {
 }
 
 TeamManager.prototype.forEachTeam = function(onCall) {
-    for(let i = 0; i < this.teams.length; i++) {
-        onCall(this.teams[i]);
-    }
-}
-
-TeamManager.prototype.clearAllies = function(teamIndex) {
-    const team = this.getTeam(teamIndex);
-
-    if(!team) {
-        return;
-    }
-
-    const { allies } = team;
-
-    for(const allyID of allies) {
-        const allyTeam = this.getTeam(allyID);
-
-        allyTeam.removeAlly(teamIndex);
-    }
-
-    //Clear all allies after iterating.
-    allies.length = 0;
-}
-
-TeamManager.prototype.loadAllies = function(teamIndex, allies) {
-    const team = this.getTeam(teamIndex);
-
-    for(const allyName of allies) {
-        const allyID = this.getTeamID(allyName);
-        const allyTeam = this.getTeam(allyID);
-
-        if(allyTeam) {
-            team.addAlly(allyID);
-            allyTeam.addAlly(teamIndex);
+    for(let i = 0; i < MAX_TEAMS; i++) {
+        if(this.teams[i].isReserved) {
+            onCall(this.teams[i]);
         }
     }
 }
 
-TeamManager.prototype.createTeam = function(teamName) {
-    const teamID = this.teams.length;
-    const team = new Team(teamID);
+TeamManager.prototype.loadAlliance = function(alliance) {
+    if(alliance.length < 1) {
+        return;
+    }
 
-    this.teams.push(team);
+    const teamID = this.getTeamID(alliance[0]);
+
+    for(let i = 1; i < alliance.length; i++) {
+        const allyID = this.getTeamID(alliance[i]);
+
+        this.setAlliance(teamID, allyID);
+    }
+}
+
+TeamManager.prototype.reserveTeam = function(teamID, teamName) {
+    if(teamID < 0 || teamID >= MAX_TEAMS) {
+        return null;
+    }
+
+    const team = this.teams[teamID];
+
+    if(team.isReserved) {
+        return null;
+    }
+
+    team.isReserved = true;
+
     this.activeTeams.push(teamID);
 
     if(teamName !== null && !this.nameMap.has(teamName)) {
@@ -143,21 +174,11 @@ TeamManager.prototype.getTeamID = function(teamName) {
 }
 
 TeamManager.prototype.getTeam = function(teamIndex) {
-    if(teamIndex < 0 || teamIndex >= this.teams.length) {
+    if(teamIndex < 0 || teamIndex >= MAX_TEAMS) {
         return null;
     }
 
     return this.teams[teamIndex];
-}
-
-TeamManager.prototype.isAlly = function(teamA, teamB) {
-    const team = this.getTeam(teamA);
-
-    if(!team) {
-        return false;
-    }
-
-    return team.isAlly(teamB);
 }
 
 //TODO(neyn): Clear of currentTeam.
@@ -179,10 +200,10 @@ TeamManager.prototype.allActiveAllied = function() {
         return false;
     }
 
-    const mainTeam = this.getTeam(this.activeTeams[0]);
+    const mainTeamID = this.activeTeams[0];
 
     for(let i = 1; i < this.activeTeams.length; i++) {
-        if(!mainTeam.isAlly(this.activeTeams[i])) {
+        if(!this.isAlly(mainTeamID, this.activeTeams[i])) {
             return false;
         }
     }

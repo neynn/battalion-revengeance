@@ -84,6 +84,7 @@ DeathAction.prototype.onStart = function(gameContext, data) {
         const entity = entityManager.getEntity(entities[i]);
 
         entity.setOpacity(1);
+        entity.clearRFlag(BattalionEntity.RENDER_FLAG.MARKABLE);
 
         playDeathEffect(gameContext, entity);
         playEntitySound(gameContext, entity, SOUND_TYPE.DEATH);
