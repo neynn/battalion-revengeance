@@ -7,8 +7,7 @@ import { StoryState } from "./states/story/story.js";
 import { TeamManager } from "./team/teamManager.js";
 import { TypeRegistry } from "./type/typeRegistry.js";
 import { ArenaState } from "./states/arena/arena.js";
-import { addDebug, overrideRiverTiles, registerActionVTables, registerClientActions } from "./systems/context.js";
-import { resolveTileType } from "./enumHelpers.js";
+import { addDebug, loadTiles, loadVisualTiles, registerActionVTables, registerClientActions } from "./systems/context.js";
 import { ShadeCache } from "./shadeCache.js";
 import { MapRegistry } from "./map/mapRegistry.js";
 import { ClientActionRouter } from "./action/router/clientActionRouter.js";
@@ -40,10 +39,11 @@ BattalionContext.prototype = Object.create(ClientGameContext.prototype);
 BattalionContext.prototype.constructor = BattalionContext;
 
 BattalionContext.prototype.init = function(resources) {
-    this.tileManager.load(resources.tileCategories, resources.logicTiles, resources.visualTiles, resources.autotilers, resolveTileType);
+    loadTiles(this);
+    loadVisualTiles(this);
+
     this.tileManager.createVisuals(this.textureLoader, resources.tiles);
     this.tileManager.enableAllVisuals();
-    overrideRiverTiles(this);
 
     this.spriteManager.load(resources.spriteTextures, resources.sprites);
     this.uiManager.load(this.textureLoader, resources.layouts, resources.gui);

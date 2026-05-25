@@ -186,8 +186,8 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
     const worldMap = mapManager.getActiveMap();
     const targetNode = this.nodeMap.get(worldMap.getIndex(tileX, tileY));
     const entity = player.getVisibleEntity(gameContext, tileX, tileY);
-    const walkAutotiler = tileManager.getAutotilerByID(AUTOTILER_TYPE.PATH);
-    const attackAutotiler = tileManager.getAutotilerByID(AUTOTILER_TYPE.PATH);
+    const walkAutotiler = tileManager.getAutotiler(AUTOTILER_TYPE.PATH);
+    const attackAutotiler = tileManager.getAutotiler(AUTOTILER_TYPE.PATH);
     const { targetX, targetY } = this.getPathTarget();
 
     this.cursorX = tileX;

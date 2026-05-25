@@ -77,21 +77,3 @@ export const oreToValue = function(tileID) {
         default: return 0;
     }
 }
-
-export const resolveTileType = function(type) {
-    if(!type) {
-        console.error("No TileType given!");
-
-        return TILE_TYPE._INVALID;
-    }
-
-    const typeID = TILE_TYPE[type];
-
-    if(typeID === undefined) {
-        console.error("TileType does not exist!", type);
-
-        return TILE_TYPE._INVALID;
-    }
-
-    return typeID;
-}

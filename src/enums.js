@@ -716,7 +716,13 @@ export const COMPONENT_TYPE = {
 };
 
 export const AUTOTILER_TYPE = {
-    PATH: "battalion_path"
+    _INVALID: -1,
+    PATH: 0,
+    ROAD: 1,
+    RIVER: 2,
+    RAIL: 3,
+    CANYON: 4,
+    _COUNT: 5
 };
 
 export const LAYER_TYPE = {
@@ -833,7 +839,16 @@ export const TILE_ID = {
     PLAINS_MOUNTAIN_1: 207,
     PLAINS_MOUNTAIN_5: 211,
 
-    _COUNT: 212
+    PLAINS_HILLS_1: 212,
+    PLAINS_HILLS_2: 213,
+    PLAINS_HILLS_3: 214,
+    PLAINS_HILLS_4: 215,
+
+    BOREAL_GROUND_1: 300,
+
+    ARCTIC_GROUND_1: 400,
+
+    _COUNT: 1000
 };
 
 export const DIRECTION = {

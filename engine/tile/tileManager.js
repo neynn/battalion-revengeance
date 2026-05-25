@@ -1,25 +1,24 @@
 import { TileVisual } from "./visual.js";
 import { Autotiler } from "./autotiler.js";
-import { Tile, TileCategory } from "./tile.js";
+import { TileCategory } from "./category.js";
 import { TextureRegistry } from "../resources/texture/textureRegistry.js";
 
 export const TileManager = function() {
-    this.categories = new Map();
-    this.autotilers = new Map();
-    this.tileCount = 1;
-    this.tileTable = [0];
+    this.categories = [];
+    this.autotilers = [];
+
+    this.tileCount = 0;
+    this.tileTable = [];
+    this.autotilerTable = [];
+
+    this.visualCount = 1;
     this.visualTable = [0];
-    this.tiles = [TileManager.EMPTY_TILE];
     this.visuals = [TileManager.EMPTY_VISUAL];
     this.activeVisuals = [];
-
-    this.logicTableMap = new Map();
     this.visualTableMap = new Map();
-    this.regionMap = new Map();
 }
 
 TileManager.EMPTY_VISUAL = new TileVisual(0);
-TileManager.EMPTY_TILE = new Tile(0, -1, null);
 
 TileManager.TILE_ID = {
     EMPTY: 0,
@@ -35,121 +34,106 @@ TileManager.prototype.update = function(gameContext) {
     }
 }
 
-TileManager.prototype.createCategories = function(tileCategories) {
-    for(const categoryID in tileCategories) {
-        const category = new TileCategory(categoryID);
+TileManager.prototype.initTables = function(count) {
+    for(let i = 0; i < count; i++) {
+        this.visualTable[i] = 0;
+        this.tileTable[i] = -1;
+        this.autotilerTable[i] = -1;
+    }
 
-        this.categories.set(categoryID, category)
+    this.tileCount = count;
+}
+
+TileManager.prototype.createCategories = function(count) {
+    for(let i = 0; i < count; i++) {
+        this.categories[i] = new TileCategory();
     }
 }
 
-TileManager.prototype.overrideTile = function(mapID, logicalID) {
-    if(mapID < 0 || mapID >= this.tileCount) {
+TileManager.prototype.createAutotilers = function(count) {
+    for(let i = 0; i < count; i++) {
+        this.autotilers[i] = new Autotiler(TileManager.TILE_ID.EMPTY);
+    }
+}
+
+TileManager.prototype.registerTile = function(tileID, typeID, autotilerID, categoryID) {
+    if(tileID < 0 || tileID >= this.tileCount) {
         return;
     }
 
-    const logicIndex = this.logicTableMap.get(logicalID);
+    this.tileTable[tileID] = typeID;
+    this.autotilerTable[tileID] = autotilerID;
 
-    if(logicIndex === undefined) {
+    if(categoryID >= 0 && categoryID < this.categories.length) {
+        this.categories[categoryID].addMember(i);
+    }
+}
+
+TileManager.prototype.registerTiles = function(beginID, endID, typeID, autotilerID, categoryID) {
+    if(beginID > endID || beginID < 0 || endID >= this.tileCount) {
         return;
     }
 
-    this.tileTable[mapID] = logicIndex;
-}
+    for(let i = beginID; i <= endID; i++) {
+        this.tileTable[i] = typeID;
+        this.autotilerTable[i] = autotilerID;
 
-TileManager.prototype.createCustomTile = function(mapID, typeID) {
-    const oldTile = this.getTile(mapID);
-    const tileID = this.tiles.length;
-    const tileObject = new Tile(tileID, typeID, oldTile.autotiler);
-    const index = mapID - 1;
-
-    if(index >= 0 && index < this.tileTable.length) {
-        this.tileTable[index] = tileID;
-    }
-
-    this.tiles.push(tileObject);
-
-    return tileObject;
-}
-
-TileManager.prototype.createTiles = function(logicTiles, resolveType) {
-    for(const logicID in logicTiles) {
-        const { tileType = null, autotiler = null } = logicTiles[logicID];
-        const tileID = this.tiles.length;
-        const tile = new Tile(tileID, resolveType(tileType), autotiler);
-
-        this.tiles.push(tile);
-        this.logicTableMap.set(logicID, tileID);
+        if(categoryID >= 0 && categoryID < this.categories.length) {
+            this.categories[categoryID].addMember(i);
+        }
     }
 }
 
-TileManager.prototype.linkTables = function(tileMeta) {
-    let visualIndex = 1;
-    let mapID = 1;
-
-    for(let i = 0; i < tileMeta.length; i++) {
-        const { id = null, texture, category = null, logic = null, visuals = [], autoVisuals = {} } = tileMeta[i];
-        const { count = 0, prefix = "" } = autoVisuals;
-        const visualCount = count + visuals.length;
-        let tileID = 0;
-        let offset = 0;
-
-        if(this.logicTableMap.has(logic)) {
-            tileID = this.logicTableMap.get(logic);
-        }
-        
-        for(let i = 0; i < visualCount; i++) {
-            this.tileTable[mapID + i] = tileID;
-            this.visualTable[mapID + i] = 0;
-        }
-
-        const categoryType = this.categories.get(category);
-
-        if(categoryType) {
-            for(let j = 0; j < visualCount; j++) {
-                categoryType.addMember(mapID + j);
-            }
-        }
-
-        if(id !== null && !this.regionMap.has(id)) {
-            this.regionMap.set(id, mapID);
-        }
-
-        for(let j = 0; j < count; j++) {
-            const visualName = texture + "::" + prefix + j;
-            const currentIndex = this.visualTableMap.get(visualName);
-
-            if(currentIndex === undefined) {
-                this.visualTable[mapID + offset] = visualIndex;
-                this.visualTableMap.set(visualName, visualIndex);
-
-                visualIndex++;
-            } else {
-                this.visualTable[mapID + offset] = currentIndex;
-            }
-
-            offset++;
-        }
-
-        for(const name of visuals) {
-            const visualName = texture + "::" + name;
-            const currentIndex = this.visualTableMap.get(visualName);
-
-            if(currentIndex === undefined) {
-                this.visualTable[mapID + offset] = visualIndex;
-                this.visualTableMap.set(visualName, visualIndex);
-
-                visualIndex++;
-            } else {
-                this.visualTable[mapID + offset] = currentIndex;
-            }
-
-            offset++;
-        }
-
-        mapID += visualCount;
-        this.tileCount += visualCount;
+TileManager.prototype.registerVisual = function(tileID, texture, sprite) {
+    if(tileID < 1 || tileID >= this.tileCount) {
+        return;
     }
+
+    const visualName = texture + "::" + sprite;
+    const currentIndex = this.visualTableMap.get(visualName);
+
+    if(currentIndex === undefined) {
+        const visualID = this.visualCount++;
+
+        this.visualTable[tileID] = visualID;
+        this.visualTableMap.set(visualName, visualID);
+    } else {
+        this.visualTable[tileID] = currentIndex;
+    }
+}
+
+TileManager.prototype.registerVisuals = function(tileID, texture, visuals) {
+    if(tileID < 1 || (tileID + visuals.length - 1) >= this.tileCount) {
+        return;
+    }
+
+    for(let i = 0; i < visuals.length; i++) {
+        const mapID = tileID + i;
+        const visualName = visuals[i];
+
+        this.registerVisual(mapID, texture, visualName);
+    }
+}
+
+TileManager.prototype.registerVisualsAuto = function(tileID, texture, prefix, count) {
+    if(tileID < 1 || (tileID + count - 1) >= this.tileCount) {
+        return;
+    }
+
+    for(let i = 0; i < count; i++) {
+        const mapID = tileID + i;
+        const spriteName = prefix + i;
+
+        this.registerVisual(mapID, texture, spriteName);
+    }
+}
+
+TileManager.prototype.setLogicalID = function(tileID, logicalID) {
+    if(tileID < 0 || tileID >= this.tileCount) {
+        return;
+    }
+
+    this.tileTable[tileID] = logicalID;
 }
 
 TileManager.prototype.createVisuals = function(textureLoader, tileAtlases) {
@@ -181,77 +165,57 @@ TileManager.prototype.createVisuals = function(textureLoader, tileAtlases) {
     }
 }
 
-TileManager.prototype.createAutotilers = function(autotilers) {
-    for(const autotilerID in autotilers) {
-        const autotiler = this.createAutotiler(autotilers[autotilerID]);
-
-        this.autotilers.set(autotilerID, autotiler);
-    }
-}
-
-TileManager.prototype.createAutotiler = function(config) {
-    const { type = Autotiler.TYPE.NONE, values = {}, categories = [], useAutoValues = null } = config;
-    const autotiler = new Autotiler(TileManager.TILE_ID.EMPTY);
-
-    autotiler.setType(type);
-
-    for(const categoryID of categories) {
-        const category = this.categories.get(categoryID);
-
-        if(category) {
-            autotiler.addCategory(category);
-        }
-    }
-
-    if(useAutoValues !== null && this.regionMap.has(useAutoValues)) {
-        const regionBegin = this.regionMap.get(useAutoValues);
-
-        for(let i = 0; i < autotiler.values.length; i++) {
-            const mapID = regionBegin + i;
-
-            if(mapID < this.tileCount) {
-                autotiler.setValue(i, mapID);
-            } else {
-                console.error("Value is too large!");
-            }  
-        }
-    }
-
-    for(const indexID in values) {
-        const index = Number(indexID);
-        const name = values[indexID];
-
-        //null can be used to remove a specific value.
-        if(name !== null) {
-            const [regionID, value] = name.split("::");
-
-            if(this.regionMap.has(regionID)) {
-                const regionBegin = this.regionMap.get(regionID);
-                const mapID = regionBegin + Number(value);
-
-                if(mapID < this.tileCount) {
-                    autotiler.setValue(index, mapID);
-                } else {
-                    console.error("Value is too large!");
-                }
-            }
-        } else {
-            autotiler.setValue(index, 0);
-        }
-    }
-
-    return autotiler;
-}
-
-TileManager.prototype.load = function(categories, logicTiles, visualTiles, autotilers, resolveType) {
-    if(!categories || !logicTiles || !visualTiles || !autotilers) {
+TileManager.prototype.loadAutotiler = function(autotilerID, typeID, categories) {
+    if(autotilerID < 0 || autotilerID >= this.autotilers.length) {
         return;
     }
 
-    this.createCategories(categories);
-    this.createTiles(logicTiles, resolveType);
-    this.linkTables(visualTiles);
-    this.createAutotilers(autotilers);
+    const autotiler = this.autotilers[autotilerID];
+
+    autotiler.setType(typeID);
+
+    for(const categoryID of categories) {
+        if(categoryID >= 0 && categoryID < this.categories.length) {
+            autotiler.addCategory(this.categories[categoryID]);
+        }
+    }
+}
+
+TileManager.prototype.loadAutotilerValues = function(autotilerID, values) {
+    if(autotilerID < 0 || autotilerID >= this.autotilers.length) {
+        return;
+    }
+
+    const autotiler = this.autotilers[autotilerID];
+
+    for(const indexID in values) {
+        const index = Number(indexID);
+        const tileID = values[indexID];
+
+        if(tileID < this.tileCount) {
+            autotiler.setValue(index, tileID);
+        } else {
+            console.error("Value is too large!");
+        }
+    }
+}
+
+TileManager.prototype.loadAutotilerValuesAuto = function(autotilerID, tileID) {
+    if(autotilerID < 0 || autotilerID >= this.autotilers.length) {
+        return;
+    }
+
+    const autotiler = this.autotilers[autotilerID];
+
+    for(let i = 0; i < autotiler.values.length; i++) {
+        const nextID = tileID + i;
+
+        if(nextID < this.tileCount) {
+            autotiler.setValue(i, nextID);
+        } else {
+            console.error("Value is too large!");
+        }  
+    }
 }
 
 TileManager.prototype.disableVisual = function(mapID) {
@@ -299,12 +263,12 @@ TileManager.prototype.disableAllVisuals = function() {
     this.activeVisuals.length = 0;
 }
 
-TileManager.prototype.getTile = function(mapID) {
+TileManager.prototype.getLogicalID = function(mapID) {
     if(mapID < 0 || mapID >= this.tileCount) {
-        return TileManager.EMPTY_TILE;
+        return -1;
     }
 
-    return this.tiles[this.tileTable[mapID]];
+    return this.tileTable[mapID];
 }
 
 TileManager.prototype.getVisual = function(mapID) {
@@ -315,19 +279,18 @@ TileManager.prototype.getVisual = function(mapID) {
     return this.visuals[this.visualTable[mapID]];
 }
 
-TileManager.prototype.getAutotilerByID = function(autotilerID) {
-    const autotiler = this.autotilers.get(autotilerID);
-
-    if(!autotiler) {
+TileManager.prototype.getAutotiler = function(autotilerID) {
+    if(autotilerID < 0 || autotilerID >= this.autotilers.length) {
         return null;
     }
 
-    return autotiler;
+    return this.autotilers[autotilerID];
 }
 
 TileManager.prototype.getAutotilerByVisual = function(mapID) {
-    const tile = this.getTile(mapID);
-    const { autotiler } = tile;
+    if(mapID < 0 || mapID >= this.tileCount) {
+        return null;
+    }
 
-    return this.getAutotilerByID(autotiler);
+    return this.getAutotiler(this.autotilerTable[mapID]);
 }

@@ -4,8 +4,7 @@ import { TileManager } from "../../engine/tile/tileManager.js";
 import { ServerGameContext } from "./serverContext.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { MapRegistry } from "../map/mapRegistry.js";
-import { overrideRiverTiles, registerActionVTables } from "../systems/context.js";
-import { resolveTileType } from "../enumHelpers.js";
+import { loadTiles, registerActionVTables } from "../systems/context.js";
 import { MAX_TEAMS } from "../constants.js";
 import { TILE_ID, TILE_TYPE } from "../enums.js";
 import { ScenarioRegistry } from "../scenarioRegistry.js";
@@ -24,8 +23,7 @@ ServerApplication.prototype = Object.create(SocketServer.prototype);
 ServerApplication.prototype.constructor = ServerApplication;
 
 ServerApplication.prototype.init = function(resources) {
-    this.tileManager.load(resources.tileCategories, resources.logicTiles, resources.visualTiles, resources.autotilers, resolveTileType);
-    overrideRiverTiles(this);
+    loadTiles(this);
     this.mapRegistry.load(resources.maps);
     this.typeRegistry.load(resources);
     this.scenarioRegistry.load(this, resources.scenarioTypes);

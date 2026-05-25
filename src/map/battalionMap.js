@@ -63,8 +63,8 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
     if(!this.isTileOutOfBounds(tileX, tileY)) {
         for(const layerID of BattalionMap.SEARCH_ORDER) {
             const typeID = this.getTile(layerID, tileX, tileY);
-            const { type } = tileManager.getTile(typeID);
-            const { climate } = typeRegistry.getTileType(type);
+            const logicalID = tileManager.getLogicalID(typeID);
+            const { climate } = typeRegistry.getTileType(logicalID);
 
             //A climate type of NONE means falling through. This allows roads to be climate agnostic.
             //By default, every TileType has a climate of NONE.
@@ -114,11 +114,11 @@ BattalionMap.prototype.getTileType = function(gameContext, tileX, tileY) {
 
     for(const layerID of BattalionMap.SEARCH_ORDER) {
         const typeID = this.getTile(layerID, tileX, tileY);
-        const { type } = tileManager.getTile(typeID);
+        const logicalID = tileManager.getLogicalID(typeID);
 
         //Unknown tile types and empty tiles always use -1 (_INVALID).
-        if(type !== TILE_TYPE._INVALID && type !== TILE_TYPE.NONE) {
-            return typeRegistry.getTileType(type);
+        if(logicalID !== TILE_TYPE._INVALID && logicalID !== TILE_TYPE.NONE) {
+            return typeRegistry.getTileType(logicalID);
         }
     }
 
