@@ -227,7 +227,7 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
     const { client, world, uiData, language, teamManager, typeRegistry } = gameContext;
     const { session } = client; 
     const { actorManager } = world;
-    const { activeTeams } = teamManager;
+    const { activeTeams, currentIndex } = teamManager;
     const { context } = display;
     const buttonTexture = uiData.getTexture(UI_TEXTURE.HUD_BUTTONS);
     const hudTexture = uiData.getTexture(UI_TEXTURE.RECON_MAIN);
@@ -309,10 +309,11 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
     const COLOR_WIDTH = 129;
     const COLOR_HEIGHT = 19;
 
+    //Always display 4 teams.
     for(let i = 0; i < teamDraws; i++) {
+        const index = (currentIndex + i) % activeTeams.length;
+        const team = teamManager.getTeam(activeTeams[index]);
         const nextY = teamY + TEAM_OFFSET_Y * i;
-        const teamID = activeTeams[i];
-        const team = teamManager.getTeam(teamID);
         const { hudColor, textColor } = typeRegistry.getColorType(team.color);
 
         context.fillStyle = hudColor;

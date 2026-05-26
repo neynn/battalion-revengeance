@@ -48,7 +48,15 @@ const fillInterruptPlan = function(gameContext, executionPlan, actionIntent) {
 }
 
 const executeInterrupt = function(gameContext, data) {
+    const { teamManager } = gameContext;
+    const { type, event } = data;
 
+    switch(type) {
+        case INTERRUPT_TYPE.START_GAME: {
+            teamManager.initialize();
+            break;
+        }
+    }
 }
 
 export const InterruptVTable = {

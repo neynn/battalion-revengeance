@@ -1,4 +1,5 @@
 import { MAX_TEAMS } from "../constants.js";
+import { TEAM_STAT } from "../enums.js";
 import { Team } from "./team.js";
 
 export const TeamManager = function() {
@@ -6,8 +7,8 @@ export const TeamManager = function() {
     this.alliances = new Uint8Array(MAX_TEAMS * MAX_TEAMS);
     this.nameMap = new Map();
     this.activeTeams = [];
+    this.currentIndex = 0;
     this.currentTeam = TeamManager.INVALID_ID;
-    this.previousTeam = TeamManager.INVALID_ID;
     this.isConcluded = false;
     this.round = 0;
     this.turn = 0;
@@ -33,8 +34,8 @@ TeamManager.prototype.exit = function() {
     this.turn = 0;
     this.round = 0;
     this.currentTeam = TeamManager.INVALID_ID;
-    this.previousTeam = TeamManager.INVALID_ID;
     this.alliances.fill(0);
+    this.currentIndex = 0;
 }
 
 TeamManager.prototype.setAlliance = function(teamA, teamB) {
@@ -76,28 +77,6 @@ TeamManager.prototype.getCurrentTeam = function() {
     return this.teams[this.currentTeam];
 }
 
-TeamManager.prototype.clearActive = function() {
-    this.previousTeam = this.currentTeam;
-    this.currentTeam = TeamManager.INVALID_ID;
-}
-
-TeamManager.prototype.setActive = function(teamID) {
-    if(teamID < 0 || teamID >= MAX_TEAMS) {
-        return;
-    }
-
-    if(!this.activeTeams.includes(teamID)) {
-        return;
-    }
-
-    if(this.previousTeam === this.activeTeams[this.activeTeams.length - 1]) {
-        this.round++;
-    }
-
-    this.turn++;
-    this.currentTeam = teamID;
-}
-
 TeamManager.prototype.forEachTeam = function(onCall) {
     for(let i = 0; i < MAX_TEAMS; i++) {
         if(this.teams[i].isReserved) {
@@ -118,6 +97,22 @@ TeamManager.prototype.loadAlliance = function(alliance) {
 
         this.setAlliance(teamID, allyID);
     }
+}
+
+TeamManager.prototype.allActiveAllied = function() {
+    if(this.activeTeams.length === 0) {
+        return false;
+    }
+
+    const mainTeamID = this.activeTeams[0];
+
+    for(let i = 1; i < this.activeTeams.length; i++) {
+        if(!this.isAlly(mainTeamID, this.activeTeams[i])) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 TeamManager.prototype.reserveTeam = function(teamID, teamName) {
@@ -162,33 +157,89 @@ TeamManager.prototype.getTeam = function(teamIndex) {
     return this.teams[teamIndex];
 }
 
-//TODO(neyn): Clear of currentTeam.
 TeamManager.prototype.removeActiveTeam = function(teamID) {
-    for(let i = 0; i < this.activeTeams.length; i++) {
-        if(this.activeTeams[i] === teamID) {
-            this.activeTeams[i] = this.activeTeams[this.activeTeams.length - 1];
-            this.activeTeams.pop();
+    let index = 0;
+    let isFound = false;
 
-            console.log("TEAM LOST!", teamID);
-            break;
+    for(let i = 0; i < this.activeTeams.length; i++) {
+        if(this.activeTeams[i] !== teamID) {
+            this.activeTeams[index++] = this.activeTeams[i];
+        } else {
+            isFound = true;
+        }
+    }
+
+    if(isFound) {
+        console.log("TEAM LOST!", teamID);
+
+        this.activeTeams.length = index;
+    }
+}
+
+TeamManager.prototype.updateActor = function(gameContext) {
+    const { world } = gameContext;
+    const { actorManager } = world;
+    const { actors } = actorManager;
+
+    if(this.currentTeam !== TeamManager.INVALID_ID) {
+        for(const actor of actors) {
+            if(actor.teamID === this.currentTeam) {
+                actorManager.setCurrentActor(gameContext, actor.getID());
+                break;
+            }
         }
     }
 }
 
-TeamManager.prototype.allActiveAllied = function() {
-    if(this.activeTeams.length === 0) {
-        return false;
+TeamManager.prototype.startTurn = function() {
+    if(this.currentTeam !== TeamManager.INVALID_ID) {
+        this.teams[this.currentTeam].turn++;
     }
 
-    const mainTeamID = this.activeTeams[0];
+    for(let i = 0; i < this.activeTeams.length; i++) {
+        this.teams[this.activeTeams[i]].addStatistic(TEAM_STAT.ROUNDS_TAKEN, 1);
+    }
+}
 
-    for(let i = 1; i < this.activeTeams.length; i++) {
-        if(!this.isAlly(mainTeamID, this.activeTeams[i])) {
-            return false;
-        }
+TeamManager.prototype.endTurn = function() {
+    this.currentIndex++;
+
+    if(this.currentIndex >= this.activeTeams.length) {
+        this.currentIndex = 0;
+        this.round++;
     }
 
-    return true;
+    this.turn++;
+
+    if(this.activeTeams.length !== 0) {
+        this.currentTeam = this.activeTeams[this.currentIndex];
+    } else {
+        this.currentTeam = TeamManager.INVALID_ID;
+    }
+}
+
+TeamManager.prototype.initialize = function() {
+    this.turn = 1;
+    this.round = 1;
+
+    if(this.currentIndex < 0 || this.currentIndex >= this.activeTeams.length) {
+        this.currentTeam = TeamManager.INVALID_ID;
+    } else {
+        this.currentTeam = this.activeTeams[this.currentIndex];
+    }
+
+}
+
+TeamManager.prototype.loadFromSave = function(currentTeam, turn, round) {
+    this.turn = turn;
+    this.round = round;
+    this.currentTeam = currentTeam;
+
+    const index = this.activeTeams.indexOf(this.currentTeam);
+
+    if(index !== -1) {
+        this.currentIndex = index;
+    }  
 }
 
 TeamManager.prototype.getFirstWinner = function() {
@@ -270,36 +321,4 @@ TeamManager.prototype.updateStatus = function() {
     }
 
     this.checkWinner();
-}
-
-TeamManager.prototype.getNextTeam = function() {
-    if(this.activeTeams.length === 0) {
-        return TeamManager.INVALID_ID;
-    }
-
-    const index = this.activeTeams.indexOf(this.previousTeam);
-    const nextIndex = (index + 1) % this.activeTeams.length;
-
-    return this.activeTeams[nextIndex];
-}
-
-TeamManager.prototype.updateActor = function(gameContext) {
-    const { world } = gameContext;
-    const { actorManager } = world;
-    const { actors } = actorManager;
-    let isFound = false;
-
-    if(this.currentTeam !== TeamManager.INVALID_ID) {
-        for(const actor of actors) {
-            if(actor.teamID === this.currentTeam) {
-                actorManager.setCurrentActor(gameContext, actor.getID());
-                isFound = true;
-                break;
-            }
-        }
-    }
-
-    if(!isFound) {
-        actorManager.clearCurrentActor(gameContext);
-    }
 }

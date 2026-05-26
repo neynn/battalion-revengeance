@@ -1,6 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
 import { ActionIntent } from "../../../engine/action/actionIntent.js";
-import { ACTION_TYPE, INTERRUPT_TYPE, TEAM_STAT, TRAIT_CONFIG, TRAIT_TYPE } from "../../enums.js";
+import { ACTION_TYPE, INTERRUPT_TYPE, TRAIT_CONFIG, TRAIT_TYPE } from "../../enums.js";
 import { TeamManager } from "../../team/teamManager.js";
 import { fillEntityResolution } from "../interactionResolver.js";
 import { DeathActionVTable } from "./death.js";
@@ -21,13 +21,12 @@ const createStartTurnData = function() {
 const fillStartTurnPlan = function(gameContext, executionPlan, actionIntent) {
     const { world, teamManager } = gameContext;
     const { entityManager } = world;
-    const teamID = teamManager.getNextTeam();
+    const team = teamManager.getCurrentTeam();
 
-    if(teamID === TeamManager.INVALID_ID) {
+    if(!team) {
         return;
     }
 
-    const team = teamManager.getTeam(teamID);
     const { roster } = team;
     const deadEntities = [];
     const resolutions = [];
@@ -59,7 +58,7 @@ const fillStartTurnPlan = function(gameContext, executionPlan, actionIntent) {
 
     const data = createStartTurnData();
 
-    data.teamID = teamID;
+    data.teamID = team.getID();
     data.resolutions = resolutions;
 
     executionPlan.setData(data);
@@ -99,16 +98,8 @@ const executeStartTurn = function(gameContext, data) {
             }
         }
     }
-
-    const { activeTeams } = teamManager;
-
-    for(const teamID of activeTeams) {
-        const team = teamManager.getTeam(teamID);
-
-        team.addStatistic(TEAM_STAT.ROUNDS_TAKEN, 1);
-    }
     
-    teamManager.setActive(teamID);
+    teamManager.startTurn();
     teamManager.updateActor(gameContext);
     
     const events = eventHandler.getTriggerableEvents(teamManager.turn, teamManager.round);

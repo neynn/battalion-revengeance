@@ -14,6 +14,7 @@ export const Team = function(id) {
     this.customName = null;
     this.name = "MISSING_NAME_TEAM";
     this.cash = 0;
+    this.turn = 0;
     this.stats = [];
     this.status = Team.STATUS.IDLE;
     this.isReserved = false;
@@ -46,6 +47,7 @@ Team.prototype.reset = function() {
     this.customName = null;
     this.name = "MISSING_NAME_TEAM";
     this.cash = 0;
+    this.turn = 0;
     this.status = Team.STATUS.IDLE;
     this.isReserved = false;
 
@@ -63,6 +65,7 @@ Team.prototype.save = function() {
 
     snapshot.stats = this.stats;
     snapshot.cash = this.cash;
+    snapshot.turn = this.turn;
 
     for(let i = 0; i < TEAM_STAT._COUNT; i++) {
         snapshot.stats[i] = this.stats[i];
@@ -81,6 +84,7 @@ Team.prototype.load = function(data) {
     this.status = data.status;
     this.cash = data.cash;
     this.stats = data.stats;
+    this.turn = data.turn;
 
     if(objectives.length !== this.objectives.length) {
         console.error("Critical! Saved objectives do not align with all objectives!");

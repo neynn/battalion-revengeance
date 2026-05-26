@@ -106,9 +106,7 @@ ClientMatchLoader.prototype.loadTurnFromSnapshot = function(gameContext, turn) {
     const { teamManager } = gameContext;
     const { team, rounds, turns } = turn;
 
-    teamManager.setActive(team);
-    teamManager.round = rounds;
-    teamManager.turn = turns;
+    teamManager.loadFromSave(team, turns, rounds);
     teamManager.updateActor(gameContext);
 }
 

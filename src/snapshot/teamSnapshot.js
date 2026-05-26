@@ -13,6 +13,7 @@ export const createTeamSnapshot = function() {
         "status": Team.STATUS.IDLE,
         "cash": 0,
         "stats": stats,
+        "turn": 0,
         "objectives": []
     }
 }
