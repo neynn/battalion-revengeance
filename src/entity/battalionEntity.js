@@ -68,7 +68,8 @@ BattalionEntity.FLAG = {
     IS_TURN: 1 << 3,
     BEWEGUNGSKRIEG_TRIGGERED: 1 << 4,
     ELUSIVE_TRIGGERED: 1 << 5,
-    IS_DISABLED: 1 << 6
+    IS_DISABLED: 1 << 6,
+    IS_REPAIRING: 1 << 7
 };
 
 BattalionEntity.STATE = {
@@ -301,19 +302,40 @@ BattalionEntity.prototype.getStartOfTurnDelta = function(gameContext) {
 
     const damage = this.getTerrainDamage(gameContext);
     let delta = -Math.floor(damage);
+    let bonusHealth = 0;
+
+    if(this.hasTrait(TRAIT_TYPE.REPAIR)) {
+        bonusHealth += TRAIT_CONFIG.REPAIR_VALUE;
+    }
+
+    if(this.hasFlag(BattalionEntity.FLAG.IS_REPAIRING)) {
+        let healPercentage = (this.maxHealth - this.health) / this.maxHealth;
+
+        //Healing is capped to a max of 25%
+        if(healPercentage > 0.25) {
+            healPercentage = 0.25;
+        } else if(healPercentage < 0) {
+            healPercentage = 0;
+        }
+
+        bonusHealth += Math.floor(this.maxHealth * healPercentage);
+    }
 
     //Heal if below maxHealth but cap the healing to maxHealth.
-    if(this.hasTrait(TRAIT_TYPE.REPAIR) && this.health < this.maxHealth) {
+    if(bonusHealth > 0 && this.health < this.maxHealth) {
         const missingHealth = this.maxHealth - this.health;
 
-        if(TRAIT_CONFIG.REPAIR_VALUE > missingHealth) {
+        if(bonusHealth > missingHealth) {
             delta += missingHealth;
         } else {
-            delta += TRAIT_CONFIG.REPAIR_VALUE;
+            delta += bonusHealth;
         }
     }
 
-    if(this.health + delta < 0) {
+    const nextHealth = this.health + delta;
+
+    //Ensures that health never drops below 0.
+    if(nextHealth < 0) {
         delta = -this.health;
     }
 
@@ -1311,7 +1333,7 @@ BattalionEntity.prototype.hasActed = function() {
 
 BattalionEntity.prototype.onTurnStart = function() {
     this.setFlag(BattalionEntity.FLAG.IS_TURN);
-    this.clearFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED);
+    this.clearFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED | BattalionEntity.FLAG.ELUSIVE_TRIGGERED | BattalionEntity.FLAG.IS_REPAIRING);
     this.clearLastAttacker();
     this.doneMoves = 0;
     this.doneActions = 0;
