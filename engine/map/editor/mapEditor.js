@@ -21,7 +21,6 @@ export const createBrushAction = function() {
 
 export const createActivity = function() {
     return {
-        "mapID": null,
         "actions": []
     }
 }
@@ -40,6 +39,16 @@ export const MapEditor = function() {
     this.variantTable = [];
 }
 
+MapEditor.generateVariantFamily = function(begin, end) {
+    const list = [];
+
+    for(let i = begin; i <= end; i++) {
+        list.push(i);
+    }
+
+    return list;
+}
+
 MapEditor.INVALID_FAMILY_ID = -1;
 
 MapEditor.LAYER_STATE = {
@@ -55,12 +64,26 @@ MapEditor.FLAG = {
     INVERT_AUTOTILER: 1 << 2
 };
 
-MapEditor.prototype.onPaint = function(gameContext, tileX, tileY) {}
-
 MapEditor.prototype.paint = function(gameContext, tileX, tileY) {
     if(this.targetMap) {
         if(this.targetLayer !== WorldMap.INVALID_LAYER_ID) {
-            this.onPaint(gameContext, tileX, tileY);
+            const { tileManager } = gameContext;
+            const { id, width, height } = this.brush;
+            const startX = tileX - width;
+            const startY = tileY - height;
+            const endX = tileX + width;
+            const endY = tileY + height;
+
+            for(let i = startY; i <= endY; i++) {
+                for(let j = startX; j <= endX; j++) {
+                    const tileID = this.getBrushTile(id);
+
+                    if(tileManager.isVisualValid(tileID)) {
+                        this.targetMap.setTile(tileID, this.targetLayer, j, i);
+                        this.updateAutotilers(gameContext, j, i);
+                    }
+                }
+            }
         }
     }
 }
@@ -103,19 +126,14 @@ MapEditor.prototype.getBrushTile = function(tileID) {
 }
 
 MapEditor.prototype.undo = function(gameContext) {
-    if(this.activityStack.length === 0) {
+    if(this.activityStack.length === 0 || !this.targetMap) {
         return;
     }
 
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const { mapID, actions } = this.activityStack.pop();
-    const worldMap = mapManager.getMap(mapID);
+    const { actions } = this.activityStack.pop();
 
-    if(worldMap) {
-        for(const { layerID, tileX, tileY, oldID } of actions) {
-            worldMap.setTile(oldID, layerID, tileX, tileY);
-        }
+    for(const { layerID, tileX, tileY, oldID } of actions) {
+        this.targetMap.setTile(oldID, layerID, tileX, tileY);
     }
 }
 
@@ -289,6 +307,7 @@ MapEditor.prototype.resetBrush = function() {
 MapEditor.prototype.setTargetMap = function(worldMap) {
     const { layers } = worldMap;
 
+    this.activityStack.length = 0;
     this.layerStates.length = 0;
     this.targetMap = worldMap;
 

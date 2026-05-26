@@ -1,5 +1,4 @@
 import { PrettyJSON } from "../../../engine/resources/prettyJSON.js";
-import { BattalionContext } from "../../battalionContext.js";
 import { loadEditorMap, createEmptyMap } from "../../systems/map.js";
 import { clampValue } from "../../../engine/math/math.js";
 import { getCursorTile } from "../../../engine/camera/contextHelper.js";
@@ -21,6 +20,8 @@ export const EditorController = function(mapEditor) {
     ];
 
     this.tool = EditorController.TOOL.NONE;
+    this.lastPaintX = -1;
+    this.lastPaintY = -1;
 }
 
 EditorController.TOOL = {
@@ -28,13 +29,6 @@ EditorController.TOOL = {
     TILE: 1,
     ENTITY: 2
 };
-
-EditorController.prototype.useTool = function(gameContext) {
-    const tool = this.tools[this.tool];
-    const { x, y } = getCursorTile(gameContext);
-
-    tool.onClick(gameContext, x, y);
-}
 
 EditorController.prototype.initCursorEvents = function(gameContext) {
     const { client } = gameContext;
@@ -55,13 +49,23 @@ EditorController.prototype.initCursorEvents = function(gameContext) {
 
     cursor.events.on(Cursor.EVENT.DRAG, ({ button }) => {
         if(button === Cursor.BUTTON.RIGHT) {
-            this.useTool(gameContext);
+            const { x, y } = getCursorTile(gameContext);
+
+            if(this.lastPaintX !== x || this.lastPaintY !== y) {
+                this.tools[this.tool].onClick(gameContext, x, y);
+                this.lastPaintX = x;
+                this.lastPaintY = y;
+            }
         }
     });
 
     cursor.events.on(Cursor.EVENT.BUTTON_CLICK, ({ button }) => {
         if(button === Cursor.BUTTON.RIGHT) {
-            this.useTool(gameContext);
+            const { x, y } = getCursorTile(gameContext);
+
+            this.tools[this.tool].onClick(gameContext, x, y);
+            this.lastPaintX = -1;
+            this.lastPaintY = -1;
         }
     });
 }

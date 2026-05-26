@@ -271,6 +271,18 @@ TileManager.prototype.getLogicalID = function(mapID) {
     return this.tileTable[mapID];
 }
 
+TileManager.prototype.isVisualValid = function(tileID) {
+    if(tileID < 0 || tileID >= this.tileCount) {
+        return false;
+    }
+
+    if(tileID === 0) {
+        return true;
+    }
+
+    return this.visualTable[tileID] !== 0;
+}
+
 TileManager.prototype.getVisual = function(mapID) {
     if(mapID < 0 || mapID >= this.tileCount) {
         return TileManager.EMPTY_VISUAL;

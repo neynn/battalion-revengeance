@@ -463,7 +463,7 @@
             "width": 500,
             "height": 50,
             "opacity": 1,
-            "children": [ "BUTTON_AUTO", "BUTTON_PERMUTATION", "BUTTON_UNDO", "BUTTON_ERASER", "BUTTON_INVERT"]
+            "children": [ "BUTTON_AUTO", "BUTTON_PERMUTATION", "BUTTON_JUMP", "BUTTON_ERASER", "BUTTON_INVERT"]
         },
         "BUTTON_AUTO": {
             "type": "BUTTON",
@@ -545,7 +545,7 @@
             "align": "center",
             "opacity": 1
         },
-        "BUTTON_UNDO": {
+        "BUTTON_JUMP": {
             "type": "BUTTON",
             "shape": 0,
             "position": { "x": 400, "y": 0 },
@@ -553,12 +553,12 @@
             "width": 100,
             "height": 50,
             "opacity": 1,
-            "children": [ "TEXT_UNDO" ]
+            "children": [ "TEXT_JUMP" ]
         },
-        "TEXT_UNDO": {
+        "TEXT_JUMP": {
             "type": "TEXT",
             "position": { "x": 50, "y": 25 },
-            "text": "UNDO",
+            "text": "JUMP",
             "fontSize": 20,
             "fontType": "Arial",
             "color": [238, 238, 238, 255],

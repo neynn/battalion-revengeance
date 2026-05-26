@@ -1,10 +1,10 @@
 import { BrushSet } from "../../../../engine/map/editor/brushSet.js";
+import { MapEditor } from "../../../../engine/map/editor/mapEditor.js";
 import { loopValue } from "../../../../engine/math/math.js";
 import { TileManager } from "../../../../engine/tile/tileManager.js";
 import { Scroller } from "../../../../engine/util/scroller.js";
 import { TILE_ID } from "../../../enums.js";
 import { BattalionMap } from "../../../map/battalionMap.js";
-import { BattalionMapEditor } from "../battalionMapEditor.js";
 import { BUTTON_COUNT } from "../mapEditorInterface.js";
 import { EditorTool } from "./tool.js";
 
@@ -26,7 +26,7 @@ const fillBrushSize = function(width, height) {
 
 /**
  * 
- * @param {BattalionMapEditor} mapEditor 
+ * @param {MapEditor} mapEditor 
  */
 export const TileTool = function(mapEditor) {
     EditorTool.call(this);
@@ -90,7 +90,6 @@ TileTool.prototype.onEnable = function(gameContext, userInterface) {
     this.userInterface.addClickByName("BUTTON_PAGE_LAST", (e) => this.updatePage(gameContext, -1)); 
     this.userInterface.addClickByName("BUTTON_PAGE_NEXT", (e) => this.updatePage(gameContext, 1));  
     this.userInterface.addClickByName("BUTTON_SCROLL_SIZE", (e) => this.updateBrushSize(gameContext, 1));
-    this.userInterface.addClickByName("BUTTON_UNDO", (e) => this.editor.undo(gameContext)); 
     this.userInterface.addClickByName("BUTTON_ERASER", (e) => this.toggleEraser());
 
     this.updateMenuText(gameContext);

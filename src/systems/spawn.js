@@ -75,6 +75,7 @@ export const createClientEntityObject = function(gameContext, entityID, snapshot
 
         team.addToRoster(entity);
         entity.placeOnMap(gameContext);
+        entity.syncRenderFlags();
     }
 
     return entity;
