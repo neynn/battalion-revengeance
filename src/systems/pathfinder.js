@@ -311,45 +311,44 @@ export const PathfinderSystem = {
         }
 
         return true;
+    },
+    getBestPath: function(gameContext, nodes, targetX, targetY) {
+        const { world } = gameContext;
+        const { mapManager } = world;
+        const worldMap = mapManager.getActiveMap();
+        const path = [];
+
+        if(!worldMap) {
+            return path;
+        }
+
+        const index = worldMap.getIndex(targetX, targetY);
+        const targetNode = nodes.get(index);
+
+        if(!targetNode || !PathfinderSystem.isNodeReachable(targetNode)) {
+            return path;
+        }
+
+        let i = 0;
+        let lastX = targetX;
+        let lastY = targetY;
+        let currentNode = targetNode.parent;
+
+        while(currentNode !== null && i < EntityType.MAX_MOVE_COST) {
+            const { x, y, parent } = currentNode;
+            const deltaX = lastX - x;
+            const deltaY = lastY - y;
+
+            path.unshift(fillStep(deltaX, deltaY));
+            i++;
+            lastX = x;
+            lastY = y;
+            currentNode = parent;
+        }
+
+        return path;
     }
 };
-
-export const getBestPath = function(gameContext, nodes, targetX, targetY) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-    const path = [];
-
-    if(!worldMap) {
-        return path;
-    }
-
-    const index = worldMap.getIndex(targetX, targetY);
-    const targetNode = nodes.get(index);
-
-    if(!targetNode || !PathfinderSystem.isNodeReachable(targetNode)) {
-        return path;
-    }
-
-    let i = 0;
-    let lastX = targetX;
-    let lastY = targetY;
-    let currentNode = targetNode.parent;
-
-    while(currentNode !== null && i < EntityType.MAX_MOVE_COST) {
-        const { x, y, parent } = currentNode;
-        const deltaX = lastX - x;
-        const deltaY = lastY - y;
-
-        path.unshift(fillStep(deltaX, deltaY));
-        i++;
-        lastX = x;
-        lastY = y;
-        currentNode = parent;
-    }
-
-    return path;
-}
 
 /**
  * 

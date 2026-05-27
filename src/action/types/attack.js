@@ -4,7 +4,7 @@ import { FIXED_DELTA_TIME } from "../../../engine/engine_constants.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ACTION_TYPE, ATTACK_TYPE, ATTACK_COMMAND_TYPE, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
-import { CombatSystem, getDeadEntities, InteractionResolver } from "../../systems/combat.js";
+import { CombatSystem, InteractionResolver, ResolutionSystem } from "../../systems/combat.js";
 import { playEntitySound } from "../../systems/sound.js";
 import { getAnimationDuration, playAttackEffect, updateEntitySprite } from "../../systems/sprite.js";
 import { DeathActionVTable } from "./death.js";
@@ -150,7 +150,7 @@ const fillAttackPlan = function(gameContext, executionPlan, actionIntent) {
     const resolutions = resolver.createResolutions(gameContext);
 
     if(resolutions.length !== 0) {
-        const deadEntities = getDeadEntities(resolutions);
+        const deadEntities = ResolutionSystem.getDeadEntities(resolutions);
 
         if(deadEntities.length !== 0) {
             executionPlan.addNext(DeathActionVTable.createIntent(deadEntities));

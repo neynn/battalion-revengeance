@@ -14,7 +14,7 @@ import { ToTransportVTable } from "../action/types/toTransport.js";
 import { FromTransportVTable } from "../action/types/fromTransport.js";
 import { BattalionRenderer2D } from "../camera/battalionRenderer2D.js";
 import { RepairVTable } from "../action/types/repair.js";
-import { PathfinderSystem } from "../systems/pathfinding.js";
+import { PathfinderSystem } from "../systems/pathfinder.js";
 
 /**
  * 

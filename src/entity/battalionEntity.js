@@ -10,6 +10,7 @@ import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { ScenarioModel } from "../scenarioModel.js";
 import { ShopType } from "../type/parsed/shopType.js";
 import { TerrainType } from "../type/parsed/terrainType.js";
+import { StealthSystem } from "../systems/stealth.js";
 
 const ACTIONS_PER_TURN = 1;
 const MOVES_PER_TURN = 1;
@@ -1064,48 +1065,16 @@ BattalionEntity.prototype.canCloak = function() {
     return !this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED) && this.hasTrait(TRAIT_TYPE.STEALTH);
 }
 
-BattalionEntity.prototype.isSpottedBySpawner = function(gameContext, tileX, tileY) {
-    const { world, teamManager } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-    const building = worldMap.getBuilding(tileX, tileY);
-    const isSpotted = building && building.hasTrait(TRAIT_TYPE.SPAWNER) && !teamManager.isAlly(this.teamID, building.teamID);
-
-    //Enemy stealth units must uncloak on a spawner as they'd leak information otherwise (spawning wouldn't work).
-    return isSpotted;
+BattalionEntity.prototype.canCloakAtSelf = function(gameContext) {
+    return StealthSystem.canEntityCloakAt(gameContext, this, this.tileX, this.tileY);
 }
 
-BattalionEntity.prototype.canCloakAt = function(gameContext, tileX, tileY) {
-    if(!this.canCloak()) {
-        return false;
-    }
-
-    if(this.isDiscoveredByJammerAt(gameContext, tileX, tileY)) {
-        return false;
-    }
-
-    const { world } = gameContext;
-    const nearbyEntities = world.getEntitiesAround(tileX, tileY);
-
-    for(let i = 0; i < nearbyEntities.length; i++) {
-        if(!this.isAllyWith(gameContext, nearbyEntities[i])) {
-            return false;
-        }
-    }
-
-    if(this.isSpottedBySpawner(gameContext, tileX, tileY)) {
-        return false;
-    }
-
-    return true;
+BattalionEntity.prototype.isDiscoveredByJammer = function(gameContext) {
+    return StealthSystem.isEntityDiscoveredByJammerAt(gameContext, this, this.tileX, this.tileY);
 }
 
 BattalionEntity.prototype.hasWeapon = function() {
     return this.config.weaponType !== WEAPON_TYPE.NONE;
-}
-
-BattalionEntity.prototype.canCloakAtSelf = function(gameContext) {
-    return this.canCloakAt(gameContext, this.tileX, this.tileY);
 }
 
 BattalionEntity.prototype.isMoveable = function() {
@@ -1209,117 +1178,8 @@ BattalionEntity.prototype.consumeAll = function() {
     this.syncRenderFlags();
 }
 
-
 BattalionEntity.prototype.isSelectable = function() {
     return !this.isDead() && this.isAllowedToActAndMove() && !this.hasTrait(TRAIT_TYPE.NOT_SELECTABLE);
-}
-
-BattalionEntity.prototype.getUncloakedEntities = function(gameContext) {
-    const { world, teamManager } = gameContext;
-    const { mapManager, entityManager } = world;
-    const worldMap = mapManager.getActiveMap();
-    const jammerFlags = this.config.getJammerFlags();
-    const searchRange = jammerFlags !== JAMMER_FLAG.NONE ? this.config.jammerRange : 1;
-    const uncloakedEntities = [];
-    let shouldSelfUncloak = false;
-
-    worldMap.fill2DGraph(this.tileX, this.tileY, searchRange, (tileX, tileY, tileD, tileI) => {
-        const index = worldMap.getEntity(tileX, tileY);
-        const entity = entityManager.getEntityByIndex(index);
-
-        if(!entity) {
-            return;
-        }
-
-        const distance = entity.getDistanceToTile(this.tileX, this.tileY);
-
-        switch(distance) {
-            case 0: {
-                //Distance 0 is the entity itself.
-                break;
-            }
-            case 1: {
-                //isVisibleTo check, but split up.
-                if(!teamManager.isAlly(this.teamID, entity.teamID)) {
-                    if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-                        uncloakedEntities.push(entity);
-                    }
-
-                    //Always uncloak next to an enemy, regardless of their state.
-                    shouldSelfUncloak = true;
-                }
-                break;
-            }
-            default: {
-                const cloakFlag = entity.config.getCloakFlag();
-
-                if(jammerFlags & cloakFlag) {
-                    if(!entity.hasTrait(TRAIT_TYPE.UNFAIR) && !entity.isVisibleTo(gameContext, this.teamID)) {
-                        uncloakedEntities.push(entity);
-                    }
-                }
-                break;
-            }
-        }
-    });
-
-   //Self uncloaking logic.
-    if(this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-        if(shouldSelfUncloak || this.isDiscoveredByJammerAt(gameContext, this.tileX, this.tileY) || this.isSpottedBySpawner(gameContext, this.tileX, this.tileY)) {
-            uncloakedEntities.push(this);
-        }
-    }
-
-    return uncloakedEntities;
-}
-
-BattalionEntity.prototype.isDiscoveredByJammer = function(gameContext) {
-    return this.isDiscoveredByJammerAt(gameContext, this.tileX, this.tileY);
-}
-
-BattalionEntity.prototype.isDiscoveredByJammerAt = function(gameContext, tileX, tileY) {
-    //UNFAIR entities ignore jammers.
-    if(this.hasTrait(TRAIT_TYPE.UNFAIR)) {
-        return false;
-    }
-
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-    const cloakFlag = this.config.getCloakFlag();
-
-    return worldMap.isJammed(gameContext, tileX, tileY, this.teamID, cloakFlag);
-}
-
-BattalionEntity.prototype.getUncloakedMines = function(gameContext) {
-    const { world, teamManager } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-    const jammerFlags = this.config.getJammerFlags();
-    const searchRange = jammerFlags !== JAMMER_FLAG.NONE ? this.config.jammerRange : 0;
-    const uncloakedMines = [];
-
-    worldMap.fill2DGraph(this.tileX, this.tileY, searchRange, (tileX, tileY, distance, index) => {
-        const mine = worldMap.getMine(tileX, tileY);
-
-        if(mine && mine.isHidden()) {
-            let isDetected = false;
-
-            if(distance === 0) {
-                isDetected = true;
-            } else {
-                const neededFlag = mine.getJammerFlag();
-
-                isDetected = (jammerFlags & neededFlag) !== 0;
-            }
-
-            if(isDetected && !teamManager.isAlly(this.teamID, mine.teamID)) {
-                uncloakedMines.push(mine);
-            }
-        }
-    });
-
-    return uncloakedMines;
 }
 
 BattalionEntity.prototype.getMaxRange = function(gameContext) {
@@ -1457,19 +1317,6 @@ BattalionEntity.prototype.setPurchased = function() {
     this.flags |= BattalionEntity.FLAG.IS_TURN;
     this.turns = 0;
     this.syncRenderFlags();
-}
-
-BattalionEntity.prototype.discoversMine = function(gameContext) {
-    const { world, teamManager } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-    const mine = worldMap.getMine(this.tileX, this.tileY);
-
-    if(!mine) {
-        return false;
-    }
-
-    return mine.isHidden() && !teamManager.isAlly(this.teamID, mine.teamID);
 }
 
 BattalionEntity.prototype.canPurchase = function(gameContext, typeID, cost) {

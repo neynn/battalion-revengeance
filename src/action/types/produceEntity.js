@@ -5,7 +5,7 @@ import { mapCategoryToStat } from "../../enumHelpers.js";
 import { ACTION_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { createEntitySnapshot } from "../../snapshot/entitySnapshot.js";
 import { isDirectionValid } from "../../systems/direction.js";
-import { canEntityTypeStandOnTile } from "../../systems/pathfinding.js";
+import { canEntityTypeStandOnTile } from "../../systems/pathfinder.js";
 import { createClientEntityObject, createServerEntityObject } from "../../systems/spawn.js";
 import { MineTriggerVTable } from "./mineTrigger.js";
 import { UncloakVTable } from "./uncloak.js";

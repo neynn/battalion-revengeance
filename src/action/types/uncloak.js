@@ -3,6 +3,7 @@ import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { ACTION_TYPE, ATTACK_COMMAND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { playUncloakSound } from "../../systems/sound.js";
+import { StealthSystem } from "../../systems/stealth.js";
 import { UncloakTween } from "../../tween/uncloakTween.js";
 import { AttackActionVTable } from "./attack.js";
 
@@ -30,8 +31,8 @@ const fillUncloakPlan = function(gameContext, executionPlan, actionIntent) {
         return;
     }
 
-    const uncloakedMines = entity.getUncloakedMines(gameContext);
-    const uncloakedEntities = entity.getUncloakedEntities(gameContext);
+    const uncloakedMines = StealthSystem.getUncloakedMines(gameContext, entity);
+    const uncloakedEntities = StealthSystem.getUncloakedEntities(gameContext, entity);
 
     if(uncloakedEntities.length === 0 && uncloakedMines.length === 0) {
         return;

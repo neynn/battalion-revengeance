@@ -4,7 +4,7 @@ import { AttackActionVTable } from "../../action/types/attack.js";
 import { HealVTable } from "../../action/types/heal.js";
 import { MoveVTable } from "../../action/types/move.js";
 import { AUTOTILER_TYPE, ATTACK_COMMAND_TYPE, HEAL_COMMAND_TYPE, MOVE_COMMAND, RANGE_TYPE } from "../../enums.js";
-import { getBestPath, PathfinderSystem } from "../../systems/pathfinding.js";
+import { PathfinderSystem } from "../../systems/pathfinder.js";
 import { createStep, fillStep } from "../../systems/direction.js";
 import { Player } from "../player.js";
 import { PlayerState } from "./playerState.js";
@@ -157,7 +157,7 @@ SelectState.prototype.setOptimalAttackPath = function(gameContext) {
     }
 
     if(bestNode) {
-        this.path = getBestPath(gameContext, this.nodeMap, bestNode.x, bestNode.y);
+        this.path = PathfinderSystem.getBestPath(gameContext, this.nodeMap, bestNode.x, bestNode.y);
     } else {
         this.path.length = 0;
     }
@@ -241,11 +241,11 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
             this.path.push(fillStep(deltaX, deltaY));
 
             if(!PathfinderSystem.isPathWalkable(gameContext, this.entity, this.path)) {
-                this.path = getBestPath(gameContext, this.nodeMap, tileX, tileY);
+                this.path = PathfinderSystem.getBestPath(gameContext, this.nodeMap, tileX, tileY);
             }
         }
     } else if(absDelta !== 0) {
-        this.path = getBestPath(gameContext, this.nodeMap, tileX, tileY);
+        this.path = PathfinderSystem.getBestPath(gameContext, this.nodeMap, tileX, tileY);
     }
 
     player.renderer.showEntityPath(walkAutotiler, this.path, this.originX, this.originY);

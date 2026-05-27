@@ -76,7 +76,4 @@ OG Battalion had all the data INSIDE the map, NOT the scenario.
 Teams dont cache status. If it's an active team it gets recomputed. Only calculate isLoser(). The team must NOT be a loser to win. If it/its alliance is all that remains then it won.
 
 Send TeamSnapshot along with EndTurn?
-
-Repair costs money too.
-
 EndTurn: Capture gets fired.

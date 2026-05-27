@@ -4,47 +4,34 @@ import { Mine } from "../entity/mine.js";
 import { ATTACK_FLAG, TRAIT_CONFIG, TRAIT_TYPE } from "../enums.js";
 import { DIRECTION_DELTA_X, DIRECTION_DELTA_Y } from "./direction.js";
 
-/**
- * 
- * @param {int} delta 
- * @returns {int}
- */
-const getDamageFromDelta = function(delta) {
-    if(delta >= 0) {
-        return 0;
-    }
-
-    return -delta;
-}
-
-export const createEntityResolution = function() {
-    return {
-        "entityID": EntityManager.INVALID_ID,
-        "delta": 0,
-        "health": 0
-    }
-}
-
-export const fillEntityResolution = function(entityID, delta, health) {
-    const resolution = createEntityResolution();
-
-    resolution.entityID = entityID;
-    resolution.delta = delta;
-    resolution.health = health;
-
-    return resolution;
-}
-
-export const getDeadEntities = function(resolutions) {
-    const deadEntities = [];
-
-    for(const resolution of resolutions) {
-        if(resolution.health === 0) {
-            deadEntities.push(resolution.entityID);
+export const ResolutionSystem = {
+    createEntityResolution: function() {
+        return {
+            "entityID": EntityManager.INVALID_ID,
+            "delta": 0,
+            "health": 0
         }
-    }
+    },
+    fillEntityResolution: function(entityID, delta, health) {
+        const resolution = ResolutionSystem.createEntityResolution();
 
-    return deadEntities;
+        resolution.entityID = entityID;
+        resolution.delta = delta;
+        resolution.health = health;
+
+        return resolution;
+    },
+    getDeadEntities: function(resolutions) {
+        const deadEntities = [];
+
+        for(const resolution of resolutions) {
+            if(resolution.health === 0) {
+                deadEntities.push(resolution.entityID);
+            }
+        }
+
+        return deadEntities;
+    }
 }
 
 export const InteractionResolver = function() {
@@ -52,6 +39,14 @@ export const InteractionResolver = function() {
     this.totalDamage = 0;
     this.totalHeal = 0;
     this.resourceDamage = 0;
+}
+
+InteractionResolver.prototype.getDamageFromDelta = function(delta) {
+    if(delta >= 0) {
+        return 0;
+    }
+
+    return -delta;
 }
 
 InteractionResolver.prototype.getDelta = function(entityID) {
@@ -91,7 +86,7 @@ InteractionResolver.prototype.addHeal = function(entity, heal) {
 InteractionResolver.prototype.addAttack = function(entity, damage) {
     const entityID = entity.getID();
     const delta = entity.getAttackDelta(damage, this.getDelta(entityID));
-    const damageDealt = getDamageFromDelta(delta);
+    const damageDealt = this.getDamageFromDelta(delta);
     const resourceDamage = entity.getDamageAsResources(damageDealt);
 
     this.totalDamage += damageDealt;
@@ -124,7 +119,7 @@ InteractionResolver.prototype.createResolutions = function(gameContext) {
             finalHealth = 0;
         }
 
-        resolutions.push(fillEntityResolution(entityID, delta, health));
+        resolutions.push(ResolutionSystem.fillEntityResolution(entityID, delta, health));
     }
 
     return resolutions;

@@ -5,7 +5,7 @@ import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { FADE_RATE } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ACTION_TYPE, ATTACK_COMMAND_TYPE, HEAL_COMMAND_TYPE, MOVE_COMMAND, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
-import { InterceptSystem, PathfinderSystem } from "../../systems/pathfinding.js";
+import { InterceptSystem, PathfinderSystem } from "../../systems/pathfinder.js";
 import { createStep } from "../../systems/direction.js";
 import { playEntitySound, playUncloakSound } from "../../systems/sound.js";
 import { updateEntitySprite } from "../../systems/sprite.js";
@@ -15,6 +15,7 @@ import { CloakActionVTable } from "./cloak.js";
 import { HealVTable } from "./heal.js";
 import { MineTriggerVTable } from "./mineTrigger.js";
 import { UncloakVTable } from "./uncloak.js";
+import { StealthSystem } from "../../systems/stealth.js";
 
 const MOVE_FLAG = {
     NONE: 0
@@ -129,7 +130,7 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
         executionPlan.addNext(CaptureActionVTable.createIntent(entityID, targetX, targetY));
     }
 
-    if(entity.canCloakAt(gameContext, targetX, targetY)) {
+    if(StealthSystem.canEntityCloakAt(gameContext, entity, targetX, targetY)) {
         executionPlan.addNext(CloakActionVTable.createIntent(entityID));
     }
     
@@ -182,7 +183,7 @@ const executeMove = function(gameContext, data) {
     entity.placeOnMap(gameContext);
     team.addStatistic(TEAM_STAT.UNITS_MOVED, 1);
 
-    if(entity.discoversMine(gameContext)) {
+    if(StealthSystem.isMineDiscoveredBy(gameContext, entity)) {
         team.addStatistic(TEAM_STAT.MINES_DISCOVERED, 1);
     }
 }
