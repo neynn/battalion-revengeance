@@ -1,6 +1,7 @@
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { FloodFill } from "../../engine/pathfinders/floodFill.js";
-import { DIRECTION, ENTITY_CATEGORY, JAMMER_FLAG, PATH_FLAG, TRAIT_CONFIG, TRAIT_TYPE } from "../enums.js";
+import { BattalionEntity } from "../entity/battalionEntity.js";
+import { DIRECTION, ENTITY_CATEGORY, JAMMER_FLAG, MOVEMENT_TYPE, PATH_FLAG, TILE_TYPE, TRAIT_CONFIG, TRAIT_TYPE } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { TileType } from "../type/parsed/tileType.js";
@@ -16,7 +17,7 @@ import { fillStep } from "./direction.js";
  * 
  * Returns a number between MIN_MOVE_COST and MAX_MOVE_COST.
  */
-export const getEntityTypeTileCost = function(gameContext, tileType, entityType) {
+const getEntityTypeTileCost = function(gameContext, tileType, entityType) {
     const { typeRegistry } = gameContext;
     const { terrain } = tileType;
     const { movementType } = entityType;
@@ -59,9 +60,9 @@ export const getEntityTypeTileCost = function(gameContext, tileType, entityType)
  * @param {number} tileX 
  * @param {number} tileY 
  * @param {number} teamID 
- * @returns 
+ * @returns {boolean}
  */
-export const isEntityTypeJammed = function(gameContext, entityType, worldMap, tileX, tileY, teamID) {
+const isEntityTypeJammed = function(gameContext, entityType, worldMap, tileX, tileY, teamID) {
     const { category } = entityType;
 
     //Airspace is blocked by a jammer.
@@ -128,6 +129,67 @@ const mGetLowestCostNode = function(queue) {
     return lowestNode;
 }
 
+/**
+ * 
+ * @param {*} gameContext 
+ * @param {BattalionMap} worldMap 
+ * @param {BattalionEntity} entity 
+ * @param {TileType} tileType 
+ * @param {number} tileX 
+ * @param {number} tileY 
+ * @returns 
+ */
+const resolveTileCost = function(gameContext, worldMap, entity, tileType, tileX, tileY) {
+    const { world } = gameContext;
+    const { entityManager } = world;
+    const { config, teamID } = entity;
+    const { movementType } = config;
+    const tileCost = getEntityTypeTileCost(gameContext, tileType, config);
+
+    if(tileCost >= EntityType.MAX_MOVE_COST) {
+        return EntityType.MAX_MOVE_COST;
+    }
+
+    if(isEntityTypeJammed(gameContext, config, worldMap, tileX, tileY, teamID)) {
+        return EntityType.MAX_MOVE_COST;
+    }
+
+    const index = worldMap.getEntity(tileX, tileY);
+    const otherEntity = entityManager.getEntityByIndex(index);
+    
+    if(!otherEntity) {
+        return tileCost;
+    }
+
+    //Trains are always blocked if an entity is on rail, no matter the type.
+    //On the contrary, trains can move really fast.
+    if(movementType === MOVEMENT_TYPE.RAIL && tileType.id === TILE_TYPE.RAIL) {
+        //Always block on allied units and VISIBLE enemy units.
+        //Invisible enemy units get ignored.
+        if(entity.isAllyWith(gameContext, otherEntity) || !otherEntity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+            return EntityType.MAX_MOVE_COST;
+        }
+    }
+
+    //Blocks on non-cloaked enemy units. Ignores cloaked enemy units and treats them as walkable.
+    if(!entity.isAllyWith(gameContext, otherEntity) && !otherEntity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+        return EntityType.MAX_MOVE_COST;
+    }
+
+    const mine = worldMap.getMine(tileX, tileY);
+
+    //We could always assume that an enemy mine is visible if an entity is on it, but safety first.
+    //Ally on tile but !isHidden && mine is an impossible state.
+    //This prevents entities from passing over a visible mine that they will trigger when an ally stands on it.
+    if(mine) {
+        if(!mine.isHidden() && CombatSystem.isMineTriggered(gameContext, entity, mine)) {
+            return EntityType.MAX_MOVE_COST;
+        }
+    }
+
+    return tileCost;
+}
+
 export const PathfinderSystem = {
     mGetNodeMap: function(gameContext, entity, nodeMap) {
         if(entity.isDead() || !entity.isMoveable()) {
@@ -175,7 +237,7 @@ export const PathfinderSystem = {
                     typeCache.set(neighborID, tileType);
                 }
 
-                const tileCost = cost + entity.getTileCost(gameContext, worldMap, tileType, neighborX, neighborY);
+                const tileCost = cost + resolveTileCost(gameContext, worldMap, entity, tileType, neighborX, neighborY);
 
                 if(tileCost <= movementRange) {
                     const bestCost = visitedCost.get(neighborID);
@@ -241,7 +303,7 @@ export const PathfinderSystem = {
 
             const tileType = worldMap.getTileType(gameContext, nextX, nextY);
 
-            totalCost += entity.getTileCost(gameContext, worldMap, tileType, nextX, nextY);
+            totalCost += resolveTileCost(gameContext, worldMap, entity, tileType, nextX, nextY);
 
             if(totalCost > movementRange) {
                 return false;

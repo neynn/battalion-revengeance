@@ -2,8 +2,6 @@ import { Entity } from "../../engine/entity/entity.js";
 import { EntityManager } from "../../engine/entity/entityManager.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
-import { EntityType } from "../type/parsed/entityType.js";
-import { getEntityTypeTileCost, isEntityTypeJammed } from "../systems/pathfinding.js";
 import { DIRECTION_DELTA_X, DIRECTION_DELTA_Y, getDirectionByDelta, isDirectionValid } from "../systems/direction.js";
 import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE, SHOP_TYPE } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
@@ -11,7 +9,6 @@ import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { ScenarioModel } from "../scenarioModel.js";
 import { ShopType } from "../type/parsed/shopType.js";
-import { CombatSystem } from "../systems/combat.js";
 
 const ACTIONS_PER_TURN = 1;
 const MOVES_PER_TURN = 1;
@@ -546,55 +543,6 @@ BattalionEntity.prototype.getTerrainDamage = function(gameContext) {
     }
 
     return Math.floor(totalDamage);
-}
-
-BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType, tileX, tileY) {
-    const { world } = gameContext;
-    const { entityManager } = world;
-    const tileCost = getEntityTypeTileCost(gameContext, tileType, this.config);
-
-    if(tileCost >= EntityType.MAX_MOVE_COST) {
-        return EntityType.MAX_MOVE_COST;
-    }
-
-    if(isEntityTypeJammed(gameContext, this.config, worldMap, tileX, tileY, this.teamID)) {
-        return EntityType.MAX_MOVE_COST;
-    }
-
-    const index = worldMap.getEntity(tileX, tileY);
-    const entity = entityManager.getEntityByIndex(index);
-    
-    if(!entity) {
-        return tileCost;
-    }
-
-    //Trains are always blocked if an entity is on rail, no matter the type.
-    //On the contrary, trains can move really fast.
-    if(this.config.movementType === MOVEMENT_TYPE.RAIL && tileType.id === TILE_TYPE.RAIL) {
-        //Always block on allied units and VISIBLE enemy units.
-        //Invisible enemy units get ignored.
-        if(this.isAllyWith(gameContext, entity) || !entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-            return EntityType.MAX_MOVE_COST;
-        }
-    }
-
-    //Blocks on non-cloaked enemy units. Ignores cloaked enemy units and treats them as walkable.
-    if(!this.isAllyWith(gameContext, entity) && !entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-        return EntityType.MAX_MOVE_COST;
-    }
-
-    const mine = worldMap.getMine(tileX, tileY);
-
-    //We could always assume that an enemy mine is visible if an entity is on it, but safety first.
-    //Ally on tile but !isHidden && mine is an impossible state.
-    //This prevents entities from passing over a visible mine that they will trigger when an ally stands on it.
-    if(mine) {
-        if(!mine.isHidden() && CombatSystem.isMineTriggered(gameContext, this, mine)) {
-            return EntityType.MAX_MOVE_COST;
-        }
-    }
-
-    return tileCost;
 }
 
 BattalionEntity.prototype.canCapture = function(gameContext, tileX, tileY) {
