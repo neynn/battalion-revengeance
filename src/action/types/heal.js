@@ -9,12 +9,6 @@ import { playEntitySound } from "../../systems/sound.js";
 import { getAnimationDuration, playHealEffect, updateEntitySprite } from "../../systems/sprite.js";
 import { DeathActionVTable } from "./death.js";
 
-const resolveHeal = function(gameContext, entity, target, resolver) {
-    if(entity.isHealValid(gameContext, target) && entity.isHealPositionValid(gameContext, target)) {
-        CombatSystem.mResolveHeal(gameContext, entity, target, resolver);
-    }
-}
-
 const createHealIntent = function(entityID, targetID, command) {
     return new ActionIntent(ACTION_TYPE.HEAL, {
         "entityID": entityID,
@@ -47,7 +41,7 @@ const fillHealPlan = function(gameContext, executionPlan, actionIntent) {
     switch(commandID) {
         case HEAL_COMMAND_TYPE.DIRECT: {
             if(entity.isAllowedToActAndMove()) {
-                resolveHeal(gameContext, entity, target, resolver);
+                CombatSystem.resolveHeal(gameContext, entity, target, resolver);
             }
 
             break;
@@ -55,7 +49,7 @@ const fillHealPlan = function(gameContext, executionPlan, actionIntent) {
         case HEAL_COMMAND_TYPE.FOLLOW_UP: {
             //Melee healers.
             if(entity.hasMoved() && entity.isAllowedToAct() && entity.isNextToEntity(target)) {
-                resolveHeal(gameContext, entity, target, resolver);
+                CombatSystem.resolveHeal(gameContext, entity, target, resolver);
             } 
 
             break;

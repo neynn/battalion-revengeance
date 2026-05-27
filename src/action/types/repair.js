@@ -2,7 +2,7 @@ import { Action } from "../../../engine/action/action.js";
 import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
-import { ACTION_TYPE, SOUND_TYPE, TEAM_STAT } from "../../enums.js";
+import { ACTION_TYPE, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { playEntitySound } from "../../systems/sound.js";
 
 const createRepairIntent = function(entityID) {
@@ -24,7 +24,11 @@ const fillRepairPlan = function(gameContext, executionPlan, actionIntent) {
     const { entityID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
 
-    if(!entity || entity.isDead() || !entity.isAllowedToActAndMove() || entity.hasFlag(BattalionEntity.FLAG.IS_REPAIRING)) {
+    if(!entity || entity.isDead() || !entity.isAllowedToActAndMove()) {
+        return;
+    }
+
+    if(entity.hasFlag(BattalionEntity.FLAG.IS_REPAIRING) || entity.hasTrait(TRAIT_TYPE.IRREPARABLE)) {
         return;
     }
 

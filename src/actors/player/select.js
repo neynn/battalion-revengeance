@@ -8,6 +8,7 @@ import { PathfinderSystem } from "../../systems/pathfinder.js";
 import { createStep, fillStep } from "../../systems/direction.js";
 import { Player } from "../player.js";
 import { PlayerState } from "./playerState.js";
+import { CombatSystem } from "../../systems/combat.js";
 
 export const SelectState = function() {
     PlayerState.call(this);
@@ -195,7 +196,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
     this.cursorY = tileY;
 
     if(entity) {
-        if(!this.entity.isAllyWith(gameContext, entity) && this.entity.isAttackValid(gameContext, entity)) {
+        if(!this.entity.isAllyWith(gameContext, entity) && CombatSystem.isAttackValid(gameContext, this.entity, entity)) {
             switch(this.entity.getRangeType()) {
                 case RANGE_TYPE.RANGE: {
                     //Remove the path if the entity is a ranged attacker.
@@ -366,7 +367,7 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
     const isControlled = entity.belongsTo(player.teamID);
 
     if(!isAlly) {
-        if(this.entity.isAttackValid(gameContext, entity)) {
+        if(CombatSystem.isAttackValid(gameContext, this.entity, entity)) {
             const request = this.getAttackRequest(entity);
 
             if(request) {
@@ -379,7 +380,7 @@ SelectState.prototype.onEntityClick = function(gameContext, stateMachine, entity
 
         stateMachine.setNextState(gameContext, Player.STATE.IDLE);
     } else {
-        if(this.entity.isHealValid(gameContext, entity)) {
+        if(CombatSystem.isHealValid(gameContext, this.entity, entity)) {
             const request = this.getHealRequest(entity);
 
             //Clears visual overlays when clicking on an enemy entity.

@@ -17,35 +17,6 @@ const ATTACK_FLAG = {
     BEWEGUNGSKRIEG: 1 << 3
 };
 
-const resolveCounterAttack = function(gameContext, entity, target, resolver) {
-    if(entity.isCounterValid(target) && entity.isAttackValid(gameContext, target) && entity.isAttackPositionValid(gameContext, target)) {
-        CombatSystem.mResolveCounterAttack(gameContext, entity, target, resolver);
-    }
-}
-
-const resolveFirstAttack = function(gameContext, entity, target, resolver) {
-    if(entity.isAttackValid(gameContext, target) && entity.isAttackPositionValid(gameContext, target)) {
-        switch(entity.getAttackType()) {
-            case ATTACK_TYPE.REGULAR: {
-                CombatSystem.mResolveRegularAttack(gameContext, entity, target, resolver);
-                break;
-            }
-            case ATTACK_TYPE.DISPERSION: {
-                CombatSystem.mResolveDispersionAttack(gameContext, entity, target, resolver);
-                break;
-            }
-            case ATTACK_TYPE.STREAMBLAST: {
-                CombatSystem.mResolveStreamblastAttack(gameContext, entity, target, resolver);
-                break;
-            }
-            default: {
-                console.error("Unsupported attack type!");
-                break;
-            }
-        }
-    }
-}
-
 const createAttackData = function() {
     return {
         "attackerID": EntityManager.INVALID_ID,
@@ -128,20 +99,20 @@ const fillAttackPlan = function(gameContext, executionPlan, actionIntent) {
     switch(command) {
         case ATTACK_COMMAND_TYPE.DIRECT: {
             if(entity.isAllowedToActAndMove()) {
-                resolveFirstAttack(gameContext, entity, target, resolver);
+                CombatSystem.resolveFirstAttack(gameContext, entity, target, resolver);
             }
 
             break;
         }
         case ATTACK_COMMAND_TYPE.FOLLOW_UP: {
             if(entity.hasMoved() && entity.isAllowedToAct() && entity.isNextToEntity(target)) {
-                resolveFirstAttack(gameContext, entity, target, resolver);
+                CombatSystem.resolveFirstAttack(gameContext, entity, target, resolver);
             }
 
             break;
         }
         case ATTACK_COMMAND_TYPE.COUNTER: {
-            resolveCounterAttack(gameContext, entity, target, resolver);
+            CombatSystem.resolveCounterAttack(gameContext, entity, target, resolver);
             flags |= ATTACK_FLAG.COUNTER;
             break;
         }

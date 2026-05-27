@@ -16,6 +16,7 @@ import { HealVTable } from "./heal.js";
 import { MineTriggerVTable } from "./mineTrigger.js";
 import { UncloakVTable } from "./uncloak.js";
 import { StealthSystem } from "../../systems/stealth.js";
+import { CombatSystem } from "../../systems/combat.js";
 
 const MOVE_FLAG = {
     NONE: 0
@@ -52,7 +53,7 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
     const { entityID, path, command, targetID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
 
-    if(!entity || entity.isDead() || !entity.isAllowedToMove()) {
+    if(!entity || entity.isDead() || !entity.isAllowedToMove() || !entity.isMoveable()) {
         return;
     }
 
@@ -66,7 +67,7 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
         targetY += deltaY;
     }
 
-    if(!entity.isMoveable() || entity.isDead() || !entity.isMoveTargetValid(gameContext, targetX, targetY) || !PathfinderSystem.isPathWalkable(gameContext, entity, path)) {
+    if(!entity.isMoveTargetValid(gameContext, targetX, targetY) || !PathfinderSystem.isPathWalkable(gameContext, entity, path)) {
         return;
     }
 
@@ -99,7 +100,7 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
                 break;
             }
 
-            if(entity.isHealValid(gameContext, targetEntity)) {
+            if(CombatSystem.isHealValid(gameContext, entity, targetEntity)) {
                 executionPlan.addNext(HealVTable.createIntent(entityID, targetID, HEAL_COMMAND_TYPE.FOLLOW_UP));
             }
 
@@ -116,7 +117,7 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
                 break;
             }
 
-            if(entity.isAttackValid(gameContext, targetEntity)) {
+            if(CombatSystem.isAttackValid(gameContext, entity, targetEntity)) {
                 executionPlan.addNext(AttackActionVTable.createIntent(entityID, targetID, ATTACK_COMMAND_TYPE.FOLLOW_UP));
             }
 
@@ -199,7 +200,7 @@ export const MoveAction = function() {
     Action.call(this);
 
     this.entity = null;
-    this.path = [];
+    this.path = null;
     this.pathIndex = 0;
     this.state = MoveAction.STATE.NONE;
     this.wasDiscovered = false;
@@ -308,7 +309,7 @@ MoveAction.prototype.onEnd = function(gameContext, data) {
 
     updateEntitySprite(gameContext, this.entity);
 
-    this.path = [];
+    this.path = null;
     this.pathIndex = 0;
     this.entity = null;
     this.state = MoveAction.STATE.NONE;

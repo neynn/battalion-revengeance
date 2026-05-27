@@ -3,7 +3,7 @@ import { EntityManager } from "../../engine/entity/entityManager.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { DIRECTION_DELTA_X, DIRECTION_DELTA_Y, getDirectionByDelta, isDirectionValid } from "../systems/direction.js";
-import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE, SHOP_TYPE } from "../enums.js";
+import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE, SHOP_TYPE } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
 import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
@@ -223,7 +223,7 @@ BattalionEntity.prototype.getAttackType = function() {
     return this.config.getAttackType();
 }
 
-BattalionEntity.prototype.isRangeValid = function(gameContext, entity) {
+BattalionEntity.prototype.isEntityInRange = function(gameContext, entity) {
     const distance = this.getDistanceToEntity(entity);
 
     if(distance < this.config.minRange) {
@@ -607,127 +607,6 @@ BattalionEntity.prototype.getTerrainTypes = function(gameContext) {
     return types;
 }
 
-BattalionEntity.prototype.isAttackPositionValid = function(gameContext, target) {
-    if(!this.isRangeValid(gameContext, target)) {
-        return false;
-    }
-
-    //Special ranged interaction for RANGE & HYBRID.
-    switch(this.config.rangeType) {
-        case RANGE_TYPE.RANGE: {
-            //Protected targets cannot be shot.
-            if(target.hasFlag(BattalionEntity.FLAG.IS_PROTECTED)) {
-                return false;
-            }
-
-            break;
-        }
-        case RANGE_TYPE.HYBRID: {
-            //Special case for entities with MIN_RANGE of 1 and MAX_RANGE of n.
-            if(!this.isNextToEntity(target) && target.hasFlag(BattalionEntity.FLAG.IS_PROTECTED)) {
-                return false;
-            }
-
-            break;
-        }
-    }
-
-    //Streamblast and clean shot entities can only attack in a direct lane.
-    if(!this.isAxisMeeting(target)) {
-        if(this.hasTrait(TRAIT_TYPE.STREAMBLAST) || this.hasTrait(TRAIT_TYPE.CLEAR_SHOT)) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-BattalionEntity.prototype.isAttackValid = function(gameContext, target) {
-    if(this.id === target.getID()) {
-        return false;
-    }
-    
-    if(this.damage <= 0) {
-        return false;
-    }
-
-    if(this.config.weaponType === WEAPON_TYPE.NONE) {
-        return false;
-    }
-
-    if(this.isDead() || target.isDead()) {
-        return false;
-    }
-
-    //Stealth check. Cloaked units cannot be attacked.
-    if(target.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-        return false;
-    }
-
-    //Allies cannot be attacked.
-    if(this.isAllyWith(gameContext, target)) {
-        return false;
-    }
-
-    if(target.config.category === ENTITY_CATEGORY.AIR) {
-        //Air units can only be attacked with skysweeper.
-        if(!this.hasTrait(TRAIT_TYPE.SKYSWEEPER)) {
-            return false;
-        }
-    }
-
-    //Seabound entities can only attack SEA units.
-    if(target.config.category !== ENTITY_CATEGORY.SEA && this.hasTrait(TRAIT_TYPE.SEABOUND)) {
-        return false;
-    }
-
-    //Special submarine case. Submarines can only be targeted by DEPTH_CHARGE.
-    if(target.hasTrait(TRAIT_TYPE.SUBMERGED) && !this.hasTrait(TRAIT_TYPE.DEPTH_CHARGE)) {
-        return false;
-    }
-
-    return true;
-}
-
-BattalionEntity.prototype.isHealPositionValid = function(gameContext, target) {
-    if(!this.isRangeValid(gameContext, target)) {
-        return false;
-    }
-
-    return true;
-}
-
-BattalionEntity.prototype.isHealValid = function(gameContext, target) {
-    if(this.id === target.getID()) {
-        return false;
-    }
-
-    if(this.damage <= 0) {
-        return false;
-    }
-
-    if(this.isDead() || target.isDead()) {
-        return false;
-    }
-
-    //Only suppliers can heal. 
-    if(!this.hasTrait(TRAIT_TYPE.SUPPLY_DISTRIBUTION)) {
-        return false;
-    }
-
-    //Stationary entities cannot be healed.
-    if(target.config.movementType === MOVEMENT_TYPE.STATIONARY) {
-        return false;
-    }
-
-    //Cannot heal enemies.
-    if(!this.isAllyWith(gameContext, target)) {
-        return false;
-    }
-
-    return true;
-}
-
 BattalionEntity.prototype.updateRangeGuard = function(gameContext) {
     //Air units are never protected by tiles/canyons!
     if(this.config.category === ENTITY_CATEGORY.AIR) {
@@ -767,55 +646,6 @@ BattalionEntity.prototype.updateRangeGuard = function(gameContext) {
     this.renderFlags &= ~BattalionEntity.RENDER_FLAG.PROTECTED;
 
     return false;
-}
-
-BattalionEntity.prototype.isCounterValid = function(target) {
-    //Only regular attackers can counter.
-    if(this.getAttackType() !== ATTACK_TYPE.REGULAR || target.getAttackType() !== ATTACK_TYPE.REGULAR) {
-        return false;
-    }
-
-    //Certain entities can never counter.
-    if(this.hasTrait(TRAIT_TYPE.BLIND_SPOT) || this.hasTrait(TRAIT_TYPE.SELF_DESTRUCT)) {
-        return false;
-    }
-
-    const targetID = target.getID();
-
-    //Target should be the previous attacker.
-    if(this.lastAttacker !== targetID) {
-        return false;
-    }
-
-    //STUN can never be countered.
-    if(target.hasTrait(TRAIT_TYPE.STUN)) {
-        return false;
-    }
-
-    //TANK_HUNTER disables TRACKED from countering.
-    if(target.hasTrait(TRAIT_TYPE.TANK_HUNTER) && this.config.movementType === MOVEMENT_TYPE.TRACKED) {
-        return false;
-    }
-
-    switch(target.config.rangeType) {
-        case RANGE_TYPE.RANGE: {
-            if(!this.hasTrait(TRAIT_TYPE.COUNTER_BATTERY)) {
-                return false;
-            }
-
-            break;
-        }
-        case RANGE_TYPE.HYBRID: {
-            //Edge case: If two hybrids are next to each other, treat attacking as melee.
-            if(!this.hasTrait(TRAIT_TYPE.COUNTER_BATTERY) && !this.isNextToEntity(target)) {
-                return false;
-            }
-
-            break;
-        }
-    }
-
-    return true;
 }
 
 BattalionEntity.prototype.getMoraleFactor = function(gameContext) {
