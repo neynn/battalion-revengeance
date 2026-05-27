@@ -3,6 +3,7 @@ import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { WorldMap } from "../../../engine/map/worldMap.js";
 import { ACTION_TYPE } from "../../enums.js";
+import { CombatSystem } from "../../systems/combat.js";
 import { playExplosion } from "../../systems/sprite.js";
 import { DeathActionVTable } from "./death.js";
 
@@ -40,7 +41,7 @@ const fillMineTriggerPlan = function(gameContext, executionPlan, actionIntent) {
     const { tileX, tileY } = entity;
     const mine = worldMap.getMine(tileX, tileY);
 
-    if(!mine || !entity.triggersMine(gameContext, mine)) {
+    if(!mine || !CombatSystem.isMineTriggered(gameContext, entity, mine)) {
         return;
     }
 

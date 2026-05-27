@@ -14,6 +14,7 @@ import { ToTransportVTable } from "../action/types/toTransport.js";
 import { FromTransportVTable } from "../action/types/fromTransport.js";
 import { BattalionRenderer2D } from "../camera/battalionRenderer2D.js";
 import { RepairVTable } from "../action/types/repair.js";
+import { PathfinderSystem } from "../systems/pathfinding.js";
 
 /**
  * 
@@ -67,9 +68,7 @@ Player.prototype.onTurnEnd = function(gameContext) {
 Player.prototype.refreshEntityNodeMap = function(gameContext, entity) {
     this.renderer.clearOverlays();
     this.nodeMap.clear();
-
-    entity.mGetNodeMap(gameContext, this.nodeMap);
-
+    PathfinderSystem.mGetNodeMap(gameContext, entity, this.nodeMap);
     this.renderer.showEntityNodes(gameContext, entity, this.nodeMap);
 }
 

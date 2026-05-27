@@ -40,7 +40,7 @@ const fillRepairPlan = function(gameContext, executionPlan, actionIntent) {
     const team = entity.getTeam(gameContext);
     const entityCost = team.getRegularCost(gameContext, entity.config.cost);
     const healPercentage = entity.getHealPercentage();
-    const finalCost = healPercentage * entityCost;
+    const finalCost = Math.floor(healPercentage * entityCost);
 
     if(!team.hasEnoughCash(finalCost)) {
         return;

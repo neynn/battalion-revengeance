@@ -26,3 +26,48 @@ export const getDirectionByDelta = function(deltaX, deltaY) {
 export const isDirectionValid = function(direction) {
     return direction >= 0 && direction < DIRECTION._COUNT;
 }
+
+export const createStep = function() {
+    return {
+        "deltaX": 0,
+        "deltaY": 0
+    }
+}
+
+export const fillStep = function(deltaX, deltaY) {
+    const step = createStep();
+
+    step.deltaX = deltaX;
+    step.deltaY = deltaY;
+
+    return step;
+}
+
+export const directionToStep = function(direction) {
+    const step = createStep();
+
+    switch(direction) {
+        case DIRECTION.NORTH: {
+            step.deltaX = 0;
+            step.deltaY = -1;
+            break;
+        }
+        case DIRECTION.EAST: {
+            step.deltaX = 1;
+            step.deltaY = 0;
+            break;
+        }
+        case DIRECTION.SOUTH: {
+            step.deltaX = 0;
+            step.deltaY = 1
+            break;
+        }
+        case DIRECTION.WEST: {
+            step.deltaX = -1;
+            step.deltaY = 0;
+            break;
+        }
+    }
+
+    return step;
+}

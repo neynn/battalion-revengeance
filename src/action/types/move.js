@@ -5,7 +5,8 @@ import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { FADE_RATE } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ACTION_TYPE, ATTACK_COMMAND_TYPE, HEAL_COMMAND_TYPE, MOVE_COMMAND, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
-import { createStep, Interception } from "../../systems/pathfinding.js";
+import { InterceptSystem, PathfinderSystem } from "../../systems/pathfinding.js";
+import { createStep } from "../../systems/direction.js";
 import { playEntitySound, playUncloakSound } from "../../systems/sound.js";
 import { updateEntitySprite } from "../../systems/sprite.js";
 import { AttackActionVTable } from "./attack.js";
@@ -14,9 +15,6 @@ import { CloakActionVTable } from "./cloak.js";
 import { HealVTable } from "./heal.js";
 import { MineTriggerVTable } from "./mineTrigger.js";
 import { UncloakVTable } from "./uncloak.js";
-
-const EntityInterception = new Interception();
-const MineInterception = new Interception();
 
 const MOVE_FLAG = {
     NONE: 0
@@ -67,25 +65,20 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
         targetY += deltaY;
     }
 
-    if(!entity.isMoveable() || entity.isDead() || !entity.isMoveTargetValid(gameContext, targetX, targetY) || !entity.isPathWalkable(gameContext, path)) {
+    if(!entity.isMoveable() || entity.isDead() || !entity.isMoveTargetValid(gameContext, targetX, targetY) || !PathfinderSystem.isPathWalkable(gameContext, entity, path)) {
         return;
     }
 
-    EntityInterception.reset();
-    MineInterception.reset();
+    const entityInterception = InterceptSystem.mInterceptEntity(gameContext, entity, path, path.length);
 
-    EntityInterception.pathLength = path.length;
-    entity.mInterceptEntity(gameContext, path, path.length, EntityInterception);
-
-    if(EntityInterception.pathLength === 0) {
+    if(entityInterception.pathLength === 0) {
         console.error("EDGE CASE: Stealth unit was too close!");
         return;
     }
 
-    MineInterception.pathLength = EntityInterception.pathLength;
-    entity.mInterceptMine(gameContext, path, EntityInterception.pathLength, MineInterception);
+    const mineInterception = InterceptSystem.mInterceptMine(gameContext, entity, path, entityInterception.pathLength);
 
-    if(MineInterception.isIntercepted) {
+    if(mineInterception.isIntercepted) {
         executionPlan.addNext(MineTriggerVTable.createIntent(entityID));
     }
 
@@ -98,7 +91,7 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
             const targetEntity = entityManager.getEntity(targetID);
 
             if(!targetEntity || !targetEntity.isNextToTile(targetX, targetY)) {
-                if(!MineInterception.isIntercepted && !EntityInterception.isIntercepted) {
+                if(!mineInterception.isIntercepted && !entityInterception.isIntercepted) {
                     return;
                 }
 
@@ -115,7 +108,7 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
             const targetEntity = entityManager.getEntity(targetID);
 
             if(!targetEntity || !targetEntity.isNextToTile(targetX, targetY)) {
-                if(!MineInterception.isIntercepted && !EntityInterception.isIntercepted) {
+                if(!mineInterception.isIntercepted && !entityInterception.isIntercepted) {
                     return;
                 }
 
@@ -140,7 +133,7 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
         executionPlan.addNext(CloakActionVTable.createIntent(entityID));
     }
     
-    const pathLength = MineInterception.pathLength;
+    const pathLength = mineInterception.pathLength;
     const data = createMoveData(pathLength);
 
     data.entityID = entityID;

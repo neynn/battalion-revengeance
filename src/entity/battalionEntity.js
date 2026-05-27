@@ -3,7 +3,7 @@ import { EntityManager } from "../../engine/entity/entityManager.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { EntityType } from "../type/parsed/entityType.js";
-import { getEntityTypeTileCost, Interception, isEntityTypeJammed, mGetNodeMap } from "../systems/pathfinding.js";
+import { getEntityTypeTileCost, isEntityTypeJammed } from "../systems/pathfinding.js";
 import { DIRECTION_DELTA_X, DIRECTION_DELTA_Y, getDirectionByDelta, isDirectionValid } from "../systems/direction.js";
 import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, RANGE_TYPE, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE, SHOP_TYPE } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
@@ -11,6 +11,7 @@ import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { ScenarioModel } from "../scenarioModel.js";
 import { ShopType } from "../type/parsed/shopType.js";
+import { CombatSystem } from "../systems/combat.js";
 
 const ACTIONS_PER_TURN = 1;
 const MOVES_PER_TURN = 1;
@@ -588,20 +589,12 @@ BattalionEntity.prototype.getTileCost = function(gameContext, worldMap, tileType
     //Ally on tile but !isHidden && mine is an impossible state.
     //This prevents entities from passing over a visible mine that they will trigger when an ally stands on it.
     if(mine) {
-        if(!mine.isHidden() && this.triggersMine(gameContext, mine)) {
+        if(!mine.isHidden() && CombatSystem.isMineTriggered(gameContext, this, mine)) {
             return EntityType.MAX_MOVE_COST;
         }
     }
 
     return tileCost;
-}
-
-BattalionEntity.prototype.mGetNodeMap = function(gameContext, nodeMap) {
-    if(this.isDead() || !this.isMoveable()) {
-        return;
-    }
-
-    mGetNodeMap(gameContext, this, nodeMap);
 }
 
 BattalionEntity.prototype.canCapture = function(gameContext, tileX, tileY) {
@@ -645,46 +638,6 @@ BattalionEntity.prototype.isVisibleTo = function(gameContext, teamID) {
     return isAlly;
 }
 
-BattalionEntity.prototype.isPathWalkable = function(gameContext, path) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-    let nextX = this.tileX;
-    let nextY = this.tileY;
-    let totalCost = 0;
-
-    //Path[path.length -1] is the target.
-    for(let i = 0; i < path.length; i++) {
-        const { deltaX, deltaY } = path[i];
-        const totalDelta = Math.abs(deltaX) + Math.abs(deltaY);
-
-        //Entities can only move one tile at a time.
-        if(totalDelta > 1) {
-            return false;
-        }
-
-        nextX += deltaX;
-        nextY += deltaY;
-
-        const index = worldMap.getIndex(nextX, nextY);
-
-        //The target is out of bounds
-        if(index === WorldMap.OUT_OF_BOUNDS) {
-            return false;
-        }
-
-        const tileType = worldMap.getTileType(gameContext, nextX, nextY);
-
-        totalCost += this.getTileCost(gameContext, worldMap, tileType, nextX, nextY);
-
-        if(totalCost > this.config.movementRange) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 BattalionEntity.prototype.isMoveTargetValid = function(gameContext, targetX, targetY) {
     const { world } = gameContext;
     const tileEntity = world.getEntityAt(targetX, targetY);
@@ -694,76 +647,6 @@ BattalionEntity.prototype.isMoveTargetValid = function(gameContext, targetX, tar
     }
 
     return true;
-}
-
-/**
- * 
- * @param {*} gameContext 
- * @param {*} path 
- * @param {Interception} entityInterception 
- * @returns 
- */
-BattalionEntity.prototype.mInterceptEntity = function(gameContext, path, pathLength, entityInterception) {
-    const { world } = gameContext;
-
-    let nextX = this.tileX;
-    let nextY = this.tileY;
-    let lastEmptyIndex = -1;
-
-    for(let i = 0; i < pathLength; i++) {
-        const { deltaX, deltaY } = path[i];
-
-        nextX += deltaX;
-        nextY += deltaY;
-
-        const entity = world.getEntityAt(nextX, nextY);
-
-        if(!entity) {
-            lastEmptyIndex = i;
-        } else if(!entity.isVisibleTo(gameContext, this.teamID)) {
-            //If the entity has passed through an entity before.
-            //This is a defensive check to enforce the 1-gap-stealth rule between entities. 
-            if(lastEmptyIndex !== i - 1) {
-                entityInterception.reset();
-                break;
-            }
-
-            //i means ending NEXT TO the invisible entity.
-            entityInterception.intercept(i);
-            break;
-        }
-    }
-}
-
-/**
- * 
- * @param {*} gameContext 
- * @param {*} path 
- * @param {Interception} mineInterception 
- * @returns 
- */
-BattalionEntity.prototype.mInterceptMine = function(gameContext, path, pathLength, mineInterception) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-
-    let nextX = this.tileX;
-    let nextY = this.tileY;
-
-    for(let i = 0; i < pathLength; i++) {
-        const { deltaX, deltaY } = path[i];
-
-        nextX += deltaX;
-        nextY += deltaY;
-
-        const mine = worldMap.getMine(nextX, nextY);
-
-        if(mine && this.triggersMine(gameContext, mine)) {
-            //i + 1 means ending ON the mine tile.
-            mineInterception.intercept(i + 1);
-            break;
-        }
-    }
 }
 
 BattalionEntity.prototype.getTerrainTypes = function(gameContext) {
@@ -1782,27 +1665,6 @@ BattalionEntity.prototype.discoversMine = function(gameContext) {
     }
 
     return mine.isHidden() && !teamManager.isAlly(this.teamID, mine.teamID);
-}
- 
-BattalionEntity.prototype.triggersMine = function(gameContext, mine) {
-    const { teamManager } = gameContext;
-    const damage = mine.getDamage(this.config.movementType);
-
-    //Only mines that deal damage blow up.
-    if(damage <= 0) {
-        return false;
-    }
-
-    const traitID = mine.getNullifierTrait();
-
-    //Some traits can dodge mines.
-    //These are defined in mine.js
-    if(this.hasTrait(traitID)) {
-        return false;
-    }
-
-    //Only enemy mines blow up.
-    return !teamManager.isAlly(this.teamID, mine.teamID);
 }
 
 BattalionEntity.prototype.canPurchase = function(gameContext, typeID, cost) {

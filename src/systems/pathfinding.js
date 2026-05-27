@@ -4,21 +4,8 @@ import { DIRECTION, ENTITY_CATEGORY, JAMMER_FLAG, PATH_FLAG, TRAIT_CONFIG, TRAIT
 import { BattalionMap } from "../map/battalionMap.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { TileType } from "../type/parsed/tileType.js";
-
-export const Interception = function() {
-    this.isIntercepted = false;
-    this.pathLength = 0;
-}
-
-Interception.prototype.reset = function() {
-    this.isIntercepted = false;
-    this.pathLength = 0;
-}
-
-Interception.prototype.intercept = function(pathLength) {
-    this.isIntercepted = true;
-    this.pathLength = pathLength;
-}
+import { CombatSystem } from "./combat.js";
+import { fillStep } from "./direction.js";
 
 /**
  * 
@@ -112,7 +99,19 @@ export const canEntityTypeStandOnTile = function(gameContext, typeID, tileX, til
     return !isEntityTypeJammed(gameContext, entityType, worldMap, tileX, tileY, teamID);
 }
 
-export const mGetLowestCostNode = function(queue) {
+const createNode = function(id, x, y, cost, type, parent, flags) {
+    return {
+        "id": id,
+        "x": x,
+        "y": y,
+        "cost": cost,
+        "type": type,
+        "parent": parent,
+        "flags": flags
+    }
+}
+
+const mGetLowestCostNode = function(queue) {
     let lowestNode = queue[0];
     let lowestIndex = 0;
 
@@ -129,72 +128,129 @@ export const mGetLowestCostNode = function(queue) {
     return lowestNode;
 }
 
-export const createNode = function(id, x, y, cost, type, parent, flags) {
-    return {
-        "id": id,
-        "x": x,
-        "y": y,
-        "cost": cost,
-        "type": type,
-        "parent": parent,
-        "flags": flags
-    }
-}
-
-export const createStep = function() {
-    return {
-        "deltaX": 0,
-        "deltaY": 0
-    }
-}
-
-export const fillStep = function(deltaX, deltaY) {
-    const step = createStep();
-
-    step.deltaX = deltaX;
-    step.deltaY = deltaY;
-
-    return step;
-}
-
-export const directionToStep = function(direction) {
-    const step = createStep();
-
-    switch(direction) {
-        case DIRECTION.NORTH: {
-            step.deltaX = 0;
-            step.deltaY = -1;
-            break;
+export const PathfinderSystem = {
+    mGetNodeMap: function(gameContext, entity, nodeMap) {
+        if(entity.isDead() || !entity.isMoveable()) {
+            return;
         }
-        case DIRECTION.EAST: {
-            step.deltaX = 1;
-            step.deltaY = 0;
-            break;
+
+        const { world } = gameContext;
+        const { mapManager } = world;
+        const { tileX, tileY, config } = entity;
+        const { movementRange } = config;
+        const worldMap = mapManager.getActiveMap();
+
+        const startID = worldMap.getIndex(tileX, tileY);
+        const startNode = createNode(startID, tileX, tileY, 0, null, null, PATH_FLAG.START);
+        const queue = [startNode];
+        const visitedCost = new Map();
+        const typeCache = new Map();
+
+        nodeMap.set(startID, startNode);
+        visitedCost.set(startID, 0);
+
+        while(queue.length > 0) {
+            const node = mGetLowestCostNode(queue);
+            const { cost, x, y } = node;
+
+            if(cost > movementRange) {
+                continue;
+            }
+
+            for(let i = 0; i < FloodFill.NEIGHBORS.length; i++) {
+                const [deltaX, deltaY, type] = FloodFill.NEIGHBORS[i];
+                const neighborX = x + deltaX;
+                const neighborY = y + deltaY;
+                const neighborID = worldMap.getIndex(neighborX, neighborY);
+
+                if(neighborID === WorldMap.OUT_OF_BOUNDS) {
+                    continue;
+                }
+
+                let flags = PATH_FLAG.NONE;
+                let tileType = typeCache.get(neighborID);
+
+                if(!tileType) {
+                    tileType = worldMap.getTileType(gameContext, neighborX, neighborY);
+                    typeCache.set(neighborID, tileType);
+                }
+
+                const tileCost = cost + entity.getTileCost(gameContext, worldMap, tileType, neighborX, neighborY);
+
+                if(tileCost <= movementRange) {
+                    const bestCost = visitedCost.get(neighborID);
+
+                    if(bestCost === undefined || tileCost < bestCost) {
+                        const childNode = createNode(neighborID, neighborX, neighborY, tileCost, type, node, flags);
+
+                        queue.push(childNode);
+                        visitedCost.set(neighborID, tileCost);
+                        nodeMap.set(neighborID, childNode);
+                    }
+                } else if(!nodeMap.has(neighborID)) {
+                    //Hacky but possible because every node has a minimum cost of 1.
+                    flags |= PATH_FLAG.UNREACHABLE;
+
+                    const childNode = createNode(neighborID, neighborX, neighborY, tileCost, type, node, flags);
+
+                    nodeMap.set(neighborID, childNode);
+                }
+            }
         }
-        case DIRECTION.SOUTH: {
-            step.deltaX = 0;
-            step.deltaY = 1
-            break;
+    },
+    isNodeReachable: function(node) {
+        const { flags } = node;
+
+        if(flags & PATH_FLAG.UNREACHABLE) {
+            return false;
         }
-        case DIRECTION.WEST: {
-            step.deltaX = -1;
-            step.deltaY = 0;
-            break;
+
+        return true;
+    },
+    isPathWalkable: function(gameContext, entity, path) {
+        const { world } = gameContext;
+        const { mapManager } = world;
+        const worldMap = mapManager.getActiveMap();
+
+        const { tileX, tileY, config } = entity;
+        const { movementRange } = config;
+
+        let nextX = tileX;
+        let nextY = tileY;
+        let totalCost = 0;
+
+        //Path[path.length -1] is the target.
+        for(let i = 0; i < path.length; i++) {
+            const { deltaX, deltaY } = path[i];
+            const totalDelta = Math.abs(deltaX) + Math.abs(deltaY);
+
+            //Entities can only move one tile at a time.
+            if(totalDelta > 1) {
+                return false;
+            }
+
+            nextX += deltaX;
+            nextY += deltaY;
+
+            const index = worldMap.getIndex(nextX, nextY);
+
+            //The target is out of bounds
+            if(index === WorldMap.OUT_OF_BOUNDS) {
+                return false;
+            }
+
+            const tileType = worldMap.getTileType(gameContext, nextX, nextY);
+
+            totalCost += entity.getTileCost(gameContext, worldMap, tileType, nextX, nextY);
+
+            if(totalCost > movementRange) {
+                return false;
+            }
         }
+
+        return true;
     }
-
-    return step;
-}
-
-export const isNodeReachable = function(node) {
-    const { flags } = node;
-
-    if(flags & PATH_FLAG.UNREACHABLE) {
-        return false;
-    }
-
-    return true;
-}
+};
 
 export const getBestPath = function(gameContext, nodes, targetX, targetY) {
     const { world } = gameContext;
@@ -209,7 +265,7 @@ export const getBestPath = function(gameContext, nodes, targetX, targetY) {
     const index = worldMap.getIndex(targetX, targetY);
     const targetNode = nodes.get(index);
 
-    if(!targetNode || !isNodeReachable(targetNode)) {
+    if(!targetNode || !PathfinderSystem.isNodeReachable(targetNode)) {
         return path;
     }
 
@@ -233,70 +289,82 @@ export const getBestPath = function(gameContext, nodes, targetX, targetY) {
     return path;
 }
 
-export const mGetNodeMap = function(gameContext, entity, nodeMap) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const { tileX, tileY, config } = entity;
-    const { movementRange } = config;
-    const worldMap = mapManager.getActiveMap();
-
-    const startID = worldMap.getIndex(tileX, tileY);
-    const startNode = createNode(startID, tileX, tileY, 0, null, null, PATH_FLAG.START);
-    const queue = [startNode];
-    const visitedCost = new Map();
-    const typeCache = new Map();
-
-    nodeMap.set(startID, startNode);
-    visitedCost.set(startID, 0);
-
-    while(queue.length > 0) {
-        const node = mGetLowestCostNode(queue);
-        const { cost, x, y } = node;
-
-        if(cost > movementRange) {
-            continue;
-        }
-
-        for(let i = 0; i < FloodFill.NEIGHBORS.length; i++) {
-            const [deltaX, deltaY, type] = FloodFill.NEIGHBORS[i];
-            const neighborX = x + deltaX;
-            const neighborY = y + deltaY;
-            const neighborID = worldMap.getIndex(neighborX, neighborY);
-
-            if(neighborID === WorldMap.OUT_OF_BOUNDS) {
-                continue;
-            }
-
-            let flags = PATH_FLAG.NONE;
-            let tileType = typeCache.get(neighborID);
-
-            if(!tileType) {
-                tileType = worldMap.getTileType(gameContext, neighborX, neighborY);
-                typeCache.set(neighborID, tileType);
-            }
-
-            const tileCost = cost + entity.getTileCost(gameContext, worldMap, tileType, neighborX, neighborY);
-
-            if(tileCost <= movementRange) {
-                const bestCost = visitedCost.get(neighborID);
-
-                if(bestCost === undefined || tileCost < bestCost) {
-                    const childNode = createNode(neighborID, neighborX, neighborY, tileCost, type, node, flags);
-
-                    queue.push(childNode);
-                    visitedCost.set(neighborID, tileCost);
-                    nodeMap.set(neighborID, childNode);
-                }
-            } else if(!nodeMap.has(neighborID)) {
-                //Hacky but possible because every node has a minimum cost of 1.
-                flags |= PATH_FLAG.UNREACHABLE;
-
-                const childNode = createNode(neighborID, neighborX, neighborY, tileCost, type, node, flags);
-
-                nodeMap.set(neighborID, childNode);
-            }
-        }
+/**
+ * 
+ * @param {boolean} isIntercepted 
+ * @param {number} pathLength 
+ * @returns 
+ */
+const createInterception = function(isIntercepted, pathLength) {
+    return {
+        "isIntercepted": isIntercepted,
+        "pathLength": pathLength
     }
-
-    console.log(nodeMap);
 }
+
+export const InterceptSystem = {
+    mInterceptEntity: function(gameContext, entity, path, pathLength) {
+        const { world } = gameContext;
+        const { tileX, tileY, teamID } = entity;
+        const interception = createInterception(false, pathLength);
+        
+        let nextX = tileX;
+        let nextY = tileY;
+        let lastEmptyIndex = -1;
+
+        for(let i = 0; i < pathLength; i++) {
+            const { deltaX, deltaY } = path[i];
+
+            nextX += deltaX;
+            nextY += deltaY;
+
+            const nextEntity = world.getEntityAt(nextX, nextY);
+
+            if(!nextEntity) {
+                lastEmptyIndex = i;
+            } else if(!nextEntity.isVisibleTo(gameContext, teamID)) {
+                //If the entity has passed through an entity before.
+                //This is a defensive check to enforce the 1-gap-stealth rule between entities. 
+                if(lastEmptyIndex !== i - 1) {
+                    interception.pathLength = 0;
+                    break;
+                }
+
+                //i means ending NEXT TO the invisible entity.
+                interception.isIntercepted = true;
+                interception.pathLength = i;
+                break;
+            }
+        }
+
+        return interception;
+    },
+    mInterceptMine: function(gameContext, entity, path, pathLength) {
+        const { world } = gameContext;
+        const { mapManager } = world;
+        const worldMap = mapManager.getActiveMap();
+        const { tileX, tileY } = entity;
+        const interception = createInterception(false, pathLength);
+
+        let nextX = tileX;
+        let nextY = tileY;
+
+        for(let i = 0; i < pathLength; i++) {
+            const { deltaX, deltaY } = path[i];
+
+            nextX += deltaX;
+            nextY += deltaY;
+
+            const mine = worldMap.getMine(nextX, nextY);
+
+            if(mine && CombatSystem.isMineTriggered(gameContext, entity, mine)) {
+                //i + 1 means ending ON the mine tile.
+                interception.isIntercepted = true;
+                interception.pathLength = i + 1;
+                break;
+            }
+        }
+
+        return interception;
+    }
+};

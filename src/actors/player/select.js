@@ -4,7 +4,8 @@ import { AttackActionVTable } from "../../action/types/attack.js";
 import { HealVTable } from "../../action/types/heal.js";
 import { MoveVTable } from "../../action/types/move.js";
 import { AUTOTILER_TYPE, ATTACK_COMMAND_TYPE, HEAL_COMMAND_TYPE, MOVE_COMMAND, RANGE_TYPE } from "../../enums.js";
-import { isNodeReachable, getBestPath, fillStep, createStep } from "../../systems/pathfinding.js";
+import { getBestPath, PathfinderSystem } from "../../systems/pathfinding.js";
+import { createStep, fillStep } from "../../systems/direction.js";
 import { Player } from "../player.js";
 import { PlayerState } from "./playerState.js";
 
@@ -53,7 +54,7 @@ SelectState.prototype.onTileClick = function(gameContext, stateMachine, tileX, t
 
     if(tileX === targetX && tileY === targetY) {
         if(this.entity.isMoveTargetValid(gameContext, tileX, tileY)) {
-            if(this.entity.isPathWalkable(gameContext, this.path)) {
+            if(PathfinderSystem.isPathWalkable(gameContext, this.entity, this.path)) {
                 const player = stateMachine.getContext();
                 const request = MoveVTable.createIntent(this.entity.getID(), this.createDefaultPath(), MOVE_COMMAND.NONE, EntityManager.INVALID_ID);
         
@@ -104,7 +105,7 @@ SelectState.prototype.isAttackPathValid = function(gameContext, entity) {
         return false;
     }
 
-    return this.entity.isMoveTargetValid(gameContext, targetX, targetY) && this.entity.isPathWalkable(gameContext, this.path);
+    return this.entity.isMoveTargetValid(gameContext, targetX, targetY) && PathfinderSystem.isPathWalkable(gameContext, this.entity, this.path);
 }
 
 SelectState.prototype.isHealPathValid = function(gameContext, entity) {
@@ -145,7 +146,7 @@ SelectState.prototype.setOptimalAttackPath = function(gameContext) {
             const index = worldMap.getIndex(neighborX, neighborY);
             const node = this.nodeMap.get(index);
 
-            if(node && isNodeReachable(node)) {
+            if(node && PathfinderSystem.isNodeReachable(node)) {
                 if(!bestNode) {
                     bestNode = node;
                 } else if(node.cost < bestNode.cost) {
@@ -221,7 +222,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
         }
     }
 
-    if(!targetNode || !isNodeReachable(targetNode)) {
+    if(!targetNode || !PathfinderSystem.isNodeReachable(targetNode)) {
         //No path update if the node is not reachable.
         return;
     }
@@ -239,7 +240,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
         if(!isSplit) {
             this.path.push(fillStep(deltaX, deltaY));
 
-            if(!this.entity.isPathWalkable(gameContext, this.path)) {
+            if(!PathfinderSystem.isPathWalkable(gameContext, this.entity, this.path)) {
                 this.path = getBestPath(gameContext, this.nodeMap, tileX, tileY);
             }
         }

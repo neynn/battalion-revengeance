@@ -1,5 +1,5 @@
 import { ACTION_TYPE, ATTACK_COMMAND_TYPE, HEAL_COMMAND_TYPE } from "../enums.js";
-import { createStep } from "../systems/pathfinding.js";
+import { createStep } from "../systems/direction.js";
 import { MOVE_STEP_SIZE, packStep, unpackStep } from "./packer_constants.js";
 import { AttackActionVTable } from "./types/attack.js";
 import { EndTurnVTable } from "./types/endTurn.js";
