@@ -4,10 +4,9 @@ import { FIXED_DELTA_TIME } from "../../../engine/engine_constants.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ACTION_TYPE, HEAL_COMMAND_TYPE, SOUND_TYPE, TRAIT_TYPE } from "../../enums.js";
-import { CombatSystem } from "../../systems/combat.js";
+import { CombatSystem, getDeadEntities, InteractionResolver } from "../../systems/combat.js";
 import { playEntitySound } from "../../systems/sound.js";
 import { getAnimationDuration, playHealEffect, updateEntitySprite } from "../../systems/sprite.js";
-import { getDeadEntities, InteractionResolver } from "../interactionResolver.js";
 import { DeathActionVTable } from "./death.js";
 
 const resolveHeal = function(gameContext, entity, target, resolver) {

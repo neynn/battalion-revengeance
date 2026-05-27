@@ -236,12 +236,6 @@ BattalionEntity.prototype.isAtFullHealth = function() {
     return this.health >= this.maxHealth;
 }
 
-/**
- * 
- * @param {int} damage 
- * @param {int} accumulatedDelta
- * @returns {int}
- */
 BattalionEntity.prototype.getAttackDelta = function(damage = 0, accumulatedDelta = 0) {
     const realDamage = Math.floor(damage);
 
@@ -263,12 +257,6 @@ BattalionEntity.prototype.getAttackDelta = function(damage = 0, accumulatedDelta
     return -realDamage;
 }
 
-/**
- * 
- * @param {int} heal 
- * @param {int} accumulatedDelta
- * @returns {int}
- */
 BattalionEntity.prototype.getHealDelta = function(heal = 0, accumulatedDelta = 0) {
     const effectiveHealth = this.health + accumulatedDelta;
     let delta = Math.floor(heal);
@@ -301,11 +289,6 @@ BattalionEntity.prototype.getHealPercentage = function() {
     return healPercentage;
 }
 
-/**
- * 
- * @param {*} gameContext 
- * @returns {int}
- */
 BattalionEntity.prototype.getStartOfTurnDelta = function(gameContext) {
     //Skips the first turn to prohibit unfair state.
     if(this.turns <= 0) {
@@ -345,20 +328,10 @@ BattalionEntity.prototype.getStartOfTurnDelta = function(gameContext) {
     return delta;
 }
 
-/**
- * 
- * @param {int} delta 
- * @returns {int}
- */
 BattalionEntity.prototype.getHealthFromDelta = function(delta = 0) {
     return this.health + delta;
 }
 
-/**
- * 
- * @param {int} lostHP 
- * @returns {int}
- */
 BattalionEntity.prototype.getDamageAsResources = function(lostHP) {
     if(lostHP < 0) {
         return 0;
@@ -510,11 +483,6 @@ BattalionEntity.prototype.isAllyWith = function(gameContext, entity) {
     return teamManager.isAlly(this.teamID, teamID);
 }
 
-/**
- * 
- * @param {*} gameContext 
- * @returns {int}
- */
 BattalionEntity.prototype.getTerrainDamage = function(gameContext) {
     //Commandos take NO damage from terrains.
     if(this.hasTrait(TRAIT_TYPE.COMMANDO)) {
@@ -1407,19 +1375,10 @@ BattalionEntity.prototype.setLastAttacker = function(entityID) {
     }
 }
 
-/**
- * 
- * @returns {int}
- */
 BattalionEntity.prototype.getOverheatDamage = function() {
     return Math.floor(this.maxHealth * TRAIT_CONFIG.OVERHEAT_DAMAGE);
 }
 
-/**
- * 
- * @param {int} damage 
- * @returns {int}
- */
 BattalionEntity.prototype.getAbsorberHeal = function(damage) {
     return Math.floor(damage * TRAIT_CONFIG.ABSORBER_RATE);
 }

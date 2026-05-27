@@ -2,7 +2,7 @@ import { Action } from "../../../engine/action/action.js";
 import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { ACTION_TYPE, INTERRUPT_TYPE, TRAIT_CONFIG, TRAIT_TYPE } from "../../enums.js";
 import { TeamManager } from "../../team/teamManager.js";
-import { fillEntityResolution } from "../interactionResolver.js";
+import { fillEntityResolution } from "../../systems/combat.js";
 import { DeathActionVTable } from "./death.js";
 import { InterruptVTable } from "./interrupt.js";
 import { UncloakVTable } from "./uncloak.js";

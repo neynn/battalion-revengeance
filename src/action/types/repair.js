@@ -1,13 +1,9 @@
 import { Action } from "../../../engine/action/action.js";
 import { ActionIntent } from "../../../engine/action/actionIntent.js";
-import { FIXED_DELTA_TIME } from "../../../engine/engine_constants.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
-import { ACTION_TYPE, HEAL_COMMAND_TYPE, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { ACTION_TYPE, SOUND_TYPE, TEAM_STAT } from "../../enums.js";
 import { playEntitySound } from "../../systems/sound.js";
-import { getAnimationDuration, playHealEffect, updateEntitySprite } from "../../systems/sprite.js";
-import { createEntityResolution, getDeadEntities } from "../interactionResolver.js";
-import { DeathActionVTable } from "./death.js";
 
 const createRepairIntent = function(entityID) {
     return new ActionIntent(ACTION_TYPE.REPAIR, {

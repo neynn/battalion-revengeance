@@ -1,6 +1,6 @@
 import { ExecutionPlan } from "../../engine/action/executionPlan.js";
 import { ACTION_TYPE } from "../enums.js";
-import { createEntityResolution } from "./interactionResolver.js";
+import { createEntityResolution } from "../systems/combat.js";
 import { ENTITY_ID_SIZE, ENTITY_RESOLUTION_SIZE, ENTITY_SNAPSHOT_SIZE, MINE_SIZE, MOVE_STEP_SIZE, packEntityResolution, packEntitySnapshot, packStep, unpackEntityResolution, unpackEntitySnapshot, unpackStep } from "./packer_constants.js";
 import { AttackActionVTable } from "./types/attack.js";
 import { CaptureActionVTable } from "./types/capture.js";
