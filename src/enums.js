@@ -671,7 +671,8 @@ export const ACTION_TYPE = {
     UNCLOAK: 14,
     INTERRUPT: 15,
     TO_TRANSPORT: 16,
-    FROM_TRANSPORT: 17
+    FROM_TRANSPORT: 17,
+    REPAIR: 18
 };
 
 export const OBJECTIVE_TYPE = {

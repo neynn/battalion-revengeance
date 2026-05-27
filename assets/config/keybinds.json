@@ -12,6 +12,7 @@
         "TRANSPORT_PELICAN": "+z",
         "TRANSPORT_STORK": "+u",
         "PRODUCE": "+p",
+        "REPAIR": "+r",
 
         "DEBUG_KILL": "+8",
         "DEBUG_SAVE": "+9"

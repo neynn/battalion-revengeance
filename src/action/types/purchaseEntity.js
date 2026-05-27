@@ -48,7 +48,7 @@ const fillPurchasePlan = function(gameContext, executionPlan, actionIntent) {
 
     const { health, cost } = typeRegistry.getEntityType(typeID);
     const team = teamManager.getTeam(currentTeam);
-    const adjustedCost = team.getAdjustedCost(gameContext, cost);
+    const adjustedCost = team.getRegularCost(gameContext, cost);
 
     if(!team.hasEnoughCash(adjustedCost)) {
         return;

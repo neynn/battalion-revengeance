@@ -13,6 +13,7 @@ import { ProduceVTable } from "../action/types/produceEntity.js";
 import { ToTransportVTable } from "../action/types/toTransport.js";
 import { FromTransportVTable } from "../action/types/fromTransport.js";
 import { BattalionRenderer2D } from "../camera/battalionRenderer2D.js";
+import { RepairVTable } from "../action/types/repair.js";
 
 /**
  * 
@@ -181,6 +182,14 @@ Player.prototype.loadKeybinds = function(gameContext) {
         if(entity) {
             this.addIntent(ProduceVTable.createIntent(entity.id, ENTITY_TYPE.ANNIHILATOR_TANK, DIRECTION.NORTH));
         }  
+    });
+
+    router.on("REPAIR", () => {
+        const entity = this.inspector.getLastEntity(gameContext);
+
+        if(entity) {
+            this.addIntent(RepairVTable.createIntent(entity.id));
+        }   
     });
 
     router.on("DEBUG_SAVE", () => saveStoryMap(gameContext));

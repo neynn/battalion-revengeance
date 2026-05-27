@@ -82,7 +82,7 @@ const executeAttack = function(gameContext, data) {
 
         if(entityID !== attackerID) {
             if(doTerrifying) {
-                targetObject.applyTerrifying();
+                targetObject.reduceMorale();
             }
 
             //TODO(neyn): Should the unit itself count as killed?

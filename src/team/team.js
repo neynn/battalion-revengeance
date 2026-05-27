@@ -146,11 +146,15 @@ Team.prototype.reduceCash = function(cash) {
     this.cash -= cash;
 }
 
-Team.prototype.getAdjustedCost = function(gameContext, cost) {
+Team.prototype.getRegularCost = function(gameContext, cost) {
+    return this.getExchangeRate(gameContext) * cost;
+}
+
+Team.prototype.getExchangeRate = function(gameContext) {
     const { typeRegistry } = gameContext;
     const { exchangeRate } = typeRegistry.getCurrencyType(this.currency);
 
-    return cost * exchangeRate;
+    return exchangeRate;
 }
 
 Team.prototype.hasEnoughCash = function(cost) {

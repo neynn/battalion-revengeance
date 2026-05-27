@@ -289,6 +289,19 @@ BattalionEntity.prototype.getHealDelta = function(heal = 0, accumulatedDelta = 0
     return delta;
 }
 
+BattalionEntity.prototype.getHealPercentage = function() {
+    let healPercentage = (this.maxHealth - this.health) / this.maxHealth;
+
+    //Healing is capped to a max of 25%
+    if(healPercentage > 0.25) {
+        healPercentage = 0.25;
+    } else if(healPercentage < 0) {
+        healPercentage = 0;
+    }
+    
+    return healPercentage;
+}
+
 /**
  * 
  * @param {*} gameContext 
@@ -309,16 +322,7 @@ BattalionEntity.prototype.getStartOfTurnDelta = function(gameContext) {
     }
 
     if(this.hasFlag(BattalionEntity.FLAG.IS_REPAIRING)) {
-        let healPercentage = (this.maxHealth - this.health) / this.maxHealth;
-
-        //Healing is capped to a max of 25%
-        if(healPercentage > 0.25) {
-            healPercentage = 0.25;
-        } else if(healPercentage < 0) {
-            healPercentage = 0;
-        }
-
-        bonusHealth += Math.floor(this.maxHealth * healPercentage);
+        bonusHealth += Math.floor(this.maxHealth * this.getHealPercentage());
     }
 
     //Heal if below maxHealth but cap the healing to maxHealth.
@@ -463,7 +467,7 @@ BattalionEntity.prototype.getMorale = function(gameContext) {
     return typeRegistry.getMoraleType(morale);
 }
 
-BattalionEntity.prototype.applyTerrifying = function() {
+BattalionEntity.prototype.reduceMorale = function() {
     this.moraleDelta--;
 
     if(this.moraleDelta < MORALE_DELTA_MIN) {
@@ -471,7 +475,7 @@ BattalionEntity.prototype.applyTerrifying = function() {
     }
 }
 
-BattalionEntity.prototype.applyInflaming = function() {
+BattalionEntity.prototype.increaseMorale = function() {
     this.moraleDelta++;
 
     if(this.moraleDelta > MORALE_DELTA_MAX) {
@@ -1393,6 +1397,13 @@ BattalionEntity.prototype.consumeAct = function() {
 
     this.syncRenderFlags();
 }
+
+BattalionEntity.prototype.consumeAll = function() {
+    this.doneActions = this.getMaxActions();
+    this.doneMoves = this.getMaxMoves();
+    this.syncRenderFlags();
+}
+
 
 BattalionEntity.prototype.isSelectable = function() {
     return !this.isDead() && this.isAllowedToActAndMove() && !this.hasTrait(TRAIT_TYPE.NOT_SELECTABLE);

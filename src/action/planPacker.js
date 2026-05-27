@@ -20,6 +20,37 @@ import { StartTurnVTable } from "./types/startTurn.js";
 import { UncloakVTable } from "./types/uncloak.js";
 import { ToTransportVTable } from "./types/toTransport.js";
 import { FromTransportVTable } from "./types/fromTransport.js";
+import { RepairVTable } from "./types/repair.js";
+
+/**
+ * 0x00 [U8] -> type
+ * 
+ * 0x01 [S16] -> entityID
+ * 
+ * 0x03 [U16] -> cost
+ */
+const REPAIR_HEADER_SIZE = 5;
+
+const RepairTable = {
+    getSize: function(data) {
+        return REPAIR_HEADER_SIZE;
+    },
+    write: function(data, view, beginPtr) {
+        const { entityID, cost } = data;
+
+        view.setUint8(beginPtr + 0, ACTION_TYPE.REPAIR);
+        view.setInt16(beginPtr + 1, entityID, true);
+        view.setUint16(beginPtr + 3, cost, true);
+    },
+    read: function(view, beginPtr) {
+        const data = RepairVTable.createData();
+
+        data.entityID = view.getInt16(beginPtr + 1, true);
+        data.cost = view.getUint16(beginPtr + 3, true);
+
+        return data;
+    }
+};
 
 /**
  * 0x00 [U8] -> type
@@ -769,6 +800,7 @@ const getTable = function(actionType) {
         case ACTION_TYPE.START_TURN: return StartTurnTable;
         case ACTION_TYPE.TO_TRANSPORT: return ToTransportTable;
         case ACTION_TYPE.UNCLOAK: return UncloakTable;
+        case ACTION_TYPE.REPAIR: return RepairTable;
         default: return null;
     }
 }

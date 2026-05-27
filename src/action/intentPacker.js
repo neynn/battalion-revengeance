@@ -8,7 +8,51 @@ import { HealVTable } from "./types/heal.js";
 import { MoveVTable } from "./types/move.js";
 import { ProduceVTable } from "./types/produceEntity.js";
 import { PurchaseVTable } from "./types/purchaseEntity.js";
+import { RepairVTable } from "./types/repair.js";
 import { ToTransportVTable } from "./types/toTransport.js";
+
+/**
+ * 
+ * @param {*} gameContext 
+ * @param {number} entityID 
+ * @returns {boolean}
+ */
+const isEntityBelongingTo = function(gameContext, entityID) {
+    const { world, teamManager } = gameContext;
+    const { currentTeam } = teamManager;
+    const { entityManager } = world;
+    const entity = entityManager.getEntity(entityID);
+
+    return entity && entity.belongsTo(currentTeam);
+}
+
+/**
+ * 0x00 [U8] -> type
+ *
+ * 0x01 [S16] -> entityID
+ */
+const REPAIR_HEADER_SIZE = 3;
+
+const RepairTable = {
+    isValid: function(gameContext, data) {
+        return isEntityBelongingTo(gameContext, data.entityID);
+    },
+    write: function(data) {
+        const { entityID } = data;
+        const buffer = new ArrayBuffer(REPAIR_HEADER_SIZE)
+        const view = new DataView(buffer);
+
+        view.setUint8(0, ACTION_TYPE.REPAIR);
+        view.setInt16(1, entityID, true);
+
+        return buffer;
+    },
+    read: function(view) {
+        const entityID = view.getInt16(1, true);
+
+        return RepairVTable.createIntent(entityID);
+    }
+}
 
 /**
  * 0x00 [U8] -> type
@@ -18,20 +62,8 @@ import { ToTransportVTable } from "./types/toTransport.js";
 const FROM_TRANSPORT_HEADER_SIZE = 3;
 
 const FromTransportTable = {
-    /**
-     * 
-     * @param {*} gameContext 
-     * @param {*} data 
-     * @returns {boolean}
-     */
     isValid: function(gameContext, data) {
-        const { world, teamManager } = gameContext;
-        const { currentTeam } = teamManager;
-        const { entityManager } = world;
-        const { entityID } = data;
-        const entity = entityManager.getEntity(entityID);
-
-        return entity && entity.belongsTo(currentTeam);
+        return isEntityBelongingTo(gameContext, data.entityID);
     },
     write: function(data) {
         const { entityID } = data;
@@ -60,20 +92,8 @@ const FromTransportTable = {
 const TO_TRANSPORT_HEADER_SIZE = 4;
 
 const ToTransportTable = {
-    /**
-     * 
-     * @param {*} gameContext 
-     * @param {*} data 
-     * @returns {boolean}
-     */
     isValid: function(gameContext, data) {
-        const { world, teamManager } = gameContext;
-        const { currentTeam } = teamManager;
-        const { entityManager } = world;
-        const { entityID } = data;
-        const entity = entityManager.getEntity(entityID);
-
-        return entity && entity.belongsTo(currentTeam);
+        return isEntityBelongingTo(gameContext, data.entityID);
     },
     write: function(data) {
         const { entityID, transportID } = data;
@@ -136,20 +156,14 @@ const ProduceTable = {
 const HEAL_HEADER_SIZE = 6;
 
 const HealTable = {
-    /**
-     * 
-     * @param {*} gameContext 
-     * @param {*} data 
-     * @returns {boolean}
-     */
     isValid: function(gameContext, data) {
-        const { world, teamManager } = gameContext;
-        const { currentTeam } = teamManager;
-        const { entityManager } = world;
         const { entityID, commandID } = data;
-        const entity = entityManager.getEntity(entityID);
 
-        return commandID === HEAL_COMMAND_TYPE.DIRECT && entity && entity.belongsTo(currentTeam);
+        if(commandID !== HEAL_COMMAND_TYPE.DIRECT) {
+            return false;
+        }
+
+        return isEntityBelongingTo(gameContext, entityID);
     },
     write: function(data) {
         const { entityID, targetID, commandID } = data;
@@ -238,20 +252,14 @@ const EndTurnTable = {
 const ATTACK_HEADER_SIZE = 6;
 
 const AttackTable = {
-    /**
-     * 
-     * @param {*} gameContext 
-     * @param {*} data 
-     * @returns {boolean}
-     */
     isValid: function(gameContext, data) {
-        const { world, teamManager } = gameContext;
-        const { currentTeam } = teamManager;
-        const { entityManager } = world;
         const { entityID, command } = data;
-        const entity = entityManager.getEntity(entityID);
 
-        return command === ATTACK_COMMAND_TYPE.DIRECT && entity && entity.belongsTo(currentTeam);
+        if(command !== ATTACK_COMMAND_TYPE.DIRECT) {
+            return false;
+        }
+
+        return isEntityBelongingTo(gameContext, entityID);
     },
     write: function(data) {
         const { entityID, targetID, command } = data;
@@ -285,20 +293,8 @@ const AttackTable = {
 const MOVE_HEADER_SIZE = 8;
 
 const MoveTable = {
-    /**
-     * 
-     * @param {*} gameContext 
-     * @param {*} data 
-     * @returns {boolean}
-     */
     isValid: function(gameContext, data) {
-        const { world, teamManager } = gameContext;
-        const { currentTeam } = teamManager;
-        const { entityManager } = world;
-        const { entityID } = data;
-        const entity = entityManager.getEntity(entityID);
-
-        return entity && entity.belongsTo(currentTeam);
+        return isEntityBelongingTo(gameContext, data.entityID);
     },
     write: function(data) {
         const { entityID, targetID, command, path } = data;
@@ -349,6 +345,7 @@ const getTable = function(actionType) {
         case ACTION_TYPE.PRODUCE_ENTITY: return ProduceTable;
         case ACTION_TYPE.TO_TRANSPORT: return ToTransportTable;
         case ACTION_TYPE.FROM_TRANSPORT: return FromTransportTable;
+        case ACTION_TYPE.REPAIR: return RepairTable;
         default: return null;
     }
 }

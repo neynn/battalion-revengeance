@@ -97,7 +97,7 @@ const executeHeal = function(gameContext, data) {
         //MAYBE(neyn): If an entity modifies itself with healing, then inflaming is applied
         //Healers with ABSORBER would be one option.
         if(doInflaming) {
-            targetObject.applyInflaming();
+            targetObject.increaseMorale();
         }
     }
 

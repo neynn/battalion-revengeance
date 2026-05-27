@@ -53,7 +53,7 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
     const { entityID, path, command, targetID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
 
-    if(!entity || !entity.isAllowedToMove()) {
+    if(!entity || entity.isDead() || !entity.isAllowedToMove()) {
         return;
     }
 

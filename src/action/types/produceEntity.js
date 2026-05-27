@@ -52,7 +52,7 @@ const fillProducePlan = function(gameContext, executionPlan, actionIntent) {
     
     const { health, cost } = typeRegistry.getEntityType(typeID);
     const team = entity.getTeam(gameContext);
-    const adjustedCost = team.getAdjustedCost(gameContext, cost);
+    const adjustedCost = team.getRegularCost(gameContext, cost);
 
     //Entities purchase produced units, not the team.
     if(!entity.canPurchase(gameContext, typeID, adjustedCost)) {
@@ -65,7 +65,7 @@ const fillProducePlan = function(gameContext, executionPlan, actionIntent) {
 
     data.entityID = entityID;
     data.nextID = nextID;
-    data.cost = cost;
+    data.cost = adjustedCost;
     data.snapshot.tileX = tileX;
     data.snapshot.tileY = tileY;
     data.snapshot.type = typeID;

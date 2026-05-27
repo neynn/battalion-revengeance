@@ -19,6 +19,7 @@ import { ToTransportAction, ToTransportVTable } from "../action/types/toTranspor
 import { FromTransportAction, FromTransportVTable } from "../action/types/fromTransport.js";
 import { Renderer2D } from "../../engine/renderer/renderer2D.js";
 import { Autotiler } from "../../engine/tile/autotiler.js";
+import { RepairAction, RepairVTable } from "../action/types/repair.js";
 
 const TILE_CATEGORY = {
     _INVALID: -1,
@@ -253,6 +254,7 @@ export const registerActionVTables = function(gameContext) {
     actionQueue.registerActionVTable(ACTION_TYPE.INTERRUPT, InterruptVTable);
     actionQueue.registerActionVTable(ACTION_TYPE.TO_TRANSPORT, ToTransportVTable);
     actionQueue.registerActionVTable(ACTION_TYPE.FROM_TRANSPORT, FromTransportVTable);
+    actionQueue.registerActionVTable(ACTION_TYPE.REPAIR, RepairVTable);
 }
 
 export const registerClientActions = function(gameContext) {
@@ -277,6 +279,7 @@ export const registerClientActions = function(gameContext) {
     actionQueue.registerAction(ACTION_TYPE.INTERRUPT, new InterruptAction());
     actionQueue.registerAction(ACTION_TYPE.TO_TRANSPORT, new ToTransportAction());
     actionQueue.registerAction(ACTION_TYPE.FROM_TRANSPORT, new FromTransportAction());
+    actionQueue.registerAction(ACTION_TYPE.REPAIR, new RepairAction());
 }
 
 export const addDebug = function(gameContext) {

@@ -19,12 +19,6 @@ export const createBrushAction = function() {
     }
 }
 
-export const createActivity = function() {
-    return {
-        "actions": []
-    }
-}
-
 export const MapEditor = function() {
     this.brush = new Brush();
     this.activityStack = [];
