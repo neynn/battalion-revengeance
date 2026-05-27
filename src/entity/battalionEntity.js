@@ -1135,6 +1135,12 @@ BattalionEntity.prototype.onTurnEnd = function() {
     this.syncRenderFlags();
 }
 
+BattalionEntity.prototype.triggerScavenge = function() {
+    this.bonusMoves++;
+    this.bonusActions++;
+    this.syncRenderFlags();
+}
+
 BattalionEntity.prototype.triggerBewegungskrieg = function() {
     if(!this.hasFlag(BattalionEntity.FLAG.BEWEGUNGSKRIEG_TRIGGERED)) {
         this.bonusMoves++;

@@ -54,6 +54,14 @@ Mine.prototype.isVisibleTo = function(gameContext, teamID) {
     return isAlly;
 }
 
+Mine.prototype.isJammed = function(jammerFlags) {
+    switch(this.config.id) {
+        case MINE_TYPE.LAND: return (jammerFlags & JAMMER_FLAG.RADAR) !== 0;
+        case MINE_TYPE.SEA: return (jammerFlags & JAMMER_FLAG.SONAR) !== 0;
+        default: return false;
+    }
+}
+
 Mine.prototype.setOpacity = function(opacity) {
     this.opacity = opacity;
 }
@@ -72,12 +80,8 @@ Mine.prototype.isHidden = function() {
     return (this.flags & Mine.FLAG.HIDDEN) !== 0;
 }
 
-Mine.prototype.getJammerFlag = function() {
-    switch(this.config.id) {
-        case MINE_TYPE.LAND: return JAMMER_FLAG.RADAR;
-        case MINE_TYPE.SEA: return JAMMER_FLAG.SONAR;
-        default: return JAMMER_FLAG.NONE;
-    }
+Mine.prototype.getDamage = function(movementType) {
+    return this.config.getDamage(movementType);
 }
 
 Mine.prototype.getTileSprite = function() {
@@ -86,10 +90,6 @@ Mine.prototype.getTileSprite = function() {
         case MINE_TYPE.SEA: return TILE_ID.MINE_SEA;
         default: return TILE_ID.JAMMER;
     }
-}
-
-Mine.prototype.getDamage = function(movementType) {
-    return this.config.getDamage(movementType);
 }
 
 Mine.prototype.getNullifierTrait = function() {

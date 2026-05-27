@@ -2,6 +2,9 @@ import { BattalionEntity } from "../entity/battalionEntity.js";
 import { Mine } from "../entity/mine.js";
 import { JAMMER_FLAG, TRAIT_TYPE } from "../enums.js";
 
+const DEFAULT_MINE_SEARCH_RANGE = 0;
+const DEFAULT_ENTITY_SEARCH_RANGE = 1;
+
 export const StealthSystem = {
     /**
      * 
@@ -93,7 +96,7 @@ export const StealthSystem = {
         const { mapManager, entityManager } = world;
         const worldMap = mapManager.getActiveMap();
         const jammerFlags = checker.config.getJammerFlags();
-        const searchRange = jammerFlags !== JAMMER_FLAG.NONE ? checker.config.jammerRange : 1;
+        const searchRange = jammerFlags !== JAMMER_FLAG.NONE ? checker.config.jammerRange : DEFAULT_ENTITY_SEARCH_RANGE;
         const uncloakedEntities = [];
         let shouldSelfUncloak = false;
     
@@ -159,24 +162,14 @@ export const StealthSystem = {
         const { mapManager } = world;
         const worldMap = mapManager.getActiveMap();
         const jammerFlags = checker.config.getJammerFlags();
-        const searchRange = jammerFlags !== JAMMER_FLAG.NONE ? checker.config.jammerRange : 0;
+        const searchRange = jammerFlags !== JAMMER_FLAG.NONE ? checker.config.jammerRange : DEFAULT_MINE_SEARCH_RANGE;
         const uncloakedMines = [];
 
         worldMap.fill2DGraph(checker.tileX, checker.tileY, searchRange, (tileX, tileY, distance, index) => {
             const mine = worldMap.getMine(tileX, tileY);
 
-            if(mine && mine.isHidden()) {
-                let isDetected = false;
-
-                if(distance === 0) {
-                    isDetected = true;
-                } else {
-                    const neededFlag = mine.getJammerFlag();
-
-                    isDetected = (jammerFlags & neededFlag) !== 0;
-                }
-
-                if(isDetected && !teamManager.isAlly(checker.teamID, mine.teamID)) {
+            if(mine && !mine.isVisibleTo(gameContext, checker.teamID)) {
+                if(distance === 0 || mine.isJammed(jammerFlags)) {
                     uncloakedMines.push(mine);
                 }
             }

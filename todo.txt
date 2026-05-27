@@ -77,3 +77,5 @@ Teams dont cache status. If it's an active team it gets recomputed. Only calcula
 
 Send TeamSnapshot along with EndTurn?
 EndTurn: Capture gets fired.
+
+Add Scavenge Trait
