@@ -9,6 +9,7 @@ import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { ScenarioModel } from "../scenarioModel.js";
 import { ShopType } from "../type/parsed/shopType.js";
+import { TerrainType } from "../type/parsed/terrainType.js";
 
 const ACTIONS_PER_TURN = 1;
 const MOVES_PER_TURN = 1;
@@ -597,6 +598,11 @@ BattalionEntity.prototype.isMoveTargetValid = function(gameContext, targetX, tar
     return true;
 }
 
+/**
+ * 
+ * @param {*} gameContext 
+ * @returns {TerrainType[]}
+ */
 BattalionEntity.prototype.getTerrainTypes = function(gameContext) {
     const { world, typeRegistry } = gameContext;
     const { mapManager } = world;
@@ -1431,114 +1437,6 @@ BattalionEntity.prototype.isHurtByStreamblast = function() {
 BattalionEntity.prototype.isHurtByDispersion = function() {
     //Dispersion does not hurt air units, but unlike SHRAPNEL and STREAMBLAST hurts IS_SUBMERGED units.
     return this.config.category !== ENTITY_CATEGORY.AIR;
-}
-
-BattalionEntity.prototype.mResolveAttackTraits = function(resolver) {
-    if(this.hasTrait(TRAIT_TYPE.OVERHEAT)) {
-        const overheatDamage = this.getOverheatDamage();
-
-        resolver.addSelfDamage(this, overheatDamage);
-    }
-
-    if(this.hasTrait(TRAIT_TYPE.ABSORBER)) {
-        const { totalDamage } = resolver;
-        const absorberHeal = this.getAbsorberHeal(totalDamage);
-
-        resolver.addHeal(this, absorberHeal);
-    }
-
-    if(this.hasTrait(TRAIT_TYPE.SELF_DESTRUCT)) {
-        resolver.addSelfDestruct(this);
-    }
-}
-
-BattalionEntity.prototype.mResolveShrapnel = function(gameContext, target, damageFlags, resolver) {
-    const { world } = gameContext;
-    const { tileX, tileY } = target;
-    const direction = this.getDirectionTo(target);
-    const deltaX = DIRECTION_DELTA_X[direction];
-    const deltaY = DIRECTION_DELTA_Y[direction];
-    const targets = world.getEntitiesInLine(tileX, tileY, deltaX, deltaY, TRAIT_CONFIG.SHRAPNEL_RANGE);
-    const flags = damageFlags | ATTACK_FLAG.SHRAPNEL;
-
-    for(const target of targets) {
-        if(target.isHurtByShrapnel()) {
-            const damage = this.getAttackDamage(gameContext, target, flags);
-
-            resolver.addAttack(target, damage);
-        }
-    }
-}
-
-BattalionEntity.prototype.mResolveStreamblastAttack = function(gameContext, target, resolver) {
-    const { world } = gameContext;
-    const direction = this.getDirectionTo(target);
-    const deltaX = DIRECTION_DELTA_X[direction];
-    const deltaY = DIRECTION_DELTA_Y[direction];
-    const targets = world.getEntitiesInLine(this.tileX, this.tileY, deltaX, deltaY, this.config.streamRange);
-
-    for(const target of targets) {
-        if(target.isHurtByStreamblast()) {
-            const damage = this.getAttackDamage(gameContext, target, ATTACK_FLAG.STREAMBLAST);
-
-            resolver.addAttack(target, damage);
-        }
-    }
-
-    this.mResolveAttackTraits(resolver);
-}
-
-BattalionEntity.prototype.mResolveDispersionAttack = function(gameContext, target, resolver) {
-    const { world } = gameContext;
-    const { tileX, tileY } = target;
-    const range = this.hasTrait(TRAIT_TYPE.JUDGEMENT) ? TRAIT_CONFIG.JUDGEMENT_RANGE : TRAIT_CONFIG.DISPERSION_RANGE;
-    const targets = world.getEntitiesInRange(tileX, tileY, range, range);
-
-    for(const target of targets) {
-        if(target.isHurtByDispersion()) {
-            const damage = this.getAttackDamage(gameContext, target, ATTACK_FLAG.AREA);
-
-            if(target.id === this.id) {
-                resolver.addSelfDamage(target, damage);
-            } else {
-                resolver.addAttack(target, damage);
-            }
-        }
-    }
-
-    this.mResolveAttackTraits(resolver);
-}
-
-BattalionEntity.prototype.mResolveCounterAttack = function(gameContext, target, resolver) {
-    const damage = this.getAttackDamage(gameContext, target, ATTACK_FLAG.COUNTER);
-
-    resolver.addAttack(target, damage);
-
-    //TODO(neyn): Shrapnel did NOT work when countering in the original game.
-    if(this.hasTrait(TRAIT_TYPE.SHRAPNEL)) {
-        this.mResolveShrapnel(gameContext, target, ATTACK_FLAG.COUNTER, resolver);
-    }
-
-    this.mResolveAttackTraits(resolver);
-}
-
-BattalionEntity.prototype.mResolveRegularAttack = function(gameContext, target, resolver) {
-    const damage = this.getAttackDamage(gameContext, target, ATTACK_FLAG.NONE);
-
-    resolver.addAttack(target, damage);
-
-    if(this.hasTrait(TRAIT_TYPE.SHRAPNEL)) {
-        this.mResolveShrapnel(gameContext, target, ATTACK_FLAG.NONE, resolver);
-    }
-
-    this.mResolveAttackTraits(resolver);
-}
-
-BattalionEntity.prototype.mResolveHeal = function(gameContext, target, resolver) {
-    const amplifier = this.getHealAmplifier(gameContext);
-    const heal = Math.floor(this.damage * amplifier);
-
-    resolver.addHeal(target, heal);
 }
 
 BattalionEntity.prototype.placeOnMap = function(gameContext) {

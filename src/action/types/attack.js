@@ -4,6 +4,7 @@ import { FIXED_DELTA_TIME } from "../../../engine/engine_constants.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ACTION_TYPE, ATTACK_TYPE, ATTACK_COMMAND_TYPE, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { CombatSystem } from "../../systems/combat.js";
 import { playEntitySound } from "../../systems/sound.js";
 import { getAnimationDuration, playAttackEffect, updateEntitySprite } from "../../systems/sprite.js";
 import { getDeadEntities, InteractionResolver } from "../interactionResolver.js";
@@ -19,7 +20,7 @@ const ATTACK_FLAG = {
 
 const resolveCounterAttack = function(gameContext, entity, target, resolver) {
     if(entity.isCounterValid(target) && entity.isAttackValid(gameContext, target) && entity.isAttackPositionValid(gameContext, target)) {
-        entity.mResolveCounterAttack(gameContext, target, resolver);
+        CombatSystem.mResolveCounterAttack(gameContext, entity, target, resolver);
     }
 }
 
@@ -27,15 +28,15 @@ const resolveFirstAttack = function(gameContext, entity, target, resolver) {
     if(entity.isAttackValid(gameContext, target) && entity.isAttackPositionValid(gameContext, target)) {
         switch(entity.getAttackType()) {
             case ATTACK_TYPE.REGULAR: {
-                entity.mResolveRegularAttack(gameContext, target, resolver);
+                CombatSystem.mResolveRegularAttack(gameContext, entity, target, resolver);
                 break;
             }
             case ATTACK_TYPE.DISPERSION: {
-                entity.mResolveDispersionAttack(gameContext, target, resolver);
+                CombatSystem.mResolveDispersionAttack(gameContext, entity, target, resolver);
                 break;
             }
             case ATTACK_TYPE.STREAMBLAST: {
-                entity.mResolveStreamblastAttack(gameContext, target, resolver);
+                CombatSystem.mResolveStreamblastAttack(gameContext, entity, target, resolver);
                 break;
             }
             default: {

@@ -6,7 +6,7 @@ import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ACTION_TYPE, HEAL_COMMAND_TYPE, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { playEntitySound } from "../../systems/sound.js";
 import { getAnimationDuration, playHealEffect, updateEntitySprite } from "../../systems/sprite.js";
-import { createEntityResolution, getDeadEntities, InteractionResolver } from "../interactionResolver.js";
+import { createEntityResolution, getDeadEntities } from "../interactionResolver.js";
 import { DeathActionVTable } from "./death.js";
 
 const createRepairIntent = function(entityID) {
