@@ -1,13 +1,10 @@
-import { MAX_TILE_COLUMNS, MAX_TILE_ROWS } from "../../engine/engine_constants.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
-import { FloodFill } from "../../engine/pathfinders/floodFill.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { DIRECTION, ENTITY_CATEGORY, JAMMER_FLAG, MOVEMENT_TYPE, PATH_FLAG, RANGE_TYPE, TILE_ID, TILE_TYPE, TRAIT_CONFIG, TRAIT_TYPE } from "../enums.js";
+import { ENTITY_CATEGORY, JAMMER_FLAG, MOVEMENT_TYPE, TILE_TYPE, TRAIT_CONFIG, TRAIT_TYPE } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { TileType } from "../type/parsed/tileType.js";
 import { CombatSystem } from "./combat.js";
-import { fillStep } from "./direction.js";
 
 /**
  * 
@@ -101,35 +98,6 @@ export const canEntityTypeStandOnTile = function(gameContext, typeID, tileX, til
     return !isEntityTypeJammed(gameContext, entityType, worldMap, tileX, tileY, teamID);
 }
 
-const createNode = function(id, x, y, cost, type, parent, flags) {
-    return {
-        "id": id,
-        "x": x,
-        "y": y,
-        "cost": cost,
-        "type": type,
-        "parent": parent,
-        "flags": flags
-    }
-}
-
-const mGetLowestCostNode = function(queue) {
-    let lowestNode = queue[0];
-    let lowestIndex = 0;
-
-    for(let i = 1; i < queue.length; i++) {
-        if(queue[i].cost < queue[lowestIndex].cost) {
-            lowestNode = queue[i];
-            lowestIndex = i;
-        }
-    }
-
-    queue[lowestIndex] = queue[queue.length - 1];
-    queue.pop();
-
-    return lowestNode;
-}
-
 /**
  * 
  * @param {*} gameContext 
@@ -140,7 +108,7 @@ const mGetLowestCostNode = function(queue) {
  * @param {number} tileY 
  * @returns 
  */
-const resolveTileCost = function(gameContext, worldMap, entity, tileType, tileX, tileY) {
+export const resolveTileCost = function(gameContext, worldMap, entity, tileType, tileX, tileY) {
     const { world } = gameContext;
     const { entityManager } = world;
     const { config, teamID } = entity;
@@ -191,220 +159,38 @@ const resolveTileCost = function(gameContext, worldMap, entity, tileType, tileX,
     return tileCost;
 }
 
-export const Pathfinder = function(width, height) {
-    this.width = width;
-    this.height = height;
-    this.size = width * height;
-    this.costs = new Float16Array(this.size);
-    this.parents = new Int32Array(this.size);
-    this.visited = new Uint32Array(this.size);
-    this.flags = new Uint8Array(this.size);
-    this.tile = new Uint16Array(this.size);
-    this.heap = [];
-    this.searchID = 1;
-}
+export const PathfinderSystem = {
+    isNodeReachable: function(gameContext, index) {
+        const { world } = gameContext;
+        const { mapManager } = world;
+        const worldMap = mapManager.getActiveMap();
+        const pathfinder = worldMap.pathfinder;
 
-Pathfinder.prototype.reset = function() {
-    this.visited.fill(0);
-    this.searchID = 1;
-}
+        return pathfinder.isNodeReachable(index);
+    },
+    getCostOf: function(gameContext, index) {
+        const { world } = gameContext;
+        const { mapManager } = world;
+        const worldMap = mapManager.getActiveMap();
+        const pathfinder = worldMap.pathfinder;
 
-Pathfinder.prototype.beginSearch = function() {
-    this.searchID++;
-    this.heap.length = 0;
-}
-
-Pathfinder.prototype.mGetLowestCostNode = function() {
-    return mGetLowestCostNode(this.heap);
-}
-
-/**
- * 
- * @param {*} gameContext 
- * @param {BattalionEntity} entity 
- * @returns 
- */
-Pathfinder.prototype.computeMovement = function(gameContext, entity) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const { tileX, tileY, config } = entity;
-    const { movementRange, minRange } = config;
-    const rangeType = entity.getRangeType();
-    const hasWeapon = entity.hasWeapon();
-    const maxRange = entity.getMaxRange(gameContext);
-
-    const worldMap = mapManager.getActiveMap();
-    const startID = worldMap.getIndex(tileX, tileY);
-
-    this.beginSearch();
-    this.costs[startID] = 0;
-    this.parents[startID] = -1;
-    this.visited[startID] = this.searchID;
-    this.flags[startID] = PATH_FLAG.NONE;
-
-    this.heap.push({
-        "id": startID,
-        "cost": 0
-    });
-
-    while(this.heap.length > 0) {
-        const { id, cost } = this.mGetLowestCostNode();
-
-        if(cost > movementRange) {
-            continue;
-        }
-
-        const x = id % worldMap.width;
-        const y = Math.floor((id / worldMap.width));
-
-        for(const [deltaX, deltaY] of FloodFill.NEIGHBORS) {
-            const neighborX = x + deltaX;
-            const neighborY = y + deltaY;
-            const neighborID = worldMap.getIndex(neighborX, neighborY);
-
-            if(neighborID === WorldMap.OUT_OF_BOUNDS) {
-                continue;
-            }
-
-            const tileType = worldMap.getTileType(gameContext, neighborX, neighborY);
-            const moveCost = resolveTileCost(gameContext, worldMap, entity, tileType, neighborX, neighborY);
-            const newCost = cost + moveCost;
-        
-            if(newCost <= movementRange) {
-                if(this.visited[neighborID] !== this.searchID || newCost < this.costs[neighborID]) {
-                    this.costs[neighborID] = newCost;
-                    this.parents[neighborID] = id;
-                    this.visited[neighborID] = this.searchID;
-                    this.flags[neighborID] = PATH_FLAG.NONE;
-                    this.tile[neighborID] = TILE_ID.NONE;
-
-                    this.heap.push({
-                        "id": neighborID,
-                        "cost": newCost
-                    });
-
-                    switch(rangeType) {
-                        case RANGE_TYPE.MELEE: {
-                            this.tile[neighborID] = TILE_ID.OVERLAY_MOVE;
-                            break;
-                        }
-                        case RANGE_TYPE.HYBRID:
-                        case RANGE_TYPE.RANGE: {
-                            const distance = Math.abs(neighborX - tileX) + Math.abs(neighborY - tileY);
-
-                            if(distance >= minRange && distance <= maxRange) {
-                                this.tile[neighborID] = TILE_ID.OVERLAY_MOVE_ATTACK;
-                            } else {
-                                this.tile[neighborID] = TILE_ID.OVERLAY_MOVE;
-                            }
-
-                            break;
-                        }
-                    }
-                } 
-            } else if(this.visited[neighborID] !== this.searchID) {
-                this.visited[neighborID] = this.searchID;
-                this.flags[neighborID] |= PATH_FLAG.UNREACHABLE;
-                this.tile[neighborID] = TILE_ID.NONE;
-
-                switch(rangeType) {
-                    case RANGE_TYPE.MELEE: {
-                        if(hasWeapon) {
-                            this.tile[neighborID] = TILE_ID.OVERLAY_ATTACK_LIGHT;
-                        }
-
-                        break;
-                    }
-                    case RANGE_TYPE.HYBRID:
-                    case RANGE_TYPE.RANGE: {
-                        const distance = Math.abs(neighborX - tileX) + Math.abs(neighborY - tileY);
-
-                        if(distance >= minRange && distance <= maxRange) {
-                            this.tile[neighborID] = TILE_ID.OVERLAY_ATTACK_LIGHT;
-                        }
-
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    this.tile[startID] = TILE_ID.OVERLAY_MOVE;
-    this.flags[startID] = PATH_FLAG.START;
-    this.heap.length = 0;
-}
-
-Pathfinder.prototype.addRangedOverlay = function(gameContext, entity) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const { tileX, tileY, config } = entity;
-    const { minRange } = config;
-    const rangeType = entity.getRangeType();
-    const maxRange = entity.getMaxRange(gameContext);
-
-    //Fill the rest out to signal attack range.
-    if(rangeType === RANGE_TYPE.HYBRID || rangeType === RANGE_TYPE.RANGE) {
+        return pathfinder.getCostOf(index);
+    },
+    getBestPath: function(gameContext, targetX, targetY) {
+        const { world } = gameContext;
+        const { mapManager } = world;
         const worldMap = mapManager.getActiveMap();
 
-        worldMap.fill2DGraph(tileX, tileY, maxRange, (nextX, nextY, distance, index) => {
-            if(distance >= minRange && this.visited[index] !== this.searchID) {
-                this.visited[index] = this.searchID;
-                this.flags[index] = PATH_FLAG.UNREACHABLE;
-                this.tile[index] = TILE_ID.OVERLAY_ATTACK;
-            }
-        });
-    }
-}
-
-
-const pathfinder = new Pathfinder(MAX_TILE_COLUMNS, MAX_TILE_ROWS);
-
-export const PathfinderSystem = {
-    pathfinder: pathfinder,
-    isNodeReachable: function(index) {
-        if(index === WorldMap.OUT_OF_BOUNDS || index >= pathfinder.size) {
-            return false;
+        if(!worldMap) {
+            return [];
         }
 
-        const flags = pathfinder.flags[index];
-
-        if(flags & PATH_FLAG.UNREACHABLE) {
-            return false;
-        }
-
-        const generation = pathfinder.visited[index];
-
-        if(generation !== pathfinder.searchID) {
-            return false;
-        }
-
-        return true;
-    },
-    getCostOf: function(index) {
-        if(index === WorldMap.OUT_OF_BOUNDS || index >= pathfinder.size) {
-            return EntityType.MAX_MOVE_COST;
-        }
-
-        const flags = pathfinder.flags[index];
-
-        if(flags & PATH_FLAG.UNREACHABLE) {
-            return EntityType.MAX_MOVE_COST;
-        }
-
-        const generation = pathfinder.visited[index];
-
-        if(generation !== pathfinder.searchID) {
-            return EntityType.MAX_MOVE_COST;
-        }
-
-        return pathfinder.costs[index];    
+        return worldMap.pathfinder.getBestPath(worldMap, targetX, targetY);
     },
     isPathWalkable: function(gameContext, entity, path) {
         const { world } = gameContext;
         const { mapManager } = world;
         const worldMap = mapManager.getActiveMap();
-
         const { tileX, tileY, config } = entity;
         const { movementRange } = config;
 
@@ -442,48 +228,6 @@ export const PathfinderSystem = {
         }
 
         return true;
-    },
-    getBestPath: function(gameContext, targetX, targetY) {
-        const { world } = gameContext;
-        const { mapManager } = world;
-        const worldMap = mapManager.getActiveMap();
-        const path = [];
-
-        if(!worldMap) {
-            return path;
-        }
-
-        const index = worldMap.getIndex(targetX, targetY);
-
-        if(index === WorldMap.OUT_OF_BOUNDS) {
-            return path;
-        }
-
-        const parent = pathfinder.parents[index];
-        const flags = pathfinder.flags[index];
-
-        if(flags & PATH_FLAG.UNREACHABLE) {
-            return path;
-        }
-
-        let i = 0;
-        let lastX = targetX;
-        let lastY = targetY;
-        let currentIndex = parent;
-
-        while(currentIndex !== -1 && pathfinder.visited[currentIndex] === pathfinder.searchID && i < EntityType.MAX_MOVE_COST) {
-            const { x, y } = worldMap.getTileCoords(currentIndex);
-            const deltaX = lastX - x;
-            const deltaY = lastY - y;
-
-            path.unshift(fillStep(deltaX, deltaY));
-            i++;
-            lastX = x;
-            lastY = y;
-            currentIndex = pathfinder.parents[currentIndex];
-        }
-
-        return path;
     }
 };
 

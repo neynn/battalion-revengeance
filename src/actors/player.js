@@ -14,7 +14,6 @@ import { ToTransportVTable } from "../action/types/toTransport.js";
 import { FromTransportVTable } from "../action/types/fromTransport.js";
 import { BattalionRenderer2D } from "../camera/battalionRenderer2D.js";
 import { RepairVTable } from "../action/types/repair.js";
-import { PathfinderSystem } from "../systems/pathfinder.js";
 
 /**
  * 
@@ -65,18 +64,23 @@ Player.prototype.onTurnEnd = function(gameContext) {
 }
 
 Player.prototype.refreshEntityNodeMap = function(gameContext, entity) {
+    const { world } = gameContext;
+    const { mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
+    const pathfinder = worldMap.pathfinder;
+
     this.renderer.clearOverlays();
 
     if(!entity.isDead() && entity.isMoveable()) {
-        PathfinderSystem.pathfinder.computeMovement(gameContext, entity);
+        pathfinder.computeMovement(gameContext, entity);
     } else {
         //Updated the generation so that the ranged overlay can be visualized correctly.
-        PathfinderSystem.pathfinder.beginSearch();
+        pathfinder.beginSearch();
     }
     
-    PathfinderSystem.pathfinder.addRangedOverlay(gameContext, entity);
+    pathfinder.addRangedOverlay(gameContext, entity);
 
-    this.renderer.pathfinderGeneration = PathfinderSystem.pathfinder.searchID;
+    this.renderer.pathfinderGeneration = pathfinder.searchID;
 }
 
 Player.prototype.stopRenderingPathfinder = function() {
@@ -97,7 +101,7 @@ Player.prototype.onClick = function(gameContext, tileX, tileY) {
             break;
         }
         case MapInspector.STATE.MINE: {
-            this.stopRenderingPathfinder()
+            this.stopRenderingPathfinder();
             this.states.handleEvent(gameContext, Player.EVENT.TILE_CLICK, { "x": tileX, "y": tileY });
             break;
         }
@@ -105,7 +109,7 @@ Player.prototype.onClick = function(gameContext, tileX, tileY) {
             const worldMap = mapManager.getActiveMap();
             const building = worldMap.getBuilding(tileX, tileY);
 
-            this.stopRenderingPathfinder()
+            this.stopRenderingPathfinder();
             this.states.handleEvent(gameContext, Player.EVENT.BUILDING_CLICK, { "building": building });
             break;
         }

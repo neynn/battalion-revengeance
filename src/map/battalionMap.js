@@ -5,6 +5,7 @@ import { Building } from "../entity/building.js";
 import { downgradeOre, oreToValue } from "../enumHelpers.js";
 import { CLIMATE_TYPE, TILE_TYPE } from "../enums.js";
 import { JammerTile } from "./jammerTile.js";
+import { Pathfinder } from "./pathfinder.js";
 
 export const BattalionMap = function(id, width, height) {
     WorldMap.call(this, id, width, height);
@@ -17,6 +18,7 @@ export const BattalionMap = function(id, width, height) {
     this.mines = [];
     this.jammers = new Map();
     this.localization = new Map();
+    this.pathfinder = new Pathfinder(width, height);
 
     this.createLayer(Layer.TYPE.BIT_16);
     this.createLayer(Layer.TYPE.BIT_16);

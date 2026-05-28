@@ -19,7 +19,7 @@ import { Renderer2D } from "../../engine/renderer/renderer2D.js";
 import { Display } from "../../engine/renderer/display.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { Sprite } from "../../engine/sprite/sprite.js";
-import { Pathfinder, PathfinderSystem } from "../systems/pathfinder.js";
+import { Pathfinder } from "../map/pathfinder.js";
 
 const BLOCK = { COUNT: 4, WIDTH: 4, HEIGHT: 8, GAP: 1 };
 const WIDTH = (BLOCK.GAP * (BLOCK.COUNT + 1)) + BLOCK.WIDTH * BLOCK.COUNT;
@@ -612,7 +612,7 @@ BattalionRenderer2D.prototype.render = function(gameContext, camera, display) {
     
     camera.updateWorldBounds(worldMap.width, worldMap.height);
     tiles += this.drawTiles(gameContext, camera, display, worldMap);
-    tiles += this.drawMovementNodes(gameContext, camera, display, PathfinderSystem.pathfinder);
+    tiles += this.drawMovementNodes(gameContext, camera, display, worldMap.pathfinder);
     sprites += this.drawSpriteLayer(gameContext, camera, display, LAYER_TYPE.BUILDING);
     other += this.drawMines(gameContext, camera, display, worldMap);
 

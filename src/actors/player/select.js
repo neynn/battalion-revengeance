@@ -148,7 +148,7 @@ SelectState.prototype.setOptimalAttackPath = function(gameContext) {
 
         if(!isOccupied) {
             const index = worldMap.getIndex(neighborX, neighborY);
-            const cost = PathfinderSystem.getCostOf(index);
+            const cost = PathfinderSystem.getCostOf(gameContext, index);
 
             if(cost < bestCost) {
                 bestX = neighborX;
@@ -225,7 +225,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
         }
     }
 
-    if(!PathfinderSystem.isNodeReachable(targetIndex)) {
+    if(!PathfinderSystem.isNodeReachable(gameContext, targetIndex)) {
         //No path update if the node is not reachable.
         return;
     }
