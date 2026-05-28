@@ -19,6 +19,7 @@ import { Renderer2D } from "../../engine/renderer/renderer2D.js";
 import { Display } from "../../engine/renderer/display.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { Sprite } from "../../engine/sprite/sprite.js";
+import { Pathfinder, PathfinderSystem } from "../systems/pathfinder.js";
 
 const BLOCK = { COUNT: 4, WIDTH: 4, HEIGHT: 8, GAP: 1 };
 const WIDTH = (BLOCK.GAP * (BLOCK.COUNT + 1)) + BLOCK.WIDTH * BLOCK.COUNT;
@@ -40,7 +41,6 @@ export const BattalionRenderer2D = function() {
     //Each tile has a minCost of 1, which means there will NEVER be more than MAX_MOVE_COST tiles.
     this.pathOverlay = new TileOverlay(EntityType.MAX_MOVE_COST);
     this.jammerOverlay = new TileOverlay(JAMMER_MAX_USED_TILES);
-    this.selectOverlay = new TileOverlay(1000);
     this.flags = BattalionRenderer2D.FLAG.NONE;
     this.deferred = new Int32Array(MAX_DEFERRED);
     this.deferredCount = 0;
@@ -49,6 +49,7 @@ export const BattalionRenderer2D = function() {
 
     this.teamID = TeamManager.INVALID_ID;
     this.isCurrentActor = false;
+    this.pathfinderGeneration = 0;
 }
 
 BattalionRenderer2D.FLAG = {
@@ -68,7 +69,6 @@ BattalionRenderer2D.prototype.setInspect = function(inspectX, inspectY) {
 }
 
 BattalionRenderer2D.prototype.clearOverlays = function() {
-    this.selectOverlay.clear();
     this.pathOverlay.clear();
     this.jammerOverlay.clear();
 }
@@ -86,71 +86,64 @@ BattalionRenderer2D.prototype.showEntityJammerAt = function(gameContext, entity,
     });
 }
 
-BattalionRenderer2D.prototype.showEntityNodes = function(gameContext, entity, nodeMap) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-    const rangeType = entity.getRangeType();
-    const { tileX, tileY } = entity;
-    const hasWeapon = entity.hasWeapon();
-    const minRange = entity.config.minRange;
-    const maxRange = entity.getMaxRange(gameContext);
-    const isJammer = entity.isJammer();
+/**
+ * 
+ * @param {*} gameContext 
+ * @param {Pathfinder} pathfinder 
+ * @returns 
+ */
+BattalionRenderer2D.prototype.drawMovementNodes = function(gameContext, camera, display, pathfinder) {
+    const { tileManager } = gameContext;
+    const { context } = display;
+    const visitedNodes = pathfinder.visited;
+    const generation = pathfinder.searchID;
+    const tiles = pathfinder.tile;
 
-    this.clearOverlays();
-
-    switch(rangeType) {
-        case RANGE_TYPE.MELEE: {
-            for(const [index, node] of nodeMap) {
-                const { x, y, flags } = node;
-
-                if((flags & PATH_FLAG.UNREACHABLE) === 0) {
-                    this.selectOverlay.add(TILE_ID.OVERLAY_MOVE, x, y);
-                } else if(hasWeapon) {
-                    this.selectOverlay.add(TILE_ID.OVERLAY_ATTACK_LIGHT, x, y);
-                }
-            }
-
-            break;
-        }
-        case RANGE_TYPE.HYBRID:
-        case RANGE_TYPE.RANGE: {
-            for(const [index, node] of nodeMap) {
-                const { x, y, flags } = node;
-                const distance = entity.getDistanceToTile(x, y);
-
-                //The node is reachable
-                if((flags & PATH_FLAG.UNREACHABLE) === 0) {
-                    if(distance >= minRange && distance <= maxRange) {
-                        this.selectOverlay.add(TILE_ID.OVERLAY_MOVE_ATTACK, x, y);
-                    } else {
-                        this.selectOverlay.add(TILE_ID.OVERLAY_MOVE, x, y);
-                    }
-                } else {
-                    //The node is unreachable, but still in attack range!
-                    if(distance >= minRange && distance <= maxRange) {
-                        this.selectOverlay.add(TILE_ID.OVERLAY_ATTACK_LIGHT, x, y);
-                    } else {
-                        //Not reachable and NOT in attack range.
-                        //This node is invisible to the unit.
-                    }
-                }
-            }
-
-            //Fill the rest out to signal attack range.
-            worldMap.fill2DGraph(tileX, tileY, maxRange, (nextX, nextY, distance, index) => {
-                if(distance >= minRange && !nodeMap.has(index)) {
-                    this.selectOverlay.add(TILE_ID.OVERLAY_ATTACK, nextX, nextY);
-                }
-            });
-
-            break;
-        }
+    //Only spectate the given generation.
+    if(generation !== this.pathfinderGeneration) {
+        return 0;
     }
 
-    if(isJammer) {
-        this.showEntityJammerAt(gameContext, entity, tileX, tileY);
+    const wTileX = camera.tileX;
+    const wTileY = camera.tileY;
+    const startX = camera.startX;
+    const startY = camera.startY;
+    const endX = camera.endX;
+    const endY = camera.endY;
+    const mapWidth = camera.mapWidth;
+    const tileWidth = camera.tileWidth;
+    const tileHeight = camera.tileHeight;
+    const viewportX = camera.fOffsetX;
+    const viewportY = camera.fOffsetY;
+
+    let inspectedEntity = null;
+    let entityCount = 0;
+    let tileCount = 0;
+    let renderY = (startY - wTileY) * tileHeight - viewportY;
+
+    display.setAlpha(1);
+    
+    for(let i = startY; i <= endY; i++) {
+        let index = i * mapWidth + startX;
+        let renderX = (startX - wTileX) * tileWidth - viewportX;
+
+        for(let j = startX; j <= endX; j++) {
+            const tileID = tiles[index];
+
+            //The node was visited by the latest search.
+            if(visitedNodes[index] === generation && tileID !== 0) {
+                this.drawTile(tileManager, tileID, context, renderX, renderY);
+                tileCount++;
+            }
+
+            index++;
+            renderX += tileWidth;
+        }
+
+        renderY += tileHeight;
     }
+
+    return tileCount;
 }
 
 BattalionRenderer2D.prototype.showEntityPath = function(autotiler, path, entityX, entityY) {
@@ -619,7 +612,7 @@ BattalionRenderer2D.prototype.render = function(gameContext, camera, display) {
     
     camera.updateWorldBounds(worldMap.width, worldMap.height);
     tiles += this.drawTiles(gameContext, camera, display, worldMap);
-    overlays += this.drawOverlay(camera, tileManager, display, this.selectOverlay);
+    tiles += this.drawMovementNodes(gameContext, camera, display, PathfinderSystem.pathfinder);
     sprites += this.drawSpriteLayer(gameContext, camera, display, LAYER_TYPE.BUILDING);
     other += this.drawMines(gameContext, camera, display, worldMap);
 

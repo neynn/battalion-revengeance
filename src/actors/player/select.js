@@ -3,12 +3,13 @@ import { FloodFill } from "../../../engine/pathfinders/floodFill.js";
 import { AttackActionVTable } from "../../action/types/attack.js";
 import { HealVTable } from "../../action/types/heal.js";
 import { MoveVTable } from "../../action/types/move.js";
-import { AUTOTILER_TYPE, ATTACK_COMMAND_TYPE, HEAL_COMMAND_TYPE, MOVE_COMMAND, RANGE_TYPE } from "../../enums.js";
+import { AUTOTILER_TYPE, ATTACK_COMMAND_TYPE, HEAL_COMMAND_TYPE, MOVE_COMMAND, RANGE_TYPE, ENTITY_TYPE } from "../../enums.js";
 import { PathfinderSystem } from "../../systems/pathfinder.js";
 import { createStep, fillStep } from "../../systems/direction.js";
 import { Player } from "../player.js";
 import { PlayerState } from "./playerState.js";
 import { CombatSystem } from "../../systems/combat.js";
+import { EntityType } from "../../type/parsed/entityType.js";
 
 export const SelectState = function() {
     PlayerState.call(this);
@@ -20,7 +21,6 @@ export const SelectState = function() {
 
     this.path = [];
     this.entity = null;
-    this.nodeMap = null;
 }
 
 SelectState.prototype = Object.create(PlayerState.prototype);
@@ -29,6 +29,7 @@ SelectState.prototype.constructor = SelectState;
 SelectState.prototype.onExit = function(gameContext, stateMachine) {
     this.path.length = 0;
     this.entity = null;
+    stateMachine.getContext().stopRenderingPathfinder();
 }
 
 SelectState.prototype.onEnter = function(gameContext, stateMachine, enterData) {
@@ -41,7 +42,6 @@ SelectState.prototype.selectEntity = function(gameContext, stateMachine, entity)
     const player = stateMachine.getContext();
 
     this.entity = entity;
-    this.nodeMap = player.nodeMap;
     this.cursorX = entity.tileX;
     this.cursorY = entity.tileY;
     this.originX = entity.tileX;
@@ -136,7 +136,10 @@ SelectState.prototype.setOptimalAttackPath = function(gameContext) {
     const { world } = gameContext;
     const { mapManager } = world;
     const worldMap = mapManager.getActiveMap();
-    let bestNode = null;
+    let bestX = -1;
+    let bestY = -1;
+    let bestCost = EntityType.MAX_MOVE_COST;
+    let nodeFound = false;
 
     for(const [deltaX, deltaY, type] of FloodFill.NEIGHBORS) {
         const neighborX = this.cursorX + deltaX;
@@ -145,20 +148,19 @@ SelectState.prototype.setOptimalAttackPath = function(gameContext) {
 
         if(!isOccupied) {
             const index = worldMap.getIndex(neighborX, neighborY);
-            const node = this.nodeMap.get(index);
+            const cost = PathfinderSystem.getCostOf(index);
 
-            if(node && PathfinderSystem.isNodeReachable(node)) {
-                if(!bestNode) {
-                    bestNode = node;
-                } else if(node.cost < bestNode.cost) {
-                    bestNode = node;
-                }
+            if(cost < bestCost) {
+                bestX = neighborX;
+                bestY = neighborY;
+                bestCost = cost;
+                nodeFound = true;
             }
         }
     }
 
-    if(bestNode) {
-        this.path = PathfinderSystem.getBestPath(gameContext, this.nodeMap, bestNode.x, bestNode.y);
+    if(nodeFound) {
+        this.path = PathfinderSystem.getBestPath(gameContext, bestX, bestY);
     } else {
         this.path.length = 0;
     }
@@ -186,7 +188,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
     const { mapManager } = world;
     const player = stateMachine.getContext();
     const worldMap = mapManager.getActiveMap();
-    const targetNode = this.nodeMap.get(worldMap.getIndex(tileX, tileY));
+    const targetIndex = worldMap.getIndex(tileX, tileY);
     const entity = player.getVisibleEntity(gameContext, tileX, tileY);
     const walkAutotiler = tileManager.getAutotiler(AUTOTILER_TYPE.PATH);
     const attackAutotiler = tileManager.getAutotiler(AUTOTILER_TYPE.PATH);
@@ -223,7 +225,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
         }
     }
 
-    if(!targetNode || !PathfinderSystem.isNodeReachable(targetNode)) {
+    if(!PathfinderSystem.isNodeReachable(targetIndex)) {
         //No path update if the node is not reachable.
         return;
     }
@@ -242,11 +244,11 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
             this.path.push(fillStep(deltaX, deltaY));
 
             if(!PathfinderSystem.isPathWalkable(gameContext, this.entity, this.path)) {
-                this.path = PathfinderSystem.getBestPath(gameContext, this.nodeMap, tileX, tileY);
+                this.path = PathfinderSystem.getBestPath(gameContext, tileX, tileY);
             }
         }
     } else if(absDelta !== 0) {
-        this.path = PathfinderSystem.getBestPath(gameContext, this.nodeMap, tileX, tileY);
+        this.path = PathfinderSystem.getBestPath(gameContext, tileX, tileY);
     }
 
     player.renderer.showEntityPath(walkAutotiler, this.path, this.originX, this.originY);

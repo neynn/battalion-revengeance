@@ -27,7 +27,6 @@ export const Player = function(id, inspector, renderer) {
 
     this.renderer = renderer;
     this.inspector = inspector;
-    this.nodeMap = new Map();
     this.maxIntents = 10;
 
     this.states = new StateMachine(this);
@@ -67,9 +66,21 @@ Player.prototype.onTurnEnd = function(gameContext) {
 
 Player.prototype.refreshEntityNodeMap = function(gameContext, entity) {
     this.renderer.clearOverlays();
-    this.nodeMap.clear();
-    PathfinderSystem.mGetNodeMap(gameContext, entity, this.nodeMap);
-    this.renderer.showEntityNodes(gameContext, entity, this.nodeMap);
+
+    if(!entity.isDead() && entity.isMoveable()) {
+        PathfinderSystem.pathfinder.computeMovement(gameContext, entity);
+    } else {
+        //Updated the generation so that the ranged overlay can be visualized correctly.
+        PathfinderSystem.pathfinder.beginSearch();
+    }
+    
+    PathfinderSystem.pathfinder.addRangedOverlay(gameContext, entity);
+
+    this.renderer.pathfinderGeneration = PathfinderSystem.pathfinder.searchID;
+}
+
+Player.prototype.stopRenderingPathfinder = function() {
+    this.renderer.pathfinderGeneration = 0;
 }
 
 Player.prototype.onClick = function(gameContext, tileX, tileY) {
@@ -81,10 +92,12 @@ Player.prototype.onClick = function(gameContext, tileX, tileY) {
 
     switch(inspectorState) {
         case MapInspector.STATE.TILE: {
+            this.stopRenderingPathfinder();
             this.states.handleEvent(gameContext, Player.EVENT.TILE_CLICK, { "x": tileX, "y": tileY });
             break;
         }
         case MapInspector.STATE.MINE: {
+            this.stopRenderingPathfinder()
             this.states.handleEvent(gameContext, Player.EVENT.TILE_CLICK, { "x": tileX, "y": tileY });
             break;
         }
@@ -92,6 +105,7 @@ Player.prototype.onClick = function(gameContext, tileX, tileY) {
             const worldMap = mapManager.getActiveMap();
             const building = worldMap.getBuilding(tileX, tileY);
 
+            this.stopRenderingPathfinder()
             this.states.handleEvent(gameContext, Player.EVENT.BUILDING_CLICK, { "building": building });
             break;
         }
@@ -103,6 +117,7 @@ Player.prototype.onClick = function(gameContext, tileX, tileY) {
             break;
         }
         case MapInspector.STATE.ENTITY_MENU: {
+            this.stopRenderingPathfinder();
             this.states.setNextState(gameContext, Player.STATE.IDLE, {});
             break;
         }
