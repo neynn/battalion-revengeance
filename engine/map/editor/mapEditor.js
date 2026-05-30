@@ -144,7 +144,7 @@ MapEditor.prototype.updateAutotilers = function(gameContext, tileX, tileY) {
         for(let i = startY; i <= endY; i++) {
             for(let j = startX; j <= endX; j++) {
                 const tileID = this.targetMap.getTile(this.targetLayer, j, i);
-                const autotiler = tileManager.getAutotilerByVisual(tileID);
+                const autotiler = tileManager.getAutotilerFromTile(tileID);
 
                 if(autotiler) {
                     this.targetMap.applyAutotiler(autotiler, j, i, this.targetLayer, isInverted);

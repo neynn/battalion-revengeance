@@ -8,7 +8,7 @@ export const TileVisual = function(id) {
     this.framePtr = 0;
     this.frameCount = 0;
     this.frameTimeTotal = 1;
-    this.frameData = new Float32Array(TILE_FRAME_SIZE * TILE_MAX_FRAMES);
+    this.frameData = new Int16Array(TILE_FRAME_SIZE * TILE_MAX_FRAMES);
     this.jumpTable = new Uint8Array(TILE_MAX_FRAMES);
 }
 
@@ -46,6 +46,17 @@ TileVisual.prototype.setFrameTime = function(frameTime) {
     }
 }
 
+/**
+ * 
+ * @param {number} fp 
+ * @param {number} x 
+ * @param {number} y 
+ * @param {number} w 
+ * @param {number} h 
+ * @param {number} ox 
+ * @param {number} oy 
+ * @returns {number}
+ */
 TileVisual.prototype.pushElement = function(fp, x, y, w, h, ox, oy) {
     const element_count = this.frameData[fp];
     const begin_write_ptr = fp + element_count * TILE_FRAME_SIZE;
@@ -71,7 +82,15 @@ TileVisual.prototype.pushElement = function(fp, x, y, w, h, ox, oy) {
 
 TileVisual.prototype.createFrame = function(fp, region) {
     const { x, y, w, h, offsetX, offsetY } = region;
-    const next_frame_ptr = this.pushElement(fp, x, y, w, h, offsetX, offsetY);
+    const next_frame_ptr = this.pushElement(
+        fp, 
+        Math.floor(x),
+        Math.floor(y), 
+        Math.floor(w), 
+        Math.floor(h), 
+        Math.trunc(offsetX),
+        Math.trunc(offsetY)
+    );
 
     return next_frame_ptr;
 }
@@ -86,8 +105,8 @@ TileVisual.prototype.createPattern = function(fp, texture, pattern) {
             next_frame_ptr = this.createFrame(fp, region);
 
             //Updates the offset of the last element.
-            this.frameData[next_frame_ptr - TILE_FRAME_SIZE + 5] += shiftX;
-            this.frameData[next_frame_ptr - TILE_FRAME_SIZE + 6] += shiftY;
+            this.frameData[next_frame_ptr - TILE_FRAME_SIZE + 5] += Math.trunc(shiftX);
+            this.frameData[next_frame_ptr - TILE_FRAME_SIZE + 6] += Math.trunc(shiftY);
         }
     }
 

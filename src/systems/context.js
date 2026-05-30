@@ -22,14 +22,13 @@ import { Autotiler } from "../../engine/tile/autotiler.js";
 import { RepairAction, RepairVTable } from "../action/types/repair.js";
 
 const TILE_CATEGORY = {
-    _INVALID: -1,
-    ROAD: 0,
-    RIVER: 1,
-    PATH: 2,
-    CANYON: 3,
-    RAIL: 4,
-    SHORE: 5,
-    _COUNT: 6
+    NONE: 0,
+    ROAD: 1 << 0,
+    RIVER: 1 << 2,
+    PATH: 1 << 3,
+    CANYON: 1 << 4,
+    RAIL: 1 << 5,
+    SHORE: 1 << 6
 };
 
 const PATH_VALUES = {
@@ -188,26 +187,25 @@ export const loadTiles = function(gameContext) {
     const { tileManager } = gameContext;
 
     tileManager.initTables(TILE_ID._COUNT);
-    tileManager.createCategories(TILE_CATEGORY._COUNT);
     tileManager.createAutotilers(AUTOTILER_TYPE._COUNT);
 
-    tileManager.registerTile(TILE_ID.GRASS, TILE_TYPE.GRASS, -1, -1);
-    tileManager.registerTile(TILE_ID.BOREAL, TILE_TYPE.BOREAL, -1, -1);
-    tileManager.registerTile(TILE_ID.ARCTIC, TILE_TYPE.ARCTIC, -1, -1);
+    tileManager.registerTile(TILE_ID.GRASS, TILE_TYPE.GRASS, -1, TILE_CATEGORY.NONE);
+    tileManager.registerTile(TILE_ID.BOREAL, TILE_TYPE.BOREAL, -1, TILE_CATEGORY.NONE);
+    tileManager.registerTile(TILE_ID.ARCTIC, TILE_TYPE.ARCTIC, -1, TILE_CATEGORY.NONE);
     tileManager.registerTiles(TILE_ID.ROAD_0, TILE_ID.ROAD_15, TILE_TYPE.ROAD, AUTOTILER_TYPE.ROAD, TILE_CATEGORY.ROAD);
-    tileManager.registerTile(TILE_ID.VOLANO, TILE_TYPE.VOLCANO, -1, -1);
+    tileManager.registerTile(TILE_ID.VOLANO, TILE_TYPE.VOLCANO, -1, TILE_CATEGORY.NONE);
     tileManager.registerTiles(TILE_ID.RIVER_0, TILE_ID.RIVER_47, TILE_TYPE.RIVER, AUTOTILER_TYPE.RIVER, TILE_CATEGORY.RIVER);
     tileManager.registerTiles(TILE_ID.SHORE_0, TILE_ID.SHORE_11, TILE_TYPE.SHORE, -1, TILE_CATEGORY.SHORE);
-    tileManager.registerTiles(TILE_ID.ISLAND_1, TILE_ID.ISLAND_4, TILE_TYPE.ISLAND, -1, -1);
-    tileManager.registerTiles(TILE_ID.SWIRL_1, TILE_ID.SWIRL_4, TILE_TYPE.SWIRL, -1, -1);
-    tileManager.registerTiles(TILE_ID.ROCKS_1, TILE_ID.ROCKS_4, TILE_TYPE.ROCKS, -1, -1);
+    tileManager.registerTiles(TILE_ID.ISLAND_1, TILE_ID.ISLAND_4, TILE_TYPE.ISLAND, -1, TILE_CATEGORY.NONE);
+    tileManager.registerTiles(TILE_ID.SWIRL_1, TILE_ID.SWIRL_4, TILE_TYPE.SWIRL, -1, TILE_CATEGORY.NONE);
+    tileManager.registerTiles(TILE_ID.ROCKS_1, TILE_ID.ROCKS_4, TILE_TYPE.ROCKS, -1, TILE_CATEGORY.NONE);
     tileManager.registerTiles(TILE_ID.PATH_0, TILE_ID.PATH_15, TILE_TYPE.PATH, AUTOTILER_TYPE.PATH, TILE_CATEGORY.PATH);
-    tileManager.registerTile(TILE_ID.ORE_LEFT, TILE_TYPE.RICH_ORE, -1, -1);
-    tileManager.registerTile(TILE_ID.ORE_RIGHT, TILE_TYPE.RICH_ORE, -1, -1);
-    tileManager.registerTile(TILE_ID.ORE_LEFT_USED, TILE_TYPE.USED_ORE, -1, -1);
-    tileManager.registerTile(TILE_ID.ORE_RIGHT_USED, TILE_TYPE.USED_ORE, -1, -1);
-    tileManager.registerTile(TILE_ID.ORE_LEFT_DEPLETED, TILE_TYPE.DEPLETED_ORE, -1, -1);
-    tileManager.registerTile(TILE_ID.ORE_RIGHT_DEPLETED, TILE_TYPE.DEPLETED_ORE, -1, -1);
+    tileManager.registerTile(TILE_ID.ORE_LEFT, TILE_TYPE.RICH_ORE, -1, TILE_CATEGORY.NONE);
+    tileManager.registerTile(TILE_ID.ORE_RIGHT, TILE_TYPE.RICH_ORE, -1, TILE_CATEGORY.NONE);
+    tileManager.registerTile(TILE_ID.ORE_LEFT_USED, TILE_TYPE.USED_ORE, -1, TILE_CATEGORY.NONE);
+    tileManager.registerTile(TILE_ID.ORE_RIGHT_USED, TILE_TYPE.USED_ORE, -1, TILE_CATEGORY.NONE);
+    tileManager.registerTile(TILE_ID.ORE_LEFT_DEPLETED, TILE_TYPE.DEPLETED_ORE, -1, TILE_CATEGORY.NONE);
+    tileManager.registerTile(TILE_ID.ORE_RIGHT_DEPLETED, TILE_TYPE.DEPLETED_ORE, -1, TILE_CATEGORY.NONE);
     tileManager.registerTiles(TILE_ID.CANYON_0, TILE_ID.CANYON_47, TILE_TYPE.CANYON, AUTOTILER_TYPE.CANYON, TILE_CATEGORY.CANYON);
     tileManager.registerTiles(TILE_ID.RAIL_0, TILE_ID.RAIL_15, TILE_TYPE.RAIL, AUTOTILER_TYPE.RAIL, TILE_CATEGORY.RAIL);
     tileManager.registerTiles(TILE_ID.PLAINS_GROUND_1, TILE_ID.PLAINS_SHRUB_1, TILE_TYPE.GRASS);
@@ -217,11 +215,11 @@ export const loadTiles = function(gameContext) {
     
     //TODO(neyn): Add boreal tiles!
 
-    tileManager.loadAutotiler(AUTOTILER_TYPE.PATH, Autotiler.TYPE.MIN_4, [TILE_CATEGORY.PATH]);
-    tileManager.loadAutotiler(AUTOTILER_TYPE.ROAD, Autotiler.TYPE.MIN_4, [TILE_CATEGORY.ROAD]);
-    tileManager.loadAutotiler(AUTOTILER_TYPE.RAIL, Autotiler.TYPE.MIN_4, [TILE_CATEGORY.RAIL]);
-    tileManager.loadAutotiler(AUTOTILER_TYPE.RIVER, Autotiler.TYPE.MIN_8, [TILE_CATEGORY.RIVER, TILE_CATEGORY.SHORE]);
-    tileManager.loadAutotiler(AUTOTILER_TYPE.CANYON, Autotiler.TYPE.MIN_8, [TILE_CATEGORY.CANYON]);
+    tileManager.loadAutotiler(AUTOTILER_TYPE.PATH, Autotiler.TYPE.MIN_4, TILE_CATEGORY.PATH);
+    tileManager.loadAutotiler(AUTOTILER_TYPE.ROAD, Autotiler.TYPE.MIN_4, TILE_CATEGORY.ROAD);
+    tileManager.loadAutotiler(AUTOTILER_TYPE.RAIL, Autotiler.TYPE.MIN_4, TILE_CATEGORY.RAIL);
+    tileManager.loadAutotiler(AUTOTILER_TYPE.RIVER, Autotiler.TYPE.MIN_8, TILE_CATEGORY.RIVER | TILE_CATEGORY.SHORE);
+    tileManager.loadAutotiler(AUTOTILER_TYPE.CANYON, Autotiler.TYPE.MIN_8, TILE_CATEGORY.CANYON);
 
     tileManager.loadAutotilerValues(AUTOTILER_TYPE.PATH, PATH_VALUES);
     tileManager.loadAutotilerValues(AUTOTILER_TYPE.ROAD, ROAD_VALUES);

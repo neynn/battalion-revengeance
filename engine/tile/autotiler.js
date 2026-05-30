@@ -1,7 +1,8 @@
-export const Autotiler = function(defaultValue) {
+export const Autotiler = function(defaultValue, categoryTable) {
     this.defaultValue = defaultValue;
     this.type = Autotiler.TYPE.NONE;
-    this.categories = [];
+    this.categoryFlags = 0;
+    this.categoryTable = categoryTable;
     this.values = [];
 }
 
@@ -68,6 +69,10 @@ Autotiler.prototype.setType = function(typeID) {
     }
 }
 
+Autotiler.prototype.setFlags = function(flags) {
+    this.categoryFlags = flags;
+}
+
 Autotiler.prototype.setValue = function(index, value) {
     if(index < 0 || index >= this.values.length) {
         return;
@@ -84,18 +89,12 @@ Autotiler.prototype.getValue = function(index) {
     return this.values[index];
 }
 
-Autotiler.prototype.addCategory = function(category) {
-    this.categories.push(category);
-}
-
 Autotiler.prototype.hasMember = function(tileID) {
-    for(const category of this.categories) {
-        if(category.hasMember(tileID)) {
-            return true;
-        }
+    if(tileID < 0 || tileID >= this.categoryTable.length) {
+        return false;
     }
 
-    return false;
+    return (this.categoryFlags & this.categoryTable[tileID]) !== 0;
 }
 
 Autotiler.prototype.autotile4Bits = function(tileX, tileY, onCheck) {

@@ -1,15 +1,14 @@
 import { TileVisual } from "./visual.js";
 import { Autotiler } from "./autotiler.js";
-import { TileCategory } from "./category.js";
 import { TextureRegistry } from "../resources/texture/textureRegistry.js";
 
 export const TileManager = function() {
-    this.categories = [];
     this.autotilers = [];
 
     this.tileCount = 0;
-    this.tileTable = [];
+    this.typeTable = [];
     this.autotilerTable = [];
+    this.categoryTable = [];
 
     this.visualCount = 1;
     this.visualTable = [0];
@@ -37,50 +36,95 @@ TileManager.prototype.update = function(gameContext) {
 TileManager.prototype.initTables = function(count) {
     for(let i = 0; i < count; i++) {
         this.visualTable[i] = 0;
-        this.tileTable[i] = -1;
+        this.categoryTable[i] = 0;
+        this.typeTable[i] = -1;
         this.autotilerTable[i] = -1;
     }
 
     this.tileCount = count;
 }
 
-TileManager.prototype.createCategories = function(count) {
-    for(let i = 0; i < count; i++) {
-        this.categories[i] = new TileCategory();
-    }
-}
-
-TileManager.prototype.createAutotilers = function(count) {
-    for(let i = 0; i < count; i++) {
-        this.autotilers[i] = new Autotiler(TileManager.TILE_ID.EMPTY);
-    }
-}
-
-TileManager.prototype.registerTile = function(tileID, typeID, autotilerID, categoryID) {
+TileManager.prototype.registerTile = function(tileID, typeID, autotilerID, categoryFlags = 0) {
     if(tileID < 0 || tileID >= this.tileCount) {
         return;
     }
 
-    this.tileTable[tileID] = typeID;
+    this.typeTable[tileID] = typeID;
     this.autotilerTable[tileID] = autotilerID;
-
-    if(categoryID >= 0 && categoryID < this.categories.length) {
-        this.categories[categoryID].addMember(i);
-    }
+    this.categoryTable[tileID] = categoryFlags;
 }
 
-TileManager.prototype.registerTiles = function(beginID, endID, typeID, autotilerID, categoryID) {
+TileManager.prototype.registerTiles = function(beginID, endID, typeID, autotilerID, categoryFlags = 0) {
     if(beginID > endID || beginID < 0 || endID >= this.tileCount) {
         return;
     }
 
     for(let i = beginID; i <= endID; i++) {
-        this.tileTable[i] = typeID;
+        this.typeTable[i] = typeID;
         this.autotilerTable[i] = autotilerID;
+        this.categoryTable[i] = categoryFlags;
+    }
+}
 
-        if(categoryID >= 0 && categoryID < this.categories.length) {
-            this.categories[categoryID].addMember(i);
+TileManager.prototype.setLogicalID = function(tileID, logicalID) {
+    if(tileID < 0 || tileID >= this.tileCount) {
+        return;
+    }
+
+    this.typeTable[tileID] = logicalID;
+}
+
+TileManager.prototype.createAutotilers = function(count) {
+    for(let i = 0; i < count; i++) {
+        this.autotilers[i] = new Autotiler(TileManager.TILE_ID.EMPTY, this.categoryTable);
+    }
+}
+
+TileManager.prototype.loadAutotiler = function(autotilerID, typeID, categoryFlags) {
+    if(autotilerID < 0 || autotilerID >= this.autotilers.length) {
+        return;
+    }
+
+    const autotiler = this.autotilers[autotilerID];
+
+    autotiler.setType(typeID);
+    autotiler.setFlags(categoryFlags);
+}
+
+TileManager.prototype.loadAutotilerValues = function(autotilerID, values) {
+    if(autotilerID < 0 || autotilerID >= this.autotilers.length) {
+        return;
+    }
+
+    const autotiler = this.autotilers[autotilerID];
+
+    for(const indexID in values) {
+        const index = Number(indexID);
+        const tileID = values[indexID];
+
+        if(tileID < this.tileCount) {
+            autotiler.setValue(index, tileID);
+        } else {
+            console.error("Value is too large!");
         }
+    }
+}
+
+TileManager.prototype.loadAutotilerValuesAuto = function(autotilerID, tileID) {
+    if(autotilerID < 0 || autotilerID >= this.autotilers.length) {
+        return;
+    }
+
+    const autotiler = this.autotilers[autotilerID];
+
+    for(let i = 0; i < autotiler.values.length; i++) {
+        const nextID = tileID + i;
+
+        if(nextID < this.tileCount) {
+            autotiler.setValue(i, nextID);
+        } else {
+            console.error("Value is too large!");
+        }  
     }
 }
 
@@ -128,14 +172,6 @@ TileManager.prototype.registerVisualsAuto = function(tileID, texture, prefix, co
     }
 }
 
-TileManager.prototype.setLogicalID = function(tileID, logicalID) {
-    if(tileID < 0 || tileID >= this.tileCount) {
-        return;
-    }
-
-    this.tileTable[tileID] = logicalID;
-}
-
 TileManager.prototype.createVisuals = function(textureLoader, tileAtlases) {
     textureLoader.createTileTextures(tileAtlases);
 
@@ -165,62 +201,9 @@ TileManager.prototype.createVisuals = function(textureLoader, tileAtlases) {
     }
 }
 
-TileManager.prototype.loadAutotiler = function(autotilerID, typeID, categories) {
-    if(autotilerID < 0 || autotilerID >= this.autotilers.length) {
-        return;
-    }
-
-    const autotiler = this.autotilers[autotilerID];
-
-    autotiler.setType(typeID);
-
-    for(const categoryID of categories) {
-        if(categoryID >= 0 && categoryID < this.categories.length) {
-            autotiler.addCategory(this.categories[categoryID]);
-        }
-    }
-}
-
-TileManager.prototype.loadAutotilerValues = function(autotilerID, values) {
-    if(autotilerID < 0 || autotilerID >= this.autotilers.length) {
-        return;
-    }
-
-    const autotiler = this.autotilers[autotilerID];
-
-    for(const indexID in values) {
-        const index = Number(indexID);
-        const tileID = values[indexID];
-
-        if(tileID < this.tileCount) {
-            autotiler.setValue(index, tileID);
-        } else {
-            console.error("Value is too large!");
-        }
-    }
-}
-
-TileManager.prototype.loadAutotilerValuesAuto = function(autotilerID, tileID) {
-    if(autotilerID < 0 || autotilerID >= this.autotilers.length) {
-        return;
-    }
-
-    const autotiler = this.autotilers[autotilerID];
-
-    for(let i = 0; i < autotiler.values.length; i++) {
-        const nextID = tileID + i;
-
-        if(nextID < this.tileCount) {
-            autotiler.setValue(i, nextID);
-        } else {
-            console.error("Value is too large!");
-        }  
-    }
-}
-
-TileManager.prototype.disableVisual = function(mapID) {
+TileManager.prototype.disableVisual = function(tileID) {
     for(let i = 0; i < this.activeVisuals.length; i++) {
-        if(this.activeVisuals[i].id === mapID) {
+        if(this.activeVisuals[i].id === tileID) {
             this.activeVisuals[i].reset();
             this.activeVisuals[i] = this.activeVisuals[this.activeVisuals.length - 1];
             this.activeVisuals.pop();
@@ -229,20 +212,22 @@ TileManager.prototype.disableVisual = function(mapID) {
     }
 }
 
-TileManager.prototype.enableVisual = function(mapID) {
-    const index = mapID - 1;
-
-    if(index < 0 || index >= this.visuals.length) {
+TileManager.prototype.enableVisual = function(tileID) {
+    if(tileID < 1 || tileID >= this.tileCount) {
         return;
     }
 
     for(let i = 0; i < this.activeVisuals.length; i++) {
-        if(this.activeVisuals[i].id === mapID) {
+        if(this.activeVisuals[i].id === tileID) {
             return;
         }
     }
 
-    this.activeVisuals.push(this.visuals[index]);
+    const visual = this.visuals[this.visualTable[tileID]];
+
+    if(visual.frameCount > 1) {
+        this.activeVisuals.push(visual);
+    }
 }
 
 TileManager.prototype.enableAllVisuals = function() {
@@ -263,12 +248,12 @@ TileManager.prototype.disableAllVisuals = function() {
     this.activeVisuals.length = 0;
 }
 
-TileManager.prototype.getLogicalID = function(mapID) {
-    if(mapID < 0 || mapID >= this.tileCount) {
+TileManager.prototype.getLogicalID = function(tileID) {
+    if(tileID < 0 || tileID >= this.tileCount) {
         return -1;
     }
 
-    return this.tileTable[mapID];
+    return this.typeTable[tileID];
 }
 
 TileManager.prototype.isVisualValid = function(tileID) {
@@ -283,12 +268,12 @@ TileManager.prototype.isVisualValid = function(tileID) {
     return this.visualTable[tileID] !== 0;
 }
 
-TileManager.prototype.getVisual = function(mapID) {
-    if(mapID < 0 || mapID >= this.tileCount) {
+TileManager.prototype.getVisual = function(tileID) {
+    if(tileID < 0 || tileID >= this.tileCount) {
         return TileManager.EMPTY_VISUAL;
     }
 
-    return this.visuals[this.visualTable[mapID]];
+    return this.visuals[this.visualTable[tileID]];
 }
 
 TileManager.prototype.getAutotiler = function(autotilerID) {
@@ -299,10 +284,10 @@ TileManager.prototype.getAutotiler = function(autotilerID) {
     return this.autotilers[autotilerID];
 }
 
-TileManager.prototype.getAutotilerByVisual = function(mapID) {
-    if(mapID < 0 || mapID >= this.tileCount) {
+TileManager.prototype.getAutotilerFromTile = function(tileID) {
+    if(tileID < 0 || tileID >= this.tileCount) {
         return null;
     }
 
-    return this.getAutotiler(this.autotilerTable[mapID]);
+    return this.getAutotiler(this.autotilerTable[tileID]);
 }
