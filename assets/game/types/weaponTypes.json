@@ -2,21 +2,37 @@
     "NONE": {
         "name": "WEAPON_NAME_NONE",
         "desc": "WEAPON_DESC_NONE",
-        "icon": "WEAPON_NONE"
+        "icon": "WEAPON_NONE",
+        "damageMultiplier": {
+            "*": 0
+        }
     },
     "LIGHT": {
         "name": "WEAPON_NAME_LIGHT",
         "desc": "WEAPON_DESC_LIGHT",
-        "icon": "WEAPON_LIGHT"
+        "icon": "WEAPON_LIGHT",
+        "damageMultiplier": {
+            "LIGHT": 1.5,
+            "HEAVY": 0.5,
+            "OMEGA": 0.5
+        }
     },
     "MEDIUM": {
         "name": "WEAPON_NAME_MEDIUM",
         "desc": "WEAPON_DESC_MEDIUM",
-        "icon": "WEAPON_MEDIUM"
+        "icon": "WEAPON_MEDIUM",
+        "damageMultiplier": {
+            "OMEGA": 0.5
+        }
     },
     "HEAVY": {
         "name": "WEAPON_NAME_HEAVY",
         "desc": "WEAPON_DESC_HEAVY",
-        "icon": "WEAPON_HEAVY"
+        "icon": "WEAPON_HEAVY",
+        "damageMultiplier": {
+            "LIGHT": 0.5,
+            "HEAVY": 1.5,
+            "OMEGA": 0.5
+        }
     }
 }

@@ -1,8 +1,8 @@
 export const Autotiler = function(defaultValue, categoryTable) {
     this.defaultValue = defaultValue;
+    this.categoryTable = categoryTable;
     this.type = Autotiler.TYPE.NONE;
     this.categoryFlags = 0;
-    this.categoryTable = categoryTable;
     this.values = [];
 }
 

@@ -2,45 +2,26 @@
     "NONE": {
         "name": "ARMOR_NAME_NONE",
         "desc": "ARMOR_DESC_NONE",
-        "icon": "NONE",
-        "damageModifier": {
-            "*": -0.5    
-        }
+        "icon": "NONE"
     },
     "LIGHT": {
         "name": "ARMOR_NAME_LIGHT",
         "desc": "ARMOR_DESC_LIGHT",
-        "icon": "ARMOR_LIGHT",
-        "damageModifier": {
-            "LIGHT": -0.5,
-            "MEDIUM": 0,
-            "HEAVY": 0.5
-        }
+        "icon": "ARMOR_LIGHT"
     },
     "MEDIUM": {
         "name": "ARMOR_NAME_MEDIUM",
         "desc": "ARMOR_DESC_MEDIUM",
-        "icon": "ARMOR_MEDIUM",
-        "damageModifier": {
-            "*": 0
-        }
+        "icon": "ARMOR_MEDIUM"
     },
     "HEAVY": {
         "name": "ARMOR_NAME_HEAVY",
         "desc": "ARMOR_DESC_HEAVY",
-        "icon": "ARMOR_HEAVY",
-        "damageModifier": {
-            "LIGHT": 0.5,
-            "MEDIUM": 0,
-            "HEAVY": -0.5
-        }
+        "icon": "ARMOR_HEAVY"
     },
     "OMEGA": {
         "name": "ARMOR_NAME_OMEGA",
         "desc": "ARMOR_DESC_OMEGA",
-        "icon": "NONE",
-        "damageModifier": {
-            "*": 0.5
-        }
+        "icon": "NONE"
     }
 }

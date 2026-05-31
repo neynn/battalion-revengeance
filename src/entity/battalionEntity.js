@@ -654,18 +654,17 @@ BattalionEntity.prototype.getMoraleFactor = function(gameContext) {
     return damageModifier;
 }
 
-BattalionEntity.prototype.getArmorFactor = function(gameContext, targetArmor) {
+BattalionEntity.prototype.getWeaponFactor = function(gameContext, targetArmor) {
     const { typeRegistry } = gameContext;
-    const armorType = typeRegistry.getArmorType(targetArmor);
-    const damageModifier = armorType.getDamageModifier(this.config.weaponType);
-    let armorFactor = 1 - damageModifier;
+    const weaponType = typeRegistry.getWeaponType(this.config.weaponType);
+    let damageMultiplier = weaponType.getDamageMultiplier(targetArmor);
 
     //Ignore only damage reduction with ARMOR_PIERCE, keep the damage increase.
-    if(armorFactor < 1 && this.hasTrait(TRAIT_TYPE.ARMOR_PIERCE)) {
-        armorFactor = 1;
+    if(damageMultiplier < 1 && this.hasTrait(TRAIT_TYPE.ARMOR_PIERCE)) {
+        damageMultiplier = 1;
     }
 
-    return armorFactor;
+    return damageMultiplier;
 }
 
 BattalionEntity.prototype.getTerrainFactor = function(gameContext, target) {
@@ -738,7 +737,7 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
 
     let healthFactor = 1;
     let moraleFactor = 1;
-    let armorFactor = 1;
+    let weaponFactor = 1;
     let terrainFactor = 1;
     let logisticFactor = 1;
     let traitFactor = 1;
@@ -747,7 +746,7 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
 
     healthFactor = this.getHealthFactor();
     moraleFactor = this.getMoraleFactor(gameContext);
-    armorFactor = this.getArmorFactor(gameContext, targetArmor);
+    weaponFactor = this.getWeaponFactor(gameContext, targetArmor);
     terrainFactor = this.getTerrainFactor(gameContext, target);
     logisticFactor = this.getLogisticFactor(gameContext);
 
@@ -819,7 +818,7 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
 
     damageAmplifier *= healthFactor;
     damageAmplifier *= moraleFactor;
-    damageAmplifier *= armorFactor;
+    damageAmplifier *= weaponFactor;
     damageAmplifier *= terrainFactor;
     damageAmplifier *= logisticFactor;
     damageAmplifier *= traitFactor;
