@@ -52,6 +52,7 @@ UIData.prototype.loadPlayTextures = function() {
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.HUD_BUTTONS]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.HUD_GLASSPLATE]);
     this.textureLoader.loadTexture(this.textures[UI_TEXTURE.ARROW]);
+    this.textureLoader.loadTexture(this.textures[UI_TEXTURE.MORALE_ICONS]);
 }
 
 UIData.prototype.load = function(gameContext) {
@@ -83,4 +84,6 @@ UIData.prototype.load = function(gameContext) {
     this.textures[UI_TEXTURE.ARROW] = this.textureLoader.getGUIID("arrow");
     this.textures[UI_TEXTURE.STORY_PANELS] = this.textureLoader.getGUIID("story_panels");
     this.textures[UI_TEXTURE.STORY_PORTRAITS] = this.textureLoader.getGUIID("story_portraits");
+
+    this.textures[UI_TEXTURE.MORALE_ICONS] = this.textureLoader.getGUIID("morale_icons");
 }

@@ -6,7 +6,7 @@ import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { drawShape, shadeScreen } from "../../engine/util/drawHelper.js";
 import { TILE_HEIGHT, TILE_WIDTH } from "../../engine/engine_constants.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { DIRECTION, LAYER_TYPE, PATH_FLAG, PLAYER_PREFERENCE, RANGE_TYPE, TILE_ID } from "../enums.js";
+import { DIRECTION, LAYER_TYPE, MORALE_TYPE, PATH_FLAG, PLAYER_PREFERENCE, RANGE_TYPE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { Mine } from "../entity/mine.js";
@@ -20,6 +20,7 @@ import { Display } from "../../engine/renderer/display.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { Sprite } from "../../engine/sprite/sprite.js";
 import { Pathfinder } from "../map/pathfinder.js";
+import { UI_TEXTURE } from "../ui/constants.js";
 
 const BLOCK = { COUNT: 4, WIDTH: 4, HEIGHT: 8, GAP: 1 };
 const WIDTH = (BLOCK.GAP * (BLOCK.COUNT + 1)) + BLOCK.WIDTH * BLOCK.COUNT;
@@ -336,7 +337,7 @@ BattalionRenderer2D.prototype.drawEntity = function(gameContext, camera, display
  * @returns 
  */
 BattalionRenderer2D.prototype.drawEntities = function(gameContext, camera, display, worldMap) {
-    const { timer, world, spriteManager, tileManager } = gameContext;
+    const { timer, world, spriteManager, tileManager, uiData } = gameContext;
     const { startX, startY, endX, endY, mapWidth } = camera;
     const { realTime, deltaTime } = timer;
     const { entityManager } = world;
@@ -425,13 +426,14 @@ BattalionRenderer2D.prototype.drawEntities = function(gameContext, camera, displ
 
     if(inspectedEntity) {
         const { spriteID, tileX, tileY, cash } = inspectedEntity;
+        const moraleType = inspectedEntity.getMorale(gameContext);
+        const screenX = camera.tileXToScreen(tileX);
+        const screenY = camera.tileYToScreen(tileY);
 
         this.drawEntity(gameContext, camera, display, inspectedEntity, sprites[spriteID], realTime, deltaTime);
 
         if(cash !== 0) {
             const { context } = display;
-            const screenX = camera.tileXToScreen(tileX);
-            const screenY = camera.tileYToScreen(tileY);
 
             this.drawTile(tileManager, TILE_ID.CASH_BOX, display.context, screenX, screenY);
 
@@ -442,6 +444,13 @@ BattalionRenderer2D.prototype.drawEntities = function(gameContext, camera, displ
             context.textAlign = TextStyle.ALIGN.LEFT;
         }
 
+        if(moraleType.id !== MORALE_TYPE.NORMAL) {
+            const moraleTexture = uiData.getTexture(UI_TEXTURE.MORALE_ICONS);
+            const moraleX = screenX + TILE_WIDTH / 2 - 10;
+            const moraleY = screenY - 10;
+
+            moraleTexture.drawRegion(display, moraleType.icon, moraleX, moraleY);
+        }
         count++;
     }
 

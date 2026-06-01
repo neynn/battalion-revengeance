@@ -49,6 +49,16 @@
             "columns": 4
         }
     },
+    "morale_icons": {
+        "directory": ["assets", "gui"],
+        "source": "morale_icons.png",
+        "gridWidth": 20,
+        "gridHeight": 20,
+        "autoGrid": {
+            "rows": 5,
+            "columns": 5
+        }
+    },
     "icons": {
         "directory": ["assets", "gui"],
         "source": "icons.png",

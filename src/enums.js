@@ -144,6 +144,18 @@ export const PORTRAIT_TYPE = {
     _COUNT: 2
 };
 
+export const MORALE_ICON_TYPE = {
+    MORALE_NEUTRAL: 0,
+    MORALE_NEGATIVE_1: 2,
+    MORALE_NEGATIVE_2: 4,
+    MORALE_NEGATIVE_3: 6,
+    MORALE_NEGATIVE_4: 8,
+    MORALE_POSITIVE_1: 1,
+    MORALE_POSITIVE_2: 3,
+    MORALE_POSITIVE_3: 5,
+    MORALE_POSITIVE_4: 7
+};
+
 export const ICON_TYPE = {
     NONE: 0,
 

@@ -1,8 +1,10 @@
+import { MORALE_ICON_TYPE } from "../../enums.js";
+
 export const MoraleType = function(id) {
     this.id = id;
     this.name = "MISSING_NAME_MORALE";
     this.desc = "MISSING_DESC_MORALE";
-    this.icon = null;
+    this.icon = MORALE_ICON_TYPE.MORALE_NEUTRAL;
     this.damageModifier = 1;
 }
 
@@ -16,6 +18,6 @@ MoraleType.prototype.load = function(config, DEBUG_NAME) {
 
     this.name = name;
     this.desc = desc;
-    this.icon = icon;
+    this.icon = MORALE_ICON_TYPE[icon] ?? MORALE_ICON_TYPE.MORALE_NEUTRAL;
     this.damageModifier = damageModifier;
 }
