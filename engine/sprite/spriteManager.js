@@ -51,35 +51,39 @@ SpriteManager.prototype.load = function(textures, sprites) {
         }
 
         const textureObject = this.resources.getTexture(textureID);
-        const regionFrames = frames !== undefined ? textureObject.getFrames(frames) : textureObject.getFramesAuto(autoFrames);
+        const containerID = this.containers.length;
+        const spriteContainer = new SpriteContainer(containerID, textureObject);
 
-        if(regionFrames.length !== 0) {
-            const containerID = this.containers.length;
-            const spriteContainer = new SpriteContainer(containerID, textureObject, regionFrames);
-
-            if(spriteTime !== undefined) {
-                spriteContainer.setSpriteTime(spriteTime);
-            } else {
-                spriteContainer.setFrameTime(frameTime);
-            }
-
-            if(bounds) {
-                spriteContainer.loadBounds(bounds);
-            } else {
-                spriteContainer.loadDefaultBounds();
-            }
-
-            if(anchor) {
-                spriteContainer.loadAnchor(anchor);
-            } else if(shift) {
-                spriteContainer.loadShift(shift);
-            }
-            
-            this.containers.push(spriteContainer);
-            this.containerMap.set(spriteID, containerID);
+        if(frames === undefined) {
+            spriteContainer.loadFramesAuto(autoFrames);
         } else {
-            console.warn(`Sprite ${spriteID} has no frames!`);
+            spriteContainer.loadFrames(frames);
         }
+
+        if(spriteTime !== undefined) {
+            spriteContainer.setSpriteTime(spriteTime);
+        } else {
+            spriteContainer.setFrameTime(frameTime);
+        }
+
+        if(bounds) {
+            spriteContainer.loadBounds(bounds);
+        } else {
+            spriteContainer.loadDefaultBounds();
+        }
+
+        if(anchor) {
+            spriteContainer.loadAnchor(anchor);
+        } else if(shift) {
+            spriteContainer.loadShift(shift);
+        }
+
+        if(spriteContainer.frameCount === 0) {
+            console.warn(`SpriteContainer ${spriteID} has 0 frames!`);
+        }
+
+        this.containers.push(spriteContainer);
+        this.containerMap.set(spriteID, containerID);
     }
 }
 
@@ -89,10 +93,12 @@ SpriteManager.prototype.createShadeTask = function(spriteID, handle) {
     }
 
     const container = this.containers[spriteID];
-    const { texture, frames } = container;
+    const { texture, frames, frameCount } = container;
     const { id } = texture;
 
-    this.resources.addShadeTask(id, frames[0], handle);
+    if(frameCount > 0) {
+        this.resources.addShadeTask(id, frames[0], handle);
+    }
 }
 
 SpriteManager.prototype.forEachSprite = function(onCall) {
@@ -375,15 +381,19 @@ SpriteManager.prototype.updateSprite = function(spriteIndex, spriteID, colorID =
     }
 
     const container = this.containers[spriteID];
-    const { texture } = container;
+    const { texture, frameCount } = container;
     const { id, handle } = texture;
 
-    sprite.init(container, this.timestamp, spriteID);
-    sprite.setColor(colorID);
+    if(frameCount > 0) {
+        sprite.init(container, this.timestamp, spriteID);
+        sprite.setColor(colorID);
 
-    //Lazy-Load the default handle.
-    if(colorID === Texture.DEFAULT_COLOR && handle.state === TextureHandle.STATE.EMPTY) {
-        this.resources.loadTexture(id);
+        //Lazy-Load the default handle.
+        if(colorID === Texture.DEFAULT_COLOR && handle.state === TextureHandle.STATE.EMPTY) {
+            this.resources.loadTexture(id);
+        }
+    } else {
+        sprite.reset();
     }
 }
 

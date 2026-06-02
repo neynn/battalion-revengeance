@@ -12,7 +12,7 @@ export const Texture = function(id, name, path) {
     this.gridHeight = 0;
     this.handle = new TextureHandle();
     this.variants = [this.handle];
-    this.variantMap = new Uint8Array(MAX_TEXTURE_VARIANTS);
+    this.variantTable = new Uint8Array(MAX_TEXTURE_VARIANTS);
     this.regionMap = new Map();
     this.regions = [];
 }
@@ -69,7 +69,7 @@ Texture.prototype.clear = function() {
     }
 
     this.variants.length = 1;
-    this.variantMap.fill(0);
+    this.variantTable.fill(0);
 }
 
 Texture.prototype.requestBitmap = function() {
@@ -111,13 +111,13 @@ Texture.prototype.createOrGetVariant = function(index) {
         return this.handle;
     }
 
-    if(this.variantMap[index] !== 0) {
+    if(this.variantTable[index] !== 0) {
         return this.getVariant(index);
     }
 
     const handle = new TextureHandle();
 
-    this.variantMap[index] = this.variants.length;
+    this.variantTable[index] = this.variants.length;
     this.variants.push(handle);
 
     return handle;
@@ -128,7 +128,7 @@ Texture.prototype.getVariant = function(index) {
         return this.handle;
     }
 
-    return this.variants[this.variantMap[index]]
+    return this.variants[this.variantTable[index]]
 }
 
 Texture.prototype.initGrid = function(grid, gridWidth, gridHeight) {
@@ -182,42 +182,6 @@ Texture.prototype.autoGrid = function(startX, startY, rows, columns, firstID, gr
             this.regionMap.set(regionID, this.regions.length - 1);
         }
     }
-}
-
-Texture.prototype.getFramesAuto = function(autoRegions) {
-    const { start = 1, jump = 0, repeat = 0 } = autoRegions;
-    const frames = [];
-
-    for(let i = 0; i < repeat; i++) {
-        const regionNumber = start + jump * i;
-        const regionID = regionNumber + "";
-        const index = this.regionMap.get(regionID);
-
-        if(index !== undefined) {
-            frames.push(this.regions[index]);
-        } else {
-            console.error(`Missing region error! ${regionID} in ${this.name}!`);
-        }
-    }
-
-    return frames;
-}
-
-Texture.prototype.getFrames = function(regions) {
-    const frames = [];
-
-    for(let i = 0; i < regions.length; i++) {
-        const regionID = regions[i];
-        const index = this.regionMap.get(regionID);
-
-        if(index !== undefined) {
-            frames.push(this.regions[index]);
-        } else {
-            console.error(`Missing region error! ${regionID} in ${this.name}!`);
-        }
-    }
-
-    return frames;
 }
 
 Texture.prototype.drawOffset = function(display, screenX, screenY) {

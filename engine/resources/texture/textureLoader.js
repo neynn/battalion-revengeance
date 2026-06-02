@@ -86,11 +86,7 @@ TextureLoader.prototype.addShadeTask = function(textureID, rect, handle) {
         this.loadTexture(textureID);
     }
 
-    const task = new ShadeTask(source, handle);
-
-    task.rect = rect;
-
-    this.tasks.push(task);
+    this.tasks.push(new ShadeTask(source, handle, rect));
     this.totalTasks++;
 }
 

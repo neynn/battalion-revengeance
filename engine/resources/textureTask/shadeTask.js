@@ -1,9 +1,9 @@
 import { createEmptyImageData, TextureTask } from "./textureTask.js";
 
-export const ShadeTask = function(source, target) {
+export const ShadeTask = function(source, target, rect) {
     TextureTask.call(this, source, target);
 
-    this.rect = null;
+    this.rect = rect;
 }
 
 ShadeTask.prototype = Object.create(TextureTask.prototype);

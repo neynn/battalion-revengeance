@@ -18,74 +18,45 @@ Renderer2D.DEBUG = {
 Renderer2D.prototype.render = function(gameContext, camera, context) {}
 
 Renderer2D.prototype.drawEmptyTile = function(context, screenX, screenY, scale = 1) {
-    const drawX = Math.floor(screenX);
-    const drawY = Math.floor(screenY);
     const width = Math.floor(this.halfTileWidth * scale);
     const height = Math.floor(this.halfTileHeight * scale);
 
     context.fillStyle = "#000000";
-    context.fillRect(drawX, drawY, width, height);
-    context.fillRect(drawX + width, drawY + height, width, height);
+    context.fillRect(screenX, screenY, width, height);
+    context.fillRect(screenX + width, screenY + height, width, height);
 
     context.fillStyle = "#701867";
-    context.fillRect(drawX + width, drawY, width, height);
-    context.fillRect(drawX, drawY + height, width, height);
-}
-
-Renderer2D.prototype.drawFrame = function(context, bitmap, frame, screenX, screenY, scale) {
-    const frameLength = frame.length;
-
-    for(let i = 0; i < frameLength; i++) {
-        const component = frame[i];
-        const { frameX, frameY, frameW, frameH, shiftX, shiftY } = component;
-        //-pivot * scale
-        const drawX = Math.floor(screenX + shiftX * scale);
-        const drawY = Math.floor(screenY + shiftY * scale);
-        const drawWidth = Math.floor(frameW * scale);
-        const drawHeight = Math.floor(frameH * scale);
-
-        context.drawImage(
-            bitmap,
-            frameX, frameY, frameW, frameH,
-            drawX, drawY, drawWidth, drawHeight
-        );
-    }
+    context.fillRect(screenX + width, screenY, width, height);
+    context.fillRect(screenX, screenY + height, width, height);
 }
 
 Renderer2D.prototype.drawTile = function(tileManager, tileID, context, screenX, screenY, scale = 1) {
     const { handle, frameData, framePtr } = tileManager.getVisual(tileID);
     const { state, bitmap } = handle;
 
-    switch(state) {
-        case TextureHandle.STATE.EMPTY:
-        case TextureHandle.STATE.LOADING: {
-            this.drawEmptyTile(context, screenX, screenY, scale);
-            break;
+    if(state === TextureHandle.STATE.LOADED) {
+        const count = frameData[framePtr]; 
+        let frame_ptr = framePtr;
+
+        for(let i = 0; i < count; i++) {
+            const frameX = frameData[frame_ptr + 1];
+            const frameY = frameData[frame_ptr + 2];
+            const width = frameData[frame_ptr + 3];
+            const height = frameData[frame_ptr + 4];
+            const offsetX = frameData[frame_ptr + 5];
+            const offsetY = frameData[frame_ptr + 6];
+
+            context.drawImage(
+                bitmap,
+                frameX, frameY, width, height,
+                Math.floor(screenX + offsetX * scale), Math.floor(screenY + offsetY * scale),
+                Math.floor(width * scale), Math.floor(height * scale)
+            );
+
+            frame_ptr += TILE_FRAME_SIZE;
         }
-        case TextureHandle.STATE.LOADED: {
-            const count = frameData[framePtr]; 
-            let frame_ptr = framePtr;
-
-            for(let i = 0; i < count; i++) {
-                const frameX = frameData[frame_ptr + 1];
-                const frameY = frameData[frame_ptr + 2];
-                const width = frameData[frame_ptr + 3];
-                const height = frameData[frame_ptr + 4];
-                const offsetX = frameData[frame_ptr + 5];
-                const offsetY = frameData[frame_ptr + 6];
-
-                context.drawImage(
-                    bitmap,
-                    frameX, frameY, width, height,
-                    Math.floor(screenX + offsetX * scale), Math.floor(screenY + offsetY * scale),
-                    Math.floor(width * scale), Math.floor(height * scale)
-                );
-
-                frame_ptr += TILE_FRAME_SIZE;
-            }
-
-            break;
-        }
+    } else {
+        this.drawEmptyTile(context, screenX, screenY, scale);
     }
 }
 
