@@ -89,13 +89,14 @@ SpriteController.prototype.destroyEntitySprite = function(gameContext, entity) {
 
 SpriteController.prototype.createEntitySprite = function(gameContext, entity) {
     const { teamManager, spriteManager } = gameContext;
-    const { teamID } = entity;
+    const { teamID, config } = entity;
+    const { id } = config;
     const { color } = teamManager.getTeam(teamID);
     const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
 
     entity.spriteID = visualSprite.getIndex();
 
-    this.bufferEntitySprites(gameContext, type, color);
+    this.bufferEntitySprites(gameContext, id, color);
     this.updateEntitySprite(gameContext, entity);
 }
 
