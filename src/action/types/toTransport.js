@@ -3,7 +3,6 @@ import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { mapTransportToEntity, transportToCost } from "../../enumHelpers.js";
 import { ACTION_TYPE, ENTITY_TYPE, TRANSPORT_TYPE } from "../../enums.js";
-import { updateEntitySprite } from "../../systems/sprite.js";
 import { TransportTween } from "../../tween/transportTween.js";
 
 const createToTransportIntent = function(entityID, transportID) {
@@ -133,12 +132,12 @@ ToTransportAction.prototype.isFinished = function(gameContext, executionPlan) {
 }
 
 ToTransportAction.prototype.onEnd = function(gameContext, data) {
-    const { world } = gameContext;
+    const { world, spriteController } = gameContext;
     const { entityManager } = world;
     const { entityID } = data;
     const entity = entityManager.getEntity(entityID);
 
-    updateEntitySprite(gameContext, entity);
+    spriteController.updateEntitySprite(gameContext, entity);
 
     this.tweens.length = 0;
 }

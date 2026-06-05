@@ -13,7 +13,6 @@ import { EndTurnVTable } from "../../action/types/endTurn.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { CameraContext } from "../../../engine/renderer/cameraContext.js";
 import { TeamManager } from "../../team/teamManager.js";
-import { updateBuildingSprite } from "../../systems/sprite.js";
 
 const PORTRAIT_WIDTH = 130;
 const PORTRAIT_HEIGHT = 150;
@@ -485,7 +484,7 @@ PlayUI.prototype.updateEntityState = function(entity) {
 }
 
 PlayUI.prototype.onImmediate = function(gameContext, display) {
-    const { uiData, world, language, timer, typeRegistry, gameWindow } = gameContext;
+    const { uiData, world, language, timer, typeRegistry, gameWindow, spriteController } = gameContext;
     const { width, height } = gameWindow;
     const { mapManager } = world;
     const { realTime, deltaTime } = timer;
@@ -587,7 +586,8 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
             if(this.lastIndex !== index) {
                 this.lineCache.updateRecon(context, building.getDescription(gameContext), DESCRIPTION_BOX_WIDTH_TILE);
                 this.lastIndex = index;
-                updateBuildingSprite(gameContext, building, this.inspectSprite.index);
+
+                spriteController.updateBuildingSprite(gameContext, building, this.inspectSprite.index);
             }
 
             uiData.getTexture(UI_TEXTURE.RECON_TERRAIN).draw(display, reconX, reconY);

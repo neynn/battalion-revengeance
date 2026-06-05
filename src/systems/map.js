@@ -9,7 +9,6 @@ import { createBuildingSnapshotFromJSON } from "../snapshot/buildingSnapshot.js"
 import { transformTileToWorld } from "../../engine/math/transform2D.js";
 import { MapPreview } from "../map/mapPreview.js";
 import { Texture } from "../../engine/resources/texture/texture.js";
-import { updateBuildingSprite } from "./sprite.js";
 
 export const ClientMatchLoader = function(worldMap, scenario) {
     MatchLoader.call(this, worldMap, scenario);
@@ -26,18 +25,10 @@ ClientMatchLoader.prototype = Object.create(MatchLoader.prototype);
 ClientMatchLoader.prototype.constructor = ClientMatchLoader;
 
 ClientMatchLoader.prototype.createBuildingSprites = function(gameContext) {
-    const { teamManager, spriteManager, typeRegistry } = gameContext;
+    const { spriteController } = gameContext;
 
     for(const building of this.worldMap.buildings) {
-        const { tileX, tileY } = building;
-        const position = transformTileToWorld(tileX, tileY);
-        const spriteObject = spriteManager.createEmptySprite(LAYER_TYPE.BUILDING);
-        const spriteIndex = spriteObject.getIndex();
-
-        spriteObject.setPosition(position.x, position.y);
-        building.spriteID = spriteIndex;
-
-        updateBuildingSprite(gameContext, building, spriteIndex);
+        spriteController.createBuildingSprite(gameContext, building);
     }
 }
 

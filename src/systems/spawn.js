@@ -2,7 +2,6 @@ import { BattalionEntity } from "../entity/battalionEntity.js";
 import { LAYER_TYPE, TEAM_STAT } from "../enums.js";
 import { Building } from "../entity/building.js";
 import { Mine } from "../entity/mine.js";
-import { bufferEntitySprites, updateEntitySprite } from "./sprite.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { bufferEntitySounds } from "./sound.js";
 import { transformTileToWorld } from "../../engine/math/transform2D.js";
@@ -40,15 +39,8 @@ export const killEntity = function(gameContext, entity) {
     }
 }
 
-export const destroyEntitySprite = function(gameContext, entity) {
-    const { spriteManager } = gameContext;
-
-    spriteManager.destroySprite(entity.spriteID);
-    entity.spriteID = SpriteManager.INVALID_ID;
-}
-
 export const createClientEntityObject = function(gameContext, entityID, snapshot) {
-    const { teamManager, spriteManager, shadeCache } = gameContext;
+    const { teamManager, spriteController } = gameContext;
     const { type, teamID } = snapshot;
     const team = teamManager.getTeam(teamID);
 
@@ -63,15 +55,9 @@ export const createClientEntityObject = function(gameContext, entityID, snapshot
     }
 
     if(!entity.isDead()) {
-        const { color } = teamManager.getTeam(teamID);
-        const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
-    
-        entity.spriteID = visualSprite.getIndex();
-    
+        spriteController.createEntitySprite(gameContext, entity);
+
         bufferEntitySounds(gameContext, entity);
-        bufferEntitySprites(gameContext, entity, color);
-        updateEntitySprite(gameContext, entity);
-        shadeCache.loadShades(gameContext, type);
 
         team.addToRoster(entity);
         entity.placeOnMap(gameContext);
@@ -82,7 +68,7 @@ export const createClientEntityObject = function(gameContext, entityID, snapshot
 }
 
 export const createServerEntityObject = function(gameContext, entityID, snapshot) {
-    const { teamManager, spriteManager, shadeCache } = gameContext;
+    const { teamManager } = gameContext;
     const { type, teamID } = snapshot;
     const team = teamManager.getTeam(teamID);
 

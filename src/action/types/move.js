@@ -8,7 +8,6 @@ import { ACTION_TYPE, ATTACK_COMMAND_TYPE, HEAL_COMMAND_TYPE, MOVE_COMMAND, SOUN
 import { InterceptSystem, PathfinderSystem } from "../../systems/pathfinder.js";
 import { createStep } from "../../systems/direction.js";
 import { playEntitySound, playUncloakSound } from "../../systems/sound.js";
-import { updateEntitySprite } from "../../systems/sprite.js";
 import { AttackActionVTable } from "./attack.js";
 import { CaptureActionVTable } from "./capture.js";
 import { CloakActionVTable } from "./cloak.js";
@@ -216,7 +215,7 @@ MoveAction.prototype = Object.create(Action.prototype);
 MoveAction.prototype.constructor = MoveAction;
 
 MoveAction.prototype.onStart = function(gameContext, data) {
-    const { world } = gameContext;
+    const { world, spriteController } = gameContext;
     const { mapManager, entityManager } = world;
     const { entityID, path } = data;
     const entity = entityManager.getEntity(entityID);
@@ -224,8 +223,9 @@ MoveAction.prototype.onStart = function(gameContext, data) {
 
     entityManager.addHot(entity.getIndex());
     entity.setState(BattalionEntity.STATE.MOVE);
+    spriteController.updateEntitySprite(gameContext, entity);
+
     playEntitySound(gameContext, entity, SOUND_TYPE.MOVE);
-    updateEntitySprite(gameContext, entity);
 
     this.path = path;
     this.pathIndex = 0;
@@ -233,6 +233,8 @@ MoveAction.prototype.onStart = function(gameContext, data) {
 }
 
 MoveAction.prototype.onUpdate = function(gameContext, data) {
+    const { spriteController } = gameContext;
+
     switch(this.state) {
         case MoveAction.STATE.NONE: {
             const { deltaX, deltaY } = this.path[this.pathIndex]; 
@@ -242,7 +244,7 @@ MoveAction.prototype.onUpdate = function(gameContext, data) {
             const distanceY = deltaY * distanceMoved;
 
             if(directionChanged) {
-                updateEntitySprite(gameContext, this.entity);
+                spriteController.updateEntitySprite(gameContext, this.entity);
             }
 
             this.entity.updateOffset(distanceX, distanceY);
@@ -299,15 +301,14 @@ MoveAction.prototype.isFinished = function(gameContext, executionPlan) {
 }
 
 MoveAction.prototype.onEnd = function(gameContext, data) {
-    const { world } = gameContext;
+    const { world, spriteController } = gameContext;
     const { entityManager } = world;
-
-    entityManager.removeHot(this.entity.getIndex());
 
     this.entity.setState(BattalionEntity.STATE.IDLE);
     this.entity.clearOffset();
-
-    updateEntitySprite(gameContext, this.entity);
+    
+    entityManager.removeHot(this.entity.getIndex());
+    spriteController.updateEntitySprite(gameContext, this.entity);
 
     this.path = null;
     this.pathIndex = 0;

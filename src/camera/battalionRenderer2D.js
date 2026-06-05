@@ -248,7 +248,7 @@ BattalionRenderer2D.prototype.drawEntityHealth = function(display, drawX, drawY,
  * @param {number} deltaTime 
  */
 BattalionRenderer2D.prototype.drawEntity = function(gameContext, camera, display, entity, sprite, realTime, deltaTime) {
-    const { teamManager, shadeCache, tileManager } = gameContext;
+    const { teamManager, spriteController, tileManager } = gameContext;
     const { context } = display;
     const { tileX, tileY, offsetX, offsetY, teamID, renderFlags, opacity, config, direction } = entity;
     const screenX = camera.getScreenX(tileX) + offsetX;
@@ -285,7 +285,7 @@ BattalionRenderer2D.prototype.drawEntity = function(gameContext, camera, display
         //Draw the shaded frame over the sprite and lock the sprite to the first frame.
         if(renderFlags & BattalionEntity.RENDER_FLAG.SHADED) {
             const shadeIndex = config.id * DIRECTION._COUNT + direction;
-            const { state, bitmap, width, height } = shadeCache.getShade(shadeIndex);
+            const { state, bitmap, width, height } = spriteController.getShade(shadeIndex);
 
             sprite.setFrame(0);
             sprite.draw(display, 0, 0);

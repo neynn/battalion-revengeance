@@ -6,7 +6,7 @@ import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ACTION_TYPE, ATTACK_TYPE, ATTACK_COMMAND_TYPE, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { CombatSystem, InteractionResolver, ResolutionSystem } from "../../systems/combat.js";
 import { playEntitySound } from "../../systems/sound.js";
-import { getAnimationDuration, playAttackEffect, updateEntitySprite } from "../../systems/sprite.js";
+import { getAnimationDuration, playAttackEffect } from "../../systems/sprite.js";
 import { DeathActionVTable } from "./death.js";
 
 const ATTACK_FLAG = {
@@ -171,7 +171,7 @@ AttackAction.prototype = Object.create(Action.prototype);
 AttackAction.prototype.constructor = AttackAction;
 
 AttackAction.prototype.onStart = function(gameContext, data) {
-    const { world } = gameContext;
+    const { world, spriteController } = gameContext;
     const { entityManager } = world;
     const { attackerID, targetID, resolutions, flags } = data;
     const entity = entityManager.getEntity(attackerID);
@@ -184,7 +184,8 @@ AttackAction.prototype.onStart = function(gameContext, data) {
         //TODO: Special counter anim!
     }
 
-    updateEntitySprite(gameContext, entity);
+    spriteController.updateEntitySprite(gameContext, entity);
+
     playEntitySound(gameContext, entity, SOUND_TYPE.FIRE);
     playAttackEffect(gameContext, entity, target, resolutions);
 
@@ -204,13 +205,13 @@ AttackAction.prototype.isFinished = function(gameContext, executionPlan) {
 }
 
 AttackAction.prototype.onEnd = function(gameContext, data) {
-    const { world } = gameContext;
+    const { world, spriteController } = gameContext;
     const { entityManager } = world;
     const { attackerID } = data;
     const entity = entityManager.getEntity(attackerID);
 
     entity.setState(BattalionEntity.STATE.IDLE);
-    updateEntitySprite(gameContext, entity);
+    spriteController.updateEntitySprite(gameContext, entity);
 
     this.duration = 0;
     this.passedTime = 0;

@@ -8,12 +8,12 @@ import { TeamManager } from "./team/teamManager.js";
 import { TypeRegistry } from "./type/typeRegistry.js";
 import { ArenaState } from "./states/arena/arena.js";
 import { addDebug, loadTiles, loadVisualTiles, registerActionVTables, registerClientActions } from "./systems/context.js";
-import { ShadeCache } from "./shadeCache.js";
 import { MapRegistry } from "./map/mapRegistry.js";
 import { ClientActionRouter } from "./action/router/clientActionRouter.js";
 import { UIData } from "./ui/uiData.js";
 import { MissionManager } from "./mission/missionManager.js";
 import { ScenarioRegistry } from "./scenarioRegistry.js";
+import { SpriteController } from "./spriteController.js";
 
 export const BattalionContext = function() {
     ClientGameContext.call(this);
@@ -21,7 +21,7 @@ export const BattalionContext = function() {
     this.typeRegistry = new TypeRegistry();
     this.teamManager = new TeamManager();
     this.actionRouter = new ClientActionRouter();
-    this.shadeCache = new ShadeCache();
+    this.spriteController = new SpriteController();
     this.mapRegistry = new MapRegistry();
     this.missionManager = new MissionManager();
     this.scenarioRegistry = new ScenarioRegistry();
@@ -76,7 +76,7 @@ BattalionContext.prototype.init = function(resources) {
 
 BattalionContext.prototype.onExit = function() {
     this.teamManager.exit();
-    this.shadeCache.exit();
+    this.spriteController.exit(this);
     this.missionManager.exit();
     addDebug(this);
 }

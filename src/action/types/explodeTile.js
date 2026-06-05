@@ -4,7 +4,7 @@ import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { WorldMap } from "../../../engine/map/worldMap.js";
 import { ACTION_TYPE, ENTITY_CATEGORY, TILE_ID } from "../../enums.js";
 import { BattalionMap } from "../../map/battalionMap.js";
-import { destroyEntitySprite, killEntity } from "../../systems/spawn.js";
+import { killEntity } from "../../systems/spawn.js";
 import { playExplosion } from "../../systems/sprite.js";
 
 const createExplodeTileIntent = function(layerID, tileX, tileY) {
@@ -51,17 +51,13 @@ const fillExplodeTilePlan = function(gameContext, executionPlan, actionIntent) {
 }
 
 const executeExplodeTile = function(gameContext, data) {
-    const { teamManager, world, isClient } = gameContext;
+    const { teamManager, world } = gameContext;
     const { entityManager, mapManager } = world;
     const { entityID, tileX, tileY, layer } = data;
     const worldMap = mapManager.getActiveMap();
 
     if(entityID !== EntityManager.INVALID_ID) {
         const entity = entityManager.getEntity(entityID);
-
-        if(isClient) {
-            destroyEntitySprite(gameContext, entity);
-        }
 
         entity.setHealth(0);
 
@@ -87,12 +83,18 @@ ExplodeTileAction.prototype = Object.create(Action.prototype);
 ExplodeTileAction.prototype.constructor = ExplodeTileAction;
 
 ExplodeTileAction.prototype.onStart = function(gameContext, data) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const { tileX, tileY } = data;
+    const { world, spriteController } = gameContext;
+    const { mapManager, entityManager } = world;
+    const { entityID, tileX, tileY } = data;
     const worldMap = mapManager.getActiveMap();
 
     worldMap.removeLocalization(tileX, tileY);
 
     playExplosion(gameContext, tileX, tileY);
+
+    if(entityID !== EntityManager.INVALID_ID) {
+        const entity = entityManager.getEntity(entityID);
+
+        spriteController.destroyEntitySprite(gameContext, entity);
+    }
 }

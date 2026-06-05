@@ -3,7 +3,7 @@ import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ACTION_TYPE, SOUND_TYPE } from "../../enums.js";
 import { playEntitySound } from "../../systems/sound.js";
-import { destroyEntitySprite, killEntity } from "../../systems/spawn.js";
+import { killEntity } from "../../systems/spawn.js";
 import { playDeathEffect } from "../../systems/sprite.js";
 import { DeathTween } from "../../tween/deathTween.js";
 
@@ -39,7 +39,7 @@ const fillDeathPlan = function(gameContext, executionPlan, actionIntent) {
 }
 
 const executeDeath = function(gameContext, data) {
-    const { teamManager, world, isClient } = gameContext;
+    const { teamManager, world } = gameContext;
     const { entityManager } = world;
     const { entities } = data;
 
@@ -47,10 +47,6 @@ const executeDeath = function(gameContext, data) {
         const entity = entityManager.getEntity(entities[i]);
 
         entity.setHealth(0);
-
-        if(isClient) {
-            destroyEntitySprite(gameContext, entity);
-        }
 
         killEntity(gameContext, entity);
     }
@@ -113,5 +109,15 @@ DeathAction.prototype.isFinished = function(gameContext, executionPlan) {
 }
 
 DeathAction.prototype.onEnd = function(gameContext, data) {
+    const { world, spriteController } = gameContext;
+    const { entityManager } = world;
+    const { entities } = data;
+
+    for(const entityID of entities) {
+        const entity = entityManager.getEntity(entityID);
+
+        spriteController.destroyEntitySprite(gameContext, entity);
+    }
+
     this.tweens.length = 0;
 }

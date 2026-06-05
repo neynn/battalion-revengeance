@@ -5,45 +5,6 @@ import { BattalionEntity } from "../entity/battalionEntity.js";
 import { ATTACK_TYPE, DIRECTION, EFFECT_SPRITE, ENTITY_SPRITE, LAYER_TYPE, COLOR_TYPE } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
 
-const SPRITE_TABLE = [
-    ENTITY_SPRITE.IDLE_UP,
-    ENTITY_SPRITE.IDLE_RIGHT,
-    ENTITY_SPRITE.IDLE_DOWN,
-    ENTITY_SPRITE.IDLE_LEFT,
-    ENTITY_SPRITE.MOVE_UP,
-    ENTITY_SPRITE.MOVE_RIGHT,
-    ENTITY_SPRITE.MOVE_DOWN,
-    ENTITY_SPRITE.MOVE_LEFT,
-    ENTITY_SPRITE.FIRE_UP,
-    ENTITY_SPRITE.FIRE_RIGHT,
-    ENTITY_SPRITE.FIRE_DOWN,
-    ENTITY_SPRITE.FIRE_LEFT
-];
-
-export const getEntitySpriteID = function(entity) {
-    const { state, direction, config } = entity;
-    const { sprites } = config;
-
-    let begin = ENTITY_SPRITE.IDLE_UP;
-
-    switch(state) {
-        case BattalionEntity.STATE.IDLE: {
-            begin = ENTITY_SPRITE.IDLE_UP;
-            break;            
-        }
-        case BattalionEntity.STATE.MOVE: {
-            begin = ENTITY_SPRITE.MOVE_UP;
-            break;            
-        }
-        case BattalionEntity.STATE.FIRE: {
-            begin = ENTITY_SPRITE.FIRE_UP;
-            break;            
-        }
-    }
-
-    return sprites[SPRITE_TABLE[begin + direction]];
-}
-
 export const playSprite = function(gameContext, spriteType, tileX, tileY) {
     const { spriteManager } = gameContext;
     const sprite = spriteManager.createSprite(spriteType, LAYER_TYPE.GFX);
@@ -60,67 +21,6 @@ export const playExplosion = function(gameContext, tileX, tileY) {
     soundPlayer.play("explosion");
 
     playSprite(gameContext, "explosion", tileX, tileY);
-}
-
-//INFO(neyn): This is hard-coded but I don't really care :)
-const BUILDING_NEUTRAL_COLORS = {
-    //Base Sprite -> Gray Sprite
-    0x661A5E: [68, 86, 65],
-    0xAA162C: [128, 102, 104],
-    0xE9332E: [177, 173, 123],
-    0xFF9085: [238, 225, 156],
-
-    //Gold Icon -> Gray Icon
-    0x964E38: [35, 59, 84],
-    0xE5C234: [95, 111, 101],
-    0xFFE975: [125, 153, 138],
-    0xFFFFDC: [173, 183, 170]
-};
-
-export const updateBuildingSprite = function(gameContext, building, spriteIndex) {
-    const { spriteManager, typeRegistry, teamManager } = gameContext;
-    const { teamID, config } = building;
-    const { sprite } = config;
-
-    if(teamID === TeamManager.INVALID_ID) {
-        spriteManager.createCopyTexture(sprite, COLOR_TYPE.BUILDING, BUILDING_NEUTRAL_COLORS);
-        spriteManager.updateSprite(spriteIndex, sprite, COLOR_TYPE.BUILDING);
-    } else {
-        const { color } = teamManager.getTeam(teamID);
-
-        if(color !== COLOR_TYPE.RED) {
-            const { colorMap } = typeRegistry.getColorType(color);
-
-            spriteManager.createCopyTexture(sprite, color, colorMap);
-        }
-
-        spriteManager.updateSprite(spriteIndex, sprite, color);
-    }
-}
-
-export const updateEntitySprite = function(gameContext, entity) {
-    const { spriteManager, typeRegistry } = gameContext;
-    const { spriteID, state, config } = entity;
-    const sprite = spriteManager.getSprite(spriteID);
-    const spriteName = getEntitySpriteID(entity);
-
-    if(spriteName !== null) {
-        const { color } = entity.getTeam(gameContext);
-
-        if(color !== COLOR_TYPE.RED) {
-            const { colorMap } = typeRegistry.getColorType(color);
-
-            spriteManager.createCopyTexture(spriteName, color, colorMap);
-        }
-
-        spriteManager.updateSprite(spriteID, spriteName, color);
-    }
-
-    if(state === BattalionEntity.STATE.FIRE) {
-        sprite.lock();
-    } else {
-        sprite.unlock();
-    }
 }
 
 export const playDeathEffect = function(gameContext, entity) {
@@ -162,23 +62,6 @@ export const playAttackEffect = function(gameContext, entity, target, resolution
             }
 
             break;
-        }
-    }
-}
-
-export const bufferEntitySprites = function(gameContext, entity, colorID) {
-    if(colorID === COLOR_TYPE.RED) {
-        return;
-    }
-
-    const { spriteManager, typeRegistry } = gameContext;
-    const { id, colorMap } = typeRegistry.getColorType(colorID);
-
-    for(const spriteIndex of SPRITE_TABLE) {
-        const spriteName = entity.config.sprites[spriteIndex];
-
-        if(spriteName !== null) {
-            spriteManager.createCopyTexture(spriteName, id, colorMap);
         }
     }
 }

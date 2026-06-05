@@ -6,7 +6,7 @@ import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ACTION_TYPE, HEAL_COMMAND_TYPE, SOUND_TYPE, TRAIT_TYPE } from "../../enums.js";
 import { CombatSystem, InteractionResolver, ResolutionSystem } from "../../systems/combat.js";
 import { playEntitySound } from "../../systems/sound.js";
-import { getAnimationDuration, playHealEffect, updateEntitySprite } from "../../systems/sprite.js";
+import { getAnimationDuration, playHealEffect } from "../../systems/sprite.js";
 import { DeathActionVTable } from "./death.js";
 
 const createHealIntent = function(entityID, targetID, command) {
@@ -116,7 +116,7 @@ HealAction.prototype = Object.create(Action.prototype);
 HealAction.prototype.constructor = HealAction;
 
 HealAction.prototype.onStart = function(gameContext, data) {
-    const { world } = gameContext;
+    const { world, spriteController } = gameContext;
     const { entityManager } = world;
     const { entityID, targetID, resolutions } = data;
     const entity = entityManager.getEntity(entityID);
@@ -124,8 +124,8 @@ HealAction.prototype.onStart = function(gameContext, data) {
 
     entity.lookAt(target);
     entity.setState(BattalionEntity.STATE.FIRE);
+    spriteController.updateEntitySprite(gameContext, entity);
 
-    updateEntitySprite(gameContext, entity);
     playEntitySound(gameContext, entity, SOUND_TYPE.HEAL);
     playHealEffect(gameContext, entity, target);
 
@@ -141,13 +141,13 @@ HealAction.prototype.isFinished = function(gameContext, executionPlan) {
 }
 
 HealAction.prototype.onEnd = function(gameContext, data) {
-    const { world } = gameContext;
+    const { world, spriteController } = gameContext;
     const { entityManager } = world;
     const { entityID } = data;
     const entity = entityManager.getEntity(entityID);
 
     entity.setState(BattalionEntity.STATE.IDLE);
-    updateEntitySprite(gameContext, entity);
+    spriteController.updateEntitySprite(gameContext, entity);
 
     this.duration = 0;
     this.passedTime = 0;

@@ -3,7 +3,6 @@ import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ACTION_TYPE, TEAM_STAT } from "../../enums.js";
-import { updateBuildingSprite } from "../../systems/sprite.js";
 
 const createCaptureIntent = function(entityID, targetX, targetY) {
     return new ActionIntent(ACTION_TYPE.CAPTURE, {
@@ -81,11 +80,11 @@ CaptureAction.prototype = Object.create(Action.prototype);
 CaptureAction.prototype.constructor = CaptureAction;
 
 CaptureAction.prototype.onEnd = function(gameContext, data) {
-    const { world } = gameContext;
+    const { world, spriteController } = gameContext;
     const { mapManager } = world;
     const { targetX, targetY } = data;
     const worldMap = mapManager.getActiveMap();
     const building = worldMap.getBuilding(targetX, targetY);
 
-    updateBuildingSprite(gameContext, building, building.spriteID);
+    spriteController.updateBuildingSprite(gameContext, building, building.spriteID);
 }
