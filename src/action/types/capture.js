@@ -85,6 +85,7 @@ CaptureAction.prototype.onEnd = function(gameContext, data) {
     const { targetX, targetY } = data;
     const worldMap = mapManager.getActiveMap();
     const building = worldMap.getBuilding(targetX, targetY);
+    const spriteID = spriteController.getBuildingSpriteID(building.index);
 
-    spriteController.updateBuildingSprite(gameContext, building, building.spriteID);
+    spriteController.updateBuildingSprite(gameContext, building, spriteID);
 }

@@ -67,8 +67,14 @@ export const playAttackEffect = function(gameContext, entity, target, resolution
 }
 
 export const getAnimationDuration = function(gameContext, entity) {
-    const { spriteManager } = gameContext;
-    const { spriteID } = entity;
+    const { spriteManager, spriteController } = gameContext;
+    const { index } = entity;
+    const spriteID = spriteController.getEntitySpriteID(index);
+
+    if(spriteID === SpriteManager.INVALID_ID) {
+        return 0;
+    }
+    
     const sprite = spriteManager.getSprite(spriteID);
 
     return sprite.getTotalFrameTime();

@@ -1,5 +1,4 @@
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
-import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { SHOP_TYPE } from "../enums.js";
 import { ScenarioModel } from "../scenarioModel.js";
 import { createBuildingSnapshot } from "../snapshot/buildingSnapshot.js";
@@ -10,12 +9,12 @@ import { BuildingType } from "../type/parsed/buildingType.js";
  * 
  * @param {BuildingType} config 
  */
-export const Building = function(config) {
+export const Building = function(index, config) {
+    this.index = index;
     this.config = config;
     this.tileX = -1;
     this.tileY = -1;
     this.teamID = TeamManager.INVALID_ID;
-    this.spriteID = SpriteManager.INVALID_ID;
     this.customID = ScenarioModel.INVALID_CUSTOM_ID;
     this.customName = LanguageHandler.INVALID_ID;
     this.customDesc = LanguageHandler.INVALID_ID;

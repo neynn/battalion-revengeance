@@ -60,14 +60,31 @@ const getEntitySpriteName = function(entity) {
     return sprites[SPRITE_TABLE[begin + direction]];
 }
 
+const MAX_ENTITY_SPRITES = 1000;
+const MAX_BUILDING_SPRITES = 100;
+
 export const SpriteController = function() {
     const MAX_SHADES = ENTITY_TYPE._COUNT * DIRECTION._COUNT;
 
     this.shades = [];
     this.bufferedSprites = new Uint8Array(ENTITY_TYPE._COUNT);
+    this.buildingSprites = new Int16Array(MAX_BUILDING_SPRITES);
+    this.entitySprites = new Int16Array(MAX_ENTITY_SPRITES);
 
     for(let i = 0; i < MAX_SHADES; i++) {
         this.shades[i] = new TextureHandle();
+    }
+
+    this.resetSprites();
+}
+
+SpriteController.prototype.resetSprites = function() {
+    for(let i = 0; i < MAX_BUILDING_SPRITES; i++) {
+        this.buildingSprites[i] = SpriteManager.INVALID_ID;
+    }
+
+    for(let i = 0; i < MAX_ENTITY_SPRITES; i++) {
+        this.entitySprites[i] = SpriteManager.INVALID_ID;
     }
 }
 
@@ -79,38 +96,24 @@ SpriteController.prototype.getShade = function(index) {
     return this.shades[index];
 }
 
-SpriteController.prototype.destroyEntitySprite = function(gameContext, entity) {
-    const { spriteManager } = gameContext;
+SpriteController.prototype.getBuildingSpriteID = function(index) {
+    if(index < 0 || index >= MAX_BUILDING_SPRITES) {
+        return SpriteManager.INVALID_ID;
+    }
 
-    spriteManager.destroySprite(entity.spriteID);
-
-    entity.spriteID = SpriteManager.INVALID_ID;
-}
-
-SpriteController.prototype.createEntitySprite = function(gameContext, entity) {
-    const { teamManager, spriteManager } = gameContext;
-    const { teamID, config } = entity;
-    const { id } = config;
-    const { color } = teamManager.getTeam(teamID);
-    const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
-
-    entity.spriteID = visualSprite.getIndex();
-
-    this.bufferEntitySprites(gameContext, id, color);
-    this.updateEntitySprite(gameContext, entity);
+    return this.buildingSprites[index];
 }
 
 SpriteController.prototype.createBuildingSprite = function(gameContext, building) {
     const { spriteManager } = gameContext;
-    const { tileX, tileY } = building;
+    const { tileX, tileY, index } = building;
     const position = transformTileToWorld(tileX, tileY);
     const spriteObject = spriteManager.createEmptySprite(LAYER_TYPE.BUILDING);
     const spriteIndex = spriteObject.getIndex();
 
     spriteObject.setPosition(position.x, position.y);
 
-    building.spriteID = spriteIndex;
-
+    this.buildingSprites[index] = spriteIndex;
     this.updateBuildingSprite(gameContext, building, spriteIndex);
 }
 
@@ -135,9 +138,47 @@ SpriteController.prototype.updateBuildingSprite = function(gameContext, building
     }
 }
 
+SpriteController.prototype.getEntitySpriteID = function(index) {
+    if(index < 0 || index >= MAX_ENTITY_SPRITES) {
+        return SpriteManager.INVALID_ID;
+    }
+
+    return this.entitySprites[index];
+}
+
+SpriteController.prototype.destroyEntitySprite = function(gameContext, entity) {
+    const { spriteManager } = gameContext;
+    const { index } = entity;
+    const spriteID = this.getEntitySpriteID(index);
+
+    spriteManager.destroySprite(spriteID);
+
+    this.entitySprites[index] = SpriteManager.INVALID_ID;
+}
+
+SpriteController.prototype.createEntitySprite = function(gameContext, entity) {
+    const { teamManager, spriteManager } = gameContext;
+    const { teamID, config, index } = entity;
+    const { id } = config;
+    const { color } = teamManager.getTeam(teamID);
+    const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
+
+    if(index >= 0 && index < MAX_ENTITY_SPRITES) {
+        this.entitySprites[index] = visualSprite.getIndex();
+        this.bufferEntitySprites(gameContext, id, color);
+        this.updateEntitySprite(gameContext, entity);
+    }
+}
+
 SpriteController.prototype.updateEntitySprite = function(gameContext, entity) {
     const { spriteManager, typeRegistry } = gameContext;
-    const { spriteID, state, config } = entity;
+    const { state, config, index } = entity;
+    const spriteID = this.getEntitySpriteID(index);
+
+    if(spriteID === SpriteManager.INVALID_ID) {
+        return;
+    }
+
     const sprite = spriteManager.getSprite(spriteID);
     const spriteName = getEntitySpriteName(entity);
 
@@ -210,7 +251,6 @@ SpriteController.prototype.exit = function(gameContext) {
             }
             
             this.bufferedSprites[i] = COLOR_TYPE.RED;
-            console.log(i)
         }
     }
 }

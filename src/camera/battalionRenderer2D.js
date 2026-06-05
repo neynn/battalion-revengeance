@@ -1,6 +1,5 @@
 import { Camera2D } from "../../engine/camera/camera2D.js";
 import { TileOverlay } from "../../engine/renderer/tileOverlay.js";
-import { EntityManager } from "../../engine/entity/entityManager.js";
 import { SHAPE } from "../../engine/math/constants.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { drawShape, shadeScreen } from "../../engine/util/drawHelper.js";
@@ -337,7 +336,7 @@ BattalionRenderer2D.prototype.drawEntity = function(gameContext, camera, display
  * @returns 
  */
 BattalionRenderer2D.prototype.drawEntities = function(gameContext, camera, display, worldMap) {
-    const { timer, world, spriteManager, tileManager, uiData } = gameContext;
+    const { timer, world, spriteManager, tileManager, uiData, spriteController } = gameContext;
     const { startX, startY, endX, endY, mapWidth } = camera;
     const { realTime, deltaTime } = timer;
     const { entityManager } = world;
@@ -346,25 +345,26 @@ BattalionRenderer2D.prototype.drawEntities = function(gameContext, camera, displ
     const sprites = spriteManager.pool.elements;
     const currentFrame = this.currentFrame;
     let inspectedEntity = null;
+    let inspectedSpriteID = SpriteManager.INVALID_ID;
     let count = 0;
 
     {
         const index = worldMap.getEntity(this.inspectX, this.inspectY);
-        
-        if(index !== EntityManager.INVALID_INDEX) {
-            const entity = entities[index];
-            const { spriteID } = entity;
+        const spriteID = spriteController.getEntitySpriteID(index);
 
-            if(spriteID !== SpriteManager.INVALID_ID) {
-                if(this.flags & BattalionRenderer2D.FLAG.USE_PERSPECTIVES) {
-                    if(entity.isVisibleTo(gameContext, this.teamID)) {
-                        sprites[spriteID].lastFrame = currentFrame;
-                        inspectedEntity = entity;
-                    }
-                } else {
+        if(spriteID !== SpriteManager.INVALID_ID) {
+            const entity = entities[index];
+
+            if(this.flags & BattalionRenderer2D.FLAG.USE_PERSPECTIVES) {
+                if(entity.isVisibleTo(gameContext, this.teamID)) {
                     sprites[spriteID].lastFrame = currentFrame;
                     inspectedEntity = entity;
+                    inspectedSpriteID = spriteID;
                 }
+            } else {
+                sprites[spriteID].lastFrame = currentFrame;
+                inspectedEntity = entity;
+                inspectedSpriteID = spriteID;
             }
         }
     }
@@ -374,24 +374,22 @@ BattalionRenderer2D.prototype.drawEntities = function(gameContext, camera, displ
 
         for(let j = startX; j <= endX; j++) {
             const eIndex = mapEntities[index];
+            const spriteID = spriteController.getEntitySpriteID(eIndex);
 
-            if(eIndex !== EntityManager.INVALID_INDEX) {
-                const entity = entities[eIndex];
-                const { spriteID, renderFlags } = entity;
+            if(spriteID !== SpriteManager.INVALID_ID) {
+                const sprite = sprites[spriteID];
 
-                if(spriteID !== SpriteManager.INVALID_ID) {
-                    const sprite = sprites[spriteID];
+                if(sprite.lastFrame < currentFrame) {
+                    const entity = entities[eIndex];
 
-                    if(sprite.lastFrame < currentFrame) {
-                        sprite.lastFrame = currentFrame;
-
-                        if(renderFlags & BattalionEntity.RENDER_FLAG.ACTING) {
-                            this.addDeferred(eIndex);
-                        } else {
-                            this.drawEntity(gameContext, camera, display, entity, sprite, realTime, deltaTime);
-                            count++;
-                        }
+                    if(entity.renderFlags & BattalionEntity.RENDER_FLAG.ACTING) {
+                        this.addDeferred(eIndex);
+                    } else {
+                        this.drawEntity(gameContext, camera, display, entity, sprite, realTime, deltaTime);
+                        count++;
                     }
+
+                    sprite.lastFrame = currentFrame;
                 }
             }
 
@@ -401,35 +399,37 @@ BattalionRenderer2D.prototype.drawEntities = function(gameContext, camera, displ
 
     for(let i = 0; i < hotEntities.length; i++) {
         const eIndex = hotEntities[i];
-        const { tileX, tileY, spriteID } = entities[eIndex];
+        const spriteID = spriteController.getEntitySpriteID(eIndex);
 
         if(spriteID !== SpriteManager.INVALID_ID) {   
+            const { tileX, tileY } = entities[eIndex];
+    
             if(tileX >= startX && tileX <= endX && tileY >= startY && tileY <= endY) {
                 const sprite = sprites[spriteID];
 
                 if(sprite.lastFrame < currentFrame) {
-                    sprite.lastFrame = currentFrame;
                     this.addDeferred(eIndex);
+                    sprite.lastFrame = currentFrame;
                 }
             }
         }
     }
 
     for(let i = 0; i < this.deferredCount; i++) {
-        const entity = entities[this.deferred[i]];
-        const spriteID = entity.spriteID;
+        const entityIndex = this.deferred[i];
+        const spriteID = spriteController.getEntitySpriteID(entityIndex);
 
-        this.drawEntity(gameContext, camera, display, entity, sprites[spriteID], realTime, deltaTime);
+        this.drawEntity(gameContext, camera, display, entities[entityIndex], sprites[spriteID], realTime, deltaTime);
         count++;
     }
 
     if(inspectedEntity) {
-        const { spriteID, tileX, tileY, cash } = inspectedEntity;
+        const { tileX, tileY, cash } = inspectedEntity;
         const moraleType = inspectedEntity.getMorale(gameContext);
         const screenX = camera.tileXToScreen(tileX);
         const screenY = camera.tileYToScreen(tileY);
 
-        this.drawEntity(gameContext, camera, display, inspectedEntity, sprites[spriteID], realTime, deltaTime);
+        this.drawEntity(gameContext, camera, display, inspectedEntity, sprites[inspectedSpriteID], realTime, deltaTime);
         count++;
 
         if(cash !== 0) {
@@ -590,13 +590,13 @@ BattalionRenderer2D.prototype.drawTiles = function(gameContext, camera, display,
 }
 
 BattalionRenderer2D.prototype.drawBuildings = function(gameContext, camera, display, buildings) {
-    const { spriteManager, timer } = gameContext;
+    const { spriteManager, timer, spriteController } = gameContext;
     const { realTime, deltaTime } = timer;
     const sprites = spriteManager.pool.elements;
     let count = 0;
 
     for(let i = 0; i < buildings.length; i++) {
-        const { spriteID } = buildings[i];
+        const spriteID = spriteController.getBuildingSpriteID(i);
 
         if(spriteID !== SpriteManager.INVALID_ID) {
             const sprite = sprites[spriteID];

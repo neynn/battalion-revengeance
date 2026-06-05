@@ -1,10 +1,8 @@
-import { SpriteManager } from "../sprite/spriteManager.js";
 import { EntityManager } from "./entityManager.js";
 
 export const Entity = function(id) {
     this.id = id;
     this.index = EntityManager.INVALID_INDEX;
-    this.spriteID = SpriteManager.INVALID_ID;
     this.isMarkedForDestroy = false;
     this.isHot = false;
     this.offsetX = 0;
@@ -30,7 +28,6 @@ Entity.prototype.setOffset = function(offsetX, offsetY) {
 
 Entity.prototype.reset = function() {
     this.index = EntityManager.INVALID_INDEX;
-    this.spriteID = SpriteManager.INVALID_ID;
     this.flags = 0;
     this.renderFlags = 0;
 }

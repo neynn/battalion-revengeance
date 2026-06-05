@@ -242,17 +242,21 @@ BattalionMap.prototype.isBuildingPlaceable = function(tileX, tileY) {
 
 BattalionMap.prototype.createBuilding = function(gameContext, snapshot) {
     const { typeRegistry } = gameContext;
-    const { tileX, tileY, type, color } = snapshot;
+    const { tileX, tileY, type } = snapshot;
+
+    if(!this.isBuildingPlaceable(tileX, tileY)) {
+        return;
+    }
+
     const buildingType = typeRegistry.getBuildingType(type);
-    const building = new Building(buildingType);
+    const index = this.buildings.length;
+    const building = new Building(index, buildingType);
 
     building.tileX = tileX;
     building.tileY = tileY;
     building.load(snapshot);
 
-    if(this.isBuildingPlaceable(tileX, tileY)) {
-        this.buildings.push(building);
-    }
+    this.buildings.push(building);
 }
 
 BattalionMap.prototype.getBuilding = function(tileX, tileY) {
