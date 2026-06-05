@@ -426,8 +426,8 @@ BattalionRenderer2D.prototype.drawEntities = function(gameContext, camera, displ
     if(inspectedEntity) {
         const { tileX, tileY, cash } = inspectedEntity;
         const moraleType = inspectedEntity.getMorale(gameContext);
-        const screenX = camera.tileXToScreen(tileX);
-        const screenY = camera.tileYToScreen(tileY);
+        const screenX = camera.getScreenX(tileX);
+        const screenY = camera.getScreenY(tileY);
 
         this.drawEntity(gameContext, camera, display, inspectedEntity, sprites[inspectedSpriteID], realTime, deltaTime);
         count++;
@@ -593,17 +593,29 @@ BattalionRenderer2D.prototype.drawBuildings = function(gameContext, camera, disp
     const { spriteManager, timer, spriteController } = gameContext;
     const { realTime, deltaTime } = timer;
     const sprites = spriteManager.pool.elements;
+    const startX = camera.startX;
+    const startY = camera.startY;
+    const endX = camera.endX;
+    const endY = camera.endY;
+
     let count = 0;
 
     for(let i = 0; i < buildings.length; i++) {
-        const spriteID = spriteController.getBuildingSpriteID(i);
+        const { tileX, tileY, index } = buildings[i];
 
-        if(spriteID !== SpriteManager.INVALID_ID) {
-            const sprite = sprites[spriteID];
+        if(tileX >= startX && tileX <= endX && tileY >= startY && tileY <= endY) {
+            const spriteID = spriteController.getBuildingSpriteID(i);
 
-            sprite.update(realTime, deltaTime);
-            sprite.draw(display, 0, 0);
-            count++;
+            if(spriteID !== SpriteManager.INVALID_ID) {
+                const sprite = sprites[spriteID];
+                const screenX = camera.getScreenX(tileX);
+                const screenY = camera.getScreenY(tileY);
+
+                sprite.setPosition(screenX, screenY);
+                sprite.update(realTime, deltaTime);
+                sprite.draw(display, 0, 0);
+                count++;
+            }
         }
     }
 
@@ -614,6 +626,8 @@ BattalionRenderer2D.prototype.render = function(gameContext, camera, display) {
     const { client, world, tileManager, teamManager } = gameContext;
     const { session } = client;
     const { mapManager, actorManager } = world;
+    const { round, turn } = teamManager;
+    const { context } = display;
     const worldMap = mapManager.getActiveMap();
 
     if(!worldMap) {
@@ -621,9 +635,11 @@ BattalionRenderer2D.prototype.render = function(gameContext, camera, display) {
     }
 
     let tiles = 0;
-    let sprites = 0;
     let overlays = 0;
-    let other = 0;
+    let entities = 0;
+    let buildings = 0;
+    let gfx = 0;
+    let total = 0;
 
     const actor = actorManager.getActor(session.actorID);
 
@@ -641,7 +657,7 @@ BattalionRenderer2D.prototype.render = function(gameContext, camera, display) {
     
     tiles += this.drawTiles(gameContext, camera, display, worldMap);
     tiles += this.drawMovementNodes(gameContext, camera, display, worldMap.pathfinder);
-    sprites += this.drawBuildings(gameContext, camera, display, worldMap.buildings);
+    buildings += this.drawBuildings(gameContext, camera, display, worldMap.buildings);
     tiles += this.drawMines(gameContext, camera, display, worldMap);
 
     if(this.flags & BattalionRenderer2D.FLAG.SHOW_ALL_JAMMERS) {
@@ -651,13 +667,22 @@ BattalionRenderer2D.prototype.render = function(gameContext, camera, display) {
     }
 
     overlays += this.drawOverlay(camera, tileManager, display, this.pathOverlay);
-    sprites += this.drawEntities(gameContext, camera, display, worldMap);
-    sprites += this.drawSortedSpriteLayer(gameContext, camera, display, LAYER_TYPE.GFX);
+    entities += this.drawEntities(gameContext, camera, display, worldMap);
+    gfx += this.drawSortedSpriteLayer(gameContext, camera, display, LAYER_TYPE.GFX);
+    total += tiles + overlays + entities + buildings + gfx;
+
     //this.shadeScreen(camera, display, "#000000", 0.5);
 
     if(Renderer2D.DEBUG.WORLD) {
         this.debugMap(camera, display, worldMap);
-        this.drawInfo(gameContext, display, tiles, sprites, overlays, other);
+        
+        drawShape(display, SHAPE.RECTANGLE, "#222222", 0, 0, 100, 40);
+
+        context.fillStyle = "#467fc9";
+        context.fillText(`Turn ${turn} | Round ${round}`, 0, 5);
+        context.fillText(`Tiles ${tiles} | Overlays ${overlays}`, 0, 15);
+        context.fillText(`Entities ${entities} | Buildings ${buildings}`, 0, 25);
+        context.fillText(`GFX ${gfx} | Total ${total}`, 0, 35);  
     }
 }
 
@@ -676,19 +701,6 @@ BattalionRenderer2D.prototype.shadeScreen = function(camera, display, color, alp
     }
 
     shadeScreen(display, color, alpha, drawWidth, drawHeight);
-}
-
-BattalionRenderer2D.prototype.drawInfo = function(gameContext, display, tiles, sprites, overlays, other) {
-    const { teamManager } = gameContext;
-    const { round, turn } = teamManager;
-    const { context } = display;
-    
-    drawShape(display, SHAPE.RECTANGLE, "#222222", 0, 0, 100, 30);
-
-    context.fillStyle = "#467fc9";
-    context.fillText(`Turn ${turn} | Round ${round}`, 0, 5);
-    context.fillText(`Tiles ${tiles} | Sprites ${sprites}`, 0, 15);
-    context.fillText(`Overlays ${overlays} | Other ${other}`, 0, 25);
 }
 
 BattalionRenderer2D.prototype.debugMap = function(camera, display, worldMap) {

@@ -190,14 +190,6 @@ Camera2D.prototype.isTileVisible = function(tileX, tileY) {
     return tileX >= this.startX && tileX <= this.endX && tileY >= this.startY && tileY <= this.endY;
 }
 
-Camera2D.prototype.tileXToScreen = function(tileX) {
-    return tileX * this.tileWidth - this.fOffsetX;
-}
-
-Camera2D.prototype.tileYToScreen = function(tileY) {
-    return tileY * this.tileHeight - this.fOffsetY;
-}
-
 Camera2D.prototype.jumpToTile = function(tileX, tileY) {
     this.tileX = tileX;
     this.tileY = tileY;

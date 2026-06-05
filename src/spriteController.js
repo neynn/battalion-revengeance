@@ -1,4 +1,3 @@
-import { transformTileToWorld } from "../engine/math/transform2D.js";
 import { Texture } from "../engine/resources/texture/texture.js";
 import { TextureHandle } from "../engine/resources/texture/textureHandle.js";
 import { SpriteManager } from "../engine/sprite/spriteManager.js";
@@ -106,12 +105,9 @@ SpriteController.prototype.getBuildingSpriteID = function(index) {
 
 SpriteController.prototype.createBuildingSprite = function(gameContext, building) {
     const { spriteManager } = gameContext;
-    const { tileX, tileY, index } = building;
-    const position = transformTileToWorld(tileX, tileY);
+    const { index } = building;
     const spriteObject = spriteManager.createEmptySprite(LAYER_TYPE.BUILDING);
     const spriteIndex = spriteObject.getIndex();
-
-    spriteObject.setPosition(position.x, position.y);
 
     this.buildingSprites[index] = spriteIndex;
     this.updateBuildingSprite(gameContext, building, spriteIndex);
