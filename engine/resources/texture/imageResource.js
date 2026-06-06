@@ -20,7 +20,7 @@ ImageResource.prototype.clear = function() {
     this.bitmap = null;
 }
 
-ImageResource.prototype.setImage = function(bitmap) {
+ImageResource.prototype.setData = function(bitmap) {
     this.state = ImageResource.STATE.LOADED;
     this.width = bitmap.width;
     this.height = bitmap.height;

@@ -5,7 +5,7 @@ import { TeamOverride } from "../../map/override.js";
 import { loadClientScenario } from "../../systems/map.js";
 import { mRegenerateLines } from "../helpers.js";
 import { START_BUTTON_STYLE, UI_TEXTURE } from "../constants.js";
-import { TextureRegion } from "../../../engine/resources/texture/region.js";
+import { TextureRegion } from "../../../engine/resources/texture/textureRegion.js";
 import { INTERRUPT_TYPE } from "../../enums.js";
 import { InterruptVTable } from "../../action/types/interrupt.js";
 import { loadSavedScenario } from "../../systems/save.js";

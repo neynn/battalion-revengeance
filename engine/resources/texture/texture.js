@@ -1,5 +1,5 @@
 import { ImageResource } from "./imageResource.js";
-import { TextureRegion } from "./region.js";
+import { TextureRegion } from "./textureRegion.js";
 import { MAX_TEXTURE_VARIANTS } from "../../engine_constants.js";
 
 export const Texture = function(id, name, path) {
@@ -88,43 +88,10 @@ Texture.prototype.getOrCreateImageVariant = function(index) {
     return image;
 }
 
-//TODO(neyn): This should not be here.
-Texture.prototype.requestBitmap = function() {
-    if(!this.path) {
-        return Promise.reject("Missing path!");
-    }
-
-    const image = this.getImage();
-
-    if(image.state !== ImageResource.STATE.EMPTY) {
-        return Promise.reject("Texture is loading/loaded!");
-    }
-
-    image.state = ImageResource.STATE.LOADING;
-
-    return fetch(this.path)
-    .then((response) => {
-        if(response.ok) {
-            return response.blob();
-        }
-
-        return Promise.reject("File could not be fetched!");
-    })
-    .then((blob) => createImageBitmap(blob))
-    .then((bitmap) => {
-        image.setImage(bitmap);
-
-        this.width = bitmap.width;
-        this.height = bitmap.height;
-
-        return Promise.resolve(bitmap);
-    })
-    .catch((error) => {
-        image.state = ImageResource.STATE.EMPTY;
-
-        return Promise.reject(error);
-    });
-};
+Texture.prototype.setSize = function(width, height) {
+    this.width = width;
+    this.height = height;
+}
 
 Texture.prototype.initGrid = function(grid, gridWidth, gridHeight) {
     for(const regionID in grid) {

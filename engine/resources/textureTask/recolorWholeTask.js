@@ -1,5 +1,11 @@
+import { ImageResource } from "../texture/imageResource.js";
 import { createImageData, recolorRect, TextureTask } from "./textureTask.js";
 
+/**
+ * 
+ * @param {ImageResource} source 
+ * @param {ImageResource} target 
+ */
 export const RecolorWholeTask = function(source, target) {
     TextureTask.call(this, source, target);
 
@@ -18,7 +24,7 @@ RecolorWholeTask.prototype.execute = function() {
 
     createImageBitmap(imageData)
     .then(bitmap => {
-        this.target.setImage(bitmap);
+        this.target.setData(bitmap);
         this.state = TextureTask.STATE.FINISHED;
     })
     .catch(error => {

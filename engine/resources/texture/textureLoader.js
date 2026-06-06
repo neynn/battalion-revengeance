@@ -144,7 +144,7 @@ TextureLoader.prototype.resolveLoad = function(textureID, bitmap) {
     }
 }
 
-TextureLoader.prototype.resolveError = function(textureID) {
+TextureLoader.prototype.resolveError = function(textureID, error) {
     const toResolve = this.toResolve.get(textureID);
 
     if(toResolve) {
@@ -152,16 +152,50 @@ TextureLoader.prototype.resolveError = function(textureID) {
     }  
 }
 
+TextureLoader.prototype.requestBitmap = function(path) {
+    return fetch(path)
+    .then((response) => {
+        if(response.ok) {
+            return response.blob();
+        }
+
+        return Promise.reject("File could not be fetched!");
+    })
+    .then((blob) => createImageBitmap(blob))
+    .then((bitmap) => Promise.resolve(bitmap))
+    .catch((error) => Promise.reject(error));
+};
+
 TextureLoader.prototype.loadTexture = function(id) {
     const texture = this.getTexture(id);
 
-    if(texture) {
-        const image = texture.getImage();
+    if(!texture) {
+        return;
+    }
+    
+    const image = texture.getImage();
 
-        if(image.state === ImageResource.STATE.EMPTY) {
-            texture.requestBitmap()
-            .then((bitmap) => this.resolveLoad(id, bitmap))
-            .catch((error) => this.resolveError(id));
-        }
-    } 
+    if(image.state !== ImageResource.STATE.EMPTY) {
+        return;
+    }
+
+    if(!texture.path) {
+        return;
+    }
+
+    image.state = ImageResource.STATE.LOADING;
+
+    this.requestBitmap(texture.path)
+    .then((bitmap) => {
+        const { width, height } = bitmap;
+
+        image.setData(bitmap);
+        texture.setSize(width, height);
+        this.resolveLoad(id, bitmap);
+    })
+    .catch((error) => {
+
+        image.state = ImageResource.STATE.EMPTY;
+        this.resolveError(id, error);
+    });
 }

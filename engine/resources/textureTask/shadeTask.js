@@ -1,5 +1,12 @@
+import { ImageResource } from "../texture/imageResource.js";
 import { createEmptyImageData, TextureTask } from "./textureTask.js";
 
+/**
+ * 
+ * @param {ImageResource} source 
+ * @param {ImageResource} target 
+ * @param {*} rect 
+ */
 export const ShadeTask = function(source, target, rect) {
     TextureTask.call(this, source, target);
 
@@ -33,7 +40,7 @@ ShadeTask.prototype.execute = function() {
 
     createImageBitmap(imageData)
     .then(bitmap => {
-        this.target.setImage(bitmap);
+        this.target.setData(bitmap);
         this.state = TextureTask.STATE.FINISHED;
     })
     .catch(error => {

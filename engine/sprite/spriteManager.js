@@ -1,8 +1,6 @@
 import { Sprite } from "./sprite.js";
 import { ObjectPool } from "../util/objectPool.js";
 import { SpriteContainer } from "./spriteContainer.js";
-import { ImageResource } from "../resources/texture/imageResource.js";
-import { RenderState } from "./renderState.js";
 import { TextureRegistry } from "../resources/texture/textureRegistry.js";
 import { Texture } from "../resources/texture/texture.js";
 
@@ -389,11 +387,7 @@ SpriteManager.prototype.updateSprite = function(spriteIndex, spriteID, colorID =
 
         //Lazy-Load the default resource.
         if(colorID === Texture.DEFAULT_COLOR) {
-            const image = texture.getImage();
-
-            if(image.state === ImageResource.STATE.EMPTY) {
-                this.resources.loadTexture(texture.id);
-            }
+            this.resources.loadTexture(texture.id);
         }
     } else {
         sprite.reset();
