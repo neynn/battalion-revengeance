@@ -22,7 +22,6 @@ export const createEntitySnapshot = function() {
         "cash": 0, //UINT16
         "flags": BattalionEntity.FLAG.NONE, //UINT16
         "health": 1, //UINT16
-        "maxHealth": 1, //UINT16
         "type": ENTITY_TYPE._INVALID, //INT16
         "tileX": -1, //INT16
         "tileY": -1, //INT16
@@ -60,7 +59,6 @@ export const createEntitySnapshotFromEntry = function(gameContext, entry) {
     snapshot.desc = desc;
     snapshot.type = type;
     snapshot.health = entityType.health;
-    snapshot.maxHealth = entityType.health;
     snapshot.teamID = teamManager.getTeamID(team);
     snapshot.tileX = x;
     snapshot.tileY = y;

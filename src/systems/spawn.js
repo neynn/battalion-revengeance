@@ -11,7 +11,7 @@ const createEntity = function(gameContext, entityID, snapshot) {
     const { entityManager } = world;
     const { teamID, type, tileX, tileY } = snapshot;
     const entityType = typeRegistry.getEntityType(type);
-    const entityObject = new BattalionEntity(entityID);
+    const entityObject = new BattalionEntity(entityID, entityType);
 
     entityObject.loadConfig(entityType);
     entityObject.load(snapshot);

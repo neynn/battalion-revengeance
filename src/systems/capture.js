@@ -1,6 +1,15 @@
+import { BattalionEntity } from "../entity/battalionEntity.js";
 import { TRAIT_TYPE } from "../enums.js";
 
 export const CaptureSystem = {
+    /**
+     * 
+     * @param {*} gameContext 
+     * @param {BattalionEntity} entity 
+     * @param {number} tileX 
+     * @param {number} tileY 
+     * @returns 
+     */
     canEntityCaptureAt: function(gameContext, entity, tileX, tileY) {
         if(!entity.hasTrait(TRAIT_TYPE.CONQUEROR)) {
             return false;

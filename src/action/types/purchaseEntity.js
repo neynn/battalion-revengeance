@@ -64,7 +64,6 @@ const fillPurchasePlan = function(gameContext, executionPlan, actionIntent) {
     data.snapshot.tileY = tileY;
     data.snapshot.type = typeID;
     data.snapshot.health = health;
-    data.snapshot.maxHealth = health;
     data.snapshot.teamID = currentTeam;
 
     executionPlan.addNext(UncloakVTable.createIntent(nextID));

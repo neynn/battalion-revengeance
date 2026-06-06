@@ -653,7 +653,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
                 updateTooltip(weaponType.name, weaponType.desc, weaponX, bodyY);
             }
 
-            context.fillText(`${entity.damage}`, weaponX + ICON_WIDTH + 2, bodyY + 10);
+            context.fillText(`${entity.getDamage()}`, weaponX + ICON_WIDTH + 2, bodyY + 10);
 
             if(maxRange > 1) {
                 context.fillText(`[${minRange}-${maxRange}]`, weaponX + ICON_WIDTH + 2 + 15, bodyY + 10);

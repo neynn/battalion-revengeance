@@ -11,22 +11,27 @@ import { ScenarioModel } from "../scenarioModel.js";
 import { ShopType } from "../type/parsed/shopType.js";
 import { TerrainType } from "../type/parsed/terrainType.js";
 import { StealthSystem } from "../systems/stealth.js";
+import { EntityType } from "../type/parsed/entityType.js";
 
 const ACTIONS_PER_TURN = 1;
 const MOVES_PER_TURN = 1;
 const MORALE_DELTA_MAX = 3;
 const MORALE_DELTA_MIN = -3;
 
-export const BattalionEntity = function(id) {
+/**
+ * 
+ * @param {number} id 
+ * @param {EntityType} config 
+ */
+export const BattalionEntity = function(id, config) {
     Entity.call(this, id);
 
-    this.config = null;
+    this.config = config;
     this.customID = ScenarioModel.INVALID_CUSTOM_ID;
     this.customName = LanguageHandler.INVALID_ID;
     this.customDesc = LanguageHandler.INVALID_ID;
     this.health = 1;
     this.maxHealth = 1;
-    this.damage = 0;
     this.moraleType = MORALE_TYPE.NORMAL;
     this.moraleDelta = 0;
     this.tileX = -1;
@@ -94,7 +99,6 @@ BattalionEntity.prototype.save = function() {
     snapshot.type = this.config.id;
     snapshot.flags = this.flags;
     snapshot.health = this.health;
-    snapshot.maxHealth = this.maxHealth;
     snapshot.morale = this.moraleType;
     snapshot.moraleDelta = this.moraleDelta;
     snapshot.tileX = this.tileX;
@@ -122,7 +126,6 @@ BattalionEntity.prototype.load = function(data) {
     this.bonusMoves = data.bonusMoves;
     this.bonusActions = data.bonusActions;
     this.flags = data.flags;
-    this.maxHealth = data.maxHealth;
     this.moraleType = data.morale;
     this.tileZ = data.tileZ;
     this.transportID = data.transport;
@@ -137,13 +140,16 @@ BattalionEntity.prototype.load = function(data) {
     this.syncRenderFlags();
 }
 
+/**
+ * 
+ * @param {EntityType} config 
+ */
 BattalionEntity.prototype.loadConfig = function(config) {
-    const { health, damage } = config;
+    const { health } = config;
 
     this.config = config;
     this.health = health;
     this.maxHealth = health;
-    this.damage = damage;
     this.setHealth(this.health);
 }
 
@@ -160,6 +166,10 @@ BattalionEntity.prototype.getShop = function(gameContext) {
     }
 
     return typeRegistry.getShopType(this.config.shop);
+}
+
+BattalionEntity.prototype.getDamage = function() {
+    return this.config.damage;
 }
 
 BattalionEntity.prototype.isDisabled = function() {
@@ -802,8 +812,9 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
 }
 
 BattalionEntity.prototype.getAttackDamage = function(gameContext, target, damageFlags) {
+    const damageValue = this.getDamage();
     const damageAmplifier = this.getAttackAmplifier(gameContext, target, damageFlags);
-    let damage = this.damage * damageAmplifier;
+    let damage = damageValue * damageAmplifier;
 
 	if(target.hasTrait(TRAIT_TYPE.CEMENTED_STEEL_ARMOR) && !this.hasTrait(TRAIT_TYPE.CAVITATION_EXPLOSION)) {
 		damage -= TRAIT_CONFIG.CEMENTED_STEEL_ARMOR_REDUCTION;

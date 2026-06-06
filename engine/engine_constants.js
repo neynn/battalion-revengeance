@@ -10,8 +10,7 @@ export const FIXED_DELTA_TIME = 1 / TARGET_FPS;
 export const MAX_TICKS = 30;
 
 export const MAX_TEXTURE_VARIANTS = 30;
+export const DEFAULT_IMAGE_TYPE = ".png";
 
 export const MAX_TILE_ROWS = 100;
 export const MAX_TILE_COLUMNS = 100;
-
-export const DEFAULT_IMAGE_TYPE = ".png";

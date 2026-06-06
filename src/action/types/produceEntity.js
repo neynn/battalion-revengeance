@@ -70,7 +70,6 @@ const fillProducePlan = function(gameContext, executionPlan, actionIntent) {
     data.snapshot.tileY = tileY;
     data.snapshot.type = typeID;
     data.snapshot.health = health;
-    data.snapshot.maxHealth = health;
     data.snapshot.teamID = team.getID();
 
     executionPlan.addNext(MineTriggerVTable.createIntent(nextID));

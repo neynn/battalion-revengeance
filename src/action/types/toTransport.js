@@ -83,20 +83,6 @@ export const ToTransportVTable = {
     execute: executeToTransport
 };
 
-/*
-BattalionEntity.prototype.fromTransport = function(gameContext) {
-    if(this.transportID !== ENTITY_TYPE._INVALID) {
-        const { typeRegistry } = gameContext;
-        const transportType = typeRegistry.getEntityType(this.transportID);
-        const previousHealthFactor = this.health / this.maxHealth;
-
-        this.loadConfig(transportType);
-        this.setHealth(this.maxHealth * previousHealthFactor);
-        this.transportID = ENTITY_TYPE._INVALID;
-    }
-}
-*/
-
 export const ToTransportAction = function() {
     Action.call(this);
 
