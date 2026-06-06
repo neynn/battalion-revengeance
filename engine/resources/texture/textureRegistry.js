@@ -1,7 +1,6 @@
+import { DEFAULT_IMAGE_TYPE } from "../../engine_constants.js";
 import { PathHandler } from "../pathHandler.js";
 import { Texture } from "./texture.js";
-
-const DEFAULT_TEXTURE_TYPE = ".png";
 
 export const TextureRegistry = function() {
     this.textures = [];
@@ -53,7 +52,7 @@ TextureRegistry.prototype.createTextures = function(type, textures) {
 
     for(const textureName in textures) {
         const { directory, source, grid, autoGrid, regions, gridWidth = 0, gridHeight = 0 } = textures[textureName];
-        const fileName = source ? source : `${textureName}${DEFAULT_TEXTURE_TYPE}`;
+        const fileName = source ? source : `${textureName}${DEFAULT_IMAGE_TYPE}`;
         const filePath = PathHandler.getPath(directory, fileName);
         const textureID = this.textures.length;
         const texture = new Texture(textureID, textureName, filePath);

@@ -1,4 +1,4 @@
-import { TextureHandle } from "../texture/textureHandle.js";
+import { ImageResource } from "../texture/imageResource.js";
 
 export const recolorRect = function(buffer, bufferWidth, colorMap, frameX, frameY, frameW, frameH) {
     let rowStart = frameY * bufferWidth + frameX;
@@ -61,8 +61,8 @@ export const createEmptyImageData = function(width, height, bitmap, copyX, copyY
 
 /**
  * 
- * @param {TextureHandle} source 
- * @param {TextureHandle} target 
+ * @param {ImageResource} source 
+ * @param {ImageResource} target 
  */
 export const TextureTask = function(source, target) {
     this.source = source;
@@ -82,8 +82,8 @@ TextureTask.prototype.execute = function() {
 
 TextureTask.prototype.run = function() {
     if(this.state === TextureTask.STATE.NOT_STARTED) {
-        if(this.source.state === TextureHandle.STATE.LOADED) {
-            if(this.target.state === TextureHandle.STATE.EMPTY) {
+        if(this.source.state === ImageResource.STATE.LOADED) {
+            if(this.target.state === ImageResource.STATE.EMPTY) {
                 this.state = TextureTask.STATE.RUNNING;
                 this.execute();
             }
@@ -92,5 +92,5 @@ TextureTask.prototype.run = function() {
 }
 
 TextureTask.prototype.isFinished = function() {
-    return this.state === TextureTask.STATE.FINISHED || this.target.state === TextureHandle.STATE.LOADED;
+    return this.state === TextureTask.STATE.FINISHED || this.target.state === ImageResource.STATE.LOADED;
 }

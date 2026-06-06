@@ -1,7 +1,7 @@
 import { Graph } from "../graphics/graph.js";
 import { isRectangleRectangleIntersect } from "../math/math.js";
 import { Texture } from "../resources/texture/texture.js";
-import { TextureHandle } from "../resources/texture/textureHandle.js";
+import { ImageResource } from "../resources/texture/imageResource.js";
 import { TextureRegistry } from "../resources/texture/textureRegistry.js";
 import { SpriteContainer } from "./spriteContainer.js";
 
@@ -67,9 +67,9 @@ Sprite.prototype.onDraw = function(display, localX, localY) {
     }
 
     const { texture } = this.container;
-    const { bitmap, state } = texture.getVariant(this.colorID);
+    const { bitmap, state } = texture.getImageVariant(this.colorID);
 
-    if(state === TextureHandle.STATE.LOADED) {
+    if(state === ImageResource.STATE.LOADED) {
         const { x, y, w, h } = this.container.frames[this.currentFrame];
 
         context.drawImage(

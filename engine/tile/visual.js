@@ -3,7 +3,7 @@ import { Texture } from "../resources/texture/texture.js";
 
 export const TileVisual = function(id) {
     this.id = id;
-    this.handle = Texture.EMPTY_HANDLE;
+    this.image = Texture.EMPTY_IMAGE;
     this.frameTime = TileVisual.DEFAULT.FRAME_TIME;
     this.framePtr = 0;
     this.frameCount = 0;
@@ -16,8 +16,8 @@ TileVisual.DEFAULT = {
     FRAME_TIME: 1
 };
 
-TileVisual.prototype.setHandle = function(handle) {
-    this.handle = handle;
+TileVisual.prototype.setImage = function(image) {
+    this.image = image;
 }
 
 TileVisual.prototype.reset = function() {

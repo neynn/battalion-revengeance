@@ -1,5 +1,5 @@
 import { Texture } from "../engine/resources/texture/texture.js";
-import { TextureHandle } from "../engine/resources/texture/textureHandle.js";
+import { ImageResource } from "../engine/resources/texture/imageResource.js";
 import { SpriteManager } from "../engine/sprite/spriteManager.js";
 import { BattalionEntity } from "./entity/battalionEntity.js";
 import { COLOR_TYPE, DIRECTION, ENTITY_SPRITE, ENTITY_TYPE, LAYER_TYPE } from "./enums.js";
@@ -71,7 +71,7 @@ export const SpriteController = function() {
     this.entitySprites = new Int16Array(MAX_ENTITY_SPRITES);
 
     for(let i = 0; i < MAX_SHADES; i++) {
-        this.shades[i] = new TextureHandle();
+        this.shades[i] = new ImageResource();
     }
 
     this.resetSprites();
@@ -89,7 +89,7 @@ SpriteController.prototype.resetSprites = function() {
 
 SpriteController.prototype.getShade = function(index) {
     if(index < 0 || index >= this.shades.length) {
-        return Texture.EMPTY_HANDLE;
+        return Texture.EMPTY_IMAGE;
     }
 
     return this.shades[index];
@@ -202,13 +202,13 @@ SpriteController.prototype.bufferEntitySprites = function(gameContext, typeID, c
     const { sprites } = typeRegistry.getEntityType(typeID);
 
     if(colorID !== COLOR_TYPE.RED) {
-        const { id, colorMap } = typeRegistry.getColorType(colorID);
+        const { colorMap } = typeRegistry.getColorType(colorID);
         
         for(const spriteIndex of SPRITE_TABLE) {
             const spriteName = sprites[spriteIndex];
     
             if(spriteName !== null) {
-                spriteManager.createCopyTexture(spriteName, id, colorMap);
+                spriteManager.createCopyTexture(spriteName, colorID, colorMap);
             }
         }
 
@@ -220,7 +220,7 @@ SpriteController.prototype.bufferEntitySprites = function(gameContext, typeID, c
     for(let i = 0; i < DIRECTION._COUNT; i++) {
         const shade = this.shades[typeID * DIRECTION._COUNT + i];
 
-        if(shade.state === TextureHandle.STATE.EMPTY) {
+        if(shade.state === ImageResource.STATE.EMPTY) {
             const spriteIndex = ENTITY_SPRITE.IDLE_UP + i;
             const spriteName = sprites[spriteIndex];
 

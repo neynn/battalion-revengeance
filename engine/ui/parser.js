@@ -91,10 +91,10 @@ const createElement = function(textureLoader, config, DEBUG_NAME) {
 
             if(textureID !== TextureRegistry.INVALID_ID) {
                 const texture = textureLoader.getTexture(textureID);
-                const { handle } = texture;
+                const image = texture.getImage();
 
                 textureLoader.loadTexture(textureID);
-                element.setHandle(handle);
+                element.setImage(image);
             }
 
             element.setPosition(x, y);

@@ -1,4 +1,4 @@
-import { TextureHandle } from "../resources/texture/textureHandle.js";
+import { ImageResource } from "../resources/texture/imageResource.js";
 import { SpriteManager } from "./spriteManager.js";
 
 const DEBUG_DRAW_PLACEHOLDER = false;
@@ -27,10 +27,10 @@ RenderState.FLAG = {
     HIDDEN: 1 << 5
 };
 
-RenderState.prototype.draw = function(display, container, handle, screenX, screenY) {
+RenderState.prototype.draw = function(display, container, image, screenX, screenY) {
     const { context } = display;
     const { offsetX, offsetY, boundsW, boundsH, frames } = container;
-    const { state, bitmap } = handle;
+    const { state, bitmap } = image;
     const isFlipped = (this.flags & RenderState.FLAG.FLIP) !== 0;
 
     let renderX = 0;
@@ -46,7 +46,7 @@ RenderState.prototype.draw = function(display, container, handle, screenX, scree
         display.unflip();
     }
 
-    if(state === TextureHandle.STATE.LOADED) {
+    if(state === ImageResource.STATE.LOADED) {
         const { x, y, w, h } = frames[this.currentFrame];
 
         context.drawImage(

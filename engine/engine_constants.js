@@ -13,3 +13,5 @@ export const MAX_TEXTURE_VARIANTS = 30;
 
 export const MAX_TILE_ROWS = 100;
 export const MAX_TILE_COLUMNS = 100;
+
+export const DEFAULT_IMAGE_TYPE = ".png";

@@ -1,4 +1,4 @@
-import { TextureHandle } from "./textureHandle.js";
+import { ImageResource } from "./imageResource.js";
 import { TextureRegion } from "./region.js";
 import { MAX_TEXTURE_VARIANTS } from "../../engine_constants.js";
 
@@ -8,18 +8,15 @@ export const Texture = function(id, name, path) {
     this.path = path;
     this.width = 0;
     this.height = 0;
-    this.gridWidth = 0;
-    this.gridHeight = 0;
-    this.handle = new TextureHandle();
-    this.variants = [this.handle];
-    this.variantTable = new Uint8Array(MAX_TEXTURE_VARIANTS);
+    this.resources = [new ImageResource()];
+    this.resourceTable = new Uint8Array(MAX_TEXTURE_VARIANTS);
     this.regionMap = new Map();
     this.regions = [];
 }
 
 Texture.DEFAULT_COLOR = 0;
 Texture.EMPTY_REGION = new TextureRegion(0, 0, 0, 0);
-Texture.EMPTY_HANDLE = new TextureHandle();
+Texture.EMPTY_IMAGE = new ImageResource();
 
 Texture.prototype.getID = function() {
     return this.id;
@@ -34,29 +31,19 @@ Texture.prototype.getRegion = function(index) {
 }
 
 Texture.prototype.getRegionByName = function(name) {
-    const index = this.getRegionIndex(name);
+    const index = this.regionMap.get(name);
 
-    if(index === -1) {
+    if(index === undefined) {
         return null;
     }
 
     return this.regions[index];
 }
 
-Texture.prototype.getRegionIndex = function(name) {
-    const index = this.regionMap.get(name);
-
-    if(index === undefined) {
-        return -1;
-    }
-
-    return index;
-}
-
 Texture.prototype.getSizeBytes = function() {
     let bytes = 0;
 
-    for(const variant of this.variants) {
+    for(const variant of this.resources) {
         bytes += variant.getBytes();
     }
 
@@ -64,24 +51,56 @@ Texture.prototype.getSizeBytes = function() {
 }
 
 Texture.prototype.clear = function() {
-    for(const variant of this.variants) {
+    for(const variant of this.resources) {
         variant.clear();
     }
 
-    this.variants.length = 1;
-    this.variantTable.fill(0);
+    this.resources.length = 1;
+    this.resourceTable.fill(0);
 }
 
+Texture.prototype.getImage = function() {
+    return this.resources[0];
+}
+
+Texture.prototype.getImageVariant = function(index) {
+    if(index < 0 || index >= MAX_TEXTURE_VARIANTS) {
+        return this.resources[0];
+    }
+
+    return this.resources[this.resourceTable[index]]
+}
+
+Texture.prototype.getOrCreateImageVariant = function(index) {
+    if(index <= 0 || index >= MAX_TEXTURE_VARIANTS) {
+        return this.resources[0];
+    }
+
+    if(this.resourceTable[index] !== 0) {
+        return this.getImageVariant(index);
+    }
+
+    const image = new ImageResource();
+
+    this.resourceTable[index] = this.resources.length;
+    this.resources.push(image);
+
+    return image;
+}
+
+//TODO(neyn): This should not be here.
 Texture.prototype.requestBitmap = function() {
     if(!this.path) {
         return Promise.reject("Missing path!");
     }
 
-    if(this.handle.state !== TextureHandle.STATE.EMPTY) {
+    const image = this.getImage();
+
+    if(image.state !== ImageResource.STATE.EMPTY) {
         return Promise.reject("Texture is loading/loaded!");
     }
 
-    this.handle.state = TextureHandle.STATE.LOADING;
+    image.state = ImageResource.STATE.LOADING;
 
     return fetch(this.path)
     .then((response) => {
@@ -93,43 +112,19 @@ Texture.prototype.requestBitmap = function() {
     })
     .then((blob) => createImageBitmap(blob))
     .then((bitmap) => {
-        this.handle.setImage(bitmap);
+        image.setImage(bitmap);
+
         this.width = bitmap.width;
         this.height = bitmap.height;
 
         return Promise.resolve(bitmap);
     })
     .catch((error) => {
-        this.handle.state = TextureHandle.STATE.EMPTY;
+        image.state = ImageResource.STATE.EMPTY;
 
         return Promise.reject(error);
     });
 };
-
-Texture.prototype.createOrGetVariant = function(index) {
-    if(index <= 0 || index >= MAX_TEXTURE_VARIANTS) {
-        return this.handle;
-    }
-
-    if(this.variantTable[index] !== 0) {
-        return this.getVariant(index);
-    }
-
-    const handle = new TextureHandle();
-
-    this.variantTable[index] = this.variants.length;
-    this.variants.push(handle);
-
-    return handle;
-}
-
-Texture.prototype.getVariant = function(index) {
-    if(index < 0 || index >= MAX_TEXTURE_VARIANTS) {
-        return this.handle;
-    }
-
-    return this.variants[this.variantTable[index]]
-}
 
 Texture.prototype.initGrid = function(grid, gridWidth, gridHeight) {
     for(const regionID in grid) {
@@ -185,9 +180,9 @@ Texture.prototype.autoGrid = function(startX, startY, rows, columns, firstID, gr
 }
 
 Texture.prototype.drawOffset = function(display, screenX, screenY) {
-    const { state, width, height, bitmap } = this.handle;
+    const { state, width, height, bitmap } = this.getImage();
 
-    if(state === TextureHandle.STATE.LOADED) {
+    if(state === ImageResource.STATE.LOADED) {
         const { context } = display;
 
         context.drawImage(
@@ -199,9 +194,9 @@ Texture.prototype.drawOffset = function(display, screenX, screenY) {
 }
 
 Texture.prototype.drawRect = function(display, rect, screenX, screenY) {
-    const { state, bitmap } = this.handle;
+    const { state, bitmap } = this.getImage();
 
-    if(state === TextureHandle.STATE.LOADED) {
+    if(state === ImageResource.STATE.LOADED) {
         const { x, y, w, h } = rect;
         const { context } = display;
 
@@ -214,9 +209,9 @@ Texture.prototype.drawRect = function(display, rect, screenX, screenY) {
 }
 
 Texture.prototype.drawRegion = function(display, region, screenX, screenY) {
-    const { state, bitmap } = this.handle;
+    const { state, bitmap } = this.getImage();
 
-    if(state === TextureHandle.STATE.LOADED) {
+    if(state === ImageResource.STATE.LOADED) {
         if(region >= 0 && region < this.regions.length) {
             const { x, y, w, h } = this.regions[region];
             const { context } = display;
@@ -231,9 +226,9 @@ Texture.prototype.drawRegion = function(display, region, screenX, screenY) {
 }
 
 Texture.prototype.draw = function(display, screenX, screenY) {
-    const { state, bitmap } = this.handle;
+    const { state, bitmap } = this.getImage();
 
-    if(state === TextureHandle.STATE.LOADED) {
+    if(state === ImageResource.STATE.LOADED) {
         const { context } = display;
 
         context.drawImage(

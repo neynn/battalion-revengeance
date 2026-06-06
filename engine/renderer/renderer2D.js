@@ -1,6 +1,6 @@
 import { Camera2D } from "../camera/camera2D.js";
 import { TILE_FRAME_SIZE, TILE_HEIGHT, TILE_WIDTH } from "../engine_constants.js";
-import { TextureHandle } from "../resources/texture/textureHandle.js";
+import { ImageResource } from "../resources/texture/imageResource.js";
 
 export const Renderer2D = function() {
     this.currentFrame = 0;
@@ -31,10 +31,10 @@ Renderer2D.prototype.drawEmptyTile = function(context, screenX, screenY, scale =
 }
 
 Renderer2D.prototype.drawTile = function(tileManager, tileID, context, screenX, screenY, scale = 1) {
-    const { handle, frameData, framePtr } = tileManager.getVisual(tileID);
-    const { state, bitmap } = handle;
+    const { image, frameData, framePtr } = tileManager.getVisual(tileID);
+    const { state, bitmap } = image;
 
-    if(state === TextureHandle.STATE.LOADED) {
+    if(state === ImageResource.STATE.LOADED) {
         const count = frameData[framePtr]; 
         let frame_ptr = framePtr;
 

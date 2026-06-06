@@ -1,5 +1,5 @@
 import { TextureRegistry } from "./textureRegistry.js";
-import { TextureHandle } from "./textureHandle.js";
+import { ImageResource } from "./imageResource.js";
 import { RecolorRegionTask } from "../textureTask/recolorRegionTask.js";
 import { ShadeTask } from "../textureTask/shadeTask.js";
 
@@ -15,7 +15,7 @@ TextureLoader.prototype.exit = function() {
     this.totalTasks = 0;
 }
 
-TextureHandle.prototype.isDone = function() {
+TextureLoader.prototype.isDone = function() {
     return this.tasks.length === 0;
 }
 
@@ -73,20 +73,20 @@ TextureLoader.prototype.update = function() {
     }
 }
 
-TextureLoader.prototype.addShadeTask = function(textureID, rect, handle) {
+TextureLoader.prototype.addShadeTask = function(textureID, rect, target) {
     const texture = this.getTexture(textureID);
 
     if(!texture) {
         return;
     }
 
-    const source = texture.handle;
+    const source = texture.getImage();
 
-    if(source.state === TextureHandle.STATE.EMPTY) {
+    if(source.state === ImageResource.STATE.EMPTY) {
         this.loadTexture(textureID);
     }
 
-    this.tasks.push(new ShadeTask(source, handle, rect));
+    this.tasks.push(new ShadeTask(source, target, rect));
     this.totalTasks++;
 }
 
@@ -106,11 +106,11 @@ TextureLoader.prototype.addRecolorTask = function(textureID, colorID, colorMap) 
         return;
     }
 
-    const source = texture.handle;
-    const target = texture.createOrGetVariant(colorID);
+    const source = texture.getImage();
+    const target = texture.getOrCreateImageVariant(colorID);
 
-    if(target.state === TextureHandle.STATE.EMPTY) {
-        if(source.state === TextureHandle.STATE.EMPTY) {
+    if(target.state === ImageResource.STATE.EMPTY) {
+        if(source.state === ImageResource.STATE.EMPTY) {
             this.loadTexture(textureID);
         }
 
@@ -155,9 +155,13 @@ TextureLoader.prototype.resolveError = function(textureID) {
 TextureLoader.prototype.loadTexture = function(id) {
     const texture = this.getTexture(id);
 
-    if(texture && texture.handle.state === TextureHandle.STATE.EMPTY) {
-        texture.requestBitmap()
-        .then((bitmap) => this.resolveLoad(id, bitmap))
-        .catch((error) => this.resolveError(id));
+    if(texture) {
+        const image = texture.getImage();
+
+        if(image.state === ImageResource.STATE.EMPTY) {
+            texture.requestBitmap()
+            .then((bitmap) => this.resolveLoad(id, bitmap))
+            .catch((error) => this.resolveError(id));
+        }
     } 
 }

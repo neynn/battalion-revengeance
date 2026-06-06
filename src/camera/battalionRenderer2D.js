@@ -10,7 +10,7 @@ import { BattalionMap } from "../map/battalionMap.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { Mine } from "../entity/mine.js";
 import { TeamManager } from "../team/teamManager.js";
-import { TextureHandle } from "../../engine/resources/texture/textureHandle.js";
+import { ImageResource } from "../../engine/resources/texture/imageResource.js";
 import { getHealthColor } from "../entity/helpers.js";
 import { Autotiler } from "../../engine/tile/autotiler.js";
 import { TextStyle } from "../../engine/graphics/textStyle.js";
@@ -289,7 +289,7 @@ BattalionRenderer2D.prototype.drawEntity = function(gameContext, camera, display
             sprite.setFrame(0);
             sprite.draw(display, 0, 0);
 
-            if(state === TextureHandle.STATE.LOADED) {
+            if(state === ImageResource.STATE.LOADED) {
                 const shadeX = screenX + sprite.offsetX;
                 const shadeY = screenY + sprite.offsetY;
 

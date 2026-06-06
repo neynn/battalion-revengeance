@@ -12,12 +12,10 @@ export const TileManager = function() {
 
     this.visualCount = 1;
     this.visualTable = [0];
-    this.visuals = [TileManager.EMPTY_VISUAL];
+    this.visuals = [new TileVisual(0)];
     this.activeVisuals = [];
     this.visualTableMap = new Map();
 }
-
-TileManager.EMPTY_VISUAL = new TileVisual(0);
 
 TileManager.TILE_ID = {
     EMPTY: 0,
@@ -183,15 +181,15 @@ TileManager.prototype.createVisuals = function(textureLoader, tileAtlases) {
 
         if(textureID !== TextureRegistry.INVALID_ID) {
             const textureObject = textureLoader.getTexture(textureID);
-            const { handle } = textureObject;
+            const image = textureObject.getImage();
 
             if(textureConfig) {
                 visual.generate(textureObject, textureConfig, regionID);
             }
 
             if(visual.frameCount > 0) {
-                visual.setHandle(handle);
-                handle.addReference();
+                visual.setImage(image);
+                image.addReference();
 
                 textureLoader.loadTexture(textureID);
             }
@@ -270,7 +268,7 @@ TileManager.prototype.isVisualValid = function(tileID) {
 
 TileManager.prototype.getVisual = function(tileID) {
     if(tileID < 0 || tileID >= this.tileCount) {
-        return TileManager.EMPTY_VISUAL;
+        return this.visuals[0];
     }
 
     return this.visuals[this.visualTable[tileID]];

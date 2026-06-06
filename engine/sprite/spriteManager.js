@@ -1,7 +1,7 @@
 import { Sprite } from "./sprite.js";
 import { ObjectPool } from "../util/objectPool.js";
 import { SpriteContainer } from "./spriteContainer.js";
-import { TextureHandle } from "../resources/texture/textureHandle.js";
+import { ImageResource } from "../resources/texture/imageResource.js";
 import { RenderState } from "./renderState.js";
 import { TextureRegistry } from "../resources/texture/textureRegistry.js";
 import { Texture } from "../resources/texture/texture.js";
@@ -87,7 +87,7 @@ SpriteManager.prototype.load = function(textures, sprites) {
     }
 }
 
-SpriteManager.prototype.createShadeTask = function(spriteID, handle) {
+SpriteManager.prototype.createShadeTask = function(spriteID, target) {
     if(spriteID < 0 || spriteID >= this.containers.length) {
         return;
     }
@@ -97,7 +97,7 @@ SpriteManager.prototype.createShadeTask = function(spriteID, handle) {
     const { id } = texture;
 
     if(frameCount > 0) {
-        this.resources.addShadeTask(id, frames[0], handle);
+        this.resources.addShadeTask(id, frames[0], target);
     }
 }
 
@@ -382,15 +382,18 @@ SpriteManager.prototype.updateSprite = function(spriteIndex, spriteID, colorID =
 
     const container = this.containers[spriteID];
     const { texture, frameCount } = container;
-    const { id, handle } = texture;
 
     if(frameCount > 0) {
         sprite.init(container, this.timestamp, spriteID);
         sprite.setColor(colorID);
 
-        //Lazy-Load the default handle.
-        if(colorID === Texture.DEFAULT_COLOR && handle.state === TextureHandle.STATE.EMPTY) {
-            this.resources.loadTexture(id);
+        //Lazy-Load the default resource.
+        if(colorID === Texture.DEFAULT_COLOR) {
+            const image = texture.getImage();
+
+            if(image.state === ImageResource.STATE.EMPTY) {
+                this.resources.loadTexture(texture.id);
+            }
         }
     } else {
         sprite.reset();

@@ -1,11 +1,11 @@
 import { Texture } from "../../resources/texture/texture.js";
-import { TextureHandle } from "../../resources/texture/textureHandle.js";
+import { ImageResource } from "../../resources/texture/imageResource.js";
 import { UIElement } from "../uiElement.js";
 
 export const Icon = function(DEBUG_NAME) {
     UIElement.call(this, DEBUG_NAME);
 
-    this.handle = Texture.EMPTY_HANDLE;
+    this.image = Texture.EMPTY_IMAGE;
     this.scale = 1;
 }
 
@@ -21,9 +21,9 @@ Icon.prototype.onDebug = function(display, localX, localY) {
 }
 
 Icon.prototype.onDraw = function(display, localX, localY) {
-    const { state, bitmap } = this.handle;
+    const { state, bitmap } = this.image;
 
-    if(state === TextureHandle.STATE.LOADED) {
+    if(state === ImageResource.STATE.LOADED) {
         const { context } = display;
 
         context.drawImage(bitmap, localX, localY, bitmap.width * this.scale, bitmap.height * this.scale);
@@ -38,6 +38,6 @@ Icon.prototype.setScale = function(scale) {
     }
 }
 
-Icon.prototype.setHandle = function(handle) {
-    this.handle = handle;
+Icon.prototype.setImage = function(image) {
+    this.image = image;
 }
