@@ -2,7 +2,7 @@ import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { Building } from "../entity/building.js";
-import { downgradeOre, oreToValue } from "../enumHelpers.js";
+import { downgradeOre } from "../enumHelpers.js";
 import { CLIMATE_TYPE, TILE_TYPE } from "../enums.js";
 import { JammerTile } from "./jammerTile.js";
 import { Pathfinder } from "./pathfinder.js";
@@ -85,20 +85,7 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
     return typeRegistry.getClimateType(CLIMATE_TYPE.TEMPERATE);
 }
 
-BattalionMap.prototype.getOreValue = function(tileX, tileY) {
-    for(const layerID of BattalionMap.SEARCH_ORDER) {
-        const typeID = this.getTile(layerID, tileX, tileY);
-        const value = oreToValue(typeID);
-
-        if(value !== 0) {
-            return value;
-        }
-    }
-
-    return 0;
-}
-
-BattalionMap.prototype.extractOre = function(tileX, tileY) {
+BattalionMap.prototype.downgradeOreTile = function(tileX, tileY) {
     for(const layerID of BattalionMap.SEARCH_ORDER) {
         const tileID = this.getTile(layerID, tileX, tileY);
         const oreID = downgradeOre(tileID);

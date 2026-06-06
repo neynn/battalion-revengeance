@@ -111,6 +111,7 @@
     "RICH_ORE": {
         "name": "TILE_NAME_RICH_ORE",
         "desc": "TILE_DESC_RICH_ORE",
+        "resources": 500,
         "climate": "NONE",
         "terrain": ["EXTRACTABLE"],
         "passability": {
@@ -124,6 +125,7 @@
     "USED_ORE": {
         "name": "TILE_NAME_USED_ORE",
         "desc": "TILE_DESC_USED_ORE",
+        "resources": 300,
         "climate": "NONE",
         "terrain": ["EXTRACTABLE"],
         "passability": {

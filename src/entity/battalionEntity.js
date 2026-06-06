@@ -1137,14 +1137,6 @@ BattalionEntity.prototype.removeFromMap = function(gameContext) {
     }
 }
 
-BattalionEntity.prototype.extractOre = function(gameContext) {
-    const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-
-    worldMap.extractOre(this.tileX, this.tileY);
-}
-
 BattalionEntity.prototype.setPurchased = function() {
     //Set this.turns to 0, because it is the entities first turn.
     //It will be set to 1 when onTurnEnd is called from the EndTurnAction!

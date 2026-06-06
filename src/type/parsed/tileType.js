@@ -5,6 +5,7 @@ export const TileType = function(id) {
     this.name = "MISSING_NAME_TILE";
     this.desc = "MISSING_DESC_TILE";
     this.climate = CLIMATE_TYPE.NONE;
+    this.resources = 0;
     this.terrain = [];
     this.allowedMines = [];
     this.passability = [];
@@ -23,12 +24,18 @@ TileType.prototype.load = function(config, DEBUG_NAME) {
         climate = "NONE",
         terrain = [],
         passability = {},
-        allowedMines = []
+        allowedMines = [],
+        resources = 0
     } = config;
 
     this.name = name;
     this.desc = desc;
     this.climate = CLIMATE_TYPE[climate] ?? CLIMATE_TYPE.NONE;
+    this.resources = Math.floor(resources);
+
+    if(this.resources < 0) {
+        this.resources = 0;
+    }
 
     if(passability['*'] !== undefined) {
         const defaultPassability = passability['*'];

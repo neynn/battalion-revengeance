@@ -26,33 +26,35 @@ const fillExtractPlan = function(gameContext, executionPlan, actionIntent) {
         return;
     }
 
-    const worldMap = mapManager.getActiveMap();
     const { tileX, tileY } = entity;
+    const worldMap = mapManager.getActiveMap();
     const tileType = worldMap.getTileType(gameContext, tileX, tileY);
 
     if(!tileType.hasTerrain(TERRAIN_TYPE.EXTRACTABLE)) {
         return;
     }
 
-    const oreValue = Math.floor(worldMap.getOreValue(tileX, tileY));
     const data = createExtractData();
 
     data.entityID = entityID;
-    data.value = Math.floor(oreValue);
+    data.value = tileType.resources;
 
     executionPlan.setData(data);
 }
 
 const executeExtract = function(gameContext, data) {
     const { world } = gameContext;
-    const { entityManager } = world;
+    const { entityManager, mapManager } = world;
     const { entityID, value } = data;
+
+    const worldMap = mapManager.getActiveMap();
     const entity = entityManager.getEntity(entityID);
     const team = entity.getTeam(gameContext);
+    const { tileX, tileY } = entity;
 
     entity.addCash(value);
     entity.consumeAct();
-    entity.extractOre(gameContext);
+    worldMap.downgradeOreTile(tileX, tileY);
     team.addStatistic(TEAM_STAT.ORE_EXTRACTED, value);
 }
 
