@@ -3,6 +3,7 @@ import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ACTION_TYPE, TEAM_STAT } from "../../enums.js";
+import { CaptureSystem } from "../../systems/capture.js";
 
 const createCaptureIntent = function(entityID, targetX, targetY) {
     return new ActionIntent(ACTION_TYPE.CAPTURE, {
@@ -34,7 +35,7 @@ const fillCapturePlan = function(gameContext, executionPlan, actionIntent) {
         return;
     }
 
-    if(!entity.canCapture(gameContext, targetX, targetY)) {
+    if(!CaptureSystem.canEntityCaptureAt(gameContext, entity, targetX, targetY)) {
         return;
     }
 

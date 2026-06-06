@@ -515,32 +515,6 @@ BattalionEntity.prototype.getTerrainDamage = function(gameContext) {
     return Math.floor(totalDamage);
 }
 
-BattalionEntity.prototype.canCapture = function(gameContext, tileX, tileY) {
-    if(!this.hasTrait(TRAIT_TYPE.CONQUEROR)) {
-        return false;
-    }
-
-    const { world, teamManager } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
-
-    if(!worldMap) {
-        return false;
-    }
-
-    const building = worldMap.getBuilding(tileX, tileY);
-
-    if(!building) {
-        return false;
-    }
-
-    if(!building.hasTrait(TRAIT_TYPE.CAPTURABLE)) {
-        return false;
-    }
-
-    return !teamManager.isAlly(this.teamID, building.teamID);
-}
-
 BattalionEntity.prototype.canSee = function(gameContext, entity) {
     return entity.isVisibleTo(gameContext, this.teamID);
 }

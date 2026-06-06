@@ -16,6 +16,7 @@ import { MineTriggerVTable } from "./mineTrigger.js";
 import { UncloakVTable } from "./uncloak.js";
 import { StealthSystem } from "../../systems/stealth.js";
 import { CombatSystem } from "../../systems/combat.js";
+import { CaptureSystem } from "../../systems/capture.js";
 
 const MOVE_FLAG = {
     NONE: 0
@@ -126,7 +127,7 @@ const fillMovePlan = function(gameContext, executionPlan, actionIntent) {
 
     executionPlan.addNext(UncloakVTable.createIntent(entityID));
 
-    if(entity.canCapture(gameContext, targetX, targetY)) {
+    if(CaptureSystem.canEntityCaptureAt(gameContext, entity, targetX, targetY)) {
         executionPlan.addNext(CaptureActionVTable.createIntent(entityID, targetX, targetY));
     }
 
