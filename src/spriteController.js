@@ -2,7 +2,7 @@ import { Texture } from "../engine/resources/texture/texture.js";
 import { ImageResource } from "../engine/resources/texture/imageResource.js";
 import { SpriteManager } from "../engine/sprite/spriteManager.js";
 import { BattalionEntity } from "./entity/battalionEntity.js";
-import { COLOR_TYPE, DIRECTION, ENTITY_SPRITE, ENTITY_TYPE, LAYER_TYPE } from "./enums.js";
+import { COLOR_TYPE, DIRECTION, ENTITY_STATE, ENTITY_TYPE, LAYER_TYPE } from "./enums.js";
 import { TeamManager } from "./team/teamManager.js";
 
 //INFO(neyn): This is hard-coded but I don't really care :)
@@ -19,45 +19,6 @@ const BUILDING_NEUTRAL_COLORS = {
     0xFFE975: [125, 153, 138],
     0xFFFFDC: [173, 183, 170]
 };
-
-const SPRITE_TABLE = [
-    ENTITY_SPRITE.IDLE_UP,
-    ENTITY_SPRITE.IDLE_RIGHT,
-    ENTITY_SPRITE.IDLE_DOWN,
-    ENTITY_SPRITE.IDLE_LEFT,
-    ENTITY_SPRITE.MOVE_UP,
-    ENTITY_SPRITE.MOVE_RIGHT,
-    ENTITY_SPRITE.MOVE_DOWN,
-    ENTITY_SPRITE.MOVE_LEFT,
-    ENTITY_SPRITE.FIRE_UP,
-    ENTITY_SPRITE.FIRE_RIGHT,
-    ENTITY_SPRITE.FIRE_DOWN,
-    ENTITY_SPRITE.FIRE_LEFT
-];
-
-const getEntitySpriteName = function(entity) {
-    const { state, direction, config } = entity;
-    const { sprites } = config;
-
-    let begin = ENTITY_SPRITE.IDLE_UP;
-
-    switch(state) {
-        case BattalionEntity.STATE.IDLE: {
-            begin = ENTITY_SPRITE.IDLE_UP;
-            break;            
-        }
-        case BattalionEntity.STATE.MOVE: {
-            begin = ENTITY_SPRITE.MOVE_UP;
-            break;            
-        }
-        case BattalionEntity.STATE.FIRE: {
-            begin = ENTITY_SPRITE.FIRE_UP;
-            break;            
-        }
-    }
-
-    return sprites[SPRITE_TABLE[begin + direction]];
-}
 
 const MAX_ENTITY_SPRITES = 1000;
 const MAX_BUILDING_SPRITES = 100;
@@ -168,7 +129,7 @@ SpriteController.prototype.createEntitySprite = function(gameContext, entity) {
 
 SpriteController.prototype.updateEntitySprite = function(gameContext, entity) {
     const { spriteManager, typeRegistry } = gameContext;
-    const { state, config, index } = entity;
+    const { state, config, index, direction } = entity;
     const spriteID = this.getEntitySpriteID(index);
 
     if(spriteID === SpriteManager.INVALID_ID) {
@@ -176,7 +137,7 @@ SpriteController.prototype.updateEntitySprite = function(gameContext, entity) {
     }
 
     const sprite = spriteManager.getSprite(spriteID);
-    const spriteName = getEntitySpriteName(entity);
+    const spriteName = config.getSpriteID(state, direction);
 
     if(spriteName !== null) {
         const { color } = entity.getTeam(gameContext);
@@ -199,14 +160,13 @@ SpriteController.prototype.updateEntitySprite = function(gameContext, entity) {
 
 SpriteController.prototype.bufferEntitySprites = function(gameContext, typeID, colorID) {
     const { spriteManager, typeRegistry } = gameContext;
-    const { sprites } = typeRegistry.getEntityType(typeID);
+    const entityType = typeRegistry.getEntityType(typeID);
+    const { sprites } = entityType;
 
     if(colorID !== COLOR_TYPE.RED) {
         const { colorMap } = typeRegistry.getColorType(colorID);
         
-        for(const spriteIndex of SPRITE_TABLE) {
-            const spriteName = sprites[spriteIndex];
-    
+        for(const spriteName of sprites) {
             if(spriteName !== null) {
                 spriteManager.createCopyTexture(spriteName, colorID, colorMap);
             }
@@ -221,8 +181,7 @@ SpriteController.prototype.bufferEntitySprites = function(gameContext, typeID, c
         const shade = this.shades[typeID * DIRECTION._COUNT + i];
 
         if(shade.state === ImageResource.STATE.EMPTY) {
-            const spriteIndex = ENTITY_SPRITE.IDLE_UP + i;
-            const spriteName = sprites[spriteIndex];
+            const spriteName = entityType.getSpriteID(ENTITY_STATE.IDLE, i);
 
             if(spriteName) {
                 spriteManager.createShadeTask(spriteManager.getSpriteID(spriteName), shade);

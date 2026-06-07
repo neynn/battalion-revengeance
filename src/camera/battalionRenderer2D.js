@@ -606,12 +606,12 @@ BattalionRenderer2D.prototype.drawBuildings = function(gameContext, camera, disp
         if(tileX >= startX && tileX <= endX && tileY >= startY && tileY <= endY) {
             const spriteID = spriteController.getBuildingSpriteID(index);
 
-            if(dirty) {
-                spriteController.updateBuildingSprite(gameContext, building, spriteID);
-                building.dirty = false;
-            }
-
             if(spriteID !== SpriteManager.INVALID_ID) {
+                if(dirty) {
+                    spriteController.updateBuildingSprite(gameContext, building, spriteID);
+                    building.dirty = false;
+                }
+
                 const sprite = sprites[spriteID];
                 const screenX = camera.getScreenX(tileX);
                 const screenY = camera.getScreenY(tileY);

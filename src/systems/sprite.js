@@ -2,7 +2,7 @@ import { transformTileToWorld } from "../../engine/math/transform2D.js";
 import { Texture } from "../../engine/resources/texture/texture.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { ATTACK_TYPE, DIRECTION, EFFECT_SPRITE, ENTITY_SPRITE, LAYER_TYPE, COLOR_TYPE } from "../enums.js";
+import { ATTACK_TYPE, DIRECTION, EFFECT_SPRITE, LAYER_TYPE, COLOR_TYPE } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
 
 export const playSprite = function(gameContext, spriteType, tileX, tileY) {

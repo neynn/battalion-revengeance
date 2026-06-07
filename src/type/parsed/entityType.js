@@ -1,9 +1,14 @@
 import { MAX_TRAITS } from "../../constants.js";
 import { mapMovementToCategory } from "../../enumHelpers.js";
-import { ARMOR_TYPE, ATTACK_TYPE, DIRECTION, EFFECT_SPRITE, ENTITY_CATEGORY, ENTITY_SPRITE, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, TRAIT_TYPE, TRANSPORT_TYPE, WEAPON_TYPE } from "../../enums.js";
+import { ARMOR_TYPE, ATTACK_TYPE, DIRECTION, EFFECT_SPRITE, ENTITY_CATEGORY, ENTITY_STATE, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, TRAIT_TYPE, TRANSPORT_TYPE, WEAPON_TYPE } from "../../enums.js";
 
 const TILE_STEP = 56;
 const ENABLE_HYBRID = false;
+const MAX_SPRITES = DIRECTION._COUNT * ENTITY_STATE._COUNT;
+
+const getSpriteIndex = function(state, direction) {
+    return state * DIRECTION._COUNT + direction;
+}
 
 const getRangeType = function(minRange, maxRange) {
     if(maxRange > 1) {
@@ -26,25 +31,25 @@ const effectNameToEnum = function(name) {
         case "death": return EFFECT_SPRITE.DEATH;
         case "fire": return EFFECT_SPRITE.FIRE;
         case "heal": return EFFECT_SPRITE.HEAL;
-        default: return ENTITY_SPRITE._INVALID;
+        default: return -1;
     }
 }
 
-const spriteNameToEnum = function(name) {
+const spriteNameToIndex = function(name) {
     switch(name) {
-        case "idle_up": return ENTITY_SPRITE.IDLE_UP;
-        case "idle_right": return ENTITY_SPRITE.IDLE_RIGHT;
-        case "idle_down": return ENTITY_SPRITE.IDLE_DOWN;
-        case "idle_left": return ENTITY_SPRITE.IDLE_LEFT;
-        case "move_up": return ENTITY_SPRITE.MOVE_UP;
-        case "move_right": return ENTITY_SPRITE.MOVE_RIGHT;
-        case "move_down": return ENTITY_SPRITE.MOVE_DOWN;
-        case "move_left": return ENTITY_SPRITE.MOVE_LEFT;
-        case "fire_up": return ENTITY_SPRITE.FIRE_UP;
-        case "fire_right": return ENTITY_SPRITE.FIRE_RIGHT;
-        case "fire_down": return ENTITY_SPRITE.FIRE_DOWN;
-        case "fire_left": return ENTITY_SPRITE.FIRE_LEFT;
-        default: return ENTITY_SPRITE._INVALID
+        case "idle_up": return getSpriteIndex(ENTITY_STATE.IDLE, DIRECTION.NORTH);
+        case "idle_right": return getSpriteIndex(ENTITY_STATE.IDLE, DIRECTION.EAST);
+        case "idle_down": return getSpriteIndex(ENTITY_STATE.IDLE, DIRECTION.SOUTH);
+        case "idle_left": return getSpriteIndex(ENTITY_STATE.IDLE, DIRECTION.WEST);
+        case "move_up": return getSpriteIndex(ENTITY_STATE.MOVE, DIRECTION.NORTH);
+        case "move_right": return getSpriteIndex(ENTITY_STATE.MOVE, DIRECTION.EAST);
+        case "move_down": return getSpriteIndex(ENTITY_STATE.MOVE, DIRECTION.SOUTH);
+        case "move_left": return getSpriteIndex(ENTITY_STATE.MOVE, DIRECTION.WEST);
+        case "fire_up": return getSpriteIndex(ENTITY_STATE.FIRE, DIRECTION.NORTH);
+        case "fire_right": return getSpriteIndex(ENTITY_STATE.FIRE, DIRECTION.EAST);
+        case "fire_down": return getSpriteIndex(ENTITY_STATE.FIRE, DIRECTION.SOUTH);
+        case "fire_left": return getSpriteIndex(ENTITY_STATE.FIRE, DIRECTION.WEST);
+        default: return -1;
     }
 }
 
@@ -75,7 +80,7 @@ export const EntityType = function(id) {
     this.rangeType = getRangeType(this.minRange, this.maxRange);
     this.shop = SHOP_TYPE.NONE;
 
-    for(let i = 0; i < ENTITY_SPRITE._COUNT; i++) {
+    for(let i = 0; i < MAX_SPRITES; i++) {
         this.sprites[i] = null;
     }
 
@@ -178,27 +183,11 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
     }
 
     for(const spriteID in sprites) {
-        const index = spriteNameToEnum(spriteID);
+        const index = spriteNameToIndex(spriteID);
 
-        if(index !== ENTITY_SPRITE._INVALID) {
+        if(index >= 0 && index < MAX_SPRITES) {
             this.sprites[index] = sprites[spriteID];
         }
-    }
-
-    if(!this.sprites[ENTITY_SPRITE.MOVE_UP]) {
-        this.sprites[ENTITY_SPRITE.MOVE_UP] = this.sprites[ENTITY_SPRITE.IDLE_UP];
-    }
-
-    if(!this.sprites[ENTITY_SPRITE.MOVE_RIGHT]) {
-        this.sprites[ENTITY_SPRITE.MOVE_RIGHT] = this.sprites[ENTITY_SPRITE.IDLE_RIGHT];
-    }
-
-    if(!this.sprites[ENTITY_SPRITE.MOVE_DOWN]) {
-        this.sprites[ENTITY_SPRITE.MOVE_DOWN] = this.sprites[ENTITY_SPRITE.IDLE_DOWN];
-    }
-
-    if(!this.sprites[ENTITY_SPRITE.MOVE_LEFT]) {
-        this.sprites[ENTITY_SPRITE.MOVE_LEFT] = this.sprites[ENTITY_SPRITE.IDLE_LEFT];
     }
 
     for(const effectID in effects) {
@@ -208,6 +197,26 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
             this.effects[index] = effects[effectID];
         }
     }
+
+    for(let i = 0; i < DIRECTION._COUNT; i++) {
+        const moveIndex = getSpriteIndex(ENTITY_STATE.MOVE, i);
+
+        if(!this.sprites[moveIndex]) {
+            const idleIndex = getSpriteIndex(ENTITY_STATE.IDLE, i);
+
+            this.sprites[moveIndex] = this.sprites[idleIndex];
+        }
+    }
+}
+
+EntityType.prototype.getSpriteID = function(state, direction) {
+    const index = getSpriteIndex(state, direction);
+
+    if(index < 0 || index >= MAX_SPRITES) {
+        return null;
+    }
+
+    return this.sprites[index];
 }
 
 EntityType.prototype.hasTrait = function(traitID) {

@@ -11,23 +11,6 @@ export const EFFECT_SPRITE = {
     _COUNT: 3
 };
 
-export const ENTITY_SPRITE = {
-    _INVALID: -1,
-    IDLE_UP: 0,
-    IDLE_RIGHT: 1,
-    IDLE_DOWN: 2,
-    IDLE_LEFT: 3,
-    MOVE_UP: 4,
-    MOVE_RIGHT: 5,
-    MOVE_DOWN: 6,
-    MOVE_LEFT: 7,
-    FIRE_UP: 8,
-    FIRE_RIGHT: 9,
-    FIRE_DOWN: 10,
-    FIRE_LEFT: 11,
-    _COUNT: 12
-};
-
 export const SOUND_TYPE = {
     HEAL: "heal",
     MOVE: "move",
@@ -895,6 +878,13 @@ export const DIRECTION = {
     SOUTH: 2,
     WEST: 3,
     _COUNT: 4
+};
+
+export const ENTITY_STATE = {
+    IDLE: 0,
+    MOVE: 1,
+    FIRE: 2,
+    _COUNT: 3
 };
 
 export const RANGE_TYPE = {
