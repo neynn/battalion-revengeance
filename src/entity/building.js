@@ -20,6 +20,7 @@ export const Building = function(index, config) {
     this.customDesc = LanguageHandler.INVALID_ID;
     this.totalGeneratedCash = 0;
     this.shop = SHOP_TYPE.NONE;
+    this.dirty = false;
 }
 
 Building.prototype.save = function() {

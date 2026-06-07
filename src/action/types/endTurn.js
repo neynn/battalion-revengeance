@@ -1,6 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
 import { ActionIntent } from "../../../engine/action/actionIntent.js";
-import { ACTION_TYPE, TEAM_STAT } from "../../enums.js";
+import { ACTION_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { TeamManager } from "../../team/teamManager.js";
 import { StartTurnVTable } from "./startTurn.js";
 
@@ -24,7 +24,8 @@ const fillEndTurnPlan = function(gameContext, executionPlan, actionIntent) {
 
 const executeEndTurn = function(gameContext, data) {
     const { world, teamManager } = gameContext;
-    const { entityManager, actorManager } = world;
+    const { entityManager, actorManager, mapManager } = world;
+    const worldMap = mapManager.getActiveMap();
     const team = teamManager.getCurrentTeam();
     const turn = team.getStatistic(TEAM_STAT.ROUNDS_TAKEN);
     const { id, roster, objectives } = team;
@@ -34,6 +35,25 @@ const executeEndTurn = function(gameContext, data) {
 
         if(entity) {
             entity.onTurnEnd(gameContext);
+
+            if(entity.hasTrait(TRAIT_TYPE.CONQUEROR)) {
+                const { teamID, tileX, tileY } = entity;
+                const building = worldMap.getBuilding(tileX, tileY);
+
+                if(building && building.hasTrait(TRAIT_TYPE.CAPTURABLE)) {
+                    if(!teamManager.isAlly(teamID, building.teamID)) {
+                        const previousTeam = building.getTeam(gameContext);
+
+                        if(previousTeam) {
+                            previousTeam.addStatistic(TEAM_STAT.STRUCTURES_LOST, 1);
+                        }
+
+                        team.addStatistic(TEAM_STAT.STRUCTURES_CAPTURED, 1);
+                        building.setTeam(teamID);
+                        building.dirty = true;
+                    }
+                }
+            }
         }
     }
 

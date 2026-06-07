@@ -11,7 +11,7 @@ export const Pathfinder = function(width, height) {
     this.size = width * height;
     this.costs = new Float16Array(this.size);
     this.parents = new Int32Array(this.size);
-    this.visited = new Uint32Array(this.size);
+    this.visited = new Uint16Array(this.size);
     this.flags = new Uint8Array(this.size);
     this.tile = new Uint16Array(this.size);
     this.heap = [];
@@ -26,6 +26,10 @@ Pathfinder.prototype.reset = function() {
 Pathfinder.prototype.beginSearch = function() {
     this.searchID++;
     this.heap.length = 0;
+
+    if(this.searchID > 0xffff) {
+        this.reset();
+    }
 }
 
 Pathfinder.prototype.mGetLowestCostNode = function() {

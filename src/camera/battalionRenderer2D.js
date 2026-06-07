@@ -597,14 +597,19 @@ BattalionRenderer2D.prototype.drawBuildings = function(gameContext, camera, disp
     const startY = camera.startY;
     const endX = camera.endX;
     const endY = camera.endY;
-
     let count = 0;
 
     for(let i = 0; i < buildings.length; i++) {
-        const { tileX, tileY, index } = buildings[i];
+        const building = buildings[i];
+        const { tileX, tileY, index, dirty } = building;
 
         if(tileX >= startX && tileX <= endX && tileY >= startY && tileY <= endY) {
-            const spriteID = spriteController.getBuildingSpriteID(i);
+            const spriteID = spriteController.getBuildingSpriteID(index);
+
+            if(dirty) {
+                spriteController.updateBuildingSprite(gameContext, building, spriteID);
+                building.dirty = false;
+            }
 
             if(spriteID !== SpriteManager.INVALID_ID) {
                 const sprite = sprites[spriteID];
