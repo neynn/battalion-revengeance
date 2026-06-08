@@ -63,6 +63,7 @@ BattalionContext.prototype.init = function(resources) {
     registerActionVTables(this);
     registerClientActions(this);
 
+    this.spriteController.registerEntitySprites(this, resources.entityTypes);
     this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);
 
     this.states.addState(BattalionContext.STATE.MAIN_MENU, new MainMenuState());

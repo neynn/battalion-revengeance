@@ -283,8 +283,7 @@ BattalionRenderer2D.prototype.drawEntity = function(gameContext, camera, display
 
         //Draw the shaded frame over the sprite and lock the sprite to the first frame.
         if(renderFlags & BattalionEntity.RENDER_FLAG.SHADED) {
-            const shadeIndex = config.id * DIRECTION._COUNT + direction;
-            const { state, bitmap, width, height } = spriteController.getShade(shadeIndex);
+            const { state, bitmap, width, height } = spriteController.getShade(config.id, direction);
 
             sprite.setFrame(0);
             sprite.draw(display, 0, 0);

@@ -4,11 +4,6 @@ import { ARMOR_TYPE, ATTACK_TYPE, DIRECTION, EFFECT_SPRITE, ENTITY_CATEGORY, ENT
 
 const TILE_STEP = 56;
 const ENABLE_HYBRID = false;
-const MAX_SPRITES = DIRECTION._COUNT * ENTITY_STATE._COUNT;
-
-const getSpriteIndex = function(state, direction) {
-    return state * DIRECTION._COUNT + direction;
-}
 
 const getRangeType = function(minRange, maxRange) {
     if(maxRange > 1) {
@@ -35,24 +30,6 @@ const effectNameToEnum = function(name) {
     }
 }
 
-const spriteNameToIndex = function(name) {
-    switch(name) {
-        case "idle_up": return getSpriteIndex(ENTITY_STATE.IDLE, DIRECTION.NORTH);
-        case "idle_right": return getSpriteIndex(ENTITY_STATE.IDLE, DIRECTION.EAST);
-        case "idle_down": return getSpriteIndex(ENTITY_STATE.IDLE, DIRECTION.SOUTH);
-        case "idle_left": return getSpriteIndex(ENTITY_STATE.IDLE, DIRECTION.WEST);
-        case "move_up": return getSpriteIndex(ENTITY_STATE.MOVE, DIRECTION.NORTH);
-        case "move_right": return getSpriteIndex(ENTITY_STATE.MOVE, DIRECTION.EAST);
-        case "move_down": return getSpriteIndex(ENTITY_STATE.MOVE, DIRECTION.SOUTH);
-        case "move_left": return getSpriteIndex(ENTITY_STATE.MOVE, DIRECTION.WEST);
-        case "fire_up": return getSpriteIndex(ENTITY_STATE.FIRE, DIRECTION.NORTH);
-        case "fire_right": return getSpriteIndex(ENTITY_STATE.FIRE, DIRECTION.EAST);
-        case "fire_down": return getSpriteIndex(ENTITY_STATE.FIRE, DIRECTION.SOUTH);
-        case "fire_left": return getSpriteIndex(ENTITY_STATE.FIRE, DIRECTION.WEST);
-        default: return -1;
-    }
-}
-
 export const EntityType = function(id) {
     this.id = id;
     this.dimX = 1;
@@ -73,16 +50,11 @@ export const EntityType = function(id) {
     this.cost = 0;
     this.sounds = {};
     this.effects = [];
-    this.sprites = [];
     this.traits = [];
     this.allowedTransports = [TRANSPORT_TYPE.BARGE, TRANSPORT_TYPE.PELICAN, TRANSPORT_TYPE.STORK];
     this.category = mapMovementToCategory(this.movementType);
     this.rangeType = getRangeType(this.minRange, this.maxRange);
     this.shop = SHOP_TYPE.NONE;
-
-    for(let i = 0; i < MAX_SPRITES; i++) {
-        this.sprites[i] = null;
-    }
 
     for(let i = 0; i < EFFECT_SPRITE._COUNT; i++) {
         this.effects[i] = null;
@@ -120,7 +92,7 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
         traits = [],
         transport = [],
         sounds = {},
-        sprites = {},
+        //sprites = {}, Used in SpriteController
         effects = {}
     } = config;
 
@@ -182,14 +154,6 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
         console.warn(`${DEBUG_NAME}: More than ${MAX_TRAITS} traits detected!`);
     }
 
-    for(const spriteID in sprites) {
-        const index = spriteNameToIndex(spriteID);
-
-        if(index >= 0 && index < MAX_SPRITES) {
-            this.sprites[index] = sprites[spriteID];
-        }
-    }
-
     for(const effectID in effects) {
         const index = effectNameToEnum(effectID);
 
@@ -197,26 +161,6 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
             this.effects[index] = effects[effectID];
         }
     }
-
-    for(let i = 0; i < DIRECTION._COUNT; i++) {
-        const moveIndex = getSpriteIndex(ENTITY_STATE.MOVE, i);
-
-        if(!this.sprites[moveIndex]) {
-            const idleIndex = getSpriteIndex(ENTITY_STATE.IDLE, i);
-
-            this.sprites[moveIndex] = this.sprites[idleIndex];
-        }
-    }
-}
-
-EntityType.prototype.getSpriteID = function(state, direction) {
-    const index = getSpriteIndex(state, direction);
-
-    if(index < 0 || index >= MAX_SPRITES) {
-        return null;
-    }
-
-    return this.sprites[index];
 }
 
 EntityType.prototype.hasTrait = function(traitID) {

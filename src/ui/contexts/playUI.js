@@ -178,11 +178,11 @@ PlayUI.prototype.load = function(gameContext) {
 //TODO(neyn): Create a 28x28 ICON for each entity!
 //This icon gets drawn instead of a full sprite!
 PlayUI.prototype.updateInspectSprite = function(gameContext, entity) {
-    const { spriteManager } = gameContext;
+    const { spriteManager, spriteController } = gameContext;
     const { color } = entity.getTeam(gameContext);
-    const spriteName = entity.config.getSpriteID(ENTITY_STATE.IDLE, DIRECTION.EAST);
+    const spriteTypeID = spriteController.getEntitySpriteTypeID(entity.config.id, ENTITY_STATE.IDLE, DIRECTION.EAST);
 
-    spriteManager.updateSprite(this.inspectSprite.index, spriteName, color);
+    spriteManager.updateSprite(this.inspectSprite.index, spriteTypeID, color);
 }
 
 PlayUI.prototype.drawTile = function(gameContext, display, tileX, tileY, screenX, screenY) {
