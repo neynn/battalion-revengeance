@@ -2,7 +2,7 @@ import { Texture } from "../engine/resources/texture/texture.js";
 import { ImageResource } from "../engine/resources/texture/imageResource.js";
 import { SpriteManager } from "../engine/sprite/spriteManager.js";
 import { BattalionEntity } from "./entity/battalionEntity.js";
-import { COLOR_TYPE, DIRECTION, ENTITY_STATE, ENTITY_TYPE, LAYER_TYPE } from "./enums.js";
+import { BUILDING_TYPE, COLOR_TYPE, DIRECTION, ENTITY_STATE, ENTITY_TYPE, LAYER_TYPE } from "./enums.js";
 import { TeamManager } from "./team/teamManager.js";
 
 //INFO(neyn): This is hard-coded but I don't really care :)
@@ -26,6 +26,7 @@ const MAX_BUILDING_SPRITES = 100;
 const MAX_SHADES = ENTITY_TYPE._COUNT * DIRECTION._COUNT;
 const SPRITES_PER_TYPE = DIRECTION._COUNT * ENTITY_STATE._COUNT;
 const ENTITY_SPRITE_COUNT = ENTITY_TYPE._COUNT * SPRITES_PER_TYPE;
+const BUILDING_SPRITE_COUNT = BUILDING_TYPE._COUNT;
 
 /**
  * 
@@ -34,7 +35,7 @@ const ENTITY_SPRITE_COUNT = ENTITY_TYPE._COUNT * SPRITES_PER_TYPE;
  * @param {number} direction 
  * @returns 
  */
-const getSpriteIndex = function(type, state, direction) {
+const getEntitySpriteIndex = function(type, state, direction) {
     if(type < 0 || type >= ENTITY_TYPE._COUNT) {
         return -1;
     }
@@ -52,47 +53,81 @@ const getSpriteIndex = function(type, state, direction) {
 
 const spriteNameToIndex = function(name, type) {
     switch(name) {
-        case "idle_up": return getSpriteIndex(type, ENTITY_STATE.IDLE, DIRECTION.NORTH);
-        case "idle_right": return getSpriteIndex(type, ENTITY_STATE.IDLE, DIRECTION.EAST);
-        case "idle_down": return getSpriteIndex(type, ENTITY_STATE.IDLE, DIRECTION.SOUTH);
-        case "idle_left": return getSpriteIndex(type, ENTITY_STATE.IDLE, DIRECTION.WEST);
-        case "move_up": return getSpriteIndex(type, ENTITY_STATE.MOVE, DIRECTION.NORTH);
-        case "move_right": return getSpriteIndex(type, ENTITY_STATE.MOVE, DIRECTION.EAST);
-        case "move_down": return getSpriteIndex(type, ENTITY_STATE.MOVE, DIRECTION.SOUTH);
-        case "move_left": return getSpriteIndex(type, ENTITY_STATE.MOVE, DIRECTION.WEST);
-        case "fire_up": return getSpriteIndex(type, ENTITY_STATE.FIRE, DIRECTION.NORTH);
-        case "fire_right": return getSpriteIndex(type, ENTITY_STATE.FIRE, DIRECTION.EAST);
-        case "fire_down": return getSpriteIndex(type, ENTITY_STATE.FIRE, DIRECTION.SOUTH);
-        case "fire_left": return getSpriteIndex(type, ENTITY_STATE.FIRE, DIRECTION.WEST);
+        case "idle_up": return getEntitySpriteIndex(type, ENTITY_STATE.IDLE, DIRECTION.NORTH);
+        case "idle_right": return getEntitySpriteIndex(type, ENTITY_STATE.IDLE, DIRECTION.EAST);
+        case "idle_down": return getEntitySpriteIndex(type, ENTITY_STATE.IDLE, DIRECTION.SOUTH);
+        case "idle_left": return getEntitySpriteIndex(type, ENTITY_STATE.IDLE, DIRECTION.WEST);
+        case "move_up": return getEntitySpriteIndex(type, ENTITY_STATE.MOVE, DIRECTION.NORTH);
+        case "move_right": return getEntitySpriteIndex(type, ENTITY_STATE.MOVE, DIRECTION.EAST);
+        case "move_down": return getEntitySpriteIndex(type, ENTITY_STATE.MOVE, DIRECTION.SOUTH);
+        case "move_left": return getEntitySpriteIndex(type, ENTITY_STATE.MOVE, DIRECTION.WEST);
+        case "fire_up": return getEntitySpriteIndex(type, ENTITY_STATE.FIRE, DIRECTION.NORTH);
+        case "fire_right": return getEntitySpriteIndex(type, ENTITY_STATE.FIRE, DIRECTION.EAST);
+        case "fire_down": return getEntitySpriteIndex(type, ENTITY_STATE.FIRE, DIRECTION.SOUTH);
+        case "fire_left": return getEntitySpriteIndex(type, ENTITY_STATE.FIRE, DIRECTION.WEST);
         default: return -1;
     }
+}
+
+const getBuildingSpriteIndex = function(type) {
+    if(type < 0 || type >= BUILDING_TYPE._COUNT) {
+        return -1;
+    }
+
+    return type;
 }
 
 export const SpriteController = function() {
     this.shades = [];
     this.buildingSprites = new Int16Array(MAX_BUILDING_SPRITES);
     this.entitySprites = new Int16Array(MAX_ENTITY_SPRITES);
+
     this.entitySpriteList = new Int16Array(ENTITY_SPRITE_COUNT);
+    this.buildingSpriteList = new Int16Array(BUILDING_SPRITE_COUNT);
+    this.entitySpriteList.fill(-1);
+    this.buildingSpriteList.fill(-1);
 
     for(let i = 0; i < MAX_SHADES; i++) {
         this.shades[i] = new ImageResource();
     }
 
-    for(let i = 0; i < ENTITY_SPRITE_COUNT; i++) {
-        this.entitySpriteList[i] = -1;
-    }
-
     this.resetSprites();
 }
 
+SpriteController.prototype.getBuildingSpriteTypeID = function(type) {
+    const index = getBuildingSpriteIndex(type);
+
+    if(index === -1) {
+        return -1;
+    }
+
+    return this.buildingSpriteList[index];
+}
+
 SpriteController.prototype.getEntitySpriteTypeID = function(type, state, direction) {
-    const index = getSpriteIndex(type, state, direction);
+    const index = getEntitySpriteIndex(type, state, direction);
 
     if(index === -1) {
         return -1;
     }
 
     return this.entitySpriteList[index];
+}
+
+SpriteController.prototype.registerBuildingSprites = function(gameContext, buildingTypes) {
+    const { spriteManager } = gameContext;
+
+    for(const typeID in buildingTypes) {
+        const rBuildingType = buildingTypes[typeID];
+        const rSpriteName = rBuildingType.sprite;
+        const index = BUILDING_TYPE[typeID];
+
+        if(index !== undefined && rSpriteName !== undefined) {
+            const spriteIndex = getBuildingSpriteIndex(index);
+
+            this.buildingSpriteList[index] = spriteManager.getSpriteID(rSpriteName);
+        }
+    }
 }
 
 SpriteController.prototype.registerEntitySprites = function(gameContext, entityTypes) {
@@ -113,10 +148,10 @@ SpriteController.prototype.registerEntitySprites = function(gameContext, entityT
 
         //If move is not present then idle is used!
         for(let i = 0; i < DIRECTION._COUNT; i++) {
-            const moveIndex = getSpriteIndex(index, ENTITY_STATE.MOVE, i);
+            const moveIndex = getEntitySpriteIndex(index, ENTITY_STATE.MOVE, i);
 
             if(this.entitySpriteList[moveIndex] === -1) {
-                const idleIndex = getSpriteIndex(index, ENTITY_STATE.IDLE, i);
+                const idleIndex = getEntitySpriteIndex(index, ENTITY_STATE.IDLE, i);
 
                 this.entitySpriteList[moveIndex] = this.entitySpriteList[idleIndex];
             }
@@ -165,22 +200,30 @@ SpriteController.prototype.createBuildingSprite = function(gameContext, building
 SpriteController.prototype.updateBuildingSprite = function(gameContext, building, spriteIndex) {
     const { spriteManager, typeRegistry, teamManager } = gameContext;
     const { teamID, config } = building;
-    const { sprite } = config;
+    const spriteTypeID = this.getBuildingSpriteTypeID(config.id); 
+
+    if(spriteTypeID === -1) {
+        return;
+    }
 
     if(teamID === TeamManager.INVALID_ID) {
-        spriteManager.createCopyTexture(sprite, COLOR_TYPE.BUILDING, BUILDING_NEUTRAL_COLORS);
-        spriteManager.updateSprite(spriteIndex, sprite, COLOR_TYPE.BUILDING);
+        spriteManager.createCopyTexture(spriteTypeID, COLOR_TYPE.BUILDING, BUILDING_NEUTRAL_COLORS);
+        spriteManager.updateSprite(spriteIndex, spriteTypeID, COLOR_TYPE.BUILDING);
     } else {
         const { color } = teamManager.getTeam(teamID);
 
         if(color !== COLOR_TYPE.RED) {
             const { colorMap } = typeRegistry.getColorType(color);
 
-            spriteManager.createCopyTexture(sprite, color, colorMap);
+            spriteManager.createCopyTexture(spriteTypeID, color, colorMap);
         }
 
-        spriteManager.updateSprite(spriteIndex, sprite, color);
+        spriteManager.updateSprite(spriteIndex, spriteTypeID, color);
     }
+}
+
+SpriteController.prototype.bufferBuildingSprites = function(gameContext, typeID) {
+    
 }
 
 SpriteController.prototype.getEntitySpriteID = function(index) {

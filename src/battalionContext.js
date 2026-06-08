@@ -64,6 +64,7 @@ BattalionContext.prototype.init = function(resources) {
     registerClientActions(this);
 
     this.spriteController.registerEntitySprites(this, resources.entityTypes);
+    this.spriteController.registerBuildingSprites(this, resources.buildingTypes);
     this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);
 
     this.states.addState(BattalionContext.STATE.MAIN_MENU, new MainMenuState());
