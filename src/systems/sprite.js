@@ -24,30 +24,32 @@ export const playExplosion = function(gameContext, tileX, tileY) {
 }
 
 export const playDeathEffect = function(gameContext, entity) {
+    const { spriteController } = gameContext;
     const { tileX, tileY, config } = entity;
-    const effectName = config.effects[EFFECT_SPRITE.DEATH];
+    const spriteID = spriteController.getEntityEffectTypeID(config.id, EFFECT_SPRITE.DEATH);
 
-    playSprite(gameContext, effectName, tileX, tileY);
+    playSprite(gameContext, spriteID, tileX, tileY);
 }
 
 export const playHealEffect = function(gameContext, entity, target) {
-    const { tileX, tileY } = target;
-    const effectName = entity.config.effects[EFFECT_SPRITE.HEAL];
+    const { spriteController } = gameContext;
+    const { tileX, tileY, config } = target;
+    const spriteID = spriteController.getEntityEffectTypeID(config.id, EFFECT_SPRITE.HEAL);
 
-    playSprite(gameContext, effectName, tileX, tileY);
+    playSprite(gameContext, spriteID, tileX, tileY);
 }
 
 export const playAttackEffect = function(gameContext, entity, target, resolutions) {
-    const { world } = gameContext;
+    const { world, spriteController } = gameContext;
     const { entityManager } = world;
-    const effectName = entity.config.effects[EFFECT_SPRITE.FIRE];
     const attackType = entity.getAttackType();
+    const spriteID = spriteController.getEntityEffectTypeID(entity.config.id, EFFECT_SPRITE.FIRE);
 
     switch(attackType) {
         case ATTACK_TYPE.DISPERSION: {
             const { tileX, tileY } = target;
 
-            playSprite(gameContext, effectName, tileX, tileY);
+            playSprite(gameContext, spriteID, tileX, tileY);
             break;
         }
         default: {
@@ -57,7 +59,7 @@ export const playAttackEffect = function(gameContext, entity, target, resolution
                 if(target !== entity && entity.canSee(gameContext, target)) {
                     const { tileX, tileY } = target;
 
-                    playSprite(gameContext, effectName, tileX, tileY);
+                    playSprite(gameContext, spriteID, tileX, tileY);
                 }
             }
 

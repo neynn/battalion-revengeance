@@ -1,6 +1,6 @@
 import { MAX_TRAITS } from "../../constants.js";
 import { mapMovementToCategory } from "../../enumHelpers.js";
-import { ARMOR_TYPE, ATTACK_TYPE, DIRECTION, EFFECT_SPRITE, ENTITY_CATEGORY, ENTITY_STATE, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, TRAIT_TYPE, TRANSPORT_TYPE, WEAPON_TYPE } from "../../enums.js";
+import { ARMOR_TYPE, ATTACK_TYPE, DIRECTION, ENTITY_CATEGORY, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, TRAIT_TYPE, TRANSPORT_TYPE, WEAPON_TYPE } from "../../enums.js";
 
 const TILE_STEP = 56;
 const ENABLE_HYBRID = false;
@@ -19,15 +19,6 @@ const getRangeType = function(minRange, maxRange) {
     }
 
     return RANGE_TYPE.NONE;
-}
-
-const effectNameToEnum = function(name) {
-    switch(name) {
-        case "death": return EFFECT_SPRITE.DEATH;
-        case "fire": return EFFECT_SPRITE.FIRE;
-        case "heal": return EFFECT_SPRITE.HEAL;
-        default: return -1;
-    }
 }
 
 export const EntityType = function(id) {
@@ -49,20 +40,11 @@ export const EntityType = function(id) {
     this.streamRange = 1;
     this.cost = 0;
     this.sounds = {};
-    this.effects = [];
     this.traits = [];
     this.allowedTransports = [TRANSPORT_TYPE.BARGE, TRANSPORT_TYPE.PELICAN, TRANSPORT_TYPE.STORK];
     this.category = mapMovementToCategory(this.movementType);
     this.rangeType = getRangeType(this.minRange, this.maxRange);
     this.shop = SHOP_TYPE.NONE;
-
-    for(let i = 0; i < EFFECT_SPRITE._COUNT; i++) {
-        this.effects[i] = null;
-    }
-
-    this.effects[EFFECT_SPRITE.DEATH] = "explosion";
-    this.effects[EFFECT_SPRITE.FIRE] = "small_attack";
-    this.effects[EFFECT_SPRITE.HEAL] = "supply_attack";
 }
 
 EntityType.MIN_MOVE_COST = 1;
@@ -93,7 +75,7 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
         transport = [],
         sounds = {},
         //sprites = {}, Used in SpriteController
-        effects = {}
+        //effects = {} Used in SpriteController
     } = config;
 
     this.dimX = dimX;
@@ -152,14 +134,6 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
         this.traits.length = MAX_TRAITS;
 
         console.warn(`${DEBUG_NAME}: More than ${MAX_TRAITS} traits detected!`);
-    }
-
-    for(const effectID in effects) {
-        const index = effectNameToEnum(effectID);
-
-        if(index !== EFFECT_SPRITE._INVALID) {
-            this.effects[index] = effects[effectID];
-        }
     }
 }
 

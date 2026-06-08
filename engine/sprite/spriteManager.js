@@ -124,11 +124,6 @@ SpriteManager.prototype.getSpriteDuration = function(spriteID) {
 }
 
 SpriteManager.prototype.createCopyTexture = function(spriteID, colorID, colorMap) {
-    //TODO(neyn): Replace with numbers.
-    if(typeof spriteID !== "number") {
-        spriteID = this.getSpriteID(spriteID);
-    }
-
     if(spriteID < 0 || spriteID >= this.containers.length) {
         return;
     }
@@ -367,11 +362,6 @@ SpriteManager.prototype.removeSpriteFromLayers = function(spriteIndex) {
 }
 
 SpriteManager.prototype.updateSprite = function(spriteIndex, spriteID, colorID = Texture.DEFAULT_COLOR) {
-    //TODO(neyn): Replace with numbers.
-    if(typeof spriteID !== "number") {
-        spriteID = this.getSpriteID(spriteID);
-    }
-
     if(spriteID < 0 || spriteID >= this.containers.length) {
         return;
     }

@@ -2,7 +2,7 @@ import { Texture } from "../engine/resources/texture/texture.js";
 import { ImageResource } from "../engine/resources/texture/imageResource.js";
 import { SpriteManager } from "../engine/sprite/spriteManager.js";
 import { BattalionEntity } from "./entity/battalionEntity.js";
-import { BUILDING_TYPE, COLOR_TYPE, DIRECTION, ENTITY_STATE, ENTITY_TYPE, LAYER_TYPE } from "./enums.js";
+import { BUILDING_TYPE, COLOR_TYPE, DIRECTION, EFFECT_SPRITE, ENTITY_STATE, ENTITY_TYPE, LAYER_TYPE } from "./enums.js";
 import { TeamManager } from "./team/teamManager.js";
 
 //INFO(neyn): This is hard-coded but I don't really care :)
@@ -24,8 +24,11 @@ const MAX_ENTITY_SPRITES = 1000;
 const MAX_BUILDING_SPRITES = 100;
 
 const MAX_SHADES = ENTITY_TYPE._COUNT * DIRECTION._COUNT;
-const SPRITES_PER_TYPE = DIRECTION._COUNT * ENTITY_STATE._COUNT;
-const ENTITY_SPRITE_COUNT = ENTITY_TYPE._COUNT * SPRITES_PER_TYPE;
+const SPRITES_PER_ENTITY_TYPE = DIRECTION._COUNT * ENTITY_STATE._COUNT;
+const EFFECTS_PER_ENTITY_TYPE = EFFECT_SPRITE._COUNT;
+
+const ENTITY_EFFECT_COUNT = ENTITY_TYPE._COUNT * EFFECTS_PER_ENTITY_TYPE;
+const ENTITY_SPRITE_COUNT = ENTITY_TYPE._COUNT * SPRITES_PER_ENTITY_TYPE;
 const BUILDING_SPRITE_COUNT = BUILDING_TYPE._COUNT;
 
 /**
@@ -48,7 +51,48 @@ const getEntitySpriteIndex = function(type, state, direction) {
         return -1;
     }
 
-    return type * SPRITES_PER_TYPE + state * DIRECTION._COUNT + direction;
+    return type * SPRITES_PER_ENTITY_TYPE + state * DIRECTION._COUNT + direction;
+}
+
+
+/**
+ * 
+ * @param {number} type 
+ * @returns 
+ */
+const getBuildingSpriteIndex = function(type) {
+    if(type < 0 || type >= BUILDING_TYPE._COUNT) {
+        return -1;
+    }
+
+    return type;
+}
+
+/**
+ * 
+ * @param {number} type 
+ * @param {number} effect 
+ * @returns 
+ */
+const getEntityEffectIndex = function(type, effect) {
+     if(type < 0 || type >= ENTITY_TYPE._COUNT) {
+        return -1;
+    }
+
+    if(effect < 0 || effect >= EFFECT_SPRITE._COUNT) {
+        return -1;
+    }
+
+    return type * EFFECTS_PER_ENTITY_TYPE + effect;
+}
+
+const effectNameToIndex = function(name, type) {
+    switch(name) {
+        case "death": return getEntityEffectIndex(type, EFFECT_SPRITE.DEATH);
+        case "fire": return getEntityEffectIndex(type, EFFECT_SPRITE.FIRE);
+        case "heal": return getEntityEffectIndex(type, EFFECT_SPRITE.HEAL);
+        default: return -1;
+    }
 }
 
 const spriteNameToIndex = function(name, type) {
@@ -69,23 +113,19 @@ const spriteNameToIndex = function(name, type) {
     }
 }
 
-const getBuildingSpriteIndex = function(type) {
-    if(type < 0 || type >= BUILDING_TYPE._COUNT) {
-        return -1;
-    }
-
-    return type;
-}
-
 export const SpriteController = function() {
     this.shades = [];
     this.buildingSprites = new Int16Array(MAX_BUILDING_SPRITES);
     this.entitySprites = new Int16Array(MAX_ENTITY_SPRITES);
 
-    this.entitySpriteList = new Int16Array(ENTITY_SPRITE_COUNT);
-    this.buildingSpriteList = new Int16Array(BUILDING_SPRITE_COUNT);
-    this.entitySpriteList.fill(-1);
-    this.buildingSpriteList.fill(-1);
+    this.entityEffectRegistry = new Int16Array(ENTITY_EFFECT_COUNT);
+    this.entityEffectRegistry.fill(-1);
+
+    this.entitySpriteRegistry = new Int16Array(ENTITY_SPRITE_COUNT);
+    this.entitySpriteRegistry.fill(-1);
+    
+    this.buildingSpriteRegistry = new Int16Array(BUILDING_SPRITE_COUNT);
+    this.buildingSpriteRegistry.fill(-1);
 
     for(let i = 0; i < MAX_SHADES; i++) {
         this.shades[i] = new ImageResource();
@@ -101,7 +141,7 @@ SpriteController.prototype.getBuildingSpriteTypeID = function(type) {
         return -1;
     }
 
-    return this.buildingSpriteList[index];
+    return this.buildingSpriteRegistry[index];
 }
 
 SpriteController.prototype.getEntitySpriteTypeID = function(type, state, direction) {
@@ -111,7 +151,17 @@ SpriteController.prototype.getEntitySpriteTypeID = function(type, state, directi
         return -1;
     }
 
-    return this.entitySpriteList[index];
+    return this.entitySpriteRegistry[index];
+}
+
+SpriteController.prototype.getEntityEffectTypeID = function(type, effect) {
+    const index = getEntityEffectIndex(type, effect);
+
+    if(index === -1) {
+        return -1;
+    }
+
+    return this.entityEffectRegistry[index];
 }
 
 SpriteController.prototype.registerBuildingSprites = function(gameContext, buildingTypes) {
@@ -125,7 +175,7 @@ SpriteController.prototype.registerBuildingSprites = function(gameContext, build
         if(index !== undefined && rSpriteName !== undefined) {
             const spriteIndex = getBuildingSpriteIndex(index);
 
-            this.buildingSpriteList[index] = spriteManager.getSpriteID(rSpriteName);
+            this.buildingSpriteRegistry[index] = spriteManager.getSpriteID(rSpriteName);
         }
     }
 }
@@ -133,27 +183,49 @@ SpriteController.prototype.registerBuildingSprites = function(gameContext, build
 SpriteController.prototype.registerEntitySprites = function(gameContext, entityTypes) {
     const { spriteManager } = gameContext;
 
-    for(const typeID in entityTypes) {
-        const rEntityType = entityTypes[typeID];
+    //Preloads default effects.
+    const deathID = spriteManager.getSpriteID("explosion");
+    const fireID = spriteManager.getSpriteID("small_attack");
+    const healID = spriteManager.getSpriteID("supply_attack");
+
+    for(let i = 0; i < ENTITY_TYPE._COUNT; i++) {
+        const index = i * EFFECTS_PER_ENTITY_TYPE;
+
+        this.entityEffectRegistry[index + EFFECT_SPRITE.DEATH] = deathID;
+        this.entityEffectRegistry[index + EFFECT_SPRITE.FIRE] = fireID;
+        this.entityEffectRegistry[index + EFFECT_SPRITE.HEAL] = healID;
+    }
+
+    for(const typeName in entityTypes) {
+        const rEntityType = entityTypes[typeName];
         const rEntitySprites = rEntityType.sprites ?? {};
-        const index = ENTITY_TYPE[typeID] ?? ENTITY_TYPE._INVALID;
+        const rEntityEffects = rEntityType.effects ?? {};
+        const typeID = ENTITY_TYPE[typeName] ?? ENTITY_TYPE._INVALID;
 
         for(const spriteName in rEntitySprites) {
-            const spriteIndex = spriteNameToIndex(spriteName, index);
+            const spriteIndex = spriteNameToIndex(spriteName, typeID);
 
             if(spriteIndex !== -1) {
-                this.entitySpriteList[spriteIndex] = spriteManager.getSpriteID(rEntitySprites[spriteName]);
+                this.entitySpriteRegistry[spriteIndex] = spriteManager.getSpriteID(rEntitySprites[spriteName]);
+            }
+        }
+
+        for(const effectName in rEntityEffects) {
+            const effectIndex = effectNameToIndex(effectName, typeID);
+
+            if(effectIndex !== -1) {
+                this.entityEffectRegistry[effectIndex] = spriteManager.getSpriteID(rEntityEffects[effectName]);
             }
         }
 
         //If move is not present then idle is used!
         for(let i = 0; i < DIRECTION._COUNT; i++) {
-            const moveIndex = getEntitySpriteIndex(index, ENTITY_STATE.MOVE, i);
+            const moveIndex = getEntitySpriteIndex(typeID, ENTITY_STATE.MOVE, i);
 
-            if(this.entitySpriteList[moveIndex] === -1) {
-                const idleIndex = getEntitySpriteIndex(index, ENTITY_STATE.IDLE, i);
+            if(this.entitySpriteRegistry[moveIndex] === -1) {
+                const idleIndex = getEntitySpriteIndex(typeID, ENTITY_STATE.IDLE, i);
 
-                this.entitySpriteList[moveIndex] = this.entitySpriteList[idleIndex];
+                this.entitySpriteRegistry[moveIndex] = this.entitySpriteRegistry[idleIndex];
             }
         } 
     }
@@ -220,10 +292,6 @@ SpriteController.prototype.updateBuildingSprite = function(gameContext, building
 
         spriteManager.updateSprite(spriteIndex, spriteTypeID, color);
     }
-}
-
-SpriteController.prototype.bufferBuildingSprites = function(gameContext, typeID) {
-    
 }
 
 SpriteController.prototype.getEntitySpriteID = function(index) {
@@ -295,7 +363,7 @@ SpriteController.prototype.bufferEntitySprites = function(gameContext, typeID, c
     }
     
     const { spriteManager, typeRegistry } = gameContext;
-    const beginIndex = typeID * SPRITES_PER_TYPE;
+    const beginIndex = typeID * SPRITES_PER_ENTITY_TYPE;
 
     if(colorID !== COLOR_TYPE.RED) {
         const { colorMap } = typeRegistry.getColorType(colorID);
