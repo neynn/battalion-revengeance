@@ -34,7 +34,7 @@ export const createEntitySnapshot = function() {
 }
 
 export const createEntitySnapshotFromEntry = function(gameContext, entry) {
-    const { teamManager, typeRegistry } = gameContext;
+    const { typeRegistry } = gameContext;
     const {
         id,
         name,
@@ -59,7 +59,7 @@ export const createEntitySnapshotFromEntry = function(gameContext, entry) {
     snapshot.desc = desc;
     snapshot.type = type;
     snapshot.health = entityType.health;
-    snapshot.teamID = teamManager.getTeamID(team);
+    snapshot.teamID = team;
     snapshot.tileX = x;
     snapshot.tileY = y;
     snapshot.direction = direction;

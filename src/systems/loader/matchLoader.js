@@ -47,8 +47,6 @@ export const MatchLoader = function(worldMap, scenario) {
     this.rules = LOADER_RULE.NONE;
     this.worldMap = worldMap;
     this.scenario = scenario;
-
-    this.entities = scenario.entities;
 }
 
 MatchLoader.prototype.localizeTiles = function() {
@@ -60,15 +58,14 @@ MatchLoader.prototype.localizeTiles = function() {
 }
 
 MatchLoader.prototype.createMines = function(gameContext) {
-    const { teamManager, typeRegistry } = gameContext;
+    const { typeRegistry } = gameContext;
 
     for(const mine of this.scenario.mines) {
         const { x, y, team, type, isVisible } = mine;
         const { category } = typeRegistry.getMineType(type);
 
         if(this.worldMap.isMinePlaceable(gameContext, x, y, category)) {
-            const teamID = teamManager.getTeamID(team);
-            const mineObject = createMineObject(gameContext, teamID, type, x, y);
+            const mineObject = createMineObject(gameContext, team, type, x, y);
 
             if(isVisible) {
                 mineObject.show();
@@ -79,15 +76,13 @@ MatchLoader.prototype.createMines = function(gameContext) {
     }
 }
 
-MatchLoader.prototype.applyBuildingSettings = function(gameContext) {
-    const { teamManager } = gameContext;
-
+MatchLoader.prototype.applyBuildingSettings = function() {
     for(const settings of this.scenario.buildingSettings) {
         const { x, y, team, shop, customID, customName, customDesc } = settings;
         const building = this.worldMap.getBuilding(x, y);
 
         if(building) {
-            building.teamID = teamManager.getTeamID(team);
+            building.teamID = team;
             building.customID = customID;
             building.customName = customName;
             building.customDesc = customDesc;
@@ -224,7 +219,7 @@ MatchLoader.prototype.createTeams = function(gameContext, overrides) {
 
     for(let i = 0; i < this.scenario.teams.length; i++) {
         const { id, cash, commander, faction, objectives } = this.scenario.teams[i];
-        const team = teamManager.reserveTeam(i, id);
+        const team = teamManager.reserveTeam(id);
 
         if(!team) {
             continue;
@@ -260,8 +255,7 @@ MatchLoader.prototype.createTeams = function(gameContext, overrides) {
 
     for(const override of overrides) {
         const { team, color, name, allies } = override;
-        const teamID = teamManager.getTeamID(team);
-        const teamObject = teamManager.getTeam(teamID);
+        const teamObject = teamManager.getTeam(team);
 
         if(teamObject) {
             teamObject.customName = name;

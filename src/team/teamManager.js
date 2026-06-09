@@ -5,7 +5,6 @@ import { Team } from "./team.js";
 export const TeamManager = function() {
     this.teams = [];
     this.alliances = new Uint8Array(MAX_TEAMS * MAX_TEAMS);
-    this.nameMap = new Map();
     this.activeTeams = [];
     this.currentIndex = 0;
     this.currentTeam = TeamManager.INVALID_ID;
@@ -28,7 +27,6 @@ TeamManager.prototype.resetTeams = function() {
 
 TeamManager.prototype.exit = function() {
     this.resetTeams();
-    this.nameMap.clear();
     this.activeTeams.length = 0;
     this.isConcluded = false;
     this.turn = 0;
@@ -90,10 +88,10 @@ TeamManager.prototype.loadAlliance = function(alliance) {
         return;
     }
 
-    const teamID = this.getTeamID(alliance[0]);
+    const teamID = alliance[0];
 
     for(let i = 1; i < alliance.length; i++) {
-        const allyID = this.getTeamID(alliance[i]);
+        const allyID = alliance[i];
 
         this.setAlliance(teamID, allyID);
     }
@@ -115,7 +113,7 @@ TeamManager.prototype.allActiveAllied = function() {
     return true;
 }
 
-TeamManager.prototype.reserveTeam = function(teamID, teamName) {
+TeamManager.prototype.reserveTeam = function(teamID) {
     if(teamID < 0 || teamID >= MAX_TEAMS) {
         return null;
     }
@@ -130,23 +128,7 @@ TeamManager.prototype.reserveTeam = function(teamID, teamName) {
 
     this.activeTeams.push(teamID);
 
-    if(teamName !== null && !this.nameMap.has(teamName)) {
-        this.nameMap.set(teamName, teamID);
-    } else {
-        console.error("Team name is null or already used!");
-    }
-
     return team;
-}
-
-TeamManager.prototype.getTeamID = function(teamName) {
-    const teamIndex = this.nameMap.get(teamName);
-
-    if(teamIndex === undefined) {
-        return TeamManager.INVALID_ID;
-    }
-
-    return teamIndex;
 }
 
 TeamManager.prototype.getTeam = function(teamIndex) {

@@ -34,11 +34,10 @@ ClientMatchLoader.prototype.createBuildingSprites = function(gameContext) {
 
 ClientMatchLoader.prototype.createActors = function(gameContext) {
     const { teamManager } = gameContext;
-    const clientTeamID = teamManager.getTeamID(this.clientTeam);
 
     if(this.rules & LOADER_RULE.ALLOW_SPECTATOR) {
         //If no client team is found, assume they're a spectator.
-        if(clientTeamID === TeamManager.INVALID_ID) {
+        if(this.clientTeam === TeamManager.INVALID_ID) {
             this.createSpectator(gameContext);
         }
     }
@@ -46,7 +45,7 @@ ClientMatchLoader.prototype.createActors = function(gameContext) {
     teamManager.forEachTeam((team) => {
         const { id } = team;
 
-        if(id === clientTeamID) {
+        if(id === this.clientTeam) {
             //Each client SHOULD have a team.
             //If not, the client camera renders with no perspective.
             this.createPlayer(gameContext, id);
@@ -69,7 +68,7 @@ ClientMatchLoader.prototype.createEntities = function(gameContext) {
     const { world } = gameContext;
     const { entityManager } = world;
 
-    for(const config of this.entities) {
+    for(const config of this.scenario.entities) {
         const entityID = entityManager.getNextID();
         const snapshot = createEntitySnapshotFromEntry(gameContext, config);
         const entity = createClientEntityObject(gameContext, entityID, snapshot);
@@ -126,7 +125,7 @@ ClientMatchLoader.prototype.createServerMatch = function(gameContext, snapshot, 
     this.createActors(gameContext);
     this.unpackTotalEntityBuffer(gameContext, entities);
     this.createMines(gameContext);
-    this.applyBuildingSettings(gameContext);
+    this.applyBuildingSettings();
     this.createBuildingSprites(gameContext);
     this.loadMusic(gameContext);
     this.createWorldEvents(gameContext);
@@ -208,7 +207,7 @@ ClientMatchLoader.prototype.createDefaultMatch = function(gameContext, overrides
     this.createTeams(gameContext, overrides);
     this.createActors(gameContext);
     this.createEntities(gameContext);
-    this.applyBuildingSettings(gameContext);
+    this.applyBuildingSettings();
     this.createBuildingSprites(gameContext);
     this.createMines(gameContext);
     this.loadMusic(gameContext);
@@ -237,9 +236,7 @@ ServerMatchLoader.prototype.createActors = function(gameContext) {
         let client = null;
 
         for(const { teamID, clientID } of slots) {
-            const tTeamID = teamManager.getTeamID(teamID);
-
-            if(tTeamID === id) {
+            if(teamID === id) {
                 client = clientID;
                 break;
             }
@@ -253,9 +250,9 @@ ServerMatchLoader.prototype.createEntities = function(gameContext) {
     const { world } = gameContext;
     const { entityManager } = world; 
 
-    for(let i = 0; i < this.entities.length; i++) {
+    for(let i = 0; i < this.scenario.entities.length; i++) {
         const entityID = entityManager.getNextID();
-        const snapshot = createEntitySnapshotFromEntry(gameContext, this.entities[i]);
+        const snapshot = createEntitySnapshotFromEntry(gameContext, this.scenario.entities[i]);
         const entity = createServerEntityObject(gameContext, entityID, snapshot);
 
         if(entity) {
@@ -274,7 +271,7 @@ ServerMatchLoader.prototype.loadMap = function(gameContext, overrides) {
     this.createTeams(gameContext, overrides);
     this.createActors(gameContext);
     this.createEntities(gameContext);
-    this.applyBuildingSettings(gameContext);
+    this.applyBuildingSettings();
     this.createMines(gameContext);
     this.createWorldEvents(gameContext);
 }

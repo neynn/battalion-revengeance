@@ -1,7 +1,9 @@
 import { LanguageHandler } from "../engine/language/languageHandler.js";
 import { WorldMap } from "../engine/map/worldMap.js";
 import { WorldEvent } from "../engine/world/event/worldEvent.js";
+import { MAX_TEAMS } from "./constants.js";
 import { COMMANDER_TYPE, COMPONENT_TYPE, DIRECTION, ENTITY_TYPE, FACTION_TYPE, MINE_TYPE, OBJECTIVE_TYPE, SHOP_TYPE } from "./enums.js";
+import { TeamManager } from "./team/teamManager.js";
 
 export const ScenarioModel = function(id) {
     this.id = id;
@@ -28,6 +30,7 @@ export const ScenarioModel = function(id) {
 ScenarioModel.NEXT_ID = 0;
 ScenarioModel.ID_CACHE = new Map();
 ScenarioModel.TEXT_CACHE = new Map();
+ScenarioModel.TEAM_CACHE = new Map();
 ScenarioModel.INVALID_CUSTOM_ID = -1;
 
 ScenarioModel.getCustomID = function(name) {
@@ -38,6 +41,18 @@ ScenarioModel.getCustomID = function(name) {
     }
 
     return customID;
+}
+
+ScenarioModel.getTeamID = function(name) {
+    let teamID = TeamManager.INVALID_ID;
+
+    if(name !== null) {
+        if(ScenarioModel.TEAM_CACHE.has(name)) {
+            teamID = ScenarioModel.TEAM_CACHE.get(name);
+        }
+    }
+
+    return teamID;
 }
 
 ScenarioModel.getTextID = function(name) {
@@ -103,6 +118,7 @@ ScenarioModel.prototype.createEntityEntry = function(config) {
         "id": ScenarioModel.getAndSetCustomID(id),
         "name": ScenarioModel.getTextID(name),
         "desc": ScenarioModel.getTextID(desc),
+        "team": ScenarioModel.getTeamID(team),
         "type": ENTITY_TYPE[type] ?? ENTITY_TYPE._INVALID,
         "x": x,
         "y": y,
@@ -111,7 +127,6 @@ ScenarioModel.prototype.createEntityEntry = function(config) {
         "stealth": stealth,
         "cash": cash,
         "cargo": ENTITY_TYPE[cargo] ?? ENTITY_TYPE._INVALID,
-        "team": team,
         "shop": SHOP_TYPE[shop] ?? SHOP_TYPE.NONE
     }
 }
@@ -136,18 +151,16 @@ ScenarioModel.prototype.load = function(data) {
     } = data;
 
     const resolvedEvents = new Map();
-    const resolvedTeams = new Set();
 
     this.mapID = map;
-    this.client = client;
     this.maxPlayers = maxPlayers;
 
     for(let i = 0; i < text.length; i++) {
         const { id, translations } = text[i];
 
         if(!ScenarioModel.TEXT_CACHE.has(id)) {
-            ScenarioModel.TEXT_CACHE.set(id, i);
             this.text.push(translations);
+            ScenarioModel.TEXT_CACHE.set(id, i);
         }
     }
     
@@ -159,31 +172,36 @@ ScenarioModel.prototype.load = function(data) {
         this.playlist = data.playlist;
     }
 
-    for(let i = 0; i < teams.length; i++) {
+    for(let i = 0; i < teams.length && this.teams.length < MAX_TEAMS; i++) {
         const {
             id = null,
             cash = 0,
             commander = null,
             faction = null,
-            allies = [],
             objectives = []
         } = teams[i];
 
-        if(id === null || resolvedTeams.has(id)) {
+        if(id === null || ScenarioModel.TEAM_CACHE.has(id)) {
+            console.error(`Team ${id} does not exist or was mentioned twice!`);
             continue;
         }
 
+        const teamID = this.teams.length;
+
+        ScenarioModel.TEAM_CACHE.set(id, teamID);
+    
         this.teams.push({
-            "id": id,
+            "id": teamID,
             "cash": cash,
             "commander": COMMANDER_TYPE[commander] ?? COMMANDER_TYPE.NONE,
             "faction": FACTION_TYPE[faction] ?? FACTION_TYPE.RED,
-            "allies": allies,
             "objectives": objectives
         });
-
-        resolvedTeams.add(id);
     }
+
+    this.client = ScenarioModel.getTeamID(client);
+
+    const alliedTeams = new Uint8Array(MAX_TEAMS);
 
     for(let i = 0; i < alliances.length; i++) {
         const alliance = alliances[i];
@@ -191,10 +209,11 @@ ScenarioModel.prototype.load = function(data) {
 
         for(let j = 0; j < alliance.length; j++) {
             const teamName = alliance[j];
+            const teamID = ScenarioModel.getTeamID(teamName);
 
-            if(resolvedTeams.has(teamName)) {
-                mAlliance.push(teamName);
-                resolvedTeams.delete(teamName);
+            if(teamID !== TeamManager.INVALID_ID && alliedTeams[teamID] !== 1) {
+                mAlliance.push(teamID);
+                alliedTeams[teamID] = 1;
             }
         }
 
@@ -217,8 +236,8 @@ ScenarioModel.prototype.load = function(data) {
         this.buildingSettings.push({
             "x": x,
             "y": y,
-            "team": team,
             "shop": SHOP_TYPE[shop] ?? SHOP_TYPE.NONE,
+            "team": ScenarioModel.getTeamID(team),
             "customID": ScenarioModel.getAndSetCustomID(id),
             "customName": ScenarioModel.getTextID(name),
             "customDesc": ScenarioModel.getTextID(desc)
@@ -237,7 +256,7 @@ ScenarioModel.prototype.load = function(data) {
         this.mines.push({
             "x": x,
             "y": y,
-            "team": team,
+            "team": ScenarioModel.getTeamID(team),
             "type": MINE_TYPE[type] ?? MINE_TYPE.LAND,
             "isVisible": visible
         });
@@ -482,6 +501,7 @@ ScenarioModel.prototype.load = function(data) {
         }
     }
 
+    ScenarioModel.TEAM_CACHE.clear();
     ScenarioModel.TEXT_CACHE.clear();
     ScenarioModel.ID_CACHE.clear();
     ScenarioModel.NEXT_ID = 0;

@@ -49,20 +49,16 @@ MapMaster.prototype.clear = function() {
     this.players = 0;
 }
 
-MapMaster.prototype.createSlots = function(teams) {
-    const slotCount = teams.length;
+MapMaster.prototype.createSlots = function(scenarioTeams) {
+    const slotCount = scenarioTeams.length;
 
     for(let i = 0; i < slotCount; i++) {
         const slot = new MapSlot();
-        const team = teams[i];
+        const team = scenarioTeams[i];
 
         slot.teamID = team.id;
 
         this.slots.push(slot);
-    }
-
-    for(const team of teams) {
-        const { id } = team;
     }
 }
 

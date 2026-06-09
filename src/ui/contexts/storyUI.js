@@ -203,9 +203,10 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
                 context.fillText(language.getSystemTranslation(startButton), startTextX, startTextY);
 
                 if(startFlags & IM_FLAG.CLICKED) {
-                    const over = new TeamOverride("SOMERTIN");
+                    const override1 = new TeamOverride();
 
-                    over.color = {
+                    override1.team = 0;
+                    override1.color = {
                         "0x661A5E": [105, 125, 108],
                         "0xAA162C": [197, 171, 159],
                         "0xE9332E": [66, 65, 68],
