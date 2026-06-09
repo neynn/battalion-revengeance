@@ -58,13 +58,11 @@ ClientMatchLoader.prototype.createActors = function(gameContext) {
 
 ClientMatchLoader.prototype.loadScenarioText = function(gameContext) {
     const { language } = gameContext;
-    const text = this.scenario.text;
-    const table = this.scenario.textMap;
 
     this.localizeTiles();
     
     language.clearScenarioAndMapText();
-    language.registerScenarioText(text, table);
+    language.registerScenarioText(this.scenario.text);
 }
 
 ClientMatchLoader.prototype.createEntities = function(gameContext) {

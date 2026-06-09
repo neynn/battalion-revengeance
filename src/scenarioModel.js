@@ -20,21 +20,18 @@ export const ScenarioModel = function(id) {
     this.events = [];
     this.localization = [];
     this.alliances = [];
-    this.text = {};
+    this.text = [];
     this.maxPlayers = 0;
     this.minPlayers = 0;
-    
-    this.customIDs = new Map();
-    this.customIDCount = 0;
-
-    this.textMap = new Map();
-    this.textID = 0;
 }
 
+ScenarioModel.NEXT_ID = 0;
+ScenarioModel.ID_CACHE = new Map();
+ScenarioModel.TEXT_CACHE = new Map();
 ScenarioModel.INVALID_CUSTOM_ID = -1;
 
-ScenarioModel.prototype.getCustomID = function(name) {
-    const customID = this.customIDs.get(name);
+ScenarioModel.getCustomID = function(name) {
+    const customID = ScenarioModel.ID_CACHE.get(name);
     
     if(customID === undefined) {
         return ScenarioModel.INVALID_CUSTOM_ID;
@@ -43,36 +40,32 @@ ScenarioModel.prototype.getCustomID = function(name) {
     return customID;
 }
 
-ScenarioModel.prototype.getAndSetCustomID = function(name) {
-    let customID = ScenarioModel.INVALID_CUSTOM_ID;
-    
-    if(name !== null) {
-        if(this.customIDs.has(name)) {
-            customID = this.customIDs.get(name);
-        } else {
-            customID = this.customIDCount++;
-
-            this.customIDs.set(name, customID);
-        }
-    }
-
-    return customID;
-}
-
-ScenarioModel.prototype.getOrCreateTextID = function(name) {
+ScenarioModel.getTextID = function(name) {
     let textID = LanguageHandler.INVALID_ID;
 
     if(name !== null) {
-        if(this.textMap.has(name)) {
-            textID = this.textMap.get(name);
-        } else {
-            textID = this.textID++;
-
-            this.textMap.set(name, textID);
+        if(ScenarioModel.TEXT_CACHE.has(name)) {
+            textID = ScenarioModel.TEXT_CACHE.get(name);
         }
     }
 
     return textID;
+}
+
+ScenarioModel.getAndSetCustomID = function(name) {
+    let customID = ScenarioModel.INVALID_CUSTOM_ID;
+    
+    if(name !== null) {
+        if(ScenarioModel.ID_CACHE.has(name)) {
+            customID = ScenarioModel.ID_CACHE.get(name);
+        } else {
+            customID = ScenarioModel.NEXT_ID++;
+
+            ScenarioModel.ID_CACHE.set(name, customID);
+        }
+    }
+
+    return customID;
 }
 
 ScenarioModel.prototype.createDialogueEntry = function(config) {
@@ -84,7 +77,7 @@ ScenarioModel.prototype.createDialogueEntry = function(config) {
 
     return {
         "narrator": COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE,
-        "text": this.getOrCreateTextID(text),
+        "text": ScenarioModel.getTextID(text),
         "voice": voice
     }
 }
@@ -107,9 +100,9 @@ ScenarioModel.prototype.createEntityEntry = function(config) {
     } = config;
 
     return {
-        "id": this.getAndSetCustomID(id),
-        "name": this.getOrCreateTextID(name),
-        "desc": this.getOrCreateTextID(desc),
+        "id": ScenarioModel.getAndSetCustomID(id),
+        "name": ScenarioModel.getTextID(name),
+        "desc": ScenarioModel.getTextID(desc),
         "type": ENTITY_TYPE[type] ?? ENTITY_TYPE._INVALID,
         "x": x,
         "y": y,
@@ -138,7 +131,7 @@ ScenarioModel.prototype.load = function(data) {
         localization = [],
         alliances = [],
         objectives = {},
-        text = {},
+        text = [],
         maxPlayers = 0
     } = data;
 
@@ -149,8 +142,14 @@ ScenarioModel.prototype.load = function(data) {
     this.client = client;
     this.maxPlayers = maxPlayers;
 
-    //TODO(neyn): Must be loaded separately!
-    this.text = text;
+    for(let i = 0; i < text.length; i++) {
+        const { id, translations } = text[i];
+
+        if(!ScenarioModel.TEXT_CACHE.has(id)) {
+            ScenarioModel.TEXT_CACHE.set(id, i);
+            this.text.push(translations);
+        }
+    }
     
     if(data.music) {
         this.music = data.music;
@@ -220,9 +219,9 @@ ScenarioModel.prototype.load = function(data) {
             "y": y,
             "team": team,
             "shop": SHOP_TYPE[shop] ?? SHOP_TYPE.NONE,
-            "customID": this.getAndSetCustomID(id),
-            "customName": this.getOrCreateTextID(name),
-            "customDesc": this.getOrCreateTextID(desc)
+            "customID": ScenarioModel.getAndSetCustomID(id),
+            "customName": ScenarioModel.getTextID(name),
+            "customDesc": ScenarioModel.getTextID(desc)
         });
     }
 
@@ -270,8 +269,8 @@ ScenarioModel.prototype.load = function(data) {
 
     for(let i = 0; i < localization.length; i++) {
         const { x = -1, y = -1, name = null, desc = null } = localization[i];
-        const nameID = this.getOrCreateTextID(name);
-        const descID = this.getOrCreateTextID(desc);
+        const nameID = ScenarioModel.getTextID(name);
+        const descID = ScenarioModel.getTextID(desc);
 
         this.localization.push({
             "tileX": x,
@@ -402,7 +401,7 @@ ScenarioModel.prototype.load = function(data) {
 
         switch(type) {
             case OBJECTIVE_TYPE.DEFEAT: {
-                const customID = this.getCustomID(config.target);
+                const customID = ScenarioModel.getCustomID(config.target);
 
                 if(customID !== ScenarioModel.INVALID_CUSTOM_ID) {
                     data = {
@@ -418,7 +417,7 @@ ScenarioModel.prototype.load = function(data) {
                 };
 
                 for(const targetName of config.targets) {
-                    const customID = this.getCustomID(targetName);
+                    const customID = ScenarioModel.getCustomID(targetName);
 
                     if(customID !== ScenarioModel.INVALID_CUSTOM_ID) {
                         data.targets.push(customID);
@@ -482,4 +481,8 @@ ScenarioModel.prototype.load = function(data) {
             }
         }
     }
+
+    ScenarioModel.TEXT_CACHE.clear();
+    ScenarioModel.ID_CACHE.clear();
+    ScenarioModel.NEXT_ID = 0;
 }

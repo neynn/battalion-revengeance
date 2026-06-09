@@ -13,5 +13,8 @@ PlaySpriteComponent.prototype = Object.create(EffectComponent.prototype);
 PlaySpriteComponent.prototype.constructor = PlaySpriteComponent;
 
 PlaySpriteComponent.prototype.play = function(gameContext) {
-    playSprite(gameContext, this.sprite, this.tileX, this.tileY);
+    const { spriteManager } = gameContext;
+    const spriteID = spriteManager.getSpriteID(this.sprite);
+
+    playSprite(gameContext, spriteID, this.tileX, this.tileY);
 }

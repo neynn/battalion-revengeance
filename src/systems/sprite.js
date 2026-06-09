@@ -15,12 +15,13 @@ export const playSprite = function(gameContext, spriteType, tileX, tileY) {
 }
 
 export const playExplosion = function(gameContext, tileX, tileY) {
-    const { client } = gameContext;
+    const { client, spriteManager } = gameContext;
     const { soundPlayer } = client;
+    const spriteID = spriteManager.getSpriteID("explosion");
 
     soundPlayer.play("explosion");
 
-    playSprite(gameContext, "explosion", tileX, tileY);
+    playSprite(gameContext, spriteID, tileX, tileY);
 }
 
 export const playDeathEffect = function(gameContext, entity) {

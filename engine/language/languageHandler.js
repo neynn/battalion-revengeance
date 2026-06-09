@@ -62,14 +62,9 @@ LanguageHandler.prototype.load = function(languages) {
     }
 }
 
-LanguageHandler.prototype.registerScenarioText = function(scenarioText, textTable) {
-    for(const name in scenarioText) {
-        const translation = scenarioText[name];
-        const id = textTable.get(name);
-
-        if(id !== undefined) {
-            this.scenarioText.set(id, translation);
-        }
+LanguageHandler.prototype.registerScenarioText = function(translations) {
+    for(let i = 0; i < translations.length; i++) {
+        this.scenarioText.set(i, translations[i]);
     }
 }
 
