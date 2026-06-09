@@ -7,7 +7,7 @@ import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, ATTACK_FLAG, MORALE_TY
 import { TeamManager } from "../team/teamManager.js";
 import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
-import { ScenarioModel } from "../scenarioModel.js";
+import { ScenarioModel } from "../scenario/scenarioModel.js";
 import { ShopType } from "../type/parsed/shopType.js";
 import { TerrainType } from "../type/parsed/terrainType.js";
 import { StealthSystem } from "../systems/stealth.js";

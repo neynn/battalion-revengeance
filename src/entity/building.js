@@ -1,6 +1,6 @@
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { SHOP_TYPE } from "../enums.js";
-import { ScenarioModel } from "../scenarioModel.js";
+import { ScenarioModel } from "../scenario/scenarioModel.js";
 import { createBuildingSnapshot } from "../snapshot/buildingSnapshot.js";
 import { TeamManager } from "../team/teamManager.js";
 import { BuildingType } from "../type/parsed/buildingType.js";

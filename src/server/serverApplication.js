@@ -7,7 +7,7 @@ import { MapRegistry } from "../map/mapRegistry.js";
 import { loadTiles, registerActionVTables } from "../systems/context.js";
 import { MAX_TEAMS } from "../constants.js";
 import { TILE_ID, TILE_TYPE } from "../enums.js";
-import { ScenarioRegistry } from "../scenarioRegistry.js";
+import { ScenarioRegistry } from "../scenario/scenarioRegistry.js";
 
 export const ServerApplication = function(io) {
     SocketServer.call(this, io);

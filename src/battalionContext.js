@@ -12,7 +12,7 @@ import { MapRegistry } from "./map/mapRegistry.js";
 import { ClientActionRouter } from "./action/router/clientActionRouter.js";
 import { UIData } from "./ui/uiData.js";
 import { MissionManager } from "./mission/missionManager.js";
-import { ScenarioRegistry } from "./scenarioRegistry.js";
+import { ScenarioRegistry } from "./scenario/scenarioRegistry.js";
 import { SpriteController } from "./spriteController.js";
 
 export const BattalionContext = function() {

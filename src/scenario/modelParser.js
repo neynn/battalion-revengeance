@@ -1,40 +1,20 @@
-import { LanguageHandler } from "../engine/language/languageHandler.js";
-import { WorldMap } from "../engine/map/worldMap.js";
-import { WorldEvent } from "../engine/world/event/worldEvent.js";
-import { MAX_TEAMS } from "./constants.js";
-import { COMMANDER_TYPE, COMPONENT_TYPE, DIRECTION, ENTITY_TYPE, FACTION_TYPE, MINE_TYPE, OBJECTIVE_TYPE, SHOP_TYPE } from "./enums.js";
-import { TeamManager } from "./team/teamManager.js";
+import { LanguageHandler } from "../../engine/language/languageHandler.js";
+import { WorldMap } from "../../engine/map/worldMap.js";
+import { WorldEvent } from "../../engine/world/event/worldEvent.js";
+import { MAX_TEAMS } from "../constants.js";
+import { COMMANDER_TYPE, COMPONENT_TYPE, DIRECTION, ENTITY_TYPE, FACTION_TYPE, MINE_TYPE, OBJECTIVE_TYPE, SHOP_TYPE } from "../enums.js";
+import { ScenarioModel } from "../scenario/scenarioModel.js";
+import { TeamManager } from "../team/teamManager.js";
 
-export const ScenarioModel = function(id) {
-    this.id = id;
-    this.mapID = null;
-    this.client = null;
-    this.music = "rivers_of_steel";
-    this.playlist = null;
-    this.teams = [];
-    this.entities = [];
-    this.mines = [];
-    this.buildingSettings = [];
-    this.objectives = {};
-    this.prelogue = [];
-    this.postlogue = [];
-    this.defeat = [];
-    this.events = [];
-    this.localization = [];
-    this.alliances = [];
-    this.text = [];
-    this.maxPlayers = 0;
-    this.minPlayers = 0;
+export const ScenarioModelParser = function() {
+    this.nextID = 0;
+    this.idCache = new Map();
+    this.textCache = new Map();
+    this.teamCache = new Map();
 }
 
-ScenarioModel.NEXT_ID = 0;
-ScenarioModel.ID_CACHE = new Map();
-ScenarioModel.TEXT_CACHE = new Map();
-ScenarioModel.TEAM_CACHE = new Map();
-ScenarioModel.INVALID_CUSTOM_ID = -1;
-
-ScenarioModel.getCustomID = function(name) {
-    const customID = ScenarioModel.ID_CACHE.get(name);
+ScenarioModelParser.prototype.getCustomID = function(name) {
+    const customID = this.idCache.get(name);
     
     if(customID === undefined) {
         return ScenarioModel.INVALID_CUSTOM_ID;
@@ -43,47 +23,55 @@ ScenarioModel.getCustomID = function(name) {
     return customID;
 }
 
-ScenarioModel.getTeamID = function(name) {
+ScenarioModelParser.prototype.getTeamID = function(name) {
     let teamID = TeamManager.INVALID_ID;
 
     if(name !== null) {
-        if(ScenarioModel.TEAM_CACHE.has(name)) {
-            teamID = ScenarioModel.TEAM_CACHE.get(name);
+        if(this.teamCache.has(name)) {
+            teamID = this.teamCache.get(name);
         }
     }
 
     return teamID;
 }
 
-ScenarioModel.getTextID = function(name) {
+ScenarioModelParser.prototype.getTextID = function(name) {
     let textID = LanguageHandler.INVALID_ID;
 
     if(name !== null) {
-        if(ScenarioModel.TEXT_CACHE.has(name)) {
-            textID = ScenarioModel.TEXT_CACHE.get(name);
+        if(this.textCache.has(name)) {
+            textID = this.textCache.get(name);
         }
     }
 
     return textID;
 }
 
-ScenarioModel.getAndSetCustomID = function(name) {
+
+ScenarioModelParser.prototype.getAndSetCustomID = function(name) {
     let customID = ScenarioModel.INVALID_CUSTOM_ID;
     
     if(name !== null) {
-        if(ScenarioModel.ID_CACHE.has(name)) {
-            customID = ScenarioModel.ID_CACHE.get(name);
+        if(this.idCache.has(name)) {
+            customID = this.idCache.get(name);
         } else {
-            customID = ScenarioModel.NEXT_ID++;
-
-            ScenarioModel.ID_CACHE.set(name, customID);
+            customID = this.nextID++;
+            
+            this.idCache.set(name, customID);
         }
     }
-
+    
     return customID;
 }
 
-ScenarioModel.prototype.createDialogueEntry = function(config) {
+ScenarioModelParser.prototype.reset = function() {
+    this.nextID = 0;
+    this.teamCache.clear();
+    this.textCache.clear();
+    this.idCache.clear();
+}
+
+ScenarioModelParser.prototype.createDialogueEntry = function(config) {
     const {
         narrator = null,
         text = null,
@@ -92,12 +80,12 @@ ScenarioModel.prototype.createDialogueEntry = function(config) {
 
     return {
         "narrator": COMMANDER_TYPE[narrator] ?? COMMANDER_TYPE.NONE,
-        "text": ScenarioModel.getTextID(text),
+        "text": this.getTextID(text),
         "voice": voice
     }
 }
 
-ScenarioModel.prototype.createEntityEntry = function(config) {
+ScenarioModelParser.prototype.createEntityEntry = function(config) {
     const {
         id = null,
         name = null,
@@ -115,10 +103,10 @@ ScenarioModel.prototype.createEntityEntry = function(config) {
     } = config;
 
     return {
-        "id": ScenarioModel.getAndSetCustomID(id),
-        "name": ScenarioModel.getTextID(name),
-        "desc": ScenarioModel.getTextID(desc),
-        "team": ScenarioModel.getTeamID(team),
+        "id": this.getAndSetCustomID(id),
+        "name": this.getTextID(name),
+        "desc": this.getTextID(desc),
+        "team": this.getTeamID(team),
         "type": ENTITY_TYPE[type] ?? ENTITY_TYPE._INVALID,
         "x": x,
         "y": y,
@@ -131,7 +119,12 @@ ScenarioModel.prototype.createEntityEntry = function(config) {
     }
 }
 
-ScenarioModel.prototype.load = function(data) {
+/**
+ * 
+ * @param {ScenarioModel} model 
+ * @param {*} json 
+ */
+ScenarioModelParser.prototype.parseModelFromJSON = function(model, json) {
     const {
         map = null,
         client = null,
@@ -148,31 +141,31 @@ ScenarioModel.prototype.load = function(data) {
         objectives = {},
         text = [],
         maxPlayers = 0
-    } = data;
+    } = json;
 
     const resolvedEvents = new Map();
 
-    this.mapID = map;
-    this.maxPlayers = maxPlayers;
+    model.mapID = map;
+    model.maxPlayers = maxPlayers;
 
     for(let i = 0; i < text.length; i++) {
         const { id, translations } = text[i];
 
-        if(!ScenarioModel.TEXT_CACHE.has(id)) {
-            this.text.push(translations);
-            ScenarioModel.TEXT_CACHE.set(id, i);
+        if(!this.textCache.has(id)) {
+            model.text.push(translations);
+            this.textCache.set(id, i);
         }
     }
     
-    if(data.music) {
-        this.music = data.music;
+    if(json.music) {
+        model.music = json.music;
     }
 
-    if(data.playlist) {
-        this.playlist = data.playlist;
+    if(json.playlist) {
+        model.playlist = json.playlist;
     }
 
-    for(let i = 0; i < teams.length && this.teams.length < MAX_TEAMS; i++) {
+    for(let i = 0; i < teams.length && model.teams.length < MAX_TEAMS; i++) {
         const {
             id = null,
             cash = 0,
@@ -181,16 +174,16 @@ ScenarioModel.prototype.load = function(data) {
             objectives = []
         } = teams[i];
 
-        if(id === null || ScenarioModel.TEAM_CACHE.has(id)) {
+        if(id === null || this.teamCache.has(id)) {
             console.error(`Team ${id} does not exist or was mentioned twice!`);
             continue;
         }
 
-        const teamID = this.teams.length;
+        const teamID = model.teams.length;
 
-        ScenarioModel.TEAM_CACHE.set(id, teamID);
+        this.teamCache.set(id, teamID);
     
-        this.teams.push({
+        model.teams.push({
             "id": teamID,
             "cash": cash,
             "commander": COMMANDER_TYPE[commander] ?? COMMANDER_TYPE.NONE,
@@ -199,7 +192,7 @@ ScenarioModel.prototype.load = function(data) {
         });
     }
 
-    this.client = ScenarioModel.getTeamID(client);
+    model.client = this.getTeamID(client);
 
     const alliedTeams = new Uint8Array(MAX_TEAMS);
 
@@ -209,7 +202,7 @@ ScenarioModel.prototype.load = function(data) {
 
         for(let j = 0; j < alliance.length; j++) {
             const teamName = alliance[j];
-            const teamID = ScenarioModel.getTeamID(teamName);
+            const teamID = this.getTeamID(teamName);
 
             if(teamID !== TeamManager.INVALID_ID && alliedTeams[teamID] !== 1) {
                 mAlliance.push(teamID);
@@ -218,7 +211,7 @@ ScenarioModel.prototype.load = function(data) {
         }
 
         if(mAlliance.length > 1) {
-            this.alliances.push(mAlliance);
+            model.alliances.push(mAlliance);
         }
     }
 
@@ -233,14 +226,14 @@ ScenarioModel.prototype.load = function(data) {
             shop = null
         } = buildingSettings[i];
 
-        this.buildingSettings.push({
+        model.buildingSettings.push({
             "x": x,
             "y": y,
             "shop": SHOP_TYPE[shop] ?? SHOP_TYPE.NONE,
-            "team": ScenarioModel.getTeamID(team),
-            "customID": ScenarioModel.getAndSetCustomID(id),
-            "customName": ScenarioModel.getTextID(name),
-            "customDesc": ScenarioModel.getTextID(desc)
+            "team": this.getTeamID(team),
+            "customID": this.getAndSetCustomID(id),
+            "customName": this.getTextID(name),
+            "customDesc": this.getTextID(desc)
         });
     }
 
@@ -253,10 +246,10 @@ ScenarioModel.prototype.load = function(data) {
             visible = false
         } = mines[i];
 
-        this.mines.push({
+        model.mines.push({
             "x": x,
             "y": y,
-            "team": ScenarioModel.getTeamID(team),
+            "team": this.getTeamID(team),
             "type": MINE_TYPE[type] ?? MINE_TYPE.LAND,
             "isVisible": visible
         });
@@ -265,33 +258,33 @@ ScenarioModel.prototype.load = function(data) {
     for(let i = 0; i < prelogue.length; i++) {
         const entry = this.createDialogueEntry(prelogue[i]);
 
-        this.prelogue.push(entry);
+        model.prelogue.push(entry);
     }
 
     for(let i = 0; i < postlogue.length; i++) {
         const entry = this.createDialogueEntry(postlogue[i]);
 
-        this.postlogue.push(entry);
+        model.postlogue.push(entry);
     }
 
     for(let i = 0; i < defeat.length; i++) {
         const entry = this.createDialogueEntry(defeat[i]);
 
-        this.defeat.push(entry);
+        model.defeat.push(entry);
     }
 
     for(let i = 0; i < entities.length; i++) {
         const entry = this.createEntityEntry(entities[i]);
 
-        this.entities.push(entry);
+        model.entities.push(entry);
     }
 
     for(let i = 0; i < localization.length; i++) {
         const { x = -1, y = -1, name = null, desc = null } = localization[i];
-        const nameID = ScenarioModel.getTextID(name);
-        const descID = ScenarioModel.getTextID(desc);
+        const nameID = this.getTextID(name);
+        const descID = this.getTextID(desc);
 
-        this.localization.push({
+        model.localization.push({
             "tileX": x,
             "tileY": y,
             "name": nameID,
@@ -404,7 +397,7 @@ ScenarioModel.prototype.load = function(data) {
             }
         }
 
-        this.events.push({
+        model.events.push({
             "turn": turn,
             "round": round,
             "next": nextID,
@@ -420,7 +413,7 @@ ScenarioModel.prototype.load = function(data) {
 
         switch(type) {
             case OBJECTIVE_TYPE.DEFEAT: {
-                const customID = ScenarioModel.getCustomID(config.target);
+                const customID = this.getCustomID(config.target);
 
                 if(customID !== ScenarioModel.INVALID_CUSTOM_ID) {
                     data = {
@@ -436,7 +429,7 @@ ScenarioModel.prototype.load = function(data) {
                 };
 
                 for(const targetName of config.targets) {
-                    const customID = ScenarioModel.getCustomID(targetName);
+                    const customID = this.getCustomID(targetName);
 
                     if(customID !== ScenarioModel.INVALID_CUSTOM_ID) {
                         data.targets.push(customID);
@@ -494,15 +487,10 @@ ScenarioModel.prototype.load = function(data) {
         }
 
         if(data !== null) {
-            this.objectives[name] = {
+            model.objectives[name] = {
                 "type": type,
                 "data": data
             }
         }
     }
-
-    ScenarioModel.TEAM_CACHE.clear();
-    ScenarioModel.TEXT_CACHE.clear();
-    ScenarioModel.ID_CACHE.clear();
-    ScenarioModel.NEXT_ID = 0;
 }

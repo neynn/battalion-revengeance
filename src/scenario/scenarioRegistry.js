@@ -1,7 +1,9 @@
-import { ScenarioModel } from "./scenarioModel.js";
+import { ScenarioModelParser } from "./modelParser.js";
+import { ScenarioModel } from "../scenario/scenarioModel.js";
 
 export const ScenarioRegistry = function() {
     this.scenarios = new Map();
+    this.parser = new ScenarioModelParser();
 }
 
 ScenarioRegistry.prototype.load = function(gameContext, scenarios) {
@@ -9,9 +11,9 @@ ScenarioRegistry.prototype.load = function(gameContext, scenarios) {
         const model = new ScenarioModel(scenarioID);
         const data = scenarios[scenarioID];
 
-        model.load(data);
-
         this.scenarios.set(scenarioID, model);
+        this.parser.parseModelFromJSON(model, data);
+        this.parser.reset();
     }
 }
 

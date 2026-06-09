@@ -23,7 +23,7 @@ import { PlaySoundComponent } from "../../event/components/playSound.js";
 import { PlaySpriteComponent } from "../../event/components/playSprite.js";
 import { TeamManager } from "../../team/teamManager.js";
 import { StoryActor } from "../../actors/storyActor.js";
-import { ScenarioModel } from "../../scenarioModel.js";
+import { ScenarioModel } from "../../scenario/scenarioModel.js";
 import { createMineObject } from "../spawn.js";
 
 const createCustomColor = function(gameContext, team, colorMap) {

@@ -1,7 +1,7 @@
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { DIRECTION, ENTITY_TYPE, MORALE_TYPE, SHOP_TYPE, TRAIT_TYPE } from "../enums.js";
-import { ScenarioModel } from "../scenarioModel.js";
+import { ScenarioModel } from "../scenario/scenarioModel.js";
 import { TeamManager } from "../team/teamManager.js";
 
 export const createEntitySnapshot = function() {

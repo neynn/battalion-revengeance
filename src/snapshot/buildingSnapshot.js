@@ -1,7 +1,7 @@
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { BUILDING_TYPE, SHOP_TYPE } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
-import { ScenarioModel } from "../scenarioModel.js";
+import { ScenarioModel } from "../scenario/scenarioModel.js";
 import { TeamManager } from "../team/teamManager.js";
 
 export const createBuildingSnapshot = function() {
