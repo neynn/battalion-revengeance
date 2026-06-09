@@ -1,5 +1,5 @@
 import { ScenarioModelParser } from "./modelParser.js";
-import { ScenarioModel } from "../scenario/scenarioModel.js";
+import { ScenarioModel } from "./scenarioModel.js";
 
 export const ScenarioRegistry = function() {
     this.scenarios = new Map();

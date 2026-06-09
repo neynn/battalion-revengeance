@@ -3,8 +3,8 @@ import { WorldMap } from "../../engine/map/worldMap.js";
 import { WorldEvent } from "../../engine/world/event/worldEvent.js";
 import { MAX_TEAMS } from "../constants.js";
 import { COMMANDER_TYPE, COMPONENT_TYPE, DIRECTION, ENTITY_TYPE, FACTION_TYPE, MINE_TYPE, OBJECTIVE_TYPE, SHOP_TYPE } from "../enums.js";
-import { ScenarioModel } from "../scenario/scenarioModel.js";
 import { TeamManager } from "../team/teamManager.js";
+import { ScenarioModel } from "./scenarioModel.js";
 
 export const ScenarioModelParser = function() {
     this.nextID = 0;
@@ -46,7 +46,6 @@ ScenarioModelParser.prototype.getTextID = function(name) {
 
     return textID;
 }
-
 
 ScenarioModelParser.prototype.getAndSetCustomID = function(name) {
     let customID = ScenarioModel.INVALID_CUSTOM_ID;
