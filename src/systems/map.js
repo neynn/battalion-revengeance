@@ -1,6 +1,6 @@
 import { BattalionMap } from "../map/battalionMap.js";
 import { createClientEntityObject, createMineObject, createServerEntityObject } from "./spawn.js";
-import { LAYER_TYPE, LOADER_RULE, MINE_TYPE } from "../enums.js";
+import { CLIMATE_TYPE, LAYER_TYPE, LOADER_RULE, MINE_TYPE } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
 import { createEntitySnapshot, createEntitySnapshotFromEntry } from "../snapshot/entitySnapshot.js";
 import { MatchLoader } from "./loader/matchLoader.js";

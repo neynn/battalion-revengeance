@@ -276,7 +276,7 @@ const mResolveStreamblastAttack = function(gameContext, attacker, target, resolv
  */
 const mResolveHeal = function(gameContext, healer, target, resolver) {
     const amplifier = healer.getHealAmplifier(gameContext);
-    const heal = Math.floor(healer.damage * amplifier);
+    const heal = Math.floor(healer.getDamage() * amplifier);
 
     resolver.addHeal(target, heal);
 }
@@ -349,7 +349,7 @@ export const CombatSystem = {
             return false;
         }
 
-        if(healer.damage <= 0) {
+        if(healer.getDamage() <= 0) {
             return false;
         }
 
@@ -401,7 +401,7 @@ export const CombatSystem = {
             return false;
         }
         
-        if(attacker.damage <= 0) {
+        if(attacker.getDamage() <= 0) {
             return false;
         }
     
