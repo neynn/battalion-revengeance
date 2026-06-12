@@ -12,18 +12,23 @@ export const BattalionMap = function(id, width, height) {
 
     this.scenario = null;
     this.name = "MAP_NAME";
-    this.globalClimate = CLIMATE_TYPE.NONE;
-    this.climate = CLIMATE_TYPE.NONE;
+    this.climate = CLIMATE_TYPE.TEMPERATE;
     this.buildings = [];
     this.mines = [];
     this.jammers = new Map();
     this.localization = new Map();
     this.pathfinder = new Pathfinder(width, height);
+    this.flags = BattalionMap.FLAG.NONE;
 
     this.createLayer(Layer.TYPE.BIT_16);
     this.createLayer(Layer.TYPE.BIT_16);
     this.createLayer(Layer.TYPE.BIT_16);
 }
+
+BattalionMap.FLAG = {
+    NONE: 0,
+    USE_GLOBAL_CLIMATE: 1 << 0
+};
 
 BattalionMap.LAYER = {
     GROUND: 0,
@@ -51,15 +56,33 @@ BattalionMap.prototype = Object.create(WorldMap.prototype);
 BattalionMap.prototype.constructor = BattalionMap;
 
 BattalionMap.prototype.saveFlags = function() {
-    return [];
+    const flags = [];
+
+    for(const name in BattalionMap.FLAG) {
+        if(this.flags & BattalionMap.FLAG[name]) {
+            flags.push(name);
+        }
+    }
+
+    return flags;
+}
+
+BattalionMap.prototype.loadFlags = function(flags) {
+    for(let i = 0; i < flags.length; i++) {
+        const flag = BattalionMap.FLAG[flags[i]];
+
+        if(flag !== undefined) {
+            this.flags |= flag;
+        }
+    }
 }
 
 BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
     const { tileManager, typeRegistry } = gameContext;
 
     //Maps may have a global climate that overrides all.
-    if(this.globalClimate !== CLIMATE_TYPE.NONE) {
-        return typeRegistry.getClimateType(this.globalClimate);
+    if(this.flags & BattalionMap.FLAG.USE_GLOBAL_CLIMATE) {
+        return typeRegistry.getClimateType(this.climate);
     }
 
     if(!this.isTileOutOfBounds(tileX, tileY)) {
@@ -76,13 +99,7 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
         }
     }
 
-    //Backup local climate if the tile has no climate.
-    if(this.climate !== CLIMATE_TYPE.NONE) {
-        return typeRegistry.getClimateType(this.climate);
-    }
-
-    //Always ensure to return a proper climate type.
-    return typeRegistry.getClimateType(CLIMATE_TYPE.TEMPERATE);
+    return typeRegistry.getClimateType(this.climate);
 }
 
 BattalionMap.prototype.downgradeOreTile = function(tileX, tileY) {

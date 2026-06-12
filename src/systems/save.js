@@ -74,6 +74,8 @@ export const saveStoryMap = function(gameContext) {
 
     file.open();
     file.writeLine("scenario", worldMap.scenario);
+    file.writeLine("flags", worldMap.flags);
+    file.writeLine("climate", worldMap.climate);
     file.writeLine("turn", fillTurnSnapshot(gameContext));
     file.writeLine("events", events);
     file.writeList("data", data);

@@ -4,6 +4,7 @@ import { WorldEvent } from "../../engine/world/event/worldEvent.js";
 import { MAX_TEAMS } from "../constants.js";
 import { COMMANDER_TYPE, COMPONENT_TYPE, DIRECTION, ENTITY_TYPE, FACTION_TYPE, MINE_TYPE, OBJECTIVE_TYPE, SHOP_TYPE } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
+import { EntityEntry } from "./entityEntry.js";
 import { ScenarioModel } from "./scenarioModel.js";
 
 export const ScenarioModelParser = function() {

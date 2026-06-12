@@ -142,7 +142,7 @@ ClientMatchLoader.prototype.createServerMatch = function(gameContext, snapshot, 
 ClientMatchLoader.prototype.createSavedMatch = function(gameContext, snapshot, overrides) {
     const { world, dialogueHandler, teamManager, spriteManager } = gameContext;
     const { entityManager, eventHandler } = world;
-    const { mapID, turn, events, data, entities, teams, mines, buildings } = snapshot;
+    const { mapID, turn, events, data, entities, teams, mines, buildings, flags, climate } = snapshot;
 
     this.rules |= LOADER_RULE.FIXED_ALLIES;
     this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
@@ -150,7 +150,10 @@ ClientMatchLoader.prototype.createSavedMatch = function(gameContext, snapshot, o
     this.rules |= LOADER_RULE.CREATE_EVENT_EFFECTS;
     this.rules |= LOADER_RULE.CREATE_EVENT_SIMULATION;
 
+    this.worldMap.flags = flags;
+    this.worldMap.climate = climate;
     this.worldMap.decodeLayers(data);
+
     this.createTeams(gameContext, overrides);
     this.createActors(gameContext);
 
@@ -298,11 +301,13 @@ export const createEmptyMap = function(gameContext, width, height) {
 const createWorldMap = function(gameContext, file, source) {
     const { world } = gameContext;
     const { mapManager } = world;
-    const { width, height, data, buildings = [] } = file;
+    const { width, height, data, buildings = [], flags = [], climate = null } = file;
     const nextID = mapManager.getNextID();
     const worldMap = new BattalionMap(nextID, width, height);
-
+    
     worldMap.name = source.title;
+    worldMap.climate = CLIMATE_TYPE[climate] ?? CLIMATE_TYPE.TEMPERATE;
+    worldMap.loadFlags(flags);
     worldMap.decodeLayers(data);
 
     for(const setup of buildings) {
