@@ -80,7 +80,8 @@ BattalionEntity.FLAG = {
 BattalionEntity.STATE = {
     IDLE: 0,
     MOVE: 1,
-    FIRE: 2
+    FIRE: 2,
+    _COUNT: 3
 };
 
 BattalionEntity.prototype = Object.create(Entity.prototype);

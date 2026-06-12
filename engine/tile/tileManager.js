@@ -35,7 +35,7 @@ TileManager.prototype.initTables = function(count) {
     for(let i = 0; i < count; i++) {
         this.visualTable[i] = 0;
         this.categoryTable[i] = 0;
-        this.typeTable[i] = -1;
+        this.typeTable[i] = 0;
         this.autotilerTable[i] = -1;
     }
 
@@ -248,7 +248,7 @@ TileManager.prototype.disableAllVisuals = function() {
 
 TileManager.prototype.getLogicalID = function(tileID) {
     if(tileID < 0 || tileID >= this.tileCount) {
-        return -1;
+        return 0;
     }
 
     return this.typeTable[tileID];

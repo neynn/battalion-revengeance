@@ -4,7 +4,6 @@ export const PLAYER_PREFERENCE = {
 };
 
 export const EFFECT_SPRITE = {
-    _INVALID: -1,
     DEATH: 0,
     FIRE: 1,
     HEAL: 2,
@@ -296,7 +295,6 @@ export const SHOP_TYPE = {
 };
 
 export const TILE_TYPE = {
-    _INVALID: -1,
     NONE: 0,
     GRASS: 1,
     BOREAL: 2,
@@ -697,12 +695,6 @@ export const ATTACK_COMMAND_TYPE = {
     FOLLOW_UP: 2
 };
 
-export const EFFECT_TYPE = {
-    GFX: "GFX",
-    SFX: "SFX",
-    EXPLOSION: "EXPLOSION"
-};
-
 export const COMPONENT_TYPE = {
     NONE: 0,
     PLAY_SPRITE: 1,
@@ -878,13 +870,6 @@ export const DIRECTION = {
     SOUTH: 2,
     WEST: 3,
     _COUNT: 4
-};
-
-export const ENTITY_STATE = {
-    IDLE: 0,
-    MOVE: 1,
-    FIRE: 2,
-    _COUNT: 3
 };
 
 export const RANGE_TYPE = {

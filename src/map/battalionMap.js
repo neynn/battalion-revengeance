@@ -108,8 +108,7 @@ BattalionMap.prototype.getTileType = function(gameContext, tileX, tileY) {
         const typeID = this.getTile(layerID, tileX, tileY);
         const logicalID = tileManager.getLogicalID(typeID);
 
-        //Unknown tile types and empty tiles always use -1 (_INVALID).
-        if(logicalID !== TILE_TYPE._INVALID && logicalID !== TILE_TYPE.NONE) {
+        if(logicalID !== TILE_TYPE.NONE) {
             return typeRegistry.getTileType(logicalID);
         }
     }

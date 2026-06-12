@@ -4,7 +4,7 @@ import { SpriteManager } from "../../../engine/sprite/spriteManager.js";
 import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
 import { MapInspector } from "../../map/mapInspector.js";
 import { getHealthColor } from "../../entity/helpers.js";
-import { DIRECTION, ENTITY_STATE, TILE_ID } from "../../enums.js";
+import { DIRECTION, TILE_ID } from "../../enums.js";
 import { UI_TEXTURE, HUD_BUTTON, GENERIC_BUTTON_STYLE, HUD_BUTTON_STYLE } from "../constants.js";
 import { BattalionMap } from "../../map/battalionMap.js";
 import { isDrawTime, mRegenerateLines } from "../helpers.js";
@@ -13,6 +13,7 @@ import { EndTurnVTable } from "../../action/types/endTurn.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { CameraContext } from "../../../engine/renderer/cameraContext.js";
 import { TeamManager } from "../../team/teamManager.js";
+import { BattalionEntity } from "../../entity/battalionEntity.js";
 
 const PORTRAIT_WIDTH = 130;
 const PORTRAIT_HEIGHT = 150;
@@ -180,7 +181,7 @@ PlayUI.prototype.load = function(gameContext) {
 PlayUI.prototype.updateInspectSprite = function(gameContext, entity) {
     const { spriteManager, spriteController } = gameContext;
     const { color } = entity.getTeam(gameContext);
-    const spriteTypeID = spriteController.getEntitySpriteTypeID(entity.config.id, ENTITY_STATE.IDLE, DIRECTION.EAST);
+    const spriteTypeID = spriteController.getEntitySpriteTypeID(entity.config.id, BattalionEntity.STATE.IDLE, DIRECTION.EAST);
 
     spriteManager.updateSprite(this.inspectSprite.index, spriteTypeID, color);
 }

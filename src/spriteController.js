@@ -2,7 +2,7 @@ import { Texture } from "../engine/resources/texture/texture.js";
 import { ImageResource } from "../engine/resources/texture/imageResource.js";
 import { SpriteManager } from "../engine/sprite/spriteManager.js";
 import { BattalionEntity } from "./entity/battalionEntity.js";
-import { BUILDING_TYPE, COLOR_TYPE, DIRECTION, EFFECT_SPRITE, ENTITY_STATE, ENTITY_TYPE, LAYER_TYPE } from "./enums.js";
+import { BUILDING_TYPE, COLOR_TYPE, DIRECTION, EFFECT_SPRITE, ENTITY_TYPE, LAYER_TYPE } from "./enums.js";
 import { TeamManager } from "./team/teamManager.js";
 
 //INFO(neyn): This is hard-coded but I don't really care :)
@@ -24,7 +24,7 @@ const MAX_ENTITY_SPRITES = 1000;
 const MAX_BUILDING_SPRITES = 100;
 
 const MAX_SHADES = ENTITY_TYPE._COUNT * DIRECTION._COUNT;
-const SPRITES_PER_ENTITY_TYPE = DIRECTION._COUNT * ENTITY_STATE._COUNT;
+const SPRITES_PER_ENTITY_TYPE = DIRECTION._COUNT * BattalionEntity.STATE._COUNT;
 const EFFECTS_PER_ENTITY_TYPE = EFFECT_SPRITE._COUNT;
 
 const ENTITY_EFFECT_COUNT = ENTITY_TYPE._COUNT * EFFECTS_PER_ENTITY_TYPE;
@@ -43,7 +43,7 @@ const getEntitySpriteIndex = function(type, state, direction) {
         return -1;
     }
 
-    if(state < 0 || state >= ENTITY_STATE._COUNT) {
+    if(state < 0 || state >= BattalionEntity.STATE._COUNT) {
         return -1;
     }
 
@@ -97,18 +97,18 @@ const effectNameToIndex = function(name, type) {
 
 const spriteNameToIndex = function(name, type) {
     switch(name) {
-        case "idle_up": return getEntitySpriteIndex(type, ENTITY_STATE.IDLE, DIRECTION.NORTH);
-        case "idle_right": return getEntitySpriteIndex(type, ENTITY_STATE.IDLE, DIRECTION.EAST);
-        case "idle_down": return getEntitySpriteIndex(type, ENTITY_STATE.IDLE, DIRECTION.SOUTH);
-        case "idle_left": return getEntitySpriteIndex(type, ENTITY_STATE.IDLE, DIRECTION.WEST);
-        case "move_up": return getEntitySpriteIndex(type, ENTITY_STATE.MOVE, DIRECTION.NORTH);
-        case "move_right": return getEntitySpriteIndex(type, ENTITY_STATE.MOVE, DIRECTION.EAST);
-        case "move_down": return getEntitySpriteIndex(type, ENTITY_STATE.MOVE, DIRECTION.SOUTH);
-        case "move_left": return getEntitySpriteIndex(type, ENTITY_STATE.MOVE, DIRECTION.WEST);
-        case "fire_up": return getEntitySpriteIndex(type, ENTITY_STATE.FIRE, DIRECTION.NORTH);
-        case "fire_right": return getEntitySpriteIndex(type, ENTITY_STATE.FIRE, DIRECTION.EAST);
-        case "fire_down": return getEntitySpriteIndex(type, ENTITY_STATE.FIRE, DIRECTION.SOUTH);
-        case "fire_left": return getEntitySpriteIndex(type, ENTITY_STATE.FIRE, DIRECTION.WEST);
+        case "idle_up": return getEntitySpriteIndex(type, BattalionEntity.STATE.IDLE, DIRECTION.NORTH);
+        case "idle_right": return getEntitySpriteIndex(type, BattalionEntity.STATE.IDLE, DIRECTION.EAST);
+        case "idle_down": return getEntitySpriteIndex(type, BattalionEntity.STATE.IDLE, DIRECTION.SOUTH);
+        case "idle_left": return getEntitySpriteIndex(type, BattalionEntity.STATE.IDLE, DIRECTION.WEST);
+        case "move_up": return getEntitySpriteIndex(type, BattalionEntity.STATE.MOVE, DIRECTION.NORTH);
+        case "move_right": return getEntitySpriteIndex(type, BattalionEntity.STATE.MOVE, DIRECTION.EAST);
+        case "move_down": return getEntitySpriteIndex(type, BattalionEntity.STATE.MOVE, DIRECTION.SOUTH);
+        case "move_left": return getEntitySpriteIndex(type, BattalionEntity.STATE.MOVE, DIRECTION.WEST);
+        case "fire_up": return getEntitySpriteIndex(type, BattalionEntity.STATE.FIRE, DIRECTION.NORTH);
+        case "fire_right": return getEntitySpriteIndex(type, BattalionEntity.STATE.FIRE, DIRECTION.EAST);
+        case "fire_down": return getEntitySpriteIndex(type, BattalionEntity.STATE.FIRE, DIRECTION.SOUTH);
+        case "fire_left": return getEntitySpriteIndex(type, BattalionEntity.STATE.FIRE, DIRECTION.WEST);
         default: return -1;
     }
 }
@@ -220,10 +220,10 @@ SpriteController.prototype.registerEntitySprites = function(gameContext, entityT
 
         //If move is not present then idle is used!
         for(let i = 0; i < DIRECTION._COUNT; i++) {
-            const moveIndex = getEntitySpriteIndex(typeID, ENTITY_STATE.MOVE, i);
+            const moveIndex = getEntitySpriteIndex(typeID, BattalionEntity.STATE.MOVE, i);
 
             if(this.entitySpriteRegistry[moveIndex] === -1) {
-                const idleIndex = getEntitySpriteIndex(typeID, ENTITY_STATE.IDLE, i);
+                const idleIndex = getEntitySpriteIndex(typeID, BattalionEntity.STATE.IDLE, i);
 
                 this.entitySpriteRegistry[moveIndex] = this.entitySpriteRegistry[idleIndex];
             }
@@ -368,7 +368,7 @@ SpriteController.prototype.bufferEntitySprites = function(gameContext, typeID, c
     if(colorID !== COLOR_TYPE.RED) {
         const { colorMap } = typeRegistry.getColorType(colorID);
         
-        for(let i = 0; i < ENTITY_STATE._COUNT; i++) {
+        for(let i = 0; i < BattalionEntity.STATE._COUNT; i++) {
             for(let j = 0; j < DIRECTION._COUNT; j++) {
                 const spriteTypeID = this.getEntitySpriteTypeID(typeID, i, j);
 
@@ -381,7 +381,7 @@ SpriteController.prototype.bufferEntitySprites = function(gameContext, typeID, c
         const shade = this.shades[typeID * DIRECTION._COUNT + i];
 
         if(shade.state === ImageResource.STATE.EMPTY) {
-            const spriteTypeID = this.getEntitySpriteTypeID(typeID, ENTITY_STATE.IDLE, i);
+            const spriteTypeID = this.getEntitySpriteTypeID(typeID, BattalionEntity.STATE.IDLE, i);
 
             spriteManager.createShadeTask(spriteTypeID, shade);
         } 
