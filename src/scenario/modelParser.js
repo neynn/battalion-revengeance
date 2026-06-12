@@ -322,12 +322,10 @@ ScenarioModelParser.prototype.parseModelFromJSON = function(model, json) {
             switch(type) {
                 case COMPONENT_TYPE.EXPLODE_TILE: {
                     data = {
-                        "layerID": WorldMap.INVALID_LAYER_ID,
                         "tileX": WorldMap.OUT_OF_BOUNDS,
                         "tileY": WorldMap.OUT_OF_BOUNDS
                     };
 
-                    data.layerID = sim.layer ?? WorldMap.INVALID_LAYER_ID;
                     data.tileX = sim.x ?? WorldMap.OUT_OF_BOUNDS;
                     data.tileY = sim.y ?? WorldMap.OUT_OF_BOUNDS;
                     break;

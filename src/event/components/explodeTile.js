@@ -1,10 +1,9 @@
 import { SimulationComponent } from "../../../engine/world/event/simulationComponent.js";
 import { ExplodeTileVTable } from "../../action/types/explodeTile.js";
 
-export const ExplodeTileComponent = function({ layerID, tileX, tileY }) {
+export const ExplodeTileComponent = function({ tileX, tileY }) {
     SimulationComponent.call(this);
 
-    this.layerID = layerID;
     this.tileX = tileX;
     this.tileY = tileY;
 }
@@ -14,7 +13,7 @@ ExplodeTileComponent.prototype.constructor = ExplodeTileComponent;
 
 ExplodeTileComponent.prototype.execute = function(gameContext) {
     const { actionRouter } = gameContext;
-    const actionIntent = ExplodeTileVTable.createIntent(this.layerID, this.tileX, this.tileY);
+    const actionIntent = ExplodeTileVTable.createIntent(this.tileX, this.tileY);
 
     actionRouter.forceEnqueue(gameContext, actionIntent);
 }

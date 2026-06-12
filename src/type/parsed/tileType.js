@@ -9,6 +9,7 @@ export const TileType = function(id) {
     this.terrain = [];
     this.allowedMines = [];
     this.passability = [];
+    this.canExplode = false;
 
     for(let i = 0; i < MOVEMENT_TYPE._COUNT; i++) {
         this.passability[i] = -1;
@@ -25,6 +26,7 @@ TileType.prototype.load = function(config, DEBUG_NAME) {
         terrain = [],
         passability = {},
         allowedMines = [],
+        canExplode = false,
         resources = 0
     } = config;
 
@@ -32,6 +34,7 @@ TileType.prototype.load = function(config, DEBUG_NAME) {
     this.desc = desc;
     this.climate = CLIMATE_TYPE[climate] ?? CLIMATE_TYPE.NONE;
     this.resources = Math.floor(resources);
+    this.canExplode = canExplode;
 
     if(this.resources < 0) {
         this.resources = 0;

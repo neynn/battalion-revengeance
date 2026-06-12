@@ -529,36 +529,32 @@ const ExtractOreTable = {
 /**
  * 0x00 [U8] -> type
  * 
- * 0x01 [U8] -> layer
+ * 0x01 [S16] -> tileX
  * 
- * 0x02 [S16] -> tileX
+ * 0x03 [S16] -> tileY
  * 
- * 0x04 [S16] -> tileY
- * 
- * 0x06 [S16] -> entityID
+ * 0x05 [S16] -> entityID
  */
-const EXPLODE_TILE_HEADER_SIZE = 8;
+const EXPLODE_TILE_HEADER_SIZE = 7;
 
 const ExplodeTileTable = {
     getSize: function(data) {
         return EXPLODE_TILE_HEADER_SIZE;
     },
     write: function(data, view, beginPtr) {
-        const { entityID, layer, tileX, tileY } = data;
+        const { entityID, tileX, tileY } = data;
 
         view.setUint8(beginPtr + 0, ACTION_TYPE.EXPLODE_TILE);
-        view.setUint8(beginPtr + 1, layer);
-        view.setInt16(beginPtr + 2, tileX, true);
-        view.setInt16(beginPtr + 4, tileY, true);
-        view.setInt16(beginPtr + 6, entityID, true);
+        view.setInt16(beginPtr + 1, tileX, true);
+        view.setInt16(beginPtr + 3, tileY, true);
+        view.setInt16(beginPtr + 5, entityID, true);
     },
     read: function(view, beginPtr) {
         const data = ExplodeTileVTable.createData();
 
-        data.layer = view.getUint8(beginPtr + 1);
-        data.tileX = view.getInt16(beginPtr + 2, true);
-        data.tileY = view.getInt16(beginPtr + 4, true);
-        data.entityID = view.getInt16(beginPtr + 6, true);
+        data.tileX = view.getInt16(beginPtr + 1, true);
+        data.tileY = view.getInt16(beginPtr + 3, true);
+        data.entityID = view.getInt16(beginPtr + 5, true);
 
         return data;
     }

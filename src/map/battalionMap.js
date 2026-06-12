@@ -42,40 +42,8 @@ BattalionMap.SEARCH_ORDER = [
     BattalionMap.LAYER.GROUND
 ];
 
-BattalionMap.getLayerIndex = function(name) {
-    const index = BattalionMap.LAYER[name];
-
-    if(index === undefined) {
-        return WorldMap.INVALID_LAYER_ID;
-    }
-
-    return index;
-}
-
 BattalionMap.prototype = Object.create(WorldMap.prototype);
 BattalionMap.prototype.constructor = BattalionMap;
-
-BattalionMap.prototype.saveFlags = function() {
-    const flags = [];
-
-    for(const name in BattalionMap.FLAG) {
-        if(this.flags & BattalionMap.FLAG[name]) {
-            flags.push(name);
-        }
-    }
-
-    return flags;
-}
-
-BattalionMap.prototype.loadFlags = function(flags) {
-    for(let i = 0; i < flags.length; i++) {
-        const flag = BattalionMap.FLAG[flags[i]];
-
-        if(flag !== undefined) {
-            this.flags |= flag;
-        }
-    }
-}
 
 BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
     const { tileManager, typeRegistry } = gameContext;
@@ -335,13 +303,39 @@ BattalionMap.prototype.decodeLayers = function(layerData) {
 
 BattalionMap.prototype.saveLayers = function() {
     const layers = [];
+    const layerNames = ["GROUND", "DECORATION", "CLOUD"];
 
-    for(const name in BattalionMap.LAYER) {
+    for(const name of layerNames) {
         const index = BattalionMap.LAYER[name];
-        const layer = this.getLayer(index);
 
-        layers.push(`"${name}": [${layer.encode()}]`);
+        if(index !== undefined) {
+            const layer = this.getLayer(index);
+
+            layers.push(`"${name}": [${layer.encode()}]`);
+        }
     }
 
     return layers;
+}
+
+BattalionMap.prototype.saveFlags = function() {
+    const flags = [];
+
+    for(const name in BattalionMap.FLAG) {
+        if(this.flags & BattalionMap.FLAG[name]) {
+            flags.push(name);
+        }
+    }
+
+    return flags;
+}
+
+BattalionMap.prototype.loadFlags = function(flags) {
+    for(let i = 0; i < flags.length; i++) {
+        const flag = BattalionMap.FLAG[flags[i]];
+
+        if(flag !== undefined) {
+            this.flags |= flag;
+        }
+    }
 }

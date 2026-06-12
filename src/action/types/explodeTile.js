@@ -7,9 +7,8 @@ import { BattalionMap } from "../../map/battalionMap.js";
 import { killEntity } from "../../systems/spawn.js";
 import { playExplosion } from "../../systems/sprite.js";
 
-const createExplodeTileIntent = function(layerID, tileX, tileY) {
+const createExplodeTileIntent = function(tileX, tileY) {
     return new ActionIntent(ACTION_TYPE.EXPLODE_TILE, {
-        "layerID": layerID,
         "tileX": tileX,
         "tileY": tileY
     });
@@ -18,7 +17,6 @@ const createExplodeTileIntent = function(layerID, tileX, tileY) {
 const createExplodeTileData = function() {
     return {
         "entityID": EntityManager.INVALID_ID,
-        "layer": WorldMap.INVALID_LAYER_ID,
         "tileX": WorldMap.OUT_OF_BOUNDS,
         "tileY": WorldMap.OUT_OF_BOUNDS
     }
@@ -26,13 +24,7 @@ const createExplodeTileData = function() {
 
 const fillExplodeTilePlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
-    const { layerID, tileX, tileY } = actionIntent;
-    const index = BattalionMap.getLayerIndex(layerID);
-
-    if(index === WorldMap.INVALID_LAYER_ID) {
-        return;
-    }
-
+    const { tileX, tileY } = actionIntent;
     const entity = world.getEntityAt(tileX, tileY);
     let entityID = EntityManager.INVALID_ID;
 
@@ -43,7 +35,6 @@ const fillExplodeTilePlan = function(gameContext, executionPlan, actionIntent) {
     const data = createExplodeTileData();
 
     data.entityID = entityID;
-    data.layer = index;
     data.tileX = tileX;
     data.tileY = tileY;
 
@@ -51,9 +42,9 @@ const fillExplodeTilePlan = function(gameContext, executionPlan, actionIntent) {
 }
 
 const executeExplodeTile = function(gameContext, data) {
-    const { teamManager, world } = gameContext;
+    const { teamManager, world, tileManager, typeRegistry } = gameContext;
     const { entityManager, mapManager } = world;
-    const { entityID, tileX, tileY, layer } = data;
+    const { entityID, tileX, tileY } = data;
     const worldMap = mapManager.getActiveMap();
 
     if(entityID !== EntityManager.INVALID_ID) {
@@ -64,7 +55,16 @@ const executeExplodeTile = function(gameContext, data) {
         killEntity(gameContext, entity);
     }
 
-    worldMap.setTile(TILE_ID.NONE, layer, tileX, tileY);
+    for(const layerID of BattalionMap.SEARCH_ORDER) {
+        const typeID = worldMap.getTile(layerID, tileX, tileY);
+        const logicalID = tileManager.getLogicalID(typeID);
+        const { canExplode } = typeRegistry.getTileType(logicalID);
+
+        if(canExplode) {
+            worldMap.setTile(TILE_ID.NONE, layerID, tileX, tileY);
+        }
+    }
+
     teamManager.updateStatus();
 }
 
