@@ -3,7 +3,6 @@ import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { WorldMap } from "../../../engine/map/worldMap.js";
 import { ACTION_TYPE, ENTITY_CATEGORY, TILE_ID } from "../../enums.js";
-import { BattalionMap } from "../../map/battalionMap.js";
 import { killEntity } from "../../systems/spawn.js";
 import { playExplosion } from "../../systems/sprite.js";
 
@@ -55,16 +54,7 @@ const executeExplodeTile = function(gameContext, data) {
         killEntity(gameContext, entity);
     }
 
-    for(const layerID of BattalionMap.SEARCH_ORDER) {
-        const typeID = worldMap.getTile(layerID, tileX, tileY);
-        const logicalID = tileManager.getLogicalID(typeID);
-        const { canExplode } = typeRegistry.getTileType(logicalID);
-
-        if(canExplode) {
-            worldMap.setTile(TILE_ID.NONE, layerID, tileX, tileY);
-        }
-    }
-
+    worldMap.explodeTile(gameContext, tileX, tileY);
     teamManager.updateStatus();
 }
 

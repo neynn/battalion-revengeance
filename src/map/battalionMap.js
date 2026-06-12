@@ -3,7 +3,7 @@ import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { Building } from "../entity/building.js";
 import { downgradeOre } from "../enumHelpers.js";
-import { CLIMATE_TYPE, TILE_TYPE } from "../enums.js";
+import { CLIMATE_TYPE, TILE_ID, TILE_TYPE } from "../enums.js";
 import { JammerTile } from "./jammerTile.js";
 import { Pathfinder } from "./pathfinder.js";
 
@@ -44,6 +44,24 @@ BattalionMap.SEARCH_ORDER = [
 
 BattalionMap.prototype = Object.create(WorldMap.prototype);
 BattalionMap.prototype.constructor = BattalionMap;
+
+BattalionMap.prototype.explodeTile = function(gameContext, tileX, tileY) {
+    const { tileManager, typeRegistry } = gameContext;
+
+    if(this.isTileOutOfBounds(tileX, tileY)) {
+        return;
+    }
+
+    for(const layerID of BattalionMap.SEARCH_ORDER) {
+        const typeID = this.getTile(layerID, tileX, tileY);
+        const logicalID = tileManager.getLogicalID(typeID);
+        const { canExplode } = typeRegistry.getTileType(logicalID);
+
+        if(canExplode) {
+            this.setTile(TILE_ID.NONE, layerID, tileX, tileY);
+        }
+    }
+}
 
 BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
     const { tileManager, typeRegistry } = gameContext;

@@ -107,6 +107,7 @@ MapEditorInterface.prototype.drawTileEditor = function(gameContext, display, too
                 this.renderer.drawTile(tileManager, tileID, context, positionX, positionY, scale);
 
                 if(buttonFlags & IM_FLAG.HOT) {
+                    context.fillStyle = HIGHLIGHT_COLOR;
                     context.fillRect(positionX, positionY, SLOT_BUTTON_SIZE, SLOT_BUTTON_SIZE);
                 }
 
