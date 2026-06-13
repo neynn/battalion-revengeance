@@ -1,4 +1,5 @@
-export const Autotiler = function(defaultValue, categoryTable) {
+export const Autotiler = function(id, defaultValue, categoryTable) {
+    this.id = id;
     this.defaultValue = defaultValue;
     this.categoryTable = categoryTable;
     this.type = Autotiler.TYPE.NONE;

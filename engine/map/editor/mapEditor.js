@@ -70,6 +70,10 @@ MapEditor.prototype.paint = function(gameContext, tileX, tileY) {
 
             for(let i = startY; i <= endY; i++) {
                 for(let j = startX; j <= endX; j++) {
+                    if(this.targetMap.isTileOutOfBounds(j, i)) {
+                        continue;
+                    }
+
                     const tileID = this.getBrushTile(id);
 
                     if(tileManager.isVisualValid(tileID)) {

@@ -74,7 +74,7 @@ TileManager.prototype.setLogicalID = function(tileID, logicalID) {
 
 TileManager.prototype.createAutotilers = function(count) {
     for(let i = 0; i < count; i++) {
-        this.autotilers[i] = new Autotiler(TileManager.TILE_ID.EMPTY, this.categoryTable);
+        this.autotilers[i] = new Autotiler(i, TileManager.TILE_ID.EMPTY, this.categoryTable);
     }
 }
 
