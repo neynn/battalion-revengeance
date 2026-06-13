@@ -5,7 +5,7 @@ import { State } from "../../../engine/state/state.js";
 import { GAME_UPDATE_HEADER_SIZE, getGameUpdateHeaderSize } from "../../action/packer_constants.js";
 import { unpackPlan } from "../../action/planPacker.js";
 import { MP_SERVER_BINARY, MP_CLIENT_JSON, MP_SERVER_JSON } from "../../enums.js";
-import { loadClientScenario } from "../../systems/map.js";
+import { MapSystem } from "../../systems/map.js";
 import { ArenaUI } from "../../ui/contexts/arenaUI.js";
 
 export const ArenaState = function() {
@@ -72,7 +72,7 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
             case MP_SERVER_JSON.LOAD_MAP: {
                 const { scenario, snapshot, client, overrides } = payload;
 
-                loadClientScenario(gameContext, scenario)
+                MapSystem.createClientLoader(gameContext, scenario)
                 .then(loader => {
                     loader.clientTeam = client;
                     loader.createServerMatch(gameContext, snapshot, overrides);

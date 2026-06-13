@@ -9,7 +9,7 @@ import { isIntentValid, unpackIntent } from "../action/intentPacker.js";
 import { ENTITY_SNAPSHOT_SIZE, packEntitySnapshot } from "../action/packer_constants.js";
 import { fillTurnSnapshot } from "../snapshot/turnSnapshot.js";
 import { InterruptVTable } from "../action/types/interrupt.js";
-import { loadServerScenario } from "../systems/map.js";
+import { MapSystem } from "../systems/map.js";
 import { Lobby } from "./lobby.js";
 
 const isClientTurn = function(gameContext, messengerID) {
@@ -172,7 +172,7 @@ ServerGameContext.prototype.onMessage = async function(messengerID, type, payloa
             const scenarioID = this.mapMaster.scenarioID;
             const overrides = this.mapMaster.createOverrides();
 
-            loadServerScenario(this, scenarioID)
+            MapSystem.createServerLoader(this, scenarioID)
             .then(loader => {
                 loader.loadMap(this, overrides);
 

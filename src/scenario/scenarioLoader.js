@@ -1,30 +1,33 @@
-import { COMMANDER_TYPE, COMPONENT_TYPE, FACTION_TYPE, LOADER_RULE, OBJECTIVE_TYPE, COLOR_TYPE, SHOP_TYPE } from "../../enums.js";
-import { BattalionMap } from "../../map/battalionMap.js";
+import { COMMANDER_TYPE, COMPONENT_TYPE, FACTION_TYPE, LOADER_RULE, OBJECTIVE_TYPE, COLOR_TYPE, SHOP_TYPE } from "../enums.js";
+import { BattalionMap } from "../map/battalionMap.js";
 
-import { CaptureObjective } from "../../team/objective/types/capture.js";
-import { DefeatObjective } from "../../team/objective/types/defeat.js";
-import { DefendObjective } from "../../team/objective/types/defend.js";
-import { ProtectObjective } from "../../team/objective/types/protect.js";
-import { SurviveObjective } from "../../team/objective/types/survive.js";
-import { TimeLimitObjective } from "../../team/objective/types/timeLimit.js";
+import { CaptureObjective } from "../team/objective/types/capture.js";
+import { DefeatObjective } from "../team/objective/types/defeat.js";
+import { DefendObjective } from "../team/objective/types/defend.js";
+import { ProtectObjective } from "../team/objective/types/protect.js";
+import { SurviveObjective } from "../team/objective/types/survive.js";
+import { TimeLimitObjective } from "../team/objective/types/timeLimit.js";
 
-import { BattalionActor } from "../../actors/battalionActor.js";
-import { Player } from "../../actors/player.js";
-import { ServerActor } from "../../actors/serverActor.js";
-import { Spectator } from "../../actors/spectator.js";
-import { PlayUI } from "../../ui/contexts/playUI.js";
-import { createPlayCamera } from "../camera.js";
+import { StoryActor } from "../actors/storyActor.js";
+import { BattalionActor } from "../actors/battalionActor.js";
+import { Player } from "../actors/player.js";
+import { ServerActor } from "../actors/serverActor.js";
+import { Spectator } from "../actors/spectator.js";
 
-import { DialogueComponent } from "../../event/components/dialogue.js";
-import { ExplodeTileComponent } from "../../event/components/explodeTile.js";
-import { SpawnComponent } from "../../event/components/spawn.js";
-import { createEntitySnapshotFromEntry } from "../../snapshot/entitySnapshot.js";
-import { PlaySoundComponent } from "../../event/components/playSound.js";
-import { PlaySpriteComponent } from "../../event/components/playSprite.js";
-import { TeamManager } from "../../team/teamManager.js";
-import { StoryActor } from "../../actors/storyActor.js";
-import { ScenarioModel } from "../../scenario/scenarioModel.js";
-import { createMineObject } from "../spawn.js";
+import { PlayUI } from "../ui/contexts/playUI.js";
+
+import { createPlayCamera } from "../systems/camera.js";
+import { createMineObject } from "../systems/spawn.js";
+
+import { DialogueComponent } from "../event/components/dialogue.js";
+import { ExplodeTileComponent } from "../event/components/explodeTile.js";
+import { SpawnComponent } from "../event/components/spawn.js";
+import { PlaySoundComponent } from "../event/components/playSound.js";
+import { PlaySpriteComponent } from "../event/components/playSprite.js";
+
+import { createEntitySnapshotFromEntry } from "../snapshot/entitySnapshot.js";
+import { TeamManager } from "../team/teamManager.js";
+import { ScenarioModel } from "./scenarioModel.js";
 
 const createCustomColor = function(gameContext, team, colorMap) {
     const { typeRegistry } = gameContext;
@@ -43,13 +46,13 @@ const createCustomColor = function(gameContext, team, colorMap) {
  * @param {BattalionMap} worldMap 
  * @param {ScenarioModel} scenario 
  */
-export const MatchLoader = function(worldMap, scenario) {
+export const ScenarioLoader = function(worldMap, scenario) {
     this.rules = LOADER_RULE.NONE;
     this.worldMap = worldMap;
     this.scenario = scenario;
 }
 
-MatchLoader.prototype.localizeTiles = function() {
+ScenarioLoader.prototype.localizeTiles = function() {
     for(let i = 0; i < this.scenario.localization.length; i++) {
         const { tileX, tileY, name, desc } = this.scenario.localization[i];
 
@@ -57,7 +60,7 @@ MatchLoader.prototype.localizeTiles = function() {
     }
 }
 
-MatchLoader.prototype.createMines = function(gameContext) {
+ScenarioLoader.prototype.createMines = function(gameContext) {
     const { typeRegistry } = gameContext;
 
     for(const mine of this.scenario.mines) {
@@ -76,7 +79,7 @@ MatchLoader.prototype.createMines = function(gameContext) {
     }
 }
 
-MatchLoader.prototype.applyBuildingSettings = function() {
+ScenarioLoader.prototype.applyBuildingSettings = function() {
     for(const settings of this.scenario.buildingSettings) {
         const { x, y, team, shop, customID, customName, customDesc } = settings;
         const building = this.worldMap.getBuilding(x, y);
@@ -91,7 +94,7 @@ MatchLoader.prototype.applyBuildingSettings = function() {
     }
 }
 
-MatchLoader.prototype.createEventComponents = function(gameContext, event, simulation, effects) {
+ScenarioLoader.prototype.createEventComponents = function(gameContext, event, simulation, effects) {
     if(this.rules & LOADER_RULE.CREATE_EVENT_SIMULATION) {
         for(const { type, data } of simulation) {
             switch(type) {
@@ -138,7 +141,7 @@ MatchLoader.prototype.createEventComponents = function(gameContext, event, simul
     }
 }
 
-MatchLoader.prototype.createWorldEvents = function(gameContext) {
+ScenarioLoader.prototype.createWorldEvents = function(gameContext) {
     const { world } = gameContext;
     const { eventHandler } = world;
 
@@ -153,7 +156,7 @@ MatchLoader.prototype.createWorldEvents = function(gameContext) {
     }
 }
 
-MatchLoader.prototype.createServerActor = function(gameContext, teamID, clientID) {
+ScenarioLoader.prototype.createServerActor = function(gameContext, teamID, clientID) {
     const { world } = gameContext;
     const { actorManager } = world;
     const actorID = actorManager.getNextID();
@@ -164,7 +167,7 @@ MatchLoader.prototype.createServerActor = function(gameContext, teamID, clientID
     actor.clientID = clientID;
 }
 
-MatchLoader.prototype.createActor = function(gameContext, teamID) {
+ScenarioLoader.prototype.createActor = function(gameContext, teamID) {
     const { world } = gameContext;
     const { actorManager } = world;
     const actorID = actorManager.getNextID();
@@ -174,7 +177,7 @@ MatchLoader.prototype.createActor = function(gameContext, teamID) {
     actor.setTeam(teamID);
 }
 
-MatchLoader.prototype.createPlayer = function(gameContext, teamID) {
+ScenarioLoader.prototype.createPlayer = function(gameContext, teamID) {
     const { world } = gameContext;
     const { actorManager } = world;
     const context = createPlayCamera(gameContext);
@@ -189,7 +192,7 @@ MatchLoader.prototype.createPlayer = function(gameContext, teamID) {
     actor.states.setNextState(gameContext, Player.STATE.IDLE);
 }
 
-MatchLoader.prototype.createSpectator = function(gameContext) {
+ScenarioLoader.prototype.createSpectator = function(gameContext) {
     const { world } = gameContext;
     const { actorManager } = world;
     const context = createPlayCamera(gameContext);
@@ -202,7 +205,7 @@ MatchLoader.prototype.createSpectator = function(gameContext) {
     actor.loadKeybinds(gameContext);
 }
 
-MatchLoader.prototype.createObjective = function(type, data) {
+ScenarioLoader.prototype.createObjective = function(type, data) {
     switch(type) {
         case OBJECTIVE_TYPE.DEFEAT: return new DefeatObjective(data);
         case OBJECTIVE_TYPE.PROTECT: return new ProtectObjective(data);
@@ -214,7 +217,7 @@ MatchLoader.prototype.createObjective = function(type, data) {
     }
 }
 
-MatchLoader.prototype.createTeams = function(gameContext, overrides) {
+ScenarioLoader.prototype.createTeams = function(gameContext, overrides) {
     const { teamManager } = gameContext;
 
     for(let i = 0; i < this.scenario.teams.length; i++) {

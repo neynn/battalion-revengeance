@@ -1,6 +1,6 @@
 import { PrettyJSON } from "../../engine/resources/prettyJSON.js";
 import { fillTurnSnapshot } from "../snapshot/turnSnapshot.js";
-import { loadClientScenario } from "./map.js";
+import { MapSystem } from "./map.js";
 
 const saveEntities = function(gameContext) {
     const { world } = gameContext;
@@ -91,6 +91,6 @@ export const loadSavedScenario = function(gameContext, data, overrides) {
     const { actionRouter } = gameContext;
     const { scenario } = data;
     
-    return loadClientScenario(gameContext, scenario)
+    return MapSystem.createClientLoader(gameContext, scenario)
     .then(loader => loader.createSavedMatch(gameContext, data, overrides));
 }

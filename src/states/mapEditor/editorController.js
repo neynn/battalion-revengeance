@@ -1,5 +1,5 @@
 import { PrettyJSON } from "../../../engine/resources/prettyJSON.js";
-import { loadEditorMap, createEmptyMap } from "../../systems/map.js";
+import { loadEditorMap, MapSystem } from "../../systems/map.js";
 import { clampValue } from "../../../engine/math/math.js";
 import { getCursorTile } from "../../../engine/camera/contextHelper.js";
 import { Cursor } from "../../../engine/client/cursor/cursor.js";
@@ -120,7 +120,7 @@ EditorController.prototype.createMap = function(gameContext) {
     if(createNew) {
         spriteController.clearSprites(gameContext);
 
-        const worldMap = createEmptyMap(gameContext, this.defaultWidth, this.defaultHeight);
+        const worldMap = MapSystem.createEmptyMap(gameContext, this.defaultWidth, this.defaultHeight);
 
         this.editor.setTargetMap(worldMap);
         this.editor.autofillMap();

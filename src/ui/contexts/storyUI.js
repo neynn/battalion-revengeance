@@ -2,7 +2,7 @@ import { TextStyle } from "../../../engine/graphics/textStyle.js";
 import { toCenter } from "../../../engine/math/math.js";
 import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
 import { TeamOverride } from "../../map/override.js";
-import { loadClientScenario } from "../../systems/map.js";
+import { MapSystem } from "../../systems/map.js";
 import { mRegenerateLines } from "../helpers.js";
 import { START_BUTTON_STYLE, UI_TEXTURE } from "../constants.js";
 import { TextureRegion } from "../../../engine/resources/texture/textureRegion.js";
@@ -216,7 +216,7 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
                     if(DO_SAVED) {
                         loadSavedScenario(gameContext, DATA, []).then(() => this.hide())
                     } else {
-                        loadClientScenario(gameContext, scenarioID)
+                        MapSystem.createClientLoader(gameContext, scenarioID)
                         .then(loader => {
                             const { actionRouter } = gameContext;
 
