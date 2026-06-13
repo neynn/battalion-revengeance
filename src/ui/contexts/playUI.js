@@ -583,6 +583,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
         }
         case MapInspector.STATE.BUILDING: {
             const building = worldMap.getBuilding(tileX, tileY);
+            const buildingTraits = building.config.traits;
 
             if(this.lastIndex !== index) {
                 this.lineCache.updateRecon(context, building.getDescription(gameContext), DESCRIPTION_BOX_WIDTH_TILE);
@@ -600,8 +601,8 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
             context.fillText(building.getName(gameContext), reconX + 41, headY);
             context.fillText(language.getSystemTranslation("RECON_TRAIT"), traitX + 2, headY);
 
-            for(let i = 0; i < building.config.traits.length; i++) {
-                const { icon, name, desc } = typeRegistry.getTraitType(building.config.traits[i]);
+            for(let i = 0; i < buildingTraits.length; i++) {
+                const { icon, name, desc } = typeRegistry.getBuildingTraitType(buildingTraits[i]);
 
                 if(this.drawIcon(gameContext, icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
                     updateTooltip(name, desc, traitX + (ICON_WIDTH + 1) * i, bodyY);

@@ -5,7 +5,6 @@ export const TraitType = function(id) {
     this.name = "MISSING_NAME_TRAIT";
     this.desc = "MISSING_DESC_TRAIT";
     this.icon = ICON_TYPE.NONE;
-    this.cashPerTurn = 0;
     this.moveDamage = [];
     this.armorDamage = [];
 
@@ -24,14 +23,12 @@ TraitType.prototype.load = function(config, DEBUG_NAME) {
         desc = "MISSING_DESC_TRAIT",
         icon = "NONE",
         moveDamage = {},
-        armorDamage = {},
-        cashPerTurn = 0
+        armorDamage = {}
     } = config;
 
     this.name = name;
     this.desc = desc;
     this.icon = ICON_TYPE[icon] ?? ICON_TYPE.NONE;
-    this.cashPerTurn = cashPerTurn;
 
     if(moveDamage['*'] !== undefined) {
         const defaultMoveDamage = moveDamage['*'];

@@ -2,7 +2,7 @@ import { Action } from "../../../engine/action/action.js";
 import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { mapCategoryToStat } from "../../enumHelpers.js";
-import { ACTION_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { ACTION_TYPE, BUILDING_TRAIT, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { createEntitySnapshot } from "../../snapshot/entitySnapshot.js";
 import { createClientEntityObject, createServerEntityObject } from "../../systems/spawn.js";
 import { UncloakVTable } from "./uncloak.js";
@@ -31,7 +31,7 @@ const fillPurchasePlan = function(gameContext, executionPlan, actionIntent) {
     const worldMap = mapManager.getActiveMap();
     const building = worldMap.getBuilding(tileX, tileY);
 
-    if(!building || !building.belongsTo(currentTeam) || !building.hasTrait(TRAIT_TYPE.SPAWNER)) {
+    if(!building || !building.belongsTo(currentTeam) || !building.hasTrait(BUILDING_TRAIT.SPAWNER)) {
         return;
     }
 

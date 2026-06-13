@@ -1,6 +1,6 @@
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { Mine } from "../entity/mine.js";
-import { JAMMER_FLAG, TRAIT_TYPE } from "../enums.js";
+import { BUILDING_TRAIT, JAMMER_FLAG, TRAIT_TYPE } from "../enums.js";
 
 const DEFAULT_MINE_SEARCH_RANGE = 0;
 const DEFAULT_ENTITY_SEARCH_RANGE = 1;
@@ -62,7 +62,7 @@ export const StealthSystem = {
         const { mapManager } = world;
         const worldMap = mapManager.getActiveMap();
         const building = worldMap.getBuilding(tileX, tileY);
-        const isSpotted = building && building.hasTrait(TRAIT_TYPE.SPAWNER) && !teamManager.isAlly(entity.teamID, building.teamID);
+        const isSpotted = building && building.hasTrait(BUILDING_TRAIT.SPAWNER) && !teamManager.isAlly(entity.teamID, building.teamID);
 
         //Enemy stealth units must uncloak on a spawner as they'd leak information otherwise (spawning wouldn't work).
         return isSpotted;

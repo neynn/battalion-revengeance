@@ -1,5 +1,5 @@
 import { PurchaseVTable } from "../../action/types/purchaseEntity.js";
-import { ENTITY_TYPE, TRAIT_TYPE } from "../../enums.js";
+import { BUILDING_TRAIT, ENTITY_TYPE, TRAIT_TYPE } from "../../enums.js";
 import { Player } from "../player.js";
 import { PlayerState } from "./playerState.js";
 
@@ -22,7 +22,7 @@ IdleState.prototype.onEntityClick = function(gameContext, stateMachine, entity) 
 }
 
 IdleState.prototype.onBuildingClick = function(gameContext, stateMachine, building) {
-    if(building.hasTrait(TRAIT_TYPE.SPAWNER)) {
+    if(building.hasTrait(BUILDING_TRAIT.SPAWNER)) {
         //TODO: Open and create SELECT menu.
         const { tileX, tileY } = building;
         const player = stateMachine.getContext();

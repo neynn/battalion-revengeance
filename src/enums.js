@@ -321,6 +321,15 @@ export const TILE_TYPE = {
     _COUNT: 23
 };
 
+export const BUILDING_TRAIT = {
+    CAPTURABLE: 0,
+    FINANCIAL_CENTER: 1,
+    FISCAL_CENTER: 2,
+    FIDUCIARY_CENTER: 3,
+    SPAWNER: 4,
+    _COUNT: 5
+};
+
 export const TRAIT_TYPE = {
     _INVALID: -1,
     STREAMLINED: 0,
@@ -329,9 +338,9 @@ export const TRAIT_TYPE = {
     IRREPARABLE: 3,
     EXECUTIONER: 4,
     TANK_POOPER: 5,
-    SPAWNER: 6,
-    EXTRACTOR: 7,
-    CAPTURABLE: 8,
+    __6: 6, //REMOVED
+    __7: 7, //REMOVED
+    EXTRACTOR: 8,
     CONQUEROR: 9,
     HIGH_ALTITUDE: 10,
     RADAR: 11,
@@ -380,9 +389,9 @@ export const TRAIT_TYPE = {
     STREAMBLAST: 54,
     AIR_TRANSPORT: 55,
     NAVAL_TRANSPORT: 56,
-    FINANCIAL_CENTER: 57,
-    FISCAL_CENTER: 58,
-    FIDUCIARY_CENTER: 59,
+    __57: 57, //REMOVED
+    __58: 58, //REMOVED
+    __59: 59, //REMOVED
     CRAB: 60,
     UNBUILT: 61,
     ENGINEER: 62,
@@ -546,8 +555,8 @@ export const COMMANDER_TYPE = {
 };
 
 export const BUILDING_TYPE = {
-    AIR_CONTROL: 0,
-    COMMAND_CENTER: 1,
+    COMMAND_CENTER: 0,
+    AIR_CONTROL: 1,
     FACTORY: 2,
     GROUND_CONTROL: 3,
     OIL_ADVANCED_REFINERY: 4,

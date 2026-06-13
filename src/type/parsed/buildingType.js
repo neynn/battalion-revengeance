@@ -1,5 +1,5 @@
 import { MAX_TRAITS } from "../../constants.js";
-import { SHOP_TYPE, TRAIT_TYPE } from "../../enums.js";
+import { BUILDING_TRAIT, SHOP_TYPE } from "../../enums.js";
 
 export const BuildingType = function(id) {
     this.id = id;
@@ -22,7 +22,7 @@ BuildingType.prototype.load = function(config, DEBUG_NAME) {
     this.shop = SHOP_TYPE[shop] ?? SHOP_TYPE.NONE;
  
     for(const traitID of traits) {
-        const index = TRAIT_TYPE[traitID];
+        const index = BUILDING_TRAIT[traitID];
 
         if(index !== undefined) {
             this.traits.push(index);

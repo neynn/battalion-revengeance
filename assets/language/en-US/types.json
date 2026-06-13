@@ -317,6 +317,21 @@
     "ENTITY_NAME_MEME_BUREAUCRAT": "Bureaucrat",
     "ENTITY_DESC_MEME_BUREAUCRAT": "This specimen of fucking idiot shithead subhuman animal bitch goes to work at 10:00AM, scratches his ass until 12:00AM then leaves at 14:00AM. He will send you on an endless chase for approvals, signatures and requests, all the while acting so superior. Wtf is wrong with you, you dumb bitch? Don't you realize you can easily be replaced by a monkey with a typewritter? I yearn for the day when you are replaced by robots, and if that day does not come then all of humanity must join together and genocide all bureaucrats.",
 
+    "BUILDING_TRAIT_NAME_CAPTURABLE": "Capturable",
+    "BUILDING_TRAIT_DESC_CAPTURABLE": "This building can be captured.",
+
+    "BUILDING_TRAIT_NAME_FINANCIAL_CENTER": "Financial Center",
+    "BUILDING_TRAIT_DESC_FINANCIAL_CENTER": "Generates 100 [Cash] every round.",
+
+    "BUILDING_TRAIT_NAME_FISCAL_CENTER": "Fiscal Center",
+    "BUILDING_TRAIT_DESC_FISCAL_CENTER": "Generates 200 [Cash] every round.",
+
+    "BUILDING_TRAIT_NAME_FIDUCIARY_CENTER": "Fiduciary Center",
+    "BUILDING_TRAIT_DESC_FIDUCIARY_CENTER": "Generates 300 [Cash] every round.",
+    
+    "BUILDING_TRAIT_NAME_SPAWNER": "Spawner",
+    "BUILDING_TRAIT_DESC_SPAWNER": "This building can create new units.",
+
     "TRAIT_NAME_NOT_SELECTABLE": "Not Selectable",
     "TRAIT_DESC_NOT_SELECTABLE": "This unit is not selectable. It just sits there.",
 
@@ -340,9 +355,6 @@
 
     "TRAIT_NAME_EXTRACTOR": "Extractor",
     "TRAIT_DESC_EXTRACTOR": "This unit can extract resources from ore deposits.",
-
-    "TRAIT_NAME_CAPTURABLE": "Capturable",
-    "TRAIT_DESC_CAPTURABLE": "This building can be captured.",
 
     "TRAIT_NAME_HIGH_ALTITUDE": "High Altitude",
     "TRAIT_DESC_HIGH_ALTITUDE": "This unit can fly in restricted airspace.",
@@ -481,18 +493,6 @@
 
     "TRAIT_NAME_SUPPLY_DISTRIBUTION": "Supply Distribution",
     "TRAIT_DESC_SUPPLY_DISTRIBUTION": "Its action replenishes the strength of allied units",
-
-    "TRAIT_NAME_SPAWNER": "Spawner",
-    "TRAIT_DESC_SPAWNER": "This building can create new units.",
-
-    "TRAIT_NAME_FINANCIAL_CENTER": "Financial Center",
-    "TRAIT_DESC_FINANCIAL_CENTER": "Generates 100 [Cash] every round.",
-
-    "TRAIT_NAME_FISCAL_CENTER": "Fiscal Center",
-    "TRAIT_DESC_FISCAL_CENTER": "Generates 200 [Cash] every round.",
-
-    "TRAIT_NAME_FIDUCIARY_CENTER": "Fiduciary Center",
-    "TRAIT_DESC_FIDUCIARY_CENTER": "Generates 300 [Cash] every round.",
 
     "TRAIT_NAME_NAVAL_TRANSPORT": "Naval Transport",
     "TRAIT_DESC_NAVAL_TRANSPORT": "Not a very fast method of transporting units, but it will carry anything.",

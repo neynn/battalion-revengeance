@@ -1,14 +1,14 @@
 {
-    "AIR_CONTROL": {
-        "name": "BUILDING_NAME_AIR_CONTROL",
-        "desc": "BUILDING_DESC_AIR_CONTROL",
-        "sprite": "air_control",
-        "traits": ["CAPTURABLE", "FISCAL_CENTER"]
-    },
     "COMMAND_CENTER": {
         "name": "BUILDING_NAME_COMMAND_CENTER",
         "desc": "BUILDING_DESC_COMMAND_CENTER",
         "sprite": "command_center",
+        "traits": ["FISCAL_CENTER"]
+    },
+    "AIR_CONTROL": {
+        "name": "BUILDING_NAME_AIR_CONTROL",
+        "desc": "BUILDING_DESC_AIR_CONTROL",
+        "sprite": "air_control",
         "traits": ["CAPTURABLE", "FISCAL_CENTER"]
     },
     "FACTORY": {

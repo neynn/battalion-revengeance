@@ -82,7 +82,7 @@ Building.prototype.generateCash = function(gameContext) {
     let generatedCash = 0;
 
     for(const traitID of traits) {
-        const { cashPerTurn } = typeRegistry.getTraitType(traitID);
+        const { cashPerTurn } = typeRegistry.getBuildingTraitType(traitID);
 
         generatedCash += cashPerTurn;
     }

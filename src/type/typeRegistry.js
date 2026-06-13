@@ -13,10 +13,11 @@ import { MoraleType } from "./parsed/moraleType.js";
 import { EntityType } from "./parsed/entityType.js";
 import { ShopType } from "./parsed/shopType.js";
 import { ColorType } from "./parsed/colorType.js";
-import { ARMOR_TYPE, BUILDING_TYPE, CLIMATE_TYPE, COMMANDER_TYPE, CURRENCY_TYPE, ENTITY_TYPE, FACTION_TYPE, MINE_TYPE, MORALE_TYPE, MOVEMENT_TYPE, NATION_TYPE, POWER_TYPE, COLOR_TYPE, SHOP_TYPE, TERRAIN_TYPE, TILE_TYPE, TRAIT_TYPE, WEAPON_TYPE } from "../enums.js";
+import { ARMOR_TYPE, BUILDING_TYPE, CLIMATE_TYPE, COMMANDER_TYPE, CURRENCY_TYPE, ENTITY_TYPE, FACTION_TYPE, MINE_TYPE, MORALE_TYPE, MOVEMENT_TYPE, NATION_TYPE, POWER_TYPE, COLOR_TYPE, SHOP_TYPE, TERRAIN_TYPE, TILE_TYPE, TRAIT_TYPE, WEAPON_TYPE, BUILDING_TRAIT } from "../enums.js";
 import { PowerType } from "./parsed/powerType.js";
 import { CurrencyType } from "./parsed/currencyType.js";
 import { MineType } from "./parsed/mineType.js";
+import { BuildingTraitType } from "./parsed/buildingTraitType.js";
 
 const STUB_MINE = new MineType(-1);
 const STUB_ENTITY = new EntityType(-1);
@@ -36,6 +37,7 @@ const STUB_POWER = new PowerType(-1);
 const STUB_ARMOR = new ArmorType(-1);
 const STUB_MOVEMENT = new MovementType(-1);
 const STUB_TILE = new TileType(-1);
+const STUB_BUILDING_TRAIT = new BuildingTraitType(-1);
 
 const createTypeCategory = function(Type, count) {
     const list = [];
@@ -79,6 +81,7 @@ export const TypeRegistry = function() {
     this.colorTypes = createTypeCategory(ColorType, COLOR_TYPE._COUNT);
     this.entityTypes = createTypeCategory(EntityType, ENTITY_TYPE._COUNT);
     this.mineTypes = createTypeCategory(MineType, MINE_TYPE._COUNT);
+    this.buildingTraitTypes = createTypeCategory(BuildingTraitType, BUILDING_TRAIT._COUNT);
 }
 
 TypeRegistry.prototype.load = function(resources) {
@@ -100,6 +103,15 @@ TypeRegistry.prototype.load = function(resources) {
     mLoadTypeCategory(resources.movementTypes, this.movementTypes, MOVEMENT_TYPE);
     mLoadTypeCategory(resources.tileTypes, this.tileTypes, TILE_TYPE);
     mLoadTypeCategory(resources.mineTypes, this.mineTypes, MINE_TYPE);
+    mLoadTypeCategory(resources.buildingTraitTypes, this.buildingTraitTypes, BUILDING_TRAIT);
+}
+
+TypeRegistry.prototype.getBuildingTraitType = function(typeID) {
+    if(typeID < 0 || typeID >= BUILDING_TRAIT._COUNT) {
+        return STUB_BUILDING_TRAIT;
+    }
+    
+    return this.buildingTraitTypes[typeID];
 }
 
 TypeRegistry.prototype.getMineType = function(typeID) {

@@ -1,6 +1,6 @@
 import { Action } from "../../../engine/action/action.js";
 import { ActionIntent } from "../../../engine/action/actionIntent.js";
-import { ACTION_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
+import { ACTION_TYPE, BUILDING_TRAIT, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { TeamManager } from "../../team/teamManager.js";
 import { StartTurnVTable } from "./startTurn.js";
 
@@ -40,7 +40,7 @@ const executeEndTurn = function(gameContext, data) {
                 const { teamID, tileX, tileY } = entity;
                 const building = worldMap.getBuilding(tileX, tileY);
 
-                if(building && building.hasTrait(TRAIT_TYPE.CAPTURABLE)) {
+                if(building && building.hasTrait(BUILDING_TRAIT.CAPTURABLE)) {
                     if(!teamManager.isAlly(teamID, building.teamID)) {
                         const previousTeam = building.getTeam(gameContext);
 

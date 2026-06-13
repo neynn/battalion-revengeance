@@ -6,7 +6,7 @@ import { TeamManager } from "../team/teamManager.js";
 
 export const createBuildingSnapshot = function() {
     return {
-        "type": BUILDING_TYPE.AIR_CONTROL,
+        "type": BUILDING_TYPE.COMMAND_CENTER,
         "teamID": TeamManager.INVALID_ID,
         "tileX": -1,
         "tileY": -1,
@@ -26,7 +26,7 @@ export const createBuildingSnapshotFromJSON = function(json) {
     } = json;
 
     const snapshot = createBuildingSnapshot();
-    const typeID = BUILDING_TYPE[type] ?? BUILDING_TYPE.AIR_CONTROL;
+    const typeID = BUILDING_TYPE[type] ?? BUILDING_TYPE.COMMAND_CENTER;
 
     snapshot.type = typeID;
     snapshot.tileX = x;

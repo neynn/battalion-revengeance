@@ -23,6 +23,7 @@
 
     "armorTypes": { "directory": ["assets", "game", "types"], "source": "armorTypes.json" },
     "buildingTypes": { "directory": ["assets", "game", "types"], "source": "buildingTypes.json" },
+    "buildingTraitTypes": { "directory": ["assets", "game", "types"], "source": "buildingTraitTypes.json" },
     "climateTypes": { "directory": ["assets", "game", "types"], "source": "climateTypes.json" },
     "commanderTypes": { "directory": ["assets", "game", "types"], "source": "commanderTypes.json" },
     "currencyTypes": { "directory": ["assets", "game", "types"], "source": "currencyTypes.json" },
