@@ -4,6 +4,7 @@ import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { mapCategoryToStat } from "../../enumHelpers.js";
 import { ACTION_TYPE, BUILDING_TRAIT, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { createEntitySnapshot } from "../../snapshot/entitySnapshot.js";
+import { ResouceSystem } from "../../systems/resource.js";
 import { createClientEntityObject, createServerEntityObject } from "../../systems/spawn.js";
 import { UncloakVTable } from "./uncloak.js";
 
@@ -46,9 +47,11 @@ const fillPurchasePlan = function(gameContext, executionPlan, actionIntent) {
         return;
     }
 
-    const { health, cost } = typeRegistry.getEntityType(typeID);
+    const { health, cost, category } = typeRegistry.getEntityType(typeID);
+    const costFactor = ResouceSystem.getCostFactor(gameContext, currentTeam, category);
+    console.log(costFactor)
     const team = teamManager.getTeam(currentTeam);
-    const adjustedCost = team.getRegularCost(gameContext, cost);
+    const adjustedCost = team.getRegularCost(gameContext, cost * costFactor);
 
     if(!team.hasEnoughCash(adjustedCost)) {
         return;

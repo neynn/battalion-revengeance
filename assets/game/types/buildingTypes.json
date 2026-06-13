@@ -3,26 +3,32 @@
         "name": "BUILDING_NAME_COMMAND_CENTER",
         "desc": "BUILDING_DESC_COMMAND_CENTER",
         "sprite": "command_center",
-        "traits": ["FISCAL_CENTER"]
-    },
-    "AIR_CONTROL": {
-        "name": "BUILDING_NAME_AIR_CONTROL",
-        "desc": "BUILDING_DESC_AIR_CONTROL",
-        "sprite": "air_control",
-        "traits": ["CAPTURABLE", "FISCAL_CENTER"]
+        "traits": []
     },
     "FACTORY": {
         "name": "BUILDING_NAME_FACTORY",
         "desc": "BUILDING_DESC_FACTORY",
         "sprite": "factory",
         "shop": "FACTORY",
-        "traits": ["CAPTURABLE", "FISCAL_CENTER", "SPAWNER"]
+        "traits": ["CAPTURABLE", "SPAWNER"]
     },
     "GROUND_CONTROL": {
         "name": "BUILDING_NAME_GROUND_CONTROL",
         "desc": "BUILDING_DESC_GROUND_CONTROL",
         "sprite": "ground_control",
-        "traits": ["CAPTURABLE", "FISCAL_CENTER"]
+        "traits": ["CAPTURABLE", "GROUND_PROFICIENCY"]
+    },
+    "SEA_CONTROL": {
+        "name": "BUILDING_NAME_SEA_CONTROL",
+        "desc": "BUILDING_DESC_SEA_CONTROL",
+        "sprite": "sea_control",
+        "traits": ["CAPTURABLE", "SEA_PROFICIENCY"]
+    },
+    "AIR_CONTROL": {
+        "name": "BUILDING_NAME_AIR_CONTROL",
+        "desc": "BUILDING_DESC_AIR_CONTROL",
+        "sprite": "air_control",
+        "traits": ["CAPTURABLE", "AIR_PROFICIENCY"]
     },
     "OIL_ADVANCED_REFINERY": {
         "name": "BUILDING_NAME_OIL_ADVANCED_REFINERY",
@@ -40,12 +46,6 @@
         "name": "BUILDING_NAME_OIL_RIG",
         "desc": "BUILDING_DESC_OIL_RIG",
         "sprite": "oil_rig",
-        "traits": ["CAPTURABLE", "FISCAL_CENTER"]
-    },
-    "SEA_CONTROL": {
-        "name": "BUILDING_NAME_SEA_CONTROL",
-        "desc": "BUILDING_DESC_SEA_CONTROL",
-        "sprite": "sea_control",
         "traits": ["CAPTURABLE", "FISCAL_CENTER"]
     }
 }

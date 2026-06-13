@@ -66,6 +66,19 @@ Building.prototype.isPlacedOn = function(tileX, tileY) {
     return this.tileX === tileX && this.tileY === tileY;
 }
 
+Building.prototype.getCostReduction = function(gameContext, categoryID) {
+    const { typeRegistry } = gameContext;
+    let costReduction = 0;
+
+    for(let i = 0; i < this.config.traits.length; i++) {
+        const traitType = typeRegistry.getBuildingTraitType(this.config.traits[i]);
+
+        costReduction += traitType.getCostReduction(categoryID);
+    }
+
+    return costReduction;
+}
+
 Building.prototype.hasTrait = function(traitID) {
     for(let i = 0; i < this.config.traits.length; i++) {
         if(this.config.traits[i] === traitID) {

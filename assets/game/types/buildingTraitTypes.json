@@ -26,5 +26,29 @@
         "desc": "BUILDING_TRAIT_DESC_FIDUCIARY_CENTER",
         "icon": "BUILDING_FIDUCIARY_CENTER",
         "cashPerTurn": 300
+    },
+    "GROUND_PROFICIENCY": {
+        "name": "BUILDING_TRAIT_NAME_GROUND_PROFICIENCY",
+        "desc": "BUILDING_TRAIT_DESC_GROUND_PROFICIENCY",
+        "icon": "BUILDING_GROUND_PROFICIENCY",
+        "costReduction": {
+            "LAND": 5
+        }
+    },
+    "SEA_PROFICIENCY": {
+        "name": "BUILDING_TRAIT_NAME_SEA_PROFICIENCY",
+        "desc": "BUILDING_TRAIT_DESC_SEA_PROFICIENCY",
+        "icon": "BUILDING_SEA_PROFICIENCY",
+        "costReduction": {
+            "SEA": 5
+        }
+    },
+    "AIR_PROFICIENCY": {
+        "name": "BUILDING_TRAIT_NAME_AIR_PROFICIENCY",
+        "desc": "BUILDING_TRAIT_DESC_AIR_PROFICIENCY",
+        "icon": "BUILDING_AIR_PROFICIENCY",
+        "costReduction": {
+            "AIR": 5
+        }
     }
 }

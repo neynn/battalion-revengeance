@@ -332,6 +332,15 @@
     "BUILDING_TRAIT_NAME_SPAWNER": "Spawner",
     "BUILDING_TRAIT_DESC_SPAWNER": "This building can create new units.",
 
+    "BUILDING_TRAIT_NAME_GROUND_PROFICIENCY": "Ground Proficiency",
+    "BUILDING_TRAIT_DESC_GROUND_PROFICIENCY": "Reduces the cost of all ground units by 5%.",
+
+    "BUILDING_TRAIT_NAME_SEA_PROFICIENCY": "Sea Proficiency",
+    "BUILDING_TRAIT_DESC_SEA_PROFICIENCY": "Reduces the cost of all sea units by 5%.",
+
+    "BUILDING_TRAIT_NAME_AIR_PROFICIENCY": "Air Proficiency",
+    "BUILDING_TRAIT_DESC_AIR_PROFICIENCY": "Reduces the cost of all air units by 5%.",
+
     "TRAIT_NAME_NOT_SELECTABLE": "Not Selectable",
     "TRAIT_DESC_NOT_SELECTABLE": "This unit is not selectable. It just sits there.",
 
