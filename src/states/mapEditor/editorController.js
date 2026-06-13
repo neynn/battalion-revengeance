@@ -1,5 +1,5 @@
 import { PrettyJSON } from "../../../engine/resources/prettyJSON.js";
-import { loadEditorMap, MapSystem } from "../../systems/map.js";
+import { MapSystem } from "../../systems/map.js";
 import { clampValue } from "../../../engine/math/math.js";
 import { getCursorTile } from "../../../engine/camera/contextHelper.js";
 import { Cursor } from "../../../engine/client/cursor/cursor.js";
@@ -132,12 +132,16 @@ EditorController.prototype.loadMap = async function(gameContext) {
 
     spriteController.clearSprites(gameContext);
 
-    const mapID = prompt(language.getSystemTranslation("EDITOR_LOAD_MAP"));
-    const worldMap = await loadEditorMap(gameContext, mapID);
+    const scenarioID = prompt(language.getSystemTranslation("EDITOR_LOAD_MAP"));
+    
+    MapSystem.createEditorLoader(gameContext, scenarioID)
+    .then(loader => {
+        loader.createBuildingSprites(gameContext);
+        this.editor.setTargetMap(loader.worldMap);
+    })
+    .catch(() => {
 
-    if(worldMap) {
-        this.editor.setTargetMap(worldMap);
-    }
+    });
 }
 
 EditorController.prototype.selectTool = function(gameContext, userInterface, toolID) {

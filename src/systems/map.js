@@ -51,28 +51,6 @@ const loadWorldMap = async function(gameContext, sourceID) {
     return worldMap;
 }
 
-export const loadEditorMap = async function(gameContext, sourceID) {
-    const { pathHandler, mapRegistry, world, spriteController } = gameContext;
-    const { mapManager } = world;
-    const mapSource = mapRegistry.getMapPreview(sourceID);
-    const file = await mapSource.promiseFile(pathHandler);
-
-    if(file !== null) {
-        const worldMap = createWorldMap(gameContext, file, mapSource);
-
-        mapManager.addMap(worldMap);
-        mapManager.enableMap(worldMap.getID());
-            
-        for(const building of worldMap.buildings) {
-            spriteController.createBuildingSprite(gameContext, building);
-        }
-
-        return worldMap;
-    }
-
-    return null;
-}
-
 export const MapSystem = {
     createEmptyMap: function(gameContext, width, height) {
         const { world } = gameContext;
