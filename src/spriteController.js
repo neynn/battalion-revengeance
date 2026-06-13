@@ -388,8 +388,34 @@ SpriteController.prototype.bufferEntitySprites = function(gameContext, typeID, c
     }
 }
 
+SpriteController.prototype.clearSprites = function(gameContext) {
+    const { spriteManager } = gameContext;
+
+    for(let i = 0; i < MAX_ENTITY_SPRITES; i++) {
+        const spriteID = this.entitySprites[i];
+
+        if(spriteID !== SpriteManager.INVALID_ID) {
+            spriteManager.destroySprite(spriteID);
+
+            this.entitySprites[i] = SpriteManager.INVALID_ID;
+        }
+    }
+
+    for(let i = 0; i < MAX_BUILDING_SPRITES; i++) {
+        const spriteID = this.buildingSprites[i];
+
+        if(spriteID !== SpriteManager.INVALID_ID) {
+            spriteManager.destroySprite(spriteID);
+
+            this.buildingSprites[i] = SpriteManager.INVALID_ID;
+        }
+    }
+}
+
 SpriteController.prototype.exit = function(gameContext) {
     for(let i = 0; i < MAX_SHADES; i++) {
         this.shades[i].clear();
     }
+
+    this.clearSprites(gameContext);
 }

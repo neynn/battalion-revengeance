@@ -1,6 +1,6 @@
 import { BattalionMap } from "../map/battalionMap.js";
 import { createClientEntityObject, createMineObject, createServerEntityObject } from "./spawn.js";
-import { CLIMATE_TYPE, LAYER_TYPE, LOADER_RULE, MINE_TYPE } from "../enums.js";
+import { CLIMATE_TYPE, LOADER_RULE, MINE_TYPE } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
 import { createEntitySnapshot, createEntitySnapshotFromEntry } from "../snapshot/entitySnapshot.js";
 import { MatchLoader } from "./loader/matchLoader.js";
@@ -114,7 +114,7 @@ ClientMatchLoader.prototype.unpackTotalEntityBuffer = function(gameContext, enti
 }
 
 ClientMatchLoader.prototype.createServerMatch = function(gameContext, snapshot, overrides) {
-    const { dialogueHandler, spriteManager } = gameContext;
+    const { dialogueHandler } = gameContext;
     const { turn, entities, teams } = snapshot; //TODO(neyn): Colors to team overrides!
 
     this.rules |= LOADER_RULE.ALLOW_SPECTATOR;
@@ -134,13 +134,10 @@ ClientMatchLoader.prototype.createServerMatch = function(gameContext, snapshot, 
 
     this.loadTurnFromSnapshot(gameContext, turn);
     this.loadScenarioText(gameContext);
-
-    //Sort buildings once after all are created!
-    spriteManager.sortLayer(LAYER_TYPE.BUILDING);
 }
 
 ClientMatchLoader.prototype.createSavedMatch = function(gameContext, snapshot, overrides) {
-    const { world, dialogueHandler, teamManager, spriteManager } = gameContext;
+    const { world, dialogueHandler, teamManager } = gameContext;
     const { entityManager, eventHandler } = world;
     const { mapID, turn, events, data, entities, teams, mines, buildings, flags, climate } = snapshot;
 
@@ -193,13 +190,10 @@ ClientMatchLoader.prototype.createSavedMatch = function(gameContext, snapshot, o
 
     this.loadTurnFromSnapshot(gameContext, turn);
     this.loadScenarioText(gameContext);
-
-    //Sort buildings once after all are created!
-    spriteManager.sortLayer(LAYER_TYPE.BUILDING);
 }
 
 ClientMatchLoader.prototype.createDefaultMatch = function(gameContext, overrides) {
-    const { dialogueHandler, spriteManager } = gameContext;
+    const { dialogueHandler } = gameContext;
 
     this.rules |= LOADER_RULE.FIXED_ALLIES;
     this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
@@ -218,9 +212,6 @@ ClientMatchLoader.prototype.createDefaultMatch = function(gameContext, overrides
     this.loadScenarioText(gameContext);
 
     dialogueHandler.loadMapDialogue(this.prelogue, this.postlogue, this.defeat);
-
-    //Sort buildings once after all are created!
-    spriteManager.sortLayer(LAYER_TYPE.BUILDING);
 }
 
 export const ServerMatchLoader = function(worldMap, scenario) {
@@ -356,7 +347,7 @@ const loadServerMap = async function(gameContext, sourceID) {
 }
 
 export const loadEditorMap = async function(gameContext, sourceID) {
-    const { pathHandler, mapRegistry, world } = gameContext;
+    const { pathHandler, mapRegistry, world, spriteController } = gameContext;
     const { mapManager } = world;
     const mapSource = mapRegistry.getMapPreview(sourceID);
     const file = await mapSource.promiseFile(pathHandler);
@@ -366,7 +357,11 @@ export const loadEditorMap = async function(gameContext, sourceID) {
 
         mapManager.addMap(worldMap);
         mapManager.enableMap(worldMap.getID());
-        
+            
+        for(const building of worldMap.buildings) {
+            spriteController.createBuildingSprite(gameContext, building);
+        }
+
         return worldMap;
     }
 

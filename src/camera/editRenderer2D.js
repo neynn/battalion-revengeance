@@ -111,8 +111,8 @@ EditRenderer2D.prototype.render = function(gameContext, camera, display) {
         this.drawJammers(camera, tileManager, display, worldMap);
     }
 
+    this.drawBuildings(gameContext, camera, display, worldMap.buildings);
     this.drawEntities(gameContext, camera, display, worldMap);
-    this.drawSpriteLayer(gameContext, camera, display, LAYER_TYPE.BUILDING);
     this.drawHoverTile(gameContext, camera, display);
 
     if(Renderer2D.DEBUG.WORLD) {

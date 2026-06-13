@@ -122,20 +122,24 @@ EditorController.prototype.saveMap = function() {
 }
 
 EditorController.prototype.createMap = function(gameContext) {
+    const { language, spriteController } = gameContext;
     const createNew = confirm("This will create and load a brand new map! Proceed?");
 
     if(createNew) {
+        spriteController.clearSprites(gameContext);
+
         const worldMap = createEmptyMap(gameContext, this.defaultWidth, this.defaultHeight);
 
-        if(worldMap) {
-            this.editor.setTargetMap(worldMap);
-            this.editor.autofillMap();
-        }
+        this.editor.setTargetMap(worldMap);
+        this.editor.autofillMap();
     }
 }
 
 EditorController.prototype.loadMap = async function(gameContext) {
-    const { language } = gameContext;
+    const { language, spriteController } = gameContext;
+
+    spriteController.clearSprites(gameContext);
+
     const mapID = prompt(language.getSystemTranslation("EDITOR_LOAD_MAP"));
     const worldMap = await loadEditorMap(gameContext, mapID);
 

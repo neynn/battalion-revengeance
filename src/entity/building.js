@@ -134,4 +134,3 @@ Building.prototype.getShop = function(gameContext) {
 
     return typeRegistry.getShopType(this.config.shop);
 }
-
