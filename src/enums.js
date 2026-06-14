@@ -524,6 +524,7 @@ export const CURRENCY_TYPE = {
 };
 
 export const FACTION_TYPE = {
+    _INVALID: -1,
     RED: 0,
     BLUE: 1,
     GREEN: 2,
@@ -541,11 +542,13 @@ export const FACTION_TYPE = {
     GRAY: 14,
     CREAM: 15,
     LIME: 16,
+
     SOMERTIN: 17,
     KARGIT: 18,
     TRANSKAL: 19,
     POLASIE: 20,
     ELAM: 21,
+
     KANYE: 22,
     NYPD: 23,
     _COUNT: 24
