@@ -3,12 +3,11 @@ import { MapSystem } from "../../systems/map.js";
 import { clampValue } from "../../../engine/math/math.js";
 import { getCursorTile } from "../../../engine/camera/contextHelper.js";
 import { Cursor } from "../../../engine/client/cursor/cursor.js";
-import { EditorTool } from "./tools/tool.js";
 import { TileTool } from "./tools/tileTool.js";
-import { EntityTool } from "./tools/entityTool.js";
 import { BUILDING_TYPE, CLIMATE_TYPE, COLOR_TYPE, FACTION_TYPE } from "../../enums.js";
 import { createBuildingSnapshotFromJSON } from "../../snapshot/buildingSnapshot.js";
 import { BuildingProxy } from "../../proxies/buildingProxy.js";
+import { TextureRegistry } from "../../../engine/resources/texture/textureRegistry.js";
 
 export const EditorController = function(mapEditor) {
     this.editor = mapEditor;
@@ -16,15 +15,9 @@ export const EditorController = function(mapEditor) {
     this.maxHeight = 100;
     this.defaultWidth = 20;
     this.defaultHeight = 20;
-    this.tools = [
-        new EditorTool(),
-        new TileTool(mapEditor),
-        new EntityTool()
-    ];
-
-    this.tool = EditorController.TOOL.NONE;
-    this.lastPaintX = -1;
-    this.lastPaintY = -1;
+    this.tileTool = new TileTool(mapEditor);
+    this.lastUseX = -1;
+    this.lastUseY = -1;
 
     this.buildingTypeNames = new Map();
     this.buildingProxies = [];
@@ -33,24 +26,29 @@ export const EditorController = function(mapEditor) {
         this.buildingTypeNames.set(BUILDING_TYPE[name], name);
     }
 
+    this.currentTab = EditorController.TAB_TYPE.NONE;
     this.currentColor = COLOR_TYPE.RED;
     this.currentFaction = FACTION_TYPE.RED;
-    this.currentTab = EditorController.TAB_TYPE.TILE;
+    this.currentBuilding = BUILDING_TYPE.COMMAND_CENTER;
+    this.editorTexture = TextureRegistry.EMPTY_TEXTURE;
 }
 
 EditorController.TAB_TYPE = {
-    TILE: 0,
-    UNIT: 1,
-    BUILDING: 2
-};
-
-EditorController.TOOL = {
     NONE: 0,
     TILE: 1,
-    ENTITY: 2
+    UNIT: 2,
+    BUILDING: 3
 };
 
-EditorController.prototype.tryPlaceBuilding = function(gameContext, typeID, tileX, tileY) {
+EditorController.prototype.selectBuilding = function(gameContext, buildingID) {
+    if(buildingID < 0 || buildingID >= BUILDING_TYPE._COUNT) {
+        return;
+    }
+
+    this.currentBuilding = buildingID;
+}
+
+EditorController.prototype.tryPlaceBuilding = function(gameContext, tileX, tileY) {
     for(const proxy of this.buildingProxies) {
         if(proxy.tileX === tileX && proxy.tileY === tileY) {
             return;
@@ -61,20 +59,32 @@ EditorController.prototype.tryPlaceBuilding = function(gameContext, typeID, tile
 
     proxy.tileX = tileX;
     proxy.tileY = tileY;
-    proxy.typeID = typeID;
+    proxy.typeID = this.currentBuilding;
     proxy.colorID = this.currentColor;
-    proxy.factionID =this.currentFaction;
+    proxy.factionID = this.currentFaction;
 
     this.buildingProxies.push(proxy);
 }
 
+EditorController.prototype.selectTileTab = function(gameContext, userInterface) {
+    switch(this.currentTab) {
+        //Clear last tab.
+    }
+
+    this.tileTool.onEnable(gameContext, userInterface);
+    this.currentTab = EditorController.TAB_TYPE.TILE;
+}
+
 EditorController.prototype.selectUnitTab = function(gameContext) {
-    this.selectFaction(gameContext, FACTION_TYPE.RED);
-    this.currentTab = EditorController.TAB_TYPE.UNIT;
+    //Switch back to the red (default) faction if the unclaimed was used before.
+    if(this.currentFaction === FACTION_TYPE._INVALID) {
+        this.selectFaction(gameContext, FACTION_TYPE.RED);
+    }
+
+    this.currentTab = EditorController.TAB_TYPE.UNIT; 
 }
 
 EditorController.prototype.selectBuildingTab = function(gameContext) {
-    this.selectFaction(gameContext, FACTION_TYPE.RED);
     this.currentTab = EditorController.TAB_TYPE.BUILDING;
 }
 
@@ -138,31 +148,51 @@ EditorController.prototype.createBuildingProxyFromData = function(data) {
     this.buildingProxies.push(proxy);
 }
 
+EditorController.prototype.scroolTool = function(gameContext, direction) {
+    switch(this.currentTab) {
+        case EditorController.TAB_TYPE.TILE: {
+            switch(direction) {
+                case Cursor.SCROLL.UP: {
+                    this.tileTool.onScrollUp(gameContext);
+                    break;
+                }
+                case Cursor.SCROLL.DOWN: {
+                    this.tileTool.onScrollDown(gameContext);
+                    break;
+                }
+            }
+            break;
+        }
+    } 
+}
+
+EditorController.prototype.useTool = function(gameContext, tileX, tileY) {
+    switch(this.currentTab) {
+        case EditorController.TAB_TYPE.TILE: {
+            this.tileTool.onClick(gameContext, tileX, tileY);
+            break;
+        }
+        default: {
+            console.error("Unsupported ToolType!");
+            break;
+        }
+    }
+}
+
 EditorController.prototype.initCursorEvents = function(gameContext) {
     const { client } = gameContext;
     const { cursor } = client;
 
-    cursor.events.on(Cursor.EVENT.SCROLL, ({ direction }) => {
-        switch(direction) {
-            case Cursor.SCROLL.UP: {
-                this.tools[this.tool].onScrollUp(gameContext);
-                break;
-            }
-            case Cursor.SCROLL.DOWN: {
-                this.tools[this.tool].onScrollDown(gameContext);
-                break;
-            }
-        }
-    });
+    cursor.events.on(Cursor.EVENT.SCROLL, ({ direction }) => this.scroolTool(gameContext, direction));
 
     cursor.events.on(Cursor.EVENT.DRAG, ({ button }) => {
         if(button === Cursor.BUTTON.RIGHT) {
             const { x, y } = getCursorTile(gameContext);
 
-            if(this.lastPaintX !== x || this.lastPaintY !== y) {
-                this.tools[this.tool].onClick(gameContext, x, y);
-                this.lastPaintX = x;
-                this.lastPaintY = y;
+            if(this.lastUseX !== x || this.lastUseY !== y) {
+                this.useTool(gameContext, x, y);
+                this.lastUseX = x;
+                this.lastUseY = y;
             }
         }
     });
@@ -171,9 +201,9 @@ EditorController.prototype.initCursorEvents = function(gameContext) {
         if(button === Cursor.BUTTON.RIGHT) {
             const { x, y } = getCursorTile(gameContext);
 
-            this.tools[this.tool].onClick(gameContext, x, y);
-            this.lastPaintX = -1;
-            this.lastPaintY = -1;
+            this.useTool(gameContext, x, y);
+            this.lastUseX = -1;
+            this.lastUseY = -1;
         }
     });
 }
@@ -275,18 +305,4 @@ EditorController.prototype.loadMap = async function(gameContext) {
         this.editor.setTargetMap(worldMap);
         this.editor.autofillMap();
     }
-}
-
-EditorController.prototype.selectTool = function(gameContext, userInterface, toolID) {
-    if(toolID < 0 || toolID >= this.tools.length) {
-        return;
-    }
-
-    if(toolID === this.tool) {
-        return;
-    }
-
-    this.tools[this.tool].onDisable(gameContext);
-    this.tools[toolID].onEnable(gameContext, userInterface);
-    this.tool = toolID;
 }

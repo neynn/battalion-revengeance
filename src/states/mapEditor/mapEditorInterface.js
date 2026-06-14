@@ -29,6 +29,12 @@ const TEXT_COLOR_VIEW = getRGBAString(238, 238, 238, 255);
 const TEXT_COLOR_EDIT = getRGBAString(252, 252, 63, 255);
 const TEXT_COLOR_HIDE = getRGBAString(207, 55, 35, 255);
 
+/**
+ * 
+ * @param {EditorController} controller 
+ * @param {*} editor 
+ * @param {*} renderer 
+ */
 export const MapEditorInterface = function(controller, editor, renderer) {
     UIContext.call(this);
 
@@ -175,12 +181,12 @@ MapEditorInterface.prototype.drawTileEditor = function(gameContext, display, too
 }
 
 MapEditorInterface.prototype.onImmediate = function(gameContext, display) {
-    switch(this.controller.tool) {
-        case EditorController.TOOL.NONE: {
+    switch(this.controller.currentTab) {
+        case EditorController.TAB_TYPE.NONE: {
             break;
         }
-        case EditorController.TOOL.TILE: {
-            this.drawTileEditor(gameContext, display, this.controller.tools[EditorController.TOOL.TILE]);
+        case EditorController.TAB_TYPE.TILE: {
+            this.drawTileEditor(gameContext, display, this.controller.tileTool);
             break;
         }
     }
