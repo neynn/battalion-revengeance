@@ -4,7 +4,7 @@ import { createEditCamera } from "../../systems/camera.js";
 import { MapEditorInterface } from "./mapEditorInterface.js";
 import { BattalionContext } from "../../battalionContext.js";
 import { MapEditor } from "../../../engine/map/editor/mapEditor.js";
-import { TILE_ID } from "../../enums.js";
+import { COLOR_TYPE, TILE_ID } from "../../enums.js";
 import { BattalionMap } from "../../map/battalionMap.js";
 
 const createMapEditor = function() {
@@ -50,12 +50,14 @@ MapEditorState.prototype = Object.create(State.prototype);
 MapEditorState.prototype.constructor = MapEditorState;
 
 MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
-    const { states } = gameContext;
+    const { states, spriteController } = gameContext;
     const mapEditor = createMapEditor();
     const controller = new EditorController(mapEditor);
-    const context = createEditCamera(gameContext, mapEditor.brush);
+    const context = createEditCamera(gameContext, mapEditor.brush, controller);
     const camera = context.getCamera();
     const userInterface = new MapEditorInterface(controller, mapEditor, context.renderer);
+
+    spriteController.bufferBuildingSprites(gameContext, [COLOR_TYPE.RED, COLOR_TYPE.BLUE, COLOR_TYPE.YELLOW, COLOR_TYPE.GREEN]);
 
     userInterface.load(gameContext);
     userInterface.addClickByName("BUTTON_BACK", (e) => states.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));

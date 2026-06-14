@@ -85,20 +85,6 @@ SpriteManager.prototype.load = function(textures, sprites) {
     }
 }
 
-SpriteManager.prototype.createShadeTask = function(spriteID, target) {
-    if(spriteID < 0 || spriteID >= this.containers.length) {
-        return;
-    }
-
-    const container = this.containers[spriteID];
-    const { texture, frames, frameCount } = container;
-    const { id } = texture;
-
-    if(frameCount > 0) {
-        this.resources.addShadeTask(id, frames[0], target);
-    }
-}
-
 SpriteManager.prototype.forEachSprite = function(onCall) {
     if(typeof onCall === "function") {
         this.pool.forAllReserved(onCall);
@@ -123,16 +109,12 @@ SpriteManager.prototype.getSpriteDuration = function(spriteID) {
     return totalFrameTime;
 }
 
-SpriteManager.prototype.createCopyTexture = function(spriteID, colorID, colorMap) {
+SpriteManager.prototype.getTextureID = function(spriteID) {
     if(spriteID < 0 || spriteID >= this.containers.length) {
-        return;
+        return TextureRegistry.INVALID_ID;
     }
 
-    const container = this.containers[spriteID];
-    const { texture } = container;
-    const { id } = texture;
-
-    this.resources.addRecolorTask(id, colorID, colorMap);
+    return this.containers[spriteID].texture.id;
 }
 
 SpriteManager.prototype.update = function(gameContext) {
@@ -168,13 +150,6 @@ SpriteManager.prototype.update = function(gameContext) {
     }
 }
 
-SpriteManager.prototype.clear = function() {
-    const textures = this.resources.textureRegistry.textures;
-    const registry = this.resources.textureRegistry.registries[TextureRegistry.REGISTRY_TYPE.SPRITE];
-
-    registry.forEach(textureID => textures[textureID].clear());
-}
-
 SpriteManager.prototype.exit = function() {
     this.spriteTracker.clear();
     this.pool.forAllReserved((sprite) => {
@@ -182,12 +157,13 @@ SpriteManager.prototype.exit = function() {
         sprite.close();
     });
     this.pool.reset();
-    this.clear();
     this.sharedSprites.length = 0;
 
     for(let i = 0; i < this.layers.length; i++) {
         this.layers[i].length = 0;
     }
+
+    this.resources.clearRegistry(TextureRegistry.REGISTRY_TYPE.SPRITE);
 }
 
 SpriteManager.prototype.initLayers = function(count) {

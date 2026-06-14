@@ -4,6 +4,7 @@ import { SpriteManager } from "../engine/sprite/spriteManager.js";
 import { BattalionEntity } from "./entity/battalionEntity.js";
 import { BUILDING_TYPE, COLOR_TYPE, DIRECTION, EFFECT_SPRITE, ENTITY_TYPE, LAYER_TYPE } from "./enums.js";
 import { TeamManager } from "./team/teamManager.js";
+import { TextureRegistry } from "../engine/resources/texture/textureRegistry.js";
 
 //INFO(neyn): This is hard-coded but I don't really care :)
 const BUILDING_NEUTRAL_COLORS = {
@@ -269,8 +270,32 @@ SpriteController.prototype.createBuildingSprite = function(gameContext, building
     this.updateBuildingSprite(gameContext, building, spriteIndex);
 }
 
+SpriteController.prototype.bufferBuildingSprites = function(gameContext, colors) {
+    const { spriteManager, typeRegistry, textureLoader } = gameContext;
+    const bufferedTextures = new Set();
+
+    for(let i = 0; i < BUILDING_SPRITE_COUNT; i++) {
+        const spriteTypeID = this.buildingSpriteRegistry[i];
+        const textureID = spriteManager.getTextureID(spriteTypeID);
+
+        if(textureID !== TextureRegistry.INVALID_ID && !bufferedTextures.has(textureID)) {
+            textureLoader.addRecolorTask(textureID, COLOR_TYPE.BUILDING, BUILDING_NEUTRAL_COLORS);
+
+            for(const colorID of colors) {
+                if(colorID !== COLOR_TYPE.RED) {
+                    const { colorMap } = typeRegistry.getColorType(colorID);
+
+                    textureLoader.addRecolorTask(textureID, colorID, colorMap);
+                }
+            }
+
+            bufferedTextures.add(textureID);
+        }
+    }
+}
+
 SpriteController.prototype.updateBuildingSprite = function(gameContext, building, spriteIndex) {
-    const { spriteManager, typeRegistry, teamManager } = gameContext;
+    const { spriteManager, typeRegistry, teamManager, textureLoader } = gameContext;
     const { teamID, config } = building;
     const spriteTypeID = this.getBuildingSpriteTypeID(config.id); 
 
@@ -278,8 +303,10 @@ SpriteController.prototype.updateBuildingSprite = function(gameContext, building
         return;
     }
 
+    const textureID = spriteManager.getTextureID(spriteTypeID);
+
     if(teamID === TeamManager.INVALID_ID) {
-        spriteManager.createCopyTexture(spriteTypeID, COLOR_TYPE.BUILDING, BUILDING_NEUTRAL_COLORS);
+        textureLoader.addRecolorTask(textureID, COLOR_TYPE.BUILDING, BUILDING_NEUTRAL_COLORS);
         spriteManager.updateSprite(spriteIndex, spriteTypeID, COLOR_TYPE.BUILDING);
     } else {
         const { color } = teamManager.getTeam(teamID);
@@ -287,7 +314,7 @@ SpriteController.prototype.updateBuildingSprite = function(gameContext, building
         if(color !== COLOR_TYPE.RED) {
             const { colorMap } = typeRegistry.getColorType(color);
 
-            spriteManager.createCopyTexture(spriteTypeID, color, colorMap);
+            textureLoader.addRecolorTask(textureID, color, colorMap);
         }
 
         spriteManager.updateSprite(spriteIndex, spriteTypeID, color);
@@ -327,7 +354,7 @@ SpriteController.prototype.createEntitySprite = function(gameContext, entity) {
 }
 
 SpriteController.prototype.updateEntitySprite = function(gameContext, entity) {
-    const { spriteManager, typeRegistry } = gameContext;
+    const { spriteManager, typeRegistry, textureLoader } = gameContext;
     const { state, config, index, direction } = entity;
     const spriteID = this.getEntitySpriteID(index);
 
@@ -339,12 +366,13 @@ SpriteController.prototype.updateEntitySprite = function(gameContext, entity) {
     const spriteTypeID = this.getEntitySpriteTypeID(config.id, state, direction);
 
     if(spriteTypeID !== -1) {
+        const textureID = spriteManager.getTextureID(spriteTypeID);
         const { color } = entity.getTeam(gameContext);
 
         if(color !== COLOR_TYPE.RED) {
             const { colorMap } = typeRegistry.getColorType(color);
 
-            spriteManager.createCopyTexture(spriteTypeID, color, colorMap);
+            textureLoader.addRecolorTask(textureID, color, colorMap);
         }
 
         spriteManager.updateSprite(spriteID, spriteTypeID, color);
@@ -362,7 +390,7 @@ SpriteController.prototype.bufferEntitySprites = function(gameContext, typeID, c
         return;
     }
     
-    const { spriteManager, typeRegistry } = gameContext;
+    const { spriteManager, typeRegistry, textureLoader } = gameContext;
     const beginIndex = typeID * SPRITES_PER_ENTITY_TYPE;
 
     if(colorID !== COLOR_TYPE.RED) {
@@ -371,8 +399,9 @@ SpriteController.prototype.bufferEntitySprites = function(gameContext, typeID, c
         for(let i = 0; i < BattalionEntity.STATE._COUNT; i++) {
             for(let j = 0; j < DIRECTION._COUNT; j++) {
                 const spriteTypeID = this.getEntitySpriteTypeID(typeID, i, j);
+                const textureID = spriteManager.getTextureID(spriteTypeID);
 
-                spriteManager.createCopyTexture(spriteTypeID, colorID, colorMap);
+                textureLoader.addRecolorTask(textureID, colorID, colorMap);
             }
         }
     }
@@ -382,8 +411,11 @@ SpriteController.prototype.bufferEntitySprites = function(gameContext, typeID, c
 
         if(shade.state === ImageResource.STATE.EMPTY) {
             const spriteTypeID = this.getEntitySpriteTypeID(typeID, BattalionEntity.STATE.IDLE, i);
+            const container = spriteManager.getContainer(spriteTypeID);
 
-            spriteManager.createShadeTask(spriteTypeID, shade);
+            if(container && container.frameCount > 0) {
+                textureLoader.addShadeTask(container.texture.id, container.frames[0], shade);
+            }
         } 
     }
 }

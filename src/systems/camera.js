@@ -29,9 +29,9 @@ export const addZoom = function(gameContext, cContext) {
     });
 }
 
-export const createEditCamera = function(gameContext, brush) {
+export const createEditCamera = function(gameContext, brush, controller) {
     const { contextManager } = gameContext;
-    const editRenderer = new EditRenderer2D(brush);
+    const editRenderer = new EditRenderer2D(brush, controller);
     const context = contextManager.createContext();
     
     context.renderer = editRenderer;

@@ -17,6 +17,23 @@ Renderer2D.DEBUG = {
 
 Renderer2D.prototype.render = function(gameContext, camera, context) {}
 
+Renderer2D.prototype.drawSpriteFrame = function(context, container, frame, colorID, screenX, screenY) {
+    const { frameCount, frames, texture, offsetX, offsetY } = container;
+
+    if(frame >= 0 && frame < frameCount) {
+        const { state, bitmap } = texture.getImageVariant(colorID);
+        const { x, y, w, h } = frames[frame];
+
+        if(state === ImageResource.STATE.LOADED) {
+            context.drawImage(
+                bitmap,
+                x, y, w, h, 
+                screenX + offsetX, screenY + offsetY, w, h
+            );
+        }
+    }
+}
+
 Renderer2D.prototype.drawEmptyTile = function(context, screenX, screenY, scale = 1) {
     const width = Math.floor(this.halfTileWidth * scale);
     const height = Math.floor(this.halfTileHeight * scale);

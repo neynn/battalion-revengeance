@@ -6,6 +6,9 @@ import { Cursor } from "../../../engine/client/cursor/cursor.js";
 import { EditorTool } from "./tools/tool.js";
 import { TileTool } from "./tools/tileTool.js";
 import { EntityTool } from "./tools/entityTool.js";
+import { BUILDING_TYPE, CLIMATE_TYPE } from "../../enums.js";
+import { createBuildingSnapshotFromJSON } from "../../snapshot/buildingSnapshot.js";
+import { BuildingProxy } from "../../proxies/buildingProxy.js";
 
 export const EditorController = function(mapEditor) {
     this.editor = mapEditor;
@@ -22,6 +25,13 @@ export const EditorController = function(mapEditor) {
     this.tool = EditorController.TOOL.NONE;
     this.lastPaintX = -1;
     this.lastPaintY = -1;
+
+    this.buildingTypeNames = new Map();
+    this.buildingProxies = [];
+
+    for(const name in BUILDING_TYPE) {
+        this.buildingTypeNames.set(BUILDING_TYPE[name], name);
+    }
 }
 
 EditorController.TOOL = {
@@ -29,6 +39,14 @@ EditorController.TOOL = {
     TILE: 1,
     ENTITY: 2
 };
+
+EditorController.prototype.createBuildingProxyFromData = function(data) {
+    const proxy = new BuildingProxy();
+
+    proxy.fromJSON(data);
+
+    this.buildingProxies.push(proxy);
+}
 
 EditorController.prototype.initCursorEvents = function(gameContext) {
     const { client } = gameContext;
@@ -96,17 +114,26 @@ EditorController.prototype.saveMap = function() {
         .open()
         .writeLine("ERROR", "MAP NOT LOADED! USE CREATE OR LOAD!")
         .close()
-        .download("map_" + worldMap.getID());
+        .download("map_error");
     }
 
     const layers = worldMap.saveLayers();
     const flags = worldMap.saveFlags();
+    const buildings = [];
+
+    for(const proxy of this.buildingProxies) {
+        buildings.push(JSON.stringify({
+            "x": proxy.tileX,
+            "y": proxy.tileY,
+            "type": this.buildingTypeNames.get(proxy.typeID)
+        }));
+    }
 
     new PrettyJSON(4)
     .open()
     .writeLine("width", worldMap.width)
     .writeLine("height", worldMap.height)
-    .writeLine("buildings", [])
+    .writeList("buildings", buildings, PrettyJSON.LIST_TYPE.ARRAY)
     .writeLine("flags", flags)
     .writeList("data", layers)
     .close()
@@ -114,12 +141,10 @@ EditorController.prototype.saveMap = function() {
 }
 
 EditorController.prototype.createMap = function(gameContext) {
-    const { language, spriteController } = gameContext;
+    const { language } = gameContext;
     const createNew = confirm("This will create and load a brand new map! Proceed?");
 
     if(createNew) {
-        spriteController.clearSprites(gameContext);
-
         const worldMap = MapSystem.createEmptyMap(gameContext, this.defaultWidth, this.defaultHeight);
 
         this.editor.setTargetMap(worldMap);
@@ -128,20 +153,38 @@ EditorController.prototype.createMap = function(gameContext) {
 }
 
 EditorController.prototype.loadMap = async function(gameContext) {
-    const { language, spriteController } = gameContext;
-
-    spriteController.clearSprites(gameContext);
-
+    const { language, scenarioRegistry, mapRegistry } = gameContext;
     const scenarioID = prompt(language.getSystemTranslation("EDITOR_LOAD_MAP"));
-    
-    MapSystem.createEditorLoader(gameContext, scenarioID)
-    .then(loader => {
-        loader.createBuildingSprites(gameContext);
-        this.editor.setTargetMap(loader.worldMap);
-    })
-    .catch(() => {
+    const scenario = scenarioRegistry.getScenario(scenarioID);  
 
-    });
+    if(scenario) {
+        MapSystem.getMapFile(gameContext, scenario.mapID)
+        .then(file => {
+            const { width, height, data, buildings = [], flags = [], climate = null } = file;
+            const worldMap = MapSystem.createEmptyMap(gameContext, width, height);
+
+            worldMap.climate = CLIMATE_TYPE[climate] ?? CLIMATE_TYPE.TEMPERATE;
+            worldMap.loadFlags(flags);
+            worldMap.decodeLayers(data);
+
+            for(let i = 0; i < buildings.length; i++) {
+                this.createBuildingProxyFromData(buildings[i]);
+            }
+
+            this.editor.setTargetMap(worldMap);
+        })
+        .catch(() => {
+            const worldMap = MapSystem.createEmptyMap(gameContext, this.defaultWidth, this.defaultHeight);
+
+            this.editor.setTargetMap(worldMap);
+            this.editor.autofillMap();
+        });
+    } else {
+        const worldMap = MapSystem.createEmptyMap(gameContext, this.defaultWidth, this.defaultHeight);
+
+        this.editor.setTargetMap(worldMap);
+        this.editor.autofillMap();
+    }
 }
 
 EditorController.prototype.selectTool = function(gameContext, userInterface, toolID) {

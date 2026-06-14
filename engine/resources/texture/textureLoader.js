@@ -10,6 +10,17 @@ export const TextureLoader = function() {
     this.totalTasks = 0;
 }
 
+TextureLoader.prototype.clearRegistry = function(registryID) {
+    if(registryID < 0 || registryID >= TextureRegistry.REGISTRY_TYPE._COUNT) {
+        return;
+    }
+
+    const textures = this.textureRegistry.textures;
+    const registry = this.textureRegistry.registries[registryID];
+
+    registry.forEach(textureID => textures[textureID].clear());
+}
+
 TextureLoader.prototype.exit = function() {
     this.tasks.length = 0;
     this.totalTasks = 0;

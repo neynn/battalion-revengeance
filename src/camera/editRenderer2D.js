@@ -3,14 +3,21 @@ import { Renderer2D } from "../../engine/renderer/renderer2D.js";
 import { TileManager } from "../../engine/tile/tileManager.js";
 import { LAYER_TYPE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
+import { EditorController } from "../states/mapEditor/editorController.js";
 import { BattalionRenderer2D } from "./battalionRenderer2D.js";
 
-export const EditRenderer2D = function(brush) {
+/**
+ * 
+ * @param {*} brush 
+ * @param {EditorController} controller 
+ */
+export const EditRenderer2D = function(brush, controller) {
     BattalionRenderer2D.call(this);
 
     this.overlayAlpha = 0.75;
     this.overlayColor = "#eeeeee";
     this.brush = brush;
+    this.controller = controller;
 }
 
 EditRenderer2D.prototype = Object.create(BattalionRenderer2D.prototype);
@@ -94,6 +101,27 @@ EditRenderer2D.prototype.drawTiles = function(gameContext, camera, display, worl
     return tileCount;
 }
 
+EditRenderer2D.prototype.drawBuildingProxies = function(gameContext, camera, display) {
+    const { spriteController, spriteManager } = gameContext;
+    const { context } = display;
+
+    for(const proxy of this.controller.buildingProxies) {
+        const { typeID, colorID, tileX, tileY } = proxy;
+
+        if(camera.isTileVisible(tileX, tileY)) {
+            const spriteTypeID = spriteController.getBuildingSpriteTypeID(typeID);
+            const container = spriteManager.getContainer(spriteTypeID);
+
+            if(container) {
+                const screenX = camera.getScreenX(tileX);
+                const screenY = camera.getScreenY(tileY);
+
+                this.drawSpriteFrame(context, container, 0, colorID, screenX, screenY);
+            }
+        }
+    }
+}
+
 EditRenderer2D.prototype.render = function(gameContext, camera, display) {
     const { world, tileManager } = gameContext;
     const { mapManager } = world;
@@ -111,7 +139,7 @@ EditRenderer2D.prototype.render = function(gameContext, camera, display) {
         this.drawJammers(camera, tileManager, display, worldMap);
     }
 
-    this.drawBuildings(gameContext, camera, display, worldMap.buildings);
+    this.drawBuildingProxies(gameContext, camera, display);
     this.drawEntities(gameContext, camera, display, worldMap);
     this.drawHoverTile(gameContext, camera, display);
 

@@ -52,6 +52,18 @@ const loadWorldMap = async function(gameContext, sourceID) {
 }
 
 export const MapSystem = {
+    getMapFile: async function(gameContext, sourceID) {
+        const { pathHandler, mapRegistry, world } = gameContext;
+        const { mapManager } = world;
+        const mapSource = mapRegistry.getMapPreview(sourceID);
+        const file = await mapSource.promiseFile(pathHandler);
+
+        if(file === null) {
+            return Promise.reject();
+        }
+
+        return file;
+    },
     createEmptyMap: function(gameContext, width, height) {
         const { world } = gameContext;
         const { mapManager } = world;
