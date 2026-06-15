@@ -91,8 +91,7 @@ MapEditorInterface.prototype.drawTileEditor = function(gameContext, display, too
     const { tileManager, gameWindow } = gameContext;
     const { context } = display;
     const container = this.getElement("CONTAINER_TILES");
-    const tileSet = tool.tileSets.getValue();
-    const pageIndex = tool.pageIndex;
+    const assetBrowser = tool.tileSets.getValue();
     const scale = SLOT_BUTTON_SIZE / TILE_WIDTH;
 
     let positionX = container._screenX;
@@ -106,8 +105,7 @@ MapEditorInterface.prototype.drawTileEditor = function(gameContext, display, too
     for(let i = 0; i < BUTTON_ROWS; i++) {
         for(let j = 0; j < BUTTON_COLUMNS; j++) {
             const buttonFlags = this.doButton(gameContext, buttonID, positionX, positionY, SLOT_BUTTON_SIZE, SLOT_BUTTON_SIZE);
-            const palletIndex = pageIndex * BUTTON_COUNT + index;
-            const tileID = tileSet.getValue(palletIndex);
+            const tileID = assetBrowser.getItem(index);
 
             if(tileID !== TileManager.TILE_ID.INVALID) {
                 this.renderer.drawTile(tileManager, tileID, context, positionX, positionY, scale);

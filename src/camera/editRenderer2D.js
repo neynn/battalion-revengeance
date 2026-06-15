@@ -104,8 +104,9 @@ EditRenderer2D.prototype.drawTiles = function(gameContext, camera, display, worl
 EditRenderer2D.prototype.drawBuildingProxies = function(gameContext, camera, display) {
     const { spriteController, spriteManager } = gameContext;
     const { context } = display;
+    const proxies = this.controller.buildingTool.buildingProxies;
 
-    for(const proxy of this.controller.buildingProxies) {
+    for(const proxy of proxies) {
         const { typeID, colorID, tileX, tileY } = proxy;
 
         if(camera.isTileVisible(tileX, tileY)) {

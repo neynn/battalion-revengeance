@@ -8,6 +8,7 @@ import { BUILDING_TYPE, CLIMATE_TYPE, COLOR_TYPE, FACTION_TYPE } from "../../enu
 import { createBuildingSnapshotFromJSON } from "../../snapshot/buildingSnapshot.js";
 import { BuildingProxy } from "../../proxies/buildingProxy.js";
 import { TextureRegistry } from "../../../engine/resources/texture/textureRegistry.js";
+import { BuildingTool } from "./tools/buildingTool.js";
 
 export const EditorController = function(mapEditor) {
     this.editor = mapEditor;
@@ -15,16 +16,12 @@ export const EditorController = function(mapEditor) {
     this.maxHeight = 100;
     this.defaultWidth = 20;
     this.defaultHeight = 20;
+
     this.tileTool = new TileTool(mapEditor);
+    this.buildingTool = new BuildingTool();
+
     this.lastUseX = -1;
     this.lastUseY = -1;
-
-    this.buildingTypeNames = new Map();
-    this.buildingProxies = [];
-
-    for(const name in BUILDING_TYPE) {
-        this.buildingTypeNames.set(BUILDING_TYPE[name], name);
-    }
 
     this.currentTab = EditorController.TAB_TYPE.NONE;
     this.currentColor = COLOR_TYPE.RED;
@@ -46,24 +43,6 @@ EditorController.prototype.selectBuilding = function(gameContext, buildingID) {
     }
 
     this.currentBuilding = buildingID;
-}
-
-EditorController.prototype.tryPlaceBuilding = function(gameContext, tileX, tileY) {
-    for(const proxy of this.buildingProxies) {
-        if(proxy.tileX === tileX && proxy.tileY === tileY) {
-            return;
-        }
-    }
-
-    const proxy = new BuildingProxy();
-
-    proxy.tileX = tileX;
-    proxy.tileY = tileY;
-    proxy.typeID = this.currentBuilding;
-    proxy.colorID = this.currentColor;
-    proxy.factionID = this.currentFaction;
-
-    this.buildingProxies.push(proxy);
 }
 
 EditorController.prototype.selectTileTab = function(gameContext, userInterface) {
@@ -140,14 +119,6 @@ EditorController.prototype.loadArenaAssets = function(gameContext) {
     spriteController.bufferBuildingSprites(gameContext, colors);
 }
 
-EditorController.prototype.createBuildingProxyFromData = function(data) {
-    const proxy = new BuildingProxy();
-
-    proxy.fromJSON(data);
-
-    this.buildingProxies.push(proxy);
-}
-
 EditorController.prototype.scroolTool = function(gameContext, direction) {
     switch(this.currentTab) {
         case EditorController.TAB_TYPE.TILE: {
@@ -169,7 +140,7 @@ EditorController.prototype.scroolTool = function(gameContext, direction) {
 EditorController.prototype.useTool = function(gameContext, tileX, tileY) {
     switch(this.currentTab) {
         case EditorController.TAB_TYPE.TILE: {
-            this.tileTool.onClick(gameContext, tileX, tileY);
+            this.tileTool.onUse(gameContext, tileX, tileY);
             break;
         }
         default: {
@@ -239,15 +210,7 @@ EditorController.prototype.saveMap = function() {
 
     const layers = worldMap.saveLayers();
     const flags = worldMap.saveFlags();
-    const buildings = [];
-
-    for(const proxy of this.buildingProxies) {
-        buildings.push(JSON.stringify({
-            "x": proxy.tileX,
-            "y": proxy.tileY,
-            "type": this.buildingTypeNames.get(proxy.typeID)
-        }));
-    }
+    const buildings = this.buildingTool.saveBuildings();
 
     new PrettyJSON(4)
     .open()
@@ -288,7 +251,7 @@ EditorController.prototype.loadMap = async function(gameContext) {
             worldMap.decodeLayers(data);
 
             for(let i = 0; i < buildings.length; i++) {
-                this.createBuildingProxyFromData(buildings[i]);
+                this.buildingTool.createProxiesFromData(buildings[i]);
             }
 
             this.editor.setTargetMap(worldMap);
