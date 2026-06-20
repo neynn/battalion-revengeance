@@ -17,9 +17,6 @@ export const EditorController = function(mapEditor) {
 
     this.buildingTool = new BuildingTool();
 
-    this.lastUseX = -1;
-    this.lastUseY = -1;
-
     this.currentTab = EditorController.TAB_TYPE.NONE;
     this.currentColor = COLOR_TYPE.RED;
     this.currentFaction = FACTION_TYPE.RED;

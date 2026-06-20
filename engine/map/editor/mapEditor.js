@@ -264,8 +264,6 @@ MapEditor.prototype.toggleLayerState = function(layerID) {
 
 MapEditor.prototype.togglePermutation = function() {
     this.flags ^= MapEditor.FLAG.USE_PERMUTATION;
-
-    return (this.flags & MapEditor.FLAG.USE_PERMUTATION) !== 0;
 }
 
 MapEditor.prototype.toggleInversion = function() {
@@ -273,8 +271,6 @@ MapEditor.prototype.toggleInversion = function() {
     if((this.flags & MapEditor.FLAG.USE_AUTOTILER) !== 0) {
         this.flags ^= MapEditor.FLAG.INVERT_AUTOTILER;
     }
-
-    return (this.flags & MapEditor.FLAG.INVERT_AUTOTILER) !== 0;
 }
 
 MapEditor.prototype.toggleAutotiling = function() {
@@ -284,14 +280,26 @@ MapEditor.prototype.toggleAutotiling = function() {
     if((this.flags & MapEditor.FLAG.USE_AUTOTILER) === 0) {
         this.flags &= (~MapEditor.FLAG.INVERT_AUTOTILER);
     }
+}
 
+MapEditor.prototype.isRandomized = function() {
+    return (this.flags & MapEditor.FLAG.USE_PERMUTATION) !== 0;
+}
+
+MapEditor.prototype.isInverted = function() {
+    return (this.flags & MapEditor.FLAG.INVERT_AUTOTILER) !== 0;
+}
+
+MapEditor.prototype.isAutotiling = function() {
     return (this.flags & MapEditor.FLAG.USE_AUTOTILER) !== 0;
 }
 
-MapEditor.prototype.toggleEraser = function() {
-    const isErasing = this.brush.toggleEraser();
+MapEditor.prototype.isErasing = function() {
+    return this.brush.mode === Brush.MODE.ERASE;
+}
 
-    return isErasing;
+MapEditor.prototype.toggleEraser = function() {
+    this.brush.toggleEraser();
 }
 
 MapEditor.prototype.setBrush = function(id, name) {

@@ -1,3 +1,4 @@
+import { Camera2D } from "../../../engine/camera/camera2D.js";
 import { getCursorTile } from "../../../engine/camera/contextHelper.js";
 import { Cursor } from "../../../engine/client/cursor/cursor.js";
 import { TILE_WIDTH } from "../../../engine/engine_constants.js";
@@ -10,6 +11,7 @@ import { Container } from "../../../engine/ui/elements/container.js";
 import { parseLayout } from "../../../engine/ui/parser.js";
 import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
 import { Scroller } from "../../../engine/util/scroller.js";
+import { EditRenderer2D } from "../../camera/editRenderer2D.js";
 import { TILE_ID } from "../../enums.js";
 import { BattalionMap } from "../../map/battalionMap.js";
 import { EditorController } from "./editorController.js";
@@ -53,15 +55,17 @@ const TEXT_COLOR_HIDE = getRGBAString(207, 55, 35, 255);
 /**
  * 
  * @param {EditorController} controller 
- * @param {*} editor 
- * @param {*} renderer 
+ * @param {MapEditor} editor 
+ * @param {EditRenderer2D} renderer 
+ * @param {Camera2D} camera
  */
-export const MapEditorInterface = function(controller, editor, renderer) {
+export const MapEditorInterface = function(controller, editor, renderer, camera) {
     UIContext.call(this);
 
     this.controller = controller;
     this.editor = editor;
     this.renderer = renderer;
+    this.camera = camera;
     this.doImmediate = true;
 
     this.textColorView = [238, 238, 238, 255];
@@ -81,33 +85,61 @@ export const MapEditorInterface = function(controller, editor, renderer) {
 MapEditorInterface.prototype = Object.create(UIContext.prototype);
 MapEditorInterface.prototype.constructor = MapEditorInterface;
 
+MapEditorInterface.prototype.drawRegularButton = function(display, buttonX, buttonY, isHot, text, textColor) {
+    const { context } = display;
+    const textX = buttonX + LAYER_BUTTON_WIDTH / 2;
+    const textY = buttonY + LAYER_BUTTON_HEIGHT / 2;
+
+    context.fillStyle = BACKGROUND_COLOR;
+    context.fillRect(buttonX, buttonY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
+    context.fillStyle = textColor;
+    context.font = "20px Arial";
+    context.textAlign = TextStyle.ALIGN.MIDDLE;
+    context.fillText(text, textX, textY);
+
+    if(isHot) {
+        context.fillStyle = HIGHLIGHT_COLOR;
+        context.fillRect(buttonX, buttonY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
+    }
+
+    context.strokeStyle = OUTLINE_COLOR;
+    context.strokeRect(buttonX, buttonY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
+}
+
+MapEditorInterface.prototype.drawLayerButton = function(display, buttonX, buttonY, isHot, state, text) {
+    let textColor = TEXT_COLOR_VIEW;
+
+    switch(state) {
+        case MapEditor.LAYER_STATE.HIDDEN: {
+            textColor = TEXT_COLOR_HIDE;
+            break;
+        }
+        case MapEditor.LAYER_STATE.VISIBLE: {
+            textColor = TEXT_COLOR_VIEW;
+            break;
+        }
+        case MapEditor.LAYER_STATE.EDIT: {
+            textColor = TEXT_COLOR_EDIT;
+            break;
+        }
+    }
+
+    this.drawRegularButton(display, buttonX, buttonY, isHot, text, textColor);
+}
+
+MapEditorInterface.prototype.drawStatefulButton = function(display, buttonX, buttonY, isHot, isActive, text) {
+    let textColor = TEXT_COLOR_VIEW;
+
+    if(isActive) {
+        textColor = TEXT_COLOR_EDIT;
+    }
+
+    this.drawRegularButton(display, buttonX, buttonY, isHot, text, textColor);
+}
+
 MapEditorInterface.prototype.selectTileTool = function(gameContext) {
     this.controller.selectTool(gameContext, EditorController.TAB_TYPE.TILE);
     this.enableTileTool(gameContext);
-}
-
-MapEditorInterface.prototype.toggleAutotiler = function() {
-    const isEnabled = this.editor.toggleAutotiling();
-
-    this.updateAutoText(isEnabled);
-}
-
-MapEditorInterface.prototype.toggleEraser = function() {
-    const isErasing = this.editor.toggleEraser();
-
-    this.updateEraserText(isErasing);
-}
-
-MapEditorInterface.prototype.toggleInversion = function() {
-    const isInverted = this.editor.toggleInversion();
-
-    this.updateInversionText(isInverted);
-}
-
-MapEditorInterface.prototype.togglePermutation = function() {
-    const isEnabled = this.editor.togglePermutation();
-
-    this.updatePermutationText(isEnabled);
 }
 
 MapEditorInterface.prototype.updateBrushSize = function(gameContext, delta = 0) {
@@ -138,30 +170,22 @@ MapEditorInterface.prototype.getSizeInfo = function() {
     return `SIZE: ${paintWidth}x${paintHeight} (${pageString})`;
 }
 
-MapEditorInterface.prototype.resetBrush = function() {
-    this.editor.resetBrush();
-    this.updateEraserText(false);
-}
-
 MapEditorInterface.prototype.enableTileTool = function(gameContext) {
     const { client } = gameContext;
     const { router, cursor } = client;
 
     router.bind(gameContext, "EDIT");
-    router.on("TOGGLE_AUTOTILER", () => this.toggleAutotiler());
-    router.on("TOGGLE_ERASER", () => this.toggleEraser());
-    router.on("TOGGLE_INVERSION", () => this.toggleInversion());
-    router.on("TOGGLE_RANDOM", () => this.togglePermutation());
+    router.on("TOGGLE_AUTOTILER", () => this.editor.toggleAutotiling());
+    router.on("TOGGLE_ERASER", () => this.editor.toggleEraser());
+    router.on("TOGGLE_INVERSION", () => this.editor.toggleInversion());
+    router.on("TOGGLE_RANDOM", () => this.editor.togglePermutation());
     router.on("LAYER_BOTTOM", () => this.editor.toggleLayerState(BattalionMap.LAYER.GROUND));
     router.on("LAYER_MIDDLE", () => this.editor.toggleLayerState(BattalionMap.LAYER.DECORATION));
     router.on("LAYER_TOP", () => this.editor.toggleLayerState(BattalionMap.LAYER.CLOUD));
     router.on("VIEW_ALL", () => {
         this.editor.resetLayerStates();
-        this.resetBrush();
+        this.editor.resetBrush();
     });
-
-    this.addClickByName("BUTTON_INVERT", (e) => this.toggleInversion());
-    this.addClickByName("BUTTON_AUTO", (e) => this.toggleAutotiler());
 
     this.addClickByName("BUTTON_TILESET_LEFT", (e) => {
         this.tileSets.loop(-1);
@@ -188,8 +212,6 @@ MapEditorInterface.prototype.enableTileTool = function(gameContext) {
     });  
 
     this.addClickByName("BUTTON_SCROLL_SIZE", (e) => this.updateBrushSize(gameContext, 1));
-    this.addClickByName("BUTTON_ERASER", (e) => this.toggleEraser());
-
     this.updateMenuText(gameContext);
 }
 
@@ -244,42 +266,6 @@ MapEditorInterface.prototype.initBrushSizes = function() {
     this.brushSizes.addItem(fillBrushSize(4, 4));
 }
 
-MapEditorInterface.prototype.drawLayerButton = function(display, buttonX, buttonY, isHot, state, text) {
-    const { context } = display;
-    const textX = buttonX + LAYER_BUTTON_WIDTH / 2;
-    const textY = buttonY + LAYER_BUTTON_HEIGHT / 2;
-
-    context.fillStyle = BACKGROUND_COLOR;
-    context.fillRect(buttonX, buttonY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
-
-    switch(state) {
-        case MapEditor.LAYER_STATE.HIDDEN: {
-            context.fillStyle = TEXT_COLOR_HIDE;
-            break;
-        }
-        case MapEditor.LAYER_STATE.VISIBLE: {
-            context.fillStyle = TEXT_COLOR_VIEW;
-            break;
-        }
-        case MapEditor.LAYER_STATE.EDIT: {
-            context.fillStyle = TEXT_COLOR_EDIT;
-            break;
-        }
-    }
-
-    context.font = "20px Arial";
-    context.textAlign = TextStyle.ALIGN.MIDDLE;
-    context.fillText(text, textX, textY);
-
-    if(isHot) {
-        context.fillStyle = HIGHLIGHT_COLOR;
-        context.fillRect(buttonX, buttonY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
-    }
-
-    context.strokeStyle = OUTLINE_COLOR;
-    context.strokeRect(buttonX, buttonY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
-}
-
 MapEditorInterface.prototype.drawTileEditor = function(gameContext, display) {
     const { tileManager, gameWindow } = gameContext;
     const { context } = display;
@@ -291,6 +277,7 @@ MapEditorInterface.prototype.drawTileEditor = function(gameContext, display) {
     let positionY = container._screenY + SLOT_START_Y;
     let buttonID = SLOT_BUTTON_ID_REGION;
     let index = 0;
+    let toolButtonID = LAYER_BUTTON_ID_REGION;
     
     context.fillStyle = HIGHLIGHT_COLOR;
     context.strokeStyle = OUTLINE_COLOR;
@@ -313,10 +300,10 @@ MapEditorInterface.prototype.drawTileEditor = function(gameContext, display) {
 
             if(buttonFlags & IM_FLAG.CLICKED) {
                 if(tileID !== TileManager.TILE_ID.INVALID) {
-                    this.resetBrush();
+                    this.editor.resetBrush();
                     this.editor.setBrush(tileID, `${tileID}`);
                 } else {
-                    this.resetBrush();
+                    this.editor.resetBrush();
                 }
             }
 
@@ -333,19 +320,19 @@ MapEditorInterface.prototype.drawTileEditor = function(gameContext, display) {
     const layerY = gameWindow.height - LAYER_BUTTON_HEIGHT;
 
     const bottomX = layerX;
-    const bottomID = LAYER_BUTTON_ID_REGION;
+    const bottomID = toolButtonID++;
     const bottomFlags = this.doButton(gameContext, bottomID, bottomX, layerY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
 
     const middleX = bottomX + LAYER_BUTTON_WIDTH;
-    const middleID = LAYER_BUTTON_ID_REGION + 1;
+    const middleID = toolButtonID++;
     const middleFlags = this.doButton(gameContext, middleID, middleX, layerY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
 
     const topX = middleX + LAYER_BUTTON_WIDTH;
-    const topID = LAYER_BUTTON_ID_REGION + 2;
+    const topID = toolButtonID++;
     const topFlags = this.doButton(gameContext, topID, topX, layerY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
 
     const allX = topX + LAYER_BUTTON_WIDTH;
-    const allID = LAYER_BUTTON_ID_REGION + 3;
+    const allID = toolButtonID++;
     const allFlags = this.doButton(gameContext, allID, allX, layerY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
 
     if(bottomFlags & IM_FLAG.CLICKED) {
@@ -362,13 +349,62 @@ MapEditorInterface.prototype.drawTileEditor = function(gameContext, display) {
 
     if(allFlags & IM_FLAG.CLICKED) {
         this.editor.resetLayerStates();
-        this.resetBrush();
+        this.editor.resetBrush();
     }
 
     this.drawLayerButton(display, bottomX, layerY, (bottomFlags & IM_FLAG.HOT), this.editor.getLayerState(BattalionMap.LAYER.GROUND), "Bottom");
     this.drawLayerButton(display, middleX, layerY, (middleFlags & IM_FLAG.HOT), this.editor.getLayerState(BattalionMap.LAYER.DECORATION), "Middle");
     this.drawLayerButton(display, topX, layerY, (topFlags & IM_FLAG.HOT), this.editor.getLayerState(BattalionMap.LAYER.CLOUD), "Top");
     this.drawLayerButton(display, allX, layerY, (allFlags & IM_FLAG.HOT), MapEditor.LAYER_STATE.VISIBLE, "View All");
+
+    const toolsX = gameWindow.width - LAYER_BUTTON_WIDTH * 5;
+    const toolsY = gameWindow.height - LAYER_BUTTON_HEIGHT;
+
+    const autoX = toolsX;
+    const autoID = toolButtonID++;
+    const autoFlags = this.doButton(gameContext, autoID, autoX, toolsY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
+
+    const invertX = toolsX + LAYER_BUTTON_WIDTH;
+    const invertID = toolButtonID++;
+    const invertFlags = this.doButton(gameContext, invertID, invertX, toolsY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
+    
+    const eraserX = invertX + LAYER_BUTTON_WIDTH;
+    const eraserID = toolButtonID++;
+    const eraserFlags = this.doButton(gameContext, eraserID, eraserX, toolsY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
+
+    const randomX = eraserX + LAYER_BUTTON_WIDTH;
+    const randomID = toolButtonID++;
+    const randomFlags = this.doButton(gameContext, randomID, randomX, toolsY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
+
+    const jumpX = randomX + LAYER_BUTTON_WIDTH;
+    const jumpID = toolButtonID++;
+    const jumpFlags = this.doButton(gameContext, jumpID, jumpX, toolsY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
+    
+    if(autoFlags & IM_FLAG.CLICKED) {
+        this.editor.toggleAutotiling();
+    }
+
+    if(invertFlags & IM_FLAG.CLICKED) {
+        this.editor.toggleInversion();
+    }
+
+    if(eraserFlags & IM_FLAG.CLICKED) {
+        this.editor.toggleEraser();
+    }
+
+    if(randomFlags & IM_FLAG.CLICKED) {
+        this.editor.togglePermutation();
+    }
+
+    if(jumpFlags & IM_FLAG.CLICKED) {
+        this.camera.jumpToTile(0, 0);
+    }
+
+    this.drawStatefulButton(display, autoX, toolsY, (autoFlags & IM_FLAG.HOT), this.editor.isAutotiling(), "Auto");
+    this.drawStatefulButton(display, invertX, toolsY, (invertFlags & IM_FLAG.HOT), this.editor.isInverted(), "Invert");
+    this.drawStatefulButton(display, eraserX, toolsY, (eraserFlags & IM_FLAG.HOT), this.editor.isErasing(), "Erase");
+    this.drawStatefulButton(display, randomX, toolsY, (randomFlags & IM_FLAG.HOT), this.editor.isRandomized(), "Random");
+    this.drawRegularButton(display, jumpX, toolsY, (jumpFlags & IM_FLAG.HOT), "Jump", TEXT_COLOR_VIEW);
 }
 
 MapEditorInterface.prototype.onImmediate = function(gameContext, display) {
@@ -387,7 +423,7 @@ MapEditorInterface.prototype.load = function(gameContext) {
     const { client } = gameContext;
     const { cursor } = client;
 
-    const CONTAINERS = ["CONTAINER_FILE", "CONTAINER_TILES", "CONTAINER_TOOLS"];
+    const CONTAINERS = ["CONTAINER_FILE", "CONTAINER_TILES"];
 
     parseLayout(gameContext, this, "MAP_EDITOR");
 
@@ -423,49 +459,4 @@ MapEditorInterface.prototype.load = function(gameContext) {
             this.controller.useTool(gameContext, x, y);
         }
     });
-}
-
-MapEditorInterface.prototype.updatePermutationText = function(isEnabled) {
-    const text = this.getElement("TEXT_PERMUTATION");
-    const { style } = text;
-
-    if(isEnabled) {
-        style.setColorArray(this.textColorEdit);
-    } else {
-        style.setColorArray(this.textColorView);
-    }
-}
-
-MapEditorInterface.prototype.updateInversionText = function(isInverted) {
-    const text = this.getElement("TEXT_INVERT");
-    const { style } = text;
-
-    if(isInverted) {
-        style.setColorArray(this.textColorEdit);
-    } else {
-        style.setColorArray(this.textColorView);
-    }
-}
-
-MapEditorInterface.prototype.updateAutoText = function(isEnabled) {
-    const text = this.getElement("TEXT_AUTO");
-    const { style } = text;
-
-    if(isEnabled) {
-        style.setColorArray(this.textColorEdit);
-    } else {
-        style.setColorArray(this.textColorView);
-        this.updateInversionText(false);
-    }
-}
-
-MapEditorInterface.prototype.updateEraserText = function(isErasing) {
-    const text = this.getElement("TEXT_ERASER");
-    const { style } = text;
-
-    if(isErasing) {
-        style.setColorArray(this.textColorEdit);
-    } else {
-        style.setColorArray(this.textColorView);
-    }
 }

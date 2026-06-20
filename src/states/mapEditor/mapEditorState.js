@@ -55,14 +55,13 @@ MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
     const controller = new EditorController(mapEditor);
     const context = createEditCamera(gameContext, mapEditor.brush, controller);
     const camera = context.getCamera();
-    const userInterface = new MapEditorInterface(controller, mapEditor, context.renderer);
+    const userInterface = new MapEditorInterface(controller, mapEditor, context.renderer, camera);
 
     userInterface.load(gameContext);
     userInterface.addClickByName("BUTTON_BACK", (e) => states.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));
     userInterface.addClickByName("BUTTON_SAVE", (e) => controller.saveMap());
     userInterface.addClickByName("BUTTON_CREATE", (e) => controller.createMap(gameContext));
     userInterface.addClickByName("BUTTON_LOAD", (e) => controller.loadMap(gameContext));
-    userInterface.addClickByName("BUTTON_JUMP", (e) => camera.jumpToTile(0, 0));
     userInterface.addClickByName("BUTTON_RESIZE", (e) => {
         controller.resizeCurrentMap();
         camera.jumpToTile(0, 0);
