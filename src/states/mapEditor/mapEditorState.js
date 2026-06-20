@@ -69,8 +69,7 @@ MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
     }); 
 
     controller.loadArenaAssets(gameContext);
-    controller.initCursorEvents(gameContext);
-    controller.selectTileTab(gameContext, userInterface);
+    userInterface.selectTileTool(gameContext);
 
     this.interfaceID = userInterface.getID();
     this.contextID = context.getID();

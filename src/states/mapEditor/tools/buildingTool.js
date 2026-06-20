@@ -1,10 +1,7 @@
 import { BUILDING_TYPE, COLOR_TYPE, FACTION_TYPE } from "../../../enums.js";
 import { BuildingProxy } from "../../../proxies/buildingProxy.js";
-import { EditorTool } from "./tool.js";
 
 export const BuildingTool = function() {
-    EditorTool.call(this);
-
     this.buildingTypeNames = new Map();
     this.buildingProxies = [];
 
@@ -16,9 +13,6 @@ export const BuildingTool = function() {
     this.currentColor = COLOR_TYPE.BUILDING;
     this.currentFaction = FACTION_TYPE._INVALID;
 }
-
-BuildingTool.prototype = Object.create(EditorTool.prototype);
-BuildingTool.prototype.constructor = BuildingTool;
 
 BuildingTool.prototype.createProxiesFromData = function(data) {
     const proxy = new BuildingProxy();
