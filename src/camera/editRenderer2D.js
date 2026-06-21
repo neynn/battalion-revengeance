@@ -8,15 +8,13 @@ import { BattalionRenderer2D } from "./battalionRenderer2D.js";
 
 /**
  * 
- * @param {*} brush 
  * @param {EditorController} controller 
  */
-export const EditRenderer2D = function(brush, controller) {
+export const EditRenderer2D = function(controller) {
     BattalionRenderer2D.call(this);
 
     this.overlayAlpha = 0.75;
     this.overlayColor = "#eeeeee";
-    this.brush = brush;
     this.controller = controller;
 }
 
@@ -151,7 +149,7 @@ EditRenderer2D.prototype.render = function(gameContext, camera, display) {
 
 EditRenderer2D.prototype.drawHoverTile = function(gameContext, camera, display) {
     const { context } = display;
-    const { id, name, width, height } = this.brush;
+    const { id, name, width, height } = this.controller.editor.brush;
 
     if(id === TileManager.TILE_ID.INVALID) {
         return;

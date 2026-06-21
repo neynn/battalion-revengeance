@@ -29,25 +29,6 @@ export const addZoom = function(gameContext, cContext) {
     });
 }
 
-export const createEditCamera = function(gameContext, brush, controller) {
-    const { contextManager } = gameContext;
-    const editRenderer = new EditRenderer2D(brush, controller);
-    const context = contextManager.createContext();
-    
-    context.renderer = editRenderer;
-    context.camera.freeViewport();
-    context.camera.setTileSize(TILE_WIDTH, TILE_HEIGHT);
-    
-    context.setDragButton(Cursor.BUTTON.LEFT);
-    context.enableBuffer();
-    context.forceReload();
-    context.camera.reloadViewport();
-
-    //addZoom(gameContext, context);
-
-    return context;
-}
-
 export const createPlayCamera = function(gameContext) {
     const { contextManager } = gameContext;
     const battalionRenderer = new BattalionRenderer2D();

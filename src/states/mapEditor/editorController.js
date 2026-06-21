@@ -7,7 +7,12 @@ import { createBuildingSnapshotFromJSON } from "../../snapshot/buildingSnapshot.
 import { BuildingProxy } from "../../proxies/buildingProxy.js";
 import { TextureRegistry } from "../../../engine/resources/texture/textureRegistry.js";
 import { BuildingTool } from "./tools/buildingTool.js";
+import { MapEditor } from "../../../engine/map/editor/mapEditor.js";
 
+/**
+ * 
+ * @param {MapEditor} mapEditor 
+ */
 export const EditorController = function(mapEditor) {
     this.editor = mapEditor;
     this.maxWidth = 100;
@@ -232,4 +237,8 @@ EditorController.prototype.loadMap = async function(gameContext) {
         this.editor.setTargetMap(worldMap);
         this.editor.autofillMap();
     }
+}
+
+EditorController.prototype.removeMap = function() {
+    this.editor.removeTargetMap();
 }

@@ -186,12 +186,6 @@ MapEditor.prototype.autofillMap = function() {
     }
 }
 
-MapEditor.prototype.getBrushArea = function() {
-    const { width, height } = this.brush;
-
-    return `${(width + 1) * 2 - 1}x${(height + 1) * 2 - 1}`;
-}
-
 MapEditor.prototype.getLayerState = function(layerID) {
     if(layerID < 0 || layerID >= this.layerStates.length) {
         return MapEditor.LAYER_STATE.VISIBLE;
@@ -295,7 +289,7 @@ MapEditor.prototype.isAutotiling = function() {
 }
 
 MapEditor.prototype.isErasing = function() {
-    return this.brush.mode === Brush.MODE.ERASE;
+    return this.brush.id === TileManager.TILE_ID.EMPTY;
 }
 
 MapEditor.prototype.toggleEraser = function() {
@@ -332,6 +326,7 @@ MapEditor.prototype.removeTargetMap = function() {
 MapEditor.prototype.registerFill = function(layerID, value) {
     for(let i = 0; i < this.fill.length; i++) {
         if(this.fill[i].layerID === layerID) {
+            this.fill[i].value = value;
             return;
         }
     }
