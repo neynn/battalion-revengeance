@@ -55,7 +55,7 @@ const executeFromTransport = function(gameContext, data) {
     const entityType = typeRegistry.getEntityType(entityTypeID);
 
     entity.clearTransport();
-    entity.loadConfig(entityType);
+    entity.loadConfig(gameContext, entityType);
     entity.setHealth(health);
 }
 

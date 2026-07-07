@@ -30,6 +30,7 @@ export const BattalionEntity = function(id, config) {
     this.customID = ScenarioModel.INVALID_CUSTOM_ID;
     this.customName = LanguageHandler.INVALID_ID;
     this.customDesc = LanguageHandler.INVALID_ID;
+    this.damage = 0;
     this.health = 1;
     this.maxHealth = 1;
     this.moraleType = MORALE_TYPE.NORMAL;
@@ -143,14 +144,17 @@ BattalionEntity.prototype.load = function(data) {
 
 /**
  * 
+ * @param {*} gameContext 
  * @param {EntityType} config 
  */
-BattalionEntity.prototype.loadConfig = function(config) {
-    const { health } = config;
+BattalionEntity.prototype.loadConfig = function(gameContext, config) {
+    const { health, damage } = config;
 
+    //TODO(neyn): Branch in different modes.
     this.config = config;
     this.health = health;
     this.maxHealth = health;
+    this.damage = damage;
     this.setHealth(this.health);
 }
 
@@ -813,9 +817,8 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
 }
 
 BattalionEntity.prototype.getAttackDamage = function(gameContext, target, damageFlags) {
-    const damageValue = this.getDamage();
     const damageAmplifier = this.getAttackAmplifier(gameContext, target, damageFlags);
-    let damage = damageValue * damageAmplifier;
+    let damage = this.damage * damageAmplifier;
 
 	if(target.hasTrait(TRAIT_TYPE.CEMENTED_STEEL_ARMOR) && !this.hasTrait(TRAIT_TYPE.CAVITATION_EXPLOSION)) {
 		damage -= TRAIT_CONFIG.CEMENTED_STEEL_ARMOR_REDUCTION;

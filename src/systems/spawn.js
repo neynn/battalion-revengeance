@@ -13,7 +13,7 @@ const createEntity = function(gameContext, entityID, snapshot) {
     const entityType = typeRegistry.getEntityType(type);
     const entityObject = new BattalionEntity(entityID, entityType);
 
-    entityObject.loadConfig(entityType);
+    entityObject.loadConfig(gameContext, entityType);
     entityObject.load(snapshot);
     entityObject.setTeam(teamID);
     entityObject.setTile(tileX, tileY);

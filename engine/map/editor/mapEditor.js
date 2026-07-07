@@ -28,19 +28,8 @@ export const MapEditor = function() {
     this.targetLayer = WorldMap.INVALID_LAYER_ID;
     this.targetMap = null;
 
-    this.nextVariantFamily = 0;
     this.variantFamilies = [];
     this.variantTable = [];
-}
-
-MapEditor.generateVariantFamily = function(begin, end) {
-    const list = [];
-
-    for(let i = begin; i <= end; i++) {
-        list.push(i);
-    }
-
-    return list;
 }
 
 MapEditor.INVALID_FAMILY_ID = -1;
@@ -94,16 +83,18 @@ MapEditor.prototype.initVariantTable = function(count) {
     }
 }
 
-MapEditor.prototype.registerVariantFamily = function(members) {
-    const familyID = this.nextVariantFamily++;
+MapEditor.prototype.registerVariantFamily = function(begin, end) {
+    if(begin < 0 || end < begin || end >= this.variantTable.length) {
+        return;
+    }
+
+    const familyID = this.variantFamilies.length;
     const family = [];
 
-    for(const member of members) {
-        if(member >= 0 && member < this.variantTable.length) {
-            this.variantTable[member] = familyID;
-            
-            family.push(member);
-        }
+    for(let i = begin; i <= end; i++) {
+        this.variantTable[i] = familyID;
+
+        family.push(i);
     }
 
     this.variantFamilies[familyID] = family;

@@ -71,7 +71,7 @@ const executeToTransport = function(gameContext, data) {
     const team = entity.getTeam(gameContext);
 
     entity.saveTransport();
-    entity.loadConfig(entityType);
+    entity.loadConfig(gameContext, entityType);
     entity.setHealth(health);
     team.reduceCash(cost);
 }

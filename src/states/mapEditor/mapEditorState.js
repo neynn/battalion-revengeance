@@ -43,31 +43,25 @@ MapEditorState.prototype = Object.create(State.prototype);
 MapEditorState.prototype.constructor = MapEditorState;
 
 MapEditorState.prototype.initMapEditor = function() {
-    const families = [
-        MapEditor.generateVariantFamily(TILE_ID.ISLAND_1, TILE_ID.ISLAND_4),
-        MapEditor.generateVariantFamily(TILE_ID.SWIRL_1, TILE_ID.SWIRL_4),
-        MapEditor.generateVariantFamily(TILE_ID.ROCKS_1, TILE_ID.ROCKS_4),
+    this.mapEditor.registerVariantFamily(TILE_ID.ISLAND_1, TILE_ID.ISLAND_4);
+    this.mapEditor.registerVariantFamily(TILE_ID.SWIRL_1, TILE_ID.SWIRL_4);
+    this.mapEditor.registerVariantFamily(TILE_ID.ROCKS_1, TILE_ID.ROCKS_4);
 
-        MapEditor.generateVariantFamily(TILE_ID.PLAINS_GROUND_1, TILE_ID.PLAINS_GROUND_8),
-        MapEditor.generateVariantFamily(TILE_ID.PLAINS_SHRUB_1, TILE_ID.PLAINS_SHRUB_5),
-        MapEditor.generateVariantFamily(TILE_ID.PLAINS_FOREST_1, TILE_ID.PLAINS_FOREST_4),
-        MapEditor.generateVariantFamily(TILE_ID.PLAINS_MOUNTAIN_1, TILE_ID.PLAINS_MOUNTAIN_5),
-        MapEditor.generateVariantFamily(TILE_ID.PLAINS_HILLS_1, TILE_ID.PLAINS_HILLS_4),
+    this.mapEditor.registerVariantFamily(TILE_ID.PLAINS_GROUND_1, TILE_ID.PLAINS_GROUND_8);
+    this.mapEditor.registerVariantFamily(TILE_ID.PLAINS_SHRUB_1, TILE_ID.PLAINS_SHRUB_5);
+    this.mapEditor.registerVariantFamily(TILE_ID.PLAINS_FOREST_1, TILE_ID.PLAINS_FOREST_4);
+    this.mapEditor.registerVariantFamily(TILE_ID.PLAINS_MOUNTAIN_1, TILE_ID.PLAINS_MOUNTAIN_5);
+    this.mapEditor.registerVariantFamily(TILE_ID.PLAINS_HILLS_1, TILE_ID.PLAINS_HILLS_4);
 
-        MapEditor.generateVariantFamily(TILE_ID.BOREAL_GROUND_1, TILE_ID.BOREAL_GROUND_8),
-        MapEditor.generateVariantFamily(TILE_ID.BOREAL_FOREST_1, TILE_ID.BOREAL_FOREST_4),
-        MapEditor.generateVariantFamily(TILE_ID.BOREAL_MOUNTAIN_1, TILE_ID.BOREAL_MOUNTAIN_5),
-        MapEditor.generateVariantFamily(TILE_ID.BOREAL_HILLS_1, TILE_ID.BOREAL_HILLS_4),
+    this.mapEditor.registerVariantFamily(TILE_ID.BOREAL_GROUND_1, TILE_ID.BOREAL_GROUND_8);
+    this.mapEditor.registerVariantFamily(TILE_ID.BOREAL_FOREST_1, TILE_ID.BOREAL_FOREST_4);
+    this.mapEditor.registerVariantFamily(TILE_ID.BOREAL_MOUNTAIN_1, TILE_ID.BOREAL_MOUNTAIN_5);
+    this.mapEditor.registerVariantFamily(TILE_ID.BOREAL_HILLS_1, TILE_ID.BOREAL_HILLS_4);
 
-        MapEditor.generateVariantFamily(TILE_ID.ARCTIC_GROUND_1, TILE_ID.ARCTIC_GROUND_8),
-        MapEditor.generateVariantFamily(TILE_ID.ARCTIC_FOREST_1, TILE_ID.ARCTIC_FOREST_4),
-        MapEditor.generateVariantFamily(TILE_ID.ARCTIC_MOUNTAIN_1, TILE_ID.ARCTIC_MOUNTAIN_5),
-        MapEditor.generateVariantFamily(TILE_ID.ARCTIC_HILLS_1, TILE_ID.ARCTIC_HILLS_4)
-    ];
-
-    for(const family of families) {
-        this.mapEditor.registerVariantFamily(family);
-    }
+    this.mapEditor.registerVariantFamily(TILE_ID.ARCTIC_GROUND_1, TILE_ID.ARCTIC_GROUND_8);
+    this.mapEditor.registerVariantFamily(TILE_ID.ARCTIC_FOREST_1, TILE_ID.ARCTIC_FOREST_4);
+    this.mapEditor.registerVariantFamily(TILE_ID.ARCTIC_MOUNTAIN_1, TILE_ID.ARCTIC_MOUNTAIN_5);
+    this.mapEditor.registerVariantFamily(TILE_ID.ARCTIC_HILLS_1, TILE_ID.ARCTIC_HILLS_4);
 }
 
 MapEditorState.prototype.onEnter = function(gameContext, stateMachine) {
