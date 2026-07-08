@@ -30,7 +30,6 @@ export const BattalionEntity = function(id, config) {
     this.customID = ScenarioModel.INVALID_CUSTOM_ID;
     this.customName = LanguageHandler.INVALID_ID;
     this.customDesc = LanguageHandler.INVALID_ID;
-    this.damage = 0;
     this.health = 1;
     this.maxHealth = 1;
     this.moraleType = MORALE_TYPE.NORMAL;
@@ -148,13 +147,11 @@ BattalionEntity.prototype.load = function(data) {
  * @param {EntityType} config 
  */
 BattalionEntity.prototype.loadConfig = function(gameContext, config) {
-    const { health, damage } = config;
+    const { health } = config;
 
-    //TODO(neyn): Branch in different modes.
     this.config = config;
     this.health = health;
     this.maxHealth = health;
-    this.damage = damage;
     this.setHealth(this.health);
 }
 
@@ -173,7 +170,9 @@ BattalionEntity.prototype.getShop = function(gameContext) {
     return typeRegistry.getShopType(this.config.shop);
 }
 
-BattalionEntity.prototype.getDamage = function() {
+BattalionEntity.prototype.getDamage = function(gameContext) {
+    //TODO(neyn): Return correct value based on mode.
+
     return this.config.damage;
 }
 
@@ -719,7 +718,7 @@ BattalionEntity.prototype.getHealAmplifier = function(gameContext) {
     return damageAmplifier;
 }
 
-BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, damageFlags) {
+BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, flags) {
     const { typeRegistry } = gameContext;
     const targetArmor = target.config.armorType;
     const targetMove = target.config.movementType;
@@ -769,7 +768,7 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
     }
 
     //If it's not a counter it must be a normal attack.
-    if(damageFlags & ATTACK_FLAG.COUNTER) {
+    if(flags & ATTACK_FLAG.COUNTER) {
         if(this.hasTrait(TRAIT_TYPE.SLUGGER)) {
             healthFactor = 1;
         }
@@ -801,7 +800,7 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
         }
     }
 
-    if(damageFlags & ATTACK_FLAG.SHRAPNEL) {
+    if(flags & ATTACK_FLAG.SHRAPNEL) {
         otherFactor *= TRAIT_CONFIG.SHRAPNEL_DAMAGE;
     }
 
@@ -816,9 +815,9 @@ BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, dam
     return damageAmplifier;
 }
 
-BattalionEntity.prototype.getAttackDamage = function(gameContext, target, damageFlags) {
-    const damageAmplifier = this.getAttackAmplifier(gameContext, target, damageFlags);
-    let damage = this.damage * damageAmplifier;
+BattalionEntity.prototype.getAttackDamage = function(gameContext, target, flags) {
+    const damageAmplifier = this.getAttackAmplifier(gameContext, target, flags);
+    let damage = this.getDamage(gameContext) * damageAmplifier;
 
 	if(target.hasTrait(TRAIT_TYPE.CEMENTED_STEEL_ARMOR) && !this.hasTrait(TRAIT_TYPE.CAVITATION_EXPLOSION)) {
 		damage -= TRAIT_CONFIG.CEMENTED_STEEL_ARMOR_REDUCTION;

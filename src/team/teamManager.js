@@ -274,7 +274,7 @@ TeamManager.prototype.checkWinner = function() {
     }
 }
 
-TeamManager.prototype.updateStatus = function() {
+TeamManager.prototype.updateStatus = function(gameContext) {
     if(this.isConcluded) {
         return;
     }
@@ -284,7 +284,7 @@ TeamManager.prototype.updateStatus = function() {
     for(let i = 0; i < this.activeTeams.length; i++) {
         const team = this.teams[i];
 
-        team.updateStatus();
+        team.updateStatus(gameContext);
 
         if(team.isLoser()) {
             losers.push(i);

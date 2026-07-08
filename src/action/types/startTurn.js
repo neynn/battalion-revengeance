@@ -111,7 +111,7 @@ const executeStartTurn = function(gameContext, data) {
         event.execute(gameContext);
     }
 
-    teamManager.updateStatus();
+    teamManager.updateStatus(gameContext);
     //TODO: Get next turn, then check if any construction grows. Add that as next.
 }
 

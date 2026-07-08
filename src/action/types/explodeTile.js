@@ -55,7 +55,7 @@ const executeExplodeTile = function(gameContext, data) {
     }
 
     worldMap.explodeTile(gameContext, tileX, tileY);
-    teamManager.updateStatus();
+    teamManager.updateStatus(gameContext);
 }
 
 export const ExplodeTileVTable = {

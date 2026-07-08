@@ -63,7 +63,7 @@ const executeEndTurn = function(gameContext, data) {
 
     teamManager.endTurn();
     actorManager.clearCurrentActor(gameContext);
-    teamManager.updateStatus();
+    teamManager.updateStatus(gameContext);
 }
 
 export const EndTurnVTable = {

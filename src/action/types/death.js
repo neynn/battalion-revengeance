@@ -51,7 +51,7 @@ const executeDeath = function(gameContext, data) {
         killEntity(gameContext, entity);
     }
 
-    teamManager.updateStatus();
+    teamManager.updateStatus(gameContext);
 }
 
 export const DeathActionVTable = {

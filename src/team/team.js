@@ -1,6 +1,4 @@
 import { Objective } from "./objective/objective.js";
-import { UnitSurviveObjective } from "./objective/types/unitSurvive.js";
-import { LynchpinObjective } from "./objective/types/lynchpin.js";
 import { COMMANDER_TYPE, CURRENCY_TYPE, COLOR_TYPE, TEAM_STAT, TRAIT_TYPE, FACTION_TYPE } from "../enums.js";
 import { SCORE_BONUS, VICTORY_BONUS } from "../constants.js";
 import { createTeamSnapshot } from "../snapshot/teamSnapshot.js";
@@ -8,6 +6,8 @@ import { createTeamSnapshot } from "../snapshot/teamSnapshot.js";
 export const Team = function(id) {
     this.id = id;
     this.roster = [];
+    this.lynchpins = 0;
+    this.hasLynchpin = false;
     this.faction = FACTION_TYPE._INVALID;
     this.color = COLOR_TYPE.RED;
     this.currency = CURRENCY_TYPE.NONE;
@@ -19,10 +19,7 @@ export const Team = function(id) {
     this.stats = [];
     this.status = Team.STATUS.IDLE;
     this.isReserved = false;
-    this.objectives = [
-        new UnitSurviveObjective(),
-        new LynchpinObjective()
-    ];
+    this.objectives = [];
 
     for(let i = 0; i < TEAM_STAT._COUNT; i++) {
         this.stats[i] = 0;
@@ -35,13 +32,10 @@ Team.STATUS = {
     LOSER: 2
 };
 
-Team.OBJECTIVE = {
-    UNIT_SURVIVE: 0,
-    LYNCHPIN: 1
-};
-
 Team.prototype.reset = function() {
     this.roster.length = 0;
+    this.lynchpins = 0;
+    this.hasLynchpin = false;
     this.color = COLOR_TYPE.RED;
     this.currency = CURRENCY_TYPE.NONE;
     this.commander = COMMANDER_TYPE.NONE;
@@ -51,10 +45,7 @@ Team.prototype.reset = function() {
     this.turn = 0;
     this.status = Team.STATUS.IDLE;
     this.isReserved = false;
-
-    this.objectives[Team.OBJECTIVE.UNIT_SURVIVE].reset();
-    this.objectives[Team.OBJECTIVE.LYNCHPIN].reset();
-    this.objectives.length = 2;
+    this.objectives.length = 0;
 
     for(let i = 0; i < TEAM_STAT._COUNT; i++) {
         this.stats[i] = 0;
@@ -189,7 +180,18 @@ Team.prototype.getID = function() {
 Team.prototype.onEntityDeath = function(entity) {
     const entityID = entity.getID();
 
-    this.removeFromRoster(entityID);
+    for(let i = 0; i < this.roster.length; i++) {
+        if(this.roster[i] === entityID) {
+            this.roster[i] = this.roster[this.roster.length - 1];
+            this.roster.pop();
+
+            if(entity.hasTrait(TRAIT_TYPE.LYNCHPIN)) {
+                this.lynchpins--;
+            }
+
+            return;
+        }
+    }
 
     for(const objective of this.objectives) {
         objective.onEntityDeath(entity);
@@ -204,8 +206,33 @@ Team.prototype.isWinner = function() {
     return this.status === Team.STATUS.WINNER;
 }
 
-Team.prototype.updateStatus = function() {
+Team.prototype.updateStatus = function(gameContext) {
+    const { world } = gameContext;
+    const { entityManager } = world;
+
     if(this.status !== Team.STATUS.IDLE) {
+        return;
+    }
+
+    if(this.hasLynchpin && this.lynchpins <= 0) {
+        this.status = Team.STATUS.LOSER;
+        return;
+    }
+
+    let hasUseableEntity = false;
+
+    for(let i = 0; i < this.roster.length; i++) {
+        const entityID = this.roster[i];
+        const entity = entityManager.getEntity(entityID);
+
+        if(!entity.hasTrait(TRAIT_TYPE.FIXED)) {
+            hasUseableEntity = true;
+            break;
+        }
+    }
+
+    if(!hasUseableEntity) {
+        this.status = Team.STATUS.LOSER;
         return;
     }
 
@@ -235,11 +262,6 @@ Team.prototype.updateStatus = function() {
     if(necessaryObjectives !== 0 && objectivesWon === necessaryObjectives) {
         this.status = Team.STATUS.WINNER;
     }
-
-    //Edge case: Team was created with NO units(automatically lose).
-    if(this.objectives[Team.OBJECTIVE.UNIT_SURVIVE].isEmpty()) {
-        this.status = Team.STATUS.LOSER;
-    }
 }
 
 Team.prototype.addObjective = function(objective) {
@@ -255,36 +277,21 @@ Team.prototype.addGeneratedCash = function(cash) {
 
 Team.prototype.addToRoster = function(entity) {
     const entityID = entity.getID();
+    let canAdd = true;
 
-    if(!this.hasInRoster(entityID)) {
-        if(!entity.hasTrait(TRAIT_TYPE.FIXED)) {
-            this.objectives[Team.OBJECTIVE.UNIT_SURVIVE].addUnit(entityID);
+    for(let i = 0; i < this.roster.length; i++) {
+        if(this.roster[i] === entityID) {
+            canAdd = false;
+            break;
         }
+    }
+
+    if(canAdd) {
+        this.roster.push(entityID);
 
         if(entity.hasTrait(TRAIT_TYPE.LYNCHPIN)) {
-            this.objectives[Team.OBJECTIVE.LYNCHPIN].addLynchpin(entityID);
-        }
-        
-        this.roster.push(entityID);
-    }
-}
-
-Team.prototype.removeFromRoster = function(entityID) {
-    for(let i = 0; i < this.roster.length; i++) {
-        if(this.roster[i] === entityID) {
-            this.roster[i] = this.roster[this.roster.length - 1];
-            this.roster.pop();
-            return;
+            this.lynchpins++;
+            this.hasLynchpin = true;
         }
     }
-}
-
-Team.prototype.hasInRoster = function(entityID) {
-    for(let i = 0; i < this.roster.length; i++) {
-        if(this.roster[i] === entityID) {
-            return true;
-        }
-    }
-
-    return false;
 }
