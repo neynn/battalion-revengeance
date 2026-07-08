@@ -1,6 +1,6 @@
 import { BattalionMap } from "../map/battalionMap.js";
-import { CLIMATE_TYPE } from "../enums.js";
-import { createBuildingSnapshotFromJSON } from "../snapshot/buildingSnapshot.js";
+import { BUILDING_TYPE, CLIMATE_TYPE } from "../enums.js";
+import { createBuildingSnapshot } from "../snapshot/buildingSnapshot.js";
 import { MapPreview } from "../map/mapPreview.js";
 import { ClientScenarioLoader } from "../scenario/loaders/clientLoader.js";
 import { ServerScenarioLoader } from "../scenario/loaders/serverLoader.js";
@@ -25,7 +25,16 @@ const createWorldMap = function(gameContext, file, source) {
     worldMap.decodeLayers(data);
 
     for(const setup of buildings) {
-        const snapshot = createBuildingSnapshotFromJSON(setup);
+        const {
+            x = -1,
+            y = -1,
+            type = null
+        } = setup;
+        const snapshot = createBuildingSnapshot();
+
+        snapshot.type = BUILDING_TYPE[type] ?? BUILDING_TYPE.COMMAND_CENTER;;
+        snapshot.tileX = x;
+        snapshot.tileY = y;
 
         worldMap.createBuilding(gameContext, snapshot);
     }

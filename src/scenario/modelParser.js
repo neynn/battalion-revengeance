@@ -2,9 +2,10 @@ import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { WorldEvent } from "../../engine/world/event/worldEvent.js";
 import { MAX_TEAMS } from "../constants.js";
-import { COMMANDER_TYPE, COMPONENT_TYPE, DIRECTION, ENTITY_TYPE, FACTION_TYPE, MINE_TYPE, OBJECTIVE_TYPE, SHOP_TYPE } from "../enums.js";
+import { BattalionEntity } from "../entity/battalionEntity.js";
+import { COMMANDER_TYPE, COMPONENT_TYPE, DIRECTION, ENTITY_TYPE, FACTION_TYPE, MINE_TYPE, OBJECTIVE_TYPE, SHOP_TYPE, TRAIT_TYPE } from "../enums.js";
+import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 import { TeamManager } from "../team/teamManager.js";
-import { EntityEntry } from "./entityEntry.js";
 import { ScenarioModel } from "./scenarioModel.js";
 
 export const ScenarioModelParser = function() {
@@ -85,7 +86,8 @@ ScenarioModelParser.prototype.createDialogueEntry = function(config) {
     }
 }
 
-ScenarioModelParser.prototype.createEntityEntry = function(config) {
+ScenarioModelParser.prototype.createEntitySnapshotFromJSON = function(gameContext, config) {
+    const { typeRegistry } = gameContext;
     const {
         id = null,
         name = null,
@@ -102,21 +104,36 @@ ScenarioModelParser.prototype.createEntityEntry = function(config) {
         shop = null
     } = config;
 
-    return {
-        "id": this.getAndSetCustomID(id),
-        "name": this.getTextID(name),
-        "desc": this.getTextID(desc),
-        "team": this.getTeamID(team),
-        "type": ENTITY_TYPE[type] ?? ENTITY_TYPE._INVALID,
-        "x": x,
-        "y": y,
-        "direction": DIRECTION[direction] ?? DIRECTION.EAST,
-        "health": health,
-        "stealth": stealth,
-        "cash": cash,
-        "cargo": ENTITY_TYPE[cargo] ?? ENTITY_TYPE._INVALID,
-        "shop": SHOP_TYPE[shop] ?? SHOP_TYPE.NONE
+    const snapshot = createEntitySnapshot();
+    const typeID = ENTITY_TYPE[type] ?? ENTITY_TYPE._INVALID;
+    const entityType = typeRegistry.getEntityType(typeID);
+
+    snapshot.id = this.getAndSetCustomID(id);
+    snapshot.name = this.getTextID(name);
+    snapshot.desc = this.getTextID(desc);
+    snapshot.teamID = this.getTeamID(team);
+    snapshot.transport = ENTITY_TYPE[cargo] ?? ENTITY_TYPE._INVALID;
+    snapshot.direction = DIRECTION[direction] ?? DIRECTION.EAST;
+    snapshot.shop = SHOP_TYPE[shop] ?? SHOP_TYPE.NONE;
+    snapshot.type = typeID;
+    snapshot.health = entityType.health;
+    snapshot.tileX = x;
+    snapshot.tileY = y;
+    snapshot.cash = cash;
+
+    if(health > 0) {
+        snapshot.health = health;
     }
+
+    if(stealth && entityType.hasTrait(TRAIT_TYPE.STEALTH)) {
+        snapshot.flags |= BattalionEntity.FLAG.IS_CLOAKED;
+
+        if(entityType.hasTrait(TRAIT_TYPE.SUBMERGED)) {
+            snapshot.flags |= BattalionEntity.FLAG.IS_SUBMERGED;
+        }
+    }
+
+    return snapshot;
 }
 
 /**
@@ -124,7 +141,7 @@ ScenarioModelParser.prototype.createEntityEntry = function(config) {
  * @param {ScenarioModel} model 
  * @param {*} json 
  */
-ScenarioModelParser.prototype.parseModelFromJSON = function(model, json) {
+ScenarioModelParser.prototype.parseModelFromJSON = function(gameContext, model, json) {
     const {
         map = null,
         client = null,
@@ -274,7 +291,7 @@ ScenarioModelParser.prototype.parseModelFromJSON = function(model, json) {
     }
 
     for(let i = 0; i < entities.length; i++) {
-        const entry = this.createEntityEntry(entities[i]);
+        const entry = this.createEntitySnapshotFromJSON(gameContext, entities[i]);
 
         model.entities.push(entry);
     }
@@ -332,7 +349,7 @@ ScenarioModelParser.prototype.parseModelFromJSON = function(model, json) {
                 }
                 case COMPONENT_TYPE.SPAWN_ENTITY: {
                     data = {
-                        "entity": this.createEntityEntry(sim.entity)
+                        "entity": this.createEntitySnapshotFromJSON(gameContext, sim.entity)
                     };
 
                     break;

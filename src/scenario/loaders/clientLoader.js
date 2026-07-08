@@ -1,6 +1,6 @@
 import { unpackEntitySnapshot } from "../../action/packer_constants.js";
 import { LOADER_RULE } from "../../enums.js";
-import { createEntitySnapshot, createEntitySnapshotFromEntry } from "../../snapshot/entitySnapshot.js";
+import { createEntitySnapshot } from "../../snapshot/entitySnapshot.js";
 import { createClientEntityObject, createMineObject } from "../../systems/spawn.js";
 import { TeamManager } from "../../team/teamManager.js";
 import { ScenarioLoader } from "../scenarioLoader.js";
@@ -65,8 +65,7 @@ ClientScenarioLoader.prototype.createEntities = function(gameContext) {
 
     for(const config of this.scenario.entities) {
         const entityID = entityManager.getNextID();
-        const snapshot = createEntitySnapshotFromEntry(gameContext, config);
-        const entity = createClientEntityObject(gameContext, entityID, snapshot);
+        const entity = createClientEntityObject(gameContext, entityID, config);
 
         if(entity) {
             //...

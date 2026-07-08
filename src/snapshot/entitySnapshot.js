@@ -1,6 +1,6 @@
 import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { DIRECTION, ENTITY_TYPE, MORALE_TYPE, SHOP_TYPE, TRAIT_TYPE } from "../enums.js";
+import { DIRECTION, ENTITY_TYPE, MORALE_TYPE, SHOP_TYPE } from "../enums.js";
 import { ScenarioModel } from "../scenario/scenarioModel.js";
 import { TeamManager } from "../team/teamManager.js";
 
@@ -31,53 +31,4 @@ export const createEntitySnapshot = function() {
         "name": LanguageHandler.INVALID_ID, //INT16
         "desc": LanguageHandler.INVALID_ID, //INT16
     };
-}
-
-export const createEntitySnapshotFromEntry = function(gameContext, entry) {
-    const { typeRegistry } = gameContext;
-    const {
-        id,
-        name,
-        desc,
-        type,
-        x,
-        y,
-        direction,
-        health,
-        stealth,
-        cash,
-        cargo,
-        team,
-        shop
-    } = entry;
-
-    const snapshot = createEntitySnapshot();
-    const entityType = typeRegistry.getEntityType(type);
-
-    snapshot.id = id;
-    snapshot.name = name;
-    snapshot.desc = desc;
-    snapshot.type = type;
-    snapshot.health = entityType.health;
-    snapshot.teamID = team;
-    snapshot.tileX = x;
-    snapshot.tileY = y;
-    snapshot.direction = direction;
-    snapshot.cash = cash;
-    snapshot.transport = cargo;
-    snapshot.shop = shop;
-
-    if(health > 0) {
-        snapshot.health = health;
-    }
-
-    if(stealth && entityType.hasTrait(TRAIT_TYPE.STEALTH)) {
-        snapshot.flags |= BattalionEntity.FLAG.IS_CLOAKED;
-
-        if(entityType.hasTrait(TRAIT_TYPE.SUBMERGED)) {
-            snapshot.flags |= BattalionEntity.FLAG.IS_SUBMERGED;
-        }
-    }
-
-    return snapshot;
 }

@@ -12,7 +12,7 @@ ScenarioRegistry.prototype.load = function(gameContext, scenarios) {
         const data = scenarios[scenarioID];
 
         this.scenarios.set(scenarioID, model);
-        this.parser.parseModelFromJSON(model, data);
+        this.parser.parseModelFromJSON(gameContext, model, data);
         this.parser.reset();
     }
 }

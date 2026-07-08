@@ -1,4 +1,3 @@
-import { createEntitySnapshotFromEntry } from "../../snapshot/entitySnapshot.js";
 import { createServerEntityObject } from "../../systems/spawn.js";
 import { ScenarioLoader } from "../scenarioLoader.js";
 
@@ -34,8 +33,7 @@ ServerScenarioLoader.prototype.createEntities = function(gameContext) {
 
     for(let i = 0; i < this.scenario.entities.length; i++) {
         const entityID = entityManager.getNextID();
-        const snapshot = createEntitySnapshotFromEntry(gameContext, this.scenario.entities[i]);
-        const entity = createServerEntityObject(gameContext, entityID, snapshot);
+        const entity = createServerEntityObject(gameContext, entityID, this.scenario.entities[i]);
 
         if(entity) {
             //...

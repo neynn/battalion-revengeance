@@ -25,20 +25,30 @@ import { SpawnComponent } from "../event/components/spawn.js";
 import { PlaySoundComponent } from "../event/components/playSound.js";
 import { PlaySpriteComponent } from "../event/components/playSprite.js";
 
-import { createEntitySnapshotFromEntry } from "../snapshot/entitySnapshot.js";
 import { TeamManager } from "../team/teamManager.js";
 import { ScenarioModel } from "./scenarioModel.js";
 
-const createCustomColor = function(gameContext, team, colorMap) {
+/**
+ * Overrides the specific color for teamID
+ * This allows a max of 8 custom colors per match.
+ * 
+ * @param {*} gameContext 
+ * @param {number} teamID 
+ * @param {*} colorMap 
+ * @returns 
+ */
+const overrideColor = function(gameContext, teamID, colorMap) {
     const { typeRegistry } = gameContext;
-    const { id } = team;
-    const colorID = COLOR_TYPE.CUSTOM_1 + id; //TeamID from 0 to n (max 8).
-    const colorType = typeRegistry.getColorType(colorID);
+    const colorID = COLOR_TYPE.CUSTOM_1 + teamID;
 
-    colorType.reset();
-    colorType.loadCustom(colorMap);
+    if(colorID >= COLOR_TYPE.CUSTOM_1 && colorID <= COLOR_TYPE.CUSTOM_8) {
+        const colorType = typeRegistry.getColorType(colorID);
 
-    team.color = colorID;
+        colorType.reset();
+        colorType.loadCustom(colorMap);
+    }
+
+    return colorID;
 }
 
 /**
@@ -105,8 +115,7 @@ ScenarioLoader.prototype.createEventComponents = function(gameContext, event, si
                     break;
                 }
                 case COMPONENT_TYPE.SPAWN_ENTITY: {
-                    const snapshot = createEntitySnapshotFromEntry(gameContext, data.entity);
-                    const component = new SpawnComponent(snapshot);
+                    const component = new SpawnComponent(data.entity);
 
                     event.addSimulation(component);
                     break;
@@ -265,7 +274,9 @@ ScenarioLoader.prototype.createTeams = function(gameContext, overrides) {
 
             if(this.rules & LOADER_RULE.CUSTOM_COLOR) {
                 if(color !== null) {
-                    createCustomColor(gameContext, teamObject, color);
+                    const colorID = overrideColor(gameContext, team, color);
+
+                    teamObject.color = colorID;
                 }
             }
 
