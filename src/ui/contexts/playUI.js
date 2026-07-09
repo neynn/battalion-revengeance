@@ -3,7 +3,7 @@ import { toCenter } from "../../../engine/math/math.js";
 import { SpriteManager } from "../../../engine/sprite/spriteManager.js";
 import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
 import { MapInspector } from "../../map/mapInspector.js";
-import { getHealthColor } from "../../entity/helpers.js";
+import { getHealthColor } from "../../camera/helpers.js";
 import { DIRECTION, TILE_ID } from "../../enums.js";
 import { UI_TEXTURE, HUD_BUTTON, GENERIC_BUTTON_STYLE, HUD_BUTTON_STYLE } from "../constants.js";
 import { BattalionMap } from "../../map/battalionMap.js";

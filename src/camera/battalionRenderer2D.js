@@ -11,7 +11,7 @@ import { EntityType } from "../type/parsed/entityType.js";
 import { Mine } from "../entity/mine.js";
 import { TeamManager } from "../team/teamManager.js";
 import { ImageResource } from "../../engine/resources/texture/imageResource.js";
-import { getHealthColor } from "../entity/helpers.js";
+import { getHealthColor } from "./helpers.js";
 import { Autotiler } from "../../engine/tile/autotiler.js";
 import { TextStyle } from "../../engine/graphics/textStyle.js";
 import { Renderer2D } from "../../engine/renderer/renderer2D.js";

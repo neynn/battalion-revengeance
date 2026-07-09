@@ -1,4 +1,4 @@
-import { TeamManager } from "../team/teamManager.js";
+import { TeamManager } from "./teamManager.js";
 
 export const TeamOverride = function() {
     this.team = TeamManager.INVALID_ID;

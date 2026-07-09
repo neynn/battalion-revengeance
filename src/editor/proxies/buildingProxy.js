@@ -1,4 +1,4 @@
-import { BUILDING_TYPE, COLOR_TYPE, FACTION_TYPE } from "../enums.js";
+import { BUILDING_TYPE, COLOR_TYPE, FACTION_TYPE } from "../../enums.js";
 
 export const BuildingProxy = function() {
     this.tileX = -1;

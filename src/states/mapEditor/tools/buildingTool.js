@@ -1,5 +1,5 @@
 import { BUILDING_TYPE, COLOR_TYPE, FACTION_TYPE } from "../../../enums.js";
-import { BuildingProxy } from "../../../proxies/buildingProxy.js";
+import { BuildingProxy } from "../../../editor/proxies/buildingProxy.js";
 
 export const BuildingTool = function() {
     this.buildingTypeNames = new Map();

@@ -3,7 +3,7 @@ import { MapSystem } from "../../systems/map.js";
 import { clampValue } from "../../../engine/math/math.js";
 import { Cursor } from "../../../engine/client/cursor/cursor.js";
 import { BUILDING_TYPE, CLIMATE_TYPE, COLOR_TYPE, FACTION_TYPE } from "../../enums.js";
-import { BuildingProxy } from "../../proxies/buildingProxy.js";
+import { BuildingProxy } from "../../editor/proxies/buildingProxy.js";
 import { TextureRegistry } from "../../../engine/resources/texture/textureRegistry.js";
 import { BuildingTool } from "./tools/buildingTool.js";
 import { MapEditor } from "../../../engine/map/editor/mapEditor.js";
