@@ -5,6 +5,7 @@ import { BattalionEntity } from "./entity/battalionEntity.js";
 import { BUILDING_TYPE, COLOR_TYPE, DIRECTION, EFFECT_SPRITE, ENTITY_TYPE, LAYER_TYPE } from "./enums.js";
 import { TeamManager } from "./team/teamManager.js";
 import { TextureRegistry } from "../engine/resources/texture/textureRegistry.js";
+import { MAX_BUILDINGS, MAX_UNITS } from "./constants.js";
 
 //INFO(neyn): This is hard-coded but I don't really care :)
 const BUILDING_NEUTRAL_COLORS = {
@@ -20,9 +21,6 @@ const BUILDING_NEUTRAL_COLORS = {
     0xFFE975: [125, 153, 138],
     0xFFFFDC: [173, 183, 170]
 };
-
-const MAX_ENTITY_SPRITES = 1000;
-const MAX_BUILDING_SPRITES = 100;
 
 const MAX_SHADES = ENTITY_TYPE._COUNT * DIRECTION._COUNT;
 const SPRITES_PER_ENTITY_TYPE = DIRECTION._COUNT * BattalionEntity.STATE._COUNT;
@@ -116,16 +114,15 @@ const spriteNameToIndex = function(name, type) {
 
 export const SpriteController = function() {
     this.shades = [];
-    this.buildingSprites = new Int16Array(MAX_BUILDING_SPRITES);
-    this.entitySprites = new Int16Array(MAX_ENTITY_SPRITES);
+    this.buildingSprites = new Int16Array(MAX_BUILDINGS);
+    this.unitSprites = new Int16Array(MAX_UNITS);
 
     this.entityEffectRegistry = new Int16Array(ENTITY_EFFECT_COUNT);
-    this.entityEffectRegistry.fill(-1);
-
     this.entitySpriteRegistry = new Int16Array(ENTITY_SPRITE_COUNT);
-    this.entitySpriteRegistry.fill(-1);
-    
     this.buildingSpriteRegistry = new Int16Array(BUILDING_SPRITE_COUNT);
+
+    this.entityEffectRegistry.fill(-1);
+    this.entitySpriteRegistry.fill(-1);
     this.buildingSpriteRegistry.fill(-1);
 
     for(let i = 0; i < MAX_SHADES; i++) {
@@ -233,12 +230,12 @@ SpriteController.prototype.registerEntitySprites = function(gameContext, entityT
 }
 
 SpriteController.prototype.resetSprites = function() {
-    for(let i = 0; i < MAX_BUILDING_SPRITES; i++) {
+    for(let i = 0; i < MAX_BUILDINGS; i++) {
         this.buildingSprites[i] = SpriteManager.INVALID_ID;
     }
 
-    for(let i = 0; i < MAX_ENTITY_SPRITES; i++) {
-        this.entitySprites[i] = SpriteManager.INVALID_ID;
+    for(let i = 0; i < MAX_UNITS; i++) {
+        this.unitSprites[i] = SpriteManager.INVALID_ID;
     }
 }
 
@@ -253,7 +250,7 @@ SpriteController.prototype.getShade = function(type, direction) {
 }
 
 SpriteController.prototype.getBuildingSpriteID = function(index) {
-    if(index < 0 || index >= MAX_BUILDING_SPRITES) {
+    if(index < 0 || index >= MAX_BUILDINGS) {
         return SpriteManager.INVALID_ID;
     }
 
@@ -322,11 +319,11 @@ SpriteController.prototype.updateBuildingSprite = function(gameContext, building
 }
 
 SpriteController.prototype.getEntitySpriteID = function(index) {
-    if(index < 0 || index >= MAX_ENTITY_SPRITES) {
+    if(index < 0 || index >= MAX_UNITS) {
         return SpriteManager.INVALID_ID;
     }
 
-    return this.entitySprites[index];
+    return this.unitSprites[index];
 }
 
 SpriteController.prototype.destroyEntitySprite = function(gameContext, entity) {
@@ -336,7 +333,7 @@ SpriteController.prototype.destroyEntitySprite = function(gameContext, entity) {
 
     spriteManager.destroySprite(spriteID);
 
-    this.entitySprites[index] = SpriteManager.INVALID_ID;
+    this.unitSprites[index] = SpriteManager.INVALID_ID;
 }
 
 SpriteController.prototype.createEntitySprite = function(gameContext, entity) {
@@ -346,8 +343,8 @@ SpriteController.prototype.createEntitySprite = function(gameContext, entity) {
     const { color } = teamManager.getTeam(teamID);
     const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
 
-    if(index >= 0 && index < MAX_ENTITY_SPRITES) {
-        this.entitySprites[index] = visualSprite.getIndex();
+    if(index >= 0 && index < MAX_UNITS) {
+        this.unitSprites[index] = visualSprite.getIndex();
         this.bufferEntitySprites(gameContext, id, color);
         this.updateEntitySprite(gameContext, entity);
     }
@@ -423,17 +420,17 @@ SpriteController.prototype.bufferEntitySprites = function(gameContext, typeID, c
 SpriteController.prototype.clearSprites = function(gameContext) {
     const { spriteManager } = gameContext;
 
-    for(let i = 0; i < MAX_ENTITY_SPRITES; i++) {
-        const spriteID = this.entitySprites[i];
+    for(let i = 0; i < MAX_UNITS; i++) {
+        const spriteID = this.unitSprites[i];
 
         if(spriteID !== SpriteManager.INVALID_ID) {
             spriteManager.destroySprite(spriteID);
 
-            this.entitySprites[i] = SpriteManager.INVALID_ID;
+            this.unitSprites[i] = SpriteManager.INVALID_ID;
         }
     }
 
-    for(let i = 0; i < MAX_BUILDING_SPRITES; i++) {
+    for(let i = 0; i < MAX_BUILDINGS; i++) {
         const spriteID = this.buildingSprites[i];
 
         if(spriteID !== SpriteManager.INVALID_ID) {

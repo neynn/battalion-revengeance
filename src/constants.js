@@ -19,3 +19,5 @@ export const VICTORY_BONUS = 5000;
 
 //TODO(neyn): Implement
 export const MAX_TEAMS = 8;
+export const MAX_UNITS = 1000;
+export const MAX_BUILDINGS = 100;

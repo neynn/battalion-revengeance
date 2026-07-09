@@ -5,7 +5,6 @@ import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ACTION_TYPE, ATTACK_TYPE, ATTACK_COMMAND_TYPE, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { CombatSystem, InteractionResolver, ResolutionSystem } from "../../systems/combat.js";
-import { playEntitySound } from "../../systems/sound.js";
 import { getAnimationDuration, playAttackEffect } from "../../systems/sprite.js";
 import { DeathActionVTable } from "./death.js";
 
@@ -171,7 +170,7 @@ AttackAction.prototype = Object.create(Action.prototype);
 AttackAction.prototype.constructor = AttackAction;
 
 AttackAction.prototype.onStart = function(gameContext, data) {
-    const { world, spriteController } = gameContext;
+    const { world, spriteController, soundController } = gameContext;
     const { entityManager } = world;
     const { attackerID, targetID, resolutions, flags } = data;
     const entity = entityManager.getEntity(attackerID);
@@ -185,8 +184,8 @@ AttackAction.prototype.onStart = function(gameContext, data) {
     }
 
     spriteController.updateEntitySprite(gameContext, entity);
+    soundController.playUnitSound(gameContext, entity, SOUND_TYPE.FIRE);
 
-    playEntitySound(gameContext, entity, SOUND_TYPE.FIRE);
     playAttackEffect(gameContext, entity, target, resolutions);
 
     if(flags & ATTACK_FLAG.UNCLOAK) {

@@ -14,6 +14,7 @@ import { UIData } from "./ui/uiData.js";
 import { MissionManager } from "./mission/missionManager.js";
 import { ScenarioRegistry } from "./scenario/scenarioRegistry.js";
 import { SpriteController } from "./spriteController.js";
+import { SoundController } from "./soundController.js";
 
 export const BattalionContext = function() {
     ClientGameContext.call(this);
@@ -22,6 +23,7 @@ export const BattalionContext = function() {
     this.teamManager = new TeamManager();
     this.actionRouter = new ClientActionRouter();
     this.spriteController = new SpriteController();
+    this.soundController = new SoundController();
     this.mapRegistry = new MapRegistry();
     this.missionManager = new MissionManager();
     this.scenarioRegistry = new ScenarioRegistry();
@@ -63,6 +65,7 @@ BattalionContext.prototype.init = function(resources) {
     registerActionVTables(this);
     registerClientActions(this);
 
+    this.soundController.registerUnitSounds(this, resources.entityTypes);
     this.spriteController.registerEntitySprites(this, resources.entityTypes);
     this.spriteController.registerBuildingSprites(this, resources.buildingTypes);
     this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);

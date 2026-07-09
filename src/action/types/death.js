@@ -2,7 +2,6 @@ import { Action } from "../../../engine/action/action.js";
 import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ACTION_TYPE, SOUND_TYPE } from "../../enums.js";
-import { playEntitySound } from "../../systems/sound.js";
 import { killEntity } from "../../systems/spawn.js";
 import { playDeathEffect } from "../../systems/sprite.js";
 import { DeathTween } from "../../tween/deathTween.js";
@@ -71,7 +70,7 @@ DeathAction.prototype = Object.create(Action.prototype);
 DeathAction.prototype.constructor = DeathAction;
 
 DeathAction.prototype.onStart = function(gameContext, data) {
-    const { world, tweenManager } = gameContext;
+    const { world, tweenManager, soundController } = gameContext;
     const { entityManager } = world;
     const { entities } = data;
     const entityList = [];
@@ -83,8 +82,8 @@ DeathAction.prototype.onStart = function(gameContext, data) {
         entity.clearRFlag(BattalionEntity.RENDER_FLAG.MARKABLE);
 
         playDeathEffect(gameContext, entity);
-        playEntitySound(gameContext, entity, SOUND_TYPE.DEATH);
 
+        soundController.playUnitSound(gameContext, entity, SOUND_TYPE.DEATH);
         entityList.push(entity);
     }
 

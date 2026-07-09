@@ -11,13 +11,13 @@ export const EFFECT_SPRITE = {
 };
 
 export const SOUND_TYPE = {
-    HEAL: "heal",
-    MOVE: "move",
-    FIRE: "fire",
-    CLOAK: "cloak",
-    DEATH: "death",
-    RECRUIT: "recruit",
-    UNCLOAK: "uncloak",
+    HEAL: 0,
+    MOVE: 1,
+    FIRE: 2,
+    CLOAK: 3,
+    DEATH: 4,
+    RECRUIT: 5,
+    UNCLOAK: 6,
     _COUNT: 7
 };
 

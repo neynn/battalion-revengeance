@@ -3,7 +3,6 @@ import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ACTION_TYPE, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
-import { playEntitySound } from "../../systems/sound.js";
 
 const createRepairIntent = function(entityID) {
     return new ActionIntent(ACTION_TYPE.REPAIR, {
@@ -83,10 +82,10 @@ RepairAction.prototype = Object.create(Action.prototype);
 RepairAction.prototype.constructor = RepairAction;
 
 RepairAction.prototype.onStart = function(gameContext, data) {
-    const { world } = gameContext;
+    const { world, soundController } = gameContext;
     const { entityManager } = world;
     const { entityID, cost } = data;
     const entity = entityManager.getEntity(entityID);
 
-    playEntitySound(gameContext, entity, SOUND_TYPE.HEAL);
+    soundController.playUnitSound(gameContext, entity, SOUND_TYPE.HEAL);
 }

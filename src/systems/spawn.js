@@ -3,7 +3,6 @@ import { LAYER_TYPE, TEAM_STAT } from "../enums.js";
 import { Building } from "../entity/building.js";
 import { Mine } from "../entity/mine.js";
 import { SpriteManager } from "../../engine/sprite/spriteManager.js";
-import { bufferEntitySounds } from "./sound.js";
 import { transformTileToWorld } from "../../engine/math/transform2D.js";
 
 const createEntity = function(gameContext, entityID, snapshot) {
@@ -40,7 +39,7 @@ export const killEntity = function(gameContext, entity) {
 }
 
 export const createClientEntityObject = function(gameContext, entityID, snapshot) {
-    const { teamManager, spriteController } = gameContext;
+    const { teamManager, spriteController, soundController } = gameContext;
     const { type, teamID } = snapshot;
     const team = teamManager.getTeam(teamID);
 
@@ -56,8 +55,7 @@ export const createClientEntityObject = function(gameContext, entityID, snapshot
 
     if(!entity.isDead()) {
         spriteController.createEntitySprite(gameContext, entity);
-
-        bufferEntitySounds(gameContext, entity);
+        soundController.bufferUnitSounds(gameContext, entity.config.id);
 
         team.addToRoster(entity);
         entity.placeOnMap(gameContext);

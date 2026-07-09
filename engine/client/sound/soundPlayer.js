@@ -1,12 +1,31 @@
 import { PathHandler } from "../../resources/pathHandler.js";
 import { Sound } from "./sound.js";
 
+const GameSound = function(id) {
+    this.id = id;
+    this.path = "";
+    this.allowStacking = false;
+    this.volume = 0;
+    this.isLoading = false;
+}
+
 export const SoundPlayer = function() {
     this.volume = 0.3;
-    this.sounds = {};
+    this.sounds = [];
+    this.soundMap = new Map();
     this.loadedSounds = new Map();
     this.activeSounds = new Map();
     this.audioContext = new AudioContext();
+}
+
+SoundPlayer.prototype.getSoundID = function(soundName) {
+    const soundID = this.soundMap.get(soundName);
+
+    if(soundID === undefined) {
+        return -1;
+    }
+
+    return soundID;
 }
 
 SoundPlayer.prototype.load = function(soundTypes) {
@@ -14,7 +33,18 @@ SoundPlayer.prototype.load = function(soundTypes) {
         return;
     }
 
-    this.sounds = soundTypes; 
+    for(const soundName in soundTypes) {
+        const { directory = [], source = "", volume = 0, allowStacking = false } = soundTypes[soundName];
+        const soundID = this.sounds.length;
+        const sound = new GameSound(soundID);
+
+        sound.path = PathHandler.getPath(directory, source);
+        sound.volume = volume;
+        sound.allowStacking = allowStacking;
+
+        this.sounds.push(sound);
+        this.soundMap.set(soundName, soundID);
+    }
 }
 
 SoundPlayer.prototype.exit = function() {
@@ -23,23 +53,27 @@ SoundPlayer.prototype.exit = function() {
 }
 
 SoundPlayer.prototype.bufferAudio = async function(audioID) {
-    const soundType = this.sounds[audioID];
-
-    if(!soundType) {
+    if(audioID < 0 || audioID >= this.sounds.length) {
         return Promise.resolve(null);
     }
 
-    const { directory, source, volume = this.volume, allowStacking } = soundType; 
+    const soundType = this.sounds[audioID];
+    const { path, volume, allowStacking, isLoading } = soundType;
+
+    if(isLoading) {
+        return Promise.resolve(null);
+    }
 
     if(this.loadedSounds.has(audioID)) {
         return Promise.resolve(this.loadedSounds.get(audioID));
     }
-    
-    const path = PathHandler.getPath(directory, source);
+
+    soundType.isLoading = true;
 
     return PathHandler.promiseAudioBuffer(path, this.audioContext)
     .then(audioBuffer => {
-        const sound = new Sound(audioBuffer, volume, allowStacking);
+        //TODO(neyn): Add correct volume.
+        const sound = new Sound(audioBuffer, this.volume, allowStacking);
 
         this.activeSounds.set(audioID, 0);
         this.loadedSounds.set(audioID, sound);
@@ -47,7 +81,12 @@ SoundPlayer.prototype.bufferAudio = async function(audioID) {
         sound.onInstanceEnd = (instanceID) => this.onSoundEnded(audioID, instanceID);
         sound.onInstanceStart = (instanceID) => this.onSoundStarted(audioID, instanceID);
 
+        soundType.isLoading = false;
+
         return sound;
+    })
+    .catch(() => {
+        soundType.isLoading = false;
     });
 }
 
@@ -76,9 +115,7 @@ SoundPlayer.prototype.onSoundStarted = function(audioID, instanceID) {
 }
 
 SoundPlayer.prototype.isPlayable = function(soundID) {
-    const soundType = this.sounds[soundID];
-
-    if(!soundType) {
+    if(soundID < 0 || soundID >= this.sounds.length) {
         return false;
     }
 
@@ -86,7 +123,7 @@ SoundPlayer.prototype.isPlayable = function(soundID) {
         return true;
     }
 
-    const { allowStacking } = soundType;
+    const { allowStacking } = this.sounds[soundID];
     const count = this.activeSounds.get(soundID);
 
     return allowStacking || count === 0;
@@ -122,21 +159,17 @@ SoundPlayer.prototype.stop = function(soundID) {
     }
 }
 
-SoundPlayer.prototype.play = function(sounds) {
-    if(Array.isArray(sounds)) {
-        const soundID = this.getRandomSoundID(sounds);
-
-        if(soundID) {
-            this.playSound(soundID);
+SoundPlayer.prototype.play = function(soundID) {
+    switch(typeof soundID) {
+        case "string": {
+            this.playSound(this.getSoundID(soundID));
+            break;
         }
-
-
-        return soundID;
+        case "number": {
+            this.playSound(soundID);
+            break;
+        }
     }
-
-    this.playSound(sounds);
-
-    return sounds;
 }
 
 SoundPlayer.prototype.playSound = async function(audioID) {

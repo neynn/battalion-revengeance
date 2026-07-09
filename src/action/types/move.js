@@ -7,7 +7,7 @@ import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ACTION_TYPE, ATTACK_COMMAND_TYPE, HEAL_COMMAND_TYPE, MOVE_COMMAND, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { InterceptSystem, PathfinderSystem } from "../../systems/pathfinder.js";
 import { createStep } from "../../systems/direction.js";
-import { playEntitySound, playUncloakSound } from "../../systems/sound.js";
+import { playUncloakSound } from "../../systems/sound.js";
 import { AttackActionVTable } from "./attack.js";
 import { CloakActionVTable } from "./cloak.js";
 import { HealVTable } from "./heal.js";
@@ -210,7 +210,7 @@ MoveAction.prototype = Object.create(Action.prototype);
 MoveAction.prototype.constructor = MoveAction;
 
 MoveAction.prototype.onStart = function(gameContext, data) {
-    const { world, spriteController } = gameContext;
+    const { world, spriteController, soundController } = gameContext;
     const { mapManager, entityManager } = world;
     const { entityID, path } = data;
     const entity = entityManager.getEntity(entityID);
@@ -219,8 +219,7 @@ MoveAction.prototype.onStart = function(gameContext, data) {
     entityManager.addHot(entity.getIndex());
     entity.setState(BattalionEntity.STATE.MOVE);
     spriteController.updateEntitySprite(gameContext, entity);
-
-    playEntitySound(gameContext, entity, SOUND_TYPE.MOVE);
+    soundController.playUnitSound(gameContext, entity, SOUND_TYPE.MOVE);
 
     this.path = path;
     this.pathIndex = 0;
