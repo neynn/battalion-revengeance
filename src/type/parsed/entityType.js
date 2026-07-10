@@ -39,7 +39,6 @@ export const EntityType = function(id) {
     this.maxRange = 1;
     this.streamRange = 1;
     this.cost = 0;
-    this.sounds = {};
     this.traits = [];
     this.allowedTransports = [TRANSPORT_TYPE.BARGE, TRANSPORT_TYPE.PELICAN, TRANSPORT_TYPE.STORK];
     this.category = mapMovementToCategory(this.movementType);
@@ -72,8 +71,8 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
         desc = "MISSING_DESC_ENTITY",
         name = "MISSING_NAME_ENTITY",
         traits = [],
-        transport = [],
-        sounds = {},
+        transport = []
+        //sounds = {}, Used in SoundController
         //sprites = {}, Used in SpriteController
         //effects = {} Used in SpriteController
     } = config;
@@ -95,7 +94,6 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
     this.cost = cost;
     this.minRange = minRange;
     this.maxRange = maxRange;
-    this.sounds = sounds;
 
     if(this.maxRange < this.minRange) {
         this.maxRange = this.minRange;
