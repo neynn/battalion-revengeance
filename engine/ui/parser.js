@@ -29,7 +29,7 @@ const getTypeID = function(name) {
     }
 }
 
-const createElement = function(textureLoader, config, DEBUG_NAME) {
+const createElement = function(textureRegistry, config, DEBUG_NAME) {
     const {
         type,
         position = { x: 0, y: 0 },
@@ -87,13 +87,13 @@ const createElement = function(textureLoader, config, DEBUG_NAME) {
                 scale = 1
             } = config;
 
-            const textureID = textureLoader.getGUIID(image);
+            const textureID = textureRegistry.getTextureID(TextureRegistry.CATEGORY.GUI, image);
 
             if(textureID !== TextureRegistry.INVALID_ID) {
-                const texture = textureLoader.getTexture(textureID);
+                const texture = textureRegistry.getTexture(textureID);
                 const image = texture.getImage();
 
-                textureLoader.loadTexture(textureID);
+                textureRegistry.loadTexture(textureID);
                 element.setImage(image);
             }
 
@@ -144,13 +144,13 @@ const createElement = function(textureLoader, config, DEBUG_NAME) {
 }
 
 const createLayout = function(gameContext, uiContext, layout) {
-    const { textureLoader, gameWindow } = gameContext;
+    const { textureRegistry, gameWindow } = gameContext;
     const windowWidth = gameWindow.width;
     const windowHeight = gameWindow.height;
 
     for(const elementName in layout) {
         const config = layout[elementName];
-        const element = createElement(textureLoader, config, elementName);
+        const element = createElement(textureRegistry, config, elementName);
 
         uiContext.addElement(element);
         uiContext.registerName(elementName, element);   

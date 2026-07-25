@@ -2,23 +2,16 @@ import { TextureRegistry } from "./textureRegistry.js";
 import { ImageResource } from "./imageResource.js";
 import { RecolorRegionTask } from "../textureTask/recolorRegionTask.js";
 import { ShadeTask } from "../textureTask/shadeTask.js";
+import { TextureTask } from "../textureTask/textureTask.js";
 
-export const TextureLoader = function() {
-    this.textureRegistry = new TextureRegistry();
-    this.toResolve = new Map();
+/**
+ * 
+ * @param {TextureRegistry} textureRegistry 
+ */
+export const TextureLoader = function(textureRegistry) {
+    this.textureRegistry = textureRegistry;
     this.tasks = [];
     this.totalTasks = 0;
-}
-
-TextureLoader.prototype.clearRegistry = function(registryID) {
-    if(registryID < 0 || registryID >= TextureRegistry.REGISTRY_TYPE._COUNT) {
-        return;
-    }
-
-    const textures = this.textureRegistry.textures;
-    const registry = this.textureRegistry.registries[registryID];
-
-    registry.forEach(textureID => textures[textureID].clear());
 }
 
 TextureLoader.prototype.exit = function() {
@@ -32,42 +25,6 @@ TextureLoader.prototype.isDone = function() {
 
 TextureLoader.prototype.getCompletedTasks = function() {
     return this.totalTasks - this.tasks.length;
-}
-
-TextureLoader.prototype.getTotalKBUsed = function() {
-    return this.textureRegistry.getSizeBytes() / 1024;
-}
-
-TextureLoader.prototype.getTileID = function(name) {
-    return this.textureRegistry.getTextureID(TextureRegistry.REGISTRY_TYPE.TILE, name);
-}
-
-TextureLoader.prototype.getSpriteID = function(name) {
-    return this.textureRegistry.getTextureID(TextureRegistry.REGISTRY_TYPE.SPRITE, name);
-}
-
-TextureLoader.prototype.getGUIID = function(name) {
-    return this.textureRegistry.getTextureID(TextureRegistry.REGISTRY_TYPE.GUI, name);
-}
-
-TextureLoader.prototype.createTileTextures = function(textures) {
-    this.textureRegistry.createTextures(TextureRegistry.REGISTRY_TYPE.TILE, textures);
-}
-
-TextureLoader.prototype.createSpriteTextures = function(textures) {
-    this.textureRegistry.createTextures(TextureRegistry.REGISTRY_TYPE.SPRITE, textures);
-}
-
-TextureLoader.prototype.createGUITextures = function(textures) {
-    this.textureRegistry.createTextures(TextureRegistry.REGISTRY_TYPE.GUI, textures);
-}
-
-TextureLoader.prototype.getTextureWithFallback = function(index) {
-    return this.textureRegistry.getTextureWithFallback(index);
-}
-
-TextureLoader.prototype.getTexture = function(index) {
-    return this.textureRegistry.getTexture(index);
 }
 
 TextureLoader.prototype.update = function() {
@@ -85,7 +42,7 @@ TextureLoader.prototype.update = function() {
 }
 
 TextureLoader.prototype.addShadeTask = function(textureID, rect, target) {
-    const texture = this.getTexture(textureID);
+    const texture = this.textureRegistry.getTexture(textureID);
 
     if(!texture) {
         return;
@@ -94,7 +51,7 @@ TextureLoader.prototype.addShadeTask = function(textureID, rect, target) {
     const source = texture.getImage();
 
     if(source.state === ImageResource.STATE.EMPTY) {
-        this.loadTexture(textureID);
+        this.textureRegistry.loadTexture(textureID);
     }
 
     this.tasks.push(new ShadeTask(source, target, rect));
@@ -111,7 +68,7 @@ TextureLoader.prototype.addRecolorTask = function(textureID, colorID, colorMap) 
         }
     }
 
-    const texture = this.getTexture(textureID);
+    const texture = this.textureRegistry.getTexture(textureID);
 
     if(!texture) {
         return;
@@ -122,7 +79,7 @@ TextureLoader.prototype.addRecolorTask = function(textureID, colorID, colorMap) 
 
     if(target.state === ImageResource.STATE.EMPTY) {
         if(source.state === ImageResource.STATE.EMPTY) {
-            this.loadTexture(textureID);
+            this.textureRegistry.loadTexture(textureID);
         }
 
         const task = new RecolorRegionTask(source, target, texture.regions);
@@ -133,80 +90,4 @@ TextureLoader.prototype.addRecolorTask = function(textureID, colorID, colorMap) 
         this.tasks.push(task);
         this.totalTasks++;
     }
-}
-
-TextureLoader.prototype.addLoadResolver = function(textureID, onLoad) {
-    const toResolve = this.toResolve.get(textureID);
-
-    if(toResolve) {
-        toResolve.push(onLoad);
-    } else {
-        this.toResolve.set(textureID, [onLoad]);
-    }
-}
-
-TextureLoader.prototype.resolveLoad = function(textureID, bitmap) {
-    const toResolve = this.toResolve.get(textureID);
-
-    if(toResolve) {
-        toResolve.forEach(onLoad => onLoad(bitmap));
-        
-        this.toResolve.delete(textureID);
-    }
-}
-
-TextureLoader.prototype.resolveError = function(textureID, error) {
-    const toResolve = this.toResolve.get(textureID);
-
-    if(toResolve) {
-        this.toResolve.delete(textureID);
-    }  
-}
-
-TextureLoader.prototype.requestBitmap = function(path) {
-    return fetch(path)
-    .then((response) => {
-        if(response.ok) {
-            return response.blob();
-        }
-
-        return Promise.reject("File could not be fetched!");
-    })
-    .then((blob) => createImageBitmap(blob))
-    .then((bitmap) => Promise.resolve(bitmap))
-    .catch((error) => Promise.reject(error));
-};
-
-TextureLoader.prototype.loadTexture = function(id) {
-    const texture = this.getTexture(id);
-
-    if(!texture) {
-        return;
-    }
-    
-    const image = texture.getImage();
-
-    if(image.state !== ImageResource.STATE.EMPTY) {
-        return;
-    }
-
-    if(!texture.path) {
-        return;
-    }
-
-    image.state = ImageResource.STATE.LOADING;
-
-    this.requestBitmap(texture.path)
-    .then((bitmap) => {
-        const { width, height } = bitmap;
-
-        image.setData(bitmap);
-        texture.setSize(width, height);
-        this.resolveLoad(id, bitmap);
-    })
-    .catch((error) => {
-
-        image.state = ImageResource.STATE.EMPTY;
-        this.resolveError(id, error);
-    });
 }

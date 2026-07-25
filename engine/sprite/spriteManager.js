@@ -4,8 +4,12 @@ import { SpriteContainer } from "./spriteContainer.js";
 import { TextureRegistry } from "../resources/texture/textureRegistry.js";
 import { Texture } from "../resources/texture/texture.js";
 
-export const SpriteManager = function(textureLoader) {
-    this.resources = textureLoader;
+/**
+ * 
+ * @param {TextureRegistry} textureRegistry 
+ */
+export const SpriteManager = function(textureRegistry) {
+    this.registry = textureRegistry;
     this.spriteTracker = new Set();
     this.containerMap = new Map();
     this.containers = [];
@@ -36,19 +40,19 @@ SpriteManager.prototype.load = function(textures, sprites) {
         return;
     }
     
-    this.resources.createSpriteTextures(textures);
+    this.registry.createTextures(TextureRegistry.CATEGORY.SPRITE, textures);
 
     for(const spriteID in sprites) {
         const spriteConfig = sprites[spriteID];
         const { texture, shift, anchor, bounds, frameTime, spriteTime, frames, autoFrames } = spriteConfig;
-        const textureID = this.resources.getSpriteID(texture);
+        const textureID = this.registry.getTextureID(TextureRegistry.CATEGORY.SPRITE, texture);
 
         if(textureID === TextureRegistry.INVALID_ID || (!frames && !autoFrames)) {
             console.warn(`Texture ${texture} of sprite ${spriteID} does not exist!`);
             continue;
         }
 
-        const textureObject = this.resources.getTexture(textureID);
+        const textureObject = this.registry.getTexture(textureID);
         const containerID = this.containers.length;
         const spriteContainer = new SpriteContainer(containerID, textureObject);
 
@@ -163,7 +167,7 @@ SpriteManager.prototype.exit = function() {
         this.layers[i].length = 0;
     }
 
-    this.resources.clearRegistry(TextureRegistry.REGISTRY_TYPE.SPRITE);
+    this.registry.clearCategory(TextureRegistry.CATEGORY.SPRITE);
 }
 
 SpriteManager.prototype.initLayers = function(count) {
@@ -357,7 +361,7 @@ SpriteManager.prototype.updateSprite = function(spriteIndex, spriteID, colorID =
 
         //Lazy-Load the default resource.
         if(colorID === Texture.DEFAULT_COLOR) {
-            this.resources.loadTexture(texture.id);
+            this.registry.loadTexture(texture.id);
         }
     } else {
         sprite.reset();

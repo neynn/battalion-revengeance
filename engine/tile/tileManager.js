@@ -170,17 +170,22 @@ TileManager.prototype.registerVisualsAuto = function(tileID, texture, prefix, co
     }
 }
 
-TileManager.prototype.createVisuals = function(textureLoader, tileAtlases) {
-    textureLoader.createTileTextures(tileAtlases);
+/**
+ * 
+ * @param {TextureRegistry} textureRegistry 
+ * @param {object} tileAtlases 
+ */
+TileManager.prototype.createVisuals = function(textureRegistry, tileAtlases) {
+    textureRegistry.createTextures(TextureRegistry.CATEGORY.TILE, tileAtlases);
 
     for(const [visualID, index] of this.visualTableMap) {
         const [texture, regionID] = visualID.split("::");
         const visual = new TileVisual(index);
         const textureConfig = tileAtlases[texture];
-        const textureID = textureLoader.getTileID(texture);
+        const textureID = textureRegistry.getTextureID(TextureRegistry.CATEGORY.TILE, texture);
 
         if(textureID !== TextureRegistry.INVALID_ID) {
-            const textureObject = textureLoader.getTexture(textureID);
+            const textureObject = textureRegistry.getTexture(textureID);
             const image = textureObject.getImage();
 
             if(textureConfig) {
@@ -191,7 +196,7 @@ TileManager.prototype.createVisuals = function(textureLoader, tileAtlases) {
                 visual.setImage(image);
                 image.addReference();
 
-                textureLoader.loadTexture(textureID);
+                textureRegistry.loadTexture(textureID);
             }
         }
 

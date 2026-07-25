@@ -14,7 +14,7 @@ import { UIData } from "./ui/uiData.js";
 import { MissionManager } from "./mission/missionManager.js";
 import { ScenarioRegistry } from "./scenario/scenarioRegistry.js";
 import { SpriteController } from "./spriteController.js";
-import { SoundController } from "./soundController.js";
+import { SoundRegistry } from "./soundRegistry.js";
 
 export const BattalionContext = function() {
     ClientGameContext.call(this);
@@ -23,11 +23,11 @@ export const BattalionContext = function() {
     this.teamManager = new TeamManager();
     this.actionRouter = new ClientActionRouter();
     this.spriteController = new SpriteController();
-    this.soundController = new SoundController();
+    this.soundRegistry = new SoundRegistry();
     this.mapRegistry = new MapRegistry();
     this.missionManager = new MissionManager();
     this.scenarioRegistry = new ScenarioRegistry();
-    this.uiData = new UIData(this.textureLoader);
+    this.uiData = new UIData(this.textureRegistry);
 }
 
 BattalionContext.STATE = {
@@ -44,11 +44,11 @@ BattalionContext.prototype.init = function(resources) {
     loadTiles(this);
     loadVisualTiles(this);
 
-    this.tileManager.createVisuals(this.textureLoader, resources.tiles);
+    this.tileManager.createVisuals(this.textureRegistry, resources.tiles);
     this.tileManager.enableAllVisuals();
 
     this.spriteManager.load(resources.spriteTextures, resources.sprites);
-    this.uiManager.load(this.textureLoader, resources.layouts, resources.gui);
+    this.uiManager.load(this.textureRegistry, resources.layouts, resources.gui);
     this.fonts.load(resources.fonts);
     this.client.musicPlayer.load(resources.music, resources.playlists);
     this.client.soundPlayer.load(resources.sounds);
@@ -65,7 +65,7 @@ BattalionContext.prototype.init = function(resources) {
     registerActionVTables(this);
     registerClientActions(this);
 
-    this.soundController.registerUnitSounds(this, resources.entityTypes);
+    this.soundRegistry.registerUnitSounds(this, resources.entityTypes);
     this.spriteController.registerEntitySprites(this, resources.entityTypes);
     this.spriteController.registerBuildingSprites(this, resources.buildingTypes);
     this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);

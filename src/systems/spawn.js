@@ -39,7 +39,7 @@ export const killEntity = function(gameContext, entity) {
 }
 
 export const createClientEntityObject = function(gameContext, entityID, snapshot) {
-    const { teamManager, spriteController, soundController } = gameContext;
+    const { teamManager, spriteController, soundRegistry } = gameContext;
     const { type, teamID } = snapshot;
     const team = teamManager.getTeam(teamID);
 
@@ -55,7 +55,7 @@ export const createClientEntityObject = function(gameContext, entityID, snapshot
 
     if(!entity.isDead()) {
         spriteController.createEntitySprite(gameContext, entity);
-        soundController.bufferUnitSounds(gameContext, entity.config.id);
+        soundRegistry.bufferUnitSounds(gameContext, entity.config.id);
 
         team.addToRoster(entity);
         entity.placeOnMap(gameContext);

@@ -22,8 +22,8 @@ const getUnitSoundIndex = function(typeID, soundID) {
     return typeID * SOUNDS_PER_UNIT_TYPE + soundID;
 }
 
-const getSoundRegistryIndex = function(soundType, typeID) {
-    switch(soundType) {
+const getSoundRegistryIndex = function(soundName, typeID) {
+    switch(soundName) {
         case "heal": return getUnitSoundIndex(typeID, SOUND_TYPE.HEAL);
         case "move": return getUnitSoundIndex(typeID, SOUND_TYPE.MOVE);
         case "fire": return getUnitSoundIndex(typeID, SOUND_TYPE.FIRE);
@@ -35,30 +35,30 @@ const getSoundRegistryIndex = function(soundType, typeID) {
     }
 }
 
-export const SoundController = function() {
+export const SoundRegistry = function() {
     const MAX_SOUND_TYPES = ENTITY_TYPE._COUNT * SOUNDS_PER_UNIT_TYPE;
 
-    this.unitSoundRegistry = [];
+    this.unitSounds = [];
 
     for(let i = 0; i < MAX_SOUND_TYPES; i++) {
-        this.unitSoundRegistry[i] = [];
+        this.unitSounds[i] = [];
     }
 }
 
-SoundController.prototype.playUnitSound = function(gameContext, unit, soundID) {
+SoundRegistry.prototype.playUnitSound = function(gameContext, unit, soundID) {
     const { client } = gameContext;
     const { soundPlayer } = client;
     const typeID = unit.config.id;
     const index = getUnitSoundIndex(typeID, soundID);
 
     if(index !== -1) {
-        const sounds = this.unitSoundRegistry[index];
+        const sounds = this.unitSounds[index];
 
         soundPlayer.play(getRandomElement(sounds));
     }
 }
 
-SoundController.prototype.bufferUnitSounds = function(gameContext, unitID) {
+SoundRegistry.prototype.bufferUnitSounds = function(gameContext, unitID) {
     if(unitID < 0 || unitID >= ENTITY_TYPE._COUNT) {
         return;
     }
@@ -69,7 +69,7 @@ SoundController.prototype.bufferUnitSounds = function(gameContext, unitID) {
 
     for(let i = 0; i < SOUND_TYPE._COUNT; i++) {
         const index = begin + i;
-        const sounds = this.unitSoundRegistry[index];
+        const sounds = this.unitSounds[index];
 
         for(const sound of sounds) {
             soundPlayer.bufferAudio(sound);
@@ -77,7 +77,7 @@ SoundController.prototype.bufferUnitSounds = function(gameContext, unitID) {
     }
 }
 
-SoundController.prototype.registerUnitSounds = function(gameContext, unitTypes) {
+SoundRegistry.prototype.registerUnitSounds = function(gameContext, unitTypes) {
     const { client } = gameContext;
     const { soundPlayer } = client;
 
@@ -86,20 +86,20 @@ SoundController.prototype.registerUnitSounds = function(gameContext, unitTypes) 
         const rUnitSounds = rUnitType.sounds ?? {};
         const typeID = ENTITY_TYPE[typeName] ?? ENTITY_TYPE._INVALID;
 
-        for(const soundType in rUnitSounds) {
-            const soundIndex = getSoundRegistryIndex(soundType, typeID);
+        for(const soundName in rUnitSounds) {
+            const soundIndex = getSoundRegistryIndex(soundName, typeID);
 
             if(soundIndex !== -1) {
                 //The JSON MAY have an array of sounds for a specific sounds.
                 //SoundName MAY be a string OR an array.
-                const soundName = rUnitSounds[soundType];
+                const soundNameOrArray = rUnitSounds[soundName];
 
-                if(Array.isArray(soundName)) {
-                    for(const sound of soundName) {
-                        this.unitSoundRegistry[soundIndex].push(soundPlayer.getSoundID(sound));
+                if(Array.isArray(soundNameOrArray)) {
+                    for(const sound of soundNameOrArray) {
+                        this.unitSounds[soundIndex].push(soundPlayer.getSoundID(sound));
                     }
                 } else {
-                    this.unitSoundRegistry[soundIndex].push(soundPlayer.getSoundID(soundName));
+                    this.unitSounds[soundIndex].push(soundPlayer.getSoundID(soundNameOrArray));
                 }
             }
         }
@@ -114,20 +114,20 @@ SoundController.prototype.registerUnitSounds = function(gameContext, unitTypes) 
     for(let i = 0; i < ENTITY_TYPE._COUNT; i++) {
         const index = i * SOUNDS_PER_UNIT_TYPE;
 
-        if(this.unitSoundRegistry[index + SOUND_TYPE.HEAL].length === 0) {
-            this.unitSoundRegistry[index + SOUND_TYPE.HEAL][0] = healID;
+        if(this.unitSounds[index + SOUND_TYPE.HEAL].length === 0) {
+            this.unitSounds[index + SOUND_TYPE.HEAL][0] = healID;
         }
     
-        if(this.unitSoundRegistry[index + SOUND_TYPE.CLOAK].length === 0) {
-            this.unitSoundRegistry[index + SOUND_TYPE.CLOAK][0] = cloakID;
+        if(this.unitSounds[index + SOUND_TYPE.CLOAK].length === 0) {
+            this.unitSounds[index + SOUND_TYPE.CLOAK][0] = cloakID;
         }
 
-        if(this.unitSoundRegistry[index + SOUND_TYPE.DEATH].length === 0) {
-            this.unitSoundRegistry[index + SOUND_TYPE.DEATH][0] = deathID;
+        if(this.unitSounds[index + SOUND_TYPE.DEATH].length === 0) {
+            this.unitSounds[index + SOUND_TYPE.DEATH][0] = deathID;
         }
 
-        if(this.unitSoundRegistry[index + SOUND_TYPE.UNCLOAK].length === 0) {
-            this.unitSoundRegistry[index + SOUND_TYPE.UNCLOAK][0] = uncloakID;
+        if(this.unitSounds[index + SOUND_TYPE.UNCLOAK].length === 0) {
+            this.unitSounds[index + SOUND_TYPE.UNCLOAK][0] = uncloakID;
         }
     }
 }

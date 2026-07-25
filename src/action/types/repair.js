@@ -82,10 +82,10 @@ RepairAction.prototype = Object.create(Action.prototype);
 RepairAction.prototype.constructor = RepairAction;
 
 RepairAction.prototype.onStart = function(gameContext, data) {
-    const { world, soundController } = gameContext;
+    const { world, soundRegistry } = gameContext;
     const { entityManager } = world;
     const { entityID, cost } = data;
     const entity = entityManager.getEntity(entityID);
 
-    soundController.playUnitSound(gameContext, entity, SOUND_TYPE.HEAL);
+    soundRegistry.playUnitSound(gameContext, entity, SOUND_TYPE.HEAL);
 }

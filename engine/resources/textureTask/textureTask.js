@@ -76,7 +76,7 @@ TextureTask.STATE = {
     FINISHED: 2
 };
 
-TextureTask.prototype.execute = function() {
+TextureTask.prototype.onExecute = function() {
     this.state = TextureTask.STATE.FINISHED;
 }
 
@@ -85,7 +85,7 @@ TextureTask.prototype.run = function() {
         if(this.source.state === ImageResource.STATE.LOADED) {
             if(this.target.state === ImageResource.STATE.EMPTY) {
                 this.state = TextureTask.STATE.RUNNING;
-                this.execute();
+                this.onExecute();
             }
         }
     }

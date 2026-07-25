@@ -60,13 +60,13 @@ CloakAction.prototype = Object.create(Action.prototype);
 CloakAction.prototype.constructor = CloakAction;
 
 CloakAction.prototype.onStart = function(gameContext, data) {
-    const { world, tweenManager, soundController } = gameContext;
+    const { world, tweenManager, soundRegistry } = gameContext;
     const { entityManager } = world;
     const { entityID } = data;
     const entity = entityManager.getEntity(entityID);
     const tween = new CloakTween(entity);
 
-    soundController.playUnitSound(gameContext, entity, SOUND_TYPE.CLOAK);
+    soundRegistry.playUnitSound(gameContext, entity, SOUND_TYPE.CLOAK);
     tweenManager.addTween(tween);
     entity.setRFlag(BattalionEntity.RENDER_FLAG.CLOAKED);
 

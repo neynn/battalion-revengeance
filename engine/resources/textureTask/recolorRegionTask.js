@@ -18,7 +18,7 @@ export const RecolorRegionTask = function(source, target, regions) {
 RecolorRegionTask.prototype = Object.create(TextureTask.prototype);
 RecolorRegionTask.prototype.constructor = RecolorRegionTask;
 
-RecolorRegionTask.prototype.execute = function() {        
+RecolorRegionTask.prototype.onExecute = function() {        
     const imageData = createImageData(this.source.bitmap);
     const { data, width } = imageData;
 

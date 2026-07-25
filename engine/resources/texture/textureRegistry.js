@@ -1,17 +1,28 @@
 import { DEFAULT_IMAGE_TYPE } from "../../engine_constants.js";
+import { EventEmitter } from "../../events/eventEmitter.js";
 import { PathHandler } from "../pathHandler.js";
+import { ImageResource } from "./imageResource.js";
 import { Texture } from "./texture.js";
 
 export const TextureRegistry = function() {
     this.textures = [];
     this.registries = [];
 
-    for(let i = 0; i < TextureRegistry.REGISTRY_TYPE._COUNT; i++) {
+    this.events = new EventEmitter();
+    this.events.register(TextureRegistry.EVENT.BITMAP_LOAD);
+    this.events.register(TextureRegistry.EVENT.LOAD_ERROR);
+
+    for(let i = 0; i < TextureRegistry.CATEGORY._COUNT; i++) {
         this.registries[i] = new Map();
     }
 }
 
-TextureRegistry.REGISTRY_TYPE = {
+TextureRegistry.EVENT = {
+    BITMAP_LOAD: 0,
+    LOAD_ERROR: 1
+};
+
+TextureRegistry.CATEGORY = {
     TILE: 0,
     SPRITE: 1,
     GUI: 2,
@@ -21,21 +32,25 @@ TextureRegistry.REGISTRY_TYPE = {
 TextureRegistry.INVALID_ID = -1;
 TextureRegistry.EMPTY_TEXTURE = new Texture(TextureRegistry.INVALID_ID, "EMPTY_TEXTURE", "");
 
-TextureRegistry.prototype.getTextureID = function(type, name) {
-    if(type < 0 || type >= this.registries.length) {
-        return TextureRegistry.INVALID_ID;
-    }
+TextureRegistry.prototype.requestBitmap = function(path) {
+    return fetch(path)
+    .then((response) => {
+        if(response.ok) {
+            return response.blob();
+        }
 
-    const textureID = this.registries[type].get(name);
-
-    if(textureID === undefined) {
-        return TextureRegistry.INVALID_ID;
-    }
-
-    return textureID;
+        return Promise.reject("File could not be fetched!");
+    })
+    .then((blob) => createImageBitmap(blob))
+    .then((bitmap) => Promise.resolve(bitmap))
+    .catch((error) => Promise.reject(error));
 }
 
-TextureRegistry.prototype.getSizeBytes = function() {
+TextureRegistry.prototype.getKBUsed = function() {
+    return Math.ceil(this.getBytesUsed() / 1024);
+}
+
+TextureRegistry.prototype.getBytesUsed = function() {
     let bytes = 0;
 
     for(let i = 0; i < this.textures.length; i++) {
@@ -45,8 +60,83 @@ TextureRegistry.prototype.getSizeBytes = function() {
     return bytes;
 }
 
-TextureRegistry.prototype.createTextures = function(type, textures) {
-    if(type < 0 || type >= this.registries.length) {
+TextureRegistry.prototype.clearCategory = function(categoryID) {
+    if(categoryID < 0 || categoryID >= TextureRegistry.CATEGORY._COUNT) {
+        return;
+    }
+
+    this.registries[categoryID].forEach(textureID => this.textures[textureID].clear());
+}
+
+TextureRegistry.prototype.loadTexture = function(textureID) {
+    const texture = this.getTexture(textureID);
+
+    if(!texture) {
+        return;
+    }
+    
+    const image = texture.getImage();
+
+    if(image.state !== ImageResource.STATE.EMPTY) {
+        return;
+    }
+
+    if(!texture.path) {
+        return;
+    }
+
+    image.state = ImageResource.STATE.LOADING;
+
+    this.requestBitmap(texture.path)
+    .then((bitmap) => {
+        const { width, height } = bitmap;
+
+        image.setData(bitmap);
+        texture.setSize(width, height);
+        
+        this.events.emit(TextureRegistry.EVENT.BITMAP_LOAD, {
+            "texture": texture,
+            "bitmap": bitmap
+        });
+    })
+    .catch((error) => {
+        image.state = ImageResource.STATE.EMPTY;
+
+        this.events.emit(TextureRegistry.EVENT.LOAD_ERROR, {
+            "texture": texture,
+            "error": error
+        });
+    });
+}
+
+/**
+ * 
+ * @param {number} categoryID 
+ * @param {string} name 
+ * @returns {number}
+ */
+TextureRegistry.prototype.getTextureID = function(categoryID, name) {
+    if(categoryID < 0 || categoryID >= this.registries.length) {
+        return TextureRegistry.INVALID_ID;
+    }
+
+    const textureID = this.registries[categoryID].get(name);
+
+    if(textureID === undefined) {
+        return TextureRegistry.INVALID_ID;
+    }
+
+    return textureID;
+}
+
+/**
+ * 
+ * @param {number} categoryID 
+ * @param {object} textures 
+ * @returns 
+ */
+TextureRegistry.prototype.createTextures = function(categoryID, textures) {
+    if(categoryID < 0 || categoryID >= this.registries.length) {
         return;
     }
 
@@ -70,7 +160,7 @@ TextureRegistry.prototype.createTextures = function(type, textures) {
         }
 
         this.textures.push(texture);
-        this.registries[type].set(textureName, textureID);
+        this.registries[categoryID].set(textureName, textureID);
     }
 }
 
@@ -82,6 +172,11 @@ TextureRegistry.prototype.getTextureWithFallback = function(index) {
     return this.textures[index];
 }
 
+/**
+ * 
+ * @param {*} index 
+ * @returns {Texture}
+ */
 TextureRegistry.prototype.getTexture = function(index) {
     if(index < 0 || index >= this.textures.length) {
         return null;

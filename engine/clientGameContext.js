@@ -14,6 +14,7 @@ import { GameWindow } from "./gameWindow.js";
 import { PathHandler } from "./resources/pathHandler.js";
 import { TweenManager } from "./tween/tweenManager.js";
 import { DialogueHandler } from "./dialogueHandler.js";
+import { TextureRegistry } from "./resources/texture/textureRegistry.js";
 
 export const ClientGameContext = function() {
     this.client = new Client();
@@ -21,10 +22,11 @@ export const ClientGameContext = function() {
     this.pathHandler = PathHandler;
     this.gameWindow = new GameWindow();
     this.contextManager = new ContextManager(window.innerWidth, window.innerHeight);
-    this.textureLoader = new TextureLoader();
+    this.textureRegistry = new TextureRegistry();
+    this.textureLoader = new TextureLoader(this.textureRegistry);
+    this.spriteManager = new SpriteManager(this.textureRegistry);
     this.tileManager = new TileManager();
-    this.spriteManager = new SpriteManager(this.textureLoader);
-    this.uiManager = new UIManager(this.textureLoader);
+    this.uiManager = new UIManager();
     this.language = new LanguageHandler();
     this.fonts = new FontHandler();
     this.states = new StateMachine(this);

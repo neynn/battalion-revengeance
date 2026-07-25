@@ -16,7 +16,7 @@ export const RecolorWholeTask = function(source, target) {
 RecolorWholeTask.prototype = Object.create(TextureTask.prototype);
 RecolorWholeTask.prototype.constructor = RecolorWholeTask;
 
-RecolorWholeTask.prototype.execute = function() {
+RecolorWholeTask.prototype.onExecute = function() {
     const imageData = createImageData(this.source.bitmap);
     const { data, width, height } = imageData;
 

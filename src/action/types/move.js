@@ -210,7 +210,7 @@ MoveAction.prototype = Object.create(Action.prototype);
 MoveAction.prototype.constructor = MoveAction;
 
 MoveAction.prototype.onStart = function(gameContext, data) {
-    const { world, spriteController, soundController } = gameContext;
+    const { world, spriteController, soundRegistry } = gameContext;
     const { mapManager, entityManager } = world;
     const { entityID, path } = data;
     const entity = entityManager.getEntity(entityID);
@@ -219,7 +219,7 @@ MoveAction.prototype.onStart = function(gameContext, data) {
     entityManager.addHot(entity.getIndex());
     entity.setState(BattalionEntity.STATE.MOVE);
     spriteController.updateEntitySprite(gameContext, entity);
-    soundController.playUnitSound(gameContext, entity, SOUND_TYPE.MOVE);
+    soundRegistry.playUnitSound(gameContext, entity, SOUND_TYPE.MOVE);
 
     this.path = path;
     this.pathIndex = 0;

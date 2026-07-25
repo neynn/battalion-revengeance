@@ -170,7 +170,7 @@ AttackAction.prototype = Object.create(Action.prototype);
 AttackAction.prototype.constructor = AttackAction;
 
 AttackAction.prototype.onStart = function(gameContext, data) {
-    const { world, spriteController, soundController } = gameContext;
+    const { world, spriteController, soundRegistry } = gameContext;
     const { entityManager } = world;
     const { attackerID, targetID, resolutions, flags } = data;
     const entity = entityManager.getEntity(attackerID);
@@ -184,7 +184,7 @@ AttackAction.prototype.onStart = function(gameContext, data) {
     }
 
     spriteController.updateEntitySprite(gameContext, entity);
-    soundController.playUnitSound(gameContext, entity, SOUND_TYPE.FIRE);
+    soundRegistry.playUnitSound(gameContext, entity, SOUND_TYPE.FIRE);
 
     playAttackEffect(gameContext, entity, target, resolutions);
 

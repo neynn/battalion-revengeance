@@ -46,7 +46,7 @@ GameWindow.prototype.queueResize = function() {
 }
 
 GameWindow.prototype.drawDebug = function(gameContext) {
-    const { textureLoader, timer, uiManager, contextManager } = gameContext;
+    const { textureRegistry, textureLoader, timer, uiManager, contextManager } = gameContext;
     const { context } = this.display;
     const { smoothFPS, targetFPS } = timer;
     const { x, y } = getCursorTile(gameContext);
@@ -63,7 +63,7 @@ GameWindow.prototype.drawDebug = function(gameContext) {
 
     const TEXT_SIZE = 10;
     const WINDOW_Y = 0;
-    const DEBUG_Y = TEXT_SIZE * 6;
+    const DEBUG_Y = TEXT_SIZE * 7;
 
     context.globalAlpha = 1;
     context.font = `${TEXT_SIZE}px Arial`;
@@ -71,7 +71,8 @@ GameWindow.prototype.drawDebug = function(gameContext) {
     context.fillText(`FPS: ${fps} | ${delta}`, 0, WINDOW_Y + TEXT_SIZE);
     context.fillText(`WindowX: ${this.width}, WindowY: ${this.height}`, 0, WINDOW_Y + TEXT_SIZE * 2);
     context.fillText(`MouseX: ${x}, MouseY: ${y}`, 0, WINDOW_Y + TEXT_SIZE * 3);
-    context.fillText(`Task: ${textureLoader.getCompletedTasks()}/${textureLoader.totalTasks}`, 0, WINDOW_Y + TEXT_SIZE * 4);
+    context.fillText(`KB-Images: ${textureRegistry.getKBUsed()}`, 0, WINDOW_Y + TEXT_SIZE * 4);
+    context.fillText(`Task: ${textureLoader.getCompletedTasks()}/${textureLoader.totalTasks}`, 0, WINDOW_Y + TEXT_SIZE * 5);
 
     context.fillText(`World: ${Renderer2D.DEBUG.WORLD}`, 0, DEBUG_Y);
     context.fillText(`Context: ${contextManager.debug}`, 0, DEBUG_Y + TEXT_SIZE);

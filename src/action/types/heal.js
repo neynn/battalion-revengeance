@@ -115,7 +115,7 @@ HealAction.prototype = Object.create(Action.prototype);
 HealAction.prototype.constructor = HealAction;
 
 HealAction.prototype.onStart = function(gameContext, data) {
-    const { world, spriteController, soundController } = gameContext;
+    const { world, spriteController, soundRegistry } = gameContext;
     const { entityManager } = world;
     const { entityID, targetID, resolutions } = data;
     const entity = entityManager.getEntity(entityID);
@@ -124,7 +124,7 @@ HealAction.prototype.onStart = function(gameContext, data) {
     entity.lookAt(target);
     entity.setState(BattalionEntity.STATE.FIRE);
     spriteController.updateEntitySprite(gameContext, entity);
-    soundController.playUnitSound(gameContext, entity, SOUND_TYPE.HEAL);
+    soundRegistry.playUnitSound(gameContext, entity, SOUND_TYPE.HEAL);
 
     playHealEffect(gameContext, entity, target);
 

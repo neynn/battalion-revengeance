@@ -16,7 +16,7 @@ export const ShadeTask = function(source, target, rect) {
 ShadeTask.prototype = Object.create(TextureTask.prototype);
 ShadeTask.prototype.constructor = ShadeTask;
 
-ShadeTask.prototype.execute = function() {
+ShadeTask.prototype.onExecute = function() {
     const { x, y, w, h } = this.rect; 
     const imageData = createEmptyImageData(w, h, this.source.bitmap, x, y);
     const buffer = imageData.data;

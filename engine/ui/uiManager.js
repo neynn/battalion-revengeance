@@ -6,13 +6,19 @@ export const UIManager = function() {
     this.debug = false;
 }
 
-UIManager.prototype.load = function(textureLoader, layouts, textures) {
+/**
+ * 
+ * @param {TextureRegistry} textureRegistry 
+ * @param {*} layouts 
+ * @param {*} textures 
+ */
+UIManager.prototype.load = function(textureRegistry, layouts, textures) {
     if(layouts) {
         this.layouts = layouts;
     }
 
     if(textures) {
-        textureLoader.createGUITextures(textures);
+        textureRegistry.createTextures(TextureRegistry.CATEGORY.GUI, textures);
     }
 }
 

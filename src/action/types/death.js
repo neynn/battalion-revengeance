@@ -70,7 +70,7 @@ DeathAction.prototype = Object.create(Action.prototype);
 DeathAction.prototype.constructor = DeathAction;
 
 DeathAction.prototype.onStart = function(gameContext, data) {
-    const { world, tweenManager, soundController } = gameContext;
+    const { world, tweenManager, soundRegistry } = gameContext;
     const { entityManager } = world;
     const { entities } = data;
     const entityList = [];
@@ -83,7 +83,7 @@ DeathAction.prototype.onStart = function(gameContext, data) {
 
         playDeathEffect(gameContext, entity);
 
-        soundController.playUnitSound(gameContext, entity, SOUND_TYPE.DEATH);
+        soundRegistry.playUnitSound(gameContext, entity, SOUND_TYPE.DEATH);
         entityList.push(entity);
     }
 
