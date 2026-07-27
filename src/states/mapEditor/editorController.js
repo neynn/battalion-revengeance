@@ -204,7 +204,7 @@ EditorController.prototype.createMap = function(gameContext) {
 }
 
 EditorController.prototype.loadMap = async function(gameContext) {
-    const { language, scenarioRegistry, mapRegistry } = gameContext;
+    const { language, scenarioRegistry } = gameContext;
     const scenarioID = prompt(language.getSystemTranslation("EDITOR_LOAD_MAP"));
     const scenario = scenarioRegistry.getScenario(scenarioID);  
 

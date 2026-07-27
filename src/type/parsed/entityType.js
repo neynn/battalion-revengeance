@@ -1,6 +1,6 @@
-import { UNIT_MAX_TRAITS } from "../../constants.js";
-import { mapMovementToCategory } from "../../enumHelpers.js";
+import { UNIT_MAX_JAMMER_RANGE, UNIT_MAX_MOVE_COST, UNIT_MAX_TRAITS, UNIT_MIN_JAMMER_RANGE } from "../../constants.js";
 import { ARMOR_TYPE, ATTACK_TYPE, DIRECTION, ENTITY_CATEGORY, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, TRAIT_TYPE, TRANSPORT_TYPE, WEAPON_TYPE } from "../../enums.js";
+import { mapMovementToCategory } from "../../enumHelpers.js";
 
 const TILE_STEP = 56;
 const ENABLE_HYBRID = false;
@@ -45,11 +45,6 @@ export const EntityType = function(id) {
     this.rangeType = getRangeType(this.minRange, this.maxRange);
     this.shop = SHOP_TYPE.NONE;
 }
-
-EntityType.MIN_MOVE_COST = 1;
-EntityType.MAX_MOVE_COST = 99;
-EntityType.MIN_JAMMER_RANGE = 1;
-EntityType.MAX_JAMMER_RANGE = 4;
 
 EntityType.prototype.load = function(config, DEBUG_NAME) {
     const {
@@ -99,14 +94,14 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
         this.maxRange = this.minRange;
     }
 
-    if(this.jammerRange < EntityType.MIN_JAMMER_RANGE) {
-        this.jammerRange = EntityType.MIN_JAMMER_RANGE;
-    } else if(this.jammerRange > EntityType.MAX_JAMMER_RANGE) {
-        this.jammerRange = EntityType.MAX_JAMMER_RANGE;
+    if(this.jammerRange < UNIT_MIN_JAMMER_RANGE) {
+        this.jammerRange = UNIT_MIN_JAMMER_RANGE;
+    } else if(this.jammerRange > UNIT_MAX_JAMMER_RANGE) {
+        this.jammerRange = UNIT_MAX_JAMMER_RANGE;
     }
 
-    if(this.movementRange >= EntityType.MAX_MOVE_COST) {
-        this.movementRange = EntityType.MAX_MOVE_COST;
+    if(this.movementRange >= UNIT_MAX_MOVE_COST) {
+        this.movementRange = UNIT_MAX_MOVE_COST;
     }
 
     this.category = mapMovementToCategory(this.movementType);

@@ -1,9 +1,9 @@
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { FloodFill } from "../../engine/pathfinders/floodFill.js";
+import { UNIT_MAX_MOVE_COST } from "../constants.js";
 import { PATH_FLAG, RANGE_TYPE, TILE_ID } from "../enums.js";
 import { fillStep } from "../systems/direction.js";
 import { resolveTileCost } from "../systems/pathfinder.js";
-import { EntityType } from "../type/parsed/entityType.js";
 
 export const Pathfinder = function(width, height) {
     this.width = width;
@@ -178,15 +178,15 @@ Pathfinder.prototype.isNodeReachable = function(index) {
 
 Pathfinder.prototype.getCostOf = function(index) {
     if(index < 0 || index >= this.size) {
-        return EntityType.MAX_MOVE_COST;
+        return UNIT_MAX_MOVE_COST;
     }
 
     if(this.flags[index] & PATH_FLAG.UNREACHABLE) {
-        return EntityType.MAX_MOVE_COST;
+        return UNIT_MAX_MOVE_COST;
     }
 
     if(this.visited[index] !== this.searchID) {
-        return EntityType.MAX_MOVE_COST;
+        return UNIT_MAX_MOVE_COST;
     }
 
     return this.costs[index];    
@@ -209,7 +209,7 @@ Pathfinder.prototype.getBestPath = function(worldMap, targetX, targetY) {
     let lastY = targetY;
     let currentIndex = this.parents[index];
 
-    while(currentIndex !== -1 && this.visited[currentIndex] === this.searchID && i < EntityType.MAX_MOVE_COST) {
+    while(currentIndex !== -1 && this.visited[currentIndex] === this.searchID && i < UNIT_MAX_MOVE_COST) {
         const { x, y } = worldMap.getTileCoords(currentIndex);
         const deltaX = lastX - x;
         const deltaY = lastY - y;

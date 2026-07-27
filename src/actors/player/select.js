@@ -9,7 +9,7 @@ import { createStep, fillStep } from "../../systems/direction.js";
 import { Player } from "../player.js";
 import { PlayerState } from "./playerState.js";
 import { CombatSystem } from "../../systems/combat.js";
-import { EntityType } from "../../type/parsed/entityType.js";
+import { UNIT_MAX_MOVE_COST } from "../../constants.js";
 
 export const SelectState = function() {
     PlayerState.call(this);
@@ -138,7 +138,7 @@ SelectState.prototype.setOptimalAttackPath = function(gameContext) {
     const worldMap = mapManager.getActiveMap();
     let bestX = -1;
     let bestY = -1;
-    let bestCost = EntityType.MAX_MOVE_COST;
+    let bestCost = UNIT_MAX_MOVE_COST;
     let nodeFound = false;
 
     for(const [deltaX, deltaY, type] of FloodFill.NEIGHBORS) {

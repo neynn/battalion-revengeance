@@ -1,4 +1,5 @@
 import { WorldMap } from "../../engine/map/worldMap.js";
+import { UNIT_MAX_MOVE_COST, UNIT_MIN_MOVE_COST } from "../constants.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { ENTITY_CATEGORY, JAMMER_FLAG, MOVEMENT_TYPE, TILE_TYPE, TRAIT_CONFIG, TRAIT_TYPE } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
@@ -24,7 +25,7 @@ const getEntityTypeTileCost = function(gameContext, tileType, entityType) {
     //Prevents infinite/looping steps.
     //Also negative costs block entities from walking over them.
     if(tileCost <= 0) {
-        return EntityType.MAX_MOVE_COST;
+        return UNIT_MAX_MOVE_COST;
     }
     
     const terrainReduction = entityType.hasTrait(TRAIT_TYPE.STREAMLINED) ? TRAIT_CONFIG.STREAMLINED_REDUCTION : 1;
@@ -35,16 +36,16 @@ const getEntityTypeTileCost = function(gameContext, tileType, entityType) {
 
         //Some terrains may disable entities from walking over them.
         if(cost < 0) {
-            return EntityType.MAX_MOVE_COST;
+            return UNIT_MAX_MOVE_COST;
         }
 
         tileCost += (cost * terrainReduction);
     }
 
-    if(tileCost > EntityType.MAX_MOVE_COST) {
-        tileCost = EntityType.MAX_MOVE_COST;
-    } else if(tileCost < EntityType.MIN_MOVE_COST) {
-        tileCost = EntityType.MIN_MOVE_COST;
+    if(tileCost > UNIT_MAX_MOVE_COST) {
+        tileCost = UNIT_MAX_MOVE_COST;
+    } else if(tileCost < UNIT_MIN_MOVE_COST) {
+        tileCost = UNIT_MIN_MOVE_COST;
     }
     
     return tileCost;
@@ -115,12 +116,12 @@ export const resolveTileCost = function(gameContext, worldMap, entity, tileType,
     const { movementType } = config;
     const tileCost = getEntityTypeTileCost(gameContext, tileType, config);
 
-    if(tileCost >= EntityType.MAX_MOVE_COST) {
-        return EntityType.MAX_MOVE_COST;
+    if(tileCost >= UNIT_MAX_MOVE_COST) {
+        return UNIT_MAX_MOVE_COST;
     }
 
     if(isEntityTypeJammed(gameContext, config, worldMap, tileX, tileY, teamID)) {
-        return EntityType.MAX_MOVE_COST;
+        return UNIT_MAX_MOVE_COST;
     }
 
     const index = worldMap.getEntity(tileX, tileY);
@@ -136,13 +137,13 @@ export const resolveTileCost = function(gameContext, worldMap, entity, tileType,
         //Always block on allied units and VISIBLE enemy units.
         //Invisible enemy units get ignored.
         if(entity.isAllyWith(gameContext, otherEntity) || !otherEntity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-            return EntityType.MAX_MOVE_COST;
+            return UNIT_MAX_MOVE_COST;
         }
     }
 
     //Blocks on non-cloaked enemy units. Ignores cloaked enemy units and treats them as walkable.
     if(!entity.isAllyWith(gameContext, otherEntity) && !otherEntity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-        return EntityType.MAX_MOVE_COST;
+        return UNIT_MAX_MOVE_COST;
     }
 
     const mine = worldMap.getMine(tileX, tileY);
@@ -152,7 +153,7 @@ export const resolveTileCost = function(gameContext, worldMap, entity, tileType,
     //This prevents entities from passing over a visible mine that they will trigger when an ally stands on it.
     if(mine) {
         if(!mine.isHidden() && CombatSystem.isMineTriggered(gameContext, entity, mine)) {
-            return EntityType.MAX_MOVE_COST;
+            return UNIT_MAX_MOVE_COST;
         }
     }
 

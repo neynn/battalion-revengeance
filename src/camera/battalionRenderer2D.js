@@ -7,7 +7,6 @@ import { TILE_HEIGHT, TILE_WIDTH } from "../../engine/engine_constants.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { DIRECTION, LAYER_TYPE, MORALE_TYPE, PATH_FLAG, PLAYER_PREFERENCE, RANGE_TYPE, TILE_ID } from "../enums.js";
 import { BattalionMap } from "../map/battalionMap.js";
-import { EntityType } from "../type/parsed/entityType.js";
 import { Mine } from "../entity/mine.js";
 import { TeamManager } from "../team/teamManager.js";
 import { ImageResource } from "../../engine/resources/texture/imageResource.js";
@@ -20,6 +19,7 @@ import { WorldMap } from "../../engine/map/worldMap.js";
 import { Sprite } from "../../engine/sprite/sprite.js";
 import { Pathfinder } from "../map/pathfinder.js";
 import { UI_TEXTURE } from "../ui/constants.js";
+import { UNIT_MAX_JAMMER_RANGE, UNIT_MAX_MOVE_COST } from "../constants.js";
 
 const BLOCK = { COUNT: 4, WIDTH: 4, HEIGHT: 8, GAP: 1 };
 const WIDTH = (BLOCK.GAP * (BLOCK.COUNT + 1)) + BLOCK.WIDTH * BLOCK.COUNT;
@@ -36,10 +36,10 @@ export const BattalionRenderer2D = function() {
     Renderer2D.call(this);
 
     //Maximum number of tiles a jammer can cover, using the Manhattan distance.
-    const JAMMER_MAX_USED_TILES = 1 + 2 * EntityType.MAX_JAMMER_RANGE * (EntityType.MAX_JAMMER_RANGE + 1);
+    const JAMMER_MAX_USED_TILES = 1 + 2 * UNIT_MAX_JAMMER_RANGE * (UNIT_MAX_JAMMER_RANGE + 1);
 
     //Each tile has a minCost of 1, which means there will NEVER be more than MAX_MOVE_COST tiles.
-    this.pathOverlay = new TileOverlay(EntityType.MAX_MOVE_COST);
+    this.pathOverlay = new TileOverlay(UNIT_MAX_MOVE_COST);
     this.jammerOverlay = new TileOverlay(JAMMER_MAX_USED_TILES);
     this.flags = BattalionRenderer2D.FLAG.NONE;
     this.deferred = new Int32Array(MAX_DEFERRED);

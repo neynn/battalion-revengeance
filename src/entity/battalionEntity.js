@@ -594,9 +594,7 @@ BattalionEntity.prototype.updateRangeGuard = function(gameContext) {
     //Air units are never protected by tiles/canyons!
     if(this.config.category === ENTITY_CATEGORY.AIR) {
         this.flags &= ~BattalionEntity.FLAG.IS_PROTECTED;
-        this.renderFlags &= ~BattalionEntity.RENDER_FLAG.PROTECTED;
-
-        return false;
+        return;
     }
 
     const { world, typeRegistry } = gameContext;
@@ -617,18 +615,13 @@ BattalionEntity.prototype.updateRangeGuard = function(gameContext) {
 
                 if(rangeGuard) {
                     this.flags |= BattalionEntity.FLAG.IS_PROTECTED;
-                    this.renderFlags |= BattalionEntity.RENDER_FLAG.PROTECTED;
-
-                    return true;
+                    return;
                 }
             }
         }
     }
 
     this.flags &= ~BattalionEntity.FLAG.IS_PROTECTED;
-    this.renderFlags &= ~BattalionEntity.RENDER_FLAG.PROTECTED;
-
-    return false;
 }
 
 BattalionEntity.prototype.getMoraleFactor = function(gameContext) {
@@ -1098,6 +1091,7 @@ BattalionEntity.prototype.placeOnMap = function(gameContext) {
     }
 
     this.updateRangeGuard(gameContext);
+    this.syncRenderFlags();
 }
 
 BattalionEntity.prototype.removeFromMap = function(gameContext) {
