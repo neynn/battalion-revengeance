@@ -12,7 +12,7 @@ import { ScenarioRegistry } from "../scenario/scenarioRegistry.js";
 export const ServerApplication = function(io) {
     SocketServer.call(this, io);
 
-    this.pathHandler = new ServerPathHandler();
+    this.pathHandler = ServerPathHandler;
     this.typeRegistry = new TypeRegistry();
     this.tileManager = new TileManager();
     this.mapRegistry = new MapRegistry();

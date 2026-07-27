@@ -2,7 +2,7 @@ import { Action } from "../../../engine/action/action.js";
 import { ActionIntent } from "../../../engine/action/actionIntent.js";
 import { FIXED_DELTA_TIME, TILE_HEIGHT, TILE_WIDTH } from "../../../engine/engine_constants.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
-import { FADE_RATE } from "../../constants.js";
+import { UNIT_UNCLOAK_FADE_RATE } from "../../constants.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ACTION_TYPE, ATTACK_COMMAND_TYPE, HEAL_COMMAND_TYPE, MOVE_COMMAND, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { InterceptSystem, PathfinderSystem } from "../../systems/pathfinder.js";
@@ -268,7 +268,7 @@ MoveAction.prototype.onUpdate = function(gameContext, data) {
             break;
         }
         case MoveAction.STATE.DISCOVERED: {
-            this.opacity += FADE_RATE * FIXED_DELTA_TIME;
+            this.opacity += UNIT_UNCLOAK_FADE_RATE * FIXED_DELTA_TIME;
 
             if(this.opacity > 1) {
                 this.opacity = 1;

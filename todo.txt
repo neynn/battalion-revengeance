@@ -83,3 +83,5 @@ Add Scavenge Trait
 The Server only has ONE map file! Inside that ONE file is all the data and the tile data.
 
 Damage must be part of the unit.
+
+Tiles: Split the texture with the frameData. See TileManager line 178

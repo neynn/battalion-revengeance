@@ -1,4 +1,4 @@
-import { FADE_RATE } from "../constants.js";
+import { UNIT_UNCLOAK_FADE_RATE } from "../constants.js";
 import { Tween } from "../../engine/tween/tween.js";
 
 export const UncloakTween = function(cloakable) {
@@ -16,7 +16,7 @@ UncloakTween.prototype.update = function(gameContext) {
     const { timer } = gameContext;
     const { deltaTime } = timer;
 
-    this.opacity += FADE_RATE * deltaTime;
+    this.opacity += UNIT_UNCLOAK_FADE_RATE * deltaTime;
 
     if(this.opacity >= 1) {
         this.opacity = 1;

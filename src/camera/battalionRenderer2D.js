@@ -335,7 +335,7 @@ BattalionRenderer2D.prototype.drawEntity = function(gameContext, camera, display
  * @returns 
  */
 BattalionRenderer2D.prototype.drawEntities = function(gameContext, camera, display, worldMap) {
-    const { timer, world, spriteManager, tileManager, uiData, spriteController } = gameContext;
+    const { timer, world, spriteManager, tileManager, uiData, spriteController, typeRegistry } = gameContext;
     const { startX, startY, endX, endY, mapWidth } = camera;
     const { realTime, deltaTime } = timer;
     const { entityManager } = world;
@@ -424,7 +424,7 @@ BattalionRenderer2D.prototype.drawEntities = function(gameContext, camera, displ
 
     if(inspectedEntity) {
         const { tileX, tileY, cash } = inspectedEntity;
-        const moraleType = inspectedEntity.getMorale(gameContext);
+        const unitMorale = inspectedEntity.getMorale();
         const screenX = camera.getScreenX(tileX);
         const screenY = camera.getScreenY(tileY);
 
@@ -443,12 +443,13 @@ BattalionRenderer2D.prototype.drawEntities = function(gameContext, camera, displ
             context.textAlign = TextStyle.ALIGN.LEFT;
         }
 
-        if(moraleType.id !== MORALE_TYPE.NORMAL) {
+        if(unitMorale !== MORALE_TYPE.NORMAL) {
+            const moraleIcon = typeRegistry.getMoraleType(unitMorale).icon;
             const moraleTexture = uiData.getTexture(UI_TEXTURE.MORALE_ICONS);
             const moraleX = screenX + TILE_WIDTH / 2 - 10;
             const moraleY = screenY - 10;
 
-            moraleTexture.drawRegion(display, moraleType.icon, moraleX, moraleY);
+            moraleTexture.drawRegion(display, moraleIcon, moraleX, moraleY);
         }
     }
 

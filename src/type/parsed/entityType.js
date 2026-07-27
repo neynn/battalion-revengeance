@@ -1,4 +1,4 @@
-import { MAX_TRAITS } from "../../constants.js";
+import { UNIT_MAX_TRAITS } from "../../constants.js";
 import { mapMovementToCategory } from "../../enumHelpers.js";
 import { ARMOR_TYPE, ATTACK_TYPE, DIRECTION, ENTITY_CATEGORY, JAMMER_FLAG, MINE_TYPE, MOVEMENT_TYPE, RANGE_TYPE, SHOP_TYPE, TRAIT_TYPE, TRANSPORT_TYPE, WEAPON_TYPE } from "../../enums.js";
 
@@ -128,10 +128,10 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
         }
     }
 
-    if(this.traits.length > MAX_TRAITS) {
-        this.traits.length = MAX_TRAITS;
+    if(this.traits.length > UNIT_MAX_TRAITS) {
+        this.traits.length = UNIT_MAX_TRAITS;
 
-        console.warn(`${DEBUG_NAME}: More than ${MAX_TRAITS} traits detected!`);
+        console.warn(`${DEBUG_NAME}: More than ${UNIT_MAX_TRAITS} traits detected!`);
     }
 }
 

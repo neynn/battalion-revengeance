@@ -1,4 +1,4 @@
-import { DEATH_FADE_RATE } from "../constants.js";
+import { UNIT_DEATH_FADE_RATE } from "../constants.js";
 import { Tween } from "../../engine/tween/tween.js";
 
 export const DeathTween = function(cloakables) {
@@ -16,7 +16,7 @@ DeathTween.prototype.update = function(gameContext) {
     const { timer } = gameContext;
     const { deltaTime } = timer;
 
-    this.opacity -= DEATH_FADE_RATE * deltaTime;
+    this.opacity -= UNIT_DEATH_FADE_RATE * deltaTime;
 
     if(this.opacity < 0) {
         this.opacity = 0;

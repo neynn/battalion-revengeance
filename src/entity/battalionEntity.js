@@ -12,11 +12,7 @@ import { ShopType } from "../type/parsed/shopType.js";
 import { TerrainType } from "../type/parsed/terrainType.js";
 import { StealthSystem } from "../systems/stealth.js";
 import { EntityType } from "../type/parsed/entityType.js";
-
-const ACTIONS_PER_TURN = 1;
-const MOVES_PER_TURN = 1;
-const MORALE_DELTA_MAX = 3;
-const MORALE_DELTA_MIN = -3;
+import { UNIT_MAX_ACTIONS_PER_TURN, UNIT_MAX_MOVES_PER_TURN, UNIT_MAX_MORALE_DELTA, UNIT_MIN_MORALE_DELTA } from "../constants.js";
 
 /**
  * 
@@ -49,8 +45,8 @@ export const BattalionEntity = function(id, config) {
 
     this.doneMoves = 0;
     this.doneActions = 0;
-    this.allowedMoves = MOVES_PER_TURN;
-    this.allowedActions = ACTIONS_PER_TURN;
+    this.allowedMoves = UNIT_MAX_MOVES_PER_TURN;
+    this.allowedActions = UNIT_MAX_ACTIONS_PER_TURN;
     this.bonusMoves = 0;
     this.bonusActions = 0;
 }
@@ -441,8 +437,7 @@ BattalionEntity.prototype.setTeam = function(teamID) {
     this.teamID = teamID;
 }
 
-BattalionEntity.prototype.getMorale = function(gameContext) {
-    const { typeRegistry } = gameContext;
+BattalionEntity.prototype.getMorale = function() {
     let morale = this.moraleType + this.moraleDelta;
 
     if(morale < MORALE_TYPE.LOWEST)  {
@@ -451,22 +446,22 @@ BattalionEntity.prototype.getMorale = function(gameContext) {
         morale = MORALE_TYPE.HIGHEST;
     }
 
-    return typeRegistry.getMoraleType(morale);
+    return morale;
 }
 
 BattalionEntity.prototype.reduceMorale = function() {
     this.moraleDelta--;
 
-    if(this.moraleDelta < MORALE_DELTA_MIN) {
-        this.moraleDelta = MORALE_DELTA_MIN;
+    if(this.moraleDelta < UNIT_MIN_MORALE_DELTA) {
+        this.moraleDelta = UNIT_MIN_MORALE_DELTA;
     }
 }
 
 BattalionEntity.prototype.increaseMorale = function() {
     this.moraleDelta++;
 
-    if(this.moraleDelta > MORALE_DELTA_MAX) {
-        this.moraleDelta = MORALE_DELTA_MAX;
+    if(this.moraleDelta > UNIT_MAX_MORALE_DELTA) {
+        this.moraleDelta = UNIT_MAX_MORALE_DELTA;
     }
 }
 
@@ -637,7 +632,8 @@ BattalionEntity.prototype.updateRangeGuard = function(gameContext) {
 }
 
 BattalionEntity.prototype.getMoraleFactor = function(gameContext) {
-    const { damageModifier } = this.getMorale(gameContext);
+    const { typeRegistry } = gameContext;
+    const { damageModifier } = typeRegistry.getMoraleType(this.getMorale());
 
     return damageModifier;
 }
@@ -932,8 +928,8 @@ BattalionEntity.prototype.onTurnStart = function() {
     this.clearLastAttacker();
     this.doneMoves = 0;
     this.doneActions = 0;
-    this.allowedMoves = MOVES_PER_TURN;
-    this.allowedActions = ACTIONS_PER_TURN;
+    this.allowedMoves = UNIT_MAX_MOVES_PER_TURN;
+    this.allowedActions = UNIT_MAX_ACTIONS_PER_TURN;
     this.bonusMoves = 0;
     this.bonusActions = 0;
     this.syncRenderFlags();
@@ -942,10 +938,10 @@ BattalionEntity.prototype.onTurnStart = function() {
 BattalionEntity.prototype.onTurnEnd = function() {
     this.clearFlag(BattalionEntity.FLAG.IS_TURN);
     this.clearLastAttacker();
-    this.doneMoves = MOVES_PER_TURN;
-    this.doneActions = ACTIONS_PER_TURN;
-    this.allowedMoves = MOVES_PER_TURN;
-    this.allowedActions = ACTIONS_PER_TURN;
+    this.doneMoves = UNIT_MAX_MOVES_PER_TURN;
+    this.doneActions = UNIT_MAX_ACTIONS_PER_TURN;
+    this.allowedMoves = UNIT_MAX_MOVES_PER_TURN;
+    this.allowedActions = UNIT_MAX_ACTIONS_PER_TURN;
     this.bonusMoves = 0;
     this.bonusActions = 0;
     this.turns++;

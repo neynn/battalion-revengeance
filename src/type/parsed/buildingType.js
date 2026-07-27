@@ -1,4 +1,4 @@
-import { MAX_TRAITS } from "../../constants.js";
+import { BUILDING_MAX_TRAITS } from "../../constants.js";
 import { BUILDING_TRAIT, SHOP_TYPE } from "../../enums.js";
 
 export const BuildingType = function(id) {
@@ -29,9 +29,9 @@ BuildingType.prototype.load = function(config, DEBUG_NAME) {
         }
     }
 
-    if(this.traits.length > MAX_TRAITS) {
-        this.traits.length = MAX_TRAITS;
+    if(this.traits.length > BUILDING_MAX_TRAITS) {
+        this.traits.length = BUILDING_MAX_TRAITS;
 
-        console.warn(`${DEBUG_NAME}: More than ${MAX_TRAITS} traits detected!`);
+        console.warn(`${DEBUG_NAME}: More than ${BUILDING_MAX_TRAITS} traits detected!`);
     }
 }

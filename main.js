@@ -5,10 +5,11 @@ import { generateAutoSheet, makeLanguageFile } from "./helpers.js";
 import { BattalionContext } from "./src/battalionContext.js";
 import { validateTraitTypes } from "./test/types.js"
 import { tAllNamesAndDescriptionsPresent } from "./test/language.js";
+import { ClientPathHandler } from "./engine/resources/pathHandler.js";
 
 const gameContext = new BattalionContext();
 
-loadResourcesDev(gameContext.pathHandler, "assets/assets.json")
+loadResourcesDev(ClientPathHandler, "assets/assets.json")
 .then(resources => {
     gameContext.init(resources);
 
