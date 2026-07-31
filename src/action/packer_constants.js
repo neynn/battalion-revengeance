@@ -1,5 +1,4 @@
 import { assertMemoryLayoutSize, createDataLayout, DATA_TYPE, getViewValue, setViewValue } from "../../engine/network/packing.js";
-import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 
 export const ENTITY_SNAPSHOT_SIZE = 36;
 

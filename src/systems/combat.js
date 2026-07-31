@@ -499,7 +499,7 @@ export const CombatSystem = {
             return false;
         }
 
-        const traitID = mine.getNullifierTrait();
+        const traitID = mine.config.nullifierTrait;
 
         //Some traits can dodge mines.
         //These are defined in mine.js

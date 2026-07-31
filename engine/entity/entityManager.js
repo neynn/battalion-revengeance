@@ -161,7 +161,7 @@ EntityManager.prototype.destroyEntity = function(index) {
     this.entityMap.delete(entityID);
 
     //Always remove the trailing entity but keep any other.
-    if(index === this.entities.length) {
+    if(index === this.entities.length - 1) {
         this.entities.pop();
     } else {
         entity.reset();

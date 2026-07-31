@@ -79,7 +79,6 @@ Renderer2D.prototype.drawTile = function(tileManager, tileID, context, screenX, 
 
 Renderer2D.prototype.drawTileClipped = function(camera, tileManager, tileID, context, tileX, tileY) {
     const { startX, endX, startY, endY } = camera;
-    let count = 0;
 
     //TODO(neyn): startX/startY no longer tell visibility!
     //tile - this.tile and check if > 0 && < wViewport / SIZE
@@ -88,10 +87,7 @@ Renderer2D.prototype.drawTileClipped = function(camera, tileManager, tileID, con
         const screenY = camera.getScreenY(tileY);
 
         this.drawTile(tileManager, tileID, context, screenX, screenY);
-        count++;
     }
-
-    return count;
 }
 
 Renderer2D.prototype.drawOverlay = function(camera, tileManager, display, overlay) {

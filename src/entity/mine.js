@@ -84,22 +84,6 @@ Mine.prototype.getDamage = function(movementType) {
     return this.config.getDamage(movementType);
 }
 
-Mine.prototype.getTileSprite = function() {
-    switch(this.config.id) {
-        case MINE_TYPE.LAND: return TILE_ID.MINE_LAND;
-        case MINE_TYPE.SEA: return TILE_ID.MINE_SEA;
-        default: return TILE_ID.JAMMER;
-    }
-}
-
-Mine.prototype.getNullifierTrait = function() {
-    switch(this.config.category) {
-        case MINE_CATEGORY.LAND: return TRAIT_TYPE.ELUSIVE;
-        case MINE_CATEGORY.SEA: return TRAIT_TYPE.STEER;
-        default: return TRAIT_TYPE._INVALID;
-    }
-}
-
 Mine.prototype.isPlacedOn = function(tileX, tileY) {
     return this.tileX === tileX && this.tileY === tileY;
 }

@@ -472,7 +472,8 @@ BattalionRenderer2D.prototype.drawJammers = function(camera, tileManager, displa
     for(const [index, field] of jammers) {
         const { tileX, tileY, blockers } = field;
 
-        count += this.drawTileClipped(camera, tileManager, TILE_ID.JAMMER, context, tileX, tileY);
+        this.drawTileClipped(camera, tileManager, TILE_ID.JAMMER, context, tileX, tileY);
+        count++;
     }
 
     return count;
@@ -485,38 +486,31 @@ BattalionRenderer2D.prototype.drawMines = function(gameContext, camera, display,
     const length = mines.length;
     let count = 0;
 
-    if(this.flags & BattalionRenderer2D.FLAG.USE_PERSPECTIVES) {
-        for(let i = 0; i < length; i++) {
-            const mine = mines[i];
-            const { tileX, tileY, opacity } = mine;
-            let alpha = 1;
-            
+    for(let i = 0; i < length; i++) {
+        const mine = mines[i];
+        const { tileX, tileY, flags, opacity, config } = mine;
+        const tileID = config.tileVisual;
+        let alpha = 1;
+        let isDrawable = true;
+
+        if(this.flags & BattalionRenderer2D.FLAG.USE_PERSPECTIVES) {
             if(opacity < BattalionRenderer2D.STEALTH_THRESHOLD && mine.isVisibleTo(gameContext, this.teamID)) {
                 alpha = BattalionRenderer2D.STEALTH_THRESHOLD;
             } else {
                 alpha = opacity;
-            }
 
-            if(alpha !== 0) {
-                const tileID = mines[i].getTileSprite();
-                
-                display.setAlpha(alpha);
-
-                count += this.drawTileClipped(camera, tileManager, tileID, context, tileX, tileY);
+                if(alpha === 0) {
+                    isDrawable = false;
+                }
             }
+        } else if(flags & Mine.FLAG.HIDDEN) {
+            alpha = BattalionRenderer2D.STEALTH_THRESHOLD;
         }
-    } else {
-        for(let i = 0; i < length; i++) {
-            const { tileX, tileY, flags } = mines[i];
-            const tileID = mines[i].getTileSprite();
 
-            if(flags & Mine.FLAG.HIDDEN) {
-                display.setAlpha(BattalionRenderer2D.STEALTH_THRESHOLD);
-            } else {
-                display.setAlpha(1);
-            }
-
-            count += this.drawTileClipped(camera, tileManager, tileID, context, tileX, tileY);
+        if(isDrawable) {
+            display.setAlpha(alpha);
+            this.drawTileClipped(camera, tileManager, tileID, context, tileX, tileY);
+            count++;
         }
     }
 

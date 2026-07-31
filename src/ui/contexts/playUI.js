@@ -47,6 +47,10 @@ const TILE_DRAW_ORDER = [
     BattalionMap.LAYER.CLOUD
 ];
 
+const toTooltipX = function(x) {
+    return x + ICON_WIDTH - RECON_TOOLTIP_WIDTH;
+}
+
 const LineCache = function() {
     this.reconLineTime = 0;
     this.reconLineIndex = 0;
@@ -521,8 +525,11 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
     const moveX = reconX + 429;
 
     let tooltipX = 0;
+    let tooltipY = reconY + 17;
+    let tooltipSize = 0;
     let tooltipHead = "";
     let tooltip = "";
+    let tooltipTexture = UI_TEXTURE.TOOLTIP;
 
     if(this.inspector.checkChange()) {
         this.lastIndex = -1;
@@ -532,13 +539,6 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
 
     this.iconTick = 0;
     this.style.apply(context);
-
-    const updateTooltip = (name, desc, x, y) => {
-        tooltipHead = name;
-        tooltip = desc;
-        tooltipX = x + ICON_WIDTH - RECON_TOOLTIP_WIDTH;
-    }
-
     this.drawDialogueHud(gameContext, display, mainX, reconY);
     this.style.apply(context);
     this.drawMainHud(gameContext, display, mainX, mainY);
@@ -562,14 +562,19 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
             }
 
             if(this.drawIcon(gameContext, climateType.icon, display, climateX, bodyY)) {
-                updateTooltip(climateType.name, climateType.desc, climateX, bodyY);
+                tooltipHead = climateType.name;
+                tooltip = climateType.desc;
+                tooltipX = toTooltipX(climateX);
             }
 
             for(let i = 0; i < terrain.length; i++) {
                 const { icon, name, desc } = typeRegistry.getTerrainType(terrain[i]);
+                const posX = traitX + (ICON_WIDTH + 1) * i;
 
-                if(this.drawIcon(gameContext, icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
-                    updateTooltip(name, desc, traitX + (ICON_WIDTH + 1) * i, bodyY);
+                if(this.drawIcon(gameContext, icon, display, posX, bodyY)) {
+                    tooltipHead = name;
+                    tooltip = desc;
+                    tooltipX = toTooltipX(posX);
                 }
             }
 
@@ -603,9 +608,12 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
 
             for(let i = 0; i < buildingTraits.length; i++) {
                 const { icon, name, desc } = typeRegistry.getBuildingTraitType(buildingTraits[i]);
+                const posX = traitX + (ICON_WIDTH + 1) * i;
 
-                if(this.drawIcon(gameContext, icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
-                    updateTooltip(name, desc, traitX + (ICON_WIDTH + 1) * i, bodyY);
+                if(this.drawIcon(gameContext, icon, display, posX, bodyY)) {
+                    tooltipHead = name;
+                    tooltip = desc;
+                    tooltipX = toTooltipX(posX);
                 }
             }
 
@@ -645,14 +653,18 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
             context.fillStyle = "#ffffff";
 
             if(this.drawIcon(gameContext, armorType.icon, display, armorX, bodyY)) {
-                updateTooltip(armorType.name, armorType.desc, armorX, bodyY);
+                tooltipHead = armorType.name;
+                tooltip = armorType.desc;
+                tooltipX = toTooltipX(armorX);
             }
 
             context.fillText(`${entity.health}/${entity.maxHealth}`, armorX + ICON_WIDTH + 2, bodyY + 10);
             uiData.getTexture(UI_TEXTURE.RECON_HEALTH).draw(display, armorX + ICON_WIDTH + 2, bodyY);
 
             if(this.drawIcon(gameContext, weaponType.icon, display, weaponX, bodyY)) {
-                updateTooltip(weaponType.name, weaponType.desc, weaponX, bodyY);
+                tooltipHead = weaponType.name;
+                tooltip = weaponType.desc;
+                tooltipX = toTooltipX(weaponX);
             }
 
             context.fillText(`${entity.getDamage(gameContext)}`, weaponX + ICON_WIDTH + 2, bodyY + 10);
@@ -662,16 +674,21 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
             }
 
             if(this.drawIcon(gameContext, movementType.icon, display, moveX, bodyY)) {
-                updateTooltip(movementType.name, movementType.desc, moveX, bodyY);
+                tooltipHead = movementType.name;
+                tooltip = movementType.desc;
+                tooltipX = toTooltipX(moveX);
             }
 
             context.fillText(`${entity.config.movementRange}`, moveX + ICON_WIDTH + 2, bodyY + 10);
 
             for(let i = 0; i < entity.config.traits.length; i++) {
                 const { icon, name, desc } = typeRegistry.getTraitType(entity.config.traits[i]);
+                const posX = traitX + (ICON_WIDTH + 1) * i;
 
-                if(this.drawIcon(gameContext, icon, display, traitX + (ICON_WIDTH + 1) * i, bodyY)) {
-                    updateTooltip(name, desc, traitX + (ICON_WIDTH + 1) * i, bodyY);
+                if(this.drawIcon(gameContext, icon, display, posX, bodyY)) {
+                    tooltipHead = name;
+                    tooltip = desc;
+                    tooltipX = toTooltipX(posX);
                 }
             }
 
@@ -689,10 +706,6 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
 
     //If collided with any icon.
     if(this.hotWidget >= ICON_ID_REGION && this.hotWidget < DIALOGUE_ID_REGION) {
-        let tooltipTexture = UI_TEXTURE.TOOLTIP;
-        let tooltipY = reconY + 17;
-        let tooltipSize = 0;
-
         switch(this.lineCache.tooltipLines.length) {
             case 1: {
                 tooltipTexture = UI_TEXTURE.TOOLTIP_MINI;
