@@ -8,6 +8,7 @@ export const TeamManager = function() {
     this.activeTeams = [];
     this.currentIndex = 0;
     this.currentTeam = TeamManager.INVALID_ID;
+    this.clientTeam = TeamManager.INVALID_ID;
     this.isConcluded = false;
     this.round = 0;
     this.turn = 0;
@@ -32,6 +33,7 @@ TeamManager.prototype.exit = function() {
     this.turn = 0;
     this.round = 0;
     this.currentTeam = TeamManager.INVALID_ID;
+    this.clientTeam = TeamManager.INVALID_ID;
     this.alliances.fill(0);
     this.currentIndex = 0;
 }
@@ -156,6 +158,20 @@ TeamManager.prototype.removeActiveTeam = function(teamID) {
 
         this.activeTeams.length = index;
     }
+}
+
+TeamManager.prototype.getActorOf = function(gameContext, teamID) {
+    const { world } = gameContext;
+    const { actorManager } = world;
+    const { actors } = actorManager;
+
+    for(const actor of actors) {
+        if(actor.teamID === teamID) {
+            return actor;
+        }
+    }
+
+    return null;
 }
 
 TeamManager.prototype.updateActor = function(gameContext) {

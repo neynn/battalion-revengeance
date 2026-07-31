@@ -49,10 +49,9 @@ Player.prototype = Object.create(BattalionActor.prototype);
 Player.prototype.constructor = Player;
 
 Player.prototype.onTurnStart = function(gameContext) {
-    const { client } = gameContext;
-    const { session } = client;
+    const { teamManager } = gameContext;
 
-    session.actorID = this.id;
+    teamManager.clientTeam = this.teamID;
 
     this.clearIntents();
 }

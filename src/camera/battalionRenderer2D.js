@@ -629,9 +629,8 @@ BattalionRenderer2D.prototype.drawBuildings = function(gameContext, camera, disp
 
 BattalionRenderer2D.prototype.render = function(gameContext, camera, display) {
     const { client, world, tileManager, teamManager } = gameContext;
-    const { session } = client;
-    const { mapManager, actorManager } = world;
-    const { round, turn } = teamManager;
+    const { mapManager } = world;
+    const { round, turn, clientTeam } = teamManager;
     const { context } = display;
     const worldMap = mapManager.getActiveMap();
 
@@ -646,11 +645,9 @@ BattalionRenderer2D.prototype.render = function(gameContext, camera, display) {
     let gfx = 0;
     let total = 0;
 
-    const actor = actorManager.getActor(session.actorID);
-
-    if(actor) {
-        this.isCurrentActor = teamManager.isCurrent(actor.teamID);
-        this.teamID = actor.teamID;
+    if(clientTeam !== TeamManager.INVALID_ID) {
+        this.isCurrentActor = teamManager.isCurrent(clientTeam);
+        this.teamID = clientTeam;
     } else {
         this.isCurrentActor = false;
         this.teamID = TeamManager.INVALID_ID;

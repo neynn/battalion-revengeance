@@ -224,9 +224,7 @@ PlayUI.prototype.drawIcon = function(gameContext, iconID, display, screenX, scre
 }
 
 PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) {
-    const { client, world, uiData, language, teamManager, typeRegistry } = gameContext;
-    const { session } = client; 
-    const { actorManager } = world;
+    const { client, uiData, language, teamManager, typeRegistry } = gameContext;
     const { activeTeams, currentIndex } = teamManager;
     const { context } = display;
     const buttonTexture = uiData.getTexture(UI_TEXTURE.HUD_BUTTONS);
@@ -338,19 +336,21 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
         GENERIC_BUTTON_STYLE.height
     );
 
-    const actor = actorManager.getActor(session.actorID);
+    if(teamManager.isCurrent(teamManager.clientTeam)) {
+        const actor = teamManager.getActorOf(gameContext, teamManager.clientTeam);
 
-    if(actor && teamManager.isCurrent(actor.teamID)) {
-        if(endTurnFlags & IM_FLAG.CLICKED) {
-            actor.addIntent(EndTurnVTable.createIntent());
-        }
+        if(actor) {
+            if(endTurnFlags & IM_FLAG.CLICKED) {
+                actor.addIntent(EndTurnVTable.createIntent());
+            }
 
-        if(endTurnFlags & IM_FLAG.ACTIVE) {
-            button = GENERIC_BUTTON_STYLE.active;
-        } else if(endTurnFlags & IM_FLAG.HOT) {
-            button = GENERIC_BUTTON_STYLE.hot;
-        } else {
-            button = GENERIC_BUTTON_STYLE.enabled;
+            if(endTurnFlags & IM_FLAG.ACTIVE) {
+                button = GENERIC_BUTTON_STYLE.active;
+            } else if(endTurnFlags & IM_FLAG.HOT) {
+                button = GENERIC_BUTTON_STYLE.hot;
+            } else {
+                button = GENERIC_BUTTON_STYLE.enabled;
+            }
         }
     }
 

@@ -5,12 +5,10 @@ import { SoundPlayer } from "./sound/soundPlayer.js";
 import { InputRouter } from "./inputRouter.js";
 import { MusicPlayer } from "./music/musicPlayer.js";
 import { MouseButton } from "./cursor/mouseButton.js";
-import { Session } from "./session.js";
 
 export const Client = function() {
     this.router = new InputRouter();
     this.keyboard = new Keyboard();
-    this.session = new Session();
     this.cursor = new Cursor();
     this.socket = new Socket();
     this.musicPlayer = new MusicPlayer();
@@ -48,7 +46,6 @@ Client.prototype.exit = function(gameContext) {
     this.socket.events.muteAll();
     this.musicPlayer.exit();
     this.soundPlayer.exit();
-    this.session.exit();
 }
 
 Client.prototype.update = function() {
