@@ -34,9 +34,18 @@ Renderer2D.prototype.drawSpriteFrame = function(context, container, frame, color
     }
 }
 
-Renderer2D.prototype.drawEmptyTile = function(context, screenX, screenY, scale = 1) {
-    const width = Math.floor(this.halfTileWidth * scale);
-    const height = Math.floor(this.halfTileHeight * scale);
+Renderer2D.prototype.drawEmptyTile = function(context, screenX, screenY) {
+    context.fillStyle = "#000000";
+    context.fillRect(screenX, screenY, this.halfTileWidth, this.halfTileHeight);
+    context.fillRect(screenX + this.halfTileWidth, screenY + this.halfTileHeight, this.halfTileWidth, this.halfTileHeight);
+    context.fillStyle = "#701867";
+    context.fillRect(screenX + this.halfTileWidth, screenY, this.halfTileWidth, this.halfTileHeight);
+    context.fillRect(screenX, screenY + this.halfTileHeight, this.halfTileWidth, this.halfTileHeight);
+}
+
+Renderer2D.prototype.drawEmptyTileScaled = function(context, screenX, screenY, scaleX, scaleY) {
+    const width = Math.floor(this.halfTileWidth * scaleX);
+    const height = Math.floor(this.halfTileHeight * scaleY);
 
     context.fillStyle = "#000000";
     context.fillRect(screenX, screenY, width, height);
@@ -47,7 +56,7 @@ Renderer2D.prototype.drawEmptyTile = function(context, screenX, screenY, scale =
     context.fillRect(screenX, screenY + height, width, height);
 }
 
-Renderer2D.prototype.drawTile = function(tileManager, tileID, context, screenX, screenY, scale = 1) {
+Renderer2D.prototype.drawTileScaled = function(tileManager, tileID, context, screenX, screenY, scaleX, scaleY) {
     const { image, frameData, framePtr } = tileManager.getVisual(tileID);
     const { state, bitmap } = image;
 
@@ -66,14 +75,44 @@ Renderer2D.prototype.drawTile = function(tileManager, tileID, context, screenX, 
             context.drawImage(
                 bitmap,
                 frameX, frameY, width, height,
-                Math.floor(screenX + offsetX * scale), Math.floor(screenY + offsetY * scale),
-                Math.floor(width * scale), Math.floor(height * scale)
+                Math.floor(screenX + offsetX * scaleX), Math.floor(screenY + offsetY * scaleY),
+                Math.floor(width * scaleX), Math.floor(height * scaleY)
             );
 
             frame_ptr += TILE_FRAME_SIZE;
         }
     } else {
-        this.drawEmptyTile(context, screenX, screenY, scale);
+        this.drawEmptyTileScaled(context, screenX, screenY, scaleX, scaleY);
+    }
+}
+
+Renderer2D.prototype.drawTile = function(tileManager, tileID, context, screenX, screenY) {
+    const { image, frameData, framePtr } = tileManager.getVisual(tileID);
+    const { state, bitmap } = image;
+
+    if(state === ImageResource.STATE.LOADED) {
+        const count = frameData[framePtr]; 
+        let frame_ptr = framePtr;
+
+        for(let i = 0; i < count; i++) {
+            const frameX = frameData[frame_ptr + 1];
+            const frameY = frameData[frame_ptr + 2];
+            const width = frameData[frame_ptr + 3];
+            const height = frameData[frame_ptr + 4];
+            const offsetX = frameData[frame_ptr + 5];
+            const offsetY = frameData[frame_ptr + 6];
+
+            context.drawImage(
+                bitmap,
+                frameX, frameY, width, height,
+                screenX + offsetX, screenY + offsetY,
+                width, height
+            );
+
+            frame_ptr += TILE_FRAME_SIZE;
+        }
+    } else {
+        this.drawEmptyTile(context, screenX, screenY);
     }
 }
 

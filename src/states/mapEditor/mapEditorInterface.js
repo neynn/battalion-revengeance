@@ -38,6 +38,7 @@ const fillBrushSize = function(width, height) {
 
 const SLOT_START_Y = 100;
 const SLOT_BUTTON_SIZE = 50;
+const SLOT_BUTTON_SCALE = SLOT_BUTTON_SIZE / TILE_WIDTH;
 const SLOT_BUTTON_ID_REGION = 100;
 
 const LAYER_BUTTON_WIDTH = 100;
@@ -271,7 +272,6 @@ MapEditorInterface.prototype.drawTileEditor = function(gameContext, display) {
     const { context } = display;
     const container = this.getElement("CONTAINER_TILES");
     const assetBrowser = this.tileSets.getValue();
-    const scale = SLOT_BUTTON_SIZE / TILE_WIDTH;
 
     let positionX = container._screenX;
     let positionY = container._screenY + SLOT_START_Y;
@@ -288,7 +288,7 @@ MapEditorInterface.prototype.drawTileEditor = function(gameContext, display) {
             const tileID = assetBrowser.getItem(index);
 
             if(tileID !== TileManager.TILE_ID.INVALID) {
-                this.renderer.drawTile(tileManager, tileID, context, positionX, positionY, scale);
+                this.renderer.drawTileScaled(tileManager, tileID, context, positionX, positionY, SLOT_BUTTON_SCALE, SLOT_BUTTON_SCALE);
 
                 if(buttonFlags & IM_FLAG.HOT) {
                     context.fillStyle = HIGHLIGHT_COLOR;
