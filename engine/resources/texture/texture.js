@@ -108,6 +108,8 @@ Texture.prototype.initGrid = function(grid, gridWidth, gridHeight) {
             offsetY = gridHeight - h;
         }
 
+        //What if h is smaller than gridHeight?
+
         const region = new TextureRegion(regionX, regionY, gridWidth, regionHeight);
 
         region.offsetX = 0;

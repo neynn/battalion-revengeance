@@ -3,7 +3,6 @@ import { TILE_FRAME_SIZE, TILE_HEIGHT, TILE_WIDTH } from "../engine_constants.js
 import { ImageResource } from "../resources/texture/imageResource.js";
 
 export const Renderer2D = function() {
-    this.currentFrame = 0;
     this.tileWidth = TILE_WIDTH;
     this.tileHeight = TILE_HEIGHT;
     this.halfTileWidth = this.tileWidth / 2;

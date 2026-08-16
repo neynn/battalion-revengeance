@@ -875,6 +875,16 @@ export const TILE_ID = {
     ARCTIC_HILLS_3: 419,
     ARCTIC_HILLS_4: 420,
 
+    JUNGLE_1: 450,
+    JUNGLE_2: 451,
+    JUNGLE_3: 452,
+    JUNGLE_4: 453,
+
+    MANGROVE_1: 454,
+    MANGROVE_2: 455,
+    MANGROVE_3: 456,
+    MANGROVE_4: 457,
+
     _COUNT: 1000
 };
 

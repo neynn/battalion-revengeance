@@ -160,6 +160,16 @@ export const loadVisualTiles = function(gameContext) {
     tileManager.registerVisual(TILE_ID.MARKER_PROTECTED, "other", "marker_protected");
     tileManager.registerVisual(TILE_ID.CASH_BOX, "other", "cash_box");
 
+    tileManager.registerVisual(TILE_ID.JUNGLE_1, "large_tiles", "jungle_1");
+    tileManager.registerVisual(TILE_ID.JUNGLE_2, "large_tiles", "jungle_2");
+    tileManager.registerVisual(TILE_ID.JUNGLE_3, "large_tiles", "jungle_3");
+    tileManager.registerVisual(TILE_ID.JUNGLE_4, "large_tiles", "jungle_4");
+
+    tileManager.registerVisual(TILE_ID.MANGROVE_1, "large_tiles", "mangrove_1");
+    tileManager.registerVisual(TILE_ID.MANGROVE_2, "large_tiles", "mangrove_2");
+    tileManager.registerVisual(TILE_ID.MANGROVE_3, "large_tiles", "mangrove_3");
+    tileManager.registerVisual(TILE_ID.MANGROVE_4, "large_tiles", "mangrove_4");
+
     tileManager.registerVisuals(TILE_ID.PLAINS_GROUND_1, "plains", [
         "plains_1", "plains_2", "plains_3", "plains_4", "plains_5", "plains_6", "plains_7", "plains_8",
         "shrub_1", "shrub_2", "shrub_3", "shrub_4", "shrub_5",

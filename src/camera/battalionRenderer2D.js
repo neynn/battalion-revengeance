@@ -50,6 +50,7 @@ export const BattalionRenderer2D = function() {
     this.teamID = TeamManager.INVALID_ID;
     this.isCurrentActor = false;
     this.pathfinderGeneration = 0;
+    this.currentFrame = 0;
 }
 
 BattalionRenderer2D.FLAG = {
