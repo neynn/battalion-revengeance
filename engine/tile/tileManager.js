@@ -2,6 +2,8 @@ import { TileVisual } from "./visual.js";
 import { Autotiler } from "./autotiler.js";
 import { TextureRegistry } from "../resources/texture/textureRegistry.js";
 
+const VISUAL_IDENTIFIER = "::";
+
 export const TileManager = function() {
     this.autotilers = [];
 
@@ -131,7 +133,7 @@ TileManager.prototype.registerVisual = function(tileID, texture, sprite) {
         return;
     }
 
-    const visualName = texture + "::" + sprite;
+    const visualName = texture + VISUAL_IDENTIFIER + sprite;
     const currentIndex = this.visualTableMap.get(visualName);
 
     if(currentIndex === undefined) {
@@ -176,13 +178,13 @@ TileManager.prototype.registerVisualsAuto = function(tileID, texture, prefix, co
  * @param {object} tileAtlases 
  */
 TileManager.prototype.createVisuals = function(textureRegistry, tileAtlases) {
-    textureRegistry.createTextures(TextureRegistry.CATEGORY.TILE, tileAtlases);
+    textureRegistry.createTextures(tileAtlases);
 
     for(const [visualID, index] of this.visualTableMap) {
-        const [texture, regionID] = visualID.split("::");
+        const [texture, regionID] = visualID.split(VISUAL_IDENTIFIER);
         const visual = new TileVisual(index);
         const textureConfig = tileAtlases[texture];
-        const textureID = textureRegistry.getTextureID(TextureRegistry.CATEGORY.TILE, texture);
+        const textureID = textureRegistry.getTextureID(texture);
 
         if(textureID !== TextureRegistry.INVALID_ID) {
             const textureObject = textureRegistry.getTexture(textureID);

@@ -18,6 +18,7 @@ export const SpriteManager = function(textureRegistry) {
     this.nextCleanup = 0;
     this.pool = new ObjectPool(1024, (index) => new Sprite(index, "EMPTY_SPRITE"));
     this.layers = [];
+    this.relevantTextures = new Set();
 }
 
 SpriteManager.INVALID_ID = -1;
@@ -40,12 +41,12 @@ SpriteManager.prototype.load = function(textures, sprites) {
         return;
     }
     
-    this.registry.createTextures(TextureRegistry.CATEGORY.SPRITE, textures);
+    this.registry.createTextures(textures);
 
     for(const spriteID in sprites) {
         const spriteConfig = sprites[spriteID];
         const { texture, shift, anchor, bounds, frameTime, spriteTime, frames, autoFrames } = spriteConfig;
-        const textureID = this.registry.getTextureID(TextureRegistry.CATEGORY.SPRITE, texture);
+        const textureID = this.registry.getTextureID(texture);
 
         if(textureID === TextureRegistry.INVALID_ID || (!frames && !autoFrames)) {
             console.warn(`Texture ${texture} of sprite ${spriteID} does not exist!`);
@@ -86,6 +87,7 @@ SpriteManager.prototype.load = function(textures, sprites) {
 
         this.containers.push(spriteContainer);
         this.containerMap.set(spriteID, containerID);
+        this.relevantTextures.add(textureID);
     }
 }
 
@@ -167,7 +169,9 @@ SpriteManager.prototype.exit = function() {
         this.layers[i].length = 0;
     }
 
-    this.registry.clearCategory(TextureRegistry.CATEGORY.SPRITE);
+    for(const textureID of this.relevantTextures) {
+        this.registry.clearTexture(textureID);
+    }
 }
 
 SpriteManager.prototype.initLayers = function(count) {

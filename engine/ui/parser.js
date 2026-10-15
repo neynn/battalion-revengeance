@@ -87,7 +87,7 @@ const createElement = function(textureRegistry, config, DEBUG_NAME) {
                 scale = 1
             } = config;
 
-            const textureID = textureRegistry.getTextureID(TextureRegistry.CATEGORY.GUI, image);
+            const textureID = textureRegistry.getTextureID(image);
 
             if(textureID !== TextureRegistry.INVALID_ID) {
                 const texture = textureRegistry.getTexture(textureID);

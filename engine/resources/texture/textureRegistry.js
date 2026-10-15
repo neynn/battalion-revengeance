@@ -6,27 +6,16 @@ import { Texture } from "./texture.js";
 
 export const TextureRegistry = function() {
     this.textures = [];
-    this.registries = [];
+    this.textureNames = new Map();
 
     this.events = new EventEmitter();
     this.events.register(TextureRegistry.EVENT.BITMAP_LOAD);
     this.events.register(TextureRegistry.EVENT.LOAD_ERROR);
-
-    for(let i = 0; i < TextureRegistry.CATEGORY._COUNT; i++) {
-        this.registries[i] = new Map();
-    }
 }
 
 TextureRegistry.EVENT = {
     BITMAP_LOAD: 0,
     LOAD_ERROR: 1
-};
-
-TextureRegistry.CATEGORY = {
-    TILE: 0,
-    SPRITE: 1,
-    GUI: 2,
-    _COUNT: 3
 };
 
 TextureRegistry.INVALID_ID = -1;
@@ -60,12 +49,12 @@ TextureRegistry.prototype.getBytesUsed = function() {
     return bytes;
 }
 
-TextureRegistry.prototype.clearCategory = function(categoryID) {
-    if(categoryID < 0 || categoryID >= TextureRegistry.CATEGORY._COUNT) {
+TextureRegistry.prototype.clearTexture = function(textureID) {
+    if(textureID < 0 || textureID >= this.textures.length) {
         return;
     }
 
-    this.registries[categoryID].forEach(textureID => this.textures[textureID].clear());
+    this.textures[textureID].clear();
 }
 
 TextureRegistry.prototype.loadTexture = function(textureID) {
@@ -111,16 +100,11 @@ TextureRegistry.prototype.loadTexture = function(textureID) {
 
 /**
  * 
- * @param {number} categoryID 
  * @param {string} name 
  * @returns {number}
  */
-TextureRegistry.prototype.getTextureID = function(categoryID, name) {
-    if(categoryID < 0 || categoryID >= this.registries.length) {
-        return TextureRegistry.INVALID_ID;
-    }
-
-    const textureID = this.registries[categoryID].get(name);
+TextureRegistry.prototype.getTextureID = function(name) {
+    const textureID = this.textureNames.get(name);
 
     if(textureID === undefined) {
         return TextureRegistry.INVALID_ID;
@@ -131,15 +115,10 @@ TextureRegistry.prototype.getTextureID = function(categoryID, name) {
 
 /**
  * 
- * @param {number} categoryID 
  * @param {object} textures 
  * @returns 
  */
-TextureRegistry.prototype.createTextures = function(categoryID, textures) {
-    if(categoryID < 0 || categoryID >= this.registries.length) {
-        return;
-    }
-
+TextureRegistry.prototype.createTextures = function(textures) {
     for(const textureName in textures) {
         const { directory, source, grid, autoGrid, regions, gridWidth = 0, gridHeight = 0 } = textures[textureName];
         const fileName = source ? source : `${textureName}${DEFAULT_IMAGE_TYPE}`;
@@ -160,7 +139,12 @@ TextureRegistry.prototype.createTextures = function(categoryID, textures) {
         }
 
         this.textures.push(texture);
-        this.registries[categoryID].set(textureName, textureID);
+
+        if(this.textureNames.has(textureName)) {
+            console.warn(`Texture ${textureName} is already registered!`);
+        } else {
+            this.textureNames.set(textureName, textureID);
+        }
     }
 }
 

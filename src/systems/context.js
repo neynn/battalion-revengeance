@@ -128,49 +128,49 @@ const RIVER_VALUES = {
 export const loadVisualTiles = function(gameContext) {
     const { tileManager } = gameContext;
 
-    tileManager.registerVisual(TILE_ID.GRASS, "plains", "plains_1");
-    tileManager.registerVisual(TILE_ID.BOREAL, "boreal", "boreal_1");
-    tileManager.registerVisual(TILE_ID.ARCTIC, "arctic", "arctic_1");
-    tileManager.registerVisualsAuto(TILE_ID.ROAD_0, "road", "", 16);
-    tileManager.registerVisual(TILE_ID.VOLANO, "volcano", "ANIMATION_0");
-    tileManager.registerVisualsAuto(TILE_ID.RIVER_0, "river", "ANIMATION_", 48);
-    tileManager.registerVisualsAuto(TILE_ID.SHORE_0, "shore", "ANIMATION_", 12);
-    tileManager.registerVisualsAuto(TILE_ID.ISLAND_1, "water", "ANIMATION_ISLAND_", 4);
-    tileManager.registerVisualsAuto(TILE_ID.SWIRL_1, "water", "ANIMATION_SWIRL_", 4);
-    tileManager.registerVisualsAuto(TILE_ID.ROCKS_1, "water", "ANIMATION_ROCKS_", 4);
-    tileManager.registerVisual(TILE_ID.OVERLAY_MOVE, "other", "overlay_0");
-    tileManager.registerVisual(TILE_ID.OVERLAY_MOVE_ATTACK, "other", "overlay_1");
-    tileManager.registerVisual(TILE_ID.OVERLAY_ATTACK_LIGHT, "other", "overlay_2");
-    tileManager.registerVisual(TILE_ID.OVERLAY_ATTACK, "other", "overlay_3");
-    tileManager.registerVisualsAuto(TILE_ID.PATH_0, "path", "", 16);
-    tileManager.registerVisual(TILE_ID.JAMMER, "other", "jammer");
-    tileManager.registerVisual(TILE_ID.ORE_LEFT, "ore_deposit", "LEFT");
-    tileManager.registerVisual(TILE_ID.ORE_RIGHT, "ore_deposit", "RIGHT");
-    tileManager.registerVisual(TILE_ID.ORE_LEFT_USED, "ore_deposit", "LEFT_USED");
-    tileManager.registerVisual(TILE_ID.ORE_RIGHT_USED, "ore_deposit", "RIGHT_USED");
-    tileManager.registerVisual(TILE_ID.ORE_LEFT_DEPLETED, "ore_deposit", "LEFT_DEPLETED");
-    tileManager.registerVisual(TILE_ID.ORE_RIGHT_DEPLETED, "ore_deposit", "RIGHT_DEPLETED");
-    tileManager.registerVisualsAuto(TILE_ID.CANYON_0, "canyon", "", 48);
-    tileManager.registerVisualsAuto(TILE_ID.RAIL_0, "rail", "", 16);
+    tileManager.registerVisual(TILE_ID.GRASS, "tile:plains", "plains_1");
+    tileManager.registerVisual(TILE_ID.BOREAL, "tile:boreal", "boreal_1");
+    tileManager.registerVisual(TILE_ID.ARCTIC, "tile:arctic", "arctic_1");
+    tileManager.registerVisualsAuto(TILE_ID.ROAD_0, "tile:road", "", 16);
+    tileManager.registerVisual(TILE_ID.VOLANO, "tile:volcano", "ANIMATION_0");
+    tileManager.registerVisualsAuto(TILE_ID.RIVER_0, "tile:river", "ANIMATION_", 48);
+    tileManager.registerVisualsAuto(TILE_ID.SHORE_0, "tile:shore", "ANIMATION_", 12);
+    tileManager.registerVisualsAuto(TILE_ID.ISLAND_1, "tile:water", "ANIMATION_ISLAND_", 4);
+    tileManager.registerVisualsAuto(TILE_ID.SWIRL_1, "tile:water", "ANIMATION_SWIRL_", 4);
+    tileManager.registerVisualsAuto(TILE_ID.ROCKS_1, "tile:water", "ANIMATION_ROCKS_", 4);
+    tileManager.registerVisual(TILE_ID.OVERLAY_MOVE, "tile:other", "overlay_0");
+    tileManager.registerVisual(TILE_ID.OVERLAY_MOVE_ATTACK, "tile:other", "overlay_1");
+    tileManager.registerVisual(TILE_ID.OVERLAY_ATTACK_LIGHT, "tile:other", "overlay_2");
+    tileManager.registerVisual(TILE_ID.OVERLAY_ATTACK, "tile:other", "overlay_3");
+    tileManager.registerVisualsAuto(TILE_ID.PATH_0, "tile:path", "", 16);
+    tileManager.registerVisual(TILE_ID.JAMMER, "tile:other", "jammer");
+    tileManager.registerVisual(TILE_ID.ORE_LEFT, "tile:ore_deposit", "LEFT");
+    tileManager.registerVisual(TILE_ID.ORE_RIGHT, "tile:ore_deposit", "RIGHT");
+    tileManager.registerVisual(TILE_ID.ORE_LEFT_USED, "tile:ore_deposit", "LEFT_USED");
+    tileManager.registerVisual(TILE_ID.ORE_RIGHT_USED, "tile:ore_deposit", "RIGHT_USED");
+    tileManager.registerVisual(TILE_ID.ORE_LEFT_DEPLETED, "tile:ore_deposit", "LEFT_DEPLETED");
+    tileManager.registerVisual(TILE_ID.ORE_RIGHT_DEPLETED, "tile:ore_deposit", "RIGHT_DEPLETED");
+    tileManager.registerVisualsAuto(TILE_ID.CANYON_0, "tile:canyon", "", 48);
+    tileManager.registerVisualsAuto(TILE_ID.RAIL_0, "tile:rail", "", 16);
 
-    tileManager.registerVisual(TILE_ID.MINE_LAND, "other", "mine_0");
-    tileManager.registerVisual(TILE_ID.MINE_SEA, "other", "mine_1");
-    tileManager.registerVisual(TILE_ID.MARKER_WEAK, "other", "marker_weak");
-    tileManager.registerVisual(TILE_ID.MARKER, "other", "marker");
-    tileManager.registerVisual(TILE_ID.MARKER_PROTECTED, "other", "marker_protected");
-    tileManager.registerVisual(TILE_ID.CASH_BOX, "other", "cash_box");
+    tileManager.registerVisual(TILE_ID.MINE_LAND, "tile:other", "mine_0");
+    tileManager.registerVisual(TILE_ID.MINE_SEA, "tile:other", "mine_1");
+    tileManager.registerVisual(TILE_ID.MARKER_WEAK, "tile:other", "marker_weak");
+    tileManager.registerVisual(TILE_ID.MARKER, "tile:other", "marker");
+    tileManager.registerVisual(TILE_ID.MARKER_PROTECTED, "tile:other", "marker_protected");
+    tileManager.registerVisual(TILE_ID.CASH_BOX, "tile:other", "cash_box");
 
-    tileManager.registerVisual(TILE_ID.JUNGLE_1, "large_tiles", "jungle_1");
-    tileManager.registerVisual(TILE_ID.JUNGLE_2, "large_tiles", "jungle_2");
-    tileManager.registerVisual(TILE_ID.JUNGLE_3, "large_tiles", "jungle_3");
-    tileManager.registerVisual(TILE_ID.JUNGLE_4, "large_tiles", "jungle_4");
+    tileManager.registerVisual(TILE_ID.JUNGLE_1, "tile:large_tiles", "jungle_1");
+    tileManager.registerVisual(TILE_ID.JUNGLE_2, "tile:large_tiles", "jungle_2");
+    tileManager.registerVisual(TILE_ID.JUNGLE_3, "tile:large_tiles", "jungle_3");
+    tileManager.registerVisual(TILE_ID.JUNGLE_4, "tile:large_tiles", "jungle_4");
 
-    tileManager.registerVisual(TILE_ID.MANGROVE_1, "large_tiles", "mangrove_1");
-    tileManager.registerVisual(TILE_ID.MANGROVE_2, "large_tiles", "mangrove_2");
-    tileManager.registerVisual(TILE_ID.MANGROVE_3, "large_tiles", "mangrove_3");
-    tileManager.registerVisual(TILE_ID.MANGROVE_4, "large_tiles", "mangrove_4");
+    tileManager.registerVisual(TILE_ID.MANGROVE_1, "tile:large_tiles", "mangrove_1");
+    tileManager.registerVisual(TILE_ID.MANGROVE_2, "tile:large_tiles", "mangrove_2");
+    tileManager.registerVisual(TILE_ID.MANGROVE_3, "tile:large_tiles", "mangrove_3");
+    tileManager.registerVisual(TILE_ID.MANGROVE_4, "tile:large_tiles", "mangrove_4");
 
-    tileManager.registerVisuals(TILE_ID.PLAINS_GROUND_1, "plains", [
+    tileManager.registerVisuals(TILE_ID.PLAINS_GROUND_1, "tile:plains", [
         "plains_1", "plains_2", "plains_3", "plains_4", "plains_5", "plains_6", "plains_7", "plains_8",
         "shrub_1", "shrub_2", "shrub_3", "shrub_4", "shrub_5",
         "forest_1", "forest_2", "forest_3", "forest_4",
@@ -178,14 +178,14 @@ export const loadVisualTiles = function(gameContext) {
         "hills_1", "hills_2", "hills_3", "hills_4"
     ]);
     
-    tileManager.registerVisuals(TILE_ID.BOREAL_GROUND_1, "boreal", [
+    tileManager.registerVisuals(TILE_ID.BOREAL_GROUND_1, "tile:boreal", [
         "boreal_1", "boreal_2", "boreal_3", "boreal_4", "boreal_5", "boreal_6", "boreal_7", "boreal_8",
         "forest_1", "forest_2", "forest_3", "forest_4",
         "mountain_1", "mountain_2", "mountain_3", "mountain_4", "megamountain",
         "hills_1", "hills_2", "hills_3", "hills_4"
     ]);
 
-    tileManager.registerVisuals(TILE_ID.ARCTIC_GROUND_1, "arctic", [
+    tileManager.registerVisuals(TILE_ID.ARCTIC_GROUND_1, "tile:arctic", [
         "arctic_1", "arctic_2", "arctic_3", "arctic_4", "arctic_5", "arctic_6", "arctic_7", "arctic_8",
         "forest_1", "forest_2", "forest_3", "forest_4",
         "mountain_1", "mountain_2", "mountain_3", "mountain_4", "megamountain",

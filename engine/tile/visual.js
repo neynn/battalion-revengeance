@@ -124,17 +124,11 @@ TileVisual.prototype.generate = function(texture, config, regionID) {
         this.createFrame(fp, frameData);
         this.frameCount++;
         this.setFrameTime(TileVisual.DEFAULT.FRAME_TIME);
-        return;
-    }
-
-    if(patternData) {
+    } else if(patternData) {
         this.createPattern(fp, texture, patternData);
         this.frameCount++;
         this.setFrameTime(TileVisual.DEFAULT.FRAME_TIME);
-        return;
-    }
-
-    if(animationData) {
+    } else if(animationData) {
         const frameTime = animationData.frameTime ?? TileVisual.DEFAULT.FRAME_TIME;
         const animationFrames = animationData.frames ?? [];
 

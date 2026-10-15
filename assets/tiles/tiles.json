@@ -1,5 +1,5 @@
 {
-    "water": {
+    "tile:water": {
         "directory": ["assets", "tiles", "battalion"],
         "source": "water.png",
         "frameTime": 0.03,
@@ -25,7 +25,7 @@
             "ANIMATION_ROCKS_3": {"frameTime":0.25,"frames":["44","45","46","47"]}
         }
     },
-    "canyon": {
+    "tile:canyon": {
         "directory": ["assets", "tiles", "battalion"],
         "source": "canyon.png",
         "frameTime": 0.03,
@@ -37,7 +37,7 @@
             "columns": 8
         }
     },
-    "shore": {
+    "tile:shore": {
         "directory": ["assets", "tiles", "battalion"],
         "source": "shore.png",
         "frameTime": 0.03,
@@ -63,7 +63,7 @@
             "ANIMATION_11": {"frameTime":0.25,"frames":["44","45","46","47"]}
         }
     },
-    "river": {
+    "tile:river": {
         "directory": ["assets", "tiles", "battalion"],
         "source": "river.png",
         "frameTime": 0.03,
@@ -125,7 +125,7 @@
             "ANIMATION_47": {"frameTime":0.25,"frames":["188","189","190","191"]}
         }
     },
-    "volcano": {
+    "tile:volcano": {
         "directory": ["assets", "tiles", "battalion"],
         "source": "volcano.png",
         "frameTime": 0.03,
@@ -141,7 +141,7 @@
             "ANIMATION_0": {"frameTime":0.15,"frames":["0","1","2","3"]}
         }
     },
-    "ore_deposit": {
+    "tile:ore_deposit": {
         "directory": ["assets", "tiles", "battalion"],
         "source": "ore_deposit.png",
         "frameTime": 0.03,
@@ -174,7 +174,7 @@
             "RIGHT_USED": {"frameTime":0.25,"frames":["RIGHT_USED_0", "RIGHT_USED_1","RIGHT_USED_2","RIGHT_USED_3"]}
         }
     },
-    "road": {
+    "tile:road": {
         "directory": ["assets", "tiles", "battalion"],
         "source": "road.png",
         "frameTime": 0.03,
@@ -186,7 +186,7 @@
             "columns": 4
         }
     },
-    "rail": {
+    "tile:rail": {
         "directory": ["assets", "tiles", "battalion"],
         "source": "rail.png",
         "frameTime": 0.03,
@@ -198,7 +198,7 @@
             "columns": 4
         }
     },
-    "path": {
+    "tile:path": {
         "directory": ["assets", "tiles", "battalion"],
         "source": "path.png",
         "frameTime": 0.03,
@@ -210,7 +210,7 @@
             "columns": 4
         }
     },
-    "other": {
+    "tile:other": {
         "directory": ["assets", "tiles", "battalion"],
         "source": "other.png",
         "frameTime": 0.03,
@@ -230,7 +230,7 @@
             "cash_box": { "u": 0, "v": 3 }
         }
     },
-    "plains": {
+    "tile:plains": {
         "directory": ["assets", "tiles", "battalion"],
         "source": "plains.png",
         "frameTime": 0.03,
@@ -265,7 +265,7 @@
             "megamountain": { "u": 6, "v": 2, "h": 77 }
         }
     },
-    "boreal": {
+    "tile:boreal": {
         "directory": ["assets", "tiles", "battalion"],
         "source": "boreal.png",
         "frameTime": 0.03,
@@ -295,7 +295,7 @@
             "megamountain": { "u": 6, "v": 2, "h": 77 }
         }
     },
-    "arctic": {
+    "tile:arctic": {
         "directory": ["assets", "tiles", "battalion"],
         "source": "arctic.png",
         "frameTime": 0.03,
@@ -325,7 +325,7 @@
             "megamountain": { "u": 6, "v": 2, "h": 77 }
         }
     },
-    "large_tiles": {
+    "tile:large_tiles": {
         "directory": ["assets", "tiles", "battalion"],
         "source": "large_tiles.png",
         "frameTime": 0.03,

@@ -7,6 +7,7 @@ import { BuildingProxy } from "../../editor/proxies/buildingProxy.js";
 import { TextureRegistry } from "../../../engine/resources/texture/textureRegistry.js";
 import { BuildingTool } from "./tools/buildingTool.js";
 import { MapEditor } from "../../../engine/map/editor/mapEditor.js";
+import { EDITOR_DEFAULT_TILE_COLUMNS, EDITOR_DEFAULT_TILE_ROWS, EDITOR_MAX_TILE_COLUMNS, EDITOR_MAX_TILE_ROWS } from "../../editor/editor_constants.js";
 
 /**
  * 
@@ -14,11 +15,6 @@ import { MapEditor } from "../../../engine/map/editor/mapEditor.js";
  */
 export const EditorController = function(mapEditor) {
     this.editor = mapEditor;
-    this.maxWidth = 100;
-    this.maxHeight = 100;
-    this.defaultWidth = 20;
-    this.defaultHeight = 20;
-
     this.buildingTool = new BuildingTool();
 
     this.currentTab = EditorController.TAB_TYPE.NONE;
@@ -157,8 +153,8 @@ EditorController.prototype.resizeCurrentMap = function() {
 
     const parsedWidth = parseInt(prompt("MAP_WIDTH"));
     const parsedHeight = parseInt(prompt("MAP_HEIGHT"));
-    const newWidth = clampValue(parsedWidth, this.maxWidth, 1);
-    const newHeight = clampValue(parsedHeight, this.maxHeight, 1);
+    const newWidth = clampValue(parsedWidth, EDITOR_MAX_TILE_COLUMNS, 1);
+    const newHeight = clampValue(parsedHeight, EDITOR_MAX_TILE_ROWS, 1);
 
     worldMap.resize(newWidth, newHeight);
 
@@ -196,7 +192,7 @@ EditorController.prototype.createMap = function(gameContext) {
     const createNew = confirm("This will create and load a brand new map! Proceed?");
 
     if(createNew) {
-        const worldMap = MapSystem.createEmptyMap(gameContext, this.defaultWidth, this.defaultHeight);
+        const worldMap = MapSystem.createEmptyMap(gameContext, EDITOR_DEFAULT_TILE_COLUMNS, EDITOR_DEFAULT_TILE_ROWS);
 
         this.editor.setTargetMap(worldMap);
         this.editor.autofillMap();
@@ -225,13 +221,13 @@ EditorController.prototype.loadMap = async function(gameContext) {
             this.editor.setTargetMap(worldMap);
         })
         .catch(() => {
-            const worldMap = MapSystem.createEmptyMap(gameContext, this.defaultWidth, this.defaultHeight);
+            const worldMap = MapSystem.createEmptyMap(gameContext, EDITOR_DEFAULT_TILE_COLUMNS, EDITOR_DEFAULT_TILE_ROWS);
 
             this.editor.setTargetMap(worldMap);
             this.editor.autofillMap();
         });
     } else {
-        const worldMap = MapSystem.createEmptyMap(gameContext, this.defaultWidth, this.defaultHeight);
+        const worldMap = MapSystem.createEmptyMap(gameContext, EDITOR_DEFAULT_TILE_COLUMNS, EDITOR_DEFAULT_TILE_ROWS);
 
         this.editor.setTargetMap(worldMap);
         this.editor.autofillMap();

@@ -1,0 +1,4 @@
+export const EDITOR_MAX_TILE_COLUMNS = 100;
+export const EDITOR_MAX_TILE_ROWS = 100;
+export const EDITOR_DEFAULT_TILE_COLUMNS = 20;
+export const EDITOR_DEFAULT_TILE_ROWS = 20;

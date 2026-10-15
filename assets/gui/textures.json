@@ -1,72 +1,29 @@
 {
-    "generic_button": { "directory": ["assets", "gui"], "source": "generic_button.png", "gridWidth": 126, "gridHeight": 71, "autoGrid": { "rows": 4, "columns": 1 } },
-
-    "arrow": { "directory": ["assets", "gui", "other"], "source": "arrow.png" },
-    "plaque": { "directory": ["assets", "gui", "other"], "source": "plaque.png" },
-    "plaque_disabled": { "directory": ["assets", "gui", "other"], "source": "plaque_disabled.png" },
-
-    "story_panels": {
-        "directory": ["assets", "gui", "story"],
-        "source": "panels.png",
-        "regions": {
-            "difficulty": { "x": 0, "y": 0, "w": 112, "h": 168 },
-            "hotseat": { "x": 112, "y": 0, "w": 112, "h": 130 },
-            "title": { "x": 0, "y": 168, "w": 350, "h": 112 },
-            "specification": { "x": 0, "y": 280, "w": 350, "h": 208 },
-            "difficulty_easy": { "x": 224, "y": 0, "w": 10, "h": 32 },
-            "difficulty_medium": { "x": 234, "y": 0, "w": 10, "h": 32 },
-            "difficulty_hard": { "x": 244, "y": 0, "w": 10, "h": 32 }
-        }
-    },
-
-    "story_portraits": { "directory": ["assets", "gui", "story"], "source": "portraits.png", "gridWidth": 130, "gridHeight": 150, "autoGrid": { "rows": 1, "columns": 2 } },
-    "story_chapter_panel": { "directory": ["assets", "gui", "story"], "source": "chapter_panel.png" },
-    "story_emblem_slot": { "directory": ["assets", "gui", "story"], "source": "emblem_slot.png" },
-    "story_main_menu_border": { "directory": ["assets", "gui", "story"], "source": "main_menu_border.png" },
-    "story_mission_panel": { "directory": ["assets", "gui", "story"], "source": "mission_panel.png" },
-    "story_emblems": { "directory": ["assets", "gui", "story"], "source": "emblems.png", "gridWidth": 70, "gridHeight": 70, "autoGrid": { "rows": 3, "columns": 4 } },
-    "story_start_button": { "directory": ["assets", "gui", "story"], "source": "start_button.png", "gridWidth": 391, "gridHeight": 101, "autoGrid": { "rows": 3, "columns": 1 } },
-
-    "pvp_icon": { "directory": ["assets", "gui"], "source": "pvp_icon.png" },
-    "recon_mainframe": { "directory": ["assets", "gui", "recon"], "source": "recon_mainframe.png" },
-    "recon_terrain": { "directory": ["assets", "gui", "recon"], "source": "recon_terrain.png" },
-    "recon_unit": { "directory": ["assets", "gui", "recon"], "source": "recon_unit.png" },
-    "recon_none": { "directory": ["assets", "gui", "recon"], "source": "recon_none.png" },
-    "recon_health": { "directory": ["assets", "gui", "recon"], "source": "recon_health.png" },
-    "recon_tooltip": { "directory": ["assets", "gui", "recon"], "source": "recon_tooltip.png" },
-    "recon_tooltip_plus": { "directory": ["assets", "gui", "recon"], "source": "recon_tooltip_plus.png" },
-    "recon_tooltip_mini": { "directory": ["assets", "gui", "recon"], "source": "recon_tooltip_mini.png" },
-    "dialogue_skip_button": { "directory": ["assets", "gui", "dialogue"], "source": "skip_button.png" },
-    "dialogue_text_box": { "directory": ["assets", "gui", "dialogue"], "source": "text_box.png" },
-    "hud_glassplate": { "directory": ["assets", "gui", "hud"], "source": "glassplate.png" },
-    "hud_buttons": {
-        "directory": ["assets", "gui", "hud"],
-        "source": "hud_buttons.png",
-        "gridWidth": 28,
-        "gridHeight": 40,
-        "autoGrid": {
-            "rows": 3,
-            "columns": 4
-        }
-    },
-    "morale_icons": {
-        "directory": ["assets", "gui"],
-        "source": "morale_icons.png",
-        "gridWidth": 20,
-        "gridHeight": 20,
-        "autoGrid": {
-            "rows": 5,
-            "columns": 5
-        }
-    },
-    "icons": {
-        "directory": ["assets", "gui"],
-        "source": "icons.png",
-        "gridWidth": 20,
-        "gridHeight": 20,
-        "autoGrid": {
-            "rows": 7,
-            "columns": 20
-        }
-    }
+    "ui:generic_button": { "directory": ["assets", "gui"], "source": "generic_button.png", "gridWidth": 126, "gridHeight": 71, "autoGrid": { "rows": 4, "columns": 1 } },
+    "ui:arrow": { "directory": ["assets", "gui", "other"], "source": "arrow.png" },
+    "ui:plaque": { "directory": ["assets", "gui", "other"], "source": "plaque.png" },
+    "ui:plaque_disabled": { "directory": ["assets", "gui", "other"], "source": "plaque_disabled.png" },
+    "ui:story_panels": { "directory": ["assets", "gui", "story"], "source": "panels.png", "regions": { "difficulty": { "x": 0, "y": 0, "w": 112, "h": 168 }, "hotseat": { "x": 112, "y": 0, "w": 112, "h": 130 }, "title": { "x": 0, "y": 168, "w": 350, "h": 112 }, "specification": { "x": 0, "y": 280, "w": 350, "h": 208 }, "difficulty_easy": { "x": 224, "y": 0, "w": 10, "h": 32 }, "difficulty_medium": { "x": 234, "y": 0, "w": 10, "h": 32 }, "difficulty_hard": { "x": 244, "y": 0, "w": 10, "h": 32 } } },
+    "ui:story_portraits": { "directory": ["assets", "gui", "story"], "source": "portraits.png", "gridWidth": 130, "gridHeight": 150, "autoGrid": { "rows": 1, "columns": 2 } },
+    "ui:story_chapter_panel": { "directory": ["assets", "gui", "story"], "source": "chapter_panel.png" },
+    "ui:story_emblem_slot": { "directory": ["assets", "gui", "story"], "source": "emblem_slot.png" },
+    "ui:story_main_menu_border": { "directory": ["assets", "gui", "story"], "source": "main_menu_border.png" },
+    "ui:story_mission_panel": { "directory": ["assets", "gui", "story"], "source": "mission_panel.png" },
+    "ui:story_emblems": { "directory": ["assets", "gui", "story"], "source": "emblems.png", "gridWidth": 70, "gridHeight": 70, "autoGrid": { "rows": 3, "columns": 4 } },
+    "ui:story_start_button": { "directory": ["assets", "gui", "story"], "source": "start_button.png", "gridWidth": 391, "gridHeight": 101, "autoGrid": { "rows": 3, "columns": 1 } },
+    "ui:pvp_icon": { "directory": ["assets", "gui"], "source": "pvp_icon.png" },
+    "ui:recon_mainframe": { "directory": ["assets", "gui", "recon"], "source": "recon_mainframe.png" },
+    "ui:recon_terrain": { "directory": ["assets", "gui", "recon"], "source": "recon_terrain.png" },
+    "ui:recon_unit": { "directory": ["assets", "gui", "recon"], "source": "recon_unit.png" },
+    "ui:recon_none": { "directory": ["assets", "gui", "recon"], "source": "recon_none.png" },
+    "ui:recon_health": { "directory": ["assets", "gui", "recon"], "source": "recon_health.png" },
+    "ui:recon_tooltip": { "directory": ["assets", "gui", "recon"], "source": "recon_tooltip.png" },
+    "ui:recon_tooltip_plus": { "directory": ["assets", "gui", "recon"], "source": "recon_tooltip_plus.png" },
+    "ui:recon_tooltip_mini": { "directory": ["assets", "gui", "recon"], "source": "recon_tooltip_mini.png" },
+    "ui:dialogue_skip_button": { "directory": ["assets", "gui", "dialogue"], "source": "skip_button.png" },
+    "ui:dialogue_text_box": { "directory": ["assets", "gui", "dialogue"], "source": "text_box.png" },
+    "ui:hud_glassplate": { "directory": ["assets", "gui", "hud"], "source": "glassplate.png" },
+    "ui:hud_buttons": { "directory": ["assets", "gui", "hud"], "source": "hud_buttons.png", "gridWidth": 28, "gridHeight": 40, "autoGrid": { "rows": 3, "columns": 4 } },
+    "ui:morale_icons": { "directory": ["assets", "gui"], "source": "morale_icons.png", "gridWidth": 20, "gridHeight": 20, "autoGrid": { "rows": 5, "columns": 5 } },
+    "ui:icons": { "directory": ["assets", "gui"], "source": "icons.png", "gridWidth": 20, "gridHeight": 20, "autoGrid": { "rows": 7, "columns": 20 } }
 }

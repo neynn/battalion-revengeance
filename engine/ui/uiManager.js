@@ -18,7 +18,7 @@ UIManager.prototype.load = function(textureRegistry, layouts, textures) {
     }
 
     if(textures) {
-        textureRegistry.createTextures(TextureRegistry.CATEGORY.GUI, textures);
+        textureRegistry.createTextures(textures);
     }
 }
 
