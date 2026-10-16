@@ -128,13 +128,13 @@ export const SpriteController = function() {
     this.buildingSprites = new Int16Array(MAX_BUILDINGS);
     this.unitSprites = new Int16Array(MAX_UNITS);
 
-    this.entityEffectRegistry = new Int16Array(ENTITY_EFFECT_COUNT);
-    this.entitySpriteRegistry = new Int16Array(ENTITY_SPRITE_COUNT);
-    this.buildingSpriteRegistry = new Int16Array(BUILDING_SPRITE_COUNT);
+    this.unitEffectSpriteDefinitionRegistry = new Int16Array(ENTITY_EFFECT_COUNT);
+    this.unitSpriteDefinitionRegistry = new Int16Array(ENTITY_SPRITE_COUNT);
+    this.buildingSpriteDefinitionRegistry = new Int16Array(BUILDING_SPRITE_COUNT);
 
-    this.entityEffectRegistry.fill(-1);
-    this.entitySpriteRegistry.fill(-1);
-    this.buildingSpriteRegistry.fill(-1);
+    this.unitEffectSpriteDefinitionRegistry.fill(-1);
+    this.unitSpriteDefinitionRegistry.fill(-1);
+    this.buildingSpriteDefinitionRegistry.fill(-1);
 
     for(let i = 0; i < ALL_SHADES; i++) {
         this.shades[i] = Texture.EMPTY_IMAGE;
@@ -143,34 +143,34 @@ export const SpriteController = function() {
     this.resetSprites();
 }
 
-SpriteController.prototype.getBuildingSpriteTypeID = function(type) {
+SpriteController.prototype.getBuildingSpriteDefinitionID = function(type) {
     const index = getBuildingSpriteRegistryIndex(type);
 
     if(index === -1) {
         return -1;
     }
 
-    return this.buildingSpriteRegistry[index];
+    return this.buildingSpriteDefinitionRegistry[index];
 }
 
-SpriteController.prototype.getEntitySpriteTypeID = function(type, state, direction) {
+SpriteController.prototype.getUnitSpriteDefinitionID = function(type, state, direction) {
     const index = getUnitSpriteRegistryIndex(type, state, direction);
 
     if(index === -1) {
         return -1;
     }
 
-    return this.entitySpriteRegistry[index];
+    return this.unitSpriteDefinitionRegistry[index];
 }
 
-SpriteController.prototype.getEntityEffectTypeID = function(type, effect) {
+SpriteController.prototype.getUnitEffectSpriteDefinitionID = function(type, effect) {
     const index = getUnitEffectRegistryIndex(type, effect);
 
     if(index === -1) {
         return -1;
     }
 
-    return this.entityEffectRegistry[index];
+    return this.unitEffectSpriteDefinitionRegistry[index];
 }
 
 SpriteController.prototype.registerBuildingSprites = function(gameContext, buildingTypes) {
@@ -183,7 +183,7 @@ SpriteController.prototype.registerBuildingSprites = function(gameContext, build
         const typeID = BUILDING_TYPE[buildingName];
 
         if(typeID !== undefined && rSpriteName !== undefined) {
-            this.buildingSpriteRegistry[typeID] = spriteManager.getSpriteID(rSpriteName);
+            this.buildingSpriteDefinitionRegistry[typeID] = spriteManager.getSpriteDefinitionID(rSpriteName);
         }
     }
 }
@@ -192,16 +192,16 @@ SpriteController.prototype.registerEntitySprites = function(gameContext, entityT
     const { spriteManager } = gameContext;
 
     //Preloads default effects.
-    const deathID = spriteManager.getSpriteID("explosion");
-    const fireID = spriteManager.getSpriteID("small_attack");
-    const healID = spriteManager.getSpriteID("supply_attack");
+    const deathID = spriteManager.getSpriteDefinitionID("explosion");
+    const fireID = spriteManager.getSpriteDefinitionID("small_attack");
+    const healID = spriteManager.getSpriteDefinitionID("supply_attack");
 
     for(let i = 0; i < ENTITY_TYPE._COUNT; i++) {
         const index = i * EFFECTS_PER_ENTITY_TYPE;
 
-        this.entityEffectRegistry[index + EFFECT_SPRITE.DEATH] = deathID;
-        this.entityEffectRegistry[index + EFFECT_SPRITE.FIRE] = fireID;
-        this.entityEffectRegistry[index + EFFECT_SPRITE.HEAL] = healID;
+        this.unitEffectSpriteDefinitionRegistry[index + EFFECT_SPRITE.DEATH] = deathID;
+        this.unitEffectSpriteDefinitionRegistry[index + EFFECT_SPRITE.FIRE] = fireID;
+        this.unitEffectSpriteDefinitionRegistry[index + EFFECT_SPRITE.HEAL] = healID;
     }
 
     for(const typeName in entityTypes) {
@@ -219,7 +219,7 @@ SpriteController.prototype.registerEntitySprites = function(gameContext, entityT
             const spriteIndex = unitSpriteNameToRegistryIndex(spriteName, typeID);
 
             if(spriteIndex !== -1) {
-                this.entitySpriteRegistry[spriteIndex] = spriteManager.getSpriteID(rEntitySprites[spriteName]);
+                this.unitSpriteDefinitionRegistry[spriteIndex] = spriteManager.getSpriteDefinitionID(rEntitySprites[spriteName]);
             }
         }
 
@@ -227,7 +227,7 @@ SpriteController.prototype.registerEntitySprites = function(gameContext, entityT
             const effectIndex = unitEffectNameToRegistryIndex(effectName, typeID);
 
             if(effectIndex !== -1) {
-                this.entityEffectRegistry[effectIndex] = spriteManager.getSpriteID(rEntityEffects[effectName]);
+                this.unitEffectSpriteDefinitionRegistry[effectIndex] = spriteManager.getSpriteDefinitionID(rEntityEffects[effectName]);
             }
         }
 
@@ -235,22 +235,23 @@ SpriteController.prototype.registerEntitySprites = function(gameContext, entityT
         for(let i = 0; i < DIRECTION._COUNT; i++) {
             const idleIndex = getUnitSpriteRegistryIndex(typeID, BattalionEntity.STATE.IDLE, i);
             const moveIndex = getUnitSpriteRegistryIndex(typeID, BattalionEntity.STATE.MOVE, i);
-            const idleID = this.entitySpriteRegistry[idleIndex];
+            const idleDefinitionID = this.unitSpriteDefinitionRegistry[idleIndex];
             
-            if(this.entitySpriteRegistry[moveIndex] === -1) {
-                this.entitySpriteRegistry[moveIndex] = idleID;
+            if(this.unitSpriteDefinitionRegistry[moveIndex] === -1) {
+                this.unitSpriteDefinitionRegistry[moveIndex] = idleDefinitionID;
             }
 
-            if(idleID !== -1) {
+            if(idleDefinitionID !== -1) {
                 const shadeIndex = getUnitShadeRegistryIndex(typeID, i);
                 let shadeResource = this.shades[shadeIndex];
 
-                if(this.shadeResources.has(idleID)) {
-                    shadeResource = this.shadeResources.get(idleID);
+                //Prevent duplicate shades.
+                if(this.shadeResources.has(idleDefinitionID)) {
+                    shadeResource = this.shadeResources.get(idleDefinitionID);
                 } else {
                     shadeResource = new ImageResource();
 
-                    this.shadeResources.set(idleID, shadeResource);
+                    this.shadeResources.set(idleDefinitionID, shadeResource);
                 }
 
                 this.shades[shadeIndex] = shadeResource;
@@ -290,8 +291,10 @@ SpriteController.prototype.getBuildingSpriteID = function(index) {
 SpriteController.prototype.createBuildingSprite = function(gameContext, building) {
     const { spriteManager } = gameContext;
     const { index } = building;
-    const spriteObject = spriteManager.createEmptySprite(LAYER_TYPE.BUILDING);
+    const spriteObject = spriteManager.createEmptySprite();
     const spriteIndex = spriteObject.getIndex();
+
+    spriteManager.addToLayer(spriteObject, LAYER_TYPE.BUILDING);
 
     this.buildingSprites[index] = spriteIndex;
     this.updateBuildingSprite(gameContext, building, spriteIndex);
@@ -302,8 +305,8 @@ SpriteController.prototype.bufferBuildingSprites = function(gameContext, colors)
     const bufferedTextures = new Set();
 
     for(let i = 0; i < BUILDING_SPRITE_COUNT; i++) {
-        const spriteTypeID = this.buildingSpriteRegistry[i];
-        const textureID = spriteManager.getTextureID(spriteTypeID);
+        const definitionID = this.buildingSpriteDefinitionRegistry[i];
+        const textureID = spriteManager.getTextureID(definitionID);
 
         if(textureID !== TextureRegistry.INVALID_ID && !bufferedTextures.has(textureID)) {
             textureLoader.addRecolorTask(textureID, COLOR_TYPE.BUILDING, BUILDING_NEUTRAL_COLORS);
@@ -324,17 +327,17 @@ SpriteController.prototype.bufferBuildingSprites = function(gameContext, colors)
 SpriteController.prototype.updateBuildingSprite = function(gameContext, building, spriteIndex) {
     const { spriteManager, typeRegistry, teamManager, textureLoader } = gameContext;
     const { teamID, config } = building;
-    const spriteTypeID = this.getBuildingSpriteTypeID(config.id); 
+    const definitionID = this.getBuildingSpriteDefinitionID(config.id); 
 
-    if(spriteTypeID === -1) {
+    if(definitionID === -1) {
         return;
     }
 
-    const textureID = spriteManager.getTextureID(spriteTypeID);
+    const textureID = spriteManager.getTextureID(definitionID);
 
     if(teamID === TeamManager.INVALID_ID) {
         textureLoader.addRecolorTask(textureID, COLOR_TYPE.BUILDING, BUILDING_NEUTRAL_COLORS);
-        spriteManager.updateSprite(spriteIndex, spriteTypeID, COLOR_TYPE.BUILDING);
+        spriteManager.updateSprite(spriteIndex, definitionID, COLOR_TYPE.BUILDING);
     } else {
         const { color } = teamManager.getTeam(teamID);
 
@@ -344,7 +347,7 @@ SpriteController.prototype.updateBuildingSprite = function(gameContext, building
             textureLoader.addRecolorTask(textureID, color, colorMap);
         }
 
-        spriteManager.updateSprite(spriteIndex, spriteTypeID, color);
+        spriteManager.updateSprite(spriteIndex, definitionID, color);
     }
 }
 
@@ -371,11 +374,14 @@ SpriteController.prototype.createEntitySprite = function(gameContext, entity) {
     const { teamID, config, index } = entity;
     const { id } = config;
     const { color } = teamManager.getTeam(teamID);
-    const visualSprite = spriteManager.createEmptySprite(LAYER_TYPE.LAND);
+    const visualSprite = spriteManager.createEmptySprite();
+
+    spriteManager.addToLayer(visualSprite, LAYER_TYPE.LAND);
 
     if(index >= 0 && index < MAX_UNITS) {
         this.unitSprites[index] = visualSprite.getIndex();
         this.bufferEntitySprites(gameContext, id, color);
+        this.bufferEntityShades(gameContext, id);
         this.updateEntitySprite(gameContext, entity);
     }
 }
@@ -390,7 +396,7 @@ SpriteController.prototype.updateEntitySprite = function(gameContext, entity) {
     }
 
     const sprite = spriteManager.getSprite(spriteID);
-    const spriteTypeID = this.getEntitySpriteTypeID(config.id, state, direction);
+    const spriteTypeID = this.getUnitSpriteDefinitionID(config.id, state, direction);
 
     if(spriteTypeID !== -1) {
         const textureID = spriteManager.getTextureID(spriteTypeID);
@@ -412,30 +418,16 @@ SpriteController.prototype.updateEntitySprite = function(gameContext, entity) {
     }
 }
 
-SpriteController.prototype.bufferEntitySprites = function(gameContext, typeID, colorID) {
+SpriteController.prototype.bufferEntityShades = function(gameContext, typeID) {
     if(typeID < 0 || typeID >= ENTITY_TYPE._COUNT) {
         return;
     }
-    
-    const { spriteManager, typeRegistry, textureLoader } = gameContext;
-    const beginIndex = typeID * SPRITES_PER_ENTITY_TYPE;
 
-    if(colorID !== COLOR_TYPE.RED) {
-        const { colorMap } = typeRegistry.getColorType(colorID);
-        
-        for(let i = 0; i < BattalionEntity.STATE._COUNT; i++) {
-            for(let j = 0; j < DIRECTION._COUNT; j++) {
-                const spriteTypeID = this.getEntitySpriteTypeID(typeID, i, j);
-                const textureID = spriteManager.getTextureID(spriteTypeID);
-
-                textureLoader.addRecolorTask(textureID, colorID, colorMap);
-            }
-        }
-    }
+    const { spriteManager, textureLoader } = gameContext;
 
     for(let i = 0; i < DIRECTION._COUNT; i++) {
         const idleIndex = getUnitSpriteRegistryIndex(typeID, BattalionEntity.STATE.IDLE, i);
-        const idleID = this.entitySpriteRegistry[idleIndex];
+        const idleID = this.unitSpriteDefinitionRegistry[idleIndex];
         const shade = this.shadeResources.get(idleID);
 
         if(shade && shade.state === ImageResource.STATE.EMPTY) {
@@ -445,6 +437,27 @@ SpriteController.prototype.bufferEntitySprites = function(gameContext, typeID, c
                 textureLoader.addShadeTask(definition.texture.id, definition.frames[0], shade);
             }
         } 
+    }
+}
+
+SpriteController.prototype.bufferEntitySprites = function(gameContext, typeID, colorID) {
+    if(typeID < 0 || typeID >= ENTITY_TYPE._COUNT) {
+        return;
+    }
+    
+    const { spriteManager, typeRegistry, textureLoader } = gameContext;
+
+    if(colorID !== COLOR_TYPE.RED) {
+        const { colorMap } = typeRegistry.getColorType(colorID);
+        
+        for(let i = 0; i < BattalionEntity.STATE._COUNT; i++) {
+            for(let j = 0; j < DIRECTION._COUNT; j++) {
+                const spriteTypeID = this.getUnitSpriteDefinitionID(typeID, i, j);
+                const textureID = spriteManager.getTextureID(spriteTypeID);
+
+                textureLoader.addRecolorTask(textureID, colorID, colorMap);
+            }
+        }
     }
 }
 

@@ -185,7 +185,7 @@ PlayUI.prototype.load = function(gameContext) {
 PlayUI.prototype.updateInspectSprite = function(gameContext, entity) {
     const { spriteManager, spriteController } = gameContext;
     const { color } = entity.getTeam(gameContext);
-    const spriteTypeID = spriteController.getEntitySpriteTypeID(entity.config.id, BattalionEntity.STATE.IDLE, DIRECTION.EAST);
+    const spriteTypeID = spriteController.getUnitSpriteDefinitionID(entity.config.id, BattalionEntity.STATE.IDLE, DIRECTION.EAST);
 
     spriteManager.updateSprite(this.inspectSprite.index, spriteTypeID, color);
 }

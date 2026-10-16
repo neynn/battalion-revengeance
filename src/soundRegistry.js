@@ -36,11 +36,9 @@ const getSoundRegistryIndex = function(soundName, typeID) {
 }
 
 export const SoundRegistry = function() {
-    const MAX_SOUND_TYPES = ENTITY_TYPE._COUNT * SOUNDS_PER_UNIT_TYPE;
-
     this.unitSounds = [];
 
-    for(let i = 0; i < MAX_SOUND_TYPES; i++) {
+    for(let i = 0; i < UNIT_SOUND_COUNT; i++) {
         this.unitSounds[i] = [];
     }
 }

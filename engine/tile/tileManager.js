@@ -196,7 +196,6 @@ TileManager.prototype.createVisuals = function(textureRegistry, tileAtlases) {
 
             if(visual.frameCount > 0) {
                 visual.setImage(image);
-                image.addReference();
 
                 textureRegistry.loadTexture(textureID);
             }

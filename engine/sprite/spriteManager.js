@@ -4,21 +4,22 @@ import { SpriteDefinition } from "./spriteDefinition.js";
 import { TextureRegistry } from "../resources/texture/textureRegistry.js";
 import { Texture } from "../resources/texture/texture.js";
 
+const MAX_SPRITES = 1024;
+
 /**
  * 
  * @param {TextureRegistry} textureRegistry 
  */
 export const SpriteManager = function(textureRegistry) {
     this.registry = textureRegistry;
+    this.pool = new ObjectPool(MAX_SPRITES, (index) => new Sprite(index, "EMPTY_SPRITE"));
+    this.relevantTextures = new Set();
     this.spriteTracker = new Set();
     this.definitionMap = new Map();
     this.definitions = [];
-    this.sharedSprites = [];
+    this.layers = [];
     this.timestamp = 0;
     this.nextCleanup = 0;
-    this.pool = new ObjectPool(1024, (index) => new Sprite(index, "EMPTY_SPRITE"));
-    this.layers = [];
-    this.relevantTextures = new Set();
 }
 
 SpriteManager.INVALID_ID = -1;
@@ -26,14 +27,14 @@ SpriteManager.SECONDS_TO_CLEANUP = 5;
 SpriteManager.EMPTY_SPRITE = new Sprite(SpriteManager.INVALID_ID, "EMPTY_SPRITE");
 SpriteManager.EMPTY_LAYER = [];
 
-SpriteManager.prototype.getSpriteID = function(name) {
-    const index = this.definitionMap.get(name);
+SpriteManager.prototype.getSpriteDefinitionID = function(name) {
+    const definitionID = this.definitionMap.get(name);
 
-    if(index === undefined) {
+    if(definitionID === undefined) {
         return SpriteManager.INVALID_ID;
     }
 
-    return index;
+    return definitionID;
 }
 
 SpriteManager.prototype.load = function(textures, sprites) {
@@ -97,30 +98,23 @@ SpriteManager.prototype.forEachSprite = function(onCall) {
     }
 }
 
-SpriteManager.prototype.addSharedEntry = function(spriteID, index) {
-    this.sharedSprites.push({
-        "id": spriteID,
-        "index": index
-    });
-}
-
-SpriteManager.prototype.getSpriteDuration = function(spriteID) {
-    if(spriteID < 0 || spriteID >= this.definitions.length) {
+SpriteManager.prototype.getSpriteDuration = function(definitionID) {
+    if(definitionID < 0 || definitionID >= this.definitions.length) {
         return 1;
     }
 
-    const definition = this.definitions[spriteID];
+    const definition = this.definitions[definitionID];
     const { totalFrameTime } = definition;
 
     return totalFrameTime;
 }
 
-SpriteManager.prototype.getTextureID = function(spriteID) {
-    if(spriteID < 0 || spriteID >= this.definitions.length) {
+SpriteManager.prototype.getTextureID = function(definitionID) {
+    if(definitionID < 0 || definitionID >= this.definitions.length) {
         return TextureRegistry.INVALID_ID;
     }
 
-    return this.definitions[spriteID].texture.id;
+    return this.definitions[definitionID].texture.id;
 }
 
 SpriteManager.prototype.update = function(gameContext) {
@@ -129,13 +123,6 @@ SpriteManager.prototype.update = function(gameContext) {
     const deltaTime = timer.getDeltaTime();
 
     this.timestamp = realTime;
-
-    for(let i = 0; i < this.sharedSprites.length; i++) {
-        const { id, index } = this.sharedSprites[i];
-        const sprite = this.pool.getElement(index);
-
-        sprite.update(realTime, deltaTime);
-    }
 
     if(this.timestamp >= this.nextCleanup) {
         const removedSprites = [];
@@ -163,7 +150,6 @@ SpriteManager.prototype.exit = function() {
         sprite.close();
     });
     this.pool.reset();
-    this.sharedSprites.length = 0;
 
     for(let i = 0; i < this.layers.length; i++) {
         this.layers[i].length = 0;
@@ -188,21 +174,15 @@ SpriteManager.prototype.getLayer = function(layerIndex) {
     return this.layers[layerIndex];
 }
 
-SpriteManager.prototype.getDefinition = function(index) {
-    if(index < 0 || index >= this.definitions.length) {
-        return null;
+SpriteManager.prototype.getDefinition = function(definitionID) {
+    if(definitionID < 0 || definitionID >= this.definitions.length) {
+        return Sprite.EMPTY_DEFINITION;
     }
 
-    return this.definitions[index];
+    return this.definitions[definitionID];
 }
 
-SpriteManager.prototype.createSharedSprite = function(spriteID) {
-    const sharedSprite = this.getSharedSprite(spriteID);
-
-    if(sharedSprite) {
-        return sharedSprite;
-    }
-
+SpriteManager.prototype.createEmptySprite = function() {
     const sprite = this.pool.reserveElement();
 
     if(!sprite) {
@@ -212,36 +192,13 @@ SpriteManager.prototype.createSharedSprite = function(spriteID) {
     sprite.reset();
 
     const graphID = sprite.getID();
-    const spriteIndex = sprite.getIndex();
-
-    this.spriteTracker.add(graphID);
-    this.addSharedEntry(spriteID, spriteIndex);
-    this.updateSprite(spriteIndex, spriteID);
-
-    return sprite;
-}
-
-SpriteManager.prototype.createEmptySprite = function(layerID = null) {
-    const sprite = this.pool.reserveElement();
-
-    if(!sprite) {
-        return SpriteManager.EMPTY_SPRITE;
-    }
-
-    sprite.reset();
-
-    if(layerID !== null) {
-        this.addToLayer(sprite, layerID);
-    }
-
-    const graphID = sprite.getID();
 
     this.spriteTracker.add(graphID);
 
     return sprite;
 }
 
-SpriteManager.prototype.createSprite = function(spriteID, layerID = null, colorID = Texture.DEFAULT_COLOR) {
+SpriteManager.prototype.createSprite = function(definitionID, layerID = null, colorID = Texture.DEFAULT_COLOR) {
     const sprite = this.pool.reserveElement();
 
     if(!sprite) {
@@ -258,7 +215,7 @@ SpriteManager.prototype.createSprite = function(spriteID, layerID = null, colorI
     const index = sprite.getIndex();
 
     this.spriteTracker.add(graphID);
-    this.updateSprite(index, spriteID, colorID);
+    this.updateSprite(index, definitionID, colorID);
 
     return sprite;
 }
@@ -345,8 +302,8 @@ SpriteManager.prototype.removeSpriteFromLayers = function(spriteIndex) {
     }
 }
 
-SpriteManager.prototype.updateSprite = function(spriteIndex, spriteID, colorID = Texture.DEFAULT_COLOR) {
-    if(spriteID < 0 || spriteID >= this.definitions.length) {
+SpriteManager.prototype.updateSprite = function(spriteIndex, definitionID, colorID = Texture.DEFAULT_COLOR) {
+    if(definitionID < 0 || definitionID >= this.definitions.length) {
         return;
     }
 
@@ -356,11 +313,11 @@ SpriteManager.prototype.updateSprite = function(spriteIndex, spriteID, colorID =
         return;
     }
 
-    const definition = this.definitions[spriteID];
+    const definition = this.definitions[definitionID];
     const { texture, frameCount } = definition;
 
     if(frameCount > 0) {
-        sprite.useDefinition(definition, this.timestamp, spriteID);
+        sprite.useDefinition(definition, this.timestamp, definitionID);
         sprite.selectImageVariant(colorID);
 
         //Lazy-Load the default resource.
@@ -370,53 +327,6 @@ SpriteManager.prototype.updateSprite = function(spriteIndex, spriteID, colorID =
     } else {
         sprite.reset();
     }
-}
-
-SpriteManager.prototype.isShared = function(spriteID, spriteIndex) {
-    for(let i = 0; i < this.sharedSprites.length; i++) {
-        const { id, index } = this.sharedSprites[i];
-
-        if(index === spriteIndex || id === spriteID) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-SpriteManager.prototype.removeShared = function(spriteID) {
-    for(let i = 0; i < this.sharedSprites.length; i++) {
-        const { id, index } = this.sharedSprites[i];
-
-        if(id === spriteID) {
-            this.destroySprite(index);
-            this.sharedSprites[i] = this.sharedSprites[this.sharedSprites.length - 1];
-            this.sharedSprites.pop();
-            break;
-        }
-    }
-}
-
-SpriteManager.prototype.getSharedSprite = function(spriteID) {
-    for(let i = 0; i < this.sharedSprites.length; i++) {
-        const { id, index } = this.sharedSprites[i];
-
-        if(id === spriteID) {
-            return this.getSprite(index);
-        }
-    }
-    
-    return SpriteManager.EMPTY_SPRITE;
-}
-
-SpriteManager.prototype.clearShared = function() {
-    for(let i = 0; i < this.sharedSprites.length; i++) {
-        const { id, index } = this.sharedSprites[i];
-
-        this.destroySprite(index);
-    }
-
-    this.sharedSprites.length = 0;
 }
 
 SpriteManager.prototype.sortLayer = function(index) {

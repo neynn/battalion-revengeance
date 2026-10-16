@@ -48,26 +48,23 @@ TextureLoader.prototype.addShadeTask = function(textureID, rect, target) {
         return;
     }
 
+    if(target.state !== ImageResource.STATE.EMPTY) {
+        return;
+    }
+
     const source = texture.getImage();
 
     if(source.state === ImageResource.STATE.EMPTY) {
         this.textureRegistry.loadTexture(textureID);
     }
 
+    target.state = ImageResource.STATE.LOADING;
+
     this.tasks.push(new ShadeTask(source, target, rect));
     this.totalTasks++;
 }
 
 TextureLoader.prototype.addRecolorTask = function(textureID, colorID, colorMap) {
-    //TODO(neyn): Not needed!
-    for(let i = 0; i < this.tasks.length; i++) {
-        const task = this.tasks[i];
-
-        if(task.textureID === textureID && task.colorID === colorID) {
-            return;
-        }
-    }
-
     const texture = this.textureRegistry.getTexture(textureID);
 
     if(!texture) {
@@ -86,6 +83,8 @@ TextureLoader.prototype.addRecolorTask = function(textureID, colorID, colorMap) 
 
         task.colorID = colorID;
         task.colorMap = colorMap;
+
+        target.state = ImageResource.STATE.LOADING;
 
         this.tasks.push(task);
         this.totalTasks++;

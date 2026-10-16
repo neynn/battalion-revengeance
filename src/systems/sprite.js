@@ -17,7 +17,7 @@ export const playSprite = function(gameContext, spriteType, tileX, tileY) {
 export const playExplosion = function(gameContext, tileX, tileY) {
     const { client, spriteManager } = gameContext;
     const { soundPlayer } = client;
-    const spriteID = spriteManager.getSpriteID("explosion");
+    const spriteID = spriteManager.getSpriteDefinitionID("explosion");
 
     soundPlayer.play("explosion");
 
@@ -27,7 +27,7 @@ export const playExplosion = function(gameContext, tileX, tileY) {
 export const playDeathEffect = function(gameContext, entity) {
     const { spriteController } = gameContext;
     const { tileX, tileY, config } = entity;
-    const spriteID = spriteController.getEntityEffectTypeID(config.id, EFFECT_SPRITE.DEATH);
+    const spriteID = spriteController.getUnitEffectSpriteDefinitionID(config.id, EFFECT_SPRITE.DEATH);
 
     playSprite(gameContext, spriteID, tileX, tileY);
 }
@@ -35,7 +35,7 @@ export const playDeathEffect = function(gameContext, entity) {
 export const playHealEffect = function(gameContext, entity, target) {
     const { spriteController } = gameContext;
     const { tileX, tileY, config } = target;
-    const spriteID = spriteController.getEntityEffectTypeID(config.id, EFFECT_SPRITE.HEAL);
+    const spriteID = spriteController.getUnitEffectSpriteDefinitionID(config.id, EFFECT_SPRITE.HEAL);
 
     playSprite(gameContext, spriteID, tileX, tileY);
 }
@@ -44,7 +44,7 @@ export const playAttackEffect = function(gameContext, entity, target, resolution
     const { world, spriteController } = gameContext;
     const { entityManager } = world;
     const attackType = entity.getAttackType();
-    const spriteID = spriteController.getEntityEffectTypeID(entity.config.id, EFFECT_SPRITE.FIRE);
+    const spriteID = spriteController.getUnitEffectSpriteDefinitionID(entity.config.id, EFFECT_SPRITE.FIRE);
 
     switch(attackType) {
         case ATTACK_TYPE.DISPERSION: {

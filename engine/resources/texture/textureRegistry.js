@@ -64,13 +64,13 @@ TextureRegistry.prototype.loadTexture = function(textureID) {
         return;
     }
     
-    const image = texture.getImage();
-
-    if(image.state !== ImageResource.STATE.EMPTY) {
+    if(!texture.path) {
         return;
     }
 
-    if(!texture.path) {
+    const image = texture.getImage();
+
+    if(image.state !== ImageResource.STATE.EMPTY) {
         return;
     }
 

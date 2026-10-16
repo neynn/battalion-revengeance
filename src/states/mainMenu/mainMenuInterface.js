@@ -25,10 +25,10 @@ MainMenuInterface.prototype.load = function(gameContext, stateMachine) {
     const buttonEdit = this.getElement("BUTTON_EDIT");
     const buttonExtra = this.getElement("BUTTON_EXTRA");
 
-    const spritePlay = spriteManager.createSprite(spriteManager.getSpriteID("lancer_tank_idle_right"));
-    const spriteVersus = spriteManager.createSprite(spriteManager.getSpriteID("red_battletank_idle"));
-    const spriteEdit = spriteManager.createSprite(spriteManager.getSpriteID("hunter_support_idle_right"));
-    const spriteExtra = spriteManager.createSprite(spriteManager.getSpriteID("aleph_idle_down"));
+    const spritePlay = spriteManager.createSprite(spriteManager.getSpriteDefinitionID("lancer_tank_idle_right"));
+    const spriteVersus = spriteManager.createSprite(spriteManager.getSpriteDefinitionID("red_battletank_idle"));
+    const spriteEdit = spriteManager.createSprite(spriteManager.getSpriteDefinitionID("hunter_support_idle_right"));
+    const spriteExtra = spriteManager.createSprite(spriteManager.getSpriteDefinitionID("aleph_idle_down"));
 
     spritePlay.setPosition(-20, -30);
     spriteEdit.setPosition(-20, -30);

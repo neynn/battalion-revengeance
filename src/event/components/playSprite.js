@@ -14,7 +14,7 @@ PlaySpriteComponent.prototype.constructor = PlaySpriteComponent;
 
 PlaySpriteComponent.prototype.play = function(gameContext) {
     const { spriteManager } = gameContext;
-    const spriteID = spriteManager.getSpriteID(this.sprite);
+    const spriteID = spriteManager.getSpriteDefinitionID(this.sprite);
 
     playSprite(gameContext, spriteID, this.tileX, this.tileY);
 }

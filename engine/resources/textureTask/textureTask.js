@@ -83,10 +83,8 @@ TextureTask.prototype.onExecute = function() {
 TextureTask.prototype.run = function() {
     if(this.state === TextureTask.STATE.NOT_STARTED) {
         if(this.source.state === ImageResource.STATE.LOADED) {
-            if(this.target.state === ImageResource.STATE.EMPTY) {
-                this.state = TextureTask.STATE.RUNNING;
-                this.onExecute();
-            }
+            this.state = TextureTask.STATE.RUNNING;
+            this.onExecute();
         }
     }
 }

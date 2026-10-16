@@ -1,6 +1,5 @@
 export const ImageResource = function() {
     this.state = ImageResource.STATE.EMPTY;
-    this.references = 0;
     this.width = 0;
     this.height = 0;
     this.bitmap = null;
@@ -14,7 +13,6 @@ ImageResource.STATE = {
 
 ImageResource.prototype.clear = function() {
     this.state = ImageResource.STATE.EMPTY;
-    this.references = 0;
     this.width = 0;
     this.height = 0;
     this.bitmap = null;
@@ -29,20 +27,4 @@ ImageResource.prototype.setData = function(bitmap) {
 
 ImageResource.prototype.getBytes = function() {
     return this.width * this.height * 4;
-}
-
-ImageResource.prototype.addReference = function() {
-    return this.references++;
-}
-
-ImageResource.prototype.removeReference = function() {
-    const references = this.references - 1;
-
-    if(references === 0) {
-        this.clear();
-    }
-
-    this.references = references;
-
-    return references;
 }
