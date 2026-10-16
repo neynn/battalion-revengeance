@@ -3,13 +3,14 @@ import { isRectangleRectangleIntersect } from "../math/math.js";
 import { Texture } from "../resources/texture/texture.js";
 import { ImageResource } from "../resources/texture/imageResource.js";
 import { TextureRegistry } from "../resources/texture/textureRegistry.js";
-import { SpriteContainer } from "./spriteContainer.js";
+import { SpriteDefinition } from "./spriteDefinition.js";
 
 export const Sprite = function(index, DEBUG_NAME) {
     Graph.call(this, DEBUG_NAME);
     
     this.index = index;
-    this.container = Sprite.EMPTY_CONTAINER;
+    this.definition = Sprite.EMPTY_DEFINITION;
+    this.imageResource = Texture.EMPTY_IMAGE;
     this.lastFrame = 0;
     this.lastCallTime = 0;
     this.frameCount = 1;
@@ -22,10 +23,9 @@ export const Sprite = function(index, DEBUG_NAME) {
     this.offsetY = 0;
     this.scale = 1;
     this.flags = Sprite.FLAG.NONE;
-    this.colorID = Texture.DEFAULT_COLOR;
 }
 
-Sprite.EMPTY_CONTAINER = new SpriteContainer(-1, TextureRegistry.EMPTY_TEXTURE, []);
+Sprite.EMPTY_DEFINITION = new SpriteDefinition(-1, TextureRegistry.EMPTY_TEXTURE);
 
 Sprite.DEBUG = {
     COLOR: "#ff00ff",
@@ -66,14 +66,11 @@ Sprite.prototype.onDraw = function(display, localX, localY) {
         display.unflip();
     }
 
-    const { texture } = this.container;
-    const { bitmap, state } = texture.getImageVariant(this.colorID);
-
-    if(state === ImageResource.STATE.LOADED) {
-        const { x, y, w, h } = this.container.frames[this.currentFrame];
+    if(this.imageResource.state === ImageResource.STATE.LOADED) {
+        const { x, y, w, h } = this.definition.frames[this.currentFrame];
 
         context.drawImage(
-            bitmap,
+            this.imageResource.bitmap,
             x, y, w, h,
             renderX, renderY, w * this.scale, h * this.scale
         );
@@ -127,12 +124,13 @@ Sprite.prototype.getIndex = function() {
     return this.index;
 }
 
-Sprite.prototype.setColor = function(colorID) {
-    this.colorID = colorID;
+Sprite.prototype.selectImageVariant = function(variantID) {
+    this.imageResource = this.definition.texture.getImageVariant(variantID);
 }
 
 Sprite.prototype.reset = function() {
-    this.container = Sprite.EMPTY_CONTAINER;
+    this.definition = Sprite.EMPTY_DEFINITION;
+    this.imageResource = Texture.EMPTY_IMAGE;
     this.lastCallTime = 0;
     this.frameCount = 1;
     this.frameTime = 1;
@@ -148,17 +146,17 @@ Sprite.prototype.reset = function() {
     this.opacity = 1;
     this.lastFrame = 0;
     this.scale = 1;
-    this.colorID = Texture.DEFAULT_COLOR;
     this.setPosition(0, 0);
     this.show();
     this.clear();
 }
 
-Sprite.prototype.init = function(container, lastCallTime, DEBUG_NAME) {
-    const { id, frameTime, frameCount, boundsW, boundsH, offsetX, offsetY } = container;
+Sprite.prototype.useDefinition = function(definition, lastCallTime, DEBUG_NAME) {
+    const { id, frameTime, frameCount, boundsW, boundsH, offsetX, offsetY } = definition;
 
-    if(this.container.id !== id) {
-        this.container = container;
+    if(this.definition.id !== id) {
+        this.definition = definition;
+        this.imageResource = this.definition.texture.getImage();
         this.lastCallTime = lastCallTime;
         this.frameCount = frameCount;
         this.frameTime = frameTime;

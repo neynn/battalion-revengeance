@@ -1,6 +1,6 @@
 import { TILE_HEIGHT, TILE_WIDTH } from "../engine_constants.js";
 
-export const SpriteContainer = function(id, texture) {
+export const SpriteDefinition = function(id, texture) {
     this.id = id;
     this.texture = texture;
     this.frames = [];
@@ -13,7 +13,7 @@ export const SpriteContainer = function(id, texture) {
     this.offsetY = 0;
 }
 
-SpriteContainer.prototype.loadFramesAuto = function(autoRegions) {
+SpriteDefinition.prototype.loadFramesAuto = function(autoRegions) {
     const { start = 1, jump = 0, repeat = 0 } = autoRegions;
 
     for(let i = 0; i < repeat; i++) {
@@ -32,7 +32,7 @@ SpriteContainer.prototype.loadFramesAuto = function(autoRegions) {
     this.totalFrameTime = this.frameCount * this.frameTime;
 }
 
-SpriteContainer.prototype.loadFrames = function(regions) {
+SpriteDefinition.prototype.loadFrames = function(regions) {
     for(let i = 0; i < regions.length; i++) {
         const regionID = regions[i];
         const index = this.texture.regionMap.get(regionID);
@@ -48,17 +48,17 @@ SpriteContainer.prototype.loadFrames = function(regions) {
     this.totalFrameTime = this.frameCount * this.frameTime;
 }
 
-SpriteContainer.prototype.setSpriteTime = function(spriteTime) {
+SpriteDefinition.prototype.setSpriteTime = function(spriteTime) {
     this.frameTime = spriteTime / this.frameCount;
     this.totalFrameTime = spriteTime;
 }
 
-SpriteContainer.prototype.setFrameTime = function(frameTime) {
+SpriteDefinition.prototype.setFrameTime = function(frameTime) {
     this.frameTime = frameTime;
     this.totalFrameTime = frameTime * this.frameCount;
 } 
 
-SpriteContainer.prototype.loadDefaultBounds = function() {
+SpriteDefinition.prototype.loadDefaultBounds = function() {
     if(this.frameCount === 0) {
         this.boundsW = 0;
         this.boundsH = 0;
@@ -68,7 +68,7 @@ SpriteContainer.prototype.loadDefaultBounds = function() {
     }
 }
 
-SpriteContainer.prototype.loadBounds = function(bounds) {
+SpriteDefinition.prototype.loadBounds = function(bounds) {
     const { w, h } = bounds;
 
     if(this.frameCount === 0) {
@@ -80,14 +80,14 @@ SpriteContainer.prototype.loadBounds = function(bounds) {
     }
 }
 
-SpriteContainer.prototype.loadAnchor = function(anchor) {
+SpriteDefinition.prototype.loadAnchor = function(anchor) {
     const { x = 0, y = 0 } = anchor;
 
     this.offsetX = TILE_WIDTH / 2 - x;
     this.offsetY = TILE_HEIGHT * 0.8 - y;
 }
 
-SpriteContainer.prototype.loadShift = function(shift) {
+SpriteDefinition.prototype.loadShift = function(shift) {
     const { x = 0, y = 0 } = shift;
 
     this.offsetX = x;

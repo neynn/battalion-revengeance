@@ -439,10 +439,10 @@ SpriteController.prototype.bufferEntitySprites = function(gameContext, typeID, c
         const shade = this.shadeResources.get(idleID);
 
         if(shade && shade.state === ImageResource.STATE.EMPTY) {
-            const container = spriteManager.getContainer(idleID);
+            const definition = spriteManager.getDefinition(idleID);
 
-            if(container && container.frameCount > 0) {
-                textureLoader.addShadeTask(container.texture.id, container.frames[0], shade);
+            if(definition && definition.frameCount > 0) {
+                textureLoader.addShadeTask(definition.texture.id, definition.frames[0], shade);
             }
         } 
     }

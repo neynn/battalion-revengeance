@@ -109,13 +109,13 @@ EditRenderer2D.prototype.drawBuildingProxies = function(gameContext, camera, dis
 
         if(camera.isTileVisible(tileX, tileY)) {
             const spriteTypeID = spriteController.getBuildingSpriteTypeID(typeID);
-            const container = spriteManager.getContainer(spriteTypeID);
+            const definition = spriteManager.getDefinition(spriteTypeID);
 
-            if(container) {
+            if(definition) {
                 const screenX = camera.getScreenX(tileX);
                 const screenY = camera.getScreenY(tileY);
 
-                this.drawSpriteFrame(context, container, 0, colorID, screenX, screenY);
+                this.drawSpriteFrame(context, definition, 0, colorID, screenX, screenY);
             }
         }
     }

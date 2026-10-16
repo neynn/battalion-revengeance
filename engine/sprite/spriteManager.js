@@ -1,6 +1,6 @@
 import { Sprite } from "./sprite.js";
 import { ObjectPool } from "../util/objectPool.js";
-import { SpriteContainer } from "./spriteContainer.js";
+import { SpriteDefinition } from "./spriteDefinition.js";
 import { TextureRegistry } from "../resources/texture/textureRegistry.js";
 import { Texture } from "../resources/texture/texture.js";
 
@@ -11,8 +11,8 @@ import { Texture } from "../resources/texture/texture.js";
 export const SpriteManager = function(textureRegistry) {
     this.registry = textureRegistry;
     this.spriteTracker = new Set();
-    this.containerMap = new Map();
-    this.containers = [];
+    this.definitionMap = new Map();
+    this.definitions = [];
     this.sharedSprites = [];
     this.timestamp = 0;
     this.nextCleanup = 0;
@@ -27,7 +27,7 @@ SpriteManager.EMPTY_SPRITE = new Sprite(SpriteManager.INVALID_ID, "EMPTY_SPRITE"
 SpriteManager.EMPTY_LAYER = [];
 
 SpriteManager.prototype.getSpriteID = function(name) {
-    const index = this.containerMap.get(name);
+    const index = this.definitionMap.get(name);
 
     if(index === undefined) {
         return SpriteManager.INVALID_ID;
@@ -54,39 +54,39 @@ SpriteManager.prototype.load = function(textures, sprites) {
         }
 
         const textureObject = this.registry.getTexture(textureID);
-        const containerID = this.containers.length;
-        const spriteContainer = new SpriteContainer(containerID, textureObject);
+        const definitionID = this.definitions.length;
+        const definition = new SpriteDefinition(definitionID, textureObject);
 
         if(frames === undefined) {
-            spriteContainer.loadFramesAuto(autoFrames);
+            definition.loadFramesAuto(autoFrames);
         } else {
-            spriteContainer.loadFrames(frames);
+            definition.loadFrames(frames);
         }
 
         if(spriteTime !== undefined) {
-            spriteContainer.setSpriteTime(spriteTime);
+            definition.setSpriteTime(spriteTime);
         } else {
-            spriteContainer.setFrameTime(frameTime);
+            definition.setFrameTime(frameTime);
         }
 
         if(bounds) {
-            spriteContainer.loadBounds(bounds);
+            definition.loadBounds(bounds);
         } else {
-            spriteContainer.loadDefaultBounds();
+            definition.loadDefaultBounds();
         }
 
         if(anchor) {
-            spriteContainer.loadAnchor(anchor);
+            definition.loadAnchor(anchor);
         } else if(shift) {
-            spriteContainer.loadShift(shift);
+            definition.loadShift(shift);
         }
 
-        if(spriteContainer.frameCount === 0) {
-            console.warn(`SpriteContainer ${spriteID} has 0 frames!`);
+        if(definition.frameCount === 0) {
+            console.warn(`SpriteDefinition ${spriteID} has 0 frames!`);
         }
 
-        this.containers.push(spriteContainer);
-        this.containerMap.set(spriteID, containerID);
+        this.definitions.push(definition);
+        this.definitionMap.set(spriteID, definitionID);
         this.relevantTextures.add(textureID);
     }
 }
@@ -105,22 +105,22 @@ SpriteManager.prototype.addSharedEntry = function(spriteID, index) {
 }
 
 SpriteManager.prototype.getSpriteDuration = function(spriteID) {
-    if(spriteID < 0 || spriteID >= this.containers.length) {
+    if(spriteID < 0 || spriteID >= this.definitions.length) {
         return 1;
     }
 
-    const container = this.containers[spriteID];
-    const { totalFrameTime } = container;
+    const definition = this.definitions[spriteID];
+    const { totalFrameTime } = definition;
 
     return totalFrameTime;
 }
 
 SpriteManager.prototype.getTextureID = function(spriteID) {
-    if(spriteID < 0 || spriteID >= this.containers.length) {
+    if(spriteID < 0 || spriteID >= this.definitions.length) {
         return TextureRegistry.INVALID_ID;
     }
 
-    return this.containers[spriteID].texture.id;
+    return this.definitions[spriteID].texture.id;
 }
 
 SpriteManager.prototype.update = function(gameContext) {
@@ -188,12 +188,12 @@ SpriteManager.prototype.getLayer = function(layerIndex) {
     return this.layers[layerIndex];
 }
 
-SpriteManager.prototype.getContainer = function(index) {
-    if(index < 0 || index >= this.containers.length) {
+SpriteManager.prototype.getDefinition = function(index) {
+    if(index < 0 || index >= this.definitions.length) {
         return null;
     }
 
-    return this.containers[index];
+    return this.definitions[index];
 }
 
 SpriteManager.prototype.createSharedSprite = function(spriteID) {
@@ -346,7 +346,7 @@ SpriteManager.prototype.removeSpriteFromLayers = function(spriteIndex) {
 }
 
 SpriteManager.prototype.updateSprite = function(spriteIndex, spriteID, colorID = Texture.DEFAULT_COLOR) {
-    if(spriteID < 0 || spriteID >= this.containers.length) {
+    if(spriteID < 0 || spriteID >= this.definitions.length) {
         return;
     }
 
@@ -356,12 +356,12 @@ SpriteManager.prototype.updateSprite = function(spriteIndex, spriteID, colorID =
         return;
     }
 
-    const container = this.containers[spriteID];
-    const { texture, frameCount } = container;
+    const definition = this.definitions[spriteID];
+    const { texture, frameCount } = definition;
 
     if(frameCount > 0) {
-        sprite.init(container, this.timestamp, spriteID);
-        sprite.setColor(colorID);
+        sprite.useDefinition(definition, this.timestamp, spriteID);
+        sprite.selectImageVariant(colorID);
 
         //Lazy-Load the default resource.
         if(colorID === Texture.DEFAULT_COLOR) {

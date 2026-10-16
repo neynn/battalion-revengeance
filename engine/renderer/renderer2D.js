@@ -16,8 +16,8 @@ Renderer2D.DEBUG = {
 
 Renderer2D.prototype.render = function(gameContext, camera, context) {}
 
-Renderer2D.prototype.drawSpriteFrame = function(context, container, frame, colorID, screenX, screenY) {
-    const { frameCount, frames, texture, offsetX, offsetY } = container;
+Renderer2D.prototype.drawSpriteFrame = function(context, definition, frame, colorID, screenX, screenY) {
+    const { frameCount, frames, texture, offsetX, offsetY } = definition;
 
     if(frame >= 0 && frame < frameCount) {
         const { state, bitmap } = texture.getImageVariant(colorID);
