@@ -142,14 +142,14 @@ MapEditor.prototype.updateAutotilers = function(gameContext, tileX, tileY) {
                 const autotiler = tileManager.getAutotilerFromTile(tileID);
 
                 if(autotiler) {
-                    this.targetMap.applyAutotiler(autotiler, j, i, this.targetLayer, isInverted);
+                    this.targetMap.applyAutotiler(tileManager, autotiler, j, i, this.targetLayer, isInverted);
                 }
             }
         }
     }
 }
 
-MapEditor.prototype.useAutotiler = function(autotiler, tileX, tileY) {
+MapEditor.prototype.useAutotiler = function(tileManager, autotiler, tileX, tileY) {
     if(this.targetMap && (this.flags & MapEditor.FLAG.USE_AUTOTILER) !== 0) {
         const startX = tileX - 1;
         const startY = tileY - 1;
@@ -159,7 +159,7 @@ MapEditor.prototype.useAutotiler = function(autotiler, tileX, tileY) {
 
         for(let i = startY; i <= endY; i++) {
             for(let j = startX; j <= endX; j++) {
-                this.targetMap.applyAutotiler(autotiler, j, i, this.targetLayer, isInverted);
+                this.targetMap.applyAutotiler(tileManager, autotiler, j, i, this.targetLayer, isInverted);
             }
         }
     }

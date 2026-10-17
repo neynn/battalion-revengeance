@@ -67,7 +67,7 @@ TileManager.prototype.registerTileGroup = function(beginID, endID, typeID, tags 
 
 TileManager.prototype.createAutotilers = function(count) {
     for(let i = 0; i < count; i++) {
-        this.autotilers[i] = new Autotiler(i, TileManager.TILE_ID.EMPTY, this.tagTable);
+        this.autotilers[i] = new Autotiler(i, TileManager.TILE_ID.EMPTY);
     }
 
     this.autotilerCount = count;
@@ -250,6 +250,14 @@ TileManager.prototype.getLogicalID = function(tileID) {
     }
 
     return this.typeTable[tileID];
+}
+
+TileManager.prototype.getTags = function(tileID) {
+    if(tileID < 0 || tileID >= MAX_TILES) {
+        return 0;
+    }
+
+    return this.tagTable[tileID];
 }
 
 TileManager.prototype.isVisualValid = function(tileID) {

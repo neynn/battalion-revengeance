@@ -25,10 +25,11 @@ WorldMap.prototype.getID = function() {
     return this.id;
 }
 
-WorldMap.prototype.applyAutotiler = function(autotiler, tileX, tileY, layerID, isInverted) {
+WorldMap.prototype.applyAutotiler = function(tileManager, autotiler, tileX, tileY, layerID, isInverted) {
     const tileID = this.getTile(layerID, tileX, tileY);
+    const tileTags = tileManager.getTags(tileID);
 
-    if(tileID === WorldMap.OUT_OF_BOUNDS || !autotiler.hasMember(tileID)) {
+    if(tileID === WorldMap.OUT_OF_BOUNDS || !autotiler.doTagsMatch(tileTags)) {
         return TileManager.TILE_ID.EMPTY;
     }
 
@@ -43,7 +44,9 @@ WorldMap.prototype.applyAutotiler = function(autotiler, tileX, tileY, layerID, i
             }
         }
 
-        if(!autotiler.hasMember(nextID)) {
+        const nextTags = tileManager.getTags(nextID);
+
+        if(!autotiler.doTagsMatch(nextTags)) {
             return Autotiler.RESPONSE.INVALID;
         }
 
