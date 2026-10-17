@@ -20,6 +20,7 @@ import { Sprite } from "../../engine/sprite/sprite.js";
 import { Pathfinder } from "../map/pathfinder.js";
 import { UI_TEXTURE } from "../ui/constants.js";
 import { UNIT_MAX_JAMMER_RANGE, UNIT_MAX_MOVE_COST } from "../constants.js";
+import { drawTextureRegion } from "../../engine/renderer/textureHelpers.js";
 
 const BLOCK = { COUNT: 4, WIDTH: 4, HEIGHT: 8, GAP: 1 };
 const WIDTH = (BLOCK.GAP * (BLOCK.COUNT + 1)) + BLOCK.WIDTH * BLOCK.COUNT;
@@ -450,7 +451,7 @@ BattalionRenderer2D.prototype.drawEntities = function(gameContext, camera, displ
             const moraleX = screenX + TILE_WIDTH / 2 - 10;
             const moraleY = screenY - 10;
 
-            moraleTexture.drawRegion(display, moraleIcon, moraleX, moraleY);
+            drawTextureRegion(moraleTexture, moraleIcon, display, moraleX, moraleY);
         }
     }
 

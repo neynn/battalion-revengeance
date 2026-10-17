@@ -5,8 +5,8 @@ import { ImageResource } from "./imageResource.js";
 import { Texture } from "./texture.js";
 
 export const TextureRegistry = function() {
-    this.textures = [];
     this.textureNames = new Map();
+    this.textures = [];
 
     this.events = new EventEmitter();
     this.events.register(TextureRegistry.EVENT.BITMAP_LOAD);

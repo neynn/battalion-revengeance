@@ -1,4 +1,5 @@
 import { TextStyle } from "../../../engine/graphics/textStyle.js";
+import { drawTextureRegion } from "../../../engine/renderer/textureHelpers.js";
 import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
 import { BattalionContext } from "../../battalionContext.js";
 import { MP_CLIENT_JSON } from "../../enums.js";
@@ -178,12 +179,12 @@ ArenaUI.prototype.onImmediate = function(gameContext, display) {
 
     this.style.apply(context);
 
-    buttonTexture.drawRegion(display, backButton, backX, backY);
-    buttonTexture.drawRegion(display, connectButton, connectX, connectY);
-    buttonTexture.drawRegion(display, joinButton, joinX, joinY);
-    buttonTexture.drawRegion(display, createButton, createX, createY);
-    buttonTexture.drawRegion(display, leaveButton, leaveX, leaveY);
-    buttonTexture.drawRegion(display, startButton, startX, startY);
+    drawTextureRegion(buttonTexture, backButton, display, backX, backY);
+    drawTextureRegion(buttonTexture, connectButton, display, connectX, connectY);
+    drawTextureRegion(buttonTexture, joinButton, display, joinX, joinY);
+    drawTextureRegion(buttonTexture, createButton, display, createX, createY);
+    drawTextureRegion(buttonTexture, leaveButton, display, leaveX, leaveY);
+    drawTextureRegion(buttonTexture, startButton, display, startX, startY);
 
     context.fillText("BACK", backX + GENERIC_BUTTON_STYLE.halfWidth, backY + 34);
     context.fillText("CONNECT", connectX + GENERIC_BUTTON_STYLE.halfWidth, connectY + 34);

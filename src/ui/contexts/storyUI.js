@@ -9,6 +9,7 @@ import { TextureRegion } from "../../../engine/resources/texture/textureRegion.j
 import { INTERRUPT_TYPE } from "../../enums.js";
 import { InterruptVTable } from "../../action/types/interrupt.js";
 import { loadSavedScenario } from "../../systems/save.js";
+import { drawTexture, drawTextureQuad, drawTextureRegion } from "../../../engine/renderer/textureHelpers.js";
 
 const DO_SAVED = false;
 const DATA = {};
@@ -91,9 +92,9 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
 
     this.style.apply(context);
 
-    mainMenuBorder.draw(display, borderX, borderY);
-    chapterPanel.draw(display, chapterPanelX, chapterPanelY);
-    missionPanel.draw(display, missionPanelX, missionPanelY);
+    drawTexture(mainMenuBorder, display, borderX, borderY);
+    drawTexture(chapterPanel, display, chapterPanelX, chapterPanelY);
+    drawTexture(missionPanel, display, missionPanelX, missionPanelY);
 
     if(currentCampaign) {
         const { chapters, nation, startButton } = currentCampaign;
@@ -108,7 +109,7 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
             const drawY = plaqueY + offsetY * i;
 
             if(i <= nextIndex) {
-                chapterPlaque.draw(display, plaqueX, drawY);
+                drawTexture(chapterPlaque, display, plaqueX, drawY);
                 
                 if(this.doButton(
                     gameContext,
@@ -122,7 +123,7 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
                     missionManager.selectMissionIfPossible(missionManager.getNextMissionIndex());
                 }
             } else {
-                chapterPlaqueDisabled.draw(display, plaqueX, drawY);
+                drawTexture(chapterPlaqueDisabled, display, plaqueX, drawY);
             }
             
             const textX = plaqueX + Math.floor(PLAQUE_WIDTH / 2);
@@ -145,7 +146,7 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
             const titleTextX = Math.floor(titleX + this.titleRect.w / 2);
             const titleTextY = Math.floor(titleY + this.titleRect.h / 2);
 
-            panelTexture.drawRect(display, this.titleRect, titleX, titleY);
+            drawTextureQuad(panelTexture, this.titleRect, display, titleX, titleY);
             context.fillText(language.getSystemTranslation(name), titleTextX, titleTextY);
 
             //TODO: This is cursed.
@@ -154,7 +155,7 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
                 const arrowX = plaqueX - 50;
                 const arrowY = plaqueY + offsetY * index - PLAQUE_HEIGHT / 2;
 
-                chapterArrowTexture.draw(display, arrowX, arrowY);
+                drawTexture(chapterArrowTexture, display, arrowX, arrowY);
             }
 
             if(currentMission) {
@@ -165,7 +166,8 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
                 const index = currentChapter.getMissionIndex(currentMission.id);
                 const drawX = emblemX + (EMBLEM_WIDTH + EMBLEM_GAP) * index - 16;
 
-                emblemSlot.draw(display, drawX, emblemY - 22);
+                drawTexture(emblemSlot, display, drawX, emblemY - 22);
+
                 context.fillText(language.getSystemTranslation(name), missionPanelTextX, missionPanelTextY);
 
                 if(this.lastMission !== id) {
@@ -195,9 +197,9 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
                 );
 
                 if(startFlags & IM_FLAG.HOT) {
-                    startButtonTexture.drawRegion(display, START_BUTTON_STYLE.hot, startX, startY);
+                    drawTextureRegion(startButtonTexture, START_BUTTON_STYLE.hot, display, startX, startY);
                 } else {
-                    startButtonTexture.drawRegion(display, START_BUTTON_STYLE.enabled, startX, startY);
+                    drawTextureRegion(startButtonTexture, START_BUTTON_STYLE.enabled, display, startX, startY);
                 }
 
                 context.fillText(language.getSystemTranslation(startButton), startTextX, startTextY);
@@ -236,7 +238,7 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
                 const drawX = emblemX + (EMBLEM_WIDTH + EMBLEM_GAP) * i;
 
                 if(i <= nextIndex) {
-                    emblemTexture.drawRegion(display, emblem, drawX, emblemY);
+                    drawTextureRegion(emblemTexture, emblem, display, drawX, emblemY);
 
                     if(this.doButton(
                         gameContext,
@@ -249,19 +251,19 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
                         missionManager.selectMissionIfPossible(i);
                     }
                 } else {
-                    emblemTexture.drawRegion(display, nonEmblem, drawX, emblemY);
+                    drawTextureRegion(emblemTexture, nonEmblem, display, drawX, emblemY);
                 }
             }
 
             const panelX = borderX + mainMenuBorder.width - this.specificationRect.w - 50;
             const panelY = borderY + mainMenuBorder.height - this.specificationRect.h - 50;
 
-            panelTexture.drawRect(display, this.specificationRect, panelX, panelY);
+            drawTextureQuad(panelTexture, this.specificationRect, display, panelX, panelY);
 
             const hotseatX = chapterPanelX + toCenter(chapterPanel.width, this.hotseatRect.w);
             const hotseatY = chapterPanelY + chapterPanel.height + 2;
 
-            panelTexture.drawRect(display, this.hotseatRect, hotseatX, hotseatY);
+            drawTextureQuad(panelTexture, this.hotseatRect, display, hotseatX, hotseatY);
 
             const difficultyX = chapterPanelX + toCenter(chapterPanel.width, this.difficultyRect.w);
             const difficultyY = hotseatY + this.hotseatRect.h + 4;
@@ -286,10 +288,10 @@ StoryUI.prototype.drawDifficulty = function(gameContext, display, screenX, scree
     const textOffsetX = 15;
     const textOffsetY = Math.floor(this.difficultyEasyRect.h / 2);
 
-    panelTexture.drawRect(display, this.difficultyRect, screenX, screenY);
-    panelTexture.drawRect(display, this.difficultyEasyRect, difficultyX, easyY);
-    panelTexture.drawRect(display, this.difficultyMediumRect, difficultyX, mediumY);
-    panelTexture.drawRect(display, this.difficultyHardRect, difficultyX, hardY);
+    drawTextureQuad(panelTexture, this.difficultyRect, display, screenX, screenY);
+    drawTextureQuad(panelTexture, this.difficultyEasyRect, display, difficultyX, easyY);
+    drawTextureQuad(panelTexture, this.difficultyMediumRect, display, difficultyX, mediumY);
+    drawTextureQuad(panelTexture, this.difficultyHardRect, display, difficultyX, hardY);
 
     context.fillText(language.getSystemTranslation("STORY_DIFFICULTY_TITLE"), textX, textY);
     context.fillText(language.getSystemTranslation("STORY_DIFFICULTY_EASY"), textX + textOffsetX, easyY + textOffsetY);
