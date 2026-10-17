@@ -1,11 +1,10 @@
 import { TILE_HEIGHT, TILE_WIDTH } from "../engine_constants.js";
 
-export const SpriteDefinition = function(id, texture) {
+export const SpriteDefinition = function(id, texture, frames) {
     this.id = id;
     this.texture = texture;
-    this.frames = [];
-    this.frameCount = 0;
-    this.totalFrameTime = 0;
+    this.frames = frames;
+    this.frameCount = frames.length;
     this.frameTime = 1;
     this.boundsW = 0;
     this.boundsH = 0;
@@ -13,49 +12,16 @@ export const SpriteDefinition = function(id, texture) {
     this.offsetY = 0;
 }
 
-SpriteDefinition.prototype.loadFramesAuto = function(autoRegions) {
-    const { start = 1, jump = 0, repeat = 0 } = autoRegions;
-
-    for(let i = 0; i < repeat; i++) {
-        const regionNumber = start + jump * i;
-        const regionID = regionNumber + "";
-        const index = this.texture.regionMap.get(regionID);
-
-        if(index !== undefined) {
-            this.frames.push(this.texture.regions[index]);
-        } else {
-            console.error(`Missing region error! ${regionID} in ${this.texture.name}!`);
-        }
-    }
-
-    this.frameCount = this.frames.length;
-    this.totalFrameTime = this.frameCount * this.frameTime;
-}
-
-SpriteDefinition.prototype.loadFrames = function(regions) {
-    for(let i = 0; i < regions.length; i++) {
-        const regionID = regions[i];
-        const index = this.texture.regionMap.get(regionID);
-
-        if(index !== undefined) {
-            this.frames.push(this.texture.regions[index]);
-        } else {
-            console.error(`Missing region error! ${regionID} in ${this.texture.name}!`);
-        }
-    }
-
-    this.frameCount = this.frames.length;
-    this.totalFrameTime = this.frameCount * this.frameTime;
+SpriteDefinition.prototype.getTotalFrameTime = function() {
+    return this.frameCount * this.frameTime;
 }
 
 SpriteDefinition.prototype.setSpriteTime = function(spriteTime) {
     this.frameTime = spriteTime / this.frameCount;
-    this.totalFrameTime = spriteTime;
 }
 
 SpriteDefinition.prototype.setFrameTime = function(frameTime) {
     this.frameTime = frameTime;
-    this.totalFrameTime = frameTime * this.frameCount;
 } 
 
 SpriteDefinition.prototype.loadDefaultBounds = function() {

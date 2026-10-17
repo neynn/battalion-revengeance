@@ -37,6 +37,22 @@ SpriteManager.prototype.getSpriteDefinitionID = function(name) {
     return definitionID;
 }
 
+SpriteManager.prototype.getTextureID = function(definitionID) {
+    if(definitionID < 0 || definitionID >= this.definitions.length) {
+        return TextureRegistry.INVALID_ID;
+    }
+
+    return this.definitions[definitionID].texture.id;
+}
+
+SpriteManager.prototype.getDefinition = function(definitionID) {
+    if(definitionID < 0 || definitionID >= this.definitions.length) {
+        return Sprite.EMPTY_DEFINITION;
+    }
+
+    return this.definitions[definitionID];
+}
+
 SpriteManager.prototype.load = function(textures, sprites) {
     if(!textures || !sprites) {
         return;
@@ -49,24 +65,33 @@ SpriteManager.prototype.load = function(textures, sprites) {
         const { texture, shift, anchor, bounds, frameTime, spriteTime, frames, autoFrames } = spriteConfig;
         const textureID = this.registry.getTextureID(texture);
 
-        if(textureID === TextureRegistry.INVALID_ID || (!frames && !autoFrames)) {
+        if(textureID === TextureRegistry.INVALID_ID) {
             console.warn(`Texture ${texture} of sprite ${spriteID} does not exist!`);
             continue;
         }
 
         const textureObject = this.registry.getTexture(textureID);
-        const definitionID = this.definitions.length;
-        const definition = new SpriteDefinition(definitionID, textureObject);
+        let spriteFrames;
+        
+        if(autoFrames) {
+            const { start = 1, jump = 0, repeat = 0 } = autoFrames;
 
-        if(frames === undefined) {
-            definition.loadFramesAuto(autoFrames);
-        } else {
-            definition.loadFrames(frames);
+            spriteFrames = textureObject.getRegionsAuto(start, jump, repeat);
+        } else if(frames) {
+            spriteFrames = textureObject.getRegionsByNames(frames);
         }
+
+        if(spriteFrames.length === 0) {
+            console.warn(`Frames for sprite ${spriteID} could not be fetched!`);
+            continue;
+        }
+
+        const definitionID = this.definitions.length;
+        const definition = new SpriteDefinition(definitionID, textureObject, spriteFrames);
 
         if(spriteTime !== undefined) {
             definition.setSpriteTime(spriteTime);
-        } else {
+        } else if(frameTime !== undefined) {
             definition.setFrameTime(frameTime);
         }
 
@@ -82,10 +107,6 @@ SpriteManager.prototype.load = function(textures, sprites) {
             definition.loadShift(shift);
         }
 
-        if(definition.frameCount === 0) {
-            console.warn(`SpriteDefinition ${spriteID} has 0 frames!`);
-        }
-
         this.definitions.push(definition);
         this.definitionMap.set(spriteID, definitionID);
         this.relevantTextures.add(textureID);
@@ -96,25 +117,6 @@ SpriteManager.prototype.forEachSprite = function(onCall) {
     if(typeof onCall === "function") {
         this.pool.forAllReserved(onCall);
     }
-}
-
-SpriteManager.prototype.getSpriteDuration = function(definitionID) {
-    if(definitionID < 0 || definitionID >= this.definitions.length) {
-        return 1;
-    }
-
-    const definition = this.definitions[definitionID];
-    const { totalFrameTime } = definition;
-
-    return totalFrameTime;
-}
-
-SpriteManager.prototype.getTextureID = function(definitionID) {
-    if(definitionID < 0 || definitionID >= this.definitions.length) {
-        return TextureRegistry.INVALID_ID;
-    }
-
-    return this.definitions[definitionID].texture.id;
 }
 
 SpriteManager.prototype.update = function(gameContext) {
@@ -172,14 +174,6 @@ SpriteManager.prototype.getLayer = function(layerIndex) {
     }
 
     return this.layers[layerIndex];
-}
-
-SpriteManager.prototype.getDefinition = function(definitionID) {
-    if(definitionID < 0 || definitionID >= this.definitions.length) {
-        return Sprite.EMPTY_DEFINITION;
-    }
-
-    return this.definitions[definitionID];
 }
 
 SpriteManager.prototype.createEmptySprite = function() {

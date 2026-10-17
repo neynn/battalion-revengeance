@@ -1,22 +1,24 @@
 import { TileVisual } from "./visual.js";
 import { Autotiler } from "./autotiler.js";
 import { TextureRegistry } from "../resources/texture/textureRegistry.js";
+import { MAX_TILES } from "../engine_constants.js";
 
 const VISUAL_IDENTIFIER = "::";
 
 export const TileManager = function() {
-    this.autotilers = [];
-
-    this.tileCount = 0;
-    this.typeTable = [];
-    this.autotilerTable = [];
-    this.tagTable = [];
-
+    this.typeTable = new Uint16Array(MAX_TILES);
+    this.tagTable = new Uint16Array(MAX_TILES);
+    this.visualTable = new Uint16Array(MAX_TILES);
+    this.autotilerTable = new Int16Array(MAX_TILES);
+    
     this.visualCount = 1;
-    this.visualTable = [0];
     this.visuals = [new TileVisual(0)];
     this.activeVisuals = [];
     this.visualTableMap = new Map();
+
+    this.autotilerCount = 0;
+    this.autotilers = [];
+    this.autotilerTable.fill(-1);
 }
 
 TileManager.TILE_ID = {
@@ -33,19 +35,8 @@ TileManager.prototype.update = function(gameContext) {
     }
 }
 
-TileManager.prototype.initTables = function(count) {
-    for(let i = 0; i < count; i++) {
-        this.visualTable[i] = 0;
-        this.tagTable[i] = 0;
-        this.typeTable[i] = 0;
-        this.autotilerTable[i] = -1;
-    }
-
-    this.tileCount = count;
-}
-
 TileManager.prototype.registerAutotilerGroup = function(beginID, endID, autotilerID) {
-    if(beginID > endID || beginID < 0 || endID >= this.tileCount) {
+    if(beginID > endID || beginID < 0 || endID >= MAX_TILES) {
         return;
     }
 
@@ -55,7 +46,7 @@ TileManager.prototype.registerAutotilerGroup = function(beginID, endID, autotile
 }
 
 TileManager.prototype.registerTile = function(tileID, typeID, tags = 0) {
-    if(tileID < 0 || tileID >= this.tileCount) {
+    if(tileID < 0 || tileID >= MAX_TILES) {
         return;
     }
 
@@ -64,7 +55,7 @@ TileManager.prototype.registerTile = function(tileID, typeID, tags = 0) {
 }
 
 TileManager.prototype.registerTileGroup = function(beginID, endID, typeID, tags = 0) {
-    if(beginID > endID || beginID < 0 || endID >= this.tileCount) {
+    if(beginID > endID || beginID < 0 || endID >= MAX_TILES) {
         return;
     }
 
@@ -78,6 +69,8 @@ TileManager.prototype.createAutotilers = function(count) {
     for(let i = 0; i < count; i++) {
         this.autotilers[i] = new Autotiler(i, TileManager.TILE_ID.EMPTY, this.tagTable);
     }
+
+    this.autotilerCount = count;
 }
 
 TileManager.prototype.loadAutotiler = function(autotilerID, typeID, tags) {
@@ -102,7 +95,7 @@ TileManager.prototype.loadAutotilerValues = function(autotilerID, values) {
         const index = Number(indexID);
         const tileID = values[indexID];
 
-        if(tileID < this.tileCount) {
+        if(tileID < MAX_TILES) {
             autotiler.setValue(index, tileID);
         } else {
             console.error("Value is too large!");
@@ -120,7 +113,7 @@ TileManager.prototype.loadAutotilerValuesAuto = function(autotilerID, tileID) {
     for(let i = 0; i < autotiler.values.length; i++) {
         const nextID = tileID + i;
 
-        if(nextID < this.tileCount) {
+        if(nextID < MAX_TILES) {
             autotiler.setValue(i, nextID);
         } else {
             console.error("Value is too large!");
@@ -129,7 +122,7 @@ TileManager.prototype.loadAutotilerValuesAuto = function(autotilerID, tileID) {
 }
 
 TileManager.prototype.registerVisual = function(tileID, texture, sprite) {
-    if(tileID < 1 || tileID >= this.tileCount) {
+    if(tileID < 1 || tileID >= MAX_TILES) {
         return;
     }
 
@@ -147,7 +140,7 @@ TileManager.prototype.registerVisual = function(tileID, texture, sprite) {
 }
 
 TileManager.prototype.registerVisuals = function(tileID, texture, visuals) {
-    if(tileID < 1 || (tileID + visuals.length - 1) >= this.tileCount) {
+    if(tileID < 1 || (tileID + visuals.length - 1) >= MAX_TILES) {
         return;
     }
 
@@ -160,7 +153,7 @@ TileManager.prototype.registerVisuals = function(tileID, texture, visuals) {
 }
 
 TileManager.prototype.registerVisualsAuto = function(tileID, texture, prefix, count) {
-    if(tileID < 1 || (tileID + count - 1) >= this.tileCount) {
+    if(tileID < 1 || (tileID + count - 1) >= MAX_TILES) {
         return;
     }
 
@@ -196,7 +189,6 @@ TileManager.prototype.createVisuals = function(textureRegistry, tileAtlases) {
 
             if(visual.frameCount > 0) {
                 visual.setImage(image);
-
                 textureRegistry.loadTexture(textureID);
             }
         }
@@ -217,7 +209,7 @@ TileManager.prototype.disableVisual = function(visualID) {
 }
 
 TileManager.prototype.enableVisual = function(tileID) {
-    if(tileID < 1 || tileID >= this.tileCount) {
+    if(tileID < 1 || tileID >= MAX_TILES) {
         return;
     }
 
@@ -253,7 +245,7 @@ TileManager.prototype.disableAllVisuals = function() {
 }
 
 TileManager.prototype.getLogicalID = function(tileID) {
-    if(tileID < 0 || tileID >= this.tileCount) {
+    if(tileID < 0 || tileID >= MAX_TILES) {
         return 0;
     }
 
@@ -261,7 +253,7 @@ TileManager.prototype.getLogicalID = function(tileID) {
 }
 
 TileManager.prototype.isVisualValid = function(tileID) {
-    if(tileID < 0 || tileID >= this.tileCount) {
+    if(tileID < 0 || tileID >= MAX_TILES) {
         return false;
     }
 
@@ -273,7 +265,7 @@ TileManager.prototype.isVisualValid = function(tileID) {
 }
 
 TileManager.prototype.getVisual = function(tileID) {
-    if(tileID < 0 || tileID >= this.tileCount) {
+    if(tileID < 0 || tileID >= MAX_TILES) {
         return this.visuals[0];
     }
 
@@ -289,7 +281,7 @@ TileManager.prototype.getAutotiler = function(autotilerID) {
 }
 
 TileManager.prototype.getAutotilerFromTile = function(tileID) {
-    if(tileID < 0 || tileID >= this.tileCount) {
+    if(tileID < 0 || tileID >= MAX_TILES) {
         return null;
     }
 

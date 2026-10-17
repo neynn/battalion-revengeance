@@ -147,3 +147,38 @@ Texture.prototype.autoGrid = function(startX, startY, rows, columns, firstID, gr
         }
     }
 }
+
+Texture.prototype.getRegionsAuto = function(start, jump, repeat) {
+    const regions = [];
+
+    for(let i = 0; i < repeat; i++) {
+        const regionNumber = start + jump * i;
+        const regionID = regionNumber + "";
+        const index = this.regionMap.get(regionID);
+
+        if(index !== undefined) {
+            regions.push(this.regions[index]);
+        } else {
+            console.error(`Missing region error! ${regionID} in ${this.name}!`);
+        }
+    }
+
+    return regions;
+}
+
+Texture.prototype.getRegionsByNames = function(names) {
+    const regions = [];
+
+    for(let i = 0; i < names.length; i++) {
+        const regionID = names[i];
+        const index = this.regionMap.get(regionID);
+
+        if(index !== undefined) {
+            regions.push(this.regions[index]);
+        } else {
+            console.error(`Missing region error! ${regionID} in ${this.name}!`);
+        }
+    }
+
+    return regions;
+}

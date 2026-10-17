@@ -25,7 +25,7 @@ export const Sprite = function(index, DEBUG_NAME) {
     this.flags = Sprite.FLAG.NONE;
 }
 
-Sprite.EMPTY_DEFINITION = new SpriteDefinition(-1, TextureRegistry.EMPTY_TEXTURE);
+Sprite.EMPTY_DEFINITION = new SpriteDefinition(-1, TextureRegistry.EMPTY_TEXTURE, []);
 
 Sprite.DEBUG = {
     COLOR: "#ff00ff",

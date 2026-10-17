@@ -196,7 +196,6 @@ export const loadVisualTiles = function(gameContext) {
 export const loadTiles = function(gameContext) {
     const { tileManager } = gameContext;
 
-    tileManager.initTables(TILE_ID._COUNT);
     tileManager.createAutotilers(AUTOTILER_TYPE._COUNT);
 
     tileManager.registerTile(TILE_ID.GRASS, TILE_TYPE.GRASS);
