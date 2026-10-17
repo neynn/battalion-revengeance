@@ -11,9 +11,16 @@ export const WorldMap = function(id, width, height) {
     this.width = width;
     this.height = height;
     this.layers = [];
+    this.cellFlags = new Uint8Array(BUFFER_SIZE);
     this.entities = new Int16Array(BUFFER_SIZE);
     this.entities.fill(EntityManager.INVALID_INDEX);
 }
+
+WorldMap.FLAG = {
+    NONE: 0,
+    TILE_PLACED_BY_HAND: 1 << 0,
+    HAS_ENTITY: 1 << 1
+};
 
 WorldMap.EMPTY_LAYER = Layer.create(0, Layer.TYPE.BIT_0);
 WorldMap.OUT_OF_BOUNDS = -1;
@@ -23,6 +30,40 @@ WorldMap.prototype.update = function(gameContext) {}
 
 WorldMap.prototype.getID = function() {
     return this.id;
+}
+
+WorldMap.prototype.hasFlag = function(flag, tileX, tileY) {
+    const index = this.getIndex(tileX, tileY);
+
+    if(index !== WorldMap.OUT_OF_BOUNDS) {
+        return (this.cellFlags[index] & flag) !== 0;
+    }
+
+    return false;
+}
+
+WorldMap.prototype.setFlag = function(flag, tileX, tileY) {
+    const index = this.getIndex(tileX, tileY);
+
+    if(index !== WorldMap.OUT_OF_BOUNDS) {
+        this.cellFlags[index] |= flag;
+    }
+}
+
+WorldMap.prototype.clearFlags = function(tileX, tileY) {
+    const index = this.getIndex(tileX, tileY);
+
+    if(index !== WorldMap.OUT_OF_BOUNDS) {
+        this.cellFlags[index] = WorldMap.FLAG.NONE;
+    }
+}
+
+WorldMap.prototype.removeFlag = function(flag, tileX, tileY) {
+    const index = this.getIndex(tileX, tileY);
+
+    if(index !== WorldMap.OUT_OF_BOUNDS) {
+        this.cellFlags[index] &= ~flag;
+    }
 }
 
 WorldMap.prototype.applyAutotiler = function(tileManager, autotiler, tileX, tileY, layerID, isInverted) {
@@ -154,12 +195,16 @@ WorldMap.prototype.resize = function(width, height) {
 
     const BUFFER_SIZE = width * height;
     const newEntities = new Int16Array(BUFFER_SIZE);
+    const newFlags = new Uint8Array(BUFFER_SIZE);
 
     newEntities.fill(EntityManager.INVALID_INDEX);
+
+    Layer.copyBuffer(this.cellFlags, newFlags, this.width, this.height, width, height);
     Layer.copyBuffer(this.entities, newEntities, this.width, this.height, width, height);
 
     this.width = width;
     this.height = height;
+    this.cellFlags = newFlags;
     this.entities = newEntities;
 }
 

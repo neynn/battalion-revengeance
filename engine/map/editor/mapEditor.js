@@ -67,6 +67,13 @@ MapEditor.prototype.paint = function(gameContext, tileX, tileY) {
 
                     if(tileManager.isVisualValid(tileID)) {
                         this.targetMap.setTile(tileID, this.targetLayer, j, i);
+
+                        if(this.flags & MapEditor.FLAG.USE_AUTOTILER) {
+                            this.targetMap.removeFlag(WorldMap.FLAG.TILE_PLACED_BY_HAND, j, i);
+                        } else {
+                            this.targetMap.setFlag(WorldMap.FLAG.TILE_PLACED_BY_HAND, j, i);
+                        }
+
                         this.updateAutotilers(gameContext, j, i);
                     }
                 }
@@ -138,11 +145,13 @@ MapEditor.prototype.updateAutotilers = function(gameContext, tileX, tileY) {
 
         for(let i = startY; i <= endY; i++) {
             for(let j = startX; j <= endX; j++) {
-                const tileID = this.targetMap.getTile(this.targetLayer, j, i);
-                const autotiler = tileManager.getAutotilerFromTile(tileID);
+                if(!this.targetMap.hasFlag(WorldMap.FLAG.TILE_PLACED_BY_HAND, j, i)) {
+                    const tileID = this.targetMap.getTile(this.targetLayer, j, i);
+                    const autotiler = tileManager.getAutotilerFromTile(tileID);
 
-                if(autotiler) {
-                    this.targetMap.applyAutotiler(tileManager, autotiler, j, i, this.targetLayer, isInverted);
+                    if(autotiler) {
+                        this.targetMap.applyAutotiler(tileManager, autotiler, j, i, this.targetLayer, isInverted);
+                    }
                 }
             }
         }
