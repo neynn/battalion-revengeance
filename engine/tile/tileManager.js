@@ -121,22 +121,27 @@ TileManager.prototype.loadAutotilerValuesAuto = function(autotilerID, tileID) {
     }
 }
 
+TileManager.prototype.useVisual = function(texture, sprite) {
+    const visualName = texture + VISUAL_IDENTIFIER + sprite;
+    let visualID = this.visualTableMap.get(visualName);
+
+    if(visualID === undefined) {
+        visualID = this.visualCount++;
+
+        this.visualTableMap.set(visualName, visualID);
+    }
+    
+    return visualID;
+}
+
 TileManager.prototype.registerVisual = function(tileID, texture, sprite) {
     if(tileID < 1 || tileID >= MAX_TILES) {
         return;
     }
 
-    const visualName = texture + VISUAL_IDENTIFIER + sprite;
-    const currentIndex = this.visualTableMap.get(visualName);
+    const visualID = this.useVisual(texture, sprite);
 
-    if(currentIndex === undefined) {
-        const visualID = this.visualCount++;
-
-        this.visualTable[tileID] = visualID;
-        this.visualTableMap.set(visualName, visualID);
-    } else {
-        this.visualTable[tileID] = currentIndex;
-    }
+    this.visualTable[tileID] = visualID;
 }
 
 TileManager.prototype.registerVisuals = function(tileID, texture, visuals) {
@@ -171,29 +176,33 @@ TileManager.prototype.registerVisualsAuto = function(tileID, texture, prefix, co
  * @param {object} tileAtlases 
  */
 TileManager.prototype.createVisuals = function(textureRegistry, tileAtlases) {
+    for(let visualID = 1; visualID < this.visualCount; visualID++) {
+        this.visuals[visualID] = new TileVisual(visualID);
+    }
+
     textureRegistry.createTextures(tileAtlases);
 
     for(const [visualID, index] of this.visualTableMap) {
         const [texture, regionID] = visualID.split(VISUAL_IDENTIFIER);
-        const visual = new TileVisual(index);
         const textureConfig = tileAtlases[texture];
         const textureID = textureRegistry.getTextureID(texture);
 
         if(textureID !== TextureRegistry.INVALID_ID) {
-            const textureObject = textureRegistry.getTexture(textureID);
-            const image = textureObject.getImage();
-
-            if(textureConfig) {
-                visual.generate(textureObject, textureConfig, regionID);
-            }
-
-            if(visual.frameCount > 0) {
-                visual.setImage(image);
-                textureRegistry.loadTexture(textureID);
+            if(index >= 1 && index < this.visualCount) {
+                const textureObject = textureRegistry.getTexture(textureID);
+                const image = textureObject.getImage();
+                const visual = this.visuals[index];
+    
+                if(textureConfig) {
+                    visual.generate(textureObject, textureConfig, regionID);
+                }
+    
+                if(visual.frameCount > 0) {
+                    visual.setImage(image);
+                    textureRegistry.loadTexture(textureID);
+                }
             }
         }
-
-        this.visuals.push(visual);
     }
 }
 
@@ -213,13 +222,13 @@ TileManager.prototype.enableVisual = function(tileID) {
         return;
     }
 
+    const visual = this.visuals[this.visualTable[tileID]];
+
     for(let i = 0; i < this.activeVisuals.length; i++) {
-        if(this.activeVisuals[i].id === tileID) {
+        if(this.activeVisuals[i].id === visual.id) {
             return;
         }
     }
-
-    const visual = this.visuals[this.visualTable[tileID]];
 
     if(visual.frameCount > 1) {
         this.activeVisuals.push(visual);
@@ -244,6 +253,14 @@ TileManager.prototype.disableAllVisuals = function() {
     this.activeVisuals.length = 0;
 }
 
+TileManager.prototype.getVisualByID = function(visualID) {
+    if(visualID < 0 || visualID >= this.visuals.length) {
+        return this.visuals[0];
+    }
+
+    return this.visuals[visualID];
+}
+
 TileManager.prototype.getLogicalID = function(tileID) {
     if(tileID < 0 || tileID >= MAX_TILES) {
         return 0;
@@ -260,7 +277,7 @@ TileManager.prototype.getTags = function(tileID) {
     return this.tagTable[tileID];
 }
 
-TileManager.prototype.isVisualValid = function(tileID) {
+TileManager.prototype.hasVisual = function(tileID) {
     if(tileID < 0 || tileID >= MAX_TILES) {
         return false;
     }

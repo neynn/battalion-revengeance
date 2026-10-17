@@ -85,8 +85,8 @@ Renderer2D.prototype.drawTileScaled = function(tileManager, tileID, context, scr
     }
 }
 
-Renderer2D.prototype.drawTile = function(tileManager, tileID, context, screenX, screenY) {
-    const { image, frameData, framePtr } = tileManager.getVisual(tileID);
+Renderer2D.prototype.drawTileVisual = function(visual, context, screenX, screenY) {
+    const { image, frameData, framePtr } = visual;
     const { state, bitmap } = image;
 
     if(state === ImageResource.STATE.LOADED) {
@@ -112,7 +112,11 @@ Renderer2D.prototype.drawTile = function(tileManager, tileID, context, screenX, 
         }
     } else {
         this.drawEmptyTile(context, screenX, screenY);
-    }
+    } 
+}
+
+Renderer2D.prototype.drawTile = function(tileManager, tileID, context, screenX, screenY) {
+    this.drawTileVisual(tileManager.getVisual(tileID), context, screenX, screenY)
 }
 
 Renderer2D.prototype.drawTileClipped = function(camera, tileManager, tileID, context, tileX, tileY) {

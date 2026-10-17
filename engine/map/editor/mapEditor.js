@@ -65,10 +65,11 @@ MapEditor.prototype.paint = function(gameContext, tileX, tileY) {
 
                     const tileID = this.getBrushTile(id);
 
-                    if(tileManager.isVisualValid(tileID)) {
+                    if(tileManager.hasVisual(tileID)) {
                         this.targetMap.setTile(tileID, this.targetLayer, j, i);
 
-                        if(this.flags & MapEditor.FLAG.USE_AUTOTILER) {
+                        //If an empty or an auto tile is placed, then the TILE_PLACED_BY_HAND flag gets removed!
+                        if(tileID === TileManager.TILE_ID.EMPTY || (this.flags & MapEditor.FLAG.USE_AUTOTILER)) {
                             this.targetMap.removeFlag(WorldMap.FLAG.TILE_PLACED_BY_HAND, j, i);
                         } else {
                             this.targetMap.setFlag(WorldMap.FLAG.TILE_PLACED_BY_HAND, j, i);
