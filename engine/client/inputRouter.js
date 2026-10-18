@@ -7,10 +7,10 @@ const TRIGGERED = 1;
 const MAX_COMMANDS = 100;
 
 export const InputRouter = function() {
-    this.commandCallbacks = new Map();
-    this.binds = [];
     this.keybinds = {};
+    this.binds = [];
     this.commands = new Uint8Array(MAX_COMMANDS);
+    this.commandCallbacks = new Map();
     this.usedKeys = new Set();
 }
 
@@ -109,6 +109,7 @@ InputRouter.prototype.clear = function(gameContext) {
     }
 
     this.binds.length = 0;
+    this.commands.fill(NOT_TRIGGERED);
     this.commandCallbacks.clear();
     this.usedKeys.clear();
 }

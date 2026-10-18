@@ -176,17 +176,6 @@ MapEditorInterface.prototype.enableTileTool = function(gameContext) {
     const { router, cursor } = client;
 
     router.useConfig(gameContext, "EDIT", INPUT_TRIGGER);
-    router.on(INPUT_TRIGGER.TOGGLE_AUTOTILER, () => this.editor.toggleAutotiling());
-    router.on(INPUT_TRIGGER.TOGGLE_ERASER, () => this.editor.toggleEraser());
-    router.on(INPUT_TRIGGER.TOGGLE_INVERSION, () => this.editor.toggleInversion());
-    router.on(INPUT_TRIGGER.TOGGLE_RANDOM, () => this.editor.togglePermutation());
-    router.on(INPUT_TRIGGER.LAYER_BOTTOM, () => this.editor.toggleLayerState(BattalionMap.LAYER.GROUND));
-    router.on(INPUT_TRIGGER.LAYER_MIDDLE, () => this.editor.toggleLayerState(BattalionMap.LAYER.DECORATION));
-    router.on(INPUT_TRIGGER.LAYER_TOP, () => this.editor.toggleLayerState(BattalionMap.LAYER.CLOUD));
-    router.on(INPUT_TRIGGER.VIEW_ALL, () => {
-        this.editor.resetLayerStates();
-        this.editor.resetBrush();
-    });
 
     this.addClickByName("BUTTON_TILESET_LEFT", (e) => {
         this.tileSets.loop(-1);
@@ -408,6 +397,42 @@ MapEditorInterface.prototype.drawTileEditor = function(gameContext, display) {
 }
 
 MapEditorInterface.prototype.onImmediate = function(gameContext, display) {
+    const { client } = gameContext;
+    const { router } = client;
+
+    if(router.isTriggered(INPUT_TRIGGER.TOGGLE_AUTOTILER)) {
+        this.editor.toggleAutotiling();
+    }
+
+    if(router.isTriggered(INPUT_TRIGGER.TOGGLE_ERASER)) {
+        this.editor.toggleEraser();
+    }
+
+    if(router.isTriggered(INPUT_TRIGGER.TOGGLE_INVERSION)) {
+        this.editor.toggleInversion();
+    }
+
+    if(router.isTriggered(INPUT_TRIGGER.TOGGLE_RANDOM)) {
+        this.editor.togglePermutation();
+    }
+
+    if(router.isTriggered(INPUT_TRIGGER.LAYER_BOTTOM)) {
+        this.editor.toggleLayerState(BattalionMap.LAYER.GROUND);
+    }
+
+    if(router.isTriggered(INPUT_TRIGGER.LAYER_MIDDLE)) {
+        this.editor.toggleLayerState(BattalionMap.LAYER.DECORATION);
+    }
+
+    if(router.isTriggered(INPUT_TRIGGER.LAYER_TOP)) {
+        this.editor.toggleLayerState(BattalionMap.LAYER.CLOUD);
+    }
+
+    if(router.isTriggered(INPUT_TRIGGER.VIEW_ALL)) {
+        this.editor.resetLayerStates();
+        this.editor.resetBrush();
+    }
+
     switch(this.controller.currentTab) {
         case EditorController.TAB_TYPE.NONE: {
             break;
