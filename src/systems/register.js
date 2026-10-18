@@ -17,7 +17,6 @@ import { UncloakAction, UncloakVTable } from "../action/types/uncloak.js";
 import { ACTION_TYPE, AUTOTILER_TYPE, TILE_ID, TILE_TYPE } from "../enums.js";
 import { ToTransportAction, ToTransportVTable } from "../action/types/toTransport.js";
 import { FromTransportAction, FromTransportVTable } from "../action/types/fromTransport.js";
-import { Renderer2D } from "../../engine/renderer/renderer2D.js";
 import { Autotiler } from "../../engine/tile/autotiler.js";
 import { RepairAction, RepairVTable } from "../action/types/repair.js";
 
@@ -294,16 +293,4 @@ export const registerClientActions = function(gameContext) {
     actionQueue.registerAction(ACTION_TYPE.TO_TRANSPORT, new ToTransportAction());
     actionQueue.registerAction(ACTION_TYPE.FROM_TRANSPORT, new FromTransportAction());
     actionQueue.registerAction(ACTION_TYPE.REPAIR, new RepairAction());
-}
-
-export const addDebug = function(gameContext) {
-    const { client, uiManager, gameWindow, contextManager } = gameContext;
-    const { router } = client;
-
-    router.bind(gameContext, "DEBUG");
-    router.on("DEBUG_MAP", () => Renderer2D.DEBUG.WORLD = !Renderer2D.DEBUG.WORLD);
-    router.on("DEBUG_CONTEXT", () => contextManager.debug = !contextManager.debug);
-    router.on("DEBUG_INTERFACE", () => uiManager.debug = !uiManager.debug);
-    router.on("DEBUG_SPRITES", () => Renderer2D.DEBUG.SPRITES = !Renderer2D.DEBUG.SPRITES);
-    router.on("DEBUG_INFO", () => gameWindow.debug = !gameWindow.debug);
 }

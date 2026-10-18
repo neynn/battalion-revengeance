@@ -7,7 +7,7 @@ import { StoryState } from "./states/story/story.js";
 import { TeamManager } from "./team/teamManager.js";
 import { TypeRegistry } from "./type/typeRegistry.js";
 import { ArenaState } from "./states/arena/arena.js";
-import { addDebug, loadTiles, loadVisualTiles, registerActionVTables, registerClientActions } from "./systems/context.js";
+import { loadTiles, loadVisualTiles, registerActionVTables, registerClientActions } from "./systems/register.js";
 import { MapRegistry } from "./map/mapRegistry.js";
 import { ClientActionRouter } from "./action/router/clientActionRouter.js";
 import { UIData } from "./ui/uiData.js";
@@ -28,6 +28,7 @@ export const BattalionContext = function(gTimer, gWindow) {
     this.missionManager = new MissionManager();
     this.scenarioRegistry = new ScenarioRegistry();
     this.uiData = new UIData(this.textureRegistry);
+    this.debugMode = false;
 }
 
 BattalionContext.STATE = {
@@ -75,13 +76,11 @@ BattalionContext.prototype.init = function(resources) {
     this.states.addState(BattalionContext.STATE.ARENA, new ArenaState());
     this.states.addState(BattalionContext.STATE.STORY, new StoryState());
     this.states.setNextState(this, BattalionContext.STATE.MAIN_MENU);
-
-    addDebug(this);
 }
 
 BattalionContext.prototype.onExit = function() {
     this.teamManager.exit();
     this.spriteController.exit(this);
     this.missionManager.exit();
-    addDebug(this);
+    this.debugMode = false;
 }

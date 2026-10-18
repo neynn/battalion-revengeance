@@ -4,7 +4,7 @@ import { TileManager } from "../../engine/tile/tileManager.js";
 import { ServerGameContext } from "./serverContext.js";
 import { TypeRegistry } from "../type/typeRegistry.js";
 import { MapRegistry } from "../map/mapRegistry.js";
-import { loadTiles, registerActionVTables } from "../systems/context.js";
+import { loadTiles, registerActionVTables } from "../systems/register.js";
 import { MAX_TEAMS } from "../constants.js";
 import { TILE_ID, TILE_TYPE } from "../enums.js";
 import { ScenarioRegistry } from "../scenario/scenarioRegistry.js";

@@ -1,6 +1,4 @@
-import { getCursorTile } from "./camera/contextHelper.js";
 import { Display } from "./renderer/display.js";
-import { Renderer2D } from "./renderer/renderer2D.js";
 
 const RESIZE_BUFFER_TIME = 0.2;
 
@@ -41,39 +39,4 @@ GameWindow.prototype.queueResize = function() {
         this.timeUntilResize = 0;
         this.isResizeQueued = true;
     }
-}
-
-GameWindow.prototype.drawDebug = function(gameContext) {
-    const { textureRegistry, textureLoader, timer, uiManager, contextManager } = gameContext;
-    const { context } = this.display;
-    const { smoothFPS, targetFPS } = timer;
-    const { x, y } = getCursorTile(gameContext);
-    const fps = Math.round(smoothFPS);
-    const delta = targetFPS - fps;
-
-    if(delta >= Math.floor(targetFPS / 2)) {
-        context.fillStyle = "#ff0000";
-    } else if(delta >= Math.floor(targetFPS / 4)) {
-        context.fillStyle = "#ffff00";
-    } else {
-        context.fillStyle = "#00ff00";
-    }
-
-    const TEXT_SIZE = 10;
-    const WINDOW_Y = 0;
-    const DEBUG_Y = TEXT_SIZE * 7;
-
-    context.globalAlpha = 1;
-    context.font = `${TEXT_SIZE}px Arial`;
-
-    context.fillText(`FPS: ${fps} | ${delta}`, 0, WINDOW_Y + TEXT_SIZE);
-    context.fillText(`WindowX: ${this.width}, WindowY: ${this.height}`, 0, WINDOW_Y + TEXT_SIZE * 2);
-    context.fillText(`MouseX: ${x}, MouseY: ${y}`, 0, WINDOW_Y + TEXT_SIZE * 3);
-    context.fillText(`KB-Images: ${textureRegistry.getKBUsed()}`, 0, WINDOW_Y + TEXT_SIZE * 4);
-    context.fillText(`Task: ${textureLoader.getCompletedTasks()}/${textureLoader.totalTasks}`, 0, WINDOW_Y + TEXT_SIZE * 5);
-
-    context.fillText(`World: ${Renderer2D.DEBUG.WORLD}`, 0, DEBUG_Y);
-    context.fillText(`Context: ${contextManager.debug}`, 0, DEBUG_Y + TEXT_SIZE);
-    context.fillText(`Sprites: ${Renderer2D.DEBUG.SPRITES}`, 0, DEBUG_Y + TEXT_SIZE * 2);
-    context.fillText(`UI: ${uiManager.debug}`, 0, DEBUG_Y + TEXT_SIZE * 3);
 }

@@ -9,6 +9,7 @@ import { ClientPathHandler } from "./engine/resources/pathHandler.js";
 import { Timer } from "./engine/timer.js";
 import { KEY } from "./engine/client/keyboard.js";
 import { GameWindow } from "./engine/gameWindow.js";
+import { addDebugKeybinds, drawWindowDebug } from "./debug.js";
 
 const gameTimer = new Timer();
 const gameWindow = new GameWindow();
@@ -21,6 +22,11 @@ const gameLoop = function(timestamp) {
     gameWindow.update(gameContext);
     gameContext.textureLoader.update();
 
+    if(!gameContext.debugMode) {
+        gameContext.debugMode = true;
+        addDebugKeybinds(gameContext, gameWindow);
+    }
+    
     //Fixed Update
     while(gameTimer.shouldTick()) {
         gameTimer.doTick();
@@ -50,7 +56,7 @@ const gameLoop = function(timestamp) {
         gameWindow.display.reset();
 
         if(gameWindow.debug) {
-            gameWindow.drawDebug(gameContext);
+            drawWindowDebug(gameContext, gameTimer, gameWindow);
         }
 
         //Post-Input
