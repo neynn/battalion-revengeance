@@ -1,10 +1,3 @@
-import { EventEmitter } from "../events/eventEmitter.js";
-
-export const KEY_STATE = {
-    UP: 0,
-    DOWN: 1
-};
-
 export const KEY = {
     _INVALID: -1,
     A: 0,
@@ -62,9 +55,9 @@ export const KEY = {
     F11: 52,
     F12: 53,
     _COUNT: 54
-}
+};
 
-const getKeyByCode = function(code) {
+export const getKeyByCode = function(code) {
     switch(code) {
         case "a":
         case "A": return KEY.A;
@@ -154,33 +147,37 @@ const getKeyByCode = function(code) {
     }
 }
 
-export const Keyboard = function() {
-    this.keyStates = new Uint8Array(KEY._COUNT * 2);
-    this.reservedKeys = new Set();
+export const KEY_STATE = {
+    UP: 0,
+    DOWN: 1
+};
 
-    this.events = new EventEmitter();
-    this.events.register(Keyboard.EVENT.KEY_PRESSED);
-    this.events.register(Keyboard.EVENT.KEY_RELEASED);
-    this.events.register(Keyboard.EVENT.KEY_BOUND);
-    this.events.register(Keyboard.EVENT.KEY_UNBOUND);
+export const KEY_FLAG = {
+    NONE: 0,
+    NO_DEFAULT: 1 << 0
+}
+
+export const Keyboard = function() {
+    this.keyFlags = new Uint8Array(KEY._COUNT);
+    this.keyStates = new Uint8Array(KEY._COUNT * 2);
 
     document.addEventListener("keydown", (event) => this.onKeyDown(event));
     document.addEventListener("keyup", (event) => this.onKeyUp(event));
+    document.addEventListener("blur", (event) => this.upAllKeys());
+    document.addEventListener("focus", (event) => this.upAllKeys());
 }
 
-Keyboard.EVENT = {
-    KEY_PRESSED: "KEY_PRESSED",
-    KEY_RELEASED: "KEY_RELEASED",
-    KEY_BOUND: "KEY_BOUND",
-    KEY_UNBOUND: "KEY_UNBOUND"
-};
+Keyboard.prototype.upAllKeys = function() {
+    for(let i = 0; i < KEY._COUNT; i++) {
+        this.keyStates[i] = KEY_STATE.UP;
+    }
+}
 
 Keyboard.prototype.exit = function() {
-    this.reservedKeys.clear();
-    this.events.muteAll();
-
-    for(let i = 0; i < KEY._COUNT * 2; i++) {
+    for(let i = 0; i < KEY._COUNT; i++) {
         this.keyStates[i] = KEY_STATE.UP;
+        this.keyStates[i + KEY._COUNT] = KEY_STATE.UP;
+        this.keyFlags[i] = KEY_FLAG.NONE;
     }
 }
 
@@ -190,6 +187,14 @@ Keyboard.prototype.isKeyPressed = function(keyID) {
     }
 
     return this.keyStates[keyID] === KEY_STATE.DOWN && this.keyStates[keyID + KEY._COUNT] === KEY_STATE.UP;
+}
+
+Keyboard.prototype.isKeyReleased = function(keyID) {
+    if(keyID < 0 || keyID >= KEY._COUNT) {
+        return false;
+    }
+
+    return this.keyStates[keyID] === KEY_STATE.UP && this.keyStates[keyID + KEY._COUNT] === KEY_STATE.DOWN;
 }
 
 Keyboard.prototype.isKeyHeld = function(keyID) {
@@ -211,20 +216,17 @@ Keyboard.prototype.onKeyDown = function(event) {
     const keyCode = event.key;
     const keyID = getKeyByCode(keyCode);
 
-    if(this.reservedKeys.has(keyCode)) {
-        event.preventDefault();
-    }
-
     if(keyID !== KEY._INVALID) {
         const keyState = this.keyStates[keyID];
+        const keyFlags = this.keyFlags[keyID];
 
-        if(keyState !== KEY_STATE.DOWN) {
-            this.events.emit(Keyboard.EVENT.KEY_PRESSED, {
-                "key": keyCode
-            });
+        if(keyFlags & KEY_FLAG.NO_DEFAULT) {
+            event.preventDefault();
         }
 
-        this.keyStates[keyID] = KEY_STATE.DOWN;
+        if(!event.repeat) {
+            this.keyStates[keyID] = KEY_STATE.DOWN;
+        }
     }
 }
 
@@ -232,17 +234,12 @@ Keyboard.prototype.onKeyUp = function(event) {
     const keyCode = event.key;
     const keyID = getKeyByCode(keyCode);
 
-    if(this.reservedKeys.has(keyCode)) {
-        event.preventDefault();
-    }
-
     if(keyID !== KEY._INVALID) {
         const keyState = this.keyStates[keyID];
+        const keyFlags = this.keyFlags[keyID];
 
-        if(keyState !== KEY_STATE.UP) {
-            this.events.emit(Keyboard.EVENT.KEY_RELEASED, {
-                "key": keyCode
-            });
+        if(keyFlags & KEY_FLAG.NO_DEFAULT) {
+            event.preventDefault();
         }
 
         this.keyStates[keyID] = KEY_STATE.UP;
@@ -250,23 +247,13 @@ Keyboard.prototype.onKeyUp = function(event) {
 }
 
 Keyboard.prototype.reserve = function(keyID) {
-    if(this.reservedKeys.has(keyID)) {
-        return;
+    if(keyID >= 0 && keyID < KEY._COUNT) {    
+        this.keyFlags[keyID] |= KEY_FLAG.NO_DEFAULT;
     }
-
-    this.reservedKeys.add(keyID);
-    this.events.emit(Keyboard.EVENT.KEY_BOUND, {
-        "key": keyID
-    });
 }
 
 Keyboard.prototype.free = function(keyID) {
-    if(!this.reservedKeys.has(keyID)) {
-        return;
+    if(keyID >= 0 && keyID < KEY._COUNT) {    
+        this.keyFlags[keyID] &= ~KEY_FLAG.NO_DEFAULT;
     }
-
-    this.reservedKeys.delete(keyID);
-    this.events.emit(Keyboard.EVENT.KEY_UNBOUND, {
-        "key": keyID
-    });
 }

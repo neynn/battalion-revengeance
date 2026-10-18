@@ -7,6 +7,15 @@ import { MouseScrollEvent } from "./events/scroll.js";
 import { MouseUpEvent } from "./events/up.js";
 import { MouseButton } from "./mouseButton.js";
 
+export const getButtonByCode = function(code) {
+    switch(code) {
+        case "M1": return Cursor.BUTTON.LEFT;
+        case "M2": return Cursor.BUTTON.RIGHT;
+        case "M3": return Cursor.BUTTON.MIDDLE;
+        default: return Cursor.BUTTON._INVALID;
+    }
+}   
+
 export const Cursor = function() {
     this.positionX = 0;
     this.positionY = 0;
@@ -88,6 +97,30 @@ Cursor.prototype.collidesRect = function(screenX, screenY, width, height) {
         this.positionX, this.positionY, this.radius, this.radius,
         screenX, screenY, width, height
     );
+}
+
+Cursor.prototype.isButtonPressed = function(buttonID) {
+    if(buttonID < 0 || buttonID >= Cursor.BUTTON._COUNT) {
+        return false;
+    }
+
+    return (this.buttons[buttonID].flags & MouseButton.FLAG.DOWN) !== 0;
+}
+
+Cursor.prototype.isButtonReleased = function(buttonID) {
+    if(buttonID < 0 || buttonID >= Cursor.BUTTON._COUNT) {
+        return false;
+    }
+
+    return (this.buttons[buttonID].flags & MouseButton.FLAG.UP) !== 0;
+}
+
+Cursor.prototype.isButtonHeld = function(buttonID) {
+    if(buttonID < 0 || buttonID >= Cursor.BUTTON._COUNT) {
+        return false;
+    }
+
+    return this.buttons[buttonID].downImpulses > 0;
 }
 
 Cursor.prototype.getFlags = function(button) {

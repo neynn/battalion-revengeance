@@ -1,6 +1,7 @@
 import { getCursorTile } from "../../engine/camera/contextHelper.js";
 import { BattalionActor } from "./battalionActor.js";
 import { MapInspector } from "../map/mapInspector.js";
+import { INPUT_TRIGGER } from "../enums.js";
 
 export const Spectator = function(id, inspector, renderer) {
     BattalionActor.call(this, id);
@@ -20,8 +21,9 @@ Spectator.prototype.loadKeybinds = function(gameContext) {
     const { client } = gameContext;
     const { router } = client;
     
-    router.bind(gameContext, "SPECTATOR");
-    router.on("CLICK", () => {
+    router.useConfig(gameContext, "SPECTATOR", INPUT_TRIGGER);
+
+    router.on(INPUT_TRIGGER.CLICK, () => {
         const { world } = gameContext;
         const { mapManager } = world;
         const worldMap = mapManager.getActiveMap();

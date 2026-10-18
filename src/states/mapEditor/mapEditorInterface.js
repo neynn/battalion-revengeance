@@ -12,7 +12,7 @@ import { parseLayout } from "../../../engine/ui/parser.js";
 import { IM_FLAG, UIContext } from "../../../engine/ui/uiContext.js";
 import { Scroller } from "../../../engine/util/scroller.js";
 import { EditRenderer2D } from "../../camera/editRenderer2D.js";
-import { TILE_ID } from "../../enums.js";
+import { INPUT_TRIGGER, TILE_ID } from "../../enums.js";
 import { BattalionMap } from "../../map/battalionMap.js";
 import { EditorController } from "./editorController.js";
 
@@ -175,15 +175,15 @@ MapEditorInterface.prototype.enableTileTool = function(gameContext) {
     const { client } = gameContext;
     const { router, cursor } = client;
 
-    router.bind(gameContext, "EDIT");
-    router.on("TOGGLE_AUTOTILER", () => this.editor.toggleAutotiling());
-    router.on("TOGGLE_ERASER", () => this.editor.toggleEraser());
-    router.on("TOGGLE_INVERSION", () => this.editor.toggleInversion());
-    router.on("TOGGLE_RANDOM", () => this.editor.togglePermutation());
-    router.on("LAYER_BOTTOM", () => this.editor.toggleLayerState(BattalionMap.LAYER.GROUND));
-    router.on("LAYER_MIDDLE", () => this.editor.toggleLayerState(BattalionMap.LAYER.DECORATION));
-    router.on("LAYER_TOP", () => this.editor.toggleLayerState(BattalionMap.LAYER.CLOUD));
-    router.on("VIEW_ALL", () => {
+    router.useConfig(gameContext, "EDIT", INPUT_TRIGGER);
+    router.on(INPUT_TRIGGER.TOGGLE_AUTOTILER, () => this.editor.toggleAutotiling());
+    router.on(INPUT_TRIGGER.TOGGLE_ERASER, () => this.editor.toggleEraser());
+    router.on(INPUT_TRIGGER.TOGGLE_INVERSION, () => this.editor.toggleInversion());
+    router.on(INPUT_TRIGGER.TOGGLE_RANDOM, () => this.editor.togglePermutation());
+    router.on(INPUT_TRIGGER.LAYER_BOTTOM, () => this.editor.toggleLayerState(BattalionMap.LAYER.GROUND));
+    router.on(INPUT_TRIGGER.LAYER_MIDDLE, () => this.editor.toggleLayerState(BattalionMap.LAYER.DECORATION));
+    router.on(INPUT_TRIGGER.LAYER_TOP, () => this.editor.toggleLayerState(BattalionMap.LAYER.CLOUD));
+    router.on(INPUT_TRIGGER.VIEW_ALL, () => {
         this.editor.resetLayerStates();
         this.editor.resetBrush();
     });

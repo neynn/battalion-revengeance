@@ -1,5 +1,6 @@
 import { State } from "../../../engine/state/state.js";
 import { BattalionContext } from "../../battalionContext.js";
+import { INPUT_TRIGGER } from "../../enums.js";
 import { StoryUI } from "../../ui/contexts/storyUI.js";
 
 export const StoryState = function() {
@@ -26,7 +27,7 @@ StoryState.prototype.onEnter = async function(gameContext, stateMachine, transit
     missionManager.selectChapterIfPossible(missionManager.getNextChapterIndex());
     missionManager.selectMissionIfPossible(missionManager.getNextMissionIndex());
 
-    router.on("ESCAPE", () => stateMachine.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));
+    router.on(INPUT_TRIGGER.ESCAPE, () => stateMachine.setNextState(gameContext, BattalionContext.STATE.MAIN_MENU));
 }
 
 StoryState.prototype.onExit = function(gameContext, stateMachine) {

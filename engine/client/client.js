@@ -1,10 +1,9 @@
 import { Cursor } from "./cursor/cursor.js";
-import { KEY, KEY_STATE, Keyboard } from "./keyboard.js";
+import { Keyboard } from "./keyboard.js";
 import { Socket } from "../network/socket.js";
 import { SoundPlayer } from "./sound/soundPlayer.js";
 import { InputRouter } from "./inputRouter.js";
 import { MusicPlayer } from "./music/musicPlayer.js";
-import { MouseButton } from "./cursor/mouseButton.js";
 
 export const Client = function() {
     this.router = new InputRouter();
@@ -13,31 +12,7 @@ export const Client = function() {
     this.socket = new Socket();
     this.musicPlayer = new MusicPlayer();
     this.soundPlayer = new SoundPlayer();
-
-    this.keyboard.events.on(Keyboard.EVENT.KEY_PRESSED, ({ key }) => {
-        this.router.handleInput(InputRouter.PREFIX.DOWN, key);
-    }, { permanent: true });
-
-    this.keyboard.events.on(Keyboard.EVENT.KEY_RELEASED, ({ key }) => {
-        this.router.handleInput(InputRouter.PREFIX.UP, key);
-    }, { permanent: true });
-
-    this.cursor.events.on(Cursor.EVENT.BUTTON_DOWN, ({ button }) => {
-        this.router.handleInput(InputRouter.PREFIX.DOWN, Client.BUTTON_TABLE[button]);
-    }, { permanent: true });
-
-    this.cursor.events.on(Cursor.EVENT.BUTTON_CLICK, ({ button }) => {
-        this.router.handleInput(InputRouter.PREFIX.UP, Client.BUTTON_TABLE[button]);
-    }, { permanent: true });
 }
-
-Client.BUTTON_TABLE = [
-    InputRouter.CURSOR_INPUT.M1,
-    InputRouter.CURSOR_INPUT.M3,
-    InputRouter.CURSOR_INPUT.M2,
-    InputRouter.CURSOR_INPUT.M1,
-    InputRouter.CURSOR_INPUT.M1
-];
 
 Client.prototype.exit = function(gameContext) {
     this.router.clear(gameContext);
@@ -50,23 +25,8 @@ Client.prototype.exit = function(gameContext) {
 
 Client.prototype.update = function() {
     this.musicPlayer.update();
-    
-    for(let i = 0; i < KEY._COUNT; i++) {
-        const keyState = this.keyboard.keyStates[i];
-        
-        if(keyState === KEY_STATE.DOWN) {
-            //TODO: i is the keyID, not the name. The router uses ids, not names!
-            this.router.handleInput(InputRouter.PREFIX.HOLD, i);
-        }
-    }
-    
     this.cursor.update();
-    
-    for(let i = 0; i < this.cursor.buttons.length; i++) {
-        if(this.cursor.buttons[i].downImpulses > 0) {
-            this.router.handleInput(InputRouter.PREFIX.HOLD, Client.BUTTON_TABLE[i]);
-        }
-    }
+    this.router.updateTriggers(this.keyboard, this.cursor);
 }
 
 Client.prototype.updateLate = function() {

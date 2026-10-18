@@ -1,34 +1,103 @@
-export const InputRouter = function() {
-    this.commands = new Map();
-    this.keybinds = {};
-    this.usedKeys = new Set();
+import { Cursor, getButtonByCode } from "./cursor/cursor.js";
+import { charToCondition, InputBind } from "./inputBind.js";
+import { getKeyByCode, KEY } from "./keyboard.js";
 
+const NOT_TRIGGERED = 0;
+const TRIGGERED = 1;
+const MAX_COMMANDS = 100;
+
+export const InputRouter = function() {
+    this.commandCallbacks = new Map();
     this.binds = [];
-    this.binds[InputRouter.PREFIX.DOWN] = new Map();
-    this.binds[InputRouter.PREFIX.UP] = new Map();
-    this.binds[InputRouter.PREFIX.HOLD] = new Map();
+    this.keybinds = {};
+    this.commands = new Uint8Array(MAX_COMMANDS);
+    this.usedKeys = new Set();
 }
 
-InputRouter.PREFIX = {
-    DOWN: 0,
-    UP: 1,
-    HOLD: 2,
-    _COUNT: 3 
-};
-
-InputRouter.CURSOR_INPUT = {
-    M1: "M1",
-    M2: "M2",
-    M3: "M3"
-};
-
-const charToPrefix = function(key) {
-    switch(key) {
-        case "+": return InputRouter.PREFIX.DOWN;
-        case "-": return InputRouter.PREFIX.UP;
-        case "~": return InputRouter.PREFIX.HOLD;
-        default: return -1;
+InputRouter.prototype.triggerCommand = function(commandID) {
+    if(commandID < 0 || commandID >= MAX_COMMANDS) {
+        return;
     }
+
+    this.commands[commandID] = TRIGGERED;
+
+    const command = this.commandCallbacks.get(commandID);
+
+    if(command) {
+        command();
+    }
+}
+
+InputRouter.prototype.updateTriggers = function(keyboard, cursor) {
+    for(let i = 0; i < MAX_COMMANDS; i++) {
+        this.commands[i] = NOT_TRIGGERED;
+    } 
+
+    for(let i = 0; i < this.binds.length; i++) {
+        const { type, commandID, keyID, key, condition } = this.binds[i];
+
+        switch(condition) {
+            case InputBind.CONDITION.DOWN: {
+                switch(type) {
+                    case InputBind.TYPE.KEY: {
+                        if(keyboard.isKeyPressed(keyID)) {
+                            this.triggerCommand(commandID);
+                        }
+                        break;
+                    }
+                    case InputBind.TYPE.BUTTON: {
+                        if(cursor.isButtonPressed(keyID)) {
+                            this.triggerCommand(commandID);
+                        }
+                        break;
+                    }
+                }
+                break;
+            }
+            case InputBind.CONDITION.UP: {
+                switch(type) {
+                    case InputBind.TYPE.KEY: {
+                        if(keyboard.isKeyReleased(keyID)) {
+                            this.triggerCommand(commandID);
+                        }
+                        break;
+                    }
+                    case InputBind.TYPE.BUTTON: {
+                        if(cursor.isButtonReleased(keyID)) {
+                            this.triggerCommand(commandID);
+                        }
+                        break;
+                    }
+                }
+                break;
+            }
+            case InputBind.CONDITION.HOLD: {
+                switch(type) {
+                    case InputBind.TYPE.KEY: {
+                        if(keyboard.isKeyHeld(keyID)) {
+                            this.triggerCommand(commandID);
+                        }
+                        break;
+                    }
+                    case InputBind.TYPE.BUTTON: {
+                        if(cursor.isButtonHeld(keyID)) {
+                            this.triggerCommand(commandID);
+                        }
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+    }
+} 
+
+InputRouter.prototype.isTriggered = function(commandID) {
+    if(commandID < 0 || commandID >= MAX_COMMANDS) {
+        return false;
+    }
+
+    return this.commands[commandID] === TRIGGERED;
 }
 
 InputRouter.prototype.clear = function(gameContext) {
@@ -39,46 +108,12 @@ InputRouter.prototype.clear = function(gameContext) {
         keyboard.free(key);
     }
 
-    for(let i = 0; i < InputRouter.PREFIX._COUNT; i++) {
-        this.binds[i].clear();
-    }
-
-    this.commands.clear();
+    this.binds.length = 0;
+    this.commandCallbacks.clear();
     this.usedKeys.clear();
 }
 
-InputRouter.prototype.createKeybind = function(keybind, commandID) {
-    const length = keybind.length;
-
-    if(length === 0) {
-        return;
-    }
-
-    const prefixID = charToPrefix(keybind[0]);
-    const isPrefixed = length > 1 && prefixID !== -1;
-    let key = keybind;
-
-    if(isPrefixed) {
-        key = keybind.slice(1);
-
-        this.bindKey(prefixID, key, commandID);
-    } else {
-        this.bindKey(InputRouter.PREFIX.DOWN, keybind, commandID);
-        this.bindKey(InputRouter.PREFIX.UP, keybind, commandID);
-    }
-
-    if(InputRouter.CURSOR_INPUT[key] === undefined) {
-        this.usedKeys.add(key);
-    }
-}
-
-InputRouter.prototype.load = function(keybinds) {
-    if(keybinds) {
-        this.keybinds = keybinds;
-    }
-}
-
-InputRouter.prototype.bind = function(gameContext, tableID) {
+InputRouter.prototype.useConfig = function(gameContext, tableID, commandTable) {
     const { client } = gameContext;
     const { keyboard } = client;
     const keybinds = this.keybinds[tableID];
@@ -87,8 +122,15 @@ InputRouter.prototype.bind = function(gameContext, tableID) {
         return;
     }
 
-    for(const commandID in keybinds) {
-        const keybind = keybinds[commandID];
+    for(const commandName in keybinds) {
+        const commandID = commandTable[commandName];
+        
+        //If the command is unknown to the engine, the registration gets skipped.
+        if(commandID === undefined || commandID < 0 || commandID >= MAX_COMMANDS) {
+            continue;
+        }
+        
+        const keybind = keybinds[commandName];
         
         if(Array.isArray(keybind)) {
             for(let i = 0; i < keybind.length; i++) {
@@ -106,46 +148,74 @@ InputRouter.prototype.bind = function(gameContext, tableID) {
     }
 } 
 
-InputRouter.prototype.bindKey = function(prefixID, key, commandID) {
-    if(prefixID < 0 || prefixID >= InputRouter.PREFIX._COUNT) {
+InputRouter.prototype.createKeybind = function(keybind, commandID) {
+    const length = keybind.length;
+
+    if(length === 0) {
+        return;
+    }
+    
+    const condition = charToCondition(keybind[0]);
+    const isPrefixed = length > 1 && condition !== -1;
+    let key = keybind;
+
+    if(isPrefixed) {
+        key = keybind.slice(1);
+
+        this.bindKey(condition, key, commandID);
+    } else {
+        this.bindKey(InputBind.CONDITION.DOWN, keybind, commandID);
+        this.bindKey(InputBind.CONDITION.UP, keybind, commandID);
+    }
+}
+
+InputRouter.prototype.bindKey = function(condition, key, commandID) {
+    if(condition < 0 || condition >= InputBind.CONDITION._COUNT) {
         return;
     }
 
-    const bindsCategory = this.binds[prefixID];
-    const commandList = bindsCategory.get(key);
+    let keyID = -1;
+    let type = -1;
+    const keyboardID = getKeyByCode(key);
+    
+    if(keyboardID !== KEY._INVALID) {
+        keyID = keyboardID; 
+        type = InputBind.TYPE.KEY;
 
-    if(!commandList) {
-        bindsCategory.set(key, [commandID]);
+        this.usedKeys.add(keyID);
     } else {
-        commandList.push(commandID);
+        const buttonID = getButtonByCode(key);
+        
+        //No valid binding found!
+        if(buttonID === Cursor.BUTTON._INVALID) {
+            return;
+        }
+        
+        keyID = buttonID;
+        type = InputBind.TYPE.BUTTON;
     }
+    
+    const inputBind = new InputBind();
+
+    inputBind.keyID = keyID;
+    inputBind.type = type;
+    inputBind.key = key;
+    inputBind.condition = condition;
+    inputBind.commandID = commandID;
+
+    this.binds.push(inputBind);
 }
 
 InputRouter.prototype.on = function(commandID, command) {
-    if(this.commands.has(commandID) || typeof command !== "function") {
+    if(this.commandCallbacks.has(commandID) || typeof command !== "function") {
         return;
     }
 
-    this.commands.set(commandID, command);
+    this.commandCallbacks.set(commandID, command);
 }
 
-InputRouter.prototype.handleInput = function(prefixID, key) {
-    if(prefixID < 0 || prefixID >= InputRouter.PREFIX._COUNT) {
-        return;
-    }
-
-    const bindsCategory = this.binds[prefixID];
-    const commandList = bindsCategory.get(key);
-
-    if(!commandList) {
-        return;
-    }
-
-    for(const commandID of commandList) {
-        const command = this.commands.get(commandID);
-
-        if(command) {
-            command();
-        }
+InputRouter.prototype.load = function(keybinds) {
+    if(keybinds) {
+        this.keybinds = keybinds;
     }
 }

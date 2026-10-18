@@ -3,7 +3,7 @@ import { StateMachine } from "../../engine/state/stateMachine.js";
 import { BattalionActor } from "./battalionActor.js";
 import { IdleState } from "./player/idle.js";
 import { SelectState } from "./player/select.js";
-import { DIRECTION, ENTITY_TYPE, TRANSPORT_TYPE } from "../enums.js";
+import { DIRECTION, ENTITY_TYPE, INPUT_TRIGGER, TRANSPORT_TYPE } from "../enums.js";
 import { saveStoryMap } from "../systems/save.js";
 import { MapInspector } from "../map/mapInspector.js";
 import { DeathActionVTable } from "../action/types/death.js";
@@ -131,9 +131,9 @@ Player.prototype.loadKeybinds = function(gameContext) {
     const { client, actionRouter } = gameContext;
     const { router } = client;
     
-    router.bind(gameContext, "PLAY");
+    router.useConfig(gameContext, "PLAY", INPUT_TRIGGER);
 
-    router.on("CLICK", () => {
+    router.on(INPUT_TRIGGER.CLICK, () => {
         const { world } = gameContext;
         const { mapManager } = world;
         const worldMap = mapManager.getActiveMap();
@@ -145,11 +145,11 @@ Player.prototype.loadKeybinds = function(gameContext) {
         }
     });
 
-    router.on("END_TURN", () => {
+    router.on(INPUT_TRIGGER.END_TURN, () => {
         this.addIntent(EndTurnVTable.createIntent());
     });
 
-    router.on("TRANSPORT_BARGE", () => {
+    router.on(INPUT_TRIGGER.TRANSPORT_BARGE, () => {
         const entity = this.inspector.getLastEntity(gameContext);
 
         if(entity) {
@@ -161,7 +161,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
         }
     });
 
-    router.on("TRANSPORT_PELICAN", () => {
+    router.on(INPUT_TRIGGER.TRANSPORT_PELICAN, () => {
         const entity = this.inspector.getLastEntity(gameContext);
 
         if(entity) {
@@ -173,7 +173,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
         }
     });
 
-    router.on("TRANSPORT_STORK", () => {
+    router.on(INPUT_TRIGGER.TRANSPORT_STORK, () => {
         const entity = this.inspector.getLastEntity(gameContext);
 
         if(entity) {
@@ -185,7 +185,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
         }
     });
 
-    router.on("EXTRACT", () => {
+    router.on(INPUT_TRIGGER.EXTRACT, () => {
         const entity = this.inspector.getLastEntity(gameContext);
 
         if(entity) {
@@ -193,7 +193,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
         }
     });
 
-    router.on("PRODUCE", () => {
+    router.on(INPUT_TRIGGER.PRODUCE, () => {
         const entity = this.inspector.getLastEntity(gameContext);
 
         if(entity) {
@@ -201,7 +201,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
         }  
     });
 
-    router.on("REPAIR", () => {
+    router.on(INPUT_TRIGGER.REPAIR, () => {
         const entity = this.inspector.getLastEntity(gameContext);
 
         if(entity) {
@@ -209,9 +209,9 @@ Player.prototype.loadKeybinds = function(gameContext) {
         }   
     });
 
-    router.on("DEBUG_SAVE", () => saveStoryMap(gameContext));
+    router.on(INPUT_TRIGGER.DEBUG_SAVE, () => saveStoryMap(gameContext));
 
-    router.on("DEBUG_KILL", () => {
+    router.on(INPUT_TRIGGER.DEBUG_KILL, () => {
         const entity = this.inspector.getLastEntity(gameContext);
 
         if(entity) {

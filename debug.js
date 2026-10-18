@@ -1,5 +1,6 @@
 import { getCursorTile } from "./engine/camera/contextHelper.js";
 import { Renderer2D } from "./engine/renderer/renderer2D.js";
+import { INPUT_TRIGGER } from "./src/enums.js";
 
 export const drawWindowDebug = function(gContext, gTimer, gWindow) {
     const { textureRegistry, textureLoader, uiManager, contextManager } = gContext;
@@ -40,10 +41,10 @@ export const addDebugKeybinds = function(gContext, gWindow) {
     const { client, uiManager, contextManager } = gContext;
     const { router } = client;
 
-    router.bind(gContext, "DEBUG");
-    router.on("DEBUG_MAP", () => Renderer2D.DEBUG.WORLD = !Renderer2D.DEBUG.WORLD);
-    router.on("DEBUG_CONTEXT", () => contextManager.debug = !contextManager.debug);
-    router.on("DEBUG_INTERFACE", () => uiManager.debug = !uiManager.debug);
-    router.on("DEBUG_SPRITES", () => Renderer2D.DEBUG.SPRITES = !Renderer2D.DEBUG.SPRITES);
-    router.on("DEBUG_INFO", () => gWindow.debug = !gWindow.debug);
+    router.useConfig(gContext, "DEBUG", INPUT_TRIGGER);
+    router.on(INPUT_TRIGGER.DEBUG_MAP, () => Renderer2D.DEBUG.WORLD = !Renderer2D.DEBUG.WORLD);
+    router.on(INPUT_TRIGGER.DEBUG_CONTEXT, () => contextManager.debug = !contextManager.debug);
+    router.on(INPUT_TRIGGER.DEBUG_INTERFACE, () => uiManager.debug = !uiManager.debug);
+    router.on(INPUT_TRIGGER.DEBUG_SPRITES, () => Renderer2D.DEBUG.SPRITES = !Renderer2D.DEBUG.SPRITES);
+    router.on(INPUT_TRIGGER.DEBUG_INFO, () => gWindow.debug = !gWindow.debug);
 }
