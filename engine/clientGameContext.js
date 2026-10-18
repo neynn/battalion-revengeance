@@ -3,7 +3,6 @@ import { Cursor } from "./client/cursor/cursor.js";
 import { SpriteManager } from "./sprite/spriteManager.js";
 import { UIManager } from "./ui/uiManager.js";
 import { StateMachine } from "./state/stateMachine.js";
-import { Timer } from "./timer.js";
 import { TileManager } from "./tile/tileManager.js";
 import { ContextManager } from "./renderer/contextManager.js";
 import { World } from "./world/world.js";
@@ -16,11 +15,10 @@ import { TweenManager } from "./tween/tweenManager.js";
 import { DialogueHandler } from "./dialogueHandler.js";
 import { TextureRegistry } from "./resources/texture/textureRegistry.js";
 
-export const ClientGameContext = function() {
+export const ClientGameContext = function(gTimer, gWindow) {
     this.client = new Client();
     this.world = new World();
     this.pathHandler = PathHandler;
-    this.gameWindow = new GameWindow();
     this.contextManager = new ContextManager(window.innerWidth, window.innerHeight);
     this.textureRegistry = new TextureRegistry();
     this.textureLoader = new TextureLoader(this.textureRegistry);
@@ -30,44 +28,11 @@ export const ClientGameContext = function() {
     this.language = new LanguageHandler();
     this.fonts = new FontHandler();
     this.states = new StateMachine(this);
-    this.timer = new Timer();
     this.tweenManager = new TweenManager();
     this.dialogueHandler = new DialogueHandler();
+    this.timer = gTimer;
+    this.gameWindow = gWindow;
     this.isClient = true;
-
-    this.timer.work = () => {
-        this.gameWindow.update(this);
-        this.textureLoader.update();
-    }
-
-    this.timer.input = () => {
-        this.client.update();
-        this.uiManager.update(this);
-    }
-
-    this.timer.update = () => {
-        this.states.update(this);
-        this.world.update(this);
-    }
-
-    this.timer.render = () => {
-        this.dialogueHandler.update(this);
-        this.tweenManager.update(this);
-        this.spriteManager.update(this);
-        this.tileManager.update(this);
-        
-        this.gameWindow.display.clear();
-        this.gameWindow.display.save();
-        this.contextManager.draw(this, this.gameWindow.display);
-        this.gameWindow.display.reset();
-        this.gameWindow.display.save();
-        this.uiManager.draw(this, this.gameWindow.display);
-        this.gameWindow.display.reset();
-
-        if(this.gameWindow.debug) {
-            this.gameWindow.drawDebug(this);
-        }
-    }
 
     this.client.cursor.events.on(Cursor.EVENT.BUTTON_CLICK, (event) => {
         const { button } = event;

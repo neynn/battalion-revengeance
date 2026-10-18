@@ -16,8 +16,8 @@ import { ScenarioRegistry } from "./scenario/scenarioRegistry.js";
 import { SpriteController } from "./spriteController.js";
 import { SoundRegistry } from "./soundRegistry.js";
 
-export const BattalionContext = function() {
-    ClientGameContext.call(this);
+export const BattalionContext = function(gTimer, gWindow) {
+    ClientGameContext.call(this, gTimer, gWindow);
 
     this.typeRegistry = new TypeRegistry();
     this.teamManager = new TeamManager();
@@ -75,7 +75,7 @@ BattalionContext.prototype.init = function(resources) {
     this.states.addState(BattalionContext.STATE.ARENA, new ArenaState());
     this.states.addState(BattalionContext.STATE.STORY, new StoryState());
     this.states.setNextState(this, BattalionContext.STATE.MAIN_MENU);
-    this.timer.start();
+
     addDebug(this);
 }
 

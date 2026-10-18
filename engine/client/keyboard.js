@@ -164,23 +164,8 @@ export const Keyboard = function() {
     this.events.register(Keyboard.EVENT.KEY_BOUND);
     this.events.register(Keyboard.EVENT.KEY_UNBOUND);
 
-    document.addEventListener("keydown", (event) => {
-        const { key } = event;
-
-        if(this.reservedKeys.has(key)) {
-            event.preventDefault();
-            this.onKeyDown(event.key);
-        }
-    });
-
-    document.addEventListener("keyup", (event) => {
-        const { key } = event;
-
-        if(this.reservedKeys.has(key)) {
-            event.preventDefault();
-            this.onKeyUp(event.key);
-        }
-    });
+    document.addEventListener("keydown", (event) => this.onKeyDown(event));
+    document.addEventListener("keyup", (event) => this.onKeyUp(event));
 }
 
 Keyboard.EVENT = {
@@ -199,6 +184,22 @@ Keyboard.prototype.exit = function() {
     }
 }
 
+Keyboard.prototype.isKeyPressed = function(keyID) {
+    if(keyID < 0 || keyID >= KEY._COUNT) {
+        return false;
+    }
+
+    return this.keyStates[keyID] === KEY_STATE.DOWN && this.keyStates[keyID + KEY._COUNT] === KEY_STATE.UP;
+}
+
+Keyboard.prototype.isKeyHeld = function(keyID) {
+    if(keyID < 0 || keyID >= KEY._COUNT) {
+        return false;
+    }
+
+    return this.keyStates[keyID] === KEY_STATE.DOWN;
+}
+
 Keyboard.prototype.updateKeyStates = function() {
     //The current key state gets put as the previous one.
     for(let i = 0; i < KEY._COUNT; i++) {
@@ -206,8 +207,13 @@ Keyboard.prototype.updateKeyStates = function() {
     }
 }
 
-Keyboard.prototype.onKeyDown = function(keyCode) {
+Keyboard.prototype.onKeyDown = function(event) {
+    const keyCode = event.key;
     const keyID = getKeyByCode(keyCode);
+
+    if(this.reservedKeys.has(keyCode)) {
+        event.preventDefault();
+    }
 
     if(keyID !== KEY._INVALID) {
         const keyState = this.keyStates[keyID];
@@ -222,8 +228,13 @@ Keyboard.prototype.onKeyDown = function(keyCode) {
     }
 }
 
-Keyboard.prototype.onKeyUp = function(keyCode) {
+Keyboard.prototype.onKeyUp = function(event) {
+    const keyCode = event.key;
     const keyID = getKeyByCode(keyCode);
+
+    if(this.reservedKeys.has(keyCode)) {
+        event.preventDefault();
+    }
 
     if(keyID !== KEY._INVALID) {
         const keyState = this.keyStates[keyID];

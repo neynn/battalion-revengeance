@@ -21,9 +21,7 @@ GameWindow.prototype.update = function(gameContext) {
     const { uiManager, contextManager, timer } = gameContext;
 
     if(this.isResizeQueued) {
-        const deltaTime = timer.getDeltaTime();
-
-        this.timeUntilResize += deltaTime;
+        this.timeUntilResize += timer.deltaTime;
 
         if(this.timeUntilResize >= RESIZE_BUFFER_TIME) {
             this.isResizeQueued = false;

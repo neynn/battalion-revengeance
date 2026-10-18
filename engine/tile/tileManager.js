@@ -28,7 +28,7 @@ TileManager.TILE_ID = {
 
 TileManager.prototype.update = function(gameContext) {
     const { timer } = gameContext;
-    const realTime = timer.getRealTime();
+    const realTime = timer.realTime;
 
     for(let i = 0; i < this.activeVisuals.length; i++) {
         this.activeVisuals[i].update(realTime);

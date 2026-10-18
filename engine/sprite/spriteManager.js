@@ -121,10 +121,8 @@ SpriteManager.prototype.forEachSprite = function(onCall) {
 
 SpriteManager.prototype.update = function(gameContext) {
     const { timer } = gameContext;
-    const realTime = timer.getRealTime();
-    const deltaTime = timer.getDeltaTime();
 
-    this.timestamp = realTime;
+    this.timestamp = timer.realTime;
 
     if(this.timestamp >= this.nextCleanup) {
         const removedSprites = [];

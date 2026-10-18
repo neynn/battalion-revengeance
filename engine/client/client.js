@@ -50,23 +50,27 @@ Client.prototype.exit = function(gameContext) {
 
 Client.prototype.update = function() {
     this.musicPlayer.update();
-
+    
     for(let i = 0; i < KEY._COUNT; i++) {
         const keyState = this.keyboard.keyStates[i];
-
+        
         if(keyState === KEY_STATE.DOWN) {
             //TODO: i is the keyID, not the name. The router uses ids, not names!
             this.router.handleInput(InputRouter.PREFIX.HOLD, i);
         }
     }
-
+    
     this.cursor.update();
-
+    
     for(let i = 0; i < this.cursor.buttons.length; i++) {
         if(this.cursor.buttons[i].downImpulses > 0) {
             this.router.handleInput(InputRouter.PREFIX.HOLD, Client.BUTTON_TABLE[i]);
         }
     }
+}
+
+Client.prototype.updateLate = function() {
+    this.keyboard.updateKeyStates();
 }
 
 Client.prototype.isOnline = function() {
