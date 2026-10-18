@@ -1,5 +1,5 @@
 import { Cursor } from "./cursor/cursor.js";
-import { Keyboard } from "./keyboard.js";
+import { KEY, KEY_STATE, Keyboard } from "./keyboard.js";
 import { Socket } from "../network/socket.js";
 import { SoundPlayer } from "./sound/soundPlayer.js";
 import { InputRouter } from "./inputRouter.js";
@@ -51,8 +51,13 @@ Client.prototype.exit = function(gameContext) {
 Client.prototype.update = function() {
     this.musicPlayer.update();
 
-    for(const key of this.keyboard.activeKeys) {
-        this.router.handleInput(InputRouter.PREFIX.HOLD, key);
+    for(let i = 0; i < KEY._COUNT; i++) {
+        const keyState = this.keyboard.keyStates[i];
+
+        if(keyState === KEY_STATE.DOWN) {
+            //TODO: i is the keyID, not the name. The router uses ids, not names!
+            this.router.handleInput(InputRouter.PREFIX.HOLD, i);
+        }
     }
 
     this.cursor.update();

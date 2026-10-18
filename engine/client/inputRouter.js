@@ -1,14 +1,19 @@
 export const InputRouter = function() {
-    this.binds = new Map();
     this.commands = new Map();
     this.keybinds = {};
     this.usedKeys = new Set();
+
+    this.binds = [];
+    this.binds[InputRouter.PREFIX.DOWN] = new Map();
+    this.binds[InputRouter.PREFIX.UP] = new Map();
+    this.binds[InputRouter.PREFIX.HOLD] = new Map();
 }
 
 InputRouter.PREFIX = {
-    DOWN: "+",
-    UP: "-",
-    HOLD: "~"
+    DOWN: 0,
+    UP: 1,
+    HOLD: 2,
+    _COUNT: 3 
 };
 
 InputRouter.CURSOR_INPUT = {
@@ -17,12 +22,12 @@ InputRouter.CURSOR_INPUT = {
     M3: "M3"
 };
 
-InputRouter.isPrefix = function(key) {
+const charToPrefix = function(key) {
     switch(key) {
-        case InputRouter.PREFIX.DOWN: return true;
-        case InputRouter.PREFIX.UP: return true;
-        case InputRouter.PREFIX.HOLD: return true;
-        default: return false;
+        case "+": return InputRouter.PREFIX.DOWN;
+        case "-": return InputRouter.PREFIX.UP;
+        case "~": return InputRouter.PREFIX.HOLD;
+        default: return -1;
     }
 }
 
@@ -34,7 +39,10 @@ InputRouter.prototype.clear = function(gameContext) {
         keyboard.free(key);
     }
 
-    this.binds.clear();
+    for(let i = 0; i < InputRouter.PREFIX._COUNT; i++) {
+        this.binds[i].clear();
+    }
+
     this.commands.clear();
     this.usedKeys.clear();
 }
@@ -46,14 +54,14 @@ InputRouter.prototype.createKeybind = function(keybind, commandID) {
         return;
     }
 
-    const prefix = keybind[0];
-    const isPrefixed = length > 1 && InputRouter.isPrefix(prefix);
+    const prefixID = charToPrefix(keybind[0]);
+    const isPrefixed = length > 1 && prefixID !== -1;
     let key = keybind;
 
     if(isPrefixed) {
         key = keybind.slice(1);
 
-        this.bindKey(prefix, key, commandID);
+        this.bindKey(prefixID, key, commandID);
     } else {
         this.bindKey(InputRouter.PREFIX.DOWN, keybind, commandID);
         this.bindKey(InputRouter.PREFIX.UP, keybind, commandID);
@@ -98,12 +106,16 @@ InputRouter.prototype.bind = function(gameContext, tableID) {
     }
 } 
 
-InputRouter.prototype.bindKey = function(prefix, key, commandID) {
-    const keybind = prefix + key;
-    const commandList = this.binds.get(keybind);
+InputRouter.prototype.bindKey = function(prefixID, key, commandID) {
+    if(prefixID < 0 || prefixID >= InputRouter.PREFIX._COUNT) {
+        return;
+    }
+
+    const bindsCategory = this.binds[prefixID];
+    const commandList = bindsCategory.get(key);
 
     if(!commandList) {
-        this.binds.set(keybind, [commandID]);
+        bindsCategory.set(key, [commandID]);
     } else {
         commandList.push(commandID);
     }
@@ -117,16 +129,19 @@ InputRouter.prototype.on = function(commandID, command) {
     this.commands.set(commandID, command);
 }
 
-InputRouter.prototype.handleInput = function(prefix, inputID) {
-    const prefixedID = prefix + inputID;
-    const commandList = this.binds.get(prefixedID);
+InputRouter.prototype.handleInput = function(prefixID, key) {
+    if(prefixID < 0 || prefixID >= InputRouter.PREFIX._COUNT) {
+        return;
+    }
+
+    const bindsCategory = this.binds[prefixID];
+    const commandList = bindsCategory.get(key);
 
     if(!commandList) {
         return;
     }
 
-    for(let i = 0; i < commandList.length; i++) {
-        const commandID = commandList[i];
+    for(const commandID of commandList) {
         const command = this.commands.get(commandID);
 
         if(command) {
