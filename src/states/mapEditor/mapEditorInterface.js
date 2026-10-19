@@ -6,6 +6,8 @@ import { getRGBAString } from "../../../engine/graphics/colorHelper.js";
 import { TextStyle } from "../../../engine/graphics/textStyle.js";
 import { AssetBrowser } from "../../../engine/map/editor/assetBrowser.js";
 import { MapEditor } from "../../../engine/map/editor/mapEditor.js";
+import { fillTileLine } from "../../../engine/math/math.js";
+import { Vec2 } from "../../../engine/math/vec2.js";
 import { TileManager } from "../../../engine/tile/tileManager.js";
 import { Container } from "../../../engine/ui/elements/container.js";
 import { parseLayout } from "../../../engine/ui/parser.js";
@@ -36,6 +38,7 @@ const fillBrushSize = function(width, height) {
     return size;
 }
 
+const MAX_CURSOR_TILES_PER_FRAME = 10;
 const SLOT_START_Y = 100;
 const SLOT_BUTTON_SIZE = 50;
 const SLOT_BUTTON_SCALE = SLOT_BUTTON_SIZE / TILE_WIDTH;
@@ -79,8 +82,14 @@ export const MapEditorInterface = function(controller, editor, renderer, camera)
     this.lastToolX = -1;
     this.lastToolY = -1;
 
-    this.initTileSets();
-    this.initBrushSizes();
+    this.registerTileSets();
+    this.registerBrushSizes();
+
+    this.cursorTilesPerFrame = [];
+
+    for(let i = 0; i < MAX_CURSOR_TILES_PER_FRAME; i++) {
+        this.cursorTilesPerFrame[i] = new Vec2(0, 0);
+    }
 }
 
 MapEditorInterface.prototype = Object.create(UIContext.prototype);
@@ -205,7 +214,7 @@ MapEditorInterface.prototype.enableTileTool = function(gameContext) {
     this.updateMenuText(gameContext);
 }
 
-MapEditorInterface.prototype.initTileSets = function() {
+MapEditorInterface.prototype.registerTileSets = function() {
     const allSet = new AssetBrowser("MAP_EDITOR_SET_NAME_ALL", BUTTON_COUNT, TileManager.TILE_ID.INVALID);
     const canyonSet = new AssetBrowser("MAP_EDITOR_SET_NAME_CANYON", BUTTON_COUNT, TileManager.TILE_ID.INVALID);
     const transportSet = new AssetBrowser("MAP_EDITOR_SET_NAME_TRANSPORT", BUTTON_COUNT, TileManager.TILE_ID.INVALID);
@@ -248,7 +257,7 @@ MapEditorInterface.prototype.initTileSets = function() {
     this.tileSets.addValue(plainsSet);
 }
 
-MapEditorInterface.prototype.initBrushSizes = function() {
+MapEditorInterface.prototype.registerBrushSizes = function() {
     this.brushSizes.addItem(fillBrushSize(0, 0));
     this.brushSizes.addItem(fillBrushSize(1, 1));
     this.brushSizes.addItem(fillBrushSize(2, 2));
@@ -398,7 +407,7 @@ MapEditorInterface.prototype.drawTileEditor = function(gameContext, display) {
 
 MapEditorInterface.prototype.onImmediate = function(gameContext, display) {
     const { client } = gameContext;
-    const { router } = client;
+    const { router, cursor } = client;
 
     if(router.isTriggered(INPUT_TRIGGER.TOGGLE_AUTOTILER)) {
         this.editor.toggleAutotiling();
@@ -433,6 +442,26 @@ MapEditorInterface.prototype.onImmediate = function(gameContext, display) {
         this.editor.resetBrush();
     }
 
+    if(cursor.isButtonHeld(Cursor.BUTTON.RIGHT)) {
+        const { x, y } = getCursorTile(gameContext);
+
+        if(this.lastUseX !== -1 && this.lastUseY !== -1) {
+            const tileCount = fillTileLine(this.lastUseX, this.lastUseY, x, y, MAX_CURSOR_TILES_PER_FRAME, this.cursorTilesPerFrame);
+
+            for(let i = 1; i < tileCount; i++) {
+                this.controller.useTool(gameContext, this.cursorTilesPerFrame[i].x, this.cursorTilesPerFrame[i].y);
+            }
+        } else {
+            this.controller.useTool(gameContext, x, y);
+        }
+
+        this.lastUseX = x;
+        this.lastUseY = y;
+    } else {
+        this.lastUseX = -1;
+        this.lastUseY = -1;
+    }
+
     switch(this.controller.currentTab) {
         case EditorController.TAB_TYPE.NONE: {
             break;
@@ -461,27 +490,5 @@ MapEditorInterface.prototype.load = function(gameContext) {
 
     cursor.events.on(Cursor.EVENT.SCROLL, ({ direction }) => {
         this.controller.scrollTool(gameContext, direction, this);
-    });
-
-    cursor.events.on(Cursor.EVENT.DRAG, ({ button }) => {
-        if(button === Cursor.BUTTON.RIGHT) {
-            const { x, y } = getCursorTile(gameContext);
-
-            if(this.lastUseX !== x || this.lastUseY !== y) {
-                this.lastUseX = x;
-                this.lastUseY = y;
-                this.controller.useTool(gameContext, x, y);
-            }
-        }
-    });
-
-    cursor.events.on(Cursor.EVENT.BUTTON_CLICK, ({ button }) => {
-        if(button === Cursor.BUTTON.RIGHT) {
-            const { x, y } = getCursorTile(gameContext);
-
-            this.lastUseX = -1;
-            this.lastUseY = -1;
-            this.controller.useTool(gameContext, x, y);
-        }
     });
 }

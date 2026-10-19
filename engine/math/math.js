@@ -1,3 +1,37 @@
+export const fillTileLine = function(previousX, previousY, currentX, currentY, maxTiles, vec2List) {
+	const deltaX = Math.abs(currentX - previousX);
+	const deltaY = Math.abs(currentY - previousY);
+	const slopeX = previousX < currentX ? 1 : -1;
+	const slopeY = previousY < currentY ? 1 : -1;
+
+	let err = deltaX - deltaY;
+	let tiles = 0;
+
+	while(tiles < maxTiles) {
+		vec2List[tiles].x = previousX;
+		vec2List[tiles].y = previousY;
+		tiles++;
+
+		if(previousX === currentX && previousY === currentY) {
+			break;
+		}
+
+		const e2 = 2 * err;
+
+		if(e2 > -deltaY) {
+			err -= deltaY;
+			previousX += slopeX;
+		}
+
+		if(e2 < deltaX) {
+			err += deltaX;
+			previousY += slopeY;
+		}
+	}
+
+	return tiles;
+}
+
 export const toCenter = function(parentSize, childSize) {
 	return Math.floor(parentSize / 2 - childSize / 2);
 }
