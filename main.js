@@ -7,7 +7,6 @@ import { validateTraitTypes } from "./test/types.js"
 import { tAllNamesAndDescriptionsPresent } from "./test/language.js";
 import { ClientPathHandler } from "./engine/resources/pathHandler.js";
 import { Timer } from "./engine/timer.js";
-import { KEY } from "./engine/client/keyboard.js";
 import { GameWindow } from "./engine/gameWindow.js";
 import { addDebugKeybinds, drawWindowDebug } from "./debug.js";
 

@@ -1,12 +1,3 @@
-export const charToCondition = function(key) {
-    switch(key) {
-        case "+": return InputBind.CONDITION.DOWN;
-        case "-": return InputBind.CONDITION.UP;
-        case "~": return InputBind.CONDITION.HOLD;
-        default: return InputBind.CONDITION._INVALID;
-    }
-}
-
 export const InputBind = function() {
     this.key = "";
     this.keyID = -1;

@@ -1,6 +1,16 @@
-import { Cursor, getButtonByCode } from "./cursor/cursor.js";
-import { charToCondition, InputBind } from "./inputBind.js";
-import { getKeyByCode, KEY } from "./keyboard.js";
+import { Cursor } from "./cursor/cursor.js";
+import { getKeyByCode, MOUSE_BUTTON } from "./input_constants.js";
+import { InputBind } from "./inputBind.js";
+import { KEY, getButtonByCode } from "./input_constants.js";
+
+const charToCondition = function(key) {
+    switch(key) {
+        case "+": return InputBind.CONDITION.DOWN;
+        case "-": return InputBind.CONDITION.UP;
+        case "~": return InputBind.CONDITION.HOLD;
+        default: return InputBind.CONDITION._INVALID;
+    }
+}
 
 const NOT_TRIGGERED = 0;
 const TRIGGERED = 1;
@@ -157,7 +167,7 @@ InputRouter.prototype.createKeybind = function(keybind, commandID) {
     }
     
     const condition = charToCondition(keybind[0]);
-    const isPrefixed = length > 1 && condition !== -1;
+    const isPrefixed = length > 1 && condition !== InputBind.CONDITION._INVALID;
     let key = keybind;
 
     if(isPrefixed) {
@@ -188,7 +198,7 @@ InputRouter.prototype.bindKey = function(condition, key, commandID) {
         const buttonID = getButtonByCode(key);
         
         //No valid binding found!
-        if(buttonID === Cursor.BUTTON._INVALID) {
+        if(buttonID === MOUSE_BUTTON._INVALID) {
             return;
         }
         

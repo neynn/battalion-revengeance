@@ -14,6 +14,7 @@ import { PathHandler } from "./resources/pathHandler.js";
 import { TweenManager } from "./tween/tweenManager.js";
 import { DialogueHandler } from "./dialogueHandler.js";
 import { TextureRegistry } from "./resources/texture/textureRegistry.js";
+import { MOUSE_BUTTON } from "./client/input_constants.js";
 
 export const ClientGameContext = function(gTimer, gWindow) {
     this.client = new Client();
@@ -37,7 +38,7 @@ export const ClientGameContext = function(gTimer, gWindow) {
     this.client.cursor.events.on(Cursor.EVENT.BUTTON_CLICK, (event) => {
         const { button } = event;
 
-        if(button === Cursor.BUTTON.LEFT) {
+        if(button === MOUSE_BUTTON.LEFT) {
             this.uiManager.onClick(event);
         }
     }, { permanent: true });

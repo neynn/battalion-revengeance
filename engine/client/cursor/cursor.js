@@ -1,20 +1,12 @@
 import { EventEmitter } from "../../events/eventEmitter.js";
 import { isRectangleRectangleIntersect } from "../../math/math.js";
+import { MOUSE_BUTTON } from "../input_constants.js";
 import { MouseClickEvent } from "./events/click.js";
 import { MouseDownEvent } from "./events/down.js";
 import { MouseDragEvent } from "./events/drag.js";
 import { MouseScrollEvent } from "./events/scroll.js";
 import { MouseUpEvent } from "./events/up.js";
 import { MouseButton } from "./mouseButton.js";
-
-export const getButtonByCode = function(code) {
-    switch(code) {
-        case "M1": return Cursor.BUTTON.LEFT;
-        case "M2": return Cursor.BUTTON.RIGHT;
-        case "M3": return Cursor.BUTTON.MIDDLE;
-        default: return Cursor.BUTTON._INVALID;
-    }
-}   
 
 export const Cursor = function() {
     this.positionX = 0;
@@ -23,7 +15,7 @@ export const Cursor = function() {
     this.isPointerLocked = false;
     this.buttons = [];
 
-    for(let i = 0; i < Cursor.BUTTON._COUNT; i++) {
+    for(let i = 0; i < MOUSE_BUTTON._COUNT; i++) {
         this.buttons[i] = new MouseButton();
     }
 
@@ -53,16 +45,6 @@ Cursor.EVENT = {
     BUTTON_CLICK: "BUTTON_CLICK",
     DRAG: "DRAG",
     SCROLL: "SCROLL"
-};
-
-Cursor.BUTTON = {
-    _INVALID: -1,
-    LEFT: 0,
-    MIDDLE: 1,
-    RIGHT: 2,
-    MOUSE_4: 3,
-    MOUSE_5: 4,
-    _COUNT: 5
 };
 
 Cursor.SCROLL = {
@@ -100,7 +82,7 @@ Cursor.prototype.collidesRect = function(screenX, screenY, width, height) {
 }
 
 Cursor.prototype.isButtonPressed = function(buttonID) {
-    if(buttonID < 0 || buttonID >= Cursor.BUTTON._COUNT) {
+    if(buttonID < 0 || buttonID >= MOUSE_BUTTON._COUNT) {
         return false;
     }
 
@@ -108,7 +90,7 @@ Cursor.prototype.isButtonPressed = function(buttonID) {
 }
 
 Cursor.prototype.isButtonReleased = function(buttonID) {
-    if(buttonID < 0 || buttonID >= Cursor.BUTTON._COUNT) {
+    if(buttonID < 0 || buttonID >= MOUSE_BUTTON._COUNT) {
         return false;
     }
 
@@ -116,7 +98,7 @@ Cursor.prototype.isButtonReleased = function(buttonID) {
 }
 
 Cursor.prototype.isButtonHeld = function(buttonID) {
-    if(buttonID < 0 || buttonID >= Cursor.BUTTON._COUNT) {
+    if(buttonID < 0 || buttonID >= MOUSE_BUTTON._COUNT) {
         return false;
     }
 
@@ -124,7 +106,7 @@ Cursor.prototype.isButtonHeld = function(buttonID) {
 }
 
 Cursor.prototype.getFlags = function(button) {
-    if(button < 0 || button >= Cursor.BUTTON._COUNT) {
+    if(button < 0 || button >= MOUSE_BUTTON._COUNT) {
         return MouseButton.FLAG.NONE;
     } 
 

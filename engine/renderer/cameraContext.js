@@ -1,8 +1,8 @@
 import { Display } from "./display.js";
 import { isRectangleRectangleIntersect } from "../math/math.js";
-import { Cursor } from "../client/cursor/cursor.js";
 import { Camera2D } from "../camera/camera2D.js";
 import { Renderer2D } from "./renderer2D.js";
+import { MOUSE_BUTTON } from "../client/input_constants.js";
 
 export const CameraContext = function(id) {
     this.id = id;
@@ -11,7 +11,7 @@ export const CameraContext = function(id) {
     this.positionX = 0;
     this.positionY = 0;
     this.flags = CameraContext.FLAG.NONE;
-    this.dragButton = Cursor.BUTTON._INVALID;
+    this.dragButton = MOUSE_BUTTON._INVALID;
     this.display = new Display(1, 1, Display.TYPE.BUFFER);
     this.screenWidth = 0;
     this.screenHeight = 0;

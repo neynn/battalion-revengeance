@@ -1,4 +1,5 @@
 import { Cursor } from "../../engine/client/cursor/cursor.js";
+import { MOUSE_BUTTON } from "../../engine/client/input_constants.js";
 import { TILE_HEIGHT, TILE_WIDTH } from "../../engine/engine_constants.js";
 import { Scroller } from "../../engine/util/scroller.js";
 import { BattalionRenderer2D } from "../camera/battalionRenderer2D.js";
@@ -40,7 +41,7 @@ export const createPlayCamera = function(gameContext) {
     context.camera.bindViewport();
     context.camera.setTileSize(TILE_WIDTH, TILE_HEIGHT);
 
-    context.setDragButton(Cursor.BUTTON.LEFT);
+    context.setDragButton(MOUSE_BUTTON.LEFT);
     context.enableBuffer();
     //context.enableAutoCenter(); -> Done in PlayUI!
     context.fixBuffer(560, 560);

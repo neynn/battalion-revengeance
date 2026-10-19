@@ -1,6 +1,7 @@
 import { Camera2D } from "../../../engine/camera/camera2D.js";
 import { getCursorTile } from "../../../engine/camera/contextHelper.js";
 import { Cursor } from "../../../engine/client/cursor/cursor.js";
+import { MOUSE_BUTTON } from "../../../engine/client/input_constants.js";
 import { TILE_WIDTH } from "../../../engine/engine_constants.js";
 import { getRGBAString } from "../../../engine/graphics/colorHelper.js";
 import { TextStyle } from "../../../engine/graphics/textStyle.js";
@@ -442,7 +443,7 @@ MapEditorInterface.prototype.onImmediate = function(gameContext, display) {
         this.editor.resetBrush();
     }
 
-    if(cursor.isButtonHeld(Cursor.BUTTON.RIGHT)) {
+    if(cursor.isButtonHeld(MOUSE_BUTTON.RIGHT)) {
         const { x, y } = getCursorTile(gameContext);
 
         if(this.lastUseX !== -1 && this.lastUseY !== -1) {

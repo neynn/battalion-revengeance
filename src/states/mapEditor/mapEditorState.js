@@ -8,6 +8,7 @@ import { BattalionMap } from "../../map/battalionMap.js";
 import { EditRenderer2D } from "../../camera/editRenderer2D.js";
 import { TILE_HEIGHT, TILE_WIDTH } from "../../../engine/engine_constants.js";
 import { Cursor } from "../../../engine/client/cursor/cursor.js";
+import { MOUSE_BUTTON } from "../../../engine/client/input_constants.js";
 
 const createEditContext = function(gameContext, renderer) {
     const { contextManager } = gameContext;
@@ -17,7 +18,7 @@ const createEditContext = function(gameContext, renderer) {
     context.camera.freeViewport();
     context.camera.setTileSize(TILE_WIDTH, TILE_HEIGHT);
     
-    context.setDragButton(Cursor.BUTTON.LEFT);
+    context.setDragButton(MOUSE_BUTTON.LEFT);
     context.enableBuffer();
     context.forceReload();
     context.camera.reloadViewport();

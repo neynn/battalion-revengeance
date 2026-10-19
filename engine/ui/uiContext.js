@@ -1,5 +1,5 @@
-import { Cursor } from "../client/cursor/cursor.js";
 import { MouseButton } from "../client/cursor/mouseButton.js";
+import { MOUSE_BUTTON } from "../client/input_constants.js";
 import { Graph } from "../graphics/graph.js";
 import { UIElement } from "./uiElement.js";
 
@@ -50,7 +50,7 @@ UIContext.prototype.doIcon = function(gameContext, widgetID, x, y, w, h) {
 UIContext.prototype.doButton = function(gameContext, widgetID, x, y, w, h) {
     const { client } = gameContext;
     const { cursor } = client;
-    const lmbFlags = cursor.getFlags(Cursor.BUTTON.LEFT);
+    const lmbFlags = cursor.getFlags(MOUSE_BUTTON.LEFT);
     const isHovered = cursor.collidesRect(x, y, w, h);
     let flags = IM_FLAG.NONE;
 
