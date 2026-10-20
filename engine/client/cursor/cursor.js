@@ -81,6 +81,14 @@ Cursor.prototype.collidesRect = function(screenX, screenY, width, height) {
     );
 }
 
+Cursor.prototype.isButtonClicked = function(buttonID) {
+    if(buttonID < 0 || buttonID >= MOUSE_BUTTON._COUNT) {
+        return false;
+    }
+
+    return this.buttons[buttonID].clicks > 0;
+}
+
 Cursor.prototype.isButtonPressed = function(buttonID) {
     if(buttonID < 0 || buttonID >= MOUSE_BUTTON._COUNT) {
         return false;

@@ -36,7 +36,8 @@ export const Camera2D = function() {
 
 Camera2D.VIEWPORT_TYPE = {
     FREE: 0,
-    BOUND: 1
+    BOUND: 1,
+    _COUNT: 2
 };
 
 Camera2D.VIEWPORT_MODE = {
@@ -61,48 +62,90 @@ Camera2D.prototype.getScreenY = function(tileY) {
     return (tileY - this.tileY) * this.tileHeight - this.fOffsetY;
 }
 
+Camera2D.prototype.applyOffset = function() {
+    if(this.viewportMode === Camera2D.VIEWPORT_MODE.FIXED) {
+        this.offsetX = 0;
+        this.offsetY = 0;
+    } else {
+        while(this.offsetX < 0) {
+            this.offsetX += this.tileWidth;
+            this.tileX--;
+        }
+        
+        while(this.offsetX >= this.tileWidth) {
+            this.offsetX -= this.tileWidth;
+            this.tileX++;
+        }
+        
+        while(this.offsetY < 0) {
+            this.offsetY += this.tileHeight;
+            this.tileY--;
+        } 
+        
+        while(this.offsetY >= this.tileHeight) {
+            this.offsetY -= this.tileHeight;
+            this.tileY++;
+        }
+
+        this.applyBounds();
+    }
+}
+
 Camera2D.prototype.applyBounds = function() {
     if(this.viewportType === Camera2D.VIEWPORT_TYPE.BOUND) {
-        const visibleTilesX = Math.floor(this.wViewportWidth / this.tileWidth);
-        const visibleTilesY = Math.floor(this.wViewportHeight / this.tileHeight);
+        const visibleTilesX = this.wViewportWidth / this.tileWidth;
+        const visibleTilesY = this.wViewportHeight / this.tileHeight;
 
+        //+1 handles a partially visible tile.
+        const fVisibleTilesX = Math.floor(visibleTilesX) + 1;
+        const fVisibleTilesY = Math.floor(visibleTilesY) + 1;
+        
         let xLimit = 0;
         let yLimit = 0;
 
-        if(this.mapWidth > visibleTilesX) {
-            xLimit = this.mapWidth - visibleTilesX;
+        //if handles the minimum valid offset.
+        if(this.mapWidth >= fVisibleTilesX) {
+            xLimit = this.mapWidth - fVisibleTilesX;
         }
 
-        if(this.mapHeight > visibleTilesY) {
-            yLimit = this.mapHeight - visibleTilesY;
+        if(this.mapHeight >= fVisibleTilesY) {
+            yLimit = this.mapHeight - fVisibleTilesY;
         }
 
         if(this.tileX < 0) {
             this.tileX = 0;
+            this.offsetX = 0;
         } else if(this.tileX >= xLimit) {
+            const deltaX = fVisibleTilesX - visibleTilesX;
+            const offsetXLimit = deltaX * this.tileWidth;
+
+            if((this.tileX - xLimit > 0) || this.offsetX > offsetXLimit) {
+                this.offsetX = offsetXLimit;
+            }
+
             this.tileX = xLimit;
+
+            if(xLimit === 0 && this.offsetX > 0) {
+                this.offsetX = 0;
+            }
         }
-    
+        
         if(this.tileY < 0) {
             this.tileY = 0;
+            this.offsetY = 0;
         } else if(this.tileY >= yLimit) {
-            this.tileY = yLimit;
-        }
+            const deltaY = fVisibleTilesY - visibleTilesY;
+            const offsetYLimit = deltaY * this.tileHeight;
 
-        if(this.tileX === xLimit && this.offsetX > 0) {
-            this.offsetX = 0;
-        } 
+            if((this.tileY - yLimit > 0) || this.offsetY > offsetYLimit) {
+                this.offsetY = offsetYLimit;
+            }
 
-        if(this.tileY === yLimit && this.offsetY > 0) {
-            this.offsetY = 0;
-        }
+            this.tileY = yLimit; 
 
-        if(this.tileX === 0 && this.offsetX < 0) {
-            this.offsetX = 0;
-        }
-
-        if(this.tileY === 0 && this.offsetY < 0) {
-            this.offsetY = 0;
+            if(yLimit === 0 && this.offsetY > 0) {
+                this.offsetY = 0;
+            }
         }
     }
 
@@ -143,35 +186,6 @@ Camera2D.prototype.setViewportSize = function(width, height) {
     this.viewportWidth = width;
     this.viewportHeight = height;
     this.reloadViewport();
-}
-
-Camera2D.prototype.applyOffset = function() {
-    if(this.viewportMode === Camera2D.VIEWPORT_MODE.FIXED) {
-        this.offsetX = 0;
-        this.offsetY = 0;
-    } else {
-        while(this.offsetX <= -this.tileWidth) {
-            this.offsetX += this.tileWidth;
-            this.tileX--;
-        }
-        
-        while(this.offsetX >= this.tileWidth) {
-            this.offsetX -= this.tileWidth;
-            this.tileX++;
-        }
-        
-        while(this.offsetY <= -this.tileHeight) {
-            this.offsetY += this.tileHeight;
-            this.tileY--;
-        } 
-        
-        while(this.offsetY >= this.tileHeight) {
-            this.offsetY -= this.tileHeight;
-            this.tileY++;
-        }
-
-        this.applyBounds();
-    }
 }
 
 Camera2D.prototype.dragViewport = function(deltaX, deltaY) {

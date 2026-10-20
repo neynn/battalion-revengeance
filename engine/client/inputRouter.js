@@ -73,7 +73,7 @@ InputRouter.prototype.updateTriggers = function(keyboard, cursor) {
                         break;
                     }
                     case InputBind.TYPE.BUTTON: {
-                        if(cursor.isButtonReleased(keyID)) {
+                        if(cursor.isButtonClicked(keyID)) {
                             this.triggerCommand(commandID);
                         }
                         break;

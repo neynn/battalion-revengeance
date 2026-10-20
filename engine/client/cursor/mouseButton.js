@@ -4,6 +4,7 @@ export const MouseButton = function() {
     this.downStartTime = 0;
     this.downImpulses = 0;
     this.upImpulses = 0;
+    this.clicks = 0;
 }
 
 MouseButton.FLAG = {
@@ -35,6 +36,11 @@ MouseButton.prototype.update = function() {
         if(clicks === 0 && !(this.flags & MouseButton.FLAG.DRAG)) {
             clicks = 1;
         }
+
+        //Disable clicking after dragging.
+        if(this.flags & MouseButton.FLAG.DRAG) {
+            clicks = 0;
+        }
     }
 
     if(this.downImpulses > this.upImpulses) {
@@ -54,6 +60,8 @@ MouseButton.prototype.update = function() {
     if(this.downImpulses < 0) {
         this.downImpulses = 0;
     }
+
+    this.clicks = clicks;
 
     return clicks;
 }
