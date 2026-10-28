@@ -6,6 +6,7 @@ import { ACTION_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
 import { createEntitySnapshot } from "../../snapshot/entitySnapshot.js";
 import { isDirectionValid } from "../../systems/direction.js";
 import { canEntityTypeStandOnTile } from "../../systems/pathfinder.js";
+import { getEntityCost } from "../../systems/shop.js";
 import { createClientEntityObject, createServerEntityObject } from "../../systems/spawn.js";
 import { MineTriggerVTable } from "./mineTrigger.js";
 import { UncloakVTable } from "./uncloak.js";
@@ -49,13 +50,19 @@ const fillProducePlan = function(gameContext, executionPlan, actionIntent) {
     if(world.getEntityAt(tileX, tileY) !== null) {
         return;
     }
-    
-    const { health, cost } = typeRegistry.getEntityType(typeID);
-    const team = entity.getTeam(gameContext);
-    const adjustedCost = team.getRegularCost(gameContext, cost);
 
-    //Entities purchase produced units, not the team.
-    if(!entity.canPurchase(gameContext, typeID, adjustedCost)) {
+    const shopType = typeRegistry.getShopType(entity.shop);
+
+    //Entity cannot be bought if it's not in the shop.
+    if(!shopType.hasEntity(typeID)) {
+        return;
+    }
+
+    const team = entity.getTeam(gameContext);
+    const totalCost = getEntityCost(gameContext, typeID, team.currency);
+
+    //Entity cannot be bought if cash does not suffice.
+    if(entity.cash < totalCost) {
         return;
     }
 
@@ -65,12 +72,12 @@ const fillProducePlan = function(gameContext, executionPlan, actionIntent) {
 
     data.entityID = entityID;
     data.nextID = nextID;
-    data.cost = adjustedCost;
+    data.cost = totalCost;
     data.snapshot.tileX = tileX;
     data.snapshot.tileY = tileY;
     data.snapshot.type = typeID;
-    data.snapshot.health = health;
-    data.snapshot.teamID = team.getID();
+    data.snapshot.health = typeRegistry.getEntityType(typeID).health; //TODO: Odd.
+    data.snapshot.teamID = entity.teamID; //Take the creator's team.
 
     executionPlan.addNext(MineTriggerVTable.createIntent(nextID));
     executionPlan.addNext(UncloakVTable.createIntent(nextID));

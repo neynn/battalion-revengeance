@@ -22,17 +22,19 @@ import { UNIT_MAX_ACTIONS_PER_TURN, UNIT_MAX_MOVES_PER_TURN, UNIT_MAX_MORALE_DEL
 export const BattalionEntity = function(id, config) {
     Entity.call(this, id);
 
-    this.config = config;
+    this.tileX = -1;
+    this.tileY = -1;
+    this.tileZ = -1;
+    
     this.customID = ScenarioModel.INVALID_CUSTOM_ID;
     this.customName = LanguageHandler.INVALID_ID;
     this.customDesc = LanguageHandler.INVALID_ID;
+
+    this.config = config;
     this.health = 1;
     this.maxHealth = 1;
     this.moraleType = MORALE_TYPE.NORMAL;
     this.moraleDelta = 0;
-    this.tileX = -1;
-    this.tileY = -1;
-    this.tileZ = -1;
     this.direction = DIRECTION.EAST;
     this.state = BattalionEntity.STATE.IDLE;
     this.teamID = TeamManager.INVALID_ID;
@@ -149,21 +151,6 @@ BattalionEntity.prototype.loadConfig = function(gameContext, config) {
     this.health = health;
     this.maxHealth = health;
     this.setHealth(this.health);
-}
-
-/**
- * 
- * @param {*} gameContext 
- * @returns {ShopType}
- */
-BattalionEntity.prototype.getShop = function(gameContext) {
-    const { typeRegistry } = gameContext;
-
-    if(this.shop !== SHOP_TYPE.NONE) {
-        return typeRegistry.getShopType(this.shop);
-    }
-
-    return typeRegistry.getShopType(this.config.shop);
 }
 
 BattalionEntity.prototype.getDamage = function(gameContext) {
@@ -1124,17 +1111,6 @@ BattalionEntity.prototype.setPurchased = function() {
     this.syncRenderFlags();
 }
 
-BattalionEntity.prototype.canPurchase = function(gameContext, typeID, cost) {
-    if(cost > this.cash) {
-        return false;
-    }
-
-    const shopType = this.getShop(gameContext);
-    const hasEntity = shopType.hasEntity(typeID);
-
-    return hasEntity;
-}
-
 BattalionEntity.prototype.reduceCash = function(cash) {
     this.cash -= cash;
 }
@@ -1150,7 +1126,7 @@ BattalionEntity.prototype.canPlaceMine = function(gameContext) {
     }
 
     //TODO: Cost needs inflation adjustment
-    const { mine } = this.getShop(gameContext);
+    const { mine } = typeRegistry.getShopType(this.shop);
     const { cost, category } = typeRegistry.getMineType(mine);
 
     if(this.cash < cost) {

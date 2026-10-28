@@ -106,6 +106,8 @@ CameraContext.prototype.setPosition = function(x, y) {
 CameraContext.prototype.centerCameraOnScreen = function() {
     const { scale, mapWidth, mapHeight, tileWidth, tileHeight, sViewportWidth, sViewportHeight } = this.camera;
     const { width, height } = this.display;
+
+    //TODO(neyn): This can get out of hand with large maps.
     const sWorldWidth = mapWidth * tileWidth * scale;
     const sWorldHeight = mapHeight * tileHeight * scale;
 
@@ -224,8 +226,6 @@ CameraContext.prototype.draw = function(gameContext, display) {
 
     if(this.flags & CameraContext.FLAG.USE_BUFFER) {
         const { sViewportWidth, sViewportHeight } = this.camera;
-        const scaledWidth = Math.floor(sViewportWidth);
-        const scaledHeight = Math.floor(sViewportHeight);
 
         if(this.flags & CameraContext.FLAG.FIX_BUFFER) {
             const { width, height } = this.display;
@@ -238,7 +238,7 @@ CameraContext.prototype.draw = function(gameContext, display) {
 
         this.display.clear();
         this.renderer.render(gameContext, this.camera, this.display);
-        this.display.copyTo(display, scaledWidth, scaledHeight);
+        this.display.copyTo(display, sViewportWidth, sViewportHeight);
     } else {
         this.renderer.render(gameContext, this.camera, display);
     }

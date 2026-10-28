@@ -1,0 +1,16 @@
+Entity:
+    An entity can have the following tags:
+        1. id => This is a string and represents the scriptable id of the entity.
+        2. name => This is a string and represents the custom name of the entity.
+        3. desc => This is a string and represents the custom description of the entity.
+        4. team => This is a string and represents a reference to the entities team.
+        5. cargo => This is a string and represents what the entity carries with itself.
+        6. direction => This is a string and represents which direction the entity is facing.
+        7. type => This is a string and represents the type of the entity.
+        8. shop => This is a string and represents the custom shop of the entity.
+        9. health => This is a number and represents a custom health value for the entity.
+        10. x => This is a number and represents the starting position on the x-axis.
+        11. y => This is a number and represents the starting position on the y-axis.
+        12. cash => This is a number and represents how much starting cash the entity holds.
+        13. disableShop => This is a boolean and represents if an entity should not have a shop.
+        14. stealth => This is a boolean and represents if an entity should start in stealth mode.

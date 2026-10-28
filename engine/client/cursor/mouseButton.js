@@ -33,7 +33,7 @@ MouseButton.prototype.update = function() {
     if(this.upImpulses > 0) {
         this.flags |= MouseButton.FLAG.UP;
 
-        if(clicks === 0 && !(this.flags & MouseButton.FLAG.DRAG)) {
+        if(clicks === 0) {
             clicks = 1;
         }
 

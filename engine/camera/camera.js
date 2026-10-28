@@ -61,10 +61,10 @@ Camera.prototype.freeViewport = function() {
 }
 
 Camera.prototype.reloadViewport = function() {
-    this.wViewportWidth = this.viewportWidth / this.scale;
-    this.wViewportHeight = this.viewportHeight / this.scale;
-    this.sViewportWidth = this.viewportWidth * this.scale;
-    this.sViewportHeight = this.viewportHeight * this.scale;
+    this.wViewportWidth = Math.floor(this.viewportWidth / this.scale);
+    this.wViewportHeight = Math.floor(this.viewportHeight / this.scale);
+    this.sViewportWidth = Math.floor(this.viewportWidth * this.scale);
+    this.sViewportHeight = Math.floor(this.viewportHeight * this.scale);
 
     if(this.worldWidth <= this.wViewportWidth) {
         this.viewportX_limit = 0;

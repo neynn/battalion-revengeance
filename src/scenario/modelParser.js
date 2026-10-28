@@ -97,6 +97,7 @@ ScenarioModelParser.prototype.createEntitySnapshotFromJSON = function(gameContex
         direction = null,
         cargo = null,
         stealth = false,
+        disableShop = false,
         health = -1,
         x = -1,
         y = -1,
@@ -114,12 +115,22 @@ ScenarioModelParser.prototype.createEntitySnapshotFromJSON = function(gameContex
     snapshot.teamID = this.getTeamID(team);
     snapshot.transport = ENTITY_TYPE[cargo] ?? ENTITY_TYPE._INVALID;
     snapshot.direction = DIRECTION[direction] ?? DIRECTION.EAST;
-    snapshot.shop = SHOP_TYPE[shop] ?? SHOP_TYPE.NONE;
     snapshot.type = typeID;
     snapshot.health = entityType.health;
     snapshot.tileX = x;
     snapshot.tileY = y;
     snapshot.cash = cash;
+    
+    if(!disableShop) {
+        //If no shop or an invalid one is given, then use the default shop.
+        const shopType = SHOP_TYPE[shop] ?? SHOP_TYPE.NONE;
+
+        if(shopType !== SHOP_TYPE.NONE) {
+            snapshot.shop = shopType;
+        } else {
+            snapshot.shop = entityType.shop;
+        }
+    }
 
     if(health > 0) {
         snapshot.health = health;
