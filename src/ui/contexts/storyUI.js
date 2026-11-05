@@ -10,6 +10,7 @@ import { INTERRUPT_TYPE } from "../../enums.js";
 import { InterruptVTable } from "../../action/types/interrupt.js";
 import { loadSavedScenario } from "../../systems/save.js";
 import { drawTexture, drawTextureQuad, drawTextureRegion } from "../../../engine/renderer/textureHelpers.js";
+import { Texture } from "../../../engine/resources/texture/texture.js";
 
 const DO_SAVED = false;
 const DATA = {};
@@ -33,13 +34,13 @@ export const StoryUI = function() {
     this.style.font = "16px Times New Roman";
     this.style.setAlignment(TextStyle.ALIGN.MIDDLE);
 
-    this.difficultyRect = new TextureRegion(0, 0, 0, 0);
-    this.difficultyEasyRect = new TextureRegion(0, 0, 0, 0);
-    this.difficultyMediumRect = new TextureRegion(0, 0, 0, 0);
-    this.difficultyHardRect = new TextureRegion(0, 0, 0, 0);
-    this.hotseatRect = new TextureRegion(0, 0, 0, 0);
-    this.titleRect = new TextureRegion(0, 0, 0, 0);
-    this.specificationRect = new TextureRegion(0, 0, 0, 0);
+    this.difficultyRect = Texture.EMPTY_REGION;
+    this.difficultyEasyRect = Texture.EMPTY_REGION;
+    this.difficultyMediumRect = Texture.EMPTY_REGION;
+    this.difficultyHardRect = Texture.EMPTY_REGION;
+    this.hotseatRect = Texture.EMPTY_REGION;
+    this.titleRect = Texture.EMPTY_REGION;
+    this.specificationRect = Texture.EMPTY_REGION;
 }
 
 StoryUI.prototype = Object.create(UIContext.prototype);
@@ -49,13 +50,13 @@ StoryUI.prototype.load = function(gameContext) {
     const { uiData, uiManager } = gameContext;
     const panelTexture = uiData.getTexture(UI_TEXTURE.STORY_PANELS);
 
-    this.difficultyRect.copy(panelTexture.getRegionByName("difficulty"));
-    this.hotseatRect.copy(panelTexture.getRegionByName("hotseat"));
-    this.titleRect.copy(panelTexture.getRegionByName("title"));
-    this.specificationRect.copy(panelTexture.getRegionByName("specification"));
-    this.difficultyEasyRect.copy(panelTexture.getRegionByName("difficulty_easy"));
-    this.difficultyMediumRect.copy(panelTexture.getRegionByName("difficulty_medium"));
-    this.difficultyHardRect.copy(panelTexture.getRegionByName("difficulty_hard"));
+    this.difficultyRect = panelTexture.getRegionByNameWithFallback("difficulty");
+    this.hotseatRect = panelTexture.getRegionByNameWithFallback("hotseat");
+    this.titleRect = panelTexture.getRegionByNameWithFallback("title");
+    this.specificationRect = panelTexture.getRegionByNameWithFallback("specification");
+    this.difficultyEasyRect = panelTexture.getRegionByNameWithFallback("difficulty_easy");
+    this.difficultyMediumRect = panelTexture.getRegionByNameWithFallback("difficulty_medium");
+    this.difficultyHardRect = panelTexture.getRegionByNameWithFallback("difficulty_hard");
 
     uiData.loadStoryTextures();
     uiManager.addContext(this);

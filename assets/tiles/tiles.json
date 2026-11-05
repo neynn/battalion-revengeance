@@ -74,6 +74,12 @@
             "rows": 12,
             "columns": 16
         },
+        "autoAnimations": {
+            "frameTime": 0.25,
+            "start": 0,
+            "width": 4,
+            "repeat": 48
+        },
         "animations": {
             "ANIMATION_0": {"frameTime":0.25,"frames":["0","1","2","3"]},
             "ANIMATION_1": {"frameTime":0.25,"frames":["4","5","6","7"]},

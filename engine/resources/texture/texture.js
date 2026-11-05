@@ -22,8 +22,10 @@ Texture.prototype.getID = function() {
     return this.id;
 }
 
-Texture.prototype.getRegion = function(index) {
-    if(index < 0 || index >= this.regions.length) {
+Texture.prototype.getRegionByNameWithFallback = function(name) {
+    const index = this.regionMap.get(name);
+
+    if(index === undefined) {
         return Texture.EMPTY_REGION;
     }
 
@@ -101,7 +103,8 @@ Texture.prototype.initGrid = function(grid, gridWidth, gridHeight) {
         let regionHeight = gridHeight;
         let offsetY = 0;
 
-        //Custom height. Move one cell down and subtract the height. 
+        //Custom height. Move one cell down and subtract the height.
+        //This taked the bottom of the element as its root.
         if(h !== 0) {
             regionY += gridHeight - h;
             regionHeight = h;
@@ -120,7 +123,7 @@ Texture.prototype.initGrid = function(grid, gridWidth, gridHeight) {
     }
 }
 
-Texture.prototype.initRegions = function(regions, gridWidth, gridHeight) {
+Texture.prototype.initRegions = function(regions) {
     for(const regionID in regions) {
         if(!this.regionMap.has(regionID)) {
             const { x = 0, y = 0, w = 0, h = 0 } = regions[regionID];

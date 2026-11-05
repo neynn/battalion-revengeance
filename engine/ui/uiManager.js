@@ -1,24 +1,12 @@
-import { TextureRegistry } from "../resources/texture/textureRegistry.js";
-
 export const UIManager = function() {
     this.layouts = {};
     this.contexts = [];
     this.debug = false;
 }
 
-/**
- * 
- * @param {TextureRegistry} textureRegistry 
- * @param {*} layouts 
- * @param {*} textures 
- */
-UIManager.prototype.load = function(textureRegistry, layouts, textures) {
+UIManager.prototype.load = function(layouts) {
     if(layouts) {
         this.layouts = layouts;
-    }
-
-    if(textures) {
-        textureRegistry.createTextures(textures);
     }
 }
 

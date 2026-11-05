@@ -1,10 +1,10 @@
 import { TILE_MAX_FRAMES, TILE_FRAME_SIZE, TILE_WRITE_PTR_MAX } from "../engine_constants.js";
 import { Texture } from "../resources/texture/texture.js";
 
-export const TileVisual = function(id) {
+export const TileAnimation = function(id) {
     this.id = id;
     this.image = Texture.EMPTY_IMAGE;
-    this.frameTime = TileVisual.DEFAULT.FRAME_TIME;
+    this.frameTime = TileAnimation.DEFAULT.FRAME_TIME;
     this.framePtr = 0;
     this.frameCount = 0;
     this.frameTimeTotal = 1;
@@ -12,19 +12,19 @@ export const TileVisual = function(id) {
     this.jumpTable = new Uint8Array(TILE_MAX_FRAMES);
 }
 
-TileVisual.DEFAULT = {
+TileAnimation.DEFAULT = {
     FRAME_TIME: 1
 };
 
-TileVisual.prototype.setImage = function(image) {
+TileAnimation.prototype.setImage = function(image) {
     this.image = image;
 }
 
-TileVisual.prototype.reset = function() {
+TileAnimation.prototype.reset = function() {
     this.framePtr = 0;
 }
 
-TileVisual.prototype.update = function(timestamp) {
+TileAnimation.prototype.update = function(timestamp) {
     const currentFrameTime = timestamp % this.frameTimeTotal;
     const frameIndex = Math.floor(currentFrameTime / this.frameTime);
     const framePtr = this.jumpTable[frameIndex] * TILE_FRAME_SIZE;
@@ -32,7 +32,7 @@ TileVisual.prototype.update = function(timestamp) {
     this.framePtr = framePtr;
 }
 
-TileVisual.prototype.setFrameTime = function(frameTime) {
+TileAnimation.prototype.setFrameTime = function(frameTime) {
     if(frameTime && frameTime > 0) {
         const frameTimeTotal = frameTime * this.frameCount;
 
@@ -57,7 +57,7 @@ TileVisual.prototype.setFrameTime = function(frameTime) {
  * @param {number} oy 
  * @returns {number}
  */
-TileVisual.prototype.pushElement = function(fp, x, y, w, h, ox, oy) {
+TileAnimation.prototype.pushElement = function(fp, x, y, w, h, ox, oy) {
     const element_count = this.frameData[fp];
     const begin_write_ptr = fp + element_count * TILE_FRAME_SIZE;
     let next_frame_ptr = fp;
@@ -80,7 +80,7 @@ TileVisual.prototype.pushElement = function(fp, x, y, w, h, ox, oy) {
     return next_frame_ptr;
 }
 
-TileVisual.prototype.createFrame = function(fp, region) {
+TileAnimation.prototype.createFrame = function(fp, region) {
     const { x, y, w, h, offsetX, offsetY } = region;
     const next_frame_ptr = this.pushElement(
         fp, 
@@ -95,7 +95,7 @@ TileVisual.prototype.createFrame = function(fp, region) {
     return next_frame_ptr;
 }
 
-TileVisual.prototype.createPattern = function(fp, texture, pattern) {
+TileAnimation.prototype.createPattern = function(fp, texture, pattern) {
     let next_frame_ptr = fp;
 
     for(const { id, shiftX = 0, shiftY = 0 } of pattern) {
@@ -113,7 +113,7 @@ TileVisual.prototype.createPattern = function(fp, texture, pattern) {
     return next_frame_ptr;
 }
 
-TileVisual.prototype.generate = function(texture, config, regionID) {
+TileAnimation.prototype.generate = function(texture, config, regionID) {
     const { patterns = {}, animations = {} } = config;
     const frameData = texture.getRegionByName(regionID);
     const patternData = patterns[regionID];
@@ -123,13 +123,13 @@ TileVisual.prototype.generate = function(texture, config, regionID) {
     if(frameData) {
         this.createFrame(fp, frameData);
         this.frameCount++;
-        this.setFrameTime(TileVisual.DEFAULT.FRAME_TIME);
+        this.setFrameTime(TileAnimation.DEFAULT.FRAME_TIME);
     } else if(patternData) {
         this.createPattern(fp, texture, patternData);
         this.frameCount++;
-        this.setFrameTime(TileVisual.DEFAULT.FRAME_TIME);
+        this.setFrameTime(TileAnimation.DEFAULT.FRAME_TIME);
     } else if(animationData) {
-        const frameTime = animationData.frameTime ?? TileVisual.DEFAULT.FRAME_TIME;
+        const frameTime = animationData.frameTime ?? TileAnimation.DEFAULT.FRAME_TIME;
         const animationFrames = animationData.frames ?? [];
 
         for(const frameID of animationFrames) {

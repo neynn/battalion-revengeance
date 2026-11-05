@@ -53,12 +53,10 @@ SpriteManager.prototype.getDefinition = function(definitionID) {
     return this.definitions[definitionID];
 }
 
-SpriteManager.prototype.load = function(textures, sprites) {
-    if(!textures || !sprites) {
+SpriteManager.prototype.load = function(sprites) {
+    if(!sprites) {
         return;
     }
-    
-    this.registry.createTextures(textures);
 
     for(const spriteID in sprites) {
         const spriteConfig = sprites[spriteID];

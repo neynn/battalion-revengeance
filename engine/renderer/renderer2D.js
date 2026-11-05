@@ -85,7 +85,7 @@ Renderer2D.prototype.drawTileScaled = function(tileManager, tileID, context, scr
     }
 }
 
-Renderer2D.prototype.drawTileVisual = function(visual, context, screenX, screenY) {
+Renderer2D.prototype.drawTileAnimation = function(visual, context, screenX, screenY) {
     const { image, frameData, framePtr } = visual;
     const { state, bitmap } = image;
 
@@ -116,7 +116,7 @@ Renderer2D.prototype.drawTileVisual = function(visual, context, screenX, screenY
 }
 
 Renderer2D.prototype.drawTile = function(tileManager, tileID, context, screenX, screenY) {
-    this.drawTileVisual(tileManager.getVisual(tileID), context, screenX, screenY)
+    this.drawTileAnimation(tileManager.getVisual(tileID), context, screenX, screenY)
 }
 
 Renderer2D.prototype.drawTileClipped = function(camera, tileManager, tileID, context, tileX, tileY) {

@@ -120,31 +120,31 @@ TextureRegistry.prototype.getTextureID = function(name) {
  */
 TextureRegistry.prototype.createTextures = function(textures) {
     for(const textureName in textures) {
+        if(this.textureNames.has(textureName)) {
+            console.warn(`Texture ${textureName} is already registered!`);
+            continue;
+        }
+        
+        const textureID = this.textures.length;
         const { directory, source, grid, autoGrid, regions, gridWidth = 0, gridHeight = 0 } = textures[textureName];
         const fileName = source ? source : `${textureName}${DEFAULT_IMAGE_TYPE}`;
         const filePath = PathHandler.getPath(directory, fileName);
-        const textureID = this.textures.length;
         const texture = new Texture(textureID, textureName, filePath);
-
+        
         if(grid) {
             texture.initGrid(grid, gridWidth, gridHeight);
         } else if(autoGrid) {
             const { startX = 0, startY = 0, rows = 0, columns = 0, first = 1 } = autoGrid;
-
+            
             texture.autoGrid(startX, startY, rows, columns, first, gridWidth, gridHeight);
         }
         
         if(regions) {
-            texture.initRegions(regions, gridWidth, gridHeight);
+            texture.initRegions(regions);
         }
-
+        
         this.textures.push(texture);
-
-        if(this.textureNames.has(textureName)) {
-            console.warn(`Texture ${textureName} is already registered!`);
-        } else {
-            this.textureNames.set(textureName, textureID);
-        }
+        this.textureNames.set(textureName, textureID);
     }
 }
 

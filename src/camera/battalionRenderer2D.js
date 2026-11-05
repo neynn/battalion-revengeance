@@ -552,7 +552,7 @@ BattalionRenderer2D.prototype.drawMines = function(gameContext, camera, display,
     for(let i = 0; i < length; i++) {
         const mine = mines[i];
         const { tileX, tileY, flags, opacity, config } = mine;
-        const tileID = config.tileVisual;
+        const tileID = config.tileAnimation;
         let alpha = 1;
         let isDrawable = true;
 

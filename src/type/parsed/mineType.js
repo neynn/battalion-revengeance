@@ -25,7 +25,7 @@ export const MineType = function(id) {
     this.damage = [];
     this.category = MINE_CATEGORY._INVALID;
     this.nullifierTrait = TRAIT_TYPE._INVALID;
-    this.tileVisual = getVisual(this.id);
+    this.tileAnimation = getVisual(this.id);
 
     for(let i = 0; i < MOVEMENT_TYPE._COUNT; i++) {
         this.damage[i] = 0;

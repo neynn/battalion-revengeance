@@ -45,11 +45,15 @@ BattalionContext.prototype.init = function(resources) {
     loadTiles(this);
     loadVisualTiles(this);
 
+    this.textureRegistry.createTextures(resources.spriteTextures);
+    this.textureRegistry.createTextures(resources.gui);
+    this.textureRegistry.createTextures(resources.tiles);
+
     this.tileManager.createVisuals(this.textureRegistry, resources.tiles);
     this.tileManager.enableAllVisuals();
 
-    this.spriteManager.load(resources.spriteTextures, resources.sprites);
-    this.uiManager.load(this.textureRegistry, resources.layouts, resources.gui);
+    this.spriteManager.load(resources.sprites);
+    this.uiManager.load(resources.layouts);
     this.fonts.load(resources.fonts);
     this.client.musicPlayer.load(resources.music, resources.playlists);
     this.client.soundPlayer.load(resources.sounds);

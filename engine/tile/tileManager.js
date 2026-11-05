@@ -1,4 +1,4 @@
-import { TileVisual } from "./visual.js";
+import { TileAnimation } from "./tileAnimation.js";
 import { Autotiler } from "./autotiler.js";
 import { TextureRegistry } from "../resources/texture/textureRegistry.js";
 import { MAX_TILES } from "../engine_constants.js";
@@ -12,7 +12,7 @@ export const TileManager = function() {
     this.autotilerTable = new Int16Array(MAX_TILES);
     
     this.visualCount = 1;
-    this.visuals = [new TileVisual(0)];
+    this.visuals = [new TileAnimation(0)];
     this.activeVisuals = [];
     this.visualTableMap = new Map();
 
@@ -177,10 +177,8 @@ TileManager.prototype.registerVisualsAuto = function(tileID, texture, prefix, co
  */
 TileManager.prototype.createVisuals = function(textureRegistry, tileAtlases) {
     for(let visualID = 1; visualID < this.visualCount; visualID++) {
-        this.visuals[visualID] = new TileVisual(visualID);
+        this.visuals[visualID] = new TileAnimation(visualID);
     }
-
-    textureRegistry.createTextures(tileAtlases);
 
     for(const [visualID, index] of this.visualTableMap) {
         const [texture, regionID] = visualID.split(VISUAL_IDENTIFIER);
