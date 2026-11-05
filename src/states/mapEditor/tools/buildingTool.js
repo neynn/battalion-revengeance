@@ -14,10 +14,10 @@ export const BuildingTool = function() {
     this.currentFaction = FACTION_TYPE._INVALID;
 }
 
-BuildingTool.prototype.createProxiesFromData = function(data) {
+BuildingTool.prototype.createProxiesFromSnapshot = function(snapshot) {
     const proxy = new BuildingProxy();
 
-    proxy.fromJSON(data);
+    proxy.fromSnapshot(snapshot);
 
     this.buildingProxies.push(proxy);
 }

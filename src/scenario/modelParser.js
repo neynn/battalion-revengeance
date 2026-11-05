@@ -3,7 +3,8 @@ import { WorldMap } from "../../engine/map/worldMap.js";
 import { WorldEvent } from "../../engine/world/event/worldEvent.js";
 import { MAX_TEAMS } from "../constants.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
-import { COMMANDER_TYPE, COMPONENT_TYPE, DIRECTION, ENTITY_TYPE, FACTION_TYPE, MINE_TYPE, OBJECTIVE_TYPE, SHOP_TYPE, TRAIT_TYPE } from "../enums.js";
+import { BUILDING_TYPE, CLIMATE_TYPE, COMMANDER_TYPE, COMPONENT_TYPE, DIRECTION, ENTITY_TYPE, FACTION_TYPE, JAMMER_FLAG, MINE_TYPE, OBJECTIVE_TYPE, SHOP_TYPE, TRAIT_TYPE } from "../enums.js";
+import { createBuildingSnapshot } from "../snapshot/buildingSnapshot.js";
 import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 import { TeamManager } from "../team/teamManager.js";
 import { ScenarioModel } from "./scenarioModel.js";
@@ -154,12 +155,11 @@ ScenarioModelParser.prototype.createEntitySnapshotFromJSON = function(gameContex
  */
 ScenarioModelParser.prototype.parseModelFromJSON = function(gameContext, model, json) {
     const {
-        map = null,
         client = null,
         teams = [],
         entities = [],
         mines = [],
-        buildingSettings = [],
+        buildings = [],
         prelogue = [],
         postlogue = [],
         defeat = [],
@@ -168,13 +168,20 @@ ScenarioModelParser.prototype.parseModelFromJSON = function(gameContext, model, 
         alliances = [],
         objectives = {},
         text = [],
-        maxPlayers = 0
+        maxPlayers = 0,
+        width = 0,
+        height = 0,
+        data = [],
+        climate = null
     } = json;
 
     const resolvedEvents = new Map();
 
-    model.mapID = map;
+    model.mapWidth = width;
+    model.mapHeight = height;
+    model.mapData = data;
     model.maxPlayers = maxPlayers;
+    model.climate = CLIMATE_TYPE[climate] ?? CLIMATE_TYPE.TEMPERATE;
 
     for(let i = 0; i < text.length; i++) {
         const { id, translations } = text[i];
@@ -242,8 +249,8 @@ ScenarioModelParser.prototype.parseModelFromJSON = function(gameContext, model, 
             model.alliances.push(mAlliance);
         }
     }
-
-    for(let i = 0; i < buildingSettings.length; i++) {
+ 
+    for(let i = 0; i < buildings.length; i++) {
         const {
             id = null,
             name = null,
@@ -251,18 +258,21 @@ ScenarioModelParser.prototype.parseModelFromJSON = function(gameContext, model, 
             x = -1,
             y = -1,
             team = null,
-            shop = null
-        } = buildingSettings[i];
+            shop = null,
+            type = null
+        } = buildings[i];
+        const snapshot = createBuildingSnapshot();
 
-        model.buildingSettings.push({
-            "x": x,
-            "y": y,
-            "shop": SHOP_TYPE[shop] ?? SHOP_TYPE.NONE,
-            "team": this.getTeamID(team),
-            "customID": this.getAndSetCustomID(id),
-            "customName": this.getTextID(name),
-            "customDesc": this.getTextID(desc)
-        });
+        snapshot.tileX = x;
+        snapshot.tileY = y;
+        snapshot.id = this.getAndSetCustomID(id);
+        snapshot.name = this.getTextID(name);
+        snapshot.desc = this.getTextID(desc);
+        snapshot.shop = SHOP_TYPE[shop] ?? SHOP_TYPE.NONE;
+        snapshot.teamID = this.getTeamID(team);
+        snapshot.type = BUILDING_TYPE[type] ?? BUILDING_TYPE.COMMAND_CENTER;
+
+        model.buildings.push(snapshot);
     }
 
     //TODO(neyn): This should be a snapshot!

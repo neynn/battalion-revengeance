@@ -8,6 +8,12 @@ export const BuildingProxy = function() {
     this.factionID = FACTION_TYPE._INVALID;
 }
 
+BuildingProxy.prototype.fromSnapshot = function(snapshot) {
+    this.tileX = snapshot.tileX;
+    this.tileY = snapshot.tileY;
+    this.typeID = snapshot.type;
+}
+
 BuildingProxy.prototype.fromJSON = function(data) {
     const { x = -1, y = -1, type = null } = data;
 

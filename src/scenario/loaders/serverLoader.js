@@ -51,7 +51,7 @@ ServerScenarioLoader.prototype.loadMap = function(gameContext, overrides) {
     this.createTeams(gameContext, overrides);
     this.createActors(gameContext);
     this.createEntities(gameContext);
-    this.applyBuildingSettings();
+    this.createBuildings(gameContext);
     this.createMines(gameContext);
     this.createWorldEvents(gameContext);
 }

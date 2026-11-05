@@ -302,42 +302,41 @@ BattalionMap.prototype.isJammed = function(gameContext, tileX, tileY, teamID, fl
     return jammerTile.isJammed(gameContext, teamID, flags);
 }
 
-BattalionMap.prototype.decodeLayers = function(layerData) {
-    for(const layerName in layerData) {
-        let layerID = -1;
+BattalionMap.prototype.decodeLayers = function(data) {
+    let ptr = 0;
+    const layerCount = data[ptr++];
+    const bottomWidth = data[ptr++];
+    const middleWidth = data[ptr++];
+    const topWidth = data[ptr++];
 
-        switch(layerName) {
-            case "GROUND": {
-                layerID = BattalionMap.LAYER.BOTTOM;
-                break;
-            }
-            case "DECORATION": {
-                layerID = BattalionMap.LAYER.MIDDLE;
-                break;
-            }
-            case "CLOUD": {
-                layerID = BattalionMap.LAYER.TOP;
-                break;
-            }
-        }
-
-        if(layerID !== -1) {
-            const data = layerData[layerName];
-            const layer = this.getLayer(layerID);
-
-            layer.decode(data);
-        } else {
-            console.error("LayerData is not present!", layerName);
-        }
-    }
+    this.getLayer(BattalionMap.LAYER.BOTTOM).decode(data, bottomWidth, ptr);
+    this.getLayer(BattalionMap.LAYER.MIDDLE).decode(data, middleWidth, ptr + bottomWidth);
+    this.getLayer(BattalionMap.LAYER.TOP).decode(data, topWidth, ptr + bottomWidth + middleWidth);
 }
 
 BattalionMap.prototype.saveLayers = function() {
-    const layers = [];
+    const bottomLayer = this.getLayer(BattalionMap.LAYER.BOTTOM).encode();
+    const middleLayer = this.getLayer(BattalionMap.LAYER.MIDDLE).encode();
+    const topLayer = this.getLayer(BattalionMap.LAYER.TOP).encode();
+    const data = [];
+    let ptr = 0;
 
-    layers.push(`"${"GROUND"}": [${this.getLayer(BattalionMap.LAYER.BOTTOM).encode()}]`);
-    layers.push(`"${"DECORATION"}": [${this.getLayer(BattalionMap.LAYER.MIDDLE).encode()}]`);
-    layers.push(`"${"CLOUD"}": [${this.getLayer(BattalionMap.LAYER.TOP).encode()}]`);
+    data[ptr++] = 3;
+    data[ptr++] = bottomLayer.length;
+    data[ptr++] = middleLayer.length;
+    data[ptr++] = topLayer.length;
 
-    return layers;
+    for(let i = 0; i < bottomLayer.length; i++) {
+        data[ptr++] = bottomLayer[i];
+    }
+
+    for(let i = 0; i < middleLayer.length; i++) {
+        data[ptr++] = middleLayer[i]
+    }
+
+    for(let i = 0; i < topLayer.length; i++) {
+        data[ptr++] = topLayer[i];
+    }
+
+    return data;
 }

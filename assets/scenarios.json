@@ -1,5 +1,8 @@
 {
     "C1M1": {
+        "width": 10,
+        "height": 10,
+        "data": [3,32,98,52,1,18,2,1,1,9,3,1,1,2,211,1,1,2,208,2,1,1,210,1,1,16,207,1,211,1,1,30,210,1,1,13,0,2,23,1,114,1,0,5,176,1,0,2,23,1,0,6,177,1,0,2,23,1,0,6,177,1,0,2,22,1,29,1,0,5,177,1,0,3,55,1,30,4,79,1,177,1,0,3,23,1,0,5,177,1,0,3,86,1,0,5,177,1,0,3,23,1,0,5,177,1,154,1,162,1,146,1,82,1,0,5,177,1,127,1,132,1,124,1,89,1,0,1,172,1,174,3,171,1,0,6,8,1,0,9,5,1,0,3,6,3,11,1,0,2,5,1,0,9,5,1,0,9,5,1,0,9,16,1,6,1,11,1,0,7,5,1,0,3,10,1,6,5,15,1,0,11,20,1,0,11],
         "text": [
             { "id": "PRESUS_PRELOGUE_1", "translations": { "en-US": "This is Kanye West."} },
             { "id": "PRESUS_PRELOGUE_2", "translations": { "en-US": "Ye." } },
@@ -14,7 +17,6 @@
             { "id": "TILE_NAME_TEST", "translations": { "en-US": "This is a test name." } },
             { "id": "TILE_DESC_TEST", "translations": { "en-US": "This is a test description." } }
         ],
-        "map": "presus",
         "client": "SOMERTIN",
         "playlist": "LAMENTOSO",
         "music": "rivers_of_steel",
@@ -97,15 +99,15 @@
         "mines": [
             { "x": 6, "y": 3, "type": "LAND", "team": "TRANSKAL", "visible": false }
         ],
-        "buildingSettings": [
-            { "x": 0, "y": 6, "team": "SOMERTIN" },
-            { "x": 1, "y": 6, "team": "TRANSKAL" },
-            { "x": 2, "y": 6, "team": "SOMERTIN" },
-            { "x": 3, "y": 6, "team": "SOMERTIN" },
-            { "x": 4, "y": 6, "team": "DRAGOON" },
-            { "x": 5, "y": 6, "team": "DRAGOON" },
-            { "x": 6, "y": 6, "team": "TRANSKAL" },
-            { "x": 7, "y": 6, "team": "TRANSKAL" }
+        "buildings": [
+            { "x": 0, "y": 6, "team": "SOMERTIN", "type": "AIR_CONTROL" },
+            { "x": 1, "y": 6, "team": "TRANSKAL", "type": "COMMAND_CENTER" },
+            { "x": 2, "y": 6, "team": "SOMERTIN", "type": "FACTORY" },
+            { "x": 3, "y": 6, "team": "SOMERTIN", "type": "GROUND_CONTROL" },
+            { "x": 4, "y": 6, "team": "DRAGOON", "type": "OIL_ADVANCED_REFINERY" },
+            { "x": 5, "y": 6, "team": "DRAGOON", "type": "OIL_REFINERY" },
+            { "x": 6, "y": 6, "team": "TRANSKAL", "type": "OIL_RIG" },
+            { "x": 7, "y": 6, "team": "TRANSKAL", "type": "SEA_CONTROL" }
         ],
         "objectives": {
             "SURVIVE_TURN_2": { "type": "SURVIVE", "turn": 2 },
@@ -160,8 +162,10 @@
             }
         ]
     },
-    "PVP_VOLCANO": {
-        "map": "volcano",
+   "PVP_VOLCANO": {
+        "width": 10,
+        "height": 10,
+        "data": [3, 0, 0, 0],
         "maxPlayers": 2,
         "client": "TEST",
         "music": "rivers_of_steel",
@@ -182,8 +186,8 @@
             { "x": 1, "y": 5, "stealth": true, "type": "PROFESSIONAL_TERRORIST", "team": "TEST" }
         ],
         "mines": [],
-        "buildingSettings": [
-            { "x": 5, "y": 5, "team": "TEST" }
+        "buildings": [
+            { "x": 5, "y": 5, "type": "COMMAND_CENTER", "team": "TEST" }
         ],
         "objectives": {},
         "prelogue": [],

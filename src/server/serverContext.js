@@ -11,6 +11,7 @@ import { fillTurnSnapshot } from "../snapshot/turnSnapshot.js";
 import { InterruptVTable } from "../action/types/interrupt.js";
 import { MapSystem } from "../systems/map.js";
 import { Lobby } from "./lobby.js";
+import { ServerScenarioLoader } from "../scenario/loaders/serverLoader.js";
 
 const isClientTurn = function(gameContext, messengerID) {
     const { world } = gameContext;
@@ -31,14 +32,12 @@ export const ServerGameContext = function(serverApplication, id) {
         typeRegistry,
         tileManager,
         pathHandler,
-        mapRegistry,
         scenarioRegistry
     } = serverApplication;
 
     this.pathHandler = pathHandler;
     this.typeRegistry = typeRegistry;
     this.tileManager = tileManager;
-    this.mapRegistry = mapRegistry;
     this.scenarioRegistry = scenarioRegistry;
 
     this.world = new World();
@@ -169,30 +168,29 @@ ServerGameContext.prototype.onMessage = async function(messengerID, type, payloa
                 "0xFF9085": [71, 75, 136]
             });
 
+            //TODO(Server): neyn. This must be completely reworked!
+            //Assume this is correct!
             const scenarioID = this.mapMaster.scenarioID;
             const overrides = this.mapMaster.createOverrides();
+            const scenario = this.scenarioRegistry.getScenario(scenarioID);
+            const worldMap = MapSystem.createMapFromScenario(scenario);
+            const loader = new ServerScenarioLoader(worldMap, scenario);
 
-            MapSystem.createServerLoader(this, scenarioID)
-            .then(loader => {
-                loader.loadMap(this, overrides);
+            loader.loadMap(this, overrides);
 
-                const snapshot = this.createInitialSnapshot();
+            const snapshot = this.createInitialSnapshot();
 
-                for(let i = 0; i < this.members.length; i++) {
-                    const memberID = this.members[i].getID();
-                    const teamID = this.mapMaster.getTeamID(memberID);
+            for(let i = 0; i < this.members.length; i++) {
+                const memberID = this.members[i].getID();
+                const teamID = this.mapMaster.getTeamID(memberID);
 
-                    this.send(MP_SERVER_JSON.LOAD_MAP, {
-                        "scenario": scenarioID,
-                        "snapshot": snapshot,
-                        "client": teamID,
-                        "overrides": overrides
-                    }, memberID);
-                }
-            })
-            .catch(() => {
-
-            });
+                this.send(MP_SERVER_JSON.LOAD_MAP, {
+                    "scenario": scenarioID,
+                    "snapshot": snapshot,
+                    "client": teamID,
+                    "overrides": overrides
+                }, memberID);
+            }
 
             break;
         }

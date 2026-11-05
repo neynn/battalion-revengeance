@@ -8,7 +8,6 @@ import { START_BUTTON_STYLE, UI_TEXTURE } from "../constants.js";
 import { TextureRegion } from "../../../engine/resources/texture/textureRegion.js";
 import { INTERRUPT_TYPE } from "../../enums.js";
 import { InterruptVTable } from "../../action/types/interrupt.js";
-import { loadSavedScenario } from "../../systems/save.js";
 import { drawTexture, drawTextureQuad, drawTextureRegion } from "../../../engine/renderer/textureHelpers.js";
 import { Texture } from "../../../engine/resources/texture/texture.js";
 
@@ -217,20 +216,25 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
                     };
 
                     if(DO_SAVED) {
-                        loadSavedScenario(gameContext, DATA, []).then(() => this.hide())
+                        const loader = MapSystem.createClientLoader(gameContext, DATA.scenario);
+
+                        if(loader) {
+                            loader.createSavedMatch(gameContext, DATA, []);
+                            this.hide();
+                        }
                     } else {
-                        MapSystem.createClientLoader(gameContext, scenarioID)
-                        .then(loader => {
+                        const loader = MapSystem.createClientLoader(gameContext, scenarioID);
+
+                        if(loader) {
                             const { actionRouter } = gameContext;
 
                             loader.createDefaultMatch(gameContext, []);
                             actionRouter.forceEnqueue(gameContext, InterruptVTable.createIntent(INTERRUPT_TYPE.START_GAME, -1));
 
                             this.hide();
-                        })
-                        .catch(() => {
+                        } else {
                             //TODO(neyn): Log error.
-                        });
+                        }
                     }
                 }
             }

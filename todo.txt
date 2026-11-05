@@ -87,3 +87,5 @@ Damage must be part of the unit.
 Tiles: Split the texture with the frameData. See TileManager line 178
 
 Add DisableShop for Buildings. SHOP_TYPE.NONE should not be openable!
+
+.brev files

@@ -86,11 +86,3 @@ export const saveStoryMap = function(gameContext) {
     file.close();
     file.download("map");
 }
-
-export const loadSavedScenario = function(gameContext, data, overrides) {
-    const { actionRouter } = gameContext;
-    const { scenario } = data;
-    
-    return MapSystem.createClientLoader(gameContext, scenario)
-    .then(loader => loader.createSavedMatch(gameContext, data, overrides));
-}

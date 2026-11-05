@@ -180,7 +180,7 @@ EditorController.prototype.saveMap = function() {
     .writeLine("width", worldMap.width)
     .writeLine("height", worldMap.height)
     .writeList("buildings", buildings, PrettyJSON.LIST_TYPE.ARRAY)
-    .writeList("data", layers)
+    .writeLine("data", layers)
     .close()
     .download("map_" + worldMap.getID());
 }
@@ -198,37 +198,27 @@ EditorController.prototype.createMap = function(gameContext) {
 }
 
 EditorController.prototype.loadMap = async function(gameContext) {
-    const { language, scenarioRegistry } = gameContext;
+    const { language, scenarioRegistry, world } = gameContext;
     const scenarioID = prompt(language.getSystemTranslation("EDITOR_LOAD_MAP"));
     const scenario = scenarioRegistry.getScenario(scenarioID);  
 
-    if(scenario) {
-        MapSystem.getMapFile(gameContext, scenario.mapID)
-        .then(file => {
-            const { width, height, data, buildings = [], climate = null } = file;
-            const worldMap = MapSystem.createEmptyMap(gameContext, width, height);
-
-            worldMap.climate = CLIMATE_TYPE[climate] ?? CLIMATE_TYPE.TEMPERATE;
-            worldMap.decodeLayers(data);
-
-            for(let i = 0; i < buildings.length; i++) {
-                this.buildingTool.createProxiesFromData(buildings[i]);
-            }
-
-            this.editor.setTargetMap(worldMap);
-        })
-        .catch(() => {
-            const worldMap = MapSystem.createEmptyMap(gameContext, EDITOR_DEFAULT_TILE_COLUMNS, EDITOR_DEFAULT_TILE_ROWS);
-
-            this.editor.setTargetMap(worldMap);
-            this.editor.autofillMap();
-        });
-    } else {
+    if(!scenario) {
         const worldMap = MapSystem.createEmptyMap(gameContext, EDITOR_DEFAULT_TILE_COLUMNS, EDITOR_DEFAULT_TILE_ROWS);
 
         this.editor.setTargetMap(worldMap);
         this.editor.autofillMap();
+        return;
     }
+
+    const { buildings } = scenario;
+    const worldMap = MapSystem.createMapFromScenario(scenario);
+
+    for(let i = 0; i < buildings.length; i++) {
+        this.buildingTool.createProxiesFromSnapshot(buildings[i]);
+    }
+
+    this.editor.setTargetMap(worldMap);
+    world.setWorldMap(worldMap);
 }
 
 EditorController.prototype.removeMap = function() {

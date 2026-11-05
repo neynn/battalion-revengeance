@@ -6,7 +6,6 @@
     "fonts": { "directory": ["assets", "fonts"], "source": "fonts.json" },
     "gui": { "directory": ["assets", "gui"], "source": "textures.json" },
     "languages": { "directory": ["assets", "language"], "source": "languages.json" },
-    "maps": { "directory": ["assets", "maps"], "source": "maps.json" },
     "music": { "directory": ["assets", "music"], "source": "music.json" },
     "playlists": { "directory": ["assets", "music"], "source": "playlists.json" },
     "sounds": { "directory": ["assets", "sounds"], "source": "sounds.json" },
@@ -15,7 +14,7 @@
     "tiles": { "directory": ["assets", "tiles"], "source": "tiles.json" },
     "tileTextures": { "directory": ["assets", "tiles"], "source": "textures.json" },
 
-    "scenarioTypes": { "directory": ["assets", "game"], "source": "scenarios.json" },
+    "scenarioTypes": { "directory": ["assets"], "source": "scenarios.json" },
 
     "scenarios": { "directory": ["assets", "game", "story"], "source": "scenarios.json" },
     "campaigns": { "directory": ["assets", "game", "story"], "source": "campaigns.json" },

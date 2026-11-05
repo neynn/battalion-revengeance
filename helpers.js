@@ -161,27 +161,6 @@ export const packerToJSONSprites = (id, packerFile) => {
     .download(id);
 }
 
-export const saveMap = function(mapID, map2D) {
-    if(!map2D) {
-        return new PrettyJSON(4)
-        .open()
-        .writeLine("ERROR", "MAP NOT LOADED! USE CREATE OR LOAD!")
-        .close()
-        .download("map_" + mapID);
-    }
-
-    const layers = map2D.saveLayers();
-
-    new PrettyJSON(4)
-    .open()
-    .writeLine("music", map2D.music)
-    .writeLine("width", map2D.width)
-    .writeLine("height", map2D.height)
-    .writeList("data", layers)
-    .close()
-    .download("map_" + mapID);
-}
-
 const formatFrames = (frames) => {
     const formattedFrames = [];
 

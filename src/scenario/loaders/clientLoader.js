@@ -119,7 +119,7 @@ ClientScenarioLoader.prototype.createServerMatch = function(gameContext, snapsho
     this.createActors(gameContext);
     this.unpackTotalEntityBuffer(gameContext, entities);
     this.createMines(gameContext);
-    this.applyBuildingSettings();
+    this.createBuildings(gameContext);
     this.createBuildingSprites(gameContext);
     this.loadMusic(gameContext);
     this.createWorldEvents(gameContext);
@@ -133,7 +133,7 @@ ClientScenarioLoader.prototype.createServerMatch = function(gameContext, snapsho
 ClientScenarioLoader.prototype.createSavedMatch = function(gameContext, snapshot, overrides) {
     const { world, dialogueHandler, teamManager } = gameContext;
     const { entityManager, eventHandler } = world;
-    const { mapID, turn, events, data, entities, teams, mines, buildings, flags, climate } = snapshot;
+    const { turn, events, data, entities, teams, mines, buildings, flags, climate } = snapshot;
 
     this.rules |= LOADER_RULE.FIXED_ALLIES;
     this.rules |= LOADER_RULE.LOAD_OBJECTIVES;
@@ -197,7 +197,7 @@ ClientScenarioLoader.prototype.createDefaultMatch = function(gameContext, overri
     this.createTeams(gameContext, overrides);
     this.createActors(gameContext);
     this.createEntities(gameContext);
-    this.applyBuildingSettings();
+    this.createBuildings(gameContext);
     this.createBuildingSprites(gameContext);
     this.createMines(gameContext);
     this.loadMusic(gameContext);

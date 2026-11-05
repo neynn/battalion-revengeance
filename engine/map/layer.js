@@ -120,19 +120,14 @@ Layer.prototype.resize = function(oldWidth, oldHeight, newWidth, newHeight) {
     this.evaluate();
 }
 
-Layer.prototype.decode = function(encodedLayer) {
-    if(!encodedLayer || this.buffer.length === 0) {
-        return;
-    }
-
+Layer.prototype.decode = function(data, width, begin) {
     let i = 0;
     let index = 0;
     const MAX_INDEX = this.buffer.length;
-    const LAYER_LENGTH = encodedLayer.length;
-
-    while(index < MAX_INDEX && i < LAYER_LENGTH) {
-        const typeID = encodedLayer[i++];
-        const typeCount = encodedLayer[i++];
+    
+    while(index < MAX_INDEX && i < width) {
+        const typeID = data[begin + i++];
+        const typeCount = data[begin + i++];
         const copies = (typeCount < MAX_INDEX - index) ? typeCount : MAX_INDEX - index;
 
         for(let j = 0; j < copies; ++j) {

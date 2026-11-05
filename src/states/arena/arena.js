@@ -71,16 +71,15 @@ ArenaState.prototype.onEnter = async function(gameContext, stateMachine) {
         switch(type) {
             case MP_SERVER_JSON.LOAD_MAP: {
                 const { scenario, snapshot, client, overrides } = payload;
+                const loader = MapSystem.createClientLoader(gameContext, scenario);
 
-                MapSystem.createClientLoader(gameContext, scenario)
-                .then(loader => {
+                if(loader) {
                     loader.clientTeam = client;
                     loader.createServerMatch(gameContext, snapshot, overrides);
                     socket.messageRoom(MP_CLIENT_JSON.MAP_LOADED, {});
-                })
-                .catch(() => {
-                    //TODO: Signal a failed load.
-                });
+                } else {
+                    //TODO: Catch error.
+                }
                 
                 break;
             }

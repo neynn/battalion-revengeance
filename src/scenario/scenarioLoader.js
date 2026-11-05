@@ -88,18 +88,12 @@ ScenarioLoader.prototype.createMines = function(gameContext) {
     }
 }
 
-ScenarioLoader.prototype.applyBuildingSettings = function() {
-    for(const settings of this.scenario.buildingSettings) {
-        const { x, y, team, shop, customID, customName, customDesc } = settings;
-        const building = this.worldMap.getBuilding(x, y);
+ScenarioLoader.prototype.createBuildings = function(gameContext) {
+    for(const snapshot of this.scenario.buildings) {
+        const { type, tileX, tileY } = snapshot;
+        const building = this.worldMap.createBuilding(gameContext, type, tileX, tileY);
 
-        if(building) {
-            building.teamID = team;
-            building.customID = customID;
-            building.customName = customName;
-            building.customDesc = customDesc;
-            building.shop = shop;
-        }
+        building.load(snapshot);
     }
 }
 

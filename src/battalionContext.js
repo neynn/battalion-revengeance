@@ -8,7 +8,6 @@ import { TeamManager } from "./team/teamManager.js";
 import { TypeRegistry } from "./type/typeRegistry.js";
 import { ArenaState } from "./states/arena/arena.js";
 import { loadTiles, loadVisualTiles, registerActionVTables, registerClientActions } from "./systems/register.js";
-import { MapRegistry } from "./map/mapRegistry.js";
 import { ClientActionRouter } from "./action/router/clientActionRouter.js";
 import { UIData } from "./ui/uiData.js";
 import { MissionManager } from "./mission/missionManager.js";
@@ -24,7 +23,6 @@ export const BattalionContext = function(gTimer, gWindow) {
     this.actionRouter = new ClientActionRouter();
     this.spriteController = new SpriteController();
     this.soundRegistry = new SoundRegistry();
-    this.mapRegistry = new MapRegistry();
     this.missionManager = new MissionManager();
     this.scenarioRegistry = new ScenarioRegistry();
     this.uiData = new UIData(this.textureRegistry);
@@ -57,7 +55,6 @@ BattalionContext.prototype.init = function(resources) {
     this.client.soundPlayer.load(resources.sounds);
     this.client.socket.load(resources.network.socket);
     this.client.router.load(resources.keybinds);
-    this.mapRegistry.load(resources.maps);
     this.language.load(resources.languages);
     this.missionManager.load(resources);
     this.spriteManager.initLayers(LAYER_TYPE._COUNT);
