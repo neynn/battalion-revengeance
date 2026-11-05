@@ -113,44 +113,37 @@ TileAnimation.prototype.createPattern = function(fp, texture, pattern) {
     return next_frame_ptr;
 }
 
-TileAnimation.prototype.generate = function(texture, config, regionID) {
-    const { patterns = {}, animations = {} } = config;
-    const frameData = texture.getRegionByName(regionID);
-    const patternData = patterns[regionID];
-    const animationData = animations[regionID];
+TileAnimation.prototype.pushFrame = function(region) {
+    this.createFrame(0, region);
+    this.frameCount++;
+    this.setFrameTime(TileAnimation.DEFAULT.FRAME_TIME);
+}
+
+TileAnimation.prototype.pushPattern = function(texture, pattern) {
+    this.createPattern(0, texture, pattern);
+    this.frameCount++;
+    this.setFrameTime(TileAnimation.DEFAULT.FRAME_TIME);
+}
+
+TileAnimation.prototype.pushAnimation = function(texture, frames, patterns) {
     let fp = 0;
 
-    if(frameData) {
-        this.createFrame(fp, frameData);
-        this.frameCount++;
-        this.setFrameTime(TileAnimation.DEFAULT.FRAME_TIME);
-    } else if(patternData) {
-        this.createPattern(fp, texture, patternData);
-        this.frameCount++;
-        this.setFrameTime(TileAnimation.DEFAULT.FRAME_TIME);
-    } else if(animationData) {
-        const frameTime = animationData.frameTime ?? TileAnimation.DEFAULT.FRAME_TIME;
-        const animationFrames = animationData.frames ?? [];
+    for(const frameID of frames) {
+        const region = texture.getRegionByName(frameID);
+        let next_frame_ptr = fp;
 
-        for(const frameID of animationFrames) {
-            const region = texture.getRegionByName(frameID);
-            let next_frame_ptr = fp;
-
-            if(region) {
-                next_frame_ptr = this.createFrame(fp, region);
-            } else if(patterns[frameID]) {
-                next_frame_ptr = this.createPattern(fp, texture, patterns[frameID]);
-            }
-
-            //A frame was created if the pointers do not match!
-            if(fp !== next_frame_ptr) {
-                this.frameCount++;
-                this.jumpTable[this.frameCount] = this.jumpTable[this.frameCount - 1] + this.frameData[fp];
-
-                fp = next_frame_ptr;
-            }
+        if(region) {
+            next_frame_ptr = this.createFrame(fp, region);
+        } else if(patterns[frameID]) {
+            next_frame_ptr = this.createPattern(fp, texture, patterns[frameID]);
         }
 
-        this.setFrameTime(frameTime);
+        //A frame was created if the pointers do not match!
+        if(fp !== next_frame_ptr) {
+            this.frameCount++;
+            this.jumpTable[this.frameCount] = this.jumpTable[this.frameCount - 1] + this.frameData[fp];
+
+            fp = next_frame_ptr;
+        }
     }
 }

@@ -1,0 +1,244 @@
+{
+    "tile:water": {
+        "directory": ["assets", "tiles", "battalion"],
+        "source": "water.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
+        "autoGrid": {
+            "first": 0,
+            "rows": 3,
+            "columns": 16
+        }
+    },
+    "tile:canyon": {
+        "directory": ["assets", "tiles", "battalion"],
+        "source": "canyon.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
+        "autoGrid": {
+            "first": 0,
+            "rows": 6,
+            "columns": 8
+        }
+    },
+    "tile:shore": {
+        "directory": ["assets", "tiles", "battalion"],
+        "source": "shore.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
+        "autoGrid": {
+            "first": 0,
+            "rows": 3,
+            "columns": 16
+        }
+    },
+    "tile:river": {
+        "directory": ["assets", "tiles", "battalion"],
+        "source": "river.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
+        "autoGrid": {
+            "first": 0,
+            "rows": 12,
+            "columns": 16
+        }
+    },
+    "tile:volcano": {
+        "directory": ["assets", "tiles", "battalion"],
+        "source": "volcano.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
+        "grid": {
+            "0": { "u": 0, "v": 1, "h": 112 },
+            "1": { "u": 1, "v": 1, "h": 112 },
+            "2": { "u": 2, "v": 1, "h": 112 },
+            "3": { "u": 3, "v": 1, "h": 112 }
+        }
+    },
+    "tile:ore_deposit": {
+        "directory": ["assets", "tiles", "battalion"],
+        "source": "ore_deposit.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
+        "grid": {
+            "LEFT_0": { "u": 0, "v": 0 },
+            "LEFT_1": { "u": 1, "v": 0 },
+            "LEFT_2": { "u": 2, "v": 0 },
+            "LEFT_3": { "u": 3, "v": 0 },
+            "RIGHT_0": { "u": 0, "v": 1 },
+            "RIGHT_1": { "u": 1, "v": 1 },
+            "RIGHT_2": { "u": 2, "v": 1 },
+            "RIGHT_3": { "u": 3, "v": 1 },
+            "LEFT_USED_0": { "u": 0, "v": 2 },
+            "LEFT_USED_1": { "u": 1, "v": 2 },
+            "LEFT_USED_2": { "u": 2, "v": 2 },
+            "LEFT_USED_3": { "u": 3, "v": 2 },
+            "RIGHT_USED_0": { "u": 0, "v": 3 },
+            "RIGHT_USED_1": { "u": 1, "v": 3 },
+            "RIGHT_USED_2": { "u": 2, "v": 3 },
+            "RIGHT_USED_3": { "u": 3, "v": 3 },
+            "LEFT_DEPLETED": { "u": 0, "v": 4 },
+            "RIGHT_DEPLETED": { "u": 1, "v": 4 }
+        }
+    },
+    "tile:road": {
+        "directory": ["assets", "tiles", "battalion"],
+        "source": "road.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
+        "autoGrid": {
+            "first": 0,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "tile:rail": {
+        "directory": ["assets", "tiles", "battalion"],
+        "source": "rail.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
+        "autoGrid": {
+            "first": 0,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "tile:path": {
+        "directory": ["assets", "tiles", "battalion"],
+        "source": "path.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
+        "autoGrid": {
+            "first": 0,
+            "rows": 4,
+            "columns": 4
+        }
+    },
+    "tile:other": {
+        "directory": ["assets", "tiles", "battalion"],
+        "source": "other.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
+        "grid": {
+            "jammer": { "u": 0, "v": 0 },
+            "marker_weak": { "u": 1, "v": 0 },
+            "marker": { "u": 2, "v": 0 },
+            "marker_protected": { "u": 3, "v": 0 },
+            "mine_0": { "u": 0, "v": 1 },
+            "mine_1": { "u": 1, "v": 1 },
+            "overlay_0": { "u": 0, "v": 2 },
+            "overlay_1": { "u": 1, "v": 2 },
+            "overlay_2": { "u": 2, "v": 2 },
+            "overlay_3": { "u": 3, "v": 2 },
+            "cash_box": { "u": 0, "v": 3 }
+        }
+    },
+    "tile:plains": {
+        "directory": ["assets", "tiles", "battalion"],
+        "source": "plains.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
+        "grid": {
+            "plains_1": { "u": 0, "v": 0 },
+            "plains_2": { "u": 1, "v": 0 },
+            "plains_3": { "u": 2, "v": 0 },
+            "plains_4": { "u": 3, "v": 0 },
+            "plains_5": { "u": 4, "v": 0 },
+            "plains_6": { "u": 5, "v": 0 },
+            "plains_7": { "u": 6, "v": 0 },
+            "plains_8": { "u": 7, "v": 0 },
+            "shrub_1": { "u": 0, "v": 1 },
+            "shrub_2": { "u": 1, "v": 1 },
+            "shrub_3": { "u": 2, "v": 1 },
+            "shrub_4": { "u": 3, "v": 1 },
+            "shrub_5": { "u": 4, "v": 1 },
+            "forest_1": { "u": 0, "v": 3, "h": 56 },
+            "forest_2": { "u": 1, "v": 3, "h": 60 },
+            "forest_3": { "u": 2, "v": 3, "h": 59 },
+            "forest_4": { "u": 3, "v": 3, "h": 68 },
+            "hills_1": { "u": 8, "v": 3 },
+            "hills_2": { "u": 9, "v": 3 },
+            "hills_3": { "u": 8, "v": 2, "h": 60 },
+            "hills_4": { "u": 9, "v": 2, "h": 61 },
+            "mountain_1": { "u": 4, "v": 3, "h": 65 },
+            "mountain_2": { "u": 5, "v": 3, "h": 66 },
+            "mountain_3": { "u": 6, "v": 3, "h": 56 },
+            "mountain_4": { "u": 7, "v": 3, "h": 60 },
+            "megamountain": { "u": 6, "v": 2, "h": 77 }
+        }
+    },
+    "tile:boreal": {
+        "directory": ["assets", "tiles", "battalion"],
+        "source": "boreal.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
+        "grid": {
+            "boreal_1": { "u": 0, "v": 0 },
+            "boreal_2": { "u": 1, "v": 0 },
+            "boreal_3": { "u": 2, "v": 0 },
+            "boreal_4": { "u": 3, "v": 0 },
+            "boreal_5": { "u": 4, "v": 0 },
+            "boreal_6": { "u": 5, "v": 0 },
+            "boreal_7": { "u": 6, "v": 0 },
+            "boreal_8": { "u": 7, "v": 0 },
+            "forest_1": { "u": 0, "v": 3, "h": 56 },
+            "forest_2": { "u": 1, "v": 3, "h": 60 },
+            "forest_3": { "u": 2, "v": 3, "h": 59 },
+            "forest_4": { "u": 3, "v": 3, "h": 68 },
+            "hills_1": { "u": 8, "v": 3 },
+            "hills_2": { "u": 9, "v": 3 },
+            "hills_3": { "u": 8, "v": 2, "h": 60 },
+            "hills_4": { "u": 9, "v": 2, "h": 61 },
+            "mountain_1": { "u": 4, "v": 3, "h": 65 },
+            "mountain_2": { "u": 5, "v": 3, "h": 66 },
+            "mountain_3": { "u": 6, "v": 3, "h": 56 },
+            "mountain_4": { "u": 7, "v": 3, "h": 60 },
+            "megamountain": { "u": 6, "v": 2, "h": 77 }
+        }
+    },
+    "tile:arctic": {
+        "directory": ["assets", "tiles", "battalion"],
+        "source": "arctic.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
+        "grid": {
+            "arctic_1": { "u": 0, "v": 0 },
+            "arctic_2": { "u": 1, "v": 0 },
+            "arctic_3": { "u": 2, "v": 0 },
+            "arctic_4": { "u": 3, "v": 0 },
+            "arctic_5": { "u": 4, "v": 0 },
+            "arctic_6": { "u": 5, "v": 0 },
+            "arctic_7": { "u": 6, "v": 0 },
+            "arctic_8": { "u": 7, "v": 0 },
+            "forest_1": { "u": 0, "v": 3, "h": 56 },
+            "forest_2": { "u": 1, "v": 3, "h": 60 },
+            "forest_3": { "u": 2, "v": 3, "h": 59 },
+            "forest_4": { "u": 3, "v": 3, "h": 68 },
+            "hills_1": { "u": 8, "v": 3 },
+            "hills_2": { "u": 9, "v": 3 },
+            "hills_3": { "u": 8, "v": 2, "h": 60 },
+            "hills_4": { "u": 9, "v": 2, "h": 61 },
+            "mountain_1": { "u": 4, "v": 3, "h": 65 },
+            "mountain_2": { "u": 5, "v": 3, "h": 66 },
+            "mountain_3": { "u": 6, "v": 3, "h": 56 },
+            "mountain_4": { "u": 7, "v": 3, "h": 60 },
+            "megamountain": { "u": 6, "v": 2, "h": 77 }
+        }
+    },
+    "tile:large_tiles": {
+        "directory": ["assets", "tiles", "battalion"],
+        "source": "large_tiles.png",
+        "gridWidth": 56,
+        "gridHeight": 56,
+        "grid": {
+            "jungle_1": { "u": 0, "v": 1, "h": 112 },
+            "jungle_2": { "u": 1, "v": 1, "h": 112 },
+            "jungle_3": { "u": 2, "v": 1, "h": 112 },
+            "jungle_4": { "u": 3, "v": 1, "h": 112 },
+            "mangrove_1": { "u": 0, "v": 3, "h": 112 },
+            "mangrove_2": { "u": 1, "v": 3, "h": 112 },
+            "mangrove_3": { "u": 2, "v": 3, "h": 112 },
+            "mangrove_4": { "u": 3, "v": 3, "h": 112 }
+        }
+    }
+}

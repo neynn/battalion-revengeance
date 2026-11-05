@@ -43,14 +43,12 @@ BattalionContext.prototype.constructor = BattalionContext;
 
 BattalionContext.prototype.init = function(resources) {
     loadTiles(this);
-    loadVisualTiles(this);
-
     this.textureRegistry.createTextures(resources.spriteTextures);
     this.textureRegistry.createTextures(resources.gui);
-    this.textureRegistry.createTextures(resources.tiles);
-
-    this.tileManager.createVisuals(this.textureRegistry, resources.tiles);
+    this.textureRegistry.createTextures(resources.tileTextures);
+    this.tileManager.createTileAnimations(this.textureRegistry, resources.tiles);
     this.tileManager.enableAllVisuals();
+    loadVisualTiles(this);
 
     this.spriteManager.load(resources.sprites);
     this.uiManager.load(resources.layouts);

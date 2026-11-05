@@ -14,11 +14,12 @@ export const TileManager = function() {
     this.visualCount = 1;
     this.visuals = [new TileAnimation(0)];
     this.activeVisuals = [];
-    this.visualTableMap = new Map();
+    this.animationMap = new Map();
 
     this.autotilerCount = 0;
     this.autotilers = [];
     this.autotilerTable.fill(-1);
+
 }
 
 TileManager.TILE_ID = {
@@ -121,16 +122,14 @@ TileManager.prototype.loadAutotilerValuesAuto = function(autotilerID, tileID) {
     }
 }
 
-TileManager.prototype.useVisual = function(texture, sprite) {
+TileManager.prototype.getAnimationID = function(texture, name) {
     const visualName = texture + VISUAL_IDENTIFIER + sprite;
-    let visualID = this.visualTableMap.get(visualName);
+    const visualID = this.animationMap.get(visualName);
 
     if(visualID === undefined) {
-        visualID = this.visualCount++;
-
-        this.visualTableMap.set(visualName, visualID);
+        return 0;
     }
-    
+
     return visualID;
 }
 
@@ -139,7 +138,7 @@ TileManager.prototype.registerVisual = function(tileID, texture, sprite) {
         return;
     }
 
-    const visualID = this.useVisual(texture, sprite);
+    const visualID = this.getAnimationID(texture, sprite);
 
     this.visualTable[tileID] = visualID;
 }
@@ -170,36 +169,82 @@ TileManager.prototype.registerVisualsAuto = function(tileID, texture, prefix, co
     }
 }
 
+TileManager.prototype.createTileAnimation = function(name) {
+    const animationID = this.visualCount++;
+    const animation = new TileAnimation(animationID);
+
+    this.visuals[animationID] = animation;
+    this.animationMap.set(name, animationID);
+
+    return animation;
+}
+
 /**
  * 
  * @param {TextureRegistry} textureRegistry 
- * @param {object} tileAtlases 
+ * @param {object} tileDefinitions 
  */
-TileManager.prototype.createVisuals = function(textureRegistry, tileAtlases) {
-    for(let visualID = 1; visualID < this.visualCount; visualID++) {
-        this.visuals[visualID] = new TileAnimation(visualID);
-    }
+TileManager.prototype.createTileAnimations = function(textureRegistry, tileDefinitions) {
+    for(const groupID in tileDefinitions) {
+        const group = tileDefinitions[groupID];
+        const { texture, frameTime = 1, fromGrid = [], fromPatterns = [], patterns = {}, animations = {}, ignore = false } = group;
 
-    for(const [visualID, index] of this.visualTableMap) {
-        const [texture, regionID] = visualID.split(VISUAL_IDENTIFIER);
-        const textureConfig = tileAtlases[texture];
+        if(ignore) {
+            continue;
+        }
+
         const textureID = textureRegistry.getTextureID(texture);
 
-        if(textureID !== TextureRegistry.INVALID_ID) {
-            if(index >= 1 && index < this.visualCount) {
-                const textureObject = textureRegistry.getTexture(textureID);
-                const image = textureObject.getImage();
-                const visual = this.visuals[index];
+        if(textureID === TextureRegistry.INVALID_ID) {
+            continue;
+        }
+
+        textureRegistry.loadTexture(textureID);
+
+        const textureObject = textureRegistry.getTexture(textureID);
+        const textureImage = textureObject.getImage();
     
-                if(textureConfig) {
-                    visual.generate(textureObject, textureConfig, regionID);
+        if(fromGrid.length !== 0) {
+            if(fromGrid.length === 1 && fromGrid[0] === "*") {
+                for(const [regionName, regionID] of textureObject.regionMap) {
+                    const region = textureObject.regions[regionID];
+                    const tileAnimation = this.createTileAnimation(groupID + VISUAL_IDENTIFIER + regionName);
+
+                    tileAnimation.pushFrame(region);
+                    tileAnimation.setImage(textureImage);
                 }
-    
-                if(visual.frameCount > 0) {
-                    visual.setImage(image);
-                    textureRegistry.loadTexture(textureID);
+            } else {
+                for(const regionName of fromGrid) {
+                    const region = textureObject.getRegionByName(regionName);
+
+                    if(region) {
+                        const tileAnimation = this.createTileAnimation(groupID + VISUAL_IDENTIFIER + regionName);
+
+                        tileAnimation.pushFrame(region);
+                        tileAnimation.setImage(textureImage);
+                    }
                 }
             }
+        }
+
+        for(const patternName of fromPatterns) {
+            const pattern = patterns[patternName];
+
+            if(pattern) {
+                const tileAnimation = this.createTileAnimation(groupID + VISUAL_IDENTIFIER + patternName);
+
+                tileAnimation.pushPattern(textureObject, pattern);
+                tileAnimation.setImage(textureImage);
+            }
+        }
+
+        for(const animationID in animations) {
+            const { frameTime = TileAnimation.DEFAULT.FRAME_TIME, frames = [] } = animations[animationID];
+            const tileAnimation = this.createTileAnimation(groupID + VISUAL_IDENTIFIER + animationID);
+
+            tileAnimation.pushAnimation(textureObject, frames, patterns);
+            tileAnimation.setFrameTime(frameTime);
+            tileAnimation.setImage(textureImage);
         }
     }
 }
