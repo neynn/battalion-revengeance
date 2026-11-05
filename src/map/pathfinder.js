@@ -51,14 +51,13 @@ Pathfinder.prototype.mGetLowestCostNode = function() {
 
 Pathfinder.prototype.computeMovement = function(gameContext, entity) {
     const { world } = gameContext;
-    const { mapManager } = world;
     const { tileX, tileY, config } = entity;
     const { movementRange, minRange } = config;
     const rangeType = entity.getRangeType();
     const hasWeapon = entity.hasWeapon();
     const maxRange = entity.getMaxRange(gameContext);
 
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const startID = worldMap.getIndex(tileX, tileY);
 
     this.beginSearch();
@@ -226,7 +225,6 @@ Pathfinder.prototype.getBestPath = function(worldMap, targetX, targetY) {
 
 Pathfinder.prototype.addRangedOverlay = function(gameContext, entity) {
     const { world } = gameContext;
-    const { mapManager } = world;
     const { tileX, tileY, config } = entity;
     const { minRange } = config;
     const rangeType = entity.getRangeType();
@@ -234,7 +232,7 @@ Pathfinder.prototype.addRangedOverlay = function(gameContext, entity) {
 
     //Fill the rest out to signal attack range.
     if(rangeType === RANGE_TYPE.HYBRID || rangeType === RANGE_TYPE.RANGE) {
-        const worldMap = mapManager.getActiveMap();
+        const worldMap = world.getWorldMap();
 
         worldMap.fill2DGraph(tileX, tileY, maxRange, (nextX, nextY, distance, index) => {
             if(distance >= minRange && this.visited[index] !== this.searchID) {

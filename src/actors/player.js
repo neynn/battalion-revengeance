@@ -64,8 +64,7 @@ Player.prototype.onTurnEnd = function(gameContext) {
 
 Player.prototype.refreshEntityNodeMap = function(gameContext, entity) {
     const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const pathfinder = worldMap.pathfinder;
 
     this.renderer.clearOverlays();
@@ -88,7 +87,6 @@ Player.prototype.stopRenderingPathfinder = function() {
 
 Player.prototype.onClick = function(gameContext, tileX, tileY) {
     const { teamManager, world } = gameContext;
-    const { mapManager } = world;
     const inspectorState = this.inspector.inspect(gameContext, this, tileX, tileY);
 
     this.renderer.clearOverlays();
@@ -105,7 +103,7 @@ Player.prototype.onClick = function(gameContext, tileX, tileY) {
             break;
         }
         case MapInspector.STATE.BUILDING: {
-            const worldMap = mapManager.getActiveMap();
+            const worldMap = world.getWorldMap();
             const building = worldMap.getBuilding(tileX, tileY);
 
             this.stopRenderingPathfinder();
@@ -135,8 +133,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
 
     router.on(INPUT_TRIGGER.CLICK, () => {
         const { world } = gameContext;
-        const { mapManager } = world;
-        const worldMap = mapManager.getActiveMap();
+        const worldMap = world.getWorldMap();
 
         if(worldMap) {
             const { x, y } = getCursorTile(gameContext);

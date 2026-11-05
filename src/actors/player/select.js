@@ -134,8 +134,7 @@ SelectState.prototype.isHealPathValid = function(gameContext, entity) {
 
 SelectState.prototype.setOptimalAttackPath = function(gameContext) {
     const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     let bestX = -1;
     let bestY = -1;
     let bestCost = UNIT_MAX_MOVE_COST;
@@ -185,9 +184,8 @@ SelectState.prototype.getPathTarget = function() {
 
 SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, tileY) {
     const { world, tileManager } = gameContext;
-    const { mapManager } = world;
     const player = stateMachine.getContext();
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const targetIndex = worldMap.getIndex(tileX, tileY);
     const entity = player.getVisibleEntity(gameContext, tileX, tileY);
     const walkAutotiler = tileManager.getAutotiler(AUTOTILER_TYPE.PATH);

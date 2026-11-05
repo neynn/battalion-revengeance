@@ -32,9 +32,9 @@ EditRenderer2D.prototype.constructor = EditRenderer2D;
 EditRenderer2D.prototype.drawTiles = function(gameContext, camera, display, worldMap) {
     const { tileManager } = gameContext;
     const { context } = display;
-    const bottomLayer = worldMap.getLayer(BattalionMap.LAYER.GROUND);
-    const middleLayer = worldMap.getLayer(BattalionMap.LAYER.DECORATION);
-    const topLayer = worldMap.getLayer(BattalionMap.LAYER.CLOUD);
+    const bottomLayer = worldMap.getLayer(BattalionMap.LAYER.BOTTOM);
+    const middleLayer = worldMap.getLayer(BattalionMap.LAYER.MIDDLE);
+    const topLayer = worldMap.getLayer(BattalionMap.LAYER.TOP);
 
     const bottomBuffer = bottomLayer.buffer;
     const bottomAlpha = bottomLayer.alpha;
@@ -123,8 +123,7 @@ EditRenderer2D.prototype.drawBuildingProxies = function(gameContext, camera, dis
 
 EditRenderer2D.prototype.render = function(gameContext, camera, display) {
     const { world, tileManager } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
 
     if(!worldMap) {
         return;

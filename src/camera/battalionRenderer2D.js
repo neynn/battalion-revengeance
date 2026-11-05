@@ -67,10 +67,9 @@ BattalionRenderer2D.prototype.constructor = BattalionRenderer2D;
 
 BattalionRenderer2D.prototype.render = function(gameContext, camera, display) {
     const { client, world, tileManager, teamManager } = gameContext;
-    const { mapManager } = world;
     const { round, turn, clientTeam } = teamManager;
     const { context } = display;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
 
     if(!worldMap) {
         return;
@@ -138,8 +137,7 @@ BattalionRenderer2D.prototype.clearOverlays = function() {
 
 BattalionRenderer2D.prototype.showEntityJammerAt = function(gameContext, entity, jammerX, jammerY) {
     const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const jammerRange = entity.config.jammerRange;
 
     this.jammerOverlay.clear();
@@ -591,9 +589,9 @@ BattalionRenderer2D.prototype.drawMines = function(gameContext, camera, display,
 BattalionRenderer2D.prototype.drawTiles = function(gameContext, camera, display, worldMap) {
     const { tileManager } = gameContext;
     const { context } = display;
-    const groundLayer = worldMap.getLayer(BattalionMap.LAYER.GROUND).buffer;
-    const decoLayer = worldMap.getLayer(BattalionMap.LAYER.DECORATION).buffer;
-    const cloudLayer = worldMap.getLayer(BattalionMap.LAYER.CLOUD).buffer;
+    const bottomLayer = worldMap.getLayer(BattalionMap.LAYER.BOTTOM).buffer;
+    const middleLayer = worldMap.getLayer(BattalionMap.LAYER.MIDDLE).buffer;
+    const topLayer = worldMap.getLayer(BattalionMap.LAYER.TOP).buffer;
 
     const wTileX = camera.tileX;
     const wTileY = camera.tileY;
@@ -617,9 +615,9 @@ BattalionRenderer2D.prototype.drawTiles = function(gameContext, camera, display,
         let renderX = (startX - wTileX) * tileWidth - viewportX;
 
         for(let j = startX; j <= endX; j++) {
-            const bottomID = groundLayer[index];
-            const middleID = decoLayer[index];
-            const topID = cloudLayer[index];
+            const bottomID = bottomLayer[index];
+            const middleID = middleLayer[index];
+            const topID = topLayer[index];
 
             if(bottomID !== 0) {
                 this.drawTile(tileManager, bottomID, context, renderX, renderY);

@@ -1,7 +1,7 @@
 import { unpackEntitySnapshot } from "../../action/packer_constants.js";
 import { LOADER_RULE } from "../../enums.js";
 import { createEntitySnapshot } from "../../snapshot/entitySnapshot.js";
-import { createClientEntityObject, createMineObject } from "../../systems/spawn.js";
+import { createClientEntityObject } from "../../systems/spawn.js";
 import { TeamManager } from "../../team/teamManager.js";
 import { ScenarioLoader } from "../scenarioLoader.js";
 
@@ -153,11 +153,10 @@ ClientScenarioLoader.prototype.createSavedMatch = function(gameContext, snapshot
     }
 
     for(const snapshot of mines) {
-        const { type, tileX, tileY, teamID } = snapshot;
-        const mine = createMineObject(gameContext, teamID, type, tileX, tileY);
+        const { type, tileX, tileY } = snapshot;
+        const mine = this.worldMap.createMine(gameContext, type, tileX, tileY);
 
         mine.load(snapshot);
-        this.worldMap.addMine(mine);
     }
 
     for(const snapshot of buildings) {

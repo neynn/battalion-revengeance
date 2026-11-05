@@ -66,9 +66,9 @@ const fillStartTurnPlan = function(gameContext, executionPlan, actionIntent) {
 
 const executeStartTurn = function(gameContext, data) {
     const { actionRouter, world, teamManager } = gameContext;
-    const { entityManager, eventHandler, mapManager } = world;
+    const { entityManager, eventHandler } = world;
     const { teamID, resolutions } = data;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const team = teamManager.getTeam(teamID);
     const { roster } = team;
 

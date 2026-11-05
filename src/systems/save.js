@@ -61,8 +61,8 @@ const saveMines = function(worldMap) {
 
 export const saveStoryMap = function(gameContext) {
     const { world } = gameContext;
-    const { mapManager, eventHandler } = world;
-    const worldMap = mapManager.getActiveMap();
+    const { eventHandler } = world;
+    const worldMap = world.getWorldMap();
     const file = new PrettyJSON(4);
 
     const entities = saveEntities(gameContext);

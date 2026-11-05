@@ -24,8 +24,8 @@ const fillEndTurnPlan = function(gameContext, executionPlan, actionIntent) {
 
 const executeEndTurn = function(gameContext, data) {
     const { world, teamManager } = gameContext;
-    const { entityManager, actorManager, mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
+    const { entityManager, actorManager } = world;
+    const worldMap = world.getWorldMap();
     const team = teamManager.getCurrentTeam();
     const turn = team.getStatistic(TEAM_STAT.ROUNDS_TAKEN);
     const { id, roster, objectives } = team;

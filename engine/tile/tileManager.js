@@ -123,7 +123,7 @@ TileManager.prototype.loadAutotilerValuesAuto = function(autotilerID, tileID) {
 }
 
 TileManager.prototype.getAnimationID = function(texture, name) {
-    const visualName = texture + VISUAL_IDENTIFIER + sprite;
+    const visualName = texture + VISUAL_IDENTIFIER + name;
     const visualID = this.animationMap.get(visualName);
 
     if(visualID === undefined) {

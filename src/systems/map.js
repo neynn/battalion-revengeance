@@ -14,14 +14,11 @@ import { ServerScenarioLoader } from "../scenario/loaders/serverLoader.js";
  */
 const createWorldMap = function(gameContext, file, source) {
     const { world } = gameContext;
-    const { mapManager } = world;
-    const { width, height, data, buildings = [], flags = [], climate = null } = file;
-    const nextID = mapManager.getNextID();
-    const worldMap = new BattalionMap(nextID, width, height);
+    const { width, height, data, buildings = [], climate = null } = file;
+    const worldMap = new BattalionMap(0, width, height);
     
     worldMap.name = source.title;
     worldMap.climate = CLIMATE_TYPE[climate] ?? CLIMATE_TYPE.TEMPERATE;
-    worldMap.loadFlags(flags);
     worldMap.decodeLayers(data);
 
     for(const setup of buildings) {
@@ -31,12 +28,14 @@ const createWorldMap = function(gameContext, file, source) {
             type = null
         } = setup;
         const snapshot = createBuildingSnapshot();
+        const buildingType = BUILDING_TYPE[type] ?? BUILDING_TYPE.COMMAND_CENTER;
+        const building = worldMap.createBuilding(gameContext, buildingType, x, y);
 
-        snapshot.type = BUILDING_TYPE[type] ?? BUILDING_TYPE.COMMAND_CENTER;;
+        snapshot.type = buildingType;
         snapshot.tileX = x;
         snapshot.tileY = y;
 
-        worldMap.createBuilding(gameContext, snapshot);
+        building.load(snapshot);
     }
 
     return worldMap;
@@ -44,7 +43,6 @@ const createWorldMap = function(gameContext, file, source) {
 
 const loadWorldMap = async function(gameContext, sourceID) {
     const { pathHandler, mapRegistry, world } = gameContext;
-    const { mapManager } = world;
     const mapSource = mapRegistry.getMapPreview(sourceID);
     const file = await mapSource.promiseFile(pathHandler);
 
@@ -54,8 +52,7 @@ const loadWorldMap = async function(gameContext, sourceID) {
 
     const worldMap = createWorldMap(gameContext, file, mapSource);
 
-    mapManager.addMap(worldMap);
-    mapManager.enableMap(worldMap.getID());
+    world.setWorldMap(worldMap);
 
     return worldMap;
 }
@@ -63,7 +60,6 @@ const loadWorldMap = async function(gameContext, sourceID) {
 export const MapSystem = {
     getMapFile: async function(gameContext, sourceID) {
         const { pathHandler, mapRegistry, world } = gameContext;
-        const { mapManager } = world;
         const mapSource = mapRegistry.getMapPreview(sourceID);
         const file = await mapSource.promiseFile(pathHandler);
 
@@ -75,12 +71,9 @@ export const MapSystem = {
     },
     createEmptyMap: function(gameContext, width, height) {
         const { world } = gameContext;
-        const { mapManager } = world;
-        const nextID = mapManager.getNextID();
-        const worldMap = new BattalionMap(nextID, width, height);
+        const worldMap = new BattalionMap(0, width, height);
 
-        mapManager.addMap(worldMap);
-        mapManager.enableMap(nextID);
+        world.setWorldMap(worldMap);
 
         return worldMap;
     },

@@ -26,10 +26,10 @@ const createPurchaseData = function() {
 
 const fillPurchasePlan = function(gameContext, executionPlan, actionIntent) {
     const { world, teamManager, typeRegistry } = gameContext;
-    const { mapManager, entityManager } = world;
+    const { entityManager } = world;
     const { tileX, tileY, typeID } = actionIntent;
     const { currentTeam } = teamManager;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const building = worldMap.getBuilding(tileX, tileY);
 
     if(!building || !building.belongsTo(currentTeam) || !building.hasTrait(BUILDING_TRAIT.SPAWNER)) {

@@ -67,9 +67,9 @@ const fillUncloakPlan = function(gameContext, executionPlan, actionIntent) {
 
 const executeUncloak = function(gameContext, data) {
     const { world } = gameContext;
-    const { entityManager, mapManager } = world;
+    const { entityManager } = world;
     const { entities, mines, entityID } = data;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const entity = entityManager.getEntity(entityID);
     const team = entity.getTeam(gameContext);
 
@@ -106,9 +106,9 @@ UncloakAction.prototype.constructor = UncloakAction;
 
 UncloakAction.prototype.onStart = function(gameContext, data) {
     const { world, tweenManager } = gameContext;
-    const { entityManager, mapManager } = world;
+    const { entityManager } = world;
     const { entities, mines } = data;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
 
     playUncloakSound(gameContext);
 

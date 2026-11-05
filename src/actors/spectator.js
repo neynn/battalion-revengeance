@@ -25,8 +25,7 @@ Spectator.prototype.loadKeybinds = function(gameContext) {
 
     router.on(INPUT_TRIGGER.CLICK, () => {
         const { world } = gameContext;
-        const { mapManager } = world;
-        const worldMap = mapManager.getActiveMap();
+        const worldMap = world.getWorldMap();
 
         if(worldMap) {
             const { x, y } = getCursorTile(gameContext);

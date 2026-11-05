@@ -20,10 +20,10 @@ const createEntitySpawnData = function() {
 
 const fillEntitySpawnPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
-    const { entityManager, mapManager } = world;
+    const { entityManager } = world;
     const { snapshot } = actionIntent;
     const { tileX, tileY } = snapshot;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const isOccupied = worldMap.isTileOccupied(tileX, tileY);
 
     if(isOccupied) {

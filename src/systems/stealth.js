@@ -43,8 +43,7 @@ export const StealthSystem = {
         }
 
         const { world } = gameContext;
-        const { mapManager } = world;
-        const worldMap = mapManager.getActiveMap();
+        const worldMap = world.getWorldMap();
         const cloakFlag = entity.config.getCloakFlag();
 
         return worldMap.isJammed(gameContext, tileX, tileY, entity.teamID, cloakFlag);
@@ -59,8 +58,7 @@ export const StealthSystem = {
      */
     isEntityDiscoveredBySpawnerAt: function(gameContext, entity, tileX, tileY) {
         const { world, teamManager } = gameContext;
-        const { mapManager } = world;
-        const worldMap = mapManager.getActiveMap();
+        const worldMap = world.getWorldMap();
         const building = worldMap.getBuilding(tileX, tileY);
         const isSpotted = building && building.hasTrait(BUILDING_TRAIT.SPAWNER) && !teamManager.isAlly(entity.teamID, building.teamID);
 
@@ -75,8 +73,7 @@ export const StealthSystem = {
      */
     isMineDiscoveredBy: function(gameContext, entity) {
         const { world, teamManager } = gameContext;
-        const { mapManager } = world;
-        const worldMap = mapManager.getActiveMap();
+        const worldMap = world.getWorldMap();
         const mine = worldMap.getMine(entity.tileX, entity.tileY);
 
         if(!mine) {
@@ -93,8 +90,8 @@ export const StealthSystem = {
      */
     getUncloakedEntities: function(gameContext, checker) {
         const { world, teamManager } = gameContext;
-        const { mapManager, entityManager } = world;
-        const worldMap = mapManager.getActiveMap();
+        const { entityManager } = world;
+        const worldMap = world.getWorldMap();
         const jammerFlags = checker.config.getJammerFlags();
         const searchRange = jammerFlags !== JAMMER_FLAG.NONE ? checker.config.jammerRange : DEFAULT_ENTITY_SEARCH_RANGE;
         const uncloakedEntities = [];
@@ -159,8 +156,7 @@ export const StealthSystem = {
      */
     getUncloakedMines: function(gameContext, checker) {
         const { world, teamManager } = gameContext;
-        const { mapManager } = world;
-        const worldMap = mapManager.getActiveMap();
+        const worldMap = world.getWorldMap();
         const jammerFlags = checker.config.getJammerFlags();
         const searchRange = jammerFlags !== JAMMER_FLAG.NONE ? checker.config.jammerRange : DEFAULT_MINE_SEARCH_RANGE;
         const uncloakedMines = [];

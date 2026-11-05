@@ -2,6 +2,7 @@ import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { Building } from "../entity/building.js";
+import { Mine } from "../entity/mine.js";
 import { downgradeOre } from "../enumHelpers.js";
 import { CLIMATE_TYPE, TILE_ID, TILE_TYPE } from "../enums.js";
 import { JammerTile } from "./jammerTile.js";
@@ -18,28 +19,29 @@ export const BattalionMap = function(id, width, height) {
     this.jammers = new Map();
     this.localization = new Map();
     this.pathfinder = new Pathfinder(width, height);
-    this.flags = BattalionMap.FLAG.NONE;
+    this.nextBuildingID = 1;
+    this.nextMineID = 1;
+    this.useGlobalClimate = false;
 
-    this.createLayer(Layer.TYPE.BIT_16);
-    this.createLayer(Layer.TYPE.BIT_16);
-    this.createLayer(Layer.TYPE.BIT_16);
+    this.createLayer(Layer.TYPE.BIT_16); //Bottom
+    this.createLayer(Layer.TYPE.BIT_16); //Middle
+    this.createLayer(Layer.TYPE.BIT_16); //Top
+    this.createLayer(Layer.TYPE.BIT_8); //building_id
+    this.createLayer(Layer.TYPE.BIT_16); //mine_id
 }
 
-BattalionMap.FLAG = {
-    NONE: 0,
-    USE_GLOBAL_CLIMATE: 1 << 0
-};
-
 BattalionMap.LAYER = {
-    GROUND: 0,
-    DECORATION: 1,
-    CLOUD: 2
+    BOTTOM: 0,
+    MIDDLE: 1,
+    TOP: 2,
+    BUILDING: 3,
+    MINE: 4
 };
 
 BattalionMap.SEARCH_ORDER = [
-    BattalionMap.LAYER.CLOUD,
-    BattalionMap.LAYER.DECORATION,
-    BattalionMap.LAYER.GROUND
+    BattalionMap.LAYER.TOP,
+    BattalionMap.LAYER.MIDDLE,
+    BattalionMap.LAYER.BOTTOM
 ];
 
 BattalionMap.prototype = Object.create(WorldMap.prototype);
@@ -67,7 +69,7 @@ BattalionMap.prototype.getClimateType = function(gameContext, tileX, tileY) {
     const { tileManager, typeRegistry } = gameContext;
 
     //Maps may have a global climate that overrides all.
-    if(this.flags & BattalionMap.FLAG.USE_GLOBAL_CLIMATE) {
+    if(this.useGlobalClimate) {
         return typeRegistry.getClimateType(this.climate);
     }
 
@@ -163,6 +165,54 @@ BattalionMap.prototype.localizeTile = function(tileX, tileY, nameID, descID) {
     }
 }
 
+BattalionMap.prototype.createMine = function(gameContext, type, tileX, tileY) {
+    const { typeRegistry } = gameContext;
+    const mineType = typeRegistry.getMineType(type);
+    const mineID = this.nextMineID++;
+    const mine = new Mine(mineID, mineType);
+
+    this.mines.push(mine);
+
+    if(this.getMine(tileX, tileY) === null) {
+        this.setTile(mineID, BattalionMap.LAYER.MINE, tileX, tileY);
+
+        mine.tileX = tileX;
+        mine.tileY = tileY;
+    }
+
+    return mine;
+}
+
+BattalionMap.prototype.getMine = function(tileX, tileY) {
+    const mineID = this.getTile(BattalionMap.LAYER.MINE, tileX, tileY);
+
+    if(mineID > 0) {
+        for(let i = 0; i < this.mines.length; i++) {
+            if(this.mines[i].id === mineID) {
+                return this.mines[i];
+            }
+        }
+    }
+
+    return null;
+}
+
+BattalionMap.prototype.removeMine = function(tileX, tileY) {
+    const mineID = this.getTile(BattalionMap.LAYER.MINE, tileX, tileY);
+
+    if(mineID <= 0) {
+        return;
+    }
+
+    for(let i = 0; i < this.mines.length; i++) {
+        if(this.mines[i].id === mineID) {
+            this.mines[i] = this.mines[this.mines.length - 1];
+            this.mines.pop();
+            break;
+        }
+    }
+}
+
 BattalionMap.prototype.isMinePlaceable = function(gameContext, tileX, tileY, mineCategory) {
     const tileType = this.getTileType(gameContext, tileX, tileY);
 
@@ -177,86 +227,32 @@ BattalionMap.prototype.isMinePlaceable = function(gameContext, tileX, tileY, min
     return true;
 }
 
-BattalionMap.prototype.removeMine = function(tileX, tileY) {
-    const index = this.getIndex(tileX, tileY);
-
-    if(index === WorldMap.OUT_OF_BOUNDS) {
-        return;
-    }
-
-    for(let i = 0; i < this.mines.length; i++) {
-        if(this.mines[i].isPlacedOn(tileX, tileY)) {
-            this.mines[i] = this.mines[this.mines.length - 1];
-            this.mines.pop();
-            break;
-        }
-    }
-}
-
-BattalionMap.prototype.addMine = function(mine) {
-    this.mines.push(mine);
-}
-
-BattalionMap.prototype.getMine = function(tileX, tileY) {
-    const index = this.getIndex(tileX, tileY);
-
-    if(index === WorldMap.OUT_OF_BOUNDS) {
-        return null;
-    }
-
-    for(let i = 0; i < this.mines.length; i++) {
-        const mine = this.mines[i];
-
-        if(mine.isPlacedOn(tileX, tileY)) {
-            return mine;
-        }
-    }
-
-    return null;
-}
-
-BattalionMap.prototype.isBuildingPlaceable = function(tileX, tileY) {
-    const index = this.getIndex(tileX, tileY);
-
-    if(index === WorldMap.OUT_OF_BOUNDS) {
-        return false;
-    }
-
-    if(this.getBuilding(tileX, tileY) !== null) {
-        return false;
-    }
-
-    return true;
-}
-
-BattalionMap.prototype.createBuilding = function(gameContext, snapshot) {
+BattalionMap.prototype.createBuilding = function(gameContext, type, tileX, tileY) {
     const { typeRegistry } = gameContext;
-    const { tileX, tileY, type } = snapshot;
-
-    if(!this.isBuildingPlaceable(tileX, tileY)) {
-        return;
-    }
-
     const buildingType = typeRegistry.getBuildingType(type);
     const index = this.buildings.length;
-    const building = new Building(index, buildingType);
-
-    building.tileX = tileX;
-    building.tileY = tileY;
-    building.load(snapshot);
+    const buildingID = this.nextBuildingID++;
+    const building = new Building(buildingID, index, buildingType);
 
     this.buildings.push(building);
+
+    if(this.getBuilding(tileX, tileY) === null) {
+        this.setTile(buildingID, BattalionMap.LAYER.BUILDING, tileX, tileY);
+
+        building.tileX = tileX;
+        building.tileY = tileY;
+    }
+
+    return building;
 }
 
 BattalionMap.prototype.getBuilding = function(tileX, tileY) {
-    const index = this.getIndex(tileX, tileY);
+    const buildingID = this.getTile(BattalionMap.LAYER.BUILDING, tileX, tileY);
 
-    if(index !== WorldMap.OUT_OF_BOUNDS) {
+    if(buildingID > 0) {
         for(let i = 0; i < this.buildings.length; i++) {
-            const building = this.buildings[i];
-
-            if(building.isPlacedOn(tileX, tileY)) {
-                return building;
+            if(this.buildings[i].id === buildingID) {
+                return this.buildings[i];
             }
         }
     }
@@ -307,52 +303,41 @@ BattalionMap.prototype.isJammed = function(gameContext, tileX, tileY, teamID, fl
 }
 
 BattalionMap.prototype.decodeLayers = function(layerData) {
-    for(const layerID in BattalionMap.LAYER) {
-        const data = layerData[layerID];
+    for(const layerName in layerData) {
+        let layerID = -1;
 
-        if(data) {
-            this.getLayer(BattalionMap.LAYER[layerID]).decode(data);
+        switch(layerName) {
+            case "GROUND": {
+                layerID = BattalionMap.LAYER.BOTTOM;
+                break;
+            }
+            case "DECORATION": {
+                layerID = BattalionMap.LAYER.MIDDLE;
+                break;
+            }
+            case "CLOUD": {
+                layerID = BattalionMap.LAYER.TOP;
+                break;
+            }
+        }
+
+        if(layerID !== -1) {
+            const data = layerData[layerName];
+            const layer = this.getLayer(layerID);
+
+            layer.decode(data);
         } else {
-            console.error("LayerData is not present!", layerID);
+            console.error("LayerData is not present!", layerName);
         }
     }
 }
 
 BattalionMap.prototype.saveLayers = function() {
     const layers = [];
-    const layerNames = ["GROUND", "DECORATION", "CLOUD"];
 
-    for(const name of layerNames) {
-        const index = BattalionMap.LAYER[name];
-
-        if(index !== undefined) {
-            const layer = this.getLayer(index);
-
-            layers.push(`"${name}": [${layer.encode()}]`);
-        }
-    }
+    layers.push(`"${"GROUND"}": [${this.getLayer(BattalionMap.LAYER.BOTTOM).encode()}]`);
+    layers.push(`"${"DECORATION"}": [${this.getLayer(BattalionMap.LAYER.MIDDLE).encode()}]`);
+    layers.push(`"${"CLOUD"}": [${this.getLayer(BattalionMap.LAYER.TOP).encode()}]`);
 
     return layers;
-}
-
-BattalionMap.prototype.saveFlags = function() {
-    const flags = [];
-
-    for(const name in BattalionMap.FLAG) {
-        if(this.flags & BattalionMap.FLAG[name]) {
-            flags.push(name);
-        }
-    }
-
-    return flags;
-}
-
-BattalionMap.prototype.loadFlags = function(flags) {
-    for(let i = 0; i < flags.length; i++) {
-        const flag = BattalionMap.FLAG[flags[i]];
-
-        if(flag !== undefined) {
-            this.flags |= flag;
-        }
-    }
 }

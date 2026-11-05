@@ -42,9 +42,9 @@ const fillExplodeTilePlan = function(gameContext, executionPlan, actionIntent) {
 
 const executeExplodeTile = function(gameContext, data) {
     const { teamManager, world, tileManager, typeRegistry } = gameContext;
-    const { entityManager, mapManager } = world;
+    const { entityManager } = world;
     const { entityID, tileX, tileY } = data;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
 
     if(entityID !== EntityManager.INVALID_ID) {
         const entity = entityManager.getEntity(entityID);
@@ -74,9 +74,9 @@ ExplodeTileAction.prototype.constructor = ExplodeTileAction;
 
 ExplodeTileAction.prototype.onStart = function(gameContext, data) {
     const { world, spriteController } = gameContext;
-    const { mapManager, entityManager } = world;
+    const { entityManager } = world;
     const { entityID, tileX, tileY } = data;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
 
     worldMap.removeLocalization(tileX, tileY);
 

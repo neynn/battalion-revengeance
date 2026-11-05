@@ -3,8 +3,7 @@ import { WorldMap } from "../../engine/map/worldMap.js";
 
 const tryInspectTile = function(gameContext, actor, tileX, tileY) {
     const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const index = worldMap.getIndex(tileX, tileY);
     let isValid = false;
 
@@ -17,8 +16,7 @@ const tryInspectTile = function(gameContext, actor, tileX, tileY) {
 
 const tryInspectMine = function(gameContext, actor, tileX, tileY) {
     const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const mine = worldMap.getMine(tileX, tileY);
     let isValid = false;
 
@@ -35,8 +33,7 @@ const tryInspectMine = function(gameContext, actor, tileX, tileY) {
 
 const tryInspectBuilding = function(gameContext, actor, tileX, tileY) {
     const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const building = worldMap.getBuilding(tileX, tileY);
     let isValid = false;
 
@@ -146,8 +143,7 @@ MapInspector.prototype.enable = function() {
 
 MapInspector.prototype.getLastMine = function(gameContext) {
     const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const building = worldMap.getMine(this.lastX, this.lastY);
 
     return building;
@@ -155,8 +151,7 @@ MapInspector.prototype.getLastMine = function(gameContext) {
 
 MapInspector.prototype.getLastBuilding = function(gameContext) {
     const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const building = worldMap.getBuilding(this.lastX, this.lastY);
 
     return building;

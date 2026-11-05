@@ -171,14 +171,12 @@ export const saveMap = function(mapID, map2D) {
     }
 
     const layers = map2D.saveLayers();
-    const flags = map2D.saveFlags();
 
     new PrettyJSON(4)
     .open()
     .writeLine("music", map2D.music)
     .writeLine("width", map2D.width)
     .writeLine("height", map2D.height)
-    .writeLine("flags", flags)
     .writeList("data", layers)
     .close()
     .download("map_" + mapID);

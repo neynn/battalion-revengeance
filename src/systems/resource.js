@@ -1,8 +1,7 @@
 export const ResouceSystem = {
     getCostFactor: function(gameContext, teamID, categoryID) {
         const { world } = gameContext;
-        const { mapManager } = world;
-        const worldMap = mapManager.getActiveMap();
+        const worldMap = world.getWorldMap();
         let costReduction = 0;
 
         for(const building of worldMap.buildings) {

@@ -86,8 +86,7 @@ const isEntityTypeJammed = function(gameContext, entityType, worldMap, tileX, ti
  */
 export const canEntityTypeStandOnTile = function(gameContext, typeID, tileX, tileY, teamID) {
     const { typeRegistry, world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const tileType = worldMap.getTileType(gameContext, tileX, tileY);
     const entityType = typeRegistry.getEntityType(typeID);
     const tileCost = getEntityTypeTileCost(gameContext, tileType, entityType);
@@ -163,24 +162,24 @@ export const resolveTileCost = function(gameContext, worldMap, entity, tileType,
 export const PathfinderSystem = {
     isNodeReachable: function(gameContext, index) {
         const { world } = gameContext;
-        const { mapManager } = world;
-        const worldMap = mapManager.getActiveMap();
+
+        const worldMap = world.getWorldMap();
         const pathfinder = worldMap.pathfinder;
 
         return pathfinder.isNodeReachable(index);
     },
     getCostOf: function(gameContext, index) {
         const { world } = gameContext;
-        const { mapManager } = world;
-        const worldMap = mapManager.getActiveMap();
+
+        const worldMap = world.getWorldMap();
         const pathfinder = worldMap.pathfinder;
 
         return pathfinder.getCostOf(index);
     },
     getBestPath: function(gameContext, targetX, targetY) {
         const { world } = gameContext;
-        const { mapManager } = world;
-        const worldMap = mapManager.getActiveMap();
+
+        const worldMap = world.getWorldMap();
 
         if(!worldMap) {
             return [];
@@ -190,8 +189,8 @@ export const PathfinderSystem = {
     },
     isPathWalkable: function(gameContext, entity, path) {
         const { world } = gameContext;
-        const { mapManager } = world;
-        const worldMap = mapManager.getActiveMap();
+
+        const worldMap = world.getWorldMap();
         const { tileX, tileY, config } = entity;
         const { movementRange } = config;
 
@@ -284,8 +283,8 @@ export const InterceptSystem = {
     },
     mInterceptMine: function(gameContext, entity, path, pathLength) {
         const { world } = gameContext;
-        const { mapManager } = world;
-        const worldMap = mapManager.getActiveMap();
+
+        const worldMap = world.getWorldMap();
         const { tileX, tileY } = entity;
         const interception = createInterception(false, pathLength);
 

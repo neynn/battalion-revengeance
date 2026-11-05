@@ -7,7 +7,8 @@ import { MineType } from "../type/parsed/mineType.js";
  * 
  * @param {MineType} config 
  */
-export const Mine = function(config) {
+export const Mine = function(id, config) {
+    this.id = id;
     this.config = config;
     this.tileX = -1;
     this.tileY = -1;
@@ -34,6 +35,7 @@ Mine.prototype.save = function() {
 }
 
 Mine.prototype.load = function(data) {
+    this.teamID = data.teamID;
     this.flags = data.flags;
 
     if(this.flags & Mine.FLAG.HIDDEN) {

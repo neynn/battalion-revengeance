@@ -17,7 +17,6 @@ import { Spectator } from "../actors/spectator.js";
 import { PlayUI } from "../ui/contexts/playUI.js";
 
 import { createPlayCamera } from "../systems/camera.js";
-import { createMineObject } from "../systems/spawn.js";
 
 import { DialogueComponent } from "../event/components/dialogue.js";
 import { ExplodeTileComponent } from "../event/components/explodeTile.js";
@@ -78,13 +77,13 @@ ScenarioLoader.prototype.createMines = function(gameContext) {
         const { category } = typeRegistry.getMineType(type);
 
         if(this.worldMap.isMinePlaceable(gameContext, x, y, category)) {
-            const mineObject = createMineObject(gameContext, team, type, x, y);
+            const mineObject = this.worldMap.createMine(gameContext, type, x, y);
 
             if(isVisible) {
                 mineObject.show();
             }
-            
-            this.worldMap.addMine(mineObject);
+
+            mineObject.teamID = team;
         }
     }
 }

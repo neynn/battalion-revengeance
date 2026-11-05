@@ -83,15 +83,3 @@ export const createServerEntityObject = function(gameContext, entityID, snapshot
 
     return entity;
 }
-
-export const createMineObject = function(gameContext, teamID, typeID, tileX, tileY) {
-    const { typeRegistry } = gameContext;
-    const mineType = typeRegistry.getMineType(typeID);
-    const mine = new Mine(mineType);
-
-    mine.tileX = tileX;
-    mine.tileY = tileY;
-    mine.teamID = teamID;
-
-    return mine;
-}

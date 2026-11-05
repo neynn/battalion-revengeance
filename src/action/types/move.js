@@ -211,10 +211,10 @@ MoveAction.prototype.constructor = MoveAction;
 
 MoveAction.prototype.onStart = function(gameContext, data) {
     const { world, spriteController, soundRegistry } = gameContext;
-    const { mapManager, entityManager } = world;
+    const { entityManager } = world;
     const { entityID, path } = data;
     const entity = entityManager.getEntity(entityID);
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
 
     entityManager.addHot(entity.getIndex());
     entity.setState(BattalionEntity.STATE.MOVE);

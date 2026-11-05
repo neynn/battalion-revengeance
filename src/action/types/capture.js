@@ -50,9 +50,9 @@ const fillCapturePlan = function(gameContext, executionPlan, actionIntent) {
 
 const executeCapture = function(gameContext, data) {
     const { world } = gameContext;
-    const { entityManager, mapManager } = world;
+    const { entityManager } = world;
     const { entityID, targetX, targetY } = data;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const entity = entityManager.getEntity(entityID);
     const building = worldMap.getBuilding(targetX, targetY);
     const nextTeam = entity.getTeam(gameContext);
@@ -82,9 +82,8 @@ CaptureAction.prototype.constructor = CaptureAction;
 
 CaptureAction.prototype.onEnd = function(gameContext, data) {
     const { world, spriteController } = gameContext;
-    const { mapManager } = world;
     const { targetX, targetY } = data;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const building = worldMap.getBuilding(targetX, targetY);
     const spriteID = spriteController.getBuildingSpriteID(building.index);
 

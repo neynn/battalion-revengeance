@@ -18,7 +18,7 @@ const createExtractData = function() {
 
 const fillExtractPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
-    const { entityManager, mapManager } = world;
+    const { entityManager } = world;
     const { entityID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
 
@@ -27,7 +27,7 @@ const fillExtractPlan = function(gameContext, executionPlan, actionIntent) {
     }
 
     const { tileX, tileY } = entity;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const tileType = worldMap.getTileType(gameContext, tileX, tileY);
 
     if(!tileType.hasTerrain(TERRAIN_TYPE.EXTRACTABLE)) {
@@ -44,10 +44,10 @@ const fillExtractPlan = function(gameContext, executionPlan, actionIntent) {
 
 const executeExtract = function(gameContext, data) {
     const { world } = gameContext;
-    const { entityManager, mapManager } = world;
+    const { entityManager } = world;
     const { entityID, value } = data;
 
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const entity = entityManager.getEntity(entityID);
     const team = entity.getTeam(gameContext);
     const { tileX, tileY } = entity;

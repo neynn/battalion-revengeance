@@ -173,7 +173,6 @@ EditorController.prototype.saveMap = function() {
     }
 
     const layers = worldMap.saveLayers();
-    const flags = worldMap.saveFlags();
     const buildings = this.buildingTool.saveBuildings();
 
     new PrettyJSON(4)
@@ -181,7 +180,6 @@ EditorController.prototype.saveMap = function() {
     .writeLine("width", worldMap.width)
     .writeLine("height", worldMap.height)
     .writeList("buildings", buildings, PrettyJSON.LIST_TYPE.ARRAY)
-    .writeLine("flags", flags)
     .writeList("data", layers)
     .close()
     .download("map_" + worldMap.getID());
@@ -207,11 +205,10 @@ EditorController.prototype.loadMap = async function(gameContext) {
     if(scenario) {
         MapSystem.getMapFile(gameContext, scenario.mapID)
         .then(file => {
-            const { width, height, data, buildings = [], flags = [], climate = null } = file;
+            const { width, height, data, buildings = [], climate = null } = file;
             const worldMap = MapSystem.createEmptyMap(gameContext, width, height);
 
             worldMap.climate = CLIMATE_TYPE[climate] ?? CLIMATE_TYPE.TEMPERATE;
-            worldMap.loadFlags(flags);
             worldMap.decodeLayers(data);
 
             for(let i = 0; i < buildings.length; i++) {

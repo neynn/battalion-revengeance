@@ -265,6 +265,7 @@ ScenarioModelParser.prototype.parseModelFromJSON = function(gameContext, model, 
         });
     }
 
+    //TODO(neyn): This should be a snapshot!
     for(let i = 0; i < mines.length; i++) {
         const {
             x = -1,

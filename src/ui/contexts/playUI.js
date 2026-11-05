@@ -43,9 +43,9 @@ const RECON_MAIN_WIDTH = 154;
 const RECON_BAR_HEIGHT = 42;
 
 const TILE_DRAW_ORDER = [
-    BattalionMap.LAYER.GROUND,
-    BattalionMap.LAYER.DECORATION,
-    BattalionMap.LAYER.CLOUD
+    BattalionMap.LAYER.BOTTOM,
+    BattalionMap.LAYER.MIDDLE,
+    BattalionMap.LAYER.TOP
 ];
 
 const toTooltipX = function(x) {
@@ -158,11 +158,10 @@ PlayUI.prototype.constructor = PlayUI;
 
 PlayUI.prototype.getHudTitle = function(gameContext) {
     const { language, missionManager, world } = gameContext;
-    const { mapManager } = world;
     const { currentMission } = missionManager;
 
     if(!currentMission) {
-        const worldMap = mapManager.getActiveMap();
+        const worldMap = world.getWorldMap();
         
         return worldMap.name;
     }
@@ -193,8 +192,7 @@ PlayUI.prototype.updateInspectSprite = function(gameContext, entity) {
 
 PlayUI.prototype.drawTile = function(gameContext, display, tileX, tileY, screenX, screenY) {
     const { tileManager, world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const { context } = display;
 
     for(const layerID of TILE_DRAW_ORDER) {
@@ -494,12 +492,11 @@ PlayUI.prototype.updateEntityState = function(entity) {
 PlayUI.prototype.onImmediate = function(gameContext, display) {
     const { uiData, world, language, timer, typeRegistry, gameWindow, spriteController } = gameContext;
     const { width, height } = gameWindow;
-    const { mapManager } = world;
     const { realTime, deltaTime } = timer;
     const { context } = display;
     const tileX = this.inspector.lastX;
     const tileY = this.inspector.lastY;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const index = worldMap.getIndex(tileX, tileY);
 
     const gameWidth = this.cameraContext.camera.viewportWidth + RECON_MAIN_WIDTH;

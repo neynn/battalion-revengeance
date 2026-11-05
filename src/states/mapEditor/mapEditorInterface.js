@@ -335,15 +335,15 @@ MapEditorInterface.prototype.drawTileEditor = function(gameContext, display) {
     const allFlags = this.doButton(gameContext, allID, allX, layerY, LAYER_BUTTON_WIDTH, LAYER_BUTTON_HEIGHT);
 
     if(bottomFlags & IM_FLAG.CLICKED) {
-        this.editor.toggleLayerState(BattalionMap.LAYER.GROUND);
+        this.editor.toggleLayerState(BattalionMap.LAYER.BOTTOM);
     }
 
     if(middleFlags & IM_FLAG.CLICKED) {
-        this.editor.toggleLayerState(BattalionMap.LAYER.DECORATION);
+        this.editor.toggleLayerState(BattalionMap.LAYER.MIDDLE);
     }
 
     if(topFlags & IM_FLAG.CLICKED) {
-        this.editor.toggleLayerState(BattalionMap.LAYER.CLOUD);
+        this.editor.toggleLayerState(BattalionMap.LAYER.TOP);
     }
 
     if(allFlags & IM_FLAG.CLICKED) {
@@ -351,9 +351,9 @@ MapEditorInterface.prototype.drawTileEditor = function(gameContext, display) {
         this.editor.resetBrush();
     }
 
-    this.drawLayerButton(display, bottomX, layerY, (bottomFlags & IM_FLAG.HOT), this.editor.getLayerState(BattalionMap.LAYER.GROUND), "Bottom");
-    this.drawLayerButton(display, middleX, layerY, (middleFlags & IM_FLAG.HOT), this.editor.getLayerState(BattalionMap.LAYER.DECORATION), "Middle");
-    this.drawLayerButton(display, topX, layerY, (topFlags & IM_FLAG.HOT), this.editor.getLayerState(BattalionMap.LAYER.CLOUD), "Top");
+    this.drawLayerButton(display, bottomX, layerY, (bottomFlags & IM_FLAG.HOT), this.editor.getLayerState(BattalionMap.LAYER.BOTTOM), "Bottom");
+    this.drawLayerButton(display, middleX, layerY, (middleFlags & IM_FLAG.HOT), this.editor.getLayerState(BattalionMap.LAYER.MIDDLE), "Middle");
+    this.drawLayerButton(display, topX, layerY, (topFlags & IM_FLAG.HOT), this.editor.getLayerState(BattalionMap.LAYER.TOP), "Top");
     this.drawLayerButton(display, allX, layerY, (allFlags & IM_FLAG.HOT), MapEditor.LAYER_STATE.VISIBLE, "View All");
 
     const toolsX = gameWindow.width - LAYER_BUTTON_WIDTH * 5;
@@ -427,15 +427,15 @@ MapEditorInterface.prototype.onImmediate = function(gameContext, display) {
     }
 
     if(router.isTriggered(INPUT_TRIGGER.LAYER_BOTTOM)) {
-        this.editor.toggleLayerState(BattalionMap.LAYER.GROUND);
+        this.editor.toggleLayerState(BattalionMap.LAYER.BOTTOM);
     }
 
     if(router.isTriggered(INPUT_TRIGGER.LAYER_MIDDLE)) {
-        this.editor.toggleLayerState(BattalionMap.LAYER.DECORATION);
+        this.editor.toggleLayerState(BattalionMap.LAYER.MIDDLE);
     }
 
     if(router.isTriggered(INPUT_TRIGGER.LAYER_TOP)) {
-        this.editor.toggleLayerState(BattalionMap.LAYER.CLOUD);
+        this.editor.toggleLayerState(BattalionMap.LAYER.TOP);
     }
 
     if(router.isTriggered(INPUT_TRIGGER.VIEW_ALL)) {

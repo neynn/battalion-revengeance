@@ -28,7 +28,7 @@ const createEditContext = function(gameContext, renderer) {
 
 export const MapEditorState = function() {
     this.mapEditor = new MapEditor();
-    this.mapEditor.registerFill(BattalionMap.LAYER.GROUND, TILE_ID.GRASS);
+    this.mapEditor.registerFill(BattalionMap.LAYER.BOTTOM, TILE_ID.GRASS);
     this.mapEditor.initVariantTable(TILE_ID._COUNT);
 
     this.controller = new EditorController(this.mapEditor);

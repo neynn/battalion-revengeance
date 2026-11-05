@@ -9,7 +9,8 @@ import { BuildingType } from "../type/parsed/buildingType.js";
  * 
  * @param {BuildingType} config 
  */
-export const Building = function(index, config) {
+export const Building = function(id, index, config) {
+    this.id = id;
     this.index = index;
     this.config = config;
     this.tileX = -1;

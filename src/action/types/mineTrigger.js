@@ -24,7 +24,7 @@ const createMineTriggerData = function() {
 
 const fillMineTriggerPlan = function(gameContext, executionPlan, actionIntent) {
     const { world } = gameContext;
-    const { entityManager, mapManager } = world;
+    const { entityManager } = world;
     const { entityID } = actionIntent;
     const entity = entityManager.getEntity(entityID);
 
@@ -32,7 +32,7 @@ const fillMineTriggerPlan = function(gameContext, executionPlan, actionIntent) {
         return;
     }
 
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
 
     if(!worldMap) {
         return;
@@ -70,10 +70,10 @@ const fillMineTriggerPlan = function(gameContext, executionPlan, actionIntent) {
 
 const executeMineTrigger = function(gameContext, data) {
     const { world } = gameContext;
-    const { entityManager, mapManager } = world;
+    const { entityManager } = world;
     const { entityID, health, tileX, tileY } = data;
     const entity = entityManager.getEntity(entityID);
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
 
     worldMap.removeMine(tileX, tileY);
     entity.setHealth(health);

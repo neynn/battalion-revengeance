@@ -487,8 +487,7 @@ BattalionEntity.prototype.getTerrainDamage = function(gameContext) {
     }
 
     const { world, typeRegistry } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
 
     const startX = this.tileX;
     const startY = this.tileY;
@@ -544,8 +543,7 @@ BattalionEntity.prototype.isMoveTargetValid = function(gameContext, targetX, tar
  */
 BattalionEntity.prototype.getTerrainTypes = function(gameContext) {
     const { world, typeRegistry } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const types = [];
 
     if(!worldMap) {
@@ -585,8 +583,7 @@ BattalionEntity.prototype.updateRangeGuard = function(gameContext) {
     }
 
     const { world, typeRegistry } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
 
     const startX = this.tileX;
     const startY = this.tileY;
@@ -633,8 +630,7 @@ BattalionEntity.prototype.getWeaponFactor = function(gameContext, targetArmor) {
 
 BattalionEntity.prototype.getTerrainFactor = function(gameContext, target) {
     const { world, typeRegistry } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const targetMove = target.config.movementType;
     const targetX = target.tileX;
     const targetY = target.tileY;
@@ -660,8 +656,7 @@ BattalionEntity.prototype.getTerrainFactor = function(gameContext, target) {
 
 BattalionEntity.prototype.getLogisticFactor = function(gameContext) {
     const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const climateType = worldMap.getClimateType(gameContext, this.tileX, this.tileY);
     let logisticFactor = 1;
 
@@ -1059,8 +1054,7 @@ BattalionEntity.prototype.isHurtByDispersion = function() {
 
 BattalionEntity.prototype.placeOnMap = function(gameContext) {
     const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
 
     if(!worldMap) {
         return;
@@ -1083,8 +1077,7 @@ BattalionEntity.prototype.placeOnMap = function(gameContext) {
 
 BattalionEntity.prototype.removeFromMap = function(gameContext) {
     const { world } = gameContext;
-    const { mapManager } = world;
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
 
     if(!worldMap) {
         return;
@@ -1118,7 +1111,6 @@ BattalionEntity.prototype.reduceCash = function(cash) {
 //TODO(neyn): Most of this must be calculated in MinePlaceAction!
 BattalionEntity.prototype.canPlaceMine = function(gameContext) {
     const { world, typeRegistry } = gameContext;
-    const { mapManager } = world;
 
     //Only engineers are able to place mines.
     if(!this.hasTrait(TRAIT_TYPE.ENGINEER)) {
@@ -1135,7 +1127,7 @@ BattalionEntity.prototype.canPlaceMine = function(gameContext) {
 
     //Tiles should only be placeable on the units feet.
     //_INVALID mines will never be placeable.
-    const worldMap = mapManager.getActiveMap();
+    const worldMap = world.getWorldMap();
     const isPlaceable = worldMap.isMinePlaceable(gameContext, this.tileX, this.tileY, category);
 
     return isPlaceable;
