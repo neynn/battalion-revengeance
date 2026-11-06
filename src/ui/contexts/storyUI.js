@@ -229,7 +229,8 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
                             const { actionRouter } = gameContext;
 
                             loader.createDefaultMatch(gameContext, []);
-                            actionRouter.forceEnqueue(gameContext, InterruptVTable.createIntent(INTERRUPT_TYPE.START_GAME, -1));
+                            //isTrigger does not matter here because it's story based. isMultiplayer is false anyway.
+                            actionRouter.pushIntent(gameContext, InterruptVTable.createIntent(INTERRUPT_TYPE.START_GAME, -1));
 
                             this.hide();
                         } else {

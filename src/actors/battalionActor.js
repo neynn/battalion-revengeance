@@ -59,12 +59,11 @@ BattalionActor.prototype.enqueueNextIntent = function(gameContext) {
 
     for(let i = 0; i < this.actionIntents.length; i++) {
         const actionIntent = this.actionIntents[i];
-        const executionPlan = actionQueue.createExecutionPlan(gameContext, actionIntent);
+        const isSuccessful = actionRouter.pushIntent(gameContext, actionIntent);
 
-        if(executionPlan) {
-            actionRouter.dispatch(gameContext, executionPlan, actionIntent);
+        if(isSuccessful) {
             toDelete = i + 1;
-            break;
+            break;  
         }
     }
 

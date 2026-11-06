@@ -8,19 +8,19 @@ import { TeamManager } from "./team/teamManager.js";
 import { TypeRegistry } from "./type/typeRegistry.js";
 import { ArenaState } from "./states/arena/arena.js";
 import { loadTiles, loadVisualTiles, registerActionVTables, registerClientActions } from "./systems/register.js";
-import { ClientActionRouter } from "./action/router/clientActionRouter.js";
 import { UIData } from "./ui/uiData.js";
 import { MissionManager } from "./mission/missionManager.js";
 import { ScenarioRegistry } from "./scenario/scenarioRegistry.js";
 import { SpriteController } from "./spriteController.js";
 import { SoundRegistry } from "./soundRegistry.js";
+import { BrevRouter } from "./action/brevRouter.js";
 
 export const BattalionContext = function(gTimer, gWindow) {
     ClientGameContext.call(this, gTimer, gWindow);
 
     this.typeRegistry = new TypeRegistry();
     this.teamManager = new TeamManager();
-    this.actionRouter = new ClientActionRouter();
+    this.actionRouter = new BrevRouter();
     this.spriteController = new SpriteController();
     this.soundRegistry = new SoundRegistry();
     this.missionManager = new MissionManager();
@@ -82,4 +82,5 @@ BattalionContext.prototype.onExit = function() {
     this.spriteController.exit(this);
     this.missionManager.exit();
     this.debugMode = false;
+    this.actionRouter.toSingleplayer();
 }

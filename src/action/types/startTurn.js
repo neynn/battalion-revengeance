@@ -107,7 +107,7 @@ const executeStartTurn = function(gameContext, data) {
     for(const event of events) {
         const { id } = event;
 
-        actionRouter.forceEnqueue(gameContext, InterruptVTable.createIntent(INTERRUPT_TYPE.EVENT, id));
+        actionRouter.pushIntent(gameContext, InterruptVTable.createIntent(INTERRUPT_TYPE.EVENT, id), true);
         event.execute(gameContext);
     }
 

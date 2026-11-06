@@ -4,7 +4,6 @@ import { World } from "../../engine/world/world.js";
 import { TeamManager } from "../team/teamManager.js";
 import { MP_CLIENT_JSON, INTERRUPT_TYPE, MP_SERVER_JSON } from "../enums.js";
 import { MapMaster } from "../map/mapMaster.js";
-import { ServerActionRouter } from "../action/router/serverActionRouter.js";
 import { isIntentValid, unpackIntent } from "../action/intentPacker.js";
 import { ENTITY_SNAPSHOT_SIZE, packEntitySnapshot } from "../action/packer_constants.js";
 import { fillTurnSnapshot } from "../snapshot/turnSnapshot.js";
@@ -12,6 +11,7 @@ import { InterruptVTable } from "../action/types/interrupt.js";
 import { MapSystem } from "../systems/map.js";
 import { Lobby } from "./lobby.js";
 import { ServerScenarioLoader } from "../scenario/loaders/serverLoader.js";
+import { BrevRouter } from "../action/brevRouter.js";
 
 const isClientTurn = function(gameContext, messengerID) {
     const { world } = gameContext;
@@ -43,11 +43,20 @@ export const ServerGameContext = function(serverApplication, id) {
     this.world = new World();
     this.teamManager = new TeamManager();
     this.states = new StateMachine(this);
-    this.actionRouter = new ServerActionRouter();
+    this.actionRouter = new BrevRouter();
+    this.actionRouter.toMultiplayerServer();
     this.mapMaster = new MapMaster();
     this.lobby = new Lobby();
     this.state = ServerGameContext.STATE.NONE;
     this.readyClients = 0;
+
+    //Hook that sends the buffer to all clients.
+    this.actionRouter.events.on(BrevRouter.EVENT.MP_SEND_BUFFER, (event) => {
+        const { bytes, buffer } = event;
+
+        console.log("SENT BYTES:", bytes);
+        this.sendGameUpdate(buffer);
+    }, { permanent: true });
 }
 
 ServerGameContext.STATE = {
@@ -200,7 +209,7 @@ ServerGameContext.prototype.onMessage = async function(messengerID, type, payloa
             if(this.readyClients >= this.members.length && this.state === ServerGameContext.STATE.STARTING) {
                 this.broadcast(MP_SERVER_JSON.START_MAP, 0);
                 this.state = ServerGameContext.STATE.STARTED;
-                this.actionRouter.forceEnqueue(this, InterruptVTable.createIntent(INTERRUPT_TYPE.START_GAME, -1));
+                this.actionRouter.pushIntent(this, InterruptVTable.createIntent(INTERRUPT_TYPE.START_GAME, -1));
             }
 
             break;
@@ -215,7 +224,7 @@ ServerGameContext.prototype.onMessage = async function(messengerID, type, payloa
 
                 if(intent) {
                     if(isIntentValid(this, intent)) {
-                        this.actionRouter.forceEnqueue(this, intent);
+                        this.actionRouter.pushIntent(this, intent);
                     } else {
                         console.error("Invalid ActionIntent!");
                     }

@@ -14,5 +14,5 @@ SpawnComponent.prototype.execute = function(gameContext) {
     const { actionRouter } = gameContext;
     const actionIntent = EntitySpawnVTable.createIntent(this.snapshot);
 
-    actionRouter.forceEnqueue(gameContext, actionIntent);
+    actionRouter.pushIntent(gameContext, actionIntent, true);
 }

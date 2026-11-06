@@ -212,7 +212,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
         const entity = this.inspector.getLastEntity(gameContext);
 
         if(entity) {
-            actionRouter.forceEnqueue(gameContext, DeathActionVTable.createIntent([entity.id]));
+            actionRouter.pushIntent(gameContext, DeathActionVTable.createIntent([entity.id]));
         }  
     });
 }

@@ -301,7 +301,7 @@ const isCounterValid = function(attacker, target) {
     const targetID = target.getID();
 
     //Target should be the previous attacker.
-    if(attacker.lastAttacker !== targetID) {
+    if(!attacker.isLastAttackedBy(targetID)) {
         return false;
     }
 

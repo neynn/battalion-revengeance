@@ -15,5 +15,5 @@ ExplodeTileComponent.prototype.execute = function(gameContext) {
     const { actionRouter } = gameContext;
     const actionIntent = ExplodeTileVTable.createIntent(this.tileX, this.tileY);
 
-    actionRouter.forceEnqueue(gameContext, actionIntent);
+    actionRouter.pushIntent(gameContext, actionIntent, true);
 }

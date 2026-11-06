@@ -1,25 +1,18 @@
 import { ExecutionPlan } from "./executionPlan.js";
-import { Queue } from "../util/queue.js";
 
 const MAX_ACTIONS_PER_BATCH = 100;
+const MAX_ACTIONS_IN_QUEUE = 100;
 
 export const ActionQueue = function() {
     this.nextID = 0;
     this.actionTables = new Map();
     this.actionTypes = new Map();
     this.intentQueue = [];
-    this.executionQueue = new Queue(ActionQueue.MAX_ACTIONS);
+    this.executionQueue = [];
     this.current = null;
     this.isSkipping = false;
     this.state = ActionQueue.STATE.NONE;
 }
-
-ActionQueue.MAX_ACTIONS = 100;
-
-ActionQueue.PRIORITY = {
-    LOW: 0,
-    HIGH: 1
-};
 
 ActionQueue.STATE = {
     NONE: 0,
@@ -58,7 +51,6 @@ ActionQueue.prototype.update = function(gameContext) {
 
         const { type, data } = this.current;
         const actionTable = this.actionTables.get(type);
-
 
         switch(this.state) {
             case ActionQueue.STATE.NONE: {
@@ -112,15 +104,19 @@ ActionQueue.prototype.getNextAction = function(gameContext) {
             const executionPlan = this.createExecutionPlan(gameContext, actionIntent);
 
             if(executionPlan) {
-                this.enqueue(executionPlan, ActionQueue.PRIORITY.HIGH);
+                this.enqueue(executionPlan);
                 break;
             }
         }
 
-        this.current = this.executionQueue.getNext();
+        if(this.executionQueue.length !== 0) {
+            this.current = this.executionQueue.shift();
 
-        if(this.current && this.actionTypes.has(this.current.type)) {
-            this.state = ActionQueue.STATE.ACTIVE;
+            if(this.actionTypes.has(this.current.type)) {
+                this.state = ActionQueue.STATE.ACTIVE;
+            }
+        } else {
+            this.current = null;
         }
     }
 
@@ -189,7 +185,7 @@ ActionQueue.prototype.registerAction = function(typeID, handler) {
 
 ActionQueue.prototype.exit = function() {
     this.intentQueue.length = 0;
-    this.executionQueue.clear();
+    this.executionQueue.length = 0;
     this.isSkipping = false;
     this.current = null;
     this.nextID = 0;
@@ -199,36 +195,25 @@ ActionQueue.prototype.exit = function() {
     }
 }
 
-ActionQueue.prototype.enqueue = function(execution, priority = ActionQueue.PRIORITY.LOW) {
-    if(!this.executionQueue.isFull()) {
-        switch(priority) {
-            case ActionQueue.PRIORITY.HIGH: {
-                this.executionQueue.enqueueFirst(execution);
-                break;
-            }
-            case ActionQueue.PRIORITY.LOW: {
-                this.executionQueue.enqueueLast(execution);
-                break;
-            }
-            default: {
-                console.warn(`Unknown priority! ${priority}`);
-                break;
-            }
-        }
-    } else {
+ActionQueue.prototype.enqueue = function(execution) {
+    if(this.executionQueue.length >= MAX_ACTIONS_IN_QUEUE) {
         console.error({
             "error": "The execution queue is full. Item has been discarded!",
             "item": execution
         });
+
+        return;
     }
+
+    this.executionQueue.unshift(execution);
 }
 
 ActionQueue.prototype.isEmpty = function() {
-    return this.executionQueue.getSize() === 0;
+    return this.executionQueue.length === 0;
 }
 
 ActionQueue.prototype.isRunning = function() {
-    return this.executionQueue.getSize() !== 0 || this.current !== null || this.intentQueue.length !== 0;
+    return this.executionQueue.length !== 0 || this.current !== null || this.intentQueue.length !== 0;
 }
 
 ActionQueue.prototype.skip = function() {

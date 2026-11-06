@@ -531,6 +531,8 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
     let tooltip = "";
     let tooltipTexture = UI_TEXTURE.TOOLTIP;
 
+    this.inspector.update(gameContext);
+
     if(this.inspector.checkChange()) {
         this.lastIndex = -1;
         this.lineCache.resetRecon();

@@ -39,18 +39,20 @@ export const BattalionEntity = function(id, config) {
     this.state = BattalionEntity.STATE.IDLE;
     this.teamID = TeamManager.INVALID_ID;
     this.transportID = ENTITY_TYPE._INVALID;
-    this.lastAttacker = EntityManager.INVALID_ID;
     this.turns = 0;
     this.cash = 0;
     this.opacity = 1;
     this.shop = SHOP_TYPE.NONE;
-
+    
     this.doneMoves = 0;
     this.doneActions = 0;
     this.allowedMoves = UNIT_MAX_MOVES_PER_TURN;
     this.allowedActions = UNIT_MAX_ACTIONS_PER_TURN;
     this.bonusMoves = 0;
     this.bonusActions = 0;
+
+    //Not persistent state.
+    this.lastAttacker = EntityManager.INVALID_ID;
 }
 
 BattalionEntity.RENDER_FLAG = {
@@ -1017,6 +1019,10 @@ BattalionEntity.prototype.setCloaked = function() {
     }
 
     this.setRFlag(BattalionEntity.RENDER_FLAG.CLOAKED);
+}
+
+BattalionEntity.prototype.isLastAttackedBy = function(entityID) {
+    return this.lastAttacker !== EntityManager.INVALID_ID && this.lastAttacker === entityID;
 }
 
 BattalionEntity.prototype.clearLastAttacker = function() {

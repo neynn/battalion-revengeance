@@ -31,7 +31,7 @@ const BACKGROUND_COLOR = "#000000";
 
 //TODO(neyn): Increase the size if ever needed.
 //Maybe do not let DEAD be a deferred state?
-const MAX_DEFERRED = 64;
+const MAX_DEFERRED = 128;
 
 export const BattalionRenderer2D = function() {
     Renderer2D.call(this);

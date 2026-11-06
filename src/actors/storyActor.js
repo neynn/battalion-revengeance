@@ -29,5 +29,5 @@ StoryActor.prototype.activeUpdate = function(gameContext) {
         return;
     }
 
-    actionRouter.forceEnqueue(gameContext, EndTurnVTable.createIntent());
+    actionRouter.pushIntent(gameContext, EndTurnVTable.createIntent());
 }

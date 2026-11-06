@@ -19,7 +19,7 @@ StoryState.prototype.onEnter = async function(gameContext, stateMachine, transit
     this.storyUI.show();
 
     eventHandler.toAuthority();
-    actionRouter.toSelf();
+    actionRouter.toSingleplayer();
 
     missionManager.unlockAll();
     missionManager.selectScenario("GREAT_WAR")
