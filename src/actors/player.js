@@ -27,15 +27,20 @@ export const Player = function(id, inspector, renderer) {
     this.renderer = renderer;
     this.inspector = inspector;
     this.maxIntents = 10;
+    this.state = Player.STATE.WATCHING;
 
     this.states = new StateMachine(this);
     this.states.addState(Player.STATE.IDLE, new IdleState());
     this.states.addState(Player.STATE.SELECT, new SelectState());
+
+    this.currentPath = [];
+    this.selectedEntity = null;
 }
 
 Player.STATE = {
     IDLE: 0,
-    SELECT: 1
+    SELECT: 1,
+    WATCHING: 2
 };
 
 Player.EVENT = {
@@ -53,6 +58,7 @@ Player.prototype.onTurnStart = function(gameContext) {
 
     teamManager.clientTeam = this.teamID;
 
+    this.state = Player.STATE.IDLE;
     this.clearIntents();
 }
 
@@ -60,6 +66,7 @@ Player.prototype.onTurnEnd = function(gameContext) {
     this.clearIntents();
     this.renderer.clearOverlays();
     this.states.setNextState(gameContext, Player.STATE.IDLE);
+    this.state = Player.STATE.WATCHING;
 }
 
 Player.prototype.refreshEntityNodeMap = function(gameContext, entity) {
@@ -78,11 +85,11 @@ Player.prototype.refreshEntityNodeMap = function(gameContext, entity) {
     
     pathfinder.addRangedOverlay(gameContext, entity);
 
-    this.renderer.pathfinderGeneration = pathfinder.searchID;
+    this.renderer.usePathfinderGeneration(pathfinder.searchID);
 }
 
 Player.prototype.stopRenderingPathfinder = function() {
-    this.renderer.pathfinderGeneration = 0;
+    this.renderer.usePathfinderGeneration(0);
 }
 
 Player.prototype.onClick = function(gameContext, tileX, tileY) {

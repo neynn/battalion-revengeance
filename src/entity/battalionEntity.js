@@ -12,7 +12,7 @@ import { ShopType } from "../type/parsed/shopType.js";
 import { TerrainType } from "../type/parsed/terrainType.js";
 import { StealthSystem } from "../systems/stealth.js";
 import { EntityType } from "../type/parsed/entityType.js";
-import { UNIT_MAX_ACTIONS_PER_TURN, UNIT_MAX_MOVES_PER_TURN, UNIT_MAX_MORALE_DELTA, UNIT_MIN_MORALE_DELTA } from "../constants.js";
+import { UNIT_MAX_ACTIONS_PER_TURN, UNIT_MAX_MOVES_PER_TURN, UNIT_MAX_MORALE_DELTA, UNIT_MIN_MORALE_DELTA, JAMMER_TILES_WITH_NEIGHBORS } from "../constants.js";
 
 /**
  * 
@@ -337,7 +337,13 @@ BattalionEntity.prototype.getDamageAsResources = function(lostHP) {
         return 0;
     }
 
-    return Math.floor(lostHP / this.maxHealth * this.config.cost);
+    const costFactor = this.maxHealth * this.config.cost;
+
+    if(costFactor <= 0) {
+        return 0;
+    }
+
+    return Math.floor(lostHP / costFactor);
 }
 
 BattalionEntity.prototype.setHealth = function(health) {
@@ -538,49 +544,11 @@ BattalionEntity.prototype.isMoveTargetValid = function(gameContext, targetX, tar
     return true;
 }
 
-/**
- * 
- * @param {*} gameContext 
- * @returns {TerrainType[]}
- */
-BattalionEntity.prototype.getTerrainTypes = function(gameContext) {
-    const { world, typeRegistry } = gameContext;
-    const worldMap = world.getWorldMap();
-    const types = [];
-
-    if(!worldMap) {
-        return types;
-    }
-
-    const tags = new Set();
-    const startX = this.tileX;
-    const startY = this.tileY;
-    const endX = startX + this.config.dimX;
-    const endY = startY + this.config.dimY;
-
-    for(let i = startY; i < endY; i++) {
-        for(let j = startX; j < endX; j++) {
-            const { terrain } = worldMap.getTileType(gameContext, j, i);
-
-            for(const terrainID of terrain) {
-                const terrainType = typeRegistry.getTerrainType(terrainID);
-                const { id } = terrainType;
-
-                if(!tags.has(id)) {
-                    types.push(terrainType);
-                    tags.add(id);
-                }
-            }
-        }
-    }
-
-    return types;
-}
-
 BattalionEntity.prototype.updateRangeGuard = function(gameContext) {
+    this.flags &= ~BattalionEntity.FLAG.IS_PROTECTED;
+
     //Air units are never protected by tiles/canyons!
     if(this.config.category === ENTITY_CATEGORY.AIR) {
-        this.flags &= ~BattalionEntity.FLAG.IS_PROTECTED;
         return;
     }
 
@@ -606,8 +574,6 @@ BattalionEntity.prototype.updateRangeGuard = function(gameContext) {
             }
         }
     }
-
-    this.flags &= ~BattalionEntity.FLAG.IS_PROTECTED;
 }
 
 BattalionEntity.prototype.getMoraleFactor = function(gameContext) {
@@ -633,24 +599,33 @@ BattalionEntity.prototype.getWeaponFactor = function(gameContext, targetArmor) {
 BattalionEntity.prototype.getTerrainFactor = function(gameContext, target) {
     const { world, typeRegistry } = gameContext;
     const worldMap = world.getWorldMap();
+
+    const startX = target.tileX;
+    const startY = target.tileY;
+    const endX = startX + target.config.dimX;
+    const endY = startY + target.config.dimY;
     const targetMove = target.config.movementType;
-    const targetX = target.tileX;
-    const targetY = target.tileY;
+
     let terrainFactor = 1;
 
-    const { terrain } = worldMap.getTileType(gameContext, targetX, targetY);
+    //TODO: Large units may get absurd protection.
+    for(let i = startY; i < endY; i++) {
+        for(let j = startX; j < endX; j++) {
+            const { terrain } = worldMap.getTileType(gameContext, j, i);
 
-    for(let i = 0; i < terrain.length; i++) {
-        const terrainType = typeRegistry.getTerrainType(terrain[i]);
-        const protectionFactor = terrainType.getProtection(targetMove);
+            for(const terrainID of terrain) {
+                const terrainType = typeRegistry.getTerrainType(terrainID);
+                const protectionFactor = terrainType.getProtection(targetMove);
 
-        //Terrain protection factor. Maxes out at 100%
-        if(protectionFactor > 1) {
-            terrainFactor = 0;
-            break;
+                //Immeditately return 0 if a terrain fully protects.
+                //This means all damage gets set to 0.
+                if(protectionFactor >= 1) {
+                    return 0;
+                }
+
+                terrainFactor *= (1 - protectionFactor);
+            }
         }
-
-        terrainFactor *= (1 - protectionFactor);
     }
 
     return terrainFactor;
@@ -659,16 +634,38 @@ BattalionEntity.prototype.getTerrainFactor = function(gameContext, target) {
 BattalionEntity.prototype.getLogisticFactor = function(gameContext) {
     const { world } = gameContext;
     const worldMap = world.getWorldMap();
-    const climateType = worldMap.getClimateType(gameContext, this.tileX, this.tileY);
-    let logisticFactor = 1;
 
-    if(this.hasTrait(TRAIT_TYPE.COMMANDO)) {
-        logisticFactor = 1 - (1 - climateType.logisticFactor) * TRAIT_CONFIG.COMMANDO_LOGISTIC_REDUCTION;
-    } else {
-        logisticFactor = climateType.logisticFactor;
+    const startX = this.tileX;
+    const startY = this.tileY;
+    const endX = startX + this.config.dimX;
+    const endY = startY + this.config.dimY;
+
+    let totalLogisticFactor = 0;
+    let count = 0;
+
+    for(let i = startY; i < endY; i++) {
+        for(let j = startX; j < endX; j++) {
+            const { logisticFactor } = worldMap.getClimateType(gameContext, j, i);
+
+            totalLogisticFactor += logisticFactor;
+            count++;
+        }
     }
 
-    return logisticFactor;
+    //Takes the average of all logistic factors.
+    if(count !== 0) {
+        totalLogisticFactor /= count;
+    } else {
+        totalLogisticFactor = 1;
+    }
+
+    //COMMANDO reduces the total impact negative logistic factors have.
+    //A factor of 0.2 would reduce damage by 80%, but COMMANDO halves that damage reduction to 40% (0.6).
+    if(totalLogisticFactor < 1 && this.hasTrait(TRAIT_TYPE.COMMANDO)) {
+        totalLogisticFactor = 1 - (1 - totalLogisticFactor) * TRAIT_CONFIG.COMMANDO_LOGISTIC_REDUCTION;
+    }
+
+    return totalLogisticFactor;
 }
 
 BattalionEntity.prototype.getHealthFactor = function() {
@@ -979,12 +976,33 @@ BattalionEntity.prototype.isSelectable = function() {
 }
 
 BattalionEntity.prototype.getMaxRange = function(gameContext) {
-    const terrainTypes = this.getTerrainTypes(gameContext);
-    let range = this.config.maxRange;
+    const { world, typeRegistry } = gameContext;
+    const worldMap = world.getWorldMap();
 
-    for(let i = 0; i < terrainTypes.length; i++) {
-        range += terrainTypes[i].rangeBoost;
+    const startX = this.tileX;
+    const startY = this.tileY;
+    const endX = startX + this.config.dimX;
+    const endY = startY + this.config.dimY;
+
+    let range = this.config.maxRange;
+    let maxBoost = 0;
+
+    //Find the max range boost from all tiles the entity is standing on.
+    for(let i = startY; i < endY; i++) {
+        for(let j = startX; j < endX; j++) {
+            const { terrain } = worldMap.getTileType(gameContext, j, i);
+
+            for(const terrainID of terrain) {
+                const { rangeModifier } = typeRegistry.getTerrainType(terrainID);
+
+                if(rangeModifier > maxBoost) {
+                    maxBoost = rangeModifier;
+                }
+            }
+        }
     }
+
+    range += maxBoost;
 
     if(range < this.config.minRange) {
         range = this.config.minRange;
@@ -1072,9 +1090,14 @@ BattalionEntity.prototype.placeOnMap = function(gameContext) {
     worldMap.addEntity(this.tileX, this.tileY, dimX, dimY, this.index);
 
     if(jammerFlags !== JAMMER_FLAG.NONE) {
-        worldMap.fill2DGraph(this.tileX, this.tileY, jammerRange, (nextX, nextY) => {
-            worldMap.addJammer(nextX, nextY, this.id, this.teamID, jammerFlags);
-        });
+        const tileDeltas = JAMMER_TILES_WITH_NEIGHBORS[jammerRange];
+
+        for(let i = 0; i < tileDeltas.length; i += 3) {
+            const tileX = this.tileX + tileDeltas[i];
+            const tileY = this.tileY + tileDeltas[i + 1];
+
+            worldMap.addJammer(tileX, tileY, this.id, this.teamID, jammerFlags);
+        }
     }
 
     this.updateRangeGuard(gameContext);
@@ -1095,9 +1118,14 @@ BattalionEntity.prototype.removeFromMap = function(gameContext) {
     worldMap.removeEntity(this.tileX, this.tileY, dimX, dimY, this.index);
 
     if(jammerFlags !== JAMMER_FLAG.NONE) {
-        worldMap.fill2DGraph(this.tileX, this.tileY, jammerRange, (nextX, nextY) => {
-            worldMap.removeJammer(nextX, nextY, this.id, this.teamID, jammerFlags);
-        });
+        const tileDeltas = JAMMER_TILES_WITH_NEIGHBORS[jammerRange];
+
+        for(let i = 0; i < tileDeltas.length; i += 3) {
+            const tileX = this.tileX + tileDeltas[i];
+            const tileY = this.tileY + tileDeltas[i + 1];
+
+            worldMap.removeJammer(tileX, tileY, this.id, this.teamID, jammerFlags);
+        }
     }
 }
 

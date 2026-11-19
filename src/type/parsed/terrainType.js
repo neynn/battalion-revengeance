@@ -6,7 +6,7 @@ export const TerrainType = function(id) {
     this.desc = "MISSING_DESC_TERRAIN";
     this.icon = ICON_TYPE.NONE;
     this.rangeGuard = false;
-    this.rangeBoost = 0;
+    this.rangeModifier = 0;
     this.damage = [];
     this.cost = [];
     this.protection = [];
@@ -30,7 +30,7 @@ TerrainType.prototype.load = function(config, DEBUG_NAME) {
         desc = "MISSING_DESC_TERRAIN",
         icon = "NONE",
         rangeGuard = false,
-        rangeBoost = 0,
+        rangeModifier = 0,
         damage = {},
         protection = {},
         cost = {}
@@ -40,7 +40,7 @@ TerrainType.prototype.load = function(config, DEBUG_NAME) {
     this.desc = desc;
     this.icon = ICON_TYPE[icon] ?? ICON_TYPE.NONE;
     this.rangeGuard = rangeGuard;
-    this.rangeBoost = rangeBoost;
+    this.rangeModifier = rangeModifier;
 
     if(damage['*'] !== undefined) {
         const defaultDamage = damage['*'];

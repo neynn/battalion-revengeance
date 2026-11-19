@@ -85,7 +85,7 @@ const fillProducePlan = function(gameContext, executionPlan, actionIntent) {
 }
 
 const executeProduce = function(gameContext, data) {
-    const { world, teamManager, isClient } = gameContext;
+    const { world, teamManager, actionRouter } = gameContext;
     const { entityManager } = world;
     const { entityID, cost, nextID, snapshot } = data;
     const { teamID } = snapshot;
@@ -93,10 +93,10 @@ const executeProduce = function(gameContext, data) {
     const spawnerEntity = entityManager.getEntity(entityID);
     let entity = null;
 
-    if(isClient) {
-        entity = createClientEntityObject(gameContext, nextID, snapshot);
-    } else {
+    if(actionRouter.isServer()) {
         entity = createServerEntityObject(gameContext, nextID, snapshot);
+    } else {
+        entity = createClientEntityObject(gameContext, nextID, snapshot);
     }
 
     if(!entity) {

@@ -33,7 +33,6 @@ export const ClientGameContext = function(gTimer, gWindow) {
     this.dialogueHandler = new DialogueHandler();
     this.timer = gTimer;
     this.gameWindow = gWindow;
-    this.isClient = true;
 
     this.client.cursor.events.on(Cursor.EVENT.BUTTON_CLICK, (event) => {
         const { button } = event;

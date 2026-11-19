@@ -89,3 +89,6 @@ Tiles: Split the texture with the frameData. See TileManager line 178
 Add DisableShop for Buildings. SHOP_TYPE.NONE should not be openable!
 
 .brev files
+
+double update in mapinteractor causes misses on clicks and tile swaps!
+remove fill2dgraph

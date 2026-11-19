@@ -14,7 +14,7 @@ const BUILDING_NEUTRAL_COLORS = {
     0xAA162C: [128, 102, 104],
     0xE9332E: [177, 173, 123],
     0xFF9085: [238, 225, 156],
-
+    
     //Gold Icon -> Gray Icon
     0x964E38: [35, 59, 84],
     0xE5C234: [95, 111, 101],
@@ -22,6 +22,7 @@ const BUILDING_NEUTRAL_COLORS = {
     0xFFFFDC: [173, 183, 170]
 };
 
+const NO_DEFINITION = -1;
 const ALL_SHADES = ENTITY_TYPE._COUNT * DIRECTION._COUNT;
 const SPRITES_PER_ENTITY_TYPE = DIRECTION._COUNT * BattalionEntity.STATE._COUNT;
 const EFFECTS_PER_ENTITY_TYPE = EFFECT_SPRITE._COUNT;
@@ -49,15 +50,15 @@ const getUnitShadeRegistryIndex = function(type, direction) {
  */
 const getUnitSpriteRegistryIndex = function(type, state, direction) {
     if(type < 0 || type >= ENTITY_TYPE._COUNT) {
-        return -1;
+        return NO_DEFINITION;
     }
 
     if(state < 0 || state >= BattalionEntity.STATE._COUNT) {
-        return -1;
+        return NO_DEFINITION;
     }
 
     if(direction < 0 || direction >= DIRECTION._COUNT) {
-        return -1;
+        return NO_DEFINITION;
     }
 
     return type * SPRITES_PER_ENTITY_TYPE + state * DIRECTION._COUNT + direction;
@@ -71,7 +72,7 @@ const getUnitSpriteRegistryIndex = function(type, state, direction) {
  */
 const getBuildingSpriteRegistryIndex = function(type) {
     if(type < 0 || type >= BUILDING_TYPE._COUNT) {
-        return -1;
+        return NO_DEFINITION;
     }
 
     return type;
@@ -85,11 +86,11 @@ const getBuildingSpriteRegistryIndex = function(type) {
  */
 const getUnitEffectRegistryIndex = function(type, effect) {
     if(type < 0 || type >= ENTITY_TYPE._COUNT) {
-        return -1;
+        return NO_DEFINITION;
     }
 
     if(effect < 0 || effect >= EFFECT_SPRITE._COUNT) {
-        return -1;
+        return NO_DEFINITION;
     }
 
     return type * EFFECTS_PER_ENTITY_TYPE + effect;
@@ -100,7 +101,7 @@ const unitEffectNameToRegistryIndex = function(effectName, typeID) {
         case "death": return getUnitEffectRegistryIndex(typeID, EFFECT_SPRITE.DEATH);
         case "fire": return getUnitEffectRegistryIndex(typeID, EFFECT_SPRITE.FIRE);
         case "heal": return getUnitEffectRegistryIndex(typeID, EFFECT_SPRITE.HEAL);
-        default: return -1;
+        default: return NO_DEFINITION;
     }
 }
 
@@ -118,7 +119,7 @@ const unitSpriteNameToRegistryIndex = function(spriteName, typeID) {
         case "fire_right": return getUnitSpriteRegistryIndex(typeID, BattalionEntity.STATE.FIRE, DIRECTION.EAST);
         case "fire_down": return getUnitSpriteRegistryIndex(typeID, BattalionEntity.STATE.FIRE, DIRECTION.SOUTH);
         case "fire_left": return getUnitSpriteRegistryIndex(typeID, BattalionEntity.STATE.FIRE, DIRECTION.WEST);
-        default: return -1;
+        default: return NO_DEFINITION;
     }
 }
 
@@ -132,9 +133,9 @@ export const SpriteController = function() {
     this.unitSpriteDefinitionRegistry = new Int16Array(ENTITY_SPRITE_COUNT);
     this.buildingSpriteDefinitionRegistry = new Int16Array(BUILDING_SPRITE_COUNT);
 
-    this.unitEffectSpriteDefinitionRegistry.fill(-1);
-    this.unitSpriteDefinitionRegistry.fill(-1);
-    this.buildingSpriteDefinitionRegistry.fill(-1);
+    this.unitEffectSpriteDefinitionRegistry.fill(NO_DEFINITION);
+    this.unitSpriteDefinitionRegistry.fill(NO_DEFINITION);
+    this.buildingSpriteDefinitionRegistry.fill(NO_DEFINITION);
 
     for(let i = 0; i < ALL_SHADES; i++) {
         this.shades[i] = Texture.EMPTY_IMAGE;
@@ -146,8 +147,8 @@ export const SpriteController = function() {
 SpriteController.prototype.getBuildingSpriteDefinitionID = function(type) {
     const index = getBuildingSpriteRegistryIndex(type);
 
-    if(index === -1) {
-        return -1;
+    if(index === NO_DEFINITION) {
+        return NO_DEFINITION;
     }
 
     return this.buildingSpriteDefinitionRegistry[index];
@@ -156,8 +157,8 @@ SpriteController.prototype.getBuildingSpriteDefinitionID = function(type) {
 SpriteController.prototype.getUnitSpriteDefinitionID = function(type, state, direction) {
     const index = getUnitSpriteRegistryIndex(type, state, direction);
 
-    if(index === -1) {
-        return -1;
+    if(index === NO_DEFINITION) {
+        return NO_DEFINITION;
     }
 
     return this.unitSpriteDefinitionRegistry[index];
@@ -166,8 +167,8 @@ SpriteController.prototype.getUnitSpriteDefinitionID = function(type, state, dir
 SpriteController.prototype.getUnitEffectSpriteDefinitionID = function(type, effect) {
     const index = getUnitEffectRegistryIndex(type, effect);
 
-    if(index === -1) {
-        return -1;
+    if(index === NO_DEFINITION) {
+        return NO_DEFINITION;
     }
 
     return this.unitEffectSpriteDefinitionRegistry[index];
@@ -218,7 +219,7 @@ SpriteController.prototype.registerEntitySprites = function(gameContext, entityT
         for(const spriteName in rEntitySprites) {
             const spriteIndex = unitSpriteNameToRegistryIndex(spriteName, typeID);
 
-            if(spriteIndex !== -1) {
+            if(spriteIndex !== NO_DEFINITION) {
                 this.unitSpriteDefinitionRegistry[spriteIndex] = spriteManager.getSpriteDefinitionID(rEntitySprites[spriteName]);
             }
         }
@@ -226,7 +227,7 @@ SpriteController.prototype.registerEntitySprites = function(gameContext, entityT
         for(const effectName in rEntityEffects) {
             const effectIndex = unitEffectNameToRegistryIndex(effectName, typeID);
 
-            if(effectIndex !== -1) {
+            if(effectIndex !== NO_DEFINITION) {
                 this.unitEffectSpriteDefinitionRegistry[effectIndex] = spriteManager.getSpriteDefinitionID(rEntityEffects[effectName]);
             }
         }
@@ -237,11 +238,11 @@ SpriteController.prototype.registerEntitySprites = function(gameContext, entityT
             const moveIndex = getUnitSpriteRegistryIndex(typeID, BattalionEntity.STATE.MOVE, i);
             const idleDefinitionID = this.unitSpriteDefinitionRegistry[idleIndex];
             
-            if(this.unitSpriteDefinitionRegistry[moveIndex] === -1) {
+            if(this.unitSpriteDefinitionRegistry[moveIndex] === NO_DEFINITION) {
                 this.unitSpriteDefinitionRegistry[moveIndex] = idleDefinitionID;
             }
 
-            if(idleDefinitionID !== -1) {
+            if(idleDefinitionID !== NO_DEFINITION) {
                 const shadeIndex = getUnitShadeRegistryIndex(typeID, i);
                 let shadeResource = this.shades[shadeIndex];
 
@@ -329,7 +330,7 @@ SpriteController.prototype.updateBuildingSprite = function(gameContext, building
     const { teamID, config } = building;
     const definitionID = this.getBuildingSpriteDefinitionID(config.id); 
 
-    if(definitionID === -1) {
+    if(definitionID === NO_DEFINITION) {
         return;
     }
 
@@ -398,7 +399,7 @@ SpriteController.prototype.updateEntitySprite = function(gameContext, entity) {
     const sprite = spriteManager.getSprite(spriteID);
     const spriteTypeID = this.getUnitSpriteDefinitionID(config.id, state, direction);
 
-    if(spriteTypeID !== -1) {
+    if(spriteTypeID !== NO_DEFINITION) {
         const textureID = spriteManager.getTextureID(spriteTypeID);
         const { color } = entity.getTeam(gameContext);
 

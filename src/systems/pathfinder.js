@@ -189,10 +189,9 @@ export const PathfinderSystem = {
     },
     isPathWalkable: function(gameContext, entity, path) {
         const { world } = gameContext;
-
-        const worldMap = world.getWorldMap();
         const { tileX, tileY, config } = entity;
         const { movementRange } = config;
+        const worldMap = world.getWorldMap();
 
         let nextX = tileX;
         let nextY = tileY;

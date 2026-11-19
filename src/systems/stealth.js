@@ -1,9 +1,11 @@
+import { JAMMER_TILES_NO_NEIGHBORS, JAMMER_TILES_WITH_NEIGHBORS, UNIT_MAX_JAMMER_RANGE } from "../constants.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { Mine } from "../entity/mine.js";
-import { BUILDING_TRAIT, JAMMER_FLAG, TRAIT_TYPE } from "../enums.js";
+import { BUILDING_TRAIT, DIRECTION, JAMMER_FLAG, TRAIT_TYPE } from "../enums.js";
+import { DIRECTION_DELTA_X, DIRECTION_DELTA_Y } from "./direction.js";
 
 const DEFAULT_MINE_SEARCH_RANGE = 0;
-const DEFAULT_ENTITY_SEARCH_RANGE = 1;
+const DEFAULT_ENTITY_SEARCH_RANGE = 0;
 
 export const StealthSystem = {
     /**
@@ -92,52 +94,52 @@ export const StealthSystem = {
         const { world, teamManager } = gameContext;
         const { entityManager } = world;
         const worldMap = world.getWorldMap();
-        const jammerFlags = checker.config.getJammerFlags();
-        const searchRange = jammerFlags !== JAMMER_FLAG.NONE ? checker.config.jammerRange : DEFAULT_ENTITY_SEARCH_RANGE;
         const uncloakedEntities = [];
         let shouldSelfUncloak = false;
     
-        worldMap.fill2DGraph(checker.tileX, checker.tileY, searchRange, (tileX, tileY, tileD, tileI) => {
+        //Always check the four neighboring cardinal tiles.
+        for(let i = 0; i < DIRECTION._COUNT; i++) {
+            const tileX = checker.tileX + DIRECTION_DELTA_X[i];
+            const tileY = checker.tileY + DIRECTION_DELTA_Y[i];
             const index = worldMap.getEntity(tileX, tileY);
             const entity = entityManager.getEntityByIndex(index);
-    
-            if(!entity) {
-                return;
-            }
-    
-            const distance = entity.getDistanceToTile(checker.tileX, checker.tileY);
-    
-            switch(distance) {
-                case 0: {
-                    //Distance 0 is the entity itself.
-                    break;
-                }
-                case 1: {
-                    //isEntityDiscoveredByNeighborsAt, but split up.
-                    if(!teamManager.isAlly(checker.teamID, entity.teamID)) {
-                        if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-                            uncloakedEntities.push(entity);
-                        }
-    
-                        //Always uncloak next to an enemy that is not selectable!
-                        if(!entity.hasTrait(TRAIT_TYPE.NOT_SELECTABLE)) {
-                            shouldSelfUncloak = true;
-                        }
+
+            if(entity) {
+                if(!teamManager.isAlly(checker.teamID, entity.teamID)) {
+                    if(entity.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+                        uncloakedEntities.push(entity);
                     }
-                    break;
-                }
-                default: {
-                    const cloakFlag = entity.config.getCloakFlag();
-    
-                    if(jammerFlags & cloakFlag) {
-                        if(!entity.hasTrait(TRAIT_TYPE.UNFAIR) && !entity.isVisibleTo(gameContext, checker.teamID)) {
-                            uncloakedEntities.push(entity);
-                        }
+
+                    //Always uncloak next to an enemy that is not selectable!
+                    if(!entity.hasTrait(TRAIT_TYPE.NOT_SELECTABLE)) {
+                        shouldSelfUncloak = true;
                     }
-                    break;
                 }
             }
-        });
+        }
+
+        //Check for entities in jammer range. Jammer check only makes sense if the distance if bigger than 1 because
+        //0 is self and 1 is the neighbors that always get uncloaked.
+        const jammerFlags = checker.config.getJammerFlags();
+        const searchRange = jammerFlags !== JAMMER_FLAG.NONE ? checker.config.jammerRange : DEFAULT_ENTITY_SEARCH_RANGE;
+        const searchDeltas = JAMMER_TILES_NO_NEIGHBORS[searchRange];
+
+        for(let i = 0; i < searchDeltas.length; i += 3) {
+            const tileX = checker.tileX + searchDeltas[i];
+            const tileY = checker.tileY + searchDeltas[i + 1];
+            const index = worldMap.getEntity(tileX, tileY);
+            const entity = entityManager.getEntityByIndex(index);
+
+            if(entity) {
+                const cloakFlag = entity.config.getCloakFlag();
+
+                if(jammerFlags & cloakFlag) {
+                    if(!entity.hasTrait(TRAIT_TYPE.UNFAIR) && !entity.isVisibleTo(gameContext, checker.teamID)) {
+                        uncloakedEntities.push(entity);
+                    }
+                }
+            }
+        }
     
         //Self uncloaking logic.
         if(checker.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
@@ -157,19 +159,27 @@ export const StealthSystem = {
     getUncloakedMines: function(gameContext, checker) {
         const { world, teamManager } = gameContext;
         const worldMap = world.getWorldMap();
-        const jammerFlags = checker.config.getJammerFlags();
-        const searchRange = jammerFlags !== JAMMER_FLAG.NONE ? checker.config.jammerRange : DEFAULT_MINE_SEARCH_RANGE;
         const uncloakedMines = [];
 
-        worldMap.fill2DGraph(checker.tileX, checker.tileY, searchRange, (tileX, tileY, distance, index) => {
+        const jammerFlags = checker.config.getJammerFlags();
+        const searchRange = jammerFlags !== JAMMER_FLAG.NONE ? checker.config.jammerRange : DEFAULT_MINE_SEARCH_RANGE;
+        const searchDeltas = JAMMER_TILES_WITH_NEIGHBORS[searchRange];
+
+        //Check for all mines in scanning area.
+        //Alaways uncloak an enemy mine the unit is standing on!
+        for(let i = 0; i < searchDeltas.length; i += 3) {
+            const tileX = checker.tileX + searchDeltas[i];
+            const tileY = checker.tileY + searchDeltas[i + 1];
             const mine = worldMap.getMine(tileX, tileY);
 
             if(mine && !mine.isVisibleTo(gameContext, checker.teamID)) {
+                const distance = searchDeltas[i + 2];
+
                 if(distance === 0 || mine.isJammed(jammerFlags)) {
                     uncloakedMines.push(mine);
                 }
             }
-        });
+        }
 
         return uncloakedMines;
     },

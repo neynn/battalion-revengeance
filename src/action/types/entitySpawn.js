@@ -41,14 +41,14 @@ const fillEntitySpawnPlan = function(gameContext, executionPlan, actionIntent) {
 }
 
 const executeEntitySpawn = function(gameContext, data) {
-    const { isClient } = gameContext;
+    const { actionRouter } = gameContext;
     const { entityID, snapshot } = data;
     let entity = null;
 
-    if(isClient) {
-        entity = createClientEntityObject(gameContext, entityID, snapshot);
-    } else {
+    if(actionRouter.isServer()) {
         entity = createServerEntityObject(gameContext, entityID, snapshot);
+    } else {
+        entity = createClientEntityObject(gameContext, entityID, snapshot);
     }
 
     //Should never fail...

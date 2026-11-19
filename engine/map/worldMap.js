@@ -296,26 +296,6 @@ WorldMap.prototype.createLayer = function(type) {
 }
 
 WorldMap.prototype.fill2DGraph = function(startX, startY, range, onFill) {
-    if(range >= 0 && range < FloodFill.LISTS.length) {
-        const list = FloodFill.LISTS[range];
-
-        for(let i = 0; i < list.length; i += 3) {
-            const deltaX = list[i];
-            const deltaY = list[i + 1];
-            const distance = list[i + 2];
-            const tileX = startX + deltaX;
-            const tileY = startY + deltaY;
-
-            if(!this.isTileOutOfBounds(tileX, tileY)) {
-                const index = tileY * this.width + tileX;
-
-                onFill(tileX, tileY, distance, index);
-            }
-        }
-
-        return;
-    }
-
     const queue = [];
     const visited = new Set();
     const startID = startY * this.width + startX;

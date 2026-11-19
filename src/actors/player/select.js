@@ -252,7 +252,7 @@ SelectState.prototype.onTileChange = function(gameContext, stateMachine, tileX, 
     player.renderer.showEntityPath(walkAutotiler, this.path, this.originX, this.originY);
 
     if(this.entity.isJammer()) {
-        player.renderer.showEntityJammerAt(gameContext, this.entity, this.cursorX, this.cursorY);
+        player.renderer.showEntityJammerAt(gameContext, this.cursorX, this.cursorY, this.entity.config.jammerRange);
     }
 }
 

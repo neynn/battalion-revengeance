@@ -1,4 +1,9 @@
-const precomputeOffsets = function(range) {
+export const FloodFill = function(straightCost, crossCost) {
+    this.straightCost = straightCost;
+    this.crossCost = crossCost;
+}
+
+FloodFill.precomputeOffsets = function(range, minRange) {
     const size = range * 2 + 1;
     const offsets = [];
 
@@ -8,27 +13,14 @@ const precomputeOffsets = function(range) {
             const deltaY = i - range;
             const distance = Math.abs(deltaX) + Math.abs(deltaY);
 
-            if(distance <= range) {
+            if(distance <= range && distance >= minRange) {
                 offsets.push(deltaX, deltaY, distance);
             }
         }
     }
 
     return offsets;
-};
-
-export const FloodFill = function(straightCost, crossCost) {
-    this.straightCost = straightCost;
-    this.crossCost = crossCost;
 }
-
-FloodFill.LISTS = [
-    precomputeOffsets(0),
-    precomputeOffsets(1),
-    precomputeOffsets(2),
-    precomputeOffsets(3),
-    precomputeOffsets(4)
-];
 
 FloodFill.RESPONSE = {
     IGNORE_NEXT: 0,

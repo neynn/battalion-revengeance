@@ -5,8 +5,7 @@ import { GAME_UPDATE_HEADER_SIZE, getGameUpdateHeaderSize } from "./packer_const
 import { getPlanSize, writePlan } from "./planPacker.js";
 
 export const BrevRouter = function() {
-    this.isMultiplayer = false;
-    this.isAuthority = false;
+    this.type = BrevRouter.TYPE.CLIENT_SP;
 
     this.maxActionsPerTick = 1000;
     this.isUpdating = false;
@@ -16,23 +15,30 @@ export const BrevRouter = function() {
     this.events.register(BrevRouter.EVENT.MP_SEND_BUFFER);
 }
 
+BrevRouter.TYPE = {
+    CLIENT_SP: 0,
+    CLIENT_MP: 1,
+    SERVER: 2
+};
+
 BrevRouter.EVENT = {
     MP_SEND_BUFFER: 0
 };
 
+BrevRouter.prototype.isServer = function() {
+    return this.type === BrevRouter.TYPE.SERVER;
+}
+
 BrevRouter.prototype.toSingleplayer = function() {
-    this.isMultiplayer = false;
-    this.isAuthority = true;
+    this.type = BrevRouter.TYPE.CLIENT_SP;
 }
 
 BrevRouter.prototype.toMultiplayerServer = function() {
-    this.isMultiplayer = true;
-    this.isAuthority = true;
+    this.type = BrevRouter.TYPE.SERVER;
 }
 
 BrevRouter.prototype.toMultiplayerClient = function() {
-    this.isMultiplayer = true;
-    this.isAuthority = false;
+    this.type = BrevRouter.TYPE.CLIENT_MP;
 }
 
 BrevRouter.prototype.mpUpdateActionQueue = function(gameContext) {
@@ -125,25 +131,18 @@ BrevRouter.prototype.pushIntent = function(gameContext, actionIntent, isFromTrig
     const { actionQueue } = world;
     let isSuccessful = false;
 
-    if(!this.isMultiplayer) {
-        const executionPlan = actionQueue.createExecutionPlan(gameContext, actionIntent);
-
-        if(executionPlan) {
-            actionQueue.enqueue(executionPlan);
-            isSuccessful = true;
-        }
-    } else {
-        if(this.isAuthority) {
+    switch(this.type) {
+        case BrevRouter.TYPE.CLIENT_SP: {
             const executionPlan = actionQueue.createExecutionPlan(gameContext, actionIntent);
 
             if(executionPlan) {
                 actionQueue.enqueue(executionPlan);
                 isSuccessful = true;
             }
-
-            this.mpUpdateActionQueue(gameContext);
-        } else {
-            //In a multiplayer setting, the client is not allowed to trigger based intents.
+            break;
+        }
+        case BrevRouter.TYPE.CLIENT_MP: {
+            //In a multiplayer setting, the client is not allowed to send trigger based intents.
             if(!isFromTrigger) {
                 const { client } = gameContext;
                 const { socket } = client;
@@ -156,6 +155,18 @@ BrevRouter.prototype.pushIntent = function(gameContext, actionIntent, isFromTrig
                     console.log("Unsupported ActionType!");
                 }
             }
+            break;
+        }
+        case BrevRouter.TYPE.SERVER: {
+            const executionPlan = actionQueue.createExecutionPlan(gameContext, actionIntent);
+
+            if(executionPlan) {
+                actionQueue.enqueue(executionPlan);
+                isSuccessful = true;
+            }
+
+            this.mpUpdateActionQueue(gameContext);
+            break;
         }
     }
 

@@ -74,16 +74,16 @@ const fillPurchasePlan = function(gameContext, executionPlan, actionIntent) {
 }
 
 const executePurchase = function(gameContext, data) {
-    const { teamManager, isClient } = gameContext;
+    const { teamManager, actionRouter } = gameContext;
     const { cost, nextID, snapshot } = data;
     const { teamID } = snapshot;
     const team = teamManager.getTeam(teamID);
     let entity = null;
 
-    if(isClient) {
-        entity = createClientEntityObject(gameContext, nextID, snapshot);
-    } else {
+    if(actionRouter.isServer()) {
         entity = createServerEntityObject(gameContext, nextID, snapshot);
+    } else {
+        entity = createClientEntityObject(gameContext, nextID, snapshot);
     }
 
     if(!entity) {

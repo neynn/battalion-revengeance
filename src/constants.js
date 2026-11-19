@@ -1,3 +1,4 @@
+import { FloodFill } from "../engine/pathfinders/floodFill.js";
 import { TEAM_STAT } from "./enums.js";
 
 export const VICTORY_BONUS = 5000;
@@ -29,3 +30,12 @@ export const UNIT_MIN_JAMMER_RANGE = 1;
 export const UNIT_MAX_JAMMER_RANGE = 4;
 export const UNIT_MIN_MOVE_COST = 1;
 export const UNIT_MAX_MOVE_COST = 99;
+
+export const JAMMER_MAX_USED_TILES = 1 + 2 * UNIT_MAX_JAMMER_RANGE * (UNIT_MAX_JAMMER_RANGE + 1);
+export const JAMMER_TILES_NO_NEIGHBORS = [];
+export const JAMMER_TILES_WITH_NEIGHBORS = [];
+
+for(let i = 0; i <= UNIT_MAX_JAMMER_RANGE; i++) {
+    JAMMER_TILES_NO_NEIGHBORS[i] = FloodFill.precomputeOffsets(i, 2);
+    JAMMER_TILES_WITH_NEIGHBORS[i] = FloodFill.precomputeOffsets(i, 0);
+}

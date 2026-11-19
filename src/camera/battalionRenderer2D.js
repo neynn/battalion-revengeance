@@ -19,7 +19,7 @@ import { WorldMap } from "../../engine/map/worldMap.js";
 import { Sprite } from "../../engine/sprite/sprite.js";
 import { Pathfinder } from "../map/pathfinder.js";
 import { UI_TEXTURE } from "../ui/constants.js";
-import { UNIT_MAX_JAMMER_RANGE, UNIT_MAX_MOVE_COST } from "../constants.js";
+import { JAMMER_MAX_USED_TILES, JAMMER_TILES_WITH_NEIGHBORS, UNIT_MAX_JAMMER_RANGE, UNIT_MAX_MOVE_COST } from "../constants.js";
 import { drawTextureRegion } from "../../engine/renderer/textureHelpers.js";
 
 const BLOCK = { COUNT: 4, WIDTH: 4, HEIGHT: 8, GAP: 1 };
@@ -35,9 +35,6 @@ const MAX_DEFERRED = 128;
 
 export const BattalionRenderer2D = function() {
     Renderer2D.call(this);
-
-    //Maximum number of tiles a jammer can cover, using the Manhattan distance.
-    const JAMMER_MAX_USED_TILES = 1 + 2 * UNIT_MAX_JAMMER_RANGE * (UNIT_MAX_JAMMER_RANGE + 1);
 
     //Each tile has a minCost of 1, which means there will NEVER be more than MAX_MOVE_COST tiles.
     this.pathOverlay = new TileOverlay(UNIT_MAX_MOVE_COST);
@@ -125,6 +122,10 @@ BattalionRenderer2D.prototype.render = function(gameContext, camera, display) {
     }
 }
 
+BattalionRenderer2D.prototype.usePathfinderGeneration = function(generation) {
+    this.pathfinderGeneration = generation;
+}
+
 BattalionRenderer2D.prototype.setInspect = function(inspectX, inspectY) {
     this.inspectX = inspectX;
     this.inspectY = inspectY;
@@ -135,16 +136,21 @@ BattalionRenderer2D.prototype.clearOverlays = function() {
     this.jammerOverlay.clear();
 }
 
-BattalionRenderer2D.prototype.showEntityJammerAt = function(gameContext, entity, jammerX, jammerY) {
+BattalionRenderer2D.prototype.showEntityJammerAt = function(gameContext, jammerX, jammerY, jammerRange) {
     const { world } = gameContext;
     const worldMap = world.getWorldMap();
-    const jammerRange = entity.config.jammerRange;
+    const tileDeltas = JAMMER_TILES_WITH_NEIGHBORS[jammerRange];
 
     this.jammerOverlay.clear();
 
-    worldMap.fill2DGraph(jammerX, jammerY, jammerRange, (nextX, nextY) => {
-        this.jammerOverlay.add(TILE_ID.JAMMER, nextX, nextY);
-    });
+    for(let i = 0; i < tileDeltas.length; i += 3) {
+        const tileX = jammerX + tileDeltas[i];
+        const tileY = jammerY + tileDeltas[i + 1];
+
+        if(!worldMap.isTileOutOfBounds(tileX, tileY)) {
+            this.jammerOverlay.add(TILE_ID.JAMMER, tileX, tileY);
+        }
+    }
 }
 
 /**
@@ -177,8 +183,6 @@ BattalionRenderer2D.prototype.drawMovementNodes = function(gameContext, camera, 
     const viewportX = camera.fOffsetX;
     const viewportY = camera.fOffsetY;
 
-    let inspectedEntity = null;
-    let entityCount = 0;
     let tileCount = 0;
     let renderY = (startY - wTileY) * tileHeight - viewportY;
 
@@ -442,7 +446,7 @@ BattalionRenderer2D.prototype.drawEntities = function(gameContext, camera, displ
                 if(sprite.lastFrame < currentFrame) {
                     const entity = entities[eIndex];
 
-                    if(entity.renderFlags & BattalionEntity.RENDER_FLAG.ACTING) {
+                    if(entity.state !== BattalionEntity.STATE.IDLE) {
                         this.addDeferred(eIndex);
                     } else {
                         this.drawEntity(gameContext, camera, display, entity, sprite, realTime, deltaTime);
