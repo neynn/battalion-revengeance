@@ -30,15 +30,17 @@ const gameLoop = function(timestamp) {
     while(gameTimer.shouldTick()) {
         gameTimer.doTick();
         gameContext.states.update(gameContext);
-        gameContext.world.update(gameContext);
+        gameContext.world.updateFixed(gameContext);
     }
 
     if(gameTimer.shouldRender()) {
         gameTimer.beginRender();
 
-        //Input
+        //Input and controller reaction.
         gameContext.client.update();
         gameContext.uiManager.update(gameContext);
+        gameContext.mapInspector.updateHover(gameContext);
+        gameContext.world.update(gameContext);
 
         //Render
         gameContext.dialogueHandler.update(gameContext);

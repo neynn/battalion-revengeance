@@ -138,7 +138,6 @@ export const PlayUI = function(cameraContext) {
 
     this.doImmediate = true;
     this.cameraContext = cameraContext;
-    this.inspector = new MapInspector();
     this.inspectSprite = SpriteManager.EMPTY_SPRITE;
 
     this.style = new TextStyle();
@@ -367,16 +366,16 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
 }
 
 PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, screenY) {
-    const { timer, uiData, dialogueHandler, typeRegistry, language } = gameContext;
+    const { timer, uiData, dialogueHandler, typeRegistry, language, mapInspector } = gameContext;
     const { letterIndex } = dialogueHandler;
     const dialogue = dialogueHandler.getCurrentEntry();
 
     if(!dialogue) {
-        this.inspector.enable();
+        mapInspector.enable();
         return;
     }
 
-    this.inspector.disable();
+    mapInspector.disable();
 
     const nextTexture = uiData.getTexture(UI_TEXTURE.ARROW);
     const skipTexture = uiData.getTexture(UI_TEXTURE.DIALOGUE_SKIP);
@@ -490,12 +489,13 @@ PlayUI.prototype.updateEntityState = function(entity) {
 }
 
 PlayUI.prototype.onImmediate = function(gameContext, display) {
-    const { uiData, world, language, timer, typeRegistry, gameWindow, spriteController } = gameContext;
+    const { uiData, world, language, timer, typeRegistry, gameWindow, spriteController, mapInspector } = gameContext;
     const { width, height } = gameWindow;
     const { realTime, deltaTime } = timer;
     const { context } = display;
-    const tileX = this.inspector.lastX;
-    const tileY = this.inspector.lastY;
+    
+    const tileX = mapInspector.lastX;
+    const tileY = mapInspector.lastY;
     const worldMap = world.getWorldMap();
     const index = worldMap.getIndex(tileX, tileY);
 
@@ -505,6 +505,12 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
     const gameY = Math.floor((height - gameHeight) / 2);
 
     this.cameraContext.setPosition(gameX, gameY);
+
+    //If the entity has been cleared this frame, remove the pathfinder and overlays.
+    if(mapInspector.hasEntityBeenRemoved) {
+        this.cameraContext.renderer.clearOverlays();
+        this.cameraContext.renderer.usePathfinderGeneration(0);
+    }
 
     const mainX = gameX + this.cameraContext.camera.viewportWidth;
     const mainY = gameY;
@@ -531,9 +537,8 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
     let tooltip = "";
     let tooltipTexture = UI_TEXTURE.TOOLTIP;
 
-    this.inspector.update(gameContext);
-
-    if(this.inspector.checkChange()) {
+    //If the state has changed then reset inspection values.
+    if(mapInspector.checkStateChange()) {
         this.lastIndex = -1;
         this.lineCache.resetRecon();
         this.lastEntityID = EntityManager.INVALID_ID;
@@ -545,7 +550,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
     this.style.apply(context);
     this.drawMainHud(gameContext, display, mainX, mainY);
 
-    switch(this.inspector.state) {
+    switch(mapInspector.state) {
         case MapInspector.STATE.TILE: {
             const { terrain } = worldMap.getTileType(gameContext, tileX, tileY);
             const climateType = worldMap.getClimateType(gameContext, tileX, tileY);

@@ -18,23 +18,18 @@ import { RepairVTable } from "../action/types/repair.js";
 /**
  * 
  * @param {*} id 
- * @param {MapInspector} inspector 
  * @param {BattalionRenderer2D} renderer 
  */
-export const Player = function(id, inspector, renderer) {
+export const Player = function(id, renderer) {
     BattalionActor.call(this, id);
 
     this.renderer = renderer;
-    this.inspector = inspector;
     this.maxIntents = 10;
     this.state = Player.STATE.WATCHING;
 
     this.states = new StateMachine(this);
     this.states.addState(Player.STATE.IDLE, new IdleState());
     this.states.addState(Player.STATE.SELECT, new SelectState());
-
-    this.currentPath = [];
-    this.selectedEntity = null;
 }
 
 Player.STATE = {
@@ -93,12 +88,13 @@ Player.prototype.stopRenderingPathfinder = function() {
 }
 
 Player.prototype.onClick = function(gameContext, tileX, tileY) {
-    const { teamManager, world } = gameContext;
-    const inspectorState = this.inspector.inspect(gameContext, this, tileX, tileY);
+    const { teamManager, world, mapInspector } = gameContext;
+
+    mapInspector.inspect(gameContext, this, tileX, tileY);
 
     this.renderer.clearOverlays();
 
-    switch(inspectorState) {
+    switch(mapInspector.state) {
         case MapInspector.STATE.TILE: {
             this.stopRenderingPathfinder();
             this.states.handleEvent(gameContext, Player.EVENT.TILE_CLICK, { "x": tileX, "y": tileY });
@@ -133,7 +129,7 @@ Player.prototype.onClick = function(gameContext, tileX, tileY) {
 }
 
 Player.prototype.loadKeybinds = function(gameContext) {
-    const { client, actionRouter } = gameContext;
+    const { client, mapInspector } = gameContext;
     const { router } = client;
     
     router.useConfig(gameContext, "PLAY", INPUT_TRIGGER);
@@ -154,7 +150,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
     });
 
     router.on(INPUT_TRIGGER.TRANSPORT_BARGE, () => {
-        const entity = this.inspector.getLastEntity(gameContext);
+        const entity = mapInspector.getLastEntity(gameContext);
 
         if(entity) {
             if(entity.transportID !== -1) {
@@ -166,7 +162,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
     });
 
     router.on(INPUT_TRIGGER.TRANSPORT_PELICAN, () => {
-        const entity = this.inspector.getLastEntity(gameContext);
+        const entity = mapInspector.getLastEntity(gameContext);
 
         if(entity) {
             if(entity.transportID !== -1) {
@@ -178,7 +174,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
     });
 
     router.on(INPUT_TRIGGER.TRANSPORT_STORK, () => {
-        const entity = this.inspector.getLastEntity(gameContext);
+        const entity = mapInspector.getLastEntity(gameContext);
 
         if(entity) {
             if(entity.transportID !== -1) {
@@ -190,7 +186,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
     });
 
     router.on(INPUT_TRIGGER.EXTRACT, () => {
-        const entity = this.inspector.getLastEntity(gameContext);
+        const entity = mapInspector.getLastEntity(gameContext);
 
         if(entity) {
             this.addIntent(ExtractVTable.createIntent(entity.id));
@@ -198,7 +194,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
     });
 
     router.on(INPUT_TRIGGER.PRODUCE, () => {
-        const entity = this.inspector.getLastEntity(gameContext);
+        const entity = mapInspector.getLastEntity(gameContext);
 
         if(entity) {
             this.addIntent(ProduceVTable.createIntent(entity.id, ENTITY_TYPE.ANNIHILATOR_TANK, DIRECTION.NORTH));
@@ -206,7 +202,7 @@ Player.prototype.loadKeybinds = function(gameContext) {
     });
 
     router.on(INPUT_TRIGGER.REPAIR, () => {
-        const entity = this.inspector.getLastEntity(gameContext);
+        const entity = mapInspector.getLastEntity(gameContext);
 
         if(entity) {
             this.addIntent(RepairVTable.createIntent(entity.id));
@@ -216,10 +212,10 @@ Player.prototype.loadKeybinds = function(gameContext) {
     router.on(INPUT_TRIGGER.DEBUG_SAVE, () => saveStoryMap(gameContext));
 
     router.on(INPUT_TRIGGER.DEBUG_KILL, () => {
-        const entity = this.inspector.getLastEntity(gameContext);
+        const entity = mapInspector.getLastEntity(gameContext);
 
         if(entity) {
-            actionRouter.pushIntent(gameContext, DeathActionVTable.createIntent([entity.id]));
+            this.addIntent(DeathActionVTable.createIntent([entity.id]));
         }  
     });
 }
@@ -229,18 +225,14 @@ Player.prototype.activeUpdate = function(gameContext) {
 }
 
 Player.prototype.update = function(gameContext) {
-    const flags = this.inspector.update(gameContext);
+    const { world, mapInspector } = gameContext;
+    const { lastHoverX, lastHoverY, hasTileChanged } = mapInspector;
+    const worldMap = world.getWorldMap();
 
-    this.renderer.setInspect(this.inspector.lastHoverX, this.inspector.lastHoverY);
-
-    if(flags & MapInspector.FLAG.ENTITY_REMOVED) {
-        this.renderer.clearOverlays();
-    }
-
-    if(flags & MapInspector.FLAG.HOVER_CHANGED) {
+    if(hasTileChanged) {
         this.states.handleEvent(gameContext, Player.EVENT.TILE_CHANGE, {
-            "x": this.inspector.lastHoverX,
-            "y": this.inspector.lastHoverY
+            "x": lastHoverX,
+            "y": lastHoverY
         });
     }
 

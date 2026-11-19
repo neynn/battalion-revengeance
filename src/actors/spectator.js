@@ -1,20 +1,20 @@
 import { getCursorTile } from "../../engine/camera/contextHelper.js";
 import { BattalionActor } from "./battalionActor.js";
-import { MapInspector } from "../map/mapInspector.js";
 import { INPUT_TRIGGER } from "../enums.js";
 
-export const Spectator = function(id, inspector, renderer) {
+export const Spectator = function(id, renderer) {
     BattalionActor.call(this, id);
 
     this.renderer = renderer;
-    this.inspector = inspector;
 }
 
 Spectator.prototype = Object.create(BattalionActor.prototype);
 Spectator.prototype.constructor = Spectator;
 
 Spectator.prototype.onClick = function(gameContext, tileX, tileY) {
-    this.inspector.inspect(gameContext, this, tileX, tileY);
+    const { mapInspector } = gameContext;
+
+    mapInspector.inspect(gameContext, this, tileX, tileY);
 }
 
 Spectator.prototype.loadKeybinds = function(gameContext) {
@@ -33,9 +33,4 @@ Spectator.prototype.loadKeybinds = function(gameContext) {
             this.onClick(gameContext, x, y);
         }
     });
-}
-
-
-Spectator.prototype.update = function(gameContext) {
-    const flags = this.inspector.update(gameContext);
 }

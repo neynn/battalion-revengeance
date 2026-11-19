@@ -42,8 +42,6 @@ export const BattalionRenderer2D = function() {
     this.flags = BattalionRenderer2D.FLAG.NONE;
     this.deferred = new Int32Array(MAX_DEFERRED);
     this.deferredCount = 0;
-    this.inspectX = -1;
-    this.inspectY = -1;
 
     this.teamID = TeamManager.INVALID_ID;
     this.isCurrentActor = false;
@@ -124,11 +122,6 @@ BattalionRenderer2D.prototype.render = function(gameContext, camera, display) {
 
 BattalionRenderer2D.prototype.usePathfinderGeneration = function(generation) {
     this.pathfinderGeneration = generation;
-}
-
-BattalionRenderer2D.prototype.setInspect = function(inspectX, inspectY) {
-    this.inspectX = inspectX;
-    this.inspectY = inspectY;
 }
 
 BattalionRenderer2D.prototype.clearOverlays = function() {
@@ -400,7 +393,8 @@ BattalionRenderer2D.prototype.drawEntity = function(gameContext, camera, display
  * @returns 
  */
 BattalionRenderer2D.prototype.drawEntities = function(gameContext, camera, display, worldMap) {
-    const { timer, world, spriteManager, tileManager, uiData, spriteController, typeRegistry } = gameContext;
+    const { timer, world, spriteManager, tileManager, uiData, spriteController, typeRegistry, mapInspector } = gameContext;
+    const { lastHoverX, lastHoverY } = mapInspector;
     const { startX, startY, endX, endY, mapWidth } = camera;
     const { realTime, deltaTime } = timer;
     const { entityManager } = world;
@@ -413,7 +407,7 @@ BattalionRenderer2D.prototype.drawEntities = function(gameContext, camera, displ
     let count = 0;
 
     {
-        const index = worldMap.getEntity(this.inspectX, this.inspectY);
+        const index = worldMap.getEntity(lastHoverX, lastHoverY);
         const spriteID = spriteController.getEntitySpriteID(index);
 
         if(spriteID !== SpriteManager.INVALID_ID) {

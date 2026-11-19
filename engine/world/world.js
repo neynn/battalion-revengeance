@@ -20,14 +20,17 @@ World.prototype.exit = function() {
     this.worldMap = null;
 }
 
-World.prototype.update = function(gameContext) {
+World.prototype.updateFixed = function(gameContext) {
     this.actionQueue.update(gameContext);
-    this.actorManager.update(gameContext);
     this.entityManager.update(gameContext);
 
     if(this.worldMap) {
         this.worldMap.update(gameContext);
     }
+}
+
+World.prototype.update = function(gameContext) {
+    this.actorManager.update(gameContext);
 }
 
 World.prototype.setWorldMap = function(worldMap) {

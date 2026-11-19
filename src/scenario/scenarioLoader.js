@@ -185,7 +185,7 @@ ScenarioLoader.prototype.createPlayer = function(gameContext, teamID) {
     const context = createPlayCamera(gameContext);
     const actorID = actorManager.getNextID();
     const playUI = new PlayUI(context);
-    const actor = new Player(actorID, playUI.inspector, context.renderer);
+    const actor = new Player(actorID, context.renderer);
 
     playUI.load(gameContext);
     actorManager.addActor(actor);
@@ -200,7 +200,7 @@ ScenarioLoader.prototype.createSpectator = function(gameContext) {
     const context = createPlayCamera(gameContext);
     const actorID = actorManager.getNextID();
     const playUI = new PlayUI(context);
-    const actor = new Spectator(actorID, playUI.inspector, context.renderer);
+    const actor = new Spectator(actorID, context.renderer);
 
     playUI.load(gameContext);
     actorManager.addActor(actor);

@@ -73,9 +73,12 @@ export const MapInspector = function() {
     this.state = MapInspector.STATE.NONE;
     this.previousState = MapInspector.STATE.NONE;
     this.isEnabled = true;
-    this.hasChanged = false;
     this.inspectionLevel = 0;
     this.lastInspectedEntity = null;
+    
+    this.hasEntityBeenRemoved = false;
+    this.hasStateChanged = false;
+    this.hasTileChanged = false;
 }
 
 MapInspector.INSPECT_LEVEL = {
@@ -92,12 +95,6 @@ MapInspector.STATE = {
     BUILDING: 3,
     ENTITY: 4,
     ENTITY_MENU: 5
-};
-
-MapInspector.FLAG = {
-    NONE: 0,
-    HOVER_CHANGED: 1 << 0,
-    ENTITY_REMOVED: 1 << 1
 };
 
 const Inspectors = [
@@ -119,18 +116,18 @@ MapInspector.prototype.setState = function(state) {
     this.state = state;
 
     if(this.previousState !== this.state) {
-        this.hasChanged = true;
+        this.hasStateChanged = true;
     }
 }
 
-MapInspector.prototype.checkChange = function() {
-    let hasChanged = this.hasChanged;
+MapInspector.prototype.checkStateChange = function() {
+    let hasStateChanged = this.hasStateChanged;
 
-    if(this.hasChanged) {
-        this.hasChanged = false;
+    if(this.hasStateChanged) {
+        this.hasStateChanged = false;
     }
 
-    return hasChanged;
+    return hasStateChanged;
 }
 
 MapInspector.prototype.disable = function() {
@@ -190,7 +187,8 @@ MapInspector.prototype.canSwitchToMenu = function(gameContext, actor) {
 
 MapInspector.prototype.inspect = function(gameContext, actor, tileX, tileY) {
     if(!this.isEnabled) {
-        return MapInspector.STATE.NONE;
+        this.state = MapInspector.STATE.NONE;
+        return;
     }
 
     //We MUST be inspecting a new tile!
@@ -202,8 +200,7 @@ MapInspector.prototype.inspect = function(gameContext, actor, tileX, tileY) {
     } else {
         if(this.canSwitchToMenu(gameContext, actor)) {
             this.setState(MapInspector.STATE.ENTITY_MENU);
-
-            return this.state;
+            return;
         }
 
         this.inspectionLevel++;
@@ -233,16 +230,16 @@ MapInspector.prototype.inspect = function(gameContext, actor, tileX, tileY) {
         this.setState(MapInspector.STATE.NONE);
         this.inspectionLevel = 0;
     }
-
-    return this.state;
 }
 
-MapInspector.prototype.update = function(gameContext) {
+MapInspector.prototype.updateHover = function(gameContext) {
     const { x, y } = getCursorTile(gameContext);
-    let flags = MapInspector.FLAG.NONE;
+
+    this.hasEntityBeenRemoved = false;
+    this.hasTileChanged = false;
 
     if(x !== this.lastHoverX || y !== this.lastHoverY) {
-        flags |= MapInspector.FLAG.HOVER_CHANGED;
+        this.hasTileChanged = true;
     }
 
     this.lastHoverX = x;
@@ -252,13 +249,10 @@ MapInspector.prototype.update = function(gameContext) {
     if(this.inspectionLevel === MapInspector.INSPECT_LEVEL.ENTITY && this.getLastEntity(gameContext) === null) {
         this.setState(MapInspector.STATE.NONE);
         this.lastInspectedEntity = null;
-
-        flags |= MapInspector.FLAG.ENTITY_REMOVED;
+        this.hasEntityBeenRemoved = true;
     }
 
     if(this.inspectionLevel === MapInspector.INSPECT_LEVEL.MINE && this.getLastMine(gameContext) === null) {
         this.setState(MapInspector.STATE.NONE);
     }
-
-    return flags;
 }

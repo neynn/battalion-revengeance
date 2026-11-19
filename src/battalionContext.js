@@ -14,10 +14,12 @@ import { ScenarioRegistry } from "./scenario/scenarioRegistry.js";
 import { SpriteController } from "./spriteController.js";
 import { SoundRegistry } from "./soundRegistry.js";
 import { BrevRouter } from "./action/brevRouter.js";
+import { MapInspector } from "./map/mapInspector.js";
 
 export const BattalionContext = function(gTimer, gWindow) {
     ClientGameContext.call(this, gTimer, gWindow);
 
+    this.mapInspector = new MapInspector();
     this.typeRegistry = new TypeRegistry();
     this.teamManager = new TeamManager();
     this.actionRouter = new BrevRouter();
