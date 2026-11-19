@@ -22,7 +22,7 @@ BattalionActor.prototype.setTeam = function(teamID) {
     this.teamID = teamID;
 }
 
-BattalionActor.prototype.onEntityDied = function(gameContext, entity) {}
+BattalionActor.prototype.onEntityDeath = function(gameContext, entity) {}
 
 BattalionActor.prototype.getVisibleEntity = function(gameContext, tileX, tileY) {
     const { world } = gameContext;

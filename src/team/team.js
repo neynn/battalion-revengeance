@@ -189,7 +189,8 @@ Team.prototype.onEntityDeath = function(entity) {
                 this.lynchpins--;
             }
 
-            return;
+            this.addStatistic(TEAM_STAT.UNITS_LOST, 1);
+            break;
         }
     }
 

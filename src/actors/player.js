@@ -49,7 +49,7 @@ Player.EVENT = {
 Player.prototype = Object.create(BattalionActor.prototype);
 Player.prototype.constructor = Player;
 
-Player.prototype.onEntityDied = function(gameContext, entity) {
+Player.prototype.onEntityDeath = function(gameContext, entity) {
     this.states.handleEvent(gameContext, Player.EVENT.UNIT_DIED, {
         "entity": entity
     });

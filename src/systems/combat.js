@@ -4,36 +4,6 @@ import { Mine } from "../entity/mine.js";
 import { ATTACK_FLAG, ATTACK_TYPE, ENTITY_CATEGORY, MOVEMENT_TYPE, RANGE_TYPE, TRAIT_CONFIG, TRAIT_TYPE, WEAPON_TYPE } from "../enums.js";
 import { DIRECTION_DELTA_X, DIRECTION_DELTA_Y } from "./direction.js";
 
-export const ResolutionSystem = {
-    createEntityResolution: function() {
-        return {
-            "entityID": EntityManager.INVALID_ID,
-            "delta": 0,
-            "health": 0
-        }
-    },
-    fillEntityResolution: function(entityID, delta, health) {
-        const resolution = ResolutionSystem.createEntityResolution();
-
-        resolution.entityID = entityID;
-        resolution.delta = delta;
-        resolution.health = health;
-
-        return resolution;
-    },
-    getDeadEntities: function(resolutions) {
-        const deadEntities = [];
-
-        for(const resolution of resolutions) {
-            if(resolution.health === 0) {
-                deadEntities.push(resolution.entityID);
-            }
-        }
-
-        return deadEntities;
-    }
-}
-
 export const InteractionResolver = function() {
     this.resolutions = new Map();
     this.totalDamage = 0;
@@ -123,6 +93,36 @@ InteractionResolver.prototype.createResolutions = function(gameContext) {
     }
 
     return resolutions;
+}
+
+export const ResolutionSystem = {
+    createEntityResolution: function() {
+        return {
+            "entityID": EntityManager.INVALID_ID,
+            "delta": 0,
+            "health": 0
+        }
+    },
+    fillEntityResolution: function(entityID, delta, health) {
+        const resolution = ResolutionSystem.createEntityResolution();
+
+        resolution.entityID = entityID;
+        resolution.delta = delta;
+        resolution.health = health;
+
+        return resolution;
+    },
+    getDeadEntities: function(resolutions) {
+        const deadEntities = [];
+
+        for(const resolution of resolutions) {
+            if(resolution.health === 0) {
+                deadEntities.push(resolution.entityID);
+            }
+        }
+
+        return deadEntities;
+    }
 }
 
 /**

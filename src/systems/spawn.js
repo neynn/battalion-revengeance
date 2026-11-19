@@ -26,20 +26,20 @@ export const killEntity = function(gameContext, entity) {
     const { entityManager, actorManager } = world;
     const { activeTeams } = teamManager;
     const { actors } = actorManager;
-    const team = entity.getTeam(gameContext);
 
     entity.removeFromMap(gameContext);
     entityManager.removeHot(entity.index);
-    team.addStatistic(TEAM_STAT.UNITS_LOST, 1);
 
+    //Notify all active teams on the entities demise.
     for(const teamID of activeTeams) {
         const team = teamManager.getTeam(teamID);
 
         team.onEntityDeath(entity);
     }
 
+    //Notify all actors of the entities demise.
     for(const actor of actors) {
-        actor.onEntityDied(gameContext, entity);
+        actor.onEntityDeath(gameContext, entity);
     }
 }
 
