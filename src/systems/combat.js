@@ -1,152 +1,147 @@
 import { EntityManager } from "../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { Mine } from "../entity/mine.js";
-import { ATTACK_FLAG, ATTACK_TYPE, ENTITY_CATEGORY, MOVEMENT_TYPE, RANGE_TYPE, TRAIT_CONFIG, TRAIT_TYPE, WEAPON_TYPE } from "../enums.js";
+import { ATTACK_TYPE, ENTITY_CATEGORY, MOVEMENT_TYPE, RANGE_TYPE, TRAIT_CONFIG, TRAIT_TYPE, WEAPON_TYPE } from "../enums.js";
 import { DIRECTION_DELTA_X, DIRECTION_DELTA_Y } from "./direction.js";
 
-export const InteractionResolver = function() {
-    this.resolutions = new Map();
-    this.totalDamage = 0;
-    this.totalHeal = 0;
-    this.resourceDamage = 0;
-}
+const COMBAT_FLAG = {
+    NONE: 0,
+    COUNTER: 1 << 0,
+    SHRAPNEL: 1 << 1,
+    AREA: 1 << 2,
+    STREAMBLAST: 1 << 3
+};
 
-InteractionResolver.prototype.getDamageFromDelta = function(delta) {
-    if(delta >= 0) {
-        return 0;
+/**
+ * 
+ * @param {*} gameContext 
+ * @param {BattalionEntity} attacker 
+ * @returns 
+ */
+const getLogisticFactor = function(gameContext, attacker) {
+    const { world } = gameContext;
+    const worldMap = world.getWorldMap();
+
+    const startX = attacker.tileX;
+    const startY = attacker.tileY;
+    const endX = startX + attacker.config.dimX;
+    const endY = startY + attacker.config.dimY;
+
+    let totalLogisticFactor = 0;
+    let count = 0;
+
+    for(let i = startY; i < endY; i++) {
+        for(let j = startX; j < endX; j++) {
+            const { logisticFactor } = worldMap.getClimateType(gameContext, j, i);
+
+            totalLogisticFactor += logisticFactor;
+            count++;
+        }
     }
 
-    return -delta;
-}
-
-InteractionResolver.prototype.getDelta = function(entityID) {
-    const delta = this.resolutions.get(entityID);
-
-    if(delta === undefined) {
-        return 0;
-    }
-
-    return delta;
-}
-
-InteractionResolver.prototype.addSelfDestruct = function(entity) {
-    const entityID = entity.getID();
-
-    //TODO(neyn): SELF_DESTRUCT is a rule override.
-    //This should later be expanded upon!
-    this.resolutions.set(entityID, -entity.health);
-}
-
-InteractionResolver.prototype.addSelfDamage = function(entity, damage) {
-    //Self damage does not count towards total damage!
-    const entityID = entity.getID();
-    const delta = entity.getAttackDelta(damage, this.getDelta(entityID));
-
-    this.add(entityID, delta);
-}
-
-InteractionResolver.prototype.addHeal = function(entity, heal) {
-    const entityID = entity.getID();
-    const delta = entity.getHealDelta(heal, this.getDelta(entityID));
-
-    this.totalHeal += delta;
-    this.add(entityID, delta);
-}
-
-InteractionResolver.prototype.addAttack = function(entity, damage) {
-    const entityID = entity.getID();
-    const delta = entity.getAttackDelta(damage, this.getDelta(entityID));
-    const damageDealt = this.getDamageFromDelta(delta);
-    const resourceDamage = entity.getDamageAsResources(damageDealt);
-
-    this.totalDamage += damageDealt;
-    this.resourceDamage += resourceDamage;
-    this.add(entityID, delta);
-}
-
-InteractionResolver.prototype.add = function(entityID, delta) {
-    if(this.resolutions.has(entityID)) {
-        const total = this.resolutions.get(entityID);
-
-        this.resolutions.set(entityID, total + delta);
+    //Takes the average of all logistic factors.
+    if(count !== 0) {
+        totalLogisticFactor /= count;
     } else {
-        this.resolutions.set(entityID, delta);
-    }
-}
-
-InteractionResolver.prototype.createResolutions = function(gameContext) {
-    const { world } = gameContext;
-    const { entityManager } = world;
-    const resolutions = [];
-
-    for(const [entityID, delta] of this.resolutions) {
-        const entity = entityManager.getEntity(entityID);
-        const health = entity.getHealthFromDelta(delta);
-        let finalHealth = health;
-
-        //Clamp health to uint.
-        if(finalHealth < 0) {
-            finalHealth = 0;
-        }
-
-        resolutions.push(ResolutionSystem.fillEntityResolution(entityID, delta, health));
+        totalLogisticFactor = 1;
     }
 
-    return resolutions;
+    //COMMANDO reduces the total impact negative logistic factors have.
+    //A factor of 0.2 would reduce damage by 80%, but COMMANDO halves that damage reduction to 40% (0.6).
+    if(totalLogisticFactor < 1 && attacker.hasTrait(TRAIT_TYPE.COMMANDO)) {
+        totalLogisticFactor = 1 - (1 - totalLogisticFactor) * TRAIT_CONFIG.COMMANDO_LOGISTIC_REDUCTION;
+    }
+
+    return totalLogisticFactor;
 }
 
-export const ResolutionSystem = {
-    createEntityResolution: function() {
-        return {
-            "entityID": EntityManager.INVALID_ID,
-            "delta": 0,
-            "health": 0
-        }
-    },
-    fillEntityResolution: function(entityID, delta, health) {
-        const resolution = ResolutionSystem.createEntityResolution();
+/**
+ * 
+ * @param {BattalionEntity} entity 
+ * @returns {number}
+ */
+const getHealthFactor = function(entity) {
+    let healthFactor = 1;
 
-        resolution.entityID = entityID;
-        resolution.delta = delta;
-        resolution.health = health;
+    if(!entity.hasTrait(TRAIT_TYPE.INDOMITABLE)) {
+        healthFactor = entity.getVitalityCapped();
+    }
 
-        return resolution;
-    },
-    getDeadEntities: function(resolutions) {
-        const deadEntities = [];
+    return healthFactor;
+}
 
-        for(const resolution of resolutions) {
-            if(resolution.health === 0) {
-                deadEntities.push(resolution.entityID);
+/**
+ * 
+ * @param {*} gameContext 
+ * @param {BattalionEntity} attacker 
+ * @param {number} targetArmor 
+ * @returns {number}
+ */
+const getWeaponFactor = function(gameContext, attacker, targetArmor) {
+    const { typeRegistry } = gameContext;
+    const weaponType = typeRegistry.getWeaponType(attacker.config.weaponType);
+    let damageMultiplier = weaponType.getDamageMultiplier(targetArmor);
+
+    //Ignore only damage reduction with ARMOR_PIERCE, keep the damage increase.
+    if(damageMultiplier < 1 && attacker.hasTrait(TRAIT_TYPE.ARMOR_PIERCE)) {
+        damageMultiplier = 1;
+    }
+
+    return damageMultiplier;
+}
+
+/**
+ * 
+ * @param {*} gameContext 
+ * @param {BattalionEntity} target 
+ * @returns 
+ */
+const getTerrainFactor = function(gameContext, target) {
+    const { world, typeRegistry } = gameContext;
+    const worldMap = world.getWorldMap();
+
+    const startX = target.tileX;
+    const startY = target.tileY;
+    const endX = startX + target.config.dimX;
+    const endY = startY + target.config.dimY;
+    const targetMove = target.config.movementType;
+
+    let terrainFactor = 1;
+
+    //TODO: Large units may get absurd protection.
+    for(let i = startY; i < endY; i++) {
+        for(let j = startX; j < endX; j++) {
+            const { terrain } = worldMap.getTileType(gameContext, j, i);
+
+            for(const terrainID of terrain) {
+                const terrainType = typeRegistry.getTerrainType(terrainID);
+                const protectionFactor = terrainType.getProtection(targetMove);
+
+                //Immeditately return 0 if a terrain fully protects.
+                //This means all damage gets set to 0.
+                if(protectionFactor >= 1) {
+                    return 0;
+                }
+
+                terrainFactor *= (1 - protectionFactor);
             }
         }
-
-        return deadEntities;
     }
+
+    return terrainFactor;
 }
 
 /**
  * 
- * @param {BattalionEntity} attacker 
- * @param {InteractionResolver} resolver 
+ * @param {*} gameContext 
+ * @param {BattalionEntity} entity 
+ * @returns {number}
  */
-const mResolveAttackTraits = function(attacker, resolver) {
-    if(attacker.hasTrait(TRAIT_TYPE.OVERHEAT)) {
-        const overheatDamage = attacker.getOverheatDamage();
+const getMoraleFactor = function(gameContext, entity) {
+    const { typeRegistry } = gameContext;
+    const { damageModifier } = typeRegistry.getMoraleType(entity.getMorale());
 
-        resolver.addSelfDamage(attacker, overheatDamage);
-    }
-
-    if(attacker.hasTrait(TRAIT_TYPE.ABSORBER)) {
-        const { totalDamage } = resolver;
-        const absorberHeal = attacker.getAbsorberHeal(totalDamage);
-
-        resolver.addHeal(attacker, absorberHeal);
-    }
-
-    if(attacker.hasTrait(TRAIT_TYPE.SELF_DESTRUCT)) {
-        resolver.addSelfDestruct(attacker);
-    }
+    return damageModifier;
 }
 
 /**
@@ -154,189 +149,177 @@ const mResolveAttackTraits = function(attacker, resolver) {
  * @param {*} gameContext 
  * @param {BattalionEntity} attacker 
  * @param {BattalionEntity} target 
- * @param {number} damageFlags 
- * @param {InteractionResolver} resolver 
+ * @param {number} flags 
+ * @returns 
  */
-const mResolveShrapnel = function(gameContext, attacker, target, damageFlags, resolver) {
-    const { world } = gameContext;
-    const { tileX, tileY } = target;
-    const direction = attacker.getDirectionTo(target);
-    const deltaX = DIRECTION_DELTA_X[direction];
-    const deltaY = DIRECTION_DELTA_Y[direction];
-    const targets = world.getEntitiesInLine(tileX, tileY, deltaX, deltaY, TRAIT_CONFIG.SHRAPNEL_RANGE);
-    const flags = damageFlags | ATTACK_FLAG.SHRAPNEL;
+const getAttackAmplifier = function(gameContext, attacker, target, flags) {
+    const { typeRegistry } = gameContext;
+    const targetArmor = target.config.armorType;
+    const targetMove = target.config.movementType;
 
-    for(const target of targets) {
-        if(target.isHurtByShrapnel()) {
-            const damage = attacker.getAttackDamage(gameContext, target, flags);
+    let healthFactor = 1;
+    let moraleFactor = 1;
+    let weaponFactor = 1;
+    let terrainFactor = 1;
+    let logisticFactor = 1;
+    let traitFactor = 1;
+    let otherFactor = 1;
+    let damageAmplifier = 1;
 
-            resolver.addAttack(target, damage);
-        }
-    }
-}
+    healthFactor = getHealthFactor(attacker);
+    moraleFactor = getMoraleFactor(gameContext, attacker);
+    weaponFactor = getWeaponFactor(gameContext, attacker, targetArmor);
+    terrainFactor = getTerrainFactor(gameContext, target);
+    logisticFactor = getLogisticFactor(gameContext, attacker);
 
-/**
- * 
- * @param {*} gameContext 
- * @param {BattalionEntity} attacker 
- * @param {BattalionEntity} target 
- * @param {InteractionResolver} resolver 
- */
-const mResolveRegularAttack = function(gameContext, attacker, target, resolver) {
-    const damage = attacker.getAttackDamage(gameContext, target, ATTACK_FLAG.NONE);
-
-    resolver.addAttack(target, damage);
-
-    if(attacker.hasTrait(TRAIT_TYPE.SHRAPNEL)) {
-        mResolveShrapnel(gameContext, attacker, target, ATTACK_FLAG.NONE, resolver);
+    //Attacker traits.
+    for(const traitID of attacker.config.traits) {
+        const traitType = typeRegistry.getTraitType(traitID);
+        
+        //Move and armor factor.
+        traitFactor *= traitType.getMoveDamage(targetMove);
+        traitFactor *= traitType.getArmorDamage(targetArmor);
     }
 
-    mResolveAttackTraits(attacker, resolver);
-}
-
-/**
- * 
- * @param {*} gameContext 
- * @param {BattalionEntity} attacker 
- * @param {BattalionEntity} target 
- * @param {InteractionResolver} resolver 
- */
-const mResolveCounterAttack = function(gameContext, attacker, target, resolver) {
-    const damage = attacker.getAttackDamage(gameContext, target, ATTACK_FLAG.COUNTER);
-
-    resolver.addAttack(target, damage);
-
-    //TODO(neyn): Shrapnel did NOT work when countering in the original game.
-    if(attacker.hasTrait(TRAIT_TYPE.SHRAPNEL)) {
-        mResolveShrapnel(gameContext, attacker, target, ATTACK_FLAG.COUNTER, resolver);
+    //Bonus damage if target at full health.
+    if(target.isAtFullHealth() && attacker.hasTrait(TRAIT_TYPE.BULLDOZE)) {
+        otherFactor *= TRAIT_CONFIG.BULLDOZE_DAMAGE;
     }
 
-    mResolveAttackTraits(attacker, resolver);
-}
+    //Steer trait. Reduces damage received by STEER for each tile the target can travel further. Up to STEER_MAX_REDUCTION.
+    if(attacker.config.category === ENTITY_CATEGORY.SEA && target.hasTrait(TRAIT_TYPE.STEER)) {
+        const deltaRange = target.config.movementRange - attacker.config.movementRange;
 
-/**
- * 
- * @param {*} gameContext 
- * @param {BattalionEntity} attacker 
- * @param {BattalionEntity} target 
- * @param {InteractionResolver} resolver 
- */
-const mResolveDispersionAttack = function(gameContext, attacker, target, resolver) {
-    const { world } = gameContext;
-    const { tileX, tileY } = target;
-    const range = attacker.hasTrait(TRAIT_TYPE.JUDGEMENT) ? TRAIT_CONFIG.JUDGEMENT_RANGE : TRAIT_CONFIG.DISPERSION_RANGE;
-    const targets = world.getEntitiesInRange(tileX, tileY, range, range);
+        if(deltaRange > 0) {
+            const steerAmplifier = 1 - (deltaRange * TRAIT_CONFIG.STEER_REDUCTION);
 
-    for(const target of targets) {
-        if(target.isHurtByDispersion()) {
-            const damage = attacker.getAttackDamage(gameContext, target, ATTACK_FLAG.AREA);
-
-            if(target.id === attacker.id) {
-                resolver.addSelfDamage(target, damage);
+            if(steerAmplifier < TRAIT_CONFIG.STEER_MAX_REDUCTION) {
+                otherFactor *= TRAIT_CONFIG.STEER_MAX_REDUCTION;
             } else {
-                resolver.addAttack(target, damage);
+                otherFactor *= steerAmplifier;
             }
         }
     }
 
-    mResolveAttackTraits(attacker, resolver);
-}
+    //If it's not a counter it must be a normal attack.
+    if(flags & COMBAT_FLAG.COUNTER) {
+        if(attacker.hasTrait(TRAIT_TYPE.SLUGGER)) {
+            healthFactor = 1;
+        }
+    } else {
+        //Bonus damage if attacking at full health.
+        if(healthFactor >= 1 && attacker.hasTrait(TRAIT_TYPE.ANNIHILATE)) {
+            otherFactor *= TRAIT_CONFIG.ANNIHILATE_DAMAGE;
+        }
 
-/**
- * 
- * @param {*} gameContext 
- * @param {BattalionEntity} attacker 
- * @param {BattalionEntity} target 
- * @param {InteractionResolver} resolver 
- */
-const mResolveStreamblastAttack = function(gameContext, attacker, target, resolver) {
-    const { world } = gameContext;
-    const direction = attacker.getDirectionTo(target);
-    const deltaX = DIRECTION_DELTA_X[direction];
-    const deltaY = DIRECTION_DELTA_Y[direction];
-    const targets = world.getEntitiesInLine(attacker.tileX, attacker.tileY, deltaX, deltaY, attacker.config.streamRange);
+        //Blitz factor.
+        if(attacker.hasTrait(TRAIT_TYPE.BLITZ)) {
+            otherFactor *= TRAIT_CONFIG.BLITZ_MULTIPLIER;
+        }
 
-    for(const target of targets) {
-        if(target.isHurtByStreamblast()) {
-            const damage = attacker.getAttackDamage(gameContext, target, ATTACK_FLAG.STREAMBLAST);
+        //Schwerpunkt factor.
+        if(attacker.hasTrait(TRAIT_TYPE.SCHWERPUNKT) && targetMove === MOVEMENT_TYPE.FOOT) {
+            otherFactor *= TRAIT_CONFIG.SCHWERPUNKT_MULTIPLIER;
+        }
 
-            resolver.addAttack(target, damage);
+        //Stealth factor.
+        if(attacker.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
+            otherFactor *= TRAIT_CONFIG.STEALTH_MULTIPLIER;
+        }
+
+        const isExecutable = target.getVitality() < TRAIT_CONFIG.EXECUTIONER_THRESHOLD;
+
+        if(isExecutable && attacker.hasTrait(TRAIT_TYPE.EXECUTIONER)) {
+            otherFactor *= TRAIT_CONFIG.EXECUTIONER_DAMAGE;
         }
     }
 
-    mResolveAttackTraits(attacker, resolver);
+    if(flags & COMBAT_FLAG.SHRAPNEL) {
+        otherFactor *= TRAIT_CONFIG.SHRAPNEL_DAMAGE;
+    }
+
+    damageAmplifier *= healthFactor;
+    damageAmplifier *= moraleFactor;
+    damageAmplifier *= weaponFactor;
+    damageAmplifier *= terrainFactor;
+    damageAmplifier *= logisticFactor;
+    damageAmplifier *= traitFactor;
+    damageAmplifier *= otherFactor;
+
+    return damageAmplifier;
 }
 
 /**
  * 
  * @param {*} gameContext 
  * @param {BattalionEntity} healer 
- * @param {BattalionEntity} target 
- * @param {InteractionResolver} resolver 
+ * @returns 
  */
-const mResolveHeal = function(gameContext, healer, target, resolver) {
-    const amplifier = healer.getHealAmplifier(gameContext);
-    const heal = Math.floor(healer.getDamage(gameContext) * amplifier);
+const getHealAmplifier = function(gameContext, healer) {
+    let healAmplifier = 1;
 
-    resolver.addHeal(target, heal);
-}
+    healAmplifier *= getHealthFactor(healer);
+    healAmplifier *= getMoraleFactor(gameContext, healer);
+    healAmplifier *= getLogisticFactor(gameContext, healer);
 
-/**
- * 
- * @param {BattalionEntity} attacker 
- * @param {BattalionEntity} target 
- * @returns {boolean}
- */
-const isCounterValid = function(attacker, target) {
-    //Only regular attackers can counter.
-    if(attacker.getAttackType() !== ATTACK_TYPE.REGULAR || target.getAttackType() !== ATTACK_TYPE.REGULAR) {
-        return false;
-    }
-
-    //Certain entities can never counter.
-    if(attacker.hasTrait(TRAIT_TYPE.BLIND_SPOT) || attacker.hasTrait(TRAIT_TYPE.SELF_DESTRUCT)) {
-        return false;
-    }
-
-    const targetID = target.getID();
-
-    //Target should be the previous attacker.
-    if(!attacker.isLastAttackedBy(targetID)) {
-        return false;
-    }
-
-    //STUN can never be countered.
-    if(target.hasTrait(TRAIT_TYPE.STUN)) {
-        return false;
-    }
-
-    //TANK_HUNTER disables TRACKED from countering.
-    if(target.hasTrait(TRAIT_TYPE.TANK_HUNTER) && attacker.config.movementType === MOVEMENT_TYPE.TRACKED) {
-        return false;
-    }
-
-    switch(target.config.rangeType) {
-        case RANGE_TYPE.RANGE: {
-            if(!attacker.hasTrait(TRAIT_TYPE.COUNTER_BATTERY)) {
-                return false;
-            }
-
-            break;
-        }
-        case RANGE_TYPE.HYBRID: {
-            //Edge case: If two hybrids are next to each other, treat attacking as melee.
-            if(!attacker.hasTrait(TRAIT_TYPE.COUNTER_BATTERY) && !attacker.isNextToEntity(target)) {
-                return false;
-            }
-
-            break;
-        }
-    }
-
-    return true;
+    return healAmplifier;
 }
 
 export const CombatSystem = {
+    /**
+     * 
+     * @param {BattalionEntity} attacker 
+     * @param {BattalionEntity} target 
+     * @returns {boolean}
+     */
+    isCounterValid: function(attacker, target) {
+        //Only regular attackers can counter.
+        if(attacker.getAttackType() !== ATTACK_TYPE.REGULAR || target.getAttackType() !== ATTACK_TYPE.REGULAR) {
+            return false;
+        }
+
+        //Certain entities can never counter.
+        if(attacker.hasTrait(TRAIT_TYPE.BLIND_SPOT) || attacker.hasTrait(TRAIT_TYPE.SELF_DESTRUCT)) {
+            return false;
+        }
+
+        const targetID = target.getID();
+
+        //Target should be the previous attacker.
+        if(!attacker.isLastAttackedBy(targetID)) {
+            return false;
+        }
+
+        //STUN can never be countered.
+        if(target.hasTrait(TRAIT_TYPE.STUN)) {
+            return false;
+        }
+
+        //TANK_HUNTER disables TRACKED from countering.
+        if(target.hasTrait(TRAIT_TYPE.TANK_HUNTER) && attacker.config.movementType === MOVEMENT_TYPE.TRACKED) {
+            return false;
+        }
+
+        switch(target.config.rangeType) {
+            case RANGE_TYPE.RANGE: {
+                if(!attacker.hasTrait(TRAIT_TYPE.COUNTER_BATTERY)) {
+                    return false;
+                }
+
+                break;
+            }
+            case RANGE_TYPE.HYBRID: {
+                //Edge case: If two hybrids are next to each other, treat attacking as melee.
+                if(!attacker.hasTrait(TRAIT_TYPE.COUNTER_BATTERY) && !attacker.isNextToEntity(target)) {
+                    return false;
+                }
+
+                break;
+            }
+        }
+
+        return true;
+    },
     /**
      * 
      * @param {*} gameContext 
@@ -513,54 +496,309 @@ export const CombatSystem = {
     /**
      * 
      * @param {*} gameContext 
-     * @param {BattalionEntity} entity 
+     * @param {BattalionEntity} attacker 
      * @param {BattalionEntity} target 
-     * @param {InteractionResolver} resolver 
+     * @param {number} flags 
+     * @returns 
      */
-    resolveFirstAttack: function(gameContext, entity, target, resolver) {
-        if(CombatSystem.isAttackValid(gameContext, entity, target) && CombatSystem.isAttackPositionValid(gameContext, entity, target)) {
-            switch(entity.getAttackType()) {
-                case ATTACK_TYPE.REGULAR: {
-                    mResolveRegularAttack(gameContext, entity, target, resolver);
-                    break;
-                }
-                case ATTACK_TYPE.DISPERSION: {
-                    mResolveDispersionAttack(gameContext, entity, target, resolver);
-                    break;
-                }
-                case ATTACK_TYPE.STREAMBLAST: {
-                    mResolveStreamblastAttack(gameContext, entity, target, resolver);
-                    break;
-                }
-                default: {
-                    console.error("Unsupported attack type!");
-                    break;
-                }
-            }
+    getAttackDamage: function(gameContext, attacker, target, flags) {
+        const damageAmplifier = getAttackAmplifier(gameContext, attacker, target, flags);
+        let damage = attacker.getDamage(gameContext) * damageAmplifier;
+
+        if(target.hasTrait(TRAIT_TYPE.CEMENTED_STEEL_ARMOR) && !attacker.hasTrait(TRAIT_TYPE.CAVITATION_EXPLOSION)) {
+            damage -= TRAIT_CONFIG.CEMENTED_STEEL_ARMOR_REDUCTION;
         }
-    },
-    /**
-     * 
-     * @param {*} gameContext 
-     * @param {BattalionEntity} entity 
-     * @param {BattalionEntity} target 
-     * @param {InteractionResolver} resolver 
-     */
-    resolveCounterAttack: function(gameContext, entity, target, resolver) {
-        if(isCounterValid(entity, target) && CombatSystem.isAttackValid(gameContext, entity, target) && CombatSystem.isAttackPositionValid(gameContext, entity, target)) {
-            mResolveCounterAttack(gameContext, entity, target, resolver);
+
+        if(damage < 0) {
+            damage = 0;
         }
-    },
-    /**
-     * 
-     * @param {*} gameContext 
-     * @param {BattalionEntity} entity 
-     * @param {BattalionEntity} target 
-     * @param {InteractionResolver} resolver 
-     */
-    resolveHeal: function(gameContext, entity, target, resolver) {
-        if(CombatSystem.isHealValid(gameContext, entity, target) && CombatSystem.isHealPositionValid(gameContext, entity, target)) {
-            mResolveHeal(gameContext, entity, target, resolver);
+
+        //Unknown calculation.
+        //Air units always take a max of 25 damage when the attacker does not have ANTI_AIR.
+        if(
+            damage > 25 &&
+            target.config.category === ENTITY_CATEGORY.AIR &&
+            !attacker.hasTrait(TRAIT_TYPE.ANTI_AIR)
+        ) {
+            damage = 25;
         }
+
+        if(attacker.hasTrait(TRAIT_TYPE.JUDGEMENT)) {
+            damage = TRAIT_CONFIG.JUDGEMENT_DAMAGE;
+        }
+
+        if(damage > 0 && damage < 1) {
+            damage = 1;
+        }
+
+        return Math.floor(damage);
     }
 };
+
+export const ResolutionSystem = {
+    createEntityResolution: function() {
+        return {
+            "entityID": EntityManager.INVALID_ID,
+            "delta": 0,
+            "health": 0
+        }
+    },
+    fillEntityResolution: function(entityID, delta, health) {
+        const resolution = ResolutionSystem.createEntityResolution();
+
+        resolution.entityID = entityID;
+        resolution.delta = delta;
+        resolution.health = health;
+
+        return resolution;
+    },
+    getDeadEntities: function(resolutions) {
+        const deadEntities = [];
+
+        for(const resolution of resolutions) {
+            if(resolution.health === 0) {
+                deadEntities.push(resolution.entityID);
+            }
+        }
+
+        return deadEntities;
+    }
+};
+
+export const CombatResolver = function() {
+    this.resolutions = new Map();
+    this.totalDamage = 0;
+    this.totalHeal = 0;
+    this.resourceDamage = 0;
+}
+
+CombatResolver.prototype.getDamageFromDelta = function(delta) {
+    if(delta >= 0) {
+        return 0;
+    }
+
+    return -delta;
+}
+
+CombatResolver.prototype.getDelta = function(entityID) {
+    const delta = this.resolutions.get(entityID);
+
+    if(delta === undefined) {
+        return 0;
+    }
+
+    return delta;
+}
+
+CombatResolver.prototype.addSelfDestruct = function(entity) {
+    const entityID = entity.getID();
+
+    //TODO(neyn): SELF_DESTRUCT is a rule override.
+    //This should later be expanded upon!
+    this.resolutions.set(entityID, -entity.health);
+}
+
+CombatResolver.prototype.addSelfDamage = function(entity, damage) {
+    //Self damage does not count towards total damage!
+    const entityID = entity.getID();
+    const delta = entity.getAttackDelta(damage, this.getDelta(entityID));
+
+    this.add(entityID, delta);
+}
+
+CombatResolver.prototype.addHeal = function(entity, heal) {
+    const entityID = entity.getID();
+    const delta = entity.getHealDelta(heal, this.getDelta(entityID));
+
+    this.totalHeal += delta;
+    this.add(entityID, delta);
+}
+
+CombatResolver.prototype.addAttack = function(entity, damage) {
+    const entityID = entity.getID();
+    const delta = entity.getAttackDelta(damage, this.getDelta(entityID));
+    const damageDealt = this.getDamageFromDelta(delta);
+    const resourceDamage = entity.getDamageAsResources(damageDealt);
+
+    this.totalDamage += damageDealt;
+    this.resourceDamage += resourceDamage;
+    this.add(entityID, delta);
+}
+
+CombatResolver.prototype.add = function(entityID, delta) {
+    if(this.resolutions.has(entityID)) {
+        const total = this.resolutions.get(entityID);
+
+        this.resolutions.set(entityID, total + delta);
+    } else {
+        this.resolutions.set(entityID, delta);
+    }
+}
+
+CombatResolver.prototype.createResolutions = function(gameContext) {
+    const { world } = gameContext;
+    const { entityManager } = world;
+    const resolutions = [];
+
+    for(const [entityID, delta] of this.resolutions) {
+        const entity = entityManager.getEntity(entityID);
+        let finalHealth = entity.getHealthFromDelta(delta);
+
+        //Clamp health to uint.
+        if(finalHealth < 0) {
+            finalHealth = 0;
+        }
+
+        resolutions.push(ResolutionSystem.fillEntityResolution(entityID, delta, finalHealth));
+    }
+
+    return resolutions;
+}
+
+CombatResolver.prototype.resolveAttackTraits = function(attacker) {
+    if(attacker.hasTrait(TRAIT_TYPE.OVERHEAT)) {
+        const overheatDamage = attacker.getOverheatDamage();
+
+        this.addSelfDamage(attacker, overheatDamage);
+    }
+
+    if(attacker.hasTrait(TRAIT_TYPE.ABSORBER)) {
+        const absorberHeal = attacker.getAbsorberHeal(this.totalDamage);
+
+        this.addHeal(attacker, absorberHeal);
+    }
+
+    if(attacker.hasTrait(TRAIT_TYPE.SELF_DESTRUCT)) {
+        this.addSelfDestruct(attacker);
+    }
+}
+
+CombatResolver.prototype.resolveRegularAttack = function(gameContext, attacker, target) {
+    const damage = CombatSystem.getAttackDamage(gameContext, attacker, target, COMBAT_FLAG.NONE);
+
+    this.addAttack(target, damage);
+
+    if(attacker.hasTrait(TRAIT_TYPE.SHRAPNEL)) {
+        this.resolveShrapnel(gameContext, attacker, target, COMBAT_FLAG.NONE);
+    }
+
+    this.resolveAttackTraits(attacker);
+}
+
+CombatResolver.prototype.resolveShrapnel = function(gameContext, attacker, target, damageFlags) {
+    const { world } = gameContext;
+    const { tileX, tileY } = target;
+    const direction = attacker.getDirectionTo(target);
+    const deltaX = DIRECTION_DELTA_X[direction];
+    const deltaY = DIRECTION_DELTA_Y[direction];
+    const targets = world.getEntitiesInLine(tileX, tileY, deltaX, deltaY, TRAIT_CONFIG.SHRAPNEL_RANGE);
+    const flags = damageFlags | COMBAT_FLAG.SHRAPNEL;
+
+    for(const target of targets) {
+        if(target.isHurtByShrapnel()) {
+            const damage = CombatSystem.getAttackDamage(gameContext, attacker, target, flags);
+
+            this.addAttack(target, damage);
+        }
+    }
+}
+
+CombatResolver.prototype.resolveCounterAttack = function(gameContext, attacker, target) {
+    const damage = CombatSystem.getAttackDamage(gameContext, attacker, target, COMBAT_FLAG.COUNTER);
+
+    this.addAttack(target, damage);
+
+    //TODO(neyn): Shrapnel did NOT work when countering in the original game.
+    if(attacker.hasTrait(TRAIT_TYPE.SHRAPNEL)) {
+        this.resolveShrapnel(gameContext, attacker, target, COMBAT_FLAG.COUNTER);
+    }
+
+    this.resolveAttackTraits(attacker);
+}
+
+CombatResolver.prototype.resolveDispersionAttack = function(gameContext, attacker, target) {
+    const { world } = gameContext;
+    const { tileX, tileY } = target;
+    const range = attacker.hasTrait(TRAIT_TYPE.JUDGEMENT) ? TRAIT_CONFIG.JUDGEMENT_RANGE : TRAIT_CONFIG.DISPERSION_RANGE;
+    const targets = world.getEntitiesInRange(tileX, tileY, range, range);
+
+    for(const target of targets) {
+        if(target.isHurtByDispersion()) {
+            const damage = CombatSystem.getAttackDamage(gameContext, attacker, target, COMBAT_FLAG.AREA);
+
+            if(target.id === attacker.id) {
+                this.addSelfDamage(target, damage);
+            } else {
+                this.addAttack(target, damage);
+            }
+        }
+    }
+
+    this.resolveAttackTraits(attacker);
+}
+
+CombatResolver.prototype.resolveStreamblastAttack = function(gameContext, attacker, target) {
+    const { world } = gameContext;
+    const direction = attacker.getDirectionTo(target);
+    const deltaX = DIRECTION_DELTA_X[direction];
+    const deltaY = DIRECTION_DELTA_Y[direction];
+    const targets = world.getEntitiesInLine(attacker.tileX, attacker.tileY, deltaX, deltaY, attacker.config.streamRange);
+
+    for(const target of targets) {
+        if(target.isHurtByStreamblast()) {
+            const damage = CombatSystem.getAttackDamage(gameContext, attacker, target, COMBAT_FLAG.STREAMBLAST);
+
+            this.addAttack(target, damage);
+        }
+    }
+
+    this.resolveAttackTraits(attacker);
+}
+
+CombatResolver.prototype.doCounterAttack = function(gameContext, entity, target) {
+    if(
+        CombatSystem.isCounterValid(entity, target)
+        && CombatSystem.isAttackValid(gameContext, entity, target)
+        && CombatSystem.isAttackPositionValid(gameContext, entity, target)
+    ) {
+        this.resolveCounterAttack(gameContext, entity, target);
+    }
+}
+
+CombatResolver.prototype.doFirstAttack = function(gameContext, entity, target) {
+    if(
+        CombatSystem.isAttackValid(gameContext, entity, target)
+        && CombatSystem.isAttackPositionValid(gameContext, entity, target)
+    ) {
+        switch(entity.getAttackType()) {
+            case ATTACK_TYPE.REGULAR: {
+                this.resolveRegularAttack(gameContext, entity, target);
+                break;
+            }
+            case ATTACK_TYPE.DISPERSION: {
+                this.resolveDispersionAttack(gameContext, entity, target);
+                break;
+            }
+            case ATTACK_TYPE.STREAMBLAST: {
+                this.resolveStreamblastAttack(gameContext, entity, target);
+                break;
+            }
+            default: {
+                console.error("Unsupported attack type!");
+                break;
+            }
+        }
+    }
+}
+
+CombatResolver.prototype.doHeal = function(gameContext, entity, target) {
+    if(
+        CombatSystem.isHealValid(gameContext, entity, target)
+        && CombatSystem.isHealPositionValid(gameContext, entity, target)
+    ) {
+        const amplifier = getHealAmplifier(gameContext, entity);
+        const heal = Math.floor(entity.getDamage(gameContext) * amplifier);
+
+        this.addHeal(target, heal);
+    }
+}

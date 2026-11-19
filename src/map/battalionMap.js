@@ -1,10 +1,10 @@
-import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { Layer } from "../../engine/map/layer.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { Building } from "../entity/building.js";
 import { Mine } from "../entity/mine.js";
 import { downgradeOre } from "../enumHelpers.js";
 import { CLIMATE_TYPE, TILE_ID, TILE_TYPE } from "../enums.js";
+import { TextRegistry } from "../registry/textRegistry.js";
 import { JammerTile } from "./jammerTile.js";
 import { Pathfinder } from "./pathfinder.js";
 
@@ -119,31 +119,31 @@ BattalionMap.prototype.getTileType = function(gameContext, tileX, tileY) {
 }
 
 BattalionMap.prototype.getTileName = function(gameContext, tileX, tileY) {
-    const { language } = gameContext;
+    const { textRegistry } = gameContext;
     const index = this.getIndex(tileX, tileY);
     const localization = this.localization.get(index);
 
-    if(localization && localization.name !== LanguageHandler.INVALID_ID) {
-        return language.getScenarioTranslation(localization.name);
+    if(localization && localization.name !== TextRegistry.INVALID_ID) {
+        return textRegistry.getScenarioTranslation(localization.name);
     }
 
     const { name } = this.getTileType(gameContext, tileX, tileY);
 
-    return language.getSystemTranslation(name);
+    return textRegistry.getSystemTranslation(name);
 }
 
 BattalionMap.prototype.getTileDesc = function(gameContext, tileX, tileY) {
-    const { language } = gameContext;
+    const { textRegistry } = gameContext;
     const index = this.getIndex(tileX, tileY);
     const localization = this.localization.get(index);
 
-    if(localization && localization.desc !== LanguageHandler.INVALID_ID) {
-        return language.getScenarioTranslation(localization.desc);
+    if(localization && localization.desc !== TextRegistry.INVALID_ID) {
+        return textRegistry.getScenarioTranslation(localization.desc);
     }
 
     const { desc } = this.getTileType(gameContext, tileX, tileY);
 
-    return language.getSystemTranslation(desc);
+    return textRegistry.getSystemTranslation(desc);
 }
 
 BattalionMap.prototype.removeLocalization = function(tileX, tileY) {

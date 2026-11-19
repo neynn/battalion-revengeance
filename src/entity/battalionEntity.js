@@ -3,16 +3,16 @@ import { EntityManager } from "../../engine/entity/entityManager.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { isRectangleRectangleIntersect } from "../../engine/math/math.js";
 import { DIRECTION_DELTA_X, DIRECTION_DELTA_Y, getDirectionByDelta, isDirectionValid } from "../systems/direction.js";
-import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, ATTACK_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE, SHOP_TYPE } from "../enums.js";
+import { TRAIT_CONFIG, ATTACK_TYPE, DIRECTION, PATH_FLAG, MORALE_TYPE, WEAPON_TYPE, MOVEMENT_TYPE, TRAIT_TYPE, ENTITY_CATEGORY, JAMMER_FLAG, ENTITY_TYPE, TILE_TYPE, SHOP_TYPE } from "../enums.js";
 import { TeamManager } from "../team/teamManager.js";
 import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
-import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { ScenarioModel } from "../scenario/scenarioModel.js";
 import { ShopType } from "../type/parsed/shopType.js";
 import { TerrainType } from "../type/parsed/terrainType.js";
 import { StealthSystem } from "../systems/stealth.js";
 import { EntityType } from "../type/parsed/entityType.js";
 import { UNIT_MAX_ACTIONS_PER_TURN, UNIT_MAX_MOVES_PER_TURN, UNIT_MAX_MORALE_DELTA, UNIT_MIN_MORALE_DELTA, JAMMER_TILES_WITH_NEIGHBORS } from "../constants.js";
+import { TextRegistry } from "../registry/textRegistry.js";
 
 /**
  * 
@@ -27,8 +27,8 @@ export const BattalionEntity = function(id, config) {
     this.tileZ = -1;
     
     this.customID = ScenarioModel.INVALID_CUSTOM_ID;
-    this.customName = LanguageHandler.INVALID_ID;
-    this.customDesc = LanguageHandler.INVALID_ID;
+    this.customName = TextRegistry.INVALID_ID;
+    this.customDesc = TextRegistry.INVALID_ID;
 
     this.config = config;
     this.health = 1;
@@ -276,7 +276,7 @@ BattalionEntity.prototype.getHealDelta = function(heal = 0, accumulatedDelta = 0
     return delta;
 }
 
-BattalionEntity.prototype.getHealPercentage = function() {
+BattalionEntity.prototype.getRepairHealPercentage = function() {
     let healPercentage = (this.maxHealth - this.health) / this.maxHealth;
 
     //Healing is capped to a max of 25%
@@ -304,7 +304,7 @@ BattalionEntity.prototype.getStartOfTurnDelta = function(gameContext) {
     }
 
     if(this.hasFlag(BattalionEntity.FLAG.IS_REPAIRING)) {
-        bonusHealth += Math.floor(this.maxHealth * this.getHealPercentage());
+        bonusHealth += Math.floor(this.maxHealth * this.getRepairHealPercentage());
     }
 
     //Heal if below maxHealth but cap the healing to maxHealth.
@@ -574,248 +574,6 @@ BattalionEntity.prototype.updateRangeGuard = function(gameContext) {
             }
         }
     }
-}
-
-BattalionEntity.prototype.getMoraleFactor = function(gameContext) {
-    const { typeRegistry } = gameContext;
-    const { damageModifier } = typeRegistry.getMoraleType(this.getMorale());
-
-    return damageModifier;
-}
-
-BattalionEntity.prototype.getWeaponFactor = function(gameContext, targetArmor) {
-    const { typeRegistry } = gameContext;
-    const weaponType = typeRegistry.getWeaponType(this.config.weaponType);
-    let damageMultiplier = weaponType.getDamageMultiplier(targetArmor);
-
-    //Ignore only damage reduction with ARMOR_PIERCE, keep the damage increase.
-    if(damageMultiplier < 1 && this.hasTrait(TRAIT_TYPE.ARMOR_PIERCE)) {
-        damageMultiplier = 1;
-    }
-
-    return damageMultiplier;
-}
-
-BattalionEntity.prototype.getTerrainFactor = function(gameContext, target) {
-    const { world, typeRegistry } = gameContext;
-    const worldMap = world.getWorldMap();
-
-    const startX = target.tileX;
-    const startY = target.tileY;
-    const endX = startX + target.config.dimX;
-    const endY = startY + target.config.dimY;
-    const targetMove = target.config.movementType;
-
-    let terrainFactor = 1;
-
-    //TODO: Large units may get absurd protection.
-    for(let i = startY; i < endY; i++) {
-        for(let j = startX; j < endX; j++) {
-            const { terrain } = worldMap.getTileType(gameContext, j, i);
-
-            for(const terrainID of terrain) {
-                const terrainType = typeRegistry.getTerrainType(terrainID);
-                const protectionFactor = terrainType.getProtection(targetMove);
-
-                //Immeditately return 0 if a terrain fully protects.
-                //This means all damage gets set to 0.
-                if(protectionFactor >= 1) {
-                    return 0;
-                }
-
-                terrainFactor *= (1 - protectionFactor);
-            }
-        }
-    }
-
-    return terrainFactor;
-}
-
-BattalionEntity.prototype.getLogisticFactor = function(gameContext) {
-    const { world } = gameContext;
-    const worldMap = world.getWorldMap();
-
-    const startX = this.tileX;
-    const startY = this.tileY;
-    const endX = startX + this.config.dimX;
-    const endY = startY + this.config.dimY;
-
-    let totalLogisticFactor = 0;
-    let count = 0;
-
-    for(let i = startY; i < endY; i++) {
-        for(let j = startX; j < endX; j++) {
-            const { logisticFactor } = worldMap.getClimateType(gameContext, j, i);
-
-            totalLogisticFactor += logisticFactor;
-            count++;
-        }
-    }
-
-    //Takes the average of all logistic factors.
-    if(count !== 0) {
-        totalLogisticFactor /= count;
-    } else {
-        totalLogisticFactor = 1;
-    }
-
-    //COMMANDO reduces the total impact negative logistic factors have.
-    //A factor of 0.2 would reduce damage by 80%, but COMMANDO halves that damage reduction to 40% (0.6).
-    if(totalLogisticFactor < 1 && this.hasTrait(TRAIT_TYPE.COMMANDO)) {
-        totalLogisticFactor = 1 - (1 - totalLogisticFactor) * TRAIT_CONFIG.COMMANDO_LOGISTIC_REDUCTION;
-    }
-
-    return totalLogisticFactor;
-}
-
-BattalionEntity.prototype.getHealthFactor = function() {
-    let healthFactor = 1;
-
-    if(!this.hasTrait(TRAIT_TYPE.INDOMITABLE)) {
-        healthFactor = this.getVitalityCapped();
-    }
-
-    return healthFactor;
-}
-
-BattalionEntity.prototype.getHealAmplifier = function(gameContext) {
-    let damageAmplifier = 1;
-
-    damageAmplifier *= this.getHealthFactor();
-    damageAmplifier *= this.getMoraleFactor(gameContext);
-    damageAmplifier *= this.getLogisticFactor(gameContext);
-
-    return damageAmplifier;
-}
-
-BattalionEntity.prototype.getAttackAmplifier = function(gameContext, target, flags) {
-    const { typeRegistry } = gameContext;
-    const targetArmor = target.config.armorType;
-    const targetMove = target.config.movementType;
-
-    let healthFactor = 1;
-    let moraleFactor = 1;
-    let weaponFactor = 1;
-    let terrainFactor = 1;
-    let logisticFactor = 1;
-    let traitFactor = 1;
-    let otherFactor = 1;
-    let damageAmplifier = 1;
-
-    healthFactor = this.getHealthFactor();
-    moraleFactor = this.getMoraleFactor(gameContext);
-    weaponFactor = this.getWeaponFactor(gameContext, targetArmor);
-    terrainFactor = this.getTerrainFactor(gameContext, target);
-    logisticFactor = this.getLogisticFactor(gameContext);
-
-    //Attacker traits.
-    for(let i = 0; i < this.config.traits.length; i++) {
-        const traitType = typeRegistry.getTraitType(this.config.traits[i]);
-        
-        //Move and armor factor.
-        traitFactor *= traitType.getMoveDamage(targetMove);
-        traitFactor *= traitType.getArmorDamage(targetArmor);
-    }
-
-    //Bonus damage if target at full health.
-    if(target.isAtFullHealth() && this.hasTrait(TRAIT_TYPE.BULLDOZE)) {
-        otherFactor *= TRAIT_CONFIG.BULLDOZE_DAMAGE;
-    }
-
-    //Steer trait. Reduces damage received by STEER for each tile the target can travel further. Up to STEER_MAX_REDUCTION.
-    if(this.config.category === ENTITY_CATEGORY.SEA && target.hasTrait(TRAIT_TYPE.STEER)) {
-        const deltaRange = target.config.movementRange - this.config.movementRange;
-
-        if(deltaRange > 0) {
-            const steerAmplifier = 1 - (deltaRange * TRAIT_CONFIG.STEER_REDUCTION);
-
-            if(steerAmplifier < TRAIT_CONFIG.STEER_MAX_REDUCTION) {
-                otherFactor *= TRAIT_CONFIG.STEER_MAX_REDUCTION;
-            } else {
-                otherFactor *= steerAmplifier;
-            }
-        }
-    }
-
-    //If it's not a counter it must be a normal attack.
-    if(flags & ATTACK_FLAG.COUNTER) {
-        if(this.hasTrait(TRAIT_TYPE.SLUGGER)) {
-            healthFactor = 1;
-        }
-    } else {
-        //Bonus damage if attacking at full health.
-        if(healthFactor >= 1 && this.hasTrait(TRAIT_TYPE.ANNIHILATE)) {
-            otherFactor *= TRAIT_CONFIG.ANNIHILATE_DAMAGE;
-        }
-
-        //Blitz factor.
-        if(this.hasTrait(TRAIT_TYPE.BLITZ)) {
-            otherFactor *= TRAIT_CONFIG.BLITZ_MULTIPLIER;
-        }
-
-        //Schwerpunkt factor.
-        if(this.hasTrait(TRAIT_TYPE.SCHWERPUNKT) && targetMove === MOVEMENT_TYPE.FOOT) {
-            otherFactor *= TRAIT_CONFIG.SCHWERPUNKT_MULTIPLIER;
-        }
-
-        //Stealth factor.
-        if(this.hasFlag(BattalionEntity.FLAG.IS_CLOAKED)) {
-            otherFactor *= TRAIT_CONFIG.STEALTH_MULTIPLIER;
-        }
-
-        const isExecutable = target.getVitality() < TRAIT_CONFIG.EXECUTIONER_THRESHOLD;
-
-        if(isExecutable && this.hasTrait(TRAIT_TYPE.EXECUTIONER)) {
-            otherFactor *= TRAIT_CONFIG.EXECUTIONER_DAMAGE;
-        }
-    }
-
-    if(flags & ATTACK_FLAG.SHRAPNEL) {
-        otherFactor *= TRAIT_CONFIG.SHRAPNEL_DAMAGE;
-    }
-
-    damageAmplifier *= healthFactor;
-    damageAmplifier *= moraleFactor;
-    damageAmplifier *= weaponFactor;
-    damageAmplifier *= terrainFactor;
-    damageAmplifier *= logisticFactor;
-    damageAmplifier *= traitFactor;
-    damageAmplifier *= otherFactor;
-
-    return damageAmplifier;
-}
-
-BattalionEntity.prototype.getAttackDamage = function(gameContext, target, flags) {
-    const damageAmplifier = this.getAttackAmplifier(gameContext, target, flags);
-    let damage = this.getDamage(gameContext) * damageAmplifier;
-
-	if(target.hasTrait(TRAIT_TYPE.CEMENTED_STEEL_ARMOR) && !this.hasTrait(TRAIT_TYPE.CAVITATION_EXPLOSION)) {
-		damage -= TRAIT_CONFIG.CEMENTED_STEEL_ARMOR_REDUCTION;
-	}
-
-    if(damage < 0) {
-		damage = 0;
-	}
-
-    //Unknown calculation.
-    //Air units always take a max of 25 damage when the attacker does not have ANTI_AIR.
-	if(
-        damage > 25 &&
-        target.config.category === ENTITY_CATEGORY.AIR &&
-        !this.hasTrait(TRAIT_TYPE.ANTI_AIR)
-    ) {
-		damage = 25;
-	}
-
-    if(this.hasTrait(TRAIT_TYPE.JUDGEMENT)) {
-        damage = TRAIT_CONFIG.JUDGEMENT_DAMAGE;
-    }
-
-    if(damage > 0 && damage < 1) {
-        damage = 1;
-    }
-
-    return Math.floor(damage);
 }
 
 BattalionEntity.prototype.isAxisMeeting = function(target) {
@@ -1168,23 +926,23 @@ BattalionEntity.prototype.canPlaceMine = function(gameContext) {
 }
 
 BattalionEntity.prototype.getDescription = function(gameContext) {
-    const { language } = gameContext;
+    const { textRegistry } = gameContext;
     
-    if(this.customDesc !== LanguageHandler.INVALID_ID) {
-        return language.getScenarioTranslation(this.customDesc);
+    if(this.customDesc !== TextRegistry.INVALID_ID) {
+        return textRegistry.getScenarioTranslation(this.customDesc);
     }
 
-    return language.getSystemTranslation(this.config.desc);
+    return textRegistry.getSystemTranslation(this.config.desc);
 }
 
 BattalionEntity.prototype.getName = function(gameContext) {
-    const { language } = gameContext;
+    const { textRegistry } = gameContext;
     
-    if(this.customName !== LanguageHandler.INVALID_ID) {
-        return language.getScenarioTranslation(this.customName);
+    if(this.customName !== TextRegistry.INVALID_ID) {
+        return textRegistry.getScenarioTranslation(this.customName);
     }
 
-    return language.getSystemTranslation(this.config.name);
+    return textRegistry.getSystemTranslation(this.config.name);
 }
 
 BattalionEntity.prototype.setOpacity = function(opacity) {

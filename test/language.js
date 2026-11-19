@@ -32,14 +32,14 @@ const getSystemTranslationCode = function(handler, key) {
 }
 
 export const tAllNamesAndDescriptionsPresent = function(gameContext, types) {
-    const { language } = gameContext;
+    const { textRegistry } = gameContext;
     const mNames = [];
     const mDesc = [];
 
     for(const typeID in types) {
         const { name, desc } = types[typeID];
-        const nCode = getSystemTranslationCode(language, name);
-        const dCode = getSystemTranslationCode(language, desc);
+        const nCode = getSystemTranslationCode(textRegistry, name);
+        const dCode = getSystemTranslationCode(textRegistry, desc);
 
         switch(nCode) {
             case TEST_CODE.EMPTY_TRANSLATION:

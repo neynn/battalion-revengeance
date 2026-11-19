@@ -6,7 +6,6 @@ import { StateMachine } from "./state/stateMachine.js";
 import { TileManager } from "./tile/tileManager.js";
 import { ContextManager } from "./renderer/contextManager.js";
 import { World } from "./world/world.js";
-import { LanguageHandler } from "./language/languageHandler.js";
 import { FontHandler } from "./fontHandler.js";
 import { TextureLoader } from "./resources/texture/textureLoader.js";
 import { GameWindow } from "./gameWindow.js";
@@ -26,7 +25,6 @@ export const ClientGameContext = function(gTimer, gWindow) {
     this.spriteManager = new SpriteManager(this.textureRegistry);
     this.tileManager = new TileManager();
     this.uiManager = new UIManager();
-    this.language = new LanguageHandler();
     this.fonts = new FontHandler();
     this.states = new StateMachine(this);
     this.tweenManager = new TweenManager();
@@ -63,7 +61,6 @@ ClientGameContext.prototype.exit = function() {
     this.contextManager.exit();
     this.spriteManager.exit();
     this.uiManager.exit();
-    this.language.exit();
     this.tweenManager.exit();
     this.textureLoader.exit();
     this.dialogueHandler.exit();

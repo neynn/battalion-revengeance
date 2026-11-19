@@ -4,7 +4,7 @@ import { FIXED_DELTA_TIME } from "../../../engine/engine_constants.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ACTION_TYPE, ATTACK_TYPE, ATTACK_COMMAND_TYPE, SOUND_TYPE, TEAM_STAT, TRAIT_TYPE } from "../../enums.js";
-import { CombatSystem, InteractionResolver, ResolutionSystem } from "../../systems/combat.js";
+import { CombatSystem, CombatResolver, ResolutionSystem } from "../../systems/combat.js";
 import { getAnimationDuration, playAttackEffect } from "../../systems/sprite.js";
 import { DeathActionVTable } from "./death.js";
 
@@ -92,26 +92,26 @@ const fillAttackPlan = function(gameContext, executionPlan, actionIntent) {
         return;
     }
 
-    const resolver = new InteractionResolver();
+    const resolver = new CombatResolver();
     let flags = ATTACK_FLAG.NONE;
 
     switch(command) {
         case ATTACK_COMMAND_TYPE.DIRECT: {
             if(entity.isAllowedToActAndMove()) {
-                CombatSystem.resolveFirstAttack(gameContext, entity, target, resolver);
+                resolver.doFirstAttack(gameContext, entity, target);
             }
 
             break;
         }
         case ATTACK_COMMAND_TYPE.FOLLOW_UP: {
             if(entity.hasMoved() && entity.isAllowedToAct() && entity.isNextToEntity(target)) {
-                CombatSystem.resolveFirstAttack(gameContext, entity, target, resolver);
+                resolver.doFirstAttack(gameContext, entity, target);
             }
 
             break;
         }
         case ATTACK_COMMAND_TYPE.COUNTER: {
-            CombatSystem.resolveCounterAttack(gameContext, entity, target, resolver);
+            resolver.doCounterAttack(gameContext, entity, target);
             flags |= ATTACK_FLAG.COUNTER;
             break;
         }
@@ -170,7 +170,7 @@ AttackAction.prototype = Object.create(Action.prototype);
 AttackAction.prototype.constructor = AttackAction;
 
 AttackAction.prototype.onStart = function(gameContext, data) {
-    const { world, spriteController, soundRegistry } = gameContext;
+    const { world, spriteRegistry, soundRegistry } = gameContext;
     const { entityManager } = world;
     const { attackerID, targetID, resolutions, flags } = data;
     const entity = entityManager.getEntity(attackerID);
@@ -183,7 +183,7 @@ AttackAction.prototype.onStart = function(gameContext, data) {
         //TODO: Special counter anim!
     }
 
-    spriteController.updateEntitySprite(gameContext, entity);
+    spriteRegistry.updateEntitySprite(gameContext, entity);
     soundRegistry.playUnitSound(gameContext, entity, SOUND_TYPE.FIRE);
 
     playAttackEffect(gameContext, entity, target, resolutions);
@@ -204,13 +204,13 @@ AttackAction.prototype.isFinished = function(gameContext, executionPlan) {
 }
 
 AttackAction.prototype.onEnd = function(gameContext, data) {
-    const { world, spriteController } = gameContext;
+    const { world, spriteRegistry } = gameContext;
     const { entityManager } = world;
     const { attackerID } = data;
     const entity = entityManager.getEntity(attackerID);
 
     entity.setState(BattalionEntity.STATE.IDLE);
-    spriteController.updateEntitySprite(gameContext, entity);
+    spriteRegistry.updateEntitySprite(gameContext, entity);
 
     this.duration = 0;
     this.passedTime = 0;

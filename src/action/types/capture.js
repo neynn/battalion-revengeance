@@ -81,11 +81,11 @@ CaptureAction.prototype = Object.create(Action.prototype);
 CaptureAction.prototype.constructor = CaptureAction;
 
 CaptureAction.prototype.onEnd = function(gameContext, data) {
-    const { world, spriteController } = gameContext;
+    const { world, spriteRegistry } = gameContext;
     const { targetX, targetY } = data;
     const worldMap = world.getWorldMap();
     const building = worldMap.getBuilding(targetX, targetY);
-    const spriteID = spriteController.getBuildingSpriteID(building.index);
+    const spriteID = spriteRegistry.getBuildingSpriteID(building.index);
 
-    spriteController.updateBuildingSprite(gameContext, building, spriteID);
+    spriteRegistry.updateBuildingSprite(gameContext, building, spriteID);
 }

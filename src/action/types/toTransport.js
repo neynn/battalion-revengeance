@@ -118,12 +118,12 @@ ToTransportAction.prototype.isFinished = function(gameContext, executionPlan) {
 }
 
 ToTransportAction.prototype.onEnd = function(gameContext, data) {
-    const { world, spriteController } = gameContext;
+    const { world, spriteRegistry } = gameContext;
     const { entityManager } = world;
     const { entityID } = data;
     const entity = entityManager.getEntity(entityID);
 
-    spriteController.updateEntitySprite(gameContext, entity);
+    spriteRegistry.updateEntitySprite(gameContext, entity);
 
     this.tweens.length = 0;
 }

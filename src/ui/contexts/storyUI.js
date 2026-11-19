@@ -62,7 +62,7 @@ StoryUI.prototype.load = function(gameContext) {
 }
 
 StoryUI.prototype.onImmediate = function(gameContext, display) {
-    const { uiData, gameWindow, missionManager, typeRegistry, language, scenarioRegistry } = gameContext;
+    const { uiData, gameWindow, missionManager, typeRegistry, textRegistry, scenarioRegistry } = gameContext;
     const { currentChapter, currentMission, currentCampaign } = missionManager;
     const { width, height } = gameWindow;
     const { context } = display;
@@ -128,7 +128,7 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
             
             const textX = plaqueX + Math.floor(PLAQUE_WIDTH / 2);
             const textY = Math.floor(PLAQUE_HEIGHT / 2);
-            const chapterName = language.getSystemTranslation("STORY_CHAPTER_PLAQUE");
+            const chapterName = textRegistry.getSystemTranslation("STORY_CHAPTER_PLAQUE");
 
             context.fillText(chapterName + ` ${i + 1}`, textX, drawY + textY);
         }
@@ -147,7 +147,7 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
             const titleTextY = Math.floor(titleY + this.titleRect.h / 2);
 
             drawTextureQuad(panelTexture, this.titleRect, display, titleX, titleY);
-            context.fillText(language.getSystemTranslation(name), titleTextX, titleTextY);
+            context.fillText(textRegistry.getSystemTranslation(name), titleTextX, titleTextY);
 
             //TODO: This is cursed.
             {
@@ -168,13 +168,13 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
 
                 drawTexture(emblemSlot, display, drawX, emblemY - 22);
 
-                context.fillText(language.getSystemTranslation(name), missionPanelTextX, missionPanelTextY);
+                context.fillText(textRegistry.getSystemTranslation(name), missionPanelTextX, missionPanelTextY);
 
                 if(this.lastMission !== id) {
                     this.lastMission = id;
                     this.lines.length = 0;
 
-                    mRegenerateLines(this.lines, context, language.getSystemTranslation(desc), 480);
+                    mRegenerateLines(this.lines, context, textRegistry.getSystemTranslation(desc), 480);
                 }
 
                 for(let i = 0; i < this.lines.length; i++) {
@@ -202,7 +202,7 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
                     drawTextureRegion(startButtonTexture, START_BUTTON_STYLE.enabled, display, startX, startY);
                 }
 
-                context.fillText(language.getSystemTranslation(startButton), startTextX, startTextY);
+                context.fillText(textRegistry.getSystemTranslation(startButton), startTextX, startTextY);
 
                 if(startFlags & IM_FLAG.CLICKED) {
                     const override1 = new TeamOverride();
@@ -280,7 +280,7 @@ StoryUI.prototype.onImmediate = function(gameContext, display) {
 }
 
 StoryUI.prototype.drawDifficulty = function(gameContext, display, screenX, screenY) {
-    const { uiData, language } = gameContext;
+    const { uiData, textRegistry } = gameContext;
     const { context } = display;
     const panelTexture = uiData.getTexture(UI_TEXTURE.STORY_PANELS);
 
@@ -299,10 +299,10 @@ StoryUI.prototype.drawDifficulty = function(gameContext, display, screenX, scree
     drawTextureQuad(panelTexture, this.difficultyMediumRect, display, difficultyX, mediumY);
     drawTextureQuad(panelTexture, this.difficultyHardRect, display, difficultyX, hardY);
 
-    context.fillText(language.getSystemTranslation("STORY_DIFFICULTY_TITLE"), textX, textY);
-    context.fillText(language.getSystemTranslation("STORY_DIFFICULTY_EASY"), textX + textOffsetX, easyY + textOffsetY);
-    context.fillText(language.getSystemTranslation("STORY_DIFFICULTY_MEDIUM"), textX + textOffsetX, mediumY + textOffsetY);
-    context.fillText(language.getSystemTranslation("STORY_DIFFICULTY_HARD"), textX + textOffsetX, hardY + textOffsetY);
+    context.fillText(textRegistry.getSystemTranslation("STORY_DIFFICULTY_TITLE"), textX, textY);
+    context.fillText(textRegistry.getSystemTranslation("STORY_DIFFICULTY_EASY"), textX + textOffsetX, easyY + textOffsetY);
+    context.fillText(textRegistry.getSystemTranslation("STORY_DIFFICULTY_MEDIUM"), textX + textOffsetX, mediumY + textOffsetY);
+    context.fillText(textRegistry.getSystemTranslation("STORY_DIFFICULTY_HARD"), textX + textOffsetX, hardY + textOffsetY);
 
     const easyID = DIFFICULTY_ID_REGION;
     const mediumID = DIFFICULTY_ID_REGION + 1;

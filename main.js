@@ -1,4 +1,3 @@
-import { LanguageHandler } from "./engine/language/languageHandler.js";
 import { loadResourcesDev } from "./engine/resources/assetLoader.js";
 import { PrettyJSON } from "./engine/resources/prettyJSON.js";
 import { generateAutoSheet, makeLanguageFile } from "./helpers.js";
@@ -9,6 +8,7 @@ import { ClientPathHandler } from "./engine/resources/pathHandler.js";
 import { Timer } from "./engine/timer.js";
 import { GameWindow } from "./engine/gameWindow.js";
 import { addDebugKeybinds, drawWindowDebug } from "./debug.js";
+import { TextRegistry } from "./src/registry/textRegistry.js";
 
 const gameTimer = new Timer();
 const gameWindow = new GameWindow();
@@ -77,7 +77,7 @@ loadResourcesDev(ClientPathHandler, "assets/assets.json")
     requestAnimationFrame(gameLoop);
     
     if(false) {
-        gameContext.language.events.on(LanguageHandler.EVENT.LANGUAGE_CHANGE, () => {
+        gameContext.textRegistry.events.on(TextRegistry.EVENT.LANGUAGE_CHANGE, () => {
             validateTraitTypes(resources.traitTypes);
             console.log("Missing entity translations:", tAllNamesAndDescriptionsPresent(gameContext, resources.entityTypes));
             console.log("Missing tile translations:", tAllNamesAndDescriptionsPresent(gameContext, resources.tileTypes));

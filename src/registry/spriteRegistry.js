@@ -1,11 +1,11 @@
-import { Texture } from "../engine/resources/texture/texture.js";
-import { ImageResource } from "../engine/resources/texture/imageResource.js";
-import { SpriteManager } from "../engine/sprite/spriteManager.js";
-import { BattalionEntity } from "./entity/battalionEntity.js";
-import { BUILDING_TYPE, COLOR_TYPE, DIRECTION, EFFECT_SPRITE, ENTITY_TYPE, LAYER_TYPE } from "./enums.js";
-import { TeamManager } from "./team/teamManager.js";
-import { TextureRegistry } from "../engine/resources/texture/textureRegistry.js";
-import { MAX_BUILDINGS, MAX_UNITS } from "./constants.js";
+import { Texture } from "../../engine/resources/texture/texture.js";
+import { ImageResource } from "../../engine/resources/texture/imageResource.js";
+import { SpriteManager } from "../../engine/sprite/spriteManager.js";
+import { BattalionEntity } from "../entity/battalionEntity.js";
+import { BUILDING_TYPE, COLOR_TYPE, DIRECTION, EFFECT_SPRITE, ENTITY_TYPE, LAYER_TYPE } from "../enums.js";
+import { TeamManager } from "../team/teamManager.js";
+import { TextureRegistry } from "../../engine/resources/texture/textureRegistry.js";
+import { MAX_BUILDINGS, MAX_UNITS } from "../constants.js";
 
 //INFO(neyn): This is hard-coded but I don't really care :)
 const BUILDING_NEUTRAL_COLORS = {
@@ -123,7 +123,7 @@ const unitSpriteNameToRegistryIndex = function(spriteName, typeID) {
     }
 }
 
-export const SpriteController = function() {
+export const SpriteRegistry = function() {
     this.shades = [];
     this.shadeResources = new Map();
     this.buildingSprites = new Int16Array(MAX_BUILDINGS);
@@ -144,7 +144,7 @@ export const SpriteController = function() {
     this.resetSprites();
 }
 
-SpriteController.prototype.getBuildingSpriteDefinitionID = function(type) {
+SpriteRegistry.prototype.getBuildingSpriteDefinitionID = function(type) {
     const index = getBuildingSpriteRegistryIndex(type);
 
     if(index === NO_DEFINITION) {
@@ -154,7 +154,7 @@ SpriteController.prototype.getBuildingSpriteDefinitionID = function(type) {
     return this.buildingSpriteDefinitionRegistry[index];
 }
 
-SpriteController.prototype.getUnitSpriteDefinitionID = function(type, state, direction) {
+SpriteRegistry.prototype.getUnitSpriteDefinitionID = function(type, state, direction) {
     const index = getUnitSpriteRegistryIndex(type, state, direction);
 
     if(index === NO_DEFINITION) {
@@ -164,7 +164,7 @@ SpriteController.prototype.getUnitSpriteDefinitionID = function(type, state, dir
     return this.unitSpriteDefinitionRegistry[index];
 }
 
-SpriteController.prototype.getUnitEffectSpriteDefinitionID = function(type, effect) {
+SpriteRegistry.prototype.getUnitEffectSpriteDefinitionID = function(type, effect) {
     const index = getUnitEffectRegistryIndex(type, effect);
 
     if(index === NO_DEFINITION) {
@@ -174,7 +174,7 @@ SpriteController.prototype.getUnitEffectSpriteDefinitionID = function(type, effe
     return this.unitEffectSpriteDefinitionRegistry[index];
 }
 
-SpriteController.prototype.registerBuildingSprites = function(gameContext, buildingTypes) {
+SpriteRegistry.prototype.registerBuildingSprites = function(gameContext, buildingTypes) {
     const { spriteManager } = gameContext;
 
     //Buildings only have one sprite, so their typeID is the index.
@@ -189,7 +189,7 @@ SpriteController.prototype.registerBuildingSprites = function(gameContext, build
     }
 }
 
-SpriteController.prototype.registerEntitySprites = function(gameContext, entityTypes) {
+SpriteRegistry.prototype.registerEntitySprites = function(gameContext, entityTypes) {
     const { spriteManager } = gameContext;
 
     //Preloads default effects.
@@ -261,7 +261,7 @@ SpriteController.prototype.registerEntitySprites = function(gameContext, entityT
     }
 }
 
-SpriteController.prototype.resetSprites = function() {
+SpriteRegistry.prototype.resetSprites = function() {
     for(let i = 0; i < MAX_BUILDINGS; i++) {
         this.buildingSprites[i] = SpriteManager.INVALID_ID;
     }
@@ -271,7 +271,7 @@ SpriteController.prototype.resetSprites = function() {
     }
 }
 
-SpriteController.prototype.getShade = function(type, direction) {
+SpriteRegistry.prototype.getShade = function(type, direction) {
     const index = getUnitShadeRegistryIndex(type, direction);
 
     if(index < 0 || index >= ALL_SHADES) {
@@ -281,7 +281,7 @@ SpriteController.prototype.getShade = function(type, direction) {
     return this.shades[index];
 }
 
-SpriteController.prototype.getBuildingSpriteID = function(index) {
+SpriteRegistry.prototype.getBuildingSpriteID = function(index) {
     if(index < 0 || index >= MAX_BUILDINGS) {
         return SpriteManager.INVALID_ID;
     }
@@ -289,7 +289,7 @@ SpriteController.prototype.getBuildingSpriteID = function(index) {
     return this.buildingSprites[index];
 }
 
-SpriteController.prototype.createBuildingSprite = function(gameContext, building) {
+SpriteRegistry.prototype.createBuildingSprite = function(gameContext, building) {
     const { spriteManager } = gameContext;
     const { index } = building;
     const spriteObject = spriteManager.createEmptySprite();
@@ -301,7 +301,7 @@ SpriteController.prototype.createBuildingSprite = function(gameContext, building
     this.updateBuildingSprite(gameContext, building, spriteIndex);
 }
 
-SpriteController.prototype.bufferBuildingSprites = function(gameContext, colors) {
+SpriteRegistry.prototype.bufferBuildingSprites = function(gameContext, colors) {
     const { spriteManager, typeRegistry, textureLoader } = gameContext;
     const bufferedTextures = new Set();
 
@@ -325,7 +325,7 @@ SpriteController.prototype.bufferBuildingSprites = function(gameContext, colors)
     }
 }
 
-SpriteController.prototype.updateBuildingSprite = function(gameContext, building, spriteIndex) {
+SpriteRegistry.prototype.updateBuildingSprite = function(gameContext, building, spriteIndex) {
     const { spriteManager, typeRegistry, teamManager, textureLoader } = gameContext;
     const { teamID, config } = building;
     const definitionID = this.getBuildingSpriteDefinitionID(config.id); 
@@ -352,7 +352,7 @@ SpriteController.prototype.updateBuildingSprite = function(gameContext, building
     }
 }
 
-SpriteController.prototype.getEntitySpriteID = function(index) {
+SpriteRegistry.prototype.getEntitySpriteID = function(index) {
     if(index < 0 || index >= MAX_UNITS) {
         return SpriteManager.INVALID_ID;
     }
@@ -360,7 +360,7 @@ SpriteController.prototype.getEntitySpriteID = function(index) {
     return this.unitSprites[index];
 }
 
-SpriteController.prototype.destroyEntitySprite = function(gameContext, entity) {
+SpriteRegistry.prototype.destroyEntitySprite = function(gameContext, entity) {
     const { spriteManager } = gameContext;
     const { index } = entity;
     const spriteID = this.getEntitySpriteID(index);
@@ -370,7 +370,7 @@ SpriteController.prototype.destroyEntitySprite = function(gameContext, entity) {
     this.unitSprites[index] = SpriteManager.INVALID_ID;
 }
 
-SpriteController.prototype.createEntitySprite = function(gameContext, entity) {
+SpriteRegistry.prototype.createEntitySprite = function(gameContext, entity) {
     const { teamManager, spriteManager } = gameContext;
     const { teamID, config, index } = entity;
     const { id } = config;
@@ -387,7 +387,7 @@ SpriteController.prototype.createEntitySprite = function(gameContext, entity) {
     }
 }
 
-SpriteController.prototype.updateEntitySprite = function(gameContext, entity) {
+SpriteRegistry.prototype.updateEntitySprite = function(gameContext, entity) {
     const { spriteManager, typeRegistry, textureLoader } = gameContext;
     const { state, config, index, direction } = entity;
     const spriteID = this.getEntitySpriteID(index);
@@ -419,7 +419,7 @@ SpriteController.prototype.updateEntitySprite = function(gameContext, entity) {
     }
 }
 
-SpriteController.prototype.bufferEntityShades = function(gameContext, typeID) {
+SpriteRegistry.prototype.bufferEntityShades = function(gameContext, typeID) {
     if(typeID < 0 || typeID >= ENTITY_TYPE._COUNT) {
         return;
     }
@@ -441,7 +441,7 @@ SpriteController.prototype.bufferEntityShades = function(gameContext, typeID) {
     }
 }
 
-SpriteController.prototype.bufferEntitySprites = function(gameContext, typeID, colorID) {
+SpriteRegistry.prototype.bufferEntitySprites = function(gameContext, typeID, colorID) {
     if(typeID < 0 || typeID >= ENTITY_TYPE._COUNT) {
         return;
     }
@@ -462,7 +462,7 @@ SpriteController.prototype.bufferEntitySprites = function(gameContext, typeID, c
     }
 }
 
-SpriteController.prototype.clearSprites = function(gameContext) {
+SpriteRegistry.prototype.clearSprites = function(gameContext) {
     const { spriteManager } = gameContext;
 
     for(let i = 0; i < MAX_UNITS; i++) {
@@ -486,7 +486,7 @@ SpriteController.prototype.clearSprites = function(gameContext) {
     }
 }
 
-SpriteController.prototype.exit = function(gameContext) {
+SpriteRegistry.prototype.exit = function(gameContext) {
     this.shadeResources.forEach(resource => resource.clear());
     this.clearSprites(gameContext);
 }

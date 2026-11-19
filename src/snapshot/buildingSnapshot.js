@@ -1,5 +1,5 @@
-import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { BUILDING_TYPE, SHOP_TYPE } from "../enums.js";
+import { TextRegistry } from "../registry/textRegistry.js";
 import { ScenarioModel } from "../scenario/scenarioModel.js";
 import { TeamManager } from "../team/teamManager.js";
 
@@ -10,8 +10,8 @@ export const createBuildingSnapshot = function() {
         "tileX": -1,
         "tileY": -1,
         "id": ScenarioModel.INVALID_CUSTOM_ID,
-        "desc": LanguageHandler.INVALID_ID,
-        "name": LanguageHandler.INVALID_ID,
+        "desc": TextRegistry.INVALID_ID,
+        "name": TextRegistry.INVALID_ID,
         "totalGeneratedCash": 0,
         "shop": SHOP_TYPE.NONE
     }

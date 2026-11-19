@@ -68,8 +68,8 @@ EntityType.prototype.load = function(config, DEBUG_NAME) {
         traits = [],
         transport = []
         //sounds = {}, Used in SoundRegistry
-        //sprites = {}, Used in SpriteController
-        //effects = {} Used in SpriteController
+        //sprites = {}, Used in SpriteRegistry
+        //effects = {} Used in SpriteRegistry
     } = config;
 
     this.dimX = dimX;

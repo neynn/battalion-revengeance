@@ -73,7 +73,7 @@ ExplodeTileAction.prototype = Object.create(Action.prototype);
 ExplodeTileAction.prototype.constructor = ExplodeTileAction;
 
 ExplodeTileAction.prototype.onStart = function(gameContext, data) {
-    const { world, spriteController } = gameContext;
+    const { world, spriteRegistry } = gameContext;
     const { entityManager } = world;
     const { entityID, tileX, tileY } = data;
     const worldMap = world.getWorldMap();
@@ -85,6 +85,6 @@ ExplodeTileAction.prototype.onStart = function(gameContext, data) {
     if(entityID !== EntityManager.INVALID_ID) {
         const entity = entityManager.getEntity(entityID);
 
-        spriteController.destroyEntitySprite(gameContext, entity);
+        spriteRegistry.destroyEntitySprite(gameContext, entity);
     }
 }

@@ -25,26 +25,26 @@ export const playExplosion = function(gameContext, tileX, tileY) {
 }
 
 export const playDeathEffect = function(gameContext, entity) {
-    const { spriteController } = gameContext;
+    const { spriteRegistry } = gameContext;
     const { tileX, tileY, config } = entity;
-    const spriteID = spriteController.getUnitEffectSpriteDefinitionID(config.id, EFFECT_SPRITE.DEATH);
+    const spriteID = spriteRegistry.getUnitEffectSpriteDefinitionID(config.id, EFFECT_SPRITE.DEATH);
 
     playSprite(gameContext, spriteID, tileX, tileY);
 }
 
 export const playHealEffect = function(gameContext, entity, target) {
-    const { spriteController } = gameContext;
+    const { spriteRegistry } = gameContext;
     const { tileX, tileY, config } = target;
-    const spriteID = spriteController.getUnitEffectSpriteDefinitionID(config.id, EFFECT_SPRITE.HEAL);
+    const spriteID = spriteRegistry.getUnitEffectSpriteDefinitionID(config.id, EFFECT_SPRITE.HEAL);
 
     playSprite(gameContext, spriteID, tileX, tileY);
 }
 
 export const playAttackEffect = function(gameContext, entity, target, resolutions) {
-    const { world, spriteController } = gameContext;
+    const { world, spriteRegistry } = gameContext;
     const { entityManager } = world;
     const attackType = entity.getAttackType();
-    const spriteID = spriteController.getUnitEffectSpriteDefinitionID(entity.config.id, EFFECT_SPRITE.FIRE);
+    const spriteID = spriteRegistry.getUnitEffectSpriteDefinitionID(entity.config.id, EFFECT_SPRITE.FIRE);
 
     switch(attackType) {
         case ATTACK_TYPE.DISPERSION: {
@@ -70,9 +70,9 @@ export const playAttackEffect = function(gameContext, entity, target, resolution
 }
 
 export const getAnimationDuration = function(gameContext, entity) {
-    const { spriteManager, spriteController } = gameContext;
+    const { spriteManager, spriteRegistry } = gameContext;
     const { index } = entity;
-    const spriteID = spriteController.getEntitySpriteID(index);
+    const spriteID = spriteRegistry.getEntitySpriteID(index);
 
     if(spriteID === SpriteManager.INVALID_ID) {
         return 0;

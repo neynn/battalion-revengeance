@@ -87,7 +87,7 @@ EditorController.prototype.selectFaction = function(gameContext, factionID) {
 } 
 
 EditorController.prototype.loadArenaAssets = function(gameContext) {
-    const { typeRegistry, spriteController } = gameContext;
+    const { typeRegistry, spriteRegistry } = gameContext;
     const factions = [
         FACTION_TYPE.RED,
         FACTION_TYPE.BLUE,
@@ -109,7 +109,7 @@ EditorController.prototype.loadArenaAssets = function(gameContext) {
         }
     }
 
-    spriteController.bufferBuildingSprites(gameContext, colors);
+    spriteRegistry.bufferBuildingSprites(gameContext, colors);
 }
 
 EditorController.prototype.scrollTool = function(gameContext, direction, gui) {
@@ -186,7 +186,6 @@ EditorController.prototype.saveMap = function() {
 }
 
 EditorController.prototype.createMap = function(gameContext) {
-    const { language } = gameContext;
     const createNew = confirm("This will create and load a brand new map! Proceed?");
 
     if(createNew) {
@@ -198,8 +197,8 @@ EditorController.prototype.createMap = function(gameContext) {
 }
 
 EditorController.prototype.loadMap = async function(gameContext) {
-    const { language, scenarioRegistry, world } = gameContext;
-    const scenarioID = prompt(language.getSystemTranslation("EDITOR_LOAD_MAP"));
+    const { textRegistry, scenarioRegistry, world } = gameContext;
+    const scenarioID = prompt(textRegistry.getSystemTranslation("EDITOR_LOAD_MAP"));
     const scenario = scenarioRegistry.getScenario(scenarioID);  
 
     if(!scenario) {

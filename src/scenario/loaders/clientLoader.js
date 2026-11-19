@@ -20,10 +20,10 @@ ClientScenarioLoader.prototype = Object.create(ScenarioLoader.prototype);
 ClientScenarioLoader.prototype.constructor = ClientScenarioLoader;
 
 ClientScenarioLoader.prototype.createBuildingSprites = function(gameContext) {
-    const { spriteController } = gameContext;
+    const { spriteRegistry } = gameContext;
 
     for(const building of this.worldMap.buildings) {
-        spriteController.createBuildingSprite(gameContext, building);
+        spriteRegistry.createBuildingSprite(gameContext, building);
     }
 }
 
@@ -51,12 +51,12 @@ ClientScenarioLoader.prototype.createActors = function(gameContext) {
 }
 
 ClientScenarioLoader.prototype.loadScenarioText = function(gameContext) {
-    const { language } = gameContext;
+    const { textRegistry } = gameContext;
 
     this.localizeTiles();
     
-    language.clearScenarioAndMapText();
-    language.registerScenarioText(this.scenario.text);
+    textRegistry.clearScenarioAndMapText();
+    textRegistry.registerScenarioText(this.scenario.text);
 }
 
 ClientScenarioLoader.prototype.createEntities = function(gameContext) {

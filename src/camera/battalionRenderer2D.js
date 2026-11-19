@@ -305,7 +305,7 @@ BattalionRenderer2D.prototype.drawEntityHealth = function(display, drawX, drawY,
  * @param {number} deltaTime 
  */
 BattalionRenderer2D.prototype.drawEntity = function(gameContext, camera, display, entity, sprite, realTime, deltaTime) {
-    const { teamManager, spriteController, tileManager } = gameContext;
+    const { teamManager, spriteRegistry, tileManager } = gameContext;
     const { context } = display;
     const { tileX, tileY, offsetX, offsetY, teamID, renderFlags, opacity, config, direction } = entity;
     const screenX = camera.getScreenX(tileX) + offsetX;
@@ -341,7 +341,7 @@ BattalionRenderer2D.prototype.drawEntity = function(gameContext, camera, display
 
         //Draw the shaded frame over the sprite and lock the sprite to the first frame.
         if(renderFlags & BattalionEntity.RENDER_FLAG.SHADED) {
-            const { state, bitmap, width, height } = spriteController.getShade(config.id, direction);
+            const { state, bitmap, width, height } = spriteRegistry.getShade(config.id, direction);
 
             sprite.setFrame(0);
             sprite.draw(display, 0, 0);
@@ -393,7 +393,7 @@ BattalionRenderer2D.prototype.drawEntity = function(gameContext, camera, display
  * @returns 
  */
 BattalionRenderer2D.prototype.drawEntities = function(gameContext, camera, display, worldMap) {
-    const { timer, world, spriteManager, tileManager, uiData, spriteController, typeRegistry, mapInspector } = gameContext;
+    const { timer, world, spriteManager, tileManager, uiData, spriteRegistry, typeRegistry, mapInspector } = gameContext;
     const { lastHoverX, lastHoverY } = mapInspector;
     const { startX, startY, endX, endY, mapWidth } = camera;
     const { realTime, deltaTime } = timer;
@@ -408,7 +408,7 @@ BattalionRenderer2D.prototype.drawEntities = function(gameContext, camera, displ
 
     {
         const index = worldMap.getEntity(lastHoverX, lastHoverY);
-        const spriteID = spriteController.getEntitySpriteID(index);
+        const spriteID = spriteRegistry.getEntitySpriteID(index);
 
         if(spriteID !== SpriteManager.INVALID_ID) {
             const entity = entities[index];
@@ -432,7 +432,7 @@ BattalionRenderer2D.prototype.drawEntities = function(gameContext, camera, displ
 
         for(let j = startX; j <= endX; j++) {
             const eIndex = mapEntities[index];
-            const spriteID = spriteController.getEntitySpriteID(eIndex);
+            const spriteID = spriteRegistry.getEntitySpriteID(eIndex);
 
             if(spriteID !== SpriteManager.INVALID_ID) {
                 const sprite = sprites[spriteID];
@@ -457,7 +457,7 @@ BattalionRenderer2D.prototype.drawEntities = function(gameContext, camera, displ
 
     for(let i = 0; i < hotEntities.length; i++) {
         const eIndex = hotEntities[i];
-        const spriteID = spriteController.getEntitySpriteID(eIndex);
+        const spriteID = spriteRegistry.getEntitySpriteID(eIndex);
 
         if(spriteID !== SpriteManager.INVALID_ID) {   
             const { tileX, tileY } = entities[eIndex];
@@ -475,7 +475,7 @@ BattalionRenderer2D.prototype.drawEntities = function(gameContext, camera, displ
 
     for(let i = 0; i < this.deferredCount; i++) {
         const entityIndex = this.deferred[i];
-        const spriteID = spriteController.getEntitySpriteID(entityIndex);
+        const spriteID = spriteRegistry.getEntitySpriteID(entityIndex);
 
         this.drawEntity(gameContext, camera, display, entities[entityIndex], sprites[spriteID], realTime, deltaTime);
         count++;
@@ -643,7 +643,7 @@ BattalionRenderer2D.prototype.drawTiles = function(gameContext, camera, display,
 }
 
 BattalionRenderer2D.prototype.drawBuildings = function(gameContext, camera, display, buildings) {
-    const { spriteManager, timer, spriteController } = gameContext;
+    const { spriteManager, timer, spriteRegistry } = gameContext;
     const { realTime, deltaTime } = timer;
     const sprites = spriteManager.pool.elements;
     const startX = camera.startX;
@@ -657,11 +657,11 @@ BattalionRenderer2D.prototype.drawBuildings = function(gameContext, camera, disp
         const { tileX, tileY, index, dirty } = building;
 
         if(tileX >= startX && tileX <= endX && tileY >= startY && tileY <= endY) {
-            const spriteID = spriteController.getBuildingSpriteID(index);
+            const spriteID = spriteRegistry.getBuildingSpriteID(index);
 
             if(spriteID !== SpriteManager.INVALID_ID) {
                 if(dirty) {
-                    spriteController.updateBuildingSprite(gameContext, building, spriteID);
+                    spriteRegistry.updateBuildingSprite(gameContext, building, spriteID);
                     building.dirty = false;
                 }
 

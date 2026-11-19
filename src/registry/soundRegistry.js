@@ -1,5 +1,5 @@
-import { getRandomElement } from "../engine/math/math.js";
-import { ENTITY_TYPE, SOUND_TYPE } from "./enums.js";
+import { getRandomElement } from "../../engine/math/math.js";
+import { ENTITY_TYPE, SOUND_TYPE } from "../enums.js";
 
 const SOUNDS_PER_UNIT_TYPE = SOUND_TYPE._COUNT;
 const UNIT_SOUND_COUNT = ENTITY_TYPE._COUNT * SOUNDS_PER_UNIT_TYPE;

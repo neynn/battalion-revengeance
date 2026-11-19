@@ -1,23 +1,24 @@
-import { EventEmitter } from "../events/eventEmitter.js";
-import { getPercent } from "../math/math.js";
-import { Language } from "./language.js";
+import { EventEmitter } from "../../engine/events/eventEmitter.js";
+import { Language } from "../../engine/language/language.js";
+import { getPercent } from "../../engine/math/math.js";
 
 const IS_STRICT = true;
 
-export const LanguageHandler = function() {
+//TODO: Complete.
+export const TextRegistry = function() {
     this.languages = new Map();
-    this.currentLanguage = LanguageHandler.LANGUAGE._INVALID;
-    this.fallbackLanguage = LanguageHandler.LANGUAGE._INVALID;
+    this.currentLanguage = TextRegistry.LANGUAGE._INVALID;
+    this.fallbackLanguage = TextRegistry.LANGUAGE._INVALID;
     this.systemText = new Map();
     this.scenarioText = new Map();
 
     this.events = new EventEmitter();
-    this.events.register(LanguageHandler.EVENT.LANGUAGE_CHANGE);
+    this.events.register(TextRegistry.EVENT.LANGUAGE_CHANGE);
 }
 
-LanguageHandler.INVALID_ID = -1;
+TextRegistry.INVALID_ID = -1;
 
-LanguageHandler.LANGUAGE = {
+TextRegistry.LANGUAGE = {
     _INVALID: -1,
     ENGLISH: 0,
     GERMAN: 1,
@@ -25,21 +26,21 @@ LanguageHandler.LANGUAGE = {
     _COUNT: 3
 };
 
-LanguageHandler.EVENT = {
+TextRegistry.EVENT = {
     LANGUAGE_CHANGE: "LANGUAGE_CHANGE"
 };
 
-LanguageHandler.getKey = function(languageID) {
+TextRegistry.getKey = function(languageID) {
     switch(languageID) {
-        case LanguageHandler.LANGUAGE.ENGLISH: return "en-US";
-        case LanguageHandler.LANGUAGE.GERMAN: return "de-DE";
-        case LanguageHandler.LANGUAGE.SPANISH: return "es-ES";
+        case TextRegistry.LANGUAGE.ENGLISH: return "en-US";
+        case TextRegistry.LANGUAGE.GERMAN: return "de-DE";
+        case TextRegistry.LANGUAGE.SPANISH: return "es-ES";
         default: return "??-??";
     }
 }
 
-LanguageHandler.prototype.getTranslation = function(translations) {
-    const key = LanguageHandler.getKey(this.currentLanguage);
+TextRegistry.prototype.getTranslation = function(translations) {
+    const key = TextRegistry.getKey(this.currentLanguage);
     const translation = translations[key];
 
     if(translation === undefined) {
@@ -49,11 +50,11 @@ LanguageHandler.prototype.getTranslation = function(translations) {
     return translation;
 }
 
-LanguageHandler.prototype.getCurrentKey = function() {
-    return LanguageHandler.getKey(this.currentLanguage);
+TextRegistry.prototype.getCurrentKey = function() {
+    return TextRegistry.getKey(this.currentLanguage);
 }
 
-LanguageHandler.prototype.load = function(languages) {
+TextRegistry.prototype.load = function(languages) {
     for(const languageID in languages) {
         const { directory = "", sources = [] } = languages[languageID];
         const language = new Language(languageID, directory, sources);
@@ -62,31 +63,31 @@ LanguageHandler.prototype.load = function(languages) {
     }
 }
 
-LanguageHandler.prototype.registerScenarioText = function(translations) {
+TextRegistry.prototype.registerScenarioText = function(translations) {
     for(let i = 0; i < translations.length; i++) {
         this.scenarioText.set(i, translations[i]);
     }
 }
 
-LanguageHandler.prototype.clearScenarioAndMapText = function() {
+TextRegistry.prototype.clearScenarioAndMapText = function() {
     this.scenarioText.clear();
 }
 
-LanguageHandler.prototype.clear = function() {
-    this.currentLanguage = LanguageHandler.LANGUAGE._INVALID;
+TextRegistry.prototype.clear = function() {
+    this.currentLanguage = TextRegistry.LANGUAGE._INVALID;
     this.systemText.clear();
 }
 
-LanguageHandler.prototype.exit = function() {
+TextRegistry.prototype.exit = function() {
     this.scenarioText.clear();
 }
 
-LanguageHandler.prototype.selectLanguage = function(languageID) {
+TextRegistry.prototype.selectLanguage = function(languageID) {
     if(this.currentLanguage === languageID) {
         return;
     }
 
-    const languageKey = LanguageHandler.getKey(languageID);
+    const languageKey = TextRegistry.getKey(languageID);
     const language = this.languages.get(languageKey);
 
     if(!language) {
@@ -97,11 +98,11 @@ LanguageHandler.prototype.selectLanguage = function(languageID) {
         this.currentLanguage = languageID;
         this.systemText.clear();
         this.loadSystemText(files);
-        this.events.emit(LanguageHandler.EVENT.LANGUAGE_CHANGE, language);
+        this.events.emit(TextRegistry.EVENT.LANGUAGE_CHANGE, language);
     });
 }
 
-LanguageHandler.prototype.loadSystemText = function(files) {
+TextRegistry.prototype.loadSystemText = function(files) {
     for(const file of files) {
         if(file === null) {
             continue;
@@ -117,7 +118,7 @@ LanguageHandler.prototype.loadSystemText = function(files) {
     }
 }
 
-LanguageHandler.prototype.getSystemTranslation = function(key) {
+TextRegistry.prototype.getSystemTranslation = function(key) {
     if(typeof key !== "string") {
         return "";
     }
@@ -135,22 +136,22 @@ LanguageHandler.prototype.getSystemTranslation = function(key) {
     return translation;
 }
 
-LanguageHandler.prototype.getScenarioTranslation = function(key) {
+TextRegistry.prototype.getScenarioTranslation = function(key) {
     const translations = this.scenarioText.get(key);
 
     if(!translations) {
         return "";
     }
 
-    const languageKey = LanguageHandler.getKey(this.currentLanguage);
+    const languageKey = TextRegistry.getKey(this.currentLanguage);
     const translation = translations[languageKey];
 
     if(translation) {
         return translation;
     }
 
-    if(this.fallbackLanguage !== LanguageHandler.LANGUAGE._INVALID) {
-        const fallbackKey = LanguageHandler.getKey(this.fallbackLanguage);
+    if(this.fallbackLanguage !== TextRegistry.LANGUAGE._INVALID) {
+        const fallbackKey = TextRegistry.getKey(this.fallbackLanguage);
         const fallback = translations[fallbackKey];
 
         if(fallback) {
@@ -161,7 +162,7 @@ LanguageHandler.prototype.getScenarioTranslation = function(key) {
     return "";
 }
 
-LanguageHandler.prototype.getMissingTags = function(template) {
+TextRegistry.prototype.getMissingTags = function(template) {
     const missing = new Set();
 
     for(const tagID in template) {
@@ -175,7 +176,7 @@ LanguageHandler.prototype.getMissingTags = function(template) {
     return missing;
 }
 
-LanguageHandler.prototype.getAllMissingTags = function(template, keywords = []) {
+TextRegistry.prototype.getAllMissingTags = function(template, keywords = []) {
     const templateSize = Object.keys(template).length;
     const languageMissing = new Map();
 

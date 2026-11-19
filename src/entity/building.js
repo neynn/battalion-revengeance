@@ -1,5 +1,5 @@
-import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { SHOP_TYPE } from "../enums.js";
+import { TextRegistry } from "../registry/textRegistry.js";
 import { ScenarioModel } from "../scenario/scenarioModel.js";
 import { createBuildingSnapshot } from "../snapshot/buildingSnapshot.js";
 import { TeamManager } from "../team/teamManager.js";
@@ -17,8 +17,8 @@ export const Building = function(id, index, config) {
     this.tileY = -1;
     this.teamID = TeamManager.INVALID_ID;
     this.customID = ScenarioModel.INVALID_CUSTOM_ID;
-    this.customName = LanguageHandler.INVALID_ID;
-    this.customDesc = LanguageHandler.INVALID_ID;
+    this.customName = TextRegistry.INVALID_ID;
+    this.customDesc = TextRegistry.INVALID_ID;
     this.totalGeneratedCash = 0;
     this.shop = SHOP_TYPE.NONE;
     this.dirty = false;
@@ -107,23 +107,23 @@ Building.prototype.generateCash = function(gameContext) {
 }
 
 Building.prototype.getDescription = function(gameContext) {
-    const { language } = gameContext;
+    const { textRegistry } = gameContext;
     
-    if(this.customDesc !== LanguageHandler.INVALID_ID) {
-        return language.getScenarioTranslation(this.customDesc);
+    if(this.customDesc !== TextRegistry.INVALID_ID) {
+        return textRegistry.getScenarioTranslation(this.customDesc);
     }
 
-    return language.getSystemTranslation(this.config.desc);
+    return textRegistry.getSystemTranslation(this.config.desc);
 }
 
 Building.prototype.getName = function(gameContext) {
-    const { language } = gameContext;
+    const { textRegistry } = gameContext;
     
-    if(this.customName !== LanguageHandler.INVALID_ID) {
-        return language.getScenarioTranslation(this.customName);
+    if(this.customName !== TextRegistry.INVALID_ID) {
+        return textRegistry.getScenarioTranslation(this.customName);
     }
 
-    return language.getSystemTranslation(this.config.name);
+    return textRegistry.getSystemTranslation(this.config.name);
 }
 
 Building.prototype.getShop = function(gameContext) {

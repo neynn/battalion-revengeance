@@ -1,6 +1,6 @@
-import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { DIRECTION, ENTITY_TYPE, MORALE_TYPE, SHOP_TYPE } from "../enums.js";
+import { TextRegistry } from "../registry/textRegistry.js";
 import { ScenarioModel } from "../scenario/scenarioModel.js";
 import { TeamManager } from "../team/teamManager.js";
 
@@ -28,7 +28,7 @@ export const createEntitySnapshot = function() {
         "tileZ": -1, //INT16
         "transport": ENTITY_TYPE._INVALID, //INT16
         "id": ScenarioModel.INVALID_CUSTOM_ID, //INT16
-        "name": LanguageHandler.INVALID_ID, //INT16
-        "desc": LanguageHandler.INVALID_ID, //INT16
+        "name": TextRegistry.INVALID_ID, //INT16
+        "desc": TextRegistry.INVALID_ID, //INT16
     };
 }

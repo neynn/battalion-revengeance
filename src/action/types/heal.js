@@ -4,7 +4,7 @@ import { FIXED_DELTA_TIME } from "../../../engine/engine_constants.js";
 import { EntityManager } from "../../../engine/entity/entityManager.js";
 import { BattalionEntity } from "../../entity/battalionEntity.js";
 import { ACTION_TYPE, HEAL_COMMAND_TYPE, SOUND_TYPE, TRAIT_TYPE } from "../../enums.js";
-import { CombatSystem, InteractionResolver, ResolutionSystem } from "../../systems/combat.js";
+import { CombatSystem, CombatResolver, ResolutionSystem } from "../../systems/combat.js";
 import { getAnimationDuration, playHealEffect } from "../../systems/sprite.js";
 import { DeathActionVTable } from "./death.js";
 
@@ -35,12 +35,12 @@ const fillHealPlan = function(gameContext, executionPlan, actionIntent) {
         return;
     }
 
-    const resolver = new InteractionResolver();
+    const resolver = new CombatResolver();
 
     switch(commandID) {
         case HEAL_COMMAND_TYPE.DIRECT: {
             if(entity.isAllowedToActAndMove()) {
-                CombatSystem.resolveHeal(gameContext, entity, target, resolver);
+                resolver.doHeal(gameContext, entity, target);
             }
 
             break;
@@ -48,7 +48,7 @@ const fillHealPlan = function(gameContext, executionPlan, actionIntent) {
         case HEAL_COMMAND_TYPE.FOLLOW_UP: {
             //Melee healers.
             if(entity.hasMoved() && entity.isAllowedToAct() && entity.isNextToEntity(target)) {
-                CombatSystem.resolveHeal(gameContext, entity, target, resolver);
+                resolver.doHeal(gameContext, entity, target);
             } 
 
             break;
@@ -115,7 +115,7 @@ HealAction.prototype = Object.create(Action.prototype);
 HealAction.prototype.constructor = HealAction;
 
 HealAction.prototype.onStart = function(gameContext, data) {
-    const { world, spriteController, soundRegistry } = gameContext;
+    const { world, spriteRegistry, soundRegistry } = gameContext;
     const { entityManager } = world;
     const { entityID, targetID, resolutions } = data;
     const entity = entityManager.getEntity(entityID);
@@ -123,7 +123,7 @@ HealAction.prototype.onStart = function(gameContext, data) {
 
     entity.lookAt(target);
     entity.setState(BattalionEntity.STATE.FIRE);
-    spriteController.updateEntitySprite(gameContext, entity);
+    spriteRegistry.updateEntitySprite(gameContext, entity);
     soundRegistry.playUnitSound(gameContext, entity, SOUND_TYPE.HEAL);
 
     playHealEffect(gameContext, entity, target);
@@ -140,13 +140,13 @@ HealAction.prototype.isFinished = function(gameContext, executionPlan) {
 }
 
 HealAction.prototype.onEnd = function(gameContext, data) {
-    const { world, spriteController } = gameContext;
+    const { world, spriteRegistry } = gameContext;
     const { entityManager } = world;
     const { entityID } = data;
     const entity = entityManager.getEntity(entityID);
 
     entity.setState(BattalionEntity.STATE.IDLE);
-    spriteController.updateEntitySprite(gameContext, entity);
+    spriteRegistry.updateEntitySprite(gameContext, entity);
 
     this.duration = 0;
     this.passedTime = 0;

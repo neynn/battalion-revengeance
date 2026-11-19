@@ -108,14 +108,14 @@ DeathAction.prototype.isFinished = function(gameContext, executionPlan) {
 }
 
 DeathAction.prototype.onEnd = function(gameContext, data) {
-    const { world, spriteController } = gameContext;
+    const { world, spriteRegistry } = gameContext;
     const { entityManager } = world;
     const { entities } = data;
 
     for(const entityID of entities) {
         const entity = entityManager.getEntity(entityID);
 
-        spriteController.destroyEntitySprite(gameContext, entity);
+        spriteRegistry.destroyEntitySprite(gameContext, entity);
     }
 
     this.tweens.length = 0;

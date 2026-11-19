@@ -11,10 +11,10 @@ TransportTween.prototype = Object.create(Tween.prototype);
 TransportTween.prototype.constructor = TransportTween;
 
 TransportTween.prototype.update = function(gameContext) {
-    const { spriteController } = gameContext;
+    const { spriteRegistry } = gameContext;
 
     //TODO(neyn): Fade out to 0.5, then updateEntitySprite, then fade in.
-    spriteController.updateEntitySprite(gameContext, this.entity);
+    spriteRegistry.updateEntitySprite(gameContext, this.entity);
 
     this.state = Tween.STATE.COMPLETE;
 

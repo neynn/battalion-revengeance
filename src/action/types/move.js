@@ -210,7 +210,7 @@ MoveAction.prototype = Object.create(Action.prototype);
 MoveAction.prototype.constructor = MoveAction;
 
 MoveAction.prototype.onStart = function(gameContext, data) {
-    const { world, spriteController, soundRegistry } = gameContext;
+    const { world, spriteRegistry, soundRegistry } = gameContext;
     const { entityManager } = world;
     const { entityID, path } = data;
     const entity = entityManager.getEntity(entityID);
@@ -218,7 +218,7 @@ MoveAction.prototype.onStart = function(gameContext, data) {
 
     entityManager.addHot(entity.getIndex());
     entity.setState(BattalionEntity.STATE.MOVE);
-    spriteController.updateEntitySprite(gameContext, entity);
+    spriteRegistry.updateEntitySprite(gameContext, entity);
     soundRegistry.playUnitSound(gameContext, entity, SOUND_TYPE.MOVE);
 
     this.path = path;
@@ -227,7 +227,7 @@ MoveAction.prototype.onStart = function(gameContext, data) {
 }
 
 MoveAction.prototype.onUpdate = function(gameContext, data) {
-    const { spriteController } = gameContext;
+    const { spriteRegistry } = gameContext;
 
     switch(this.state) {
         case MoveAction.STATE.NONE: {
@@ -238,7 +238,7 @@ MoveAction.prototype.onUpdate = function(gameContext, data) {
             const distanceY = deltaY * distanceMoved;
 
             if(directionChanged) {
-                spriteController.updateEntitySprite(gameContext, this.entity);
+                spriteRegistry.updateEntitySprite(gameContext, this.entity);
             }
 
             this.entity.updateOffset(distanceX, distanceY);
@@ -295,14 +295,14 @@ MoveAction.prototype.isFinished = function(gameContext, executionPlan) {
 }
 
 MoveAction.prototype.onEnd = function(gameContext, data) {
-    const { world, spriteController } = gameContext;
+    const { world, spriteRegistry } = gameContext;
     const { entityManager } = world;
 
     this.entity.setState(BattalionEntity.STATE.IDLE);
     this.entity.clearOffset();
     
     entityManager.removeHot(this.entity.getIndex());
-    spriteController.updateEntitySprite(gameContext, this.entity);
+    spriteRegistry.updateEntitySprite(gameContext, this.entity);
 
     this.path = null;
     this.pathIndex = 0;

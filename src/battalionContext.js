@@ -1,5 +1,4 @@
 import { ClientGameContext } from "../engine/clientGameContext.js";
-import { LanguageHandler } from "../engine/language/languageHandler.js";
 import { LAYER_TYPE, TILE_ID, TILE_TYPE } from "./enums.js";
 import { MainMenuState } from "./states/mainMenu/mainMenu.js";
 import { MapEditorState } from "./states/mapEditor/mapEditorState.js";
@@ -11,8 +10,9 @@ import { loadTiles, loadVisualTiles, registerActionVTables, registerClientAction
 import { UIData } from "./ui/uiData.js";
 import { MissionManager } from "./mission/missionManager.js";
 import { ScenarioRegistry } from "./scenario/scenarioRegistry.js";
-import { SpriteController } from "./spriteController.js";
-import { SoundRegistry } from "./soundRegistry.js";
+import { SoundRegistry } from "./registry/soundRegistry.js";
+import { SpriteRegistry } from "./registry/spriteRegistry.js";
+import { TextRegistry } from "./registry/textRegistry.js";
 import { BrevRouter } from "./action/brevRouter.js";
 import { MapInspector } from "./map/mapInspector.js";
 
@@ -23,8 +23,9 @@ export const BattalionContext = function(gTimer, gWindow) {
     this.typeRegistry = new TypeRegistry();
     this.teamManager = new TeamManager();
     this.actionRouter = new BrevRouter();
-    this.spriteController = new SpriteController();
     this.soundRegistry = new SoundRegistry();
+    this.spriteRegistry = new SpriteRegistry();
+    this.textRegistry = new TextRegistry();
     this.missionManager = new MissionManager();
     this.scenarioRegistry = new ScenarioRegistry();
     this.uiData = new UIData(this.textureRegistry);
@@ -57,7 +58,7 @@ BattalionContext.prototype.init = function(resources) {
     this.client.soundPlayer.load(resources.sounds);
     this.client.socket.load(resources.network.socket);
     this.client.router.load(resources.keybinds);
-    this.language.load(resources.languages);
+    this.textRegistry.load(resources.languages);
     this.missionManager.load(resources);
     this.spriteManager.initLayers(LAYER_TYPE._COUNT);
     this.typeRegistry.load(resources);
@@ -68,9 +69,9 @@ BattalionContext.prototype.init = function(resources) {
     registerClientActions(this);
 
     this.soundRegistry.registerUnitSounds(this, resources.entityTypes);
-    this.spriteController.registerEntitySprites(this, resources.entityTypes);
-    this.spriteController.registerBuildingSprites(this, resources.buildingTypes);
-    this.language.selectLanguage(LanguageHandler.LANGUAGE.ENGLISH);
+    this.spriteRegistry.registerEntitySprites(this, resources.entityTypes);
+    this.spriteRegistry.registerBuildingSprites(this, resources.buildingTypes);
+    this.textRegistry.selectLanguage(TextRegistry.LANGUAGE.ENGLISH);
 
     this.states.addState(BattalionContext.STATE.MAIN_MENU, new MainMenuState());
     this.states.addState(BattalionContext.STATE.MAP_EDITOR, new MapEditorState());
@@ -81,8 +82,9 @@ BattalionContext.prototype.init = function(resources) {
 
 BattalionContext.prototype.onExit = function() {
     this.teamManager.exit();
-    this.spriteController.exit(this);
+    this.spriteRegistry.exit(this);
     this.missionManager.exit();
     this.debugMode = false;
     this.actionRouter.toSingleplayer();
+    this.textRegistry.exit();
 }

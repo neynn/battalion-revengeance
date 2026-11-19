@@ -72,13 +72,13 @@ LineCache.prototype.updateRecon = function(context, text, maxWidth) {
     mRegenerateLines(this.reconLines, context, text, maxWidth);
 }
 
-LineCache.prototype.tryUpdateTooltip = function(languageHandler, context, tooltip) {
+LineCache.prototype.tryUpdateTooltip = function(textRegistry, context, tooltip) {
     if(this.lastTooltip !== tooltip) {
         this.tooltipLines.length = 0;
         this.lastTooltip = tooltip;
 
         if(tooltip.length !== 0) {
-            const text = languageHandler.getSystemTranslation(tooltip);
+            const text = textRegistry.getSystemTranslation(tooltip);
 
             mRegenerateLines(this.tooltipLines, context, text, RECON_TOOLTIP_BOX_WIDTH);
         }
@@ -156,7 +156,7 @@ PlayUI.prototype = Object.create(UIContext.prototype);
 PlayUI.prototype.constructor = PlayUI;
 
 PlayUI.prototype.getHudTitle = function(gameContext) {
-    const { language, missionManager, world } = gameContext;
+    const { textRegistry, missionManager, world } = gameContext;
     const { currentMission } = missionManager;
 
     if(!currentMission) {
@@ -165,7 +165,7 @@ PlayUI.prototype.getHudTitle = function(gameContext) {
         return worldMap.name;
     }
 
-    return language.getSystemTranslation(currentMission.name);
+    return textRegistry.getSystemTranslation(currentMission.name);
 }
 
 PlayUI.prototype.load = function(gameContext) {
@@ -182,9 +182,9 @@ PlayUI.prototype.load = function(gameContext) {
 //TODO(neyn): Create a 28x28 ICON for each entity!
 //This icon gets drawn instead of a full sprite!
 PlayUI.prototype.updateInspectSprite = function(gameContext, entity) {
-    const { spriteManager, spriteController } = gameContext;
+    const { spriteManager, spriteRegistry } = gameContext;
     const { color } = entity.getTeam(gameContext);
-    const spriteTypeID = spriteController.getUnitSpriteDefinitionID(entity.config.id, BattalionEntity.STATE.IDLE, DIRECTION.EAST);
+    const spriteTypeID = spriteRegistry.getUnitSpriteDefinitionID(entity.config.id, BattalionEntity.STATE.IDLE, DIRECTION.EAST);
 
     spriteManager.updateSprite(this.inspectSprite.index, spriteTypeID, color);
 }
@@ -226,7 +226,7 @@ PlayUI.prototype.drawIcon = function(gameContext, iconID, display, screenX, scre
 }
 
 PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) {
-    const { client, uiData, language, teamManager, typeRegistry } = gameContext;
+    const { client, uiData, textRegistry, teamManager, typeRegistry } = gameContext;
     const { activeTeams, currentIndex } = teamManager;
     const { context } = display;
     const buttonTexture = uiData.getTexture(UI_TEXTURE.HUD_BUTTONS);
@@ -259,17 +259,17 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
     switch(this.hotWidget) {
         case undoID: {
             undoButton = HUD_BUTTON.UNDO_HOT;
-            context.fillText(language.getSystemTranslation("HUD_UNDO"), textX, textY);
+            context.fillText(textRegistry.getSystemTranslation("HUD_UNDO"), textX, textY);
             break;
         }
         case menuID: {
             menuButton = HUD_BUTTON.MENU_HOT;
-            context.fillText(language.getSystemTranslation("HUD_MENU"), textX, textY);
+            context.fillText(textRegistry.getSystemTranslation("HUD_MENU"), textX, textY);
             break;
         }
         case quitID: {
             quitButton = HUD_BUTTON.QUIT_HOT;
-            context.fillText(language.getSystemTranslation("HUD_QUIT"), textX, textY);
+            context.fillText(textRegistry.getSystemTranslation("HUD_QUIT"), textX, textY);
             break;
         }
         default: {
@@ -366,7 +366,7 @@ PlayUI.prototype.drawMainHud = function(gameContext, display, screenX, screenY) 
 }
 
 PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, screenY) {
-    const { timer, uiData, dialogueHandler, typeRegistry, language, mapInspector } = gameContext;
+    const { timer, uiData, dialogueHandler, typeRegistry, textRegistry, mapInspector } = gameContext;
     const { letterIndex } = dialogueHandler;
     const dialogue = dialogueHandler.getCurrentEntry();
 
@@ -385,7 +385,7 @@ PlayUI.prototype.drawDialogueHud = function(gameContext, display, screenX, scree
     const { context } = display;
     const { narrator } = dialogue;
     const { portrait, name } = typeRegistry.getCommanderType(narrator);
-    const commanderName = language.getSystemTranslation(name);
+    const commanderName = textRegistry.getSystemTranslation(name);
 
     const barWidth = 4;
     const nextOffsetY = 8;
@@ -489,7 +489,7 @@ PlayUI.prototype.updateEntityState = function(entity) {
 }
 
 PlayUI.prototype.onImmediate = function(gameContext, display) {
-    const { uiData, world, language, timer, typeRegistry, gameWindow, spriteController, mapInspector } = gameContext;
+    const { uiData, world, textRegistry, timer, typeRegistry, gameWindow, spriteRegistry, mapInspector } = gameContext;
     const { width, height } = gameWindow;
     const { realTime, deltaTime } = timer;
     const { context } = display;
@@ -561,7 +561,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
             this.style.apply(context);
 
             context.fillText(worldMap.getTileName(gameContext, tileX, tileY), reconX + 41, headY);
-            context.fillText(language.getSystemTranslation("RECON_TRAIT"), traitX + 2, headY);
+            context.fillText(textRegistry.getSystemTranslation("RECON_TRAIT"), traitX + 2, headY);
 
             if(this.lastIndex !== index) {
                 this.lineCache.updateRecon(context, worldMap.getTileDesc(gameContext, tileX, tileY), DESCRIPTION_BOX_WIDTH_TILE);
@@ -601,7 +601,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
                 this.lineCache.updateRecon(context, building.getDescription(gameContext), DESCRIPTION_BOX_WIDTH_TILE);
                 this.lastIndex = index;
 
-                spriteController.updateBuildingSprite(gameContext, building, this.inspectSprite.index);
+                spriteRegistry.updateBuildingSprite(gameContext, building, this.inspectSprite.index);
             }
 
             drawTexture(uiData.getTexture(UI_TEXTURE.RECON_TERRAIN), display, reconX, reconY);
@@ -611,7 +611,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
             this.inspectSprite.onDraw(display, reconX + 1, reconY + 5);
 
             context.fillText(building.getName(gameContext), reconX + 41, headY);
-            context.fillText(language.getSystemTranslation("RECON_TRAIT"), traitX + 2, headY);
+            context.fillText(textRegistry.getSystemTranslation("RECON_TRAIT"), traitX + 2, headY);
 
             for(let i = 0; i < buildingTraits.length; i++) {
                 const { icon, name, desc } = typeRegistry.getBuildingTraitType(buildingTraits[i]);
@@ -650,10 +650,10 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
             const healthColor = getHealthColor(vitality);
 
             context.fillText(entity.getName(gameContext), reconX + 41, headY);
-            context.fillText(language.getSystemTranslation("RECON_HEALTH"), armorX, headY);
-            context.fillText(language.getSystemTranslation("RECON_DAMAGE"), weaponX, headY);
-            context.fillText(language.getSystemTranslation("RECON_MOVE"), moveX, headY);
-            context.fillText(language.getSystemTranslation("RECON_TRAIT"), traitX + 2, headY);
+            context.fillText(textRegistry.getSystemTranslation("RECON_HEALTH"), armorX, headY);
+            context.fillText(textRegistry.getSystemTranslation("RECON_DAMAGE"), weaponX, headY);
+            context.fillText(textRegistry.getSystemTranslation("RECON_MOVE"), moveX, headY);
+            context.fillText(textRegistry.getSystemTranslation("RECON_TRAIT"), traitX + 2, headY);
 
             context.fillStyle = healthColor;
             context.fillRect(armorX + ICON_WIDTH + 5, bodyY, Math.floor(vitality * RECON_VITALITY_HEALTH_WIDTH), RECON_VITALITY_HEALTH_HEIGHT);
@@ -710,7 +710,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
 
     this.lineCache.updateReconIndex(deltaTime);
     this.lineCache.drawRecon(context, reconX, bodyY);
-    this.lineCache.tryUpdateTooltip(language, context, tooltip);
+    this.lineCache.tryUpdateTooltip(textRegistry, context, tooltip);
 
     //If collided with any icon.
     if(this.hotWidget >= ICON_ID_REGION && this.hotWidget < DIALOGUE_ID_REGION) {
@@ -743,7 +743,7 @@ PlayUI.prototype.onImmediate = function(gameContext, display) {
 
         if(tooltipHead.length !== 0) {
             context.textAlign = TextStyle.ALIGN.MIDDLE;
-            context.fillText(language.getSystemTranslation(tooltipHead), tooltipX + (RECON_TOOLTIP_WIDTH / 2), tooltipY + 4);
+            context.fillText(textRegistry.getSystemTranslation(tooltipHead), tooltipX + (RECON_TOOLTIP_WIDTH / 2), tooltipY + 4);
             context.textAlign = TextStyle.ALIGN.LEFT;
         }
 

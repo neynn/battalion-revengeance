@@ -941,14 +941,6 @@ export const RANGE_TYPE = {
     HYBRID: 3
 };
 
-export const ATTACK_FLAG = {
-    NONE: 0,
-    COUNTER: 1 << 0,
-    SHRAPNEL: 1 << 1,
-    AREA: 1 << 2,
-    STREAMBLAST: 1 << 3
-};
-
 export const PATH_FLAG = {
     NONE: 0,
     UNREACHABLE: 1 << 0,

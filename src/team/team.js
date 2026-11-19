@@ -168,9 +168,9 @@ Team.prototype.getDisplayName = function(gameContext) {
         return this.customName;
     }
 
-    const { language } = gameContext;
+    const { textRegistry } = gameContext;
 
-    return language.getSystemTranslation(this.name);
+    return textRegistry.getSystemTranslation(this.name);
 }
 
 Team.prototype.getID = function() {

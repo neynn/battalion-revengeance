@@ -1,9 +1,9 @@
-import { LanguageHandler } from "../../engine/language/languageHandler.js";
 import { WorldMap } from "../../engine/map/worldMap.js";
 import { WorldEvent } from "../../engine/world/event/worldEvent.js";
 import { MAX_TEAMS } from "../constants.js";
 import { BattalionEntity } from "../entity/battalionEntity.js";
 import { BUILDING_TYPE, CLIMATE_TYPE, COMMANDER_TYPE, COMPONENT_TYPE, DIRECTION, ENTITY_TYPE, FACTION_TYPE, JAMMER_FLAG, MINE_TYPE, OBJECTIVE_TYPE, SHOP_TYPE, TRAIT_TYPE } from "../enums.js";
+import { TextRegistry } from "../registry/textRegistry.js";
 import { createBuildingSnapshot } from "../snapshot/buildingSnapshot.js";
 import { createEntitySnapshot } from "../snapshot/entitySnapshot.js";
 import { TeamManager } from "../team/teamManager.js";
@@ -39,7 +39,7 @@ ScenarioModelParser.prototype.getTeamID = function(name) {
 }
 
 ScenarioModelParser.prototype.getTextID = function(name) {
-    let textID = LanguageHandler.INVALID_ID;
+    let textID = TextRegistry.INVALID_ID;
 
     if(name !== null) {
         if(this.textCache.has(name)) {

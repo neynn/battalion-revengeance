@@ -163,9 +163,9 @@ MapEditorInterface.prototype.updateBrushSize = function(gameContext, delta = 0) 
 }
 
 MapEditorInterface.prototype.updateMenuText = function(gameContext) {
-    const { language } = gameContext;
+    const { textRegistry } = gameContext;
     const assetBrowser = this.tileSets.getValue();
-    const tilesetName = language.getSystemTranslation(assetBrowser.browserID);
+    const tilesetName = textRegistry.getSystemTranslation(assetBrowser.browserID);
 
     this.getElement("TEXT_PAGE").setText(this.tileSets.getValue().getPageString());
     this.getElement("TEXT_SIZE").setText(this.getSizeInfo());
