@@ -8,6 +8,7 @@ const charToCondition = function(key) {
         case "+": return InputBind.CONDITION.DOWN;
         case "-": return InputBind.CONDITION.UP;
         case "~": return InputBind.CONDITION.HOLD;
+        case "^": return InputBind.CONDITION.M_CLICK;
         default: return InputBind.CONDITION._INVALID;
     }
 }
@@ -73,7 +74,7 @@ InputRouter.prototype.updateTriggers = function(keyboard, cursor) {
                         break;
                     }
                     case InputBind.TYPE.BUTTON: {
-                        if(cursor.isButtonClicked(keyID)) {
+                        if(cursor.isButtonReleased(keyID)) {
                             this.triggerCommand(commandID);
                         }
                         break;
@@ -97,6 +98,16 @@ InputRouter.prototype.updateTriggers = function(keyboard, cursor) {
                     }
                 }
                 break;
+            }
+            case InputBind.CONDITION.M_CLICK: {
+                switch(type) {
+                    case InputBind.TYPE.BUTTON: {
+                        if(cursor.isButtonClicked(keyID)) {
+                            this.triggerCommand(commandID);
+                        }
+                        break;
+                    }
+                }
             }
         }
     }

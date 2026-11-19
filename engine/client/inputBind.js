@@ -16,5 +16,6 @@ InputBind.CONDITION = {
     DOWN: 0,
     UP: 1,
     HOLD: 2,
-    _COUNT: 3 
+    M_CLICK: 3,
+    _COUNT: 4
 };
