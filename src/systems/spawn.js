@@ -23,8 +23,9 @@ const createEntity = function(gameContext, entityID, snapshot) {
 
 export const killEntity = function(gameContext, entity) {
     const { teamManager, world } = gameContext;
-    const { entityManager } = world;
+    const { entityManager, actorManager } = world;
     const { activeTeams } = teamManager;
+    const { actors } = actorManager;
     const team = entity.getTeam(gameContext);
 
     entity.removeFromMap(gameContext);
@@ -35,6 +36,10 @@ export const killEntity = function(gameContext, entity) {
         const team = teamManager.getTeam(teamID);
 
         team.onEntityDeath(entity);
+    }
+
+    for(const actor of actors) {
+        actor.onEntityDied(gameContext, entity);
     }
 }
 

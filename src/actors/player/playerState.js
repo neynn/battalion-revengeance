@@ -26,9 +26,14 @@ PlayerState.prototype.onEvent = function(gameContext, stateMachine, eventID, eve
             this.onTileChange(gameContext, stateMachine, eventData.x, eventData.y);
             break;
         }
+        case Player.EVENT.UNIT_DIED: {
+            this.onUnitDied(gameContext, stateMachine, eventData);
+            break;
+        }
     }
 }
 
+PlayerState.prototype.onUnitDied = function(gameContext, stateMachine, event) {}
 PlayerState.prototype.onEntityClick = function(gameContext, stateMachine, entity) {}
 PlayerState.prototype.onBuildingClick = function(gameContext, stateMachine, building) {}
 PlayerState.prototype.onTileClick = function(gameContext, stateMachine, tileX, tileY) {}

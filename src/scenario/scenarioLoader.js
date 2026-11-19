@@ -190,7 +190,7 @@ ScenarioLoader.prototype.createPlayer = function(gameContext, teamID) {
     playUI.load(gameContext);
     actorManager.addActor(actor);
     actor.setTeam(teamID);
-    actor.loadKeybinds(gameContext);
+    actor.load(gameContext);
     actor.states.setNextState(gameContext, Player.STATE.IDLE);
 }
 
@@ -204,7 +204,7 @@ ScenarioLoader.prototype.createSpectator = function(gameContext) {
 
     playUI.load(gameContext);
     actorManager.addActor(actor);
-    actor.loadKeybinds(gameContext);
+    actor.load(gameContext);
 }
 
 ScenarioLoader.prototype.createObjective = function(type, data) {

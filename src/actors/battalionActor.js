@@ -22,6 +22,8 @@ BattalionActor.prototype.setTeam = function(teamID) {
     this.teamID = teamID;
 }
 
+BattalionActor.prototype.onEntityDied = function(gameContext, entity) {}
+
 BattalionActor.prototype.getVisibleEntity = function(gameContext, tileX, tileY) {
     const { world } = gameContext;
     const entity = world.getEntityAt(tileX, tileY);

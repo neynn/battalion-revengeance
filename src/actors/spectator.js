@@ -17,7 +17,7 @@ Spectator.prototype.onClick = function(gameContext, tileX, tileY) {
     mapInspector.inspect(gameContext, this, tileX, tileY);
 }
 
-Spectator.prototype.loadKeybinds = function(gameContext) {
+Spectator.prototype.load = function(gameContext) {
     const { client } = gameContext;
     const { router } = client;
     

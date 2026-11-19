@@ -42,11 +42,18 @@ Player.EVENT = {
     ENTITY_CLICK: 0,
     BUILDING_CLICK: 1,
     TILE_CLICK: 2,
-    TILE_CHANGE: 3
+    TILE_CHANGE: 3,
+    UNIT_DIED: 4
 };
 
 Player.prototype = Object.create(BattalionActor.prototype);
 Player.prototype.constructor = Player;
+
+Player.prototype.onEntityDied = function(gameContext, entity) {
+    this.states.handleEvent(gameContext, Player.EVENT.UNIT_DIED, {
+        "entity": entity
+    });
+}
 
 Player.prototype.onTurnStart = function(gameContext) {
     const { teamManager } = gameContext;
@@ -128,10 +135,10 @@ Player.prototype.onClick = function(gameContext, tileX, tileY) {
     }
 }
 
-Player.prototype.loadKeybinds = function(gameContext) {
+Player.prototype.load = function(gameContext) {
     const { client, mapInspector } = gameContext;
     const { router } = client;
-    
+
     router.useConfig(gameContext, "PLAY", INPUT_TRIGGER);
 
     router.on(INPUT_TRIGGER.CLICK, () => {
