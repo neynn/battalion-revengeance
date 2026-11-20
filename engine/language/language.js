@@ -1,9 +1,8 @@
 import { PathHandler } from "../resources/pathHandler.js";
 
-export const Language = function(id, directory, sources) {
+export const Language = function(id) {
     this.id = id;
-    this.directory = directory;
-    this.sources = sources;
+    this.paths = [];
     this.state = Language.STATE.NONE;
 }
 
@@ -17,8 +16,12 @@ Language.prototype.getID = function() {
     return this.id;
 }
 
+Language.prototype.addPath = function(directory, source) {
+    this.paths.push(PathHandler.getPath(directory, source));
+}
+
 Language.prototype.loadFiles = function(onLoaded) {
-    if(this.sources.length === 0 || this.state === Language.STATE.LOADING) {
+    if(this.paths.length === 0 || this.state === Language.STATE.LOADING) {
         return;
     }
 
@@ -26,9 +29,7 @@ Language.prototype.loadFiles = function(onLoaded) {
 
     const requests = [];
 
-    for(const source of this.sources) {
-        const path = PathHandler.getPath(this.directory, source);
-
+    for(const path of this.paths) {
         requests.push(PathHandler.promiseJSON(path));
     }
 

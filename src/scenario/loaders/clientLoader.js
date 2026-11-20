@@ -55,7 +55,7 @@ ClientScenarioLoader.prototype.loadScenarioText = function(gameContext) {
 
     this.localizeTiles();
     
-    textRegistry.clearScenarioAndMapText();
+    textRegistry.clearScenarioText();
     textRegistry.registerScenarioText(this.scenario.text);
 }
 
